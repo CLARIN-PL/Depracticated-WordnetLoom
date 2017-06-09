@@ -18,7 +18,6 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 package pl.edu.pwr.wordnetloom.client.plugins.core;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
@@ -48,21 +47,13 @@ public class CoreService extends AbstractService implements MenuListener {
     private JMenu edit, other, window; //perspective
     private JCheckBoxMenuItem showTooltips;
 
-    /**
-     * konstruktor
-     *
-     * @param workbench - środowisko pracy
-     *
-     */
     public CoreService(Workbench workbench) {
         super(workbench);
         // ustawienie domyslnego okna nadzrzednego dla komunikatow
         DialogBox.setParentWindow(workbench.getFrame());
     }
 
-    /**
-     * instalacja akcji
-     */
+    @Override
     public void installMenuItems() {
         final Workbench w = super.workbench;
 
@@ -73,10 +64,8 @@ public class CoreService extends AbstractService implements MenuListener {
         file.add(new JMenu(Labels.EXPORT));
 
         // wyjscie z programu
-        file.add(new MenuItemExt(Labels.EXIT, KeyEvent.VK_W, new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                System.exit(0);
-            }
+        file.add(new MenuItemExt(Labels.EXIT, KeyEvent.VK_W, (ActionEvent arg0) -> {
+            System.exit(0);
         }));
 
         edit = new JMenu(Labels.EDIT);
@@ -87,7 +76,7 @@ public class CoreService extends AbstractService implements MenuListener {
 
             {
                 putValue(Action.NAME, Labels.CUT);
-                putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_W));
+                putValue(Action.MNEMONIC_KEY, KeyEvent.VK_W);
             }
         });
 
@@ -96,7 +85,7 @@ public class CoreService extends AbstractService implements MenuListener {
 
             {
                 putValue(Action.NAME, Labels.COPY);
-                putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_K));
+                putValue(Action.MNEMONIC_KEY, KeyEvent.VK_K);
             }
         });
         edit.add(new DefaultEditorKit.PasteAction() {
@@ -104,7 +93,7 @@ public class CoreService extends AbstractService implements MenuListener {
 
             {
                 putValue(Action.NAME, Labels.PASTE);
-                putValue(Action.MNEMONIC_KEY, new Integer(KeyEvent.VK_E));
+                putValue(Action.MNEMONIC_KEY, KeyEvent.VK_E);
             }
         });
 
@@ -112,31 +101,27 @@ public class CoreService extends AbstractService implements MenuListener {
         help.setMnemonic(KeyEvent.VK_C);
 
         // o programie
-        help.add(new MenuItemExt(Labels.ABOUT_APP, KeyEvent.VK_O, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                AboutFrame.showModal(w);
-            }
+        help.add(new MenuItemExt(Labels.ABOUT_APP, KeyEvent.VK_O, (ActionEvent e) -> {
+            AboutFrame.showModal(w);
         }));
 
         // wyswietlanie tooltipow
         showTooltips = new JCheckBoxMenuItem(Labels.SHOW_TOOLTIPS);
         showTooltips.setMnemonic(KeyEvent.VK_D);
-        showTooltips.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {		 	 // wywolanie zdarzenia
-                JCheckBoxMenuItem item = (JCheckBoxMenuItem) e.getSource();
-                w.setParam(SHOW_TOOLTIPS_PARAM, item.isSelected() ? "1" : "0"); // ustawienie pokazywnia tooltipow
-                ToolTipGenerator.getGenerator().setEnabledTooltips(item.isSelected());
-            }
+        
+        showTooltips.addActionListener((ActionEvent e) -> {
+            // wywolanie zdarzenia
+            JCheckBoxMenuItem item = (JCheckBoxMenuItem) e.getSource();
+            w.setParam(SHOW_TOOLTIPS_PARAM, item.isSelected() ? "1" : "0"); // ustawienie pokazywnia tooltipow
+            ToolTipGenerator.getGenerator().setEnabledTooltips(item.isSelected());
         });
 
         window = new JMenu(Labels.WINDOW);
         window.setMnemonic(KeyEvent.VK_O);
 
         // standardowe ustawienia okna
-        window.add(new MenuItemExt(Labels.DEFAULT_SETTINGS, KeyEvent.VK_S, new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                w.getActivePerspective().resetViews();
-            }
+        window.add(new MenuItemExt(Labels.DEFAULT_SETTINGS, KeyEvent.VK_S, (ActionEvent arg0) -> {
+            w.getActivePerspective().resetViews();
         }));
 
         window.addSeparator();
@@ -154,37 +139,29 @@ public class CoreService extends AbstractService implements MenuListener {
         workbench.installMenu(help);
     }
 
-    /**
-     * menu perspektywa zostalo rozwiniete
-     */
+
+    @Override
     public void menuSelected(MenuEvent arg0) {
     }
 
+    @Override
     public boolean onClose() {
         return true;
     }
 
+    @Override
     public void onStart() {
-        /**
-         *
-         */
     }
 
+    @Override
     public void installViews() {
-        /**
-         *
-         */
     }
 
+    @Override
     public void menuDeselected(MenuEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void menuCanceled(MenuEvent arg0) {
-        /**
-         *
-         */
     }
 }

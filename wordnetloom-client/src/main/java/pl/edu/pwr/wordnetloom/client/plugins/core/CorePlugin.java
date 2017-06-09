@@ -30,11 +30,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
  */
 public class CorePlugin implements Plugin {
 
-    /**
-     * instalacja pluginu
-     *
-     * @param workbench - srodowisko pracy
-     */
+    @Override
     public void install(final Workbench workbench) {
         Service core = new CoreService(workbench);
         workbench.installService(core);

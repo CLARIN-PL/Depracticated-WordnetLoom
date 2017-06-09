@@ -47,17 +47,14 @@ public class ViwnExamplesViewUI extends AbstractViewUI {
     }
 
     public void make_tree(final String text) {
-        Runnable run = new Runnable() {
-            public void run() {
-                ta.setText(text);
-                ta.setCaretPosition(0);
-            }
+        Runnable run = () -> {
+            ta.setText(text);
+            ta.setCaretPosition(0);
         };
 
         try {
             GUIUtils.delegateToEDT(run);
-        } catch (InterruptedException e) {
-        } catch (InvocationTargetException e) {
+        } catch (InterruptedException | InvocationTargetException e) {
         }
     }
 }

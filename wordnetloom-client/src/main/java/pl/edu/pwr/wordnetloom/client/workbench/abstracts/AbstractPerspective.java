@@ -45,14 +45,14 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
     private String perspectiveName = null;      // nazwa perspektywy
     private int indexOfNextView = 0;            // indeks dla kolenego instalowanego indeksu
 
-    private List<SplitPaneExt> splitters = new Vector<SplitPaneExt>();
-    private List<JTabbedPane> panes = new Vector<JTabbedPane>();
+    private final List<SplitPaneExt> splitters = new Vector<>();
+    private final List<JTabbedPane> panes = new Vector<>();
 
     // konfiguracja perspektywy
     protected Workbench workbench = null;
 
     // skróty klawiszowe
-    protected Collection<ShortCut> shortCuts = new ArrayList<ShortCut>();
+    protected Collection<ShortCut> shortCuts = new ArrayList<>();
 
     // modyfikacja dla skrótów oraz skrót bazowy
     static final protected int MODIFIERS = KeyEvent.CTRL_DOWN_MASK;
@@ -83,6 +83,7 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
         return result;
     }
 
+    @Override
     public void installView(View view, int pos) {
         try {
             installPane(view, panes.get(pos));
@@ -103,23 +104,28 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
         this.workbench = workbench;
     }
 
+    @Override
     public String getName() {
         return this.perspectiveName;
     }
 
+    @Override
     public void init() {
         this.getContent(); // zbudowanie iu perspektywy
     }
 
+    @Override
     final public Collection<ShortCut> getShortCuts() {
         return shortCuts;
     }
 
     /**
      * dwuklik myszką w zakładke powoduje zwiniecie
+     * @param event
      */
-    public void mouseClicked(MouseEvent arg0) {
-        if (arg0.getClickCount() != 2) {
+    @Override
+    public void mouseClicked(MouseEvent event) {
+        if (event.getClickCount() != 2) {
             return; // czy to byl dwuklik
         }
         // przejście po wszystkich splitterach
@@ -133,7 +139,7 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
             for (int i = 0; i < count; i++) {
                 // jeśli sygnał pochodzi od komponentu
                 // to zwinięcie widoku
-                if (splitter.getComponent(i) == arg0.getSource()) {
+                if (splitter.getComponent(i) == event.getSource()) {
                     splitter.collapse(i);
                     return;
                 }
@@ -156,25 +162,30 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
         shortCuts.addAll(view.getShortCuts());
     }
 
+    @Override
     public void resetViews() {
         synchronized (splitters) {
             for (int i = 0; i < 2; i++) {
-                for (SplitPaneExt splitter : splitters) {
+                splitters.forEach((splitter) -> {
                     splitter.resetDividerLocation();
-                }
+                });
             }
         }
     }
 
+    @Override
     public void mousePressed(MouseEvent arg0) {
     }
 
+    @Override
     public void mouseReleased(MouseEvent arg0) {
     }
 
+    @Override
     public void mouseEntered(MouseEvent arg0) {
     }
 
+    @Override
     public void mouseExited(MouseEvent arg0) {
     }
 

@@ -31,9 +31,9 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
  */
 public abstract class AbstractView implements View {
 
-    private AbstractViewUI viewUI;
+    private final AbstractViewUI viewUI;
     private boolean wasViewInitialized; // czy widok byl inicjalizowany
-    private String title;
+    private final String title;
     protected Workbench workbench;
 
     /**
@@ -65,18 +65,22 @@ public abstract class AbstractView implements View {
         return viewUI;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public Collection<ShortCut> getShortCuts() {
         return getUI().perspectiveScopeShortCuts;
     }
 
+    @Override
     public JPanel getPanel() {
         return getUI().getContent();
     }
 
+    @Override
     public JComponent getRootComponent() {
         return getUI().getRootComponent();
     }

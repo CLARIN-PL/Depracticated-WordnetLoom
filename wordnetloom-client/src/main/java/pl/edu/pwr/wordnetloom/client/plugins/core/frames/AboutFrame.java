@@ -38,19 +38,15 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
  */
 public class AboutFrame extends IconDialog implements ActionListener {
 
-    private static final String TEXT_COPYRIGHT = "Copyright 2005-2014, Politechnika Wrocławska";
+    private static final String TEXT_COPYRIGHT = "Copyright 2005-2017, Politechnika Wrocławska";
     private static final String TEXT_AUTHORS_1 = "Bartosz Broda, Łukasz Jastrzębski,";
     private static final String TEXT_AUTHORS_2 = "Paweł Koczan, Michał Marcińczuk,";
     private static final String TEXT_AUTHORS_3 = "Adam Musiał, Maciej Piasecki,";
     private static final String TEXT_AUTHORS_4 = "Radosław Ramocki, Michał Stanek";
+    private static final String TEXT_AUTHORS_5 = "Tomasz Naskręt";
     private static final String PARAM_OWNER = "Owner";
     private static final long serialVersionUID = 1L;
 
-    /**
-     * konstruktor
-     *
-     * @param workbench - srodowisko
-     */
     private AboutFrame(Workbench workbench) {
         super(workbench.getFrame(), Labels.ABOUT_APP, 360, 470);
         this.setLocationRelativeTo(workbench.getFrame());
@@ -59,7 +55,7 @@ public class AboutFrame extends IconDialog implements ActionListener {
 
         Container content = this.getContentPane();
         content.setBackground(new Color(238, 238, 238));
-        content.add("center", new JLabel(new ImageIcon("icons/logo.gif"), JLabel.CENTER));
+        content.add("center", new JLabel(new ImageIcon(getClass().getClassLoader().getResource("icons/logo.gif")), JLabel.CENTER));
         content.add("br left", new LabelPlain(Labels.ABOUT_DESCRIPTION));
         content.add("br", new JLabel(" "));
         content.add("br", new JLabel(Labels.VERSION_COLON));
@@ -69,6 +65,7 @@ public class AboutFrame extends IconDialog implements ActionListener {
         content.add("br tab", new LabelPlain(TEXT_AUTHORS_2));
         content.add("br tab", new LabelPlain(TEXT_AUTHORS_3));
         content.add("br tab", new LabelPlain(TEXT_AUTHORS_4));
+        content.add("br tab", new LabelPlain(TEXT_AUTHORS_5));
         content.add("br", new JLabel(Labels.USER_COLON));
         content.add("tab", new LabelPlain(workbench.getParam(PARAM_OWNER)));
         content.add("br", new JLabel(" "));
@@ -78,21 +75,13 @@ public class AboutFrame extends IconDialog implements ActionListener {
         pack();
     }
 
-    /**
-     * wyswietlenie okienka dialogowego
-     *
-     * @param workbench - srodowisko
-     *
-     */
-    static public void showModal(Workbench workbench) {
+    public static void showModal(Workbench workbench) {
         AboutFrame frame = new AboutFrame(workbench);
         frame.setVisible(true);
     }
 
-    /**
-     * kliknięto w przycisk OK
-     */
-    public void actionPerformed(ActionEvent arg0) {
+    @Override
+    public void actionPerformed(ActionEvent event) {
         setVisible(false);
     }
 

@@ -49,10 +49,10 @@ public abstract class AbstractViewUI implements KeyListener {
     private JPanel content;       // głowny panel
     // lista skrótów działających w obrębie widoku, są one obsługiwane
     // lokalnie przez tą klasę
-    protected Collection<ShortCut> viewScopeShortCuts = new ArrayList<ShortCut>();
+    protected Collection<ShortCut> viewScopeShortCuts = new ArrayList<>();
     // lista skrótów działających w obrębie całej persepetywy, są zarządzane
     // przez workbench
-    protected Collection<ShortCut> perspectiveScopeShortCuts = new ArrayList<ShortCut>();
+    protected Collection<ShortCut> perspectiveScopeShortCuts = new ArrayList<>();
 
     /**
      * Inicjalizacja wygladu
@@ -158,7 +158,9 @@ public abstract class AbstractViewUI implements KeyListener {
     /**
      * Wcisnieto jakiś przycisk na kontrolkach, w tym przypadku może to być
      * jakiś skrót klawiaturowy
+     * @param arg0
      */
+    @Override
     public void keyPressed(KeyEvent arg0) {
         if (arg0.getSource() instanceof JTextField) // dla pol tekstowych nie dziala
         {
@@ -176,16 +178,12 @@ public abstract class AbstractViewUI implements KeyListener {
         }
     }
 
+    @Override
     public void keyTyped(KeyEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void keyReleased(KeyEvent arg0) {
-        /**
-         *
-         */
     }
 
     /**

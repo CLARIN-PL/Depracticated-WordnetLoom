@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -34,7 +33,7 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
     private JScrollPane scroll;
     private Sense unit;
     private JList examples;
-    private DefaultListModel listModel = new DefaultListModel();
+    private final DefaultListModel listModel = new DefaultListModel();
     private final ViwnGraphViewUI graphUI;
 
     public ViwnExampleKPWrViewUI(ViwnGraphViewUI graphUI) {
@@ -80,19 +79,19 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
     public void setExampleList(final List<String> exampleList, Sense sense) {
         this.unit = sense;
         listModel.clear();
-        Runnable run = new Runnable() {
-            public void run() {
-                for (String item : exampleList) {
-                    listModel.addElement(item);
-                    adjustSizeOfListItem(scroll.getWidth() - 50);
-                }
-            }
+        Runnable run;
+        run = () -> {
+            exampleList.stream().map((item) -> {
+                listModel.addElement(item);
+                return item;
+            }).forEachOrdered((_item) -> {
+                adjustSizeOfListItem(scroll.getWidth() - 50);
+            });
         };
 
         try {
             GUIUtils.delegateToEDT(run);
-        } catch (InterruptedException e) {
-        } catch (InvocationTargetException e) {
+        } catch (InterruptedException | InvocationTargetException e) {
         }
     }
 
@@ -115,11 +114,8 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
             lui.initialize(pan);
             lui.refreshData(unit);
             lui.fillKPWrExample(examples.getSelectedValues());
-            lui.closeWindow(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    dia.dispose();
-                }
+            lui.closeWindow((ActionEvent e1) -> {
+                dia.dispose();
             });
             dia.setLocationRelativeTo(workbench.getFrame());
             dia.setContentPane(pan);
@@ -147,8 +143,8 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
 
     public class ExampleCellRenderer implements ListCellRenderer {
 
-        private JPanel p;
-        private JTextArea ta;
+        private final JPanel p;
+        private final JTextArea ta;
 
         public ExampleCellRenderer() {
             p = new JPanel();

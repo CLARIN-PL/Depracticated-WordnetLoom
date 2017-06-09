@@ -29,16 +29,12 @@ public abstract class AbstractService implements Service {
 
     protected Workbench workbench; // uchwyt dla workbench
 
-    /**
-     * Konstruktor
-     *
-     * @param workbench - środowisko pracy
-     */
     public AbstractService(Workbench workbench) {
         super();
         this.workbench = workbench;
     }
 
+    @Override
     public String getId() {
         return this.getClass().getName();
     }

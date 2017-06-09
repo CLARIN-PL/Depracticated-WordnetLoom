@@ -16,7 +16,7 @@ public final class LexiconManager {
     private List<Long> cachedLexicons;
     private List<Lexicon> cachedFullLexicons;
     private boolean lexiconMarker;
-    private ConfigurationManager config = new ConfigurationManager(PanelWorkbench.WORKBENCH_CONFIG_FILE);
+    private final ConfigurationManager config = new ConfigurationManager(PanelWorkbench.WORKBENCH_CONFIG_FILE);
 
     private LexiconManager() {
         loadLexicons();
@@ -50,11 +50,7 @@ public final class LexiconManager {
         String marker = config.get("LexiconMarker");
         if (!marker.equals("") && marker != null && marker.equals("on")) {
             lexiconMarker = true;
-        } else if (!marker.equals("") && marker != null && marker.equals("off")) {
-            lexiconMarker = false;
-        } else {
-            lexiconMarker = true;
-        }
+        } else lexiconMarker = !(!marker.equals("") && marker != null && marker.equals("off"));
     }
 
     public List<Lexicon> getFullLexicons() {
@@ -84,13 +80,13 @@ public final class LexiconManager {
 
     private List<Long> readLexiconsFromFile() throws InvalidAttributeValueException {
         config.loadConfiguration();
-        List<Long> list = new ArrayList<Long>();
+        List<Long> list = new ArrayList<>();
         String[] lexiconArray = config.get("Lexicons").split(",");
-        for (int i = 0; i < lexiconArray.length; i++) {
+        for (String lexiconArray1 : lexiconArray) {
             try {
-                Long id = Long.parseLong(lexiconArray[i]);
+                Long id = Long.parseLong(lexiconArray1);
                 list.add(id);
-            } catch (Exception ex) {
+            }catch (NumberFormatException ex) {
                 throw new InvalidAttributeValueException("Invalid character in lexicon string");
             }
         }

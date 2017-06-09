@@ -120,7 +120,7 @@ public class ViWordNetService extends AbstractService implements
 
     private final static int GRAPH_VIEWS_LIMIT = 6;
     private ViwnGraphView activeGraphView = null;
-    private Vector<ViwnGraphView> graphViews = new Vector<>(GRAPH_VIEWS_LIMIT);
+    private final Vector<ViwnGraphView> graphViews = new Vector<>(GRAPH_VIEWS_LIMIT);
 
     private LexicalUnitsView luView = null;
     private SynsetView synsetView = null;

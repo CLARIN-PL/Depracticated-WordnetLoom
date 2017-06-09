@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.TreeSet;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.GraphChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
@@ -101,22 +102,24 @@ public class ViwnGraphView extends AbstractView {
     }
 
     private ArrayList<TreeSet<ViwnNodeSynset>> createSubgraphs(ArrayList<ViwnNodeSynset> exp) {
-        HashMap<Long, ViwnNodeSynset> synsetToNode = new HashMap<Long, ViwnNodeSynset>();
-        TreeSet<Long> synsets = new TreeSet<Long>();
+        HashMap<Long, ViwnNodeSynset> synsetToNode = new HashMap<>();
+        TreeSet<Long> synsets = new TreeSet<>();
 
-        for (ViwnNodeSynset node : exp) {
+        exp.stream().map((node) -> {
             synsetToNode.put(node.getId(), node);
+            return node;
+        }).forEachOrdered((node) -> {
             synsets.add(node.getId());
-        }
+        });
 
-        ArrayList<TreeSet<ViwnNodeSynset>> groups = new ArrayList<TreeSet<ViwnNodeSynset>>();
+        ArrayList<TreeSet<ViwnNodeSynset>> groups = new ArrayList<>();
 
         while (synsets.size() > 0) {
             Long synsetId = synsets.iterator().next();
             synsets.remove(synsetId);
 
-            TreeSet<Long> synsetGroup = new TreeSet<Long>();
-            TreeSet<Long> synsetGroupQueue = new TreeSet<Long>();
+            TreeSet<Long> synsetGroup = new TreeSet<>();
+            TreeSet<Long> synsetGroupQueue = new TreeSet<>();
             synsetGroupQueue.add(synsetId);
 
             while (synsetGroupQueue.size() > 0) {
@@ -124,37 +127,39 @@ public class ViwnGraphView extends AbstractView {
                 synsetGroupQueue.remove(synsetInGroup);
                 synsetGroup.add(synsetInGroup);
 
-                for (ViwnEdgeSynset relDown : synsetToNode
-                        .get(synsetInGroup).getRelation(Direction.BOTTOM)) {
-                    if (synsets.contains(relDown.getChild())) {
-                        synsetGroupQueue.add(relDown.getChild());
-                        synsets.remove(relDown.getChild());
-                    }
-                }
+                synsetToNode
+                        .get(synsetInGroup).getRelation(Direction.BOTTOM).stream().filter((relDown) -> (synsets.contains(relDown.getChild()))).map((relDown) -> {
+                            synsetGroupQueue.add(relDown.getChild());
+                    return relDown;
+                }).forEachOrdered((relDown) -> {
+                    synsets.remove(relDown.getChild());
+                });
 
-                for (ViwnEdgeSynset relUp : synsetToNode.get(synsetInGroup)
-                        .getRelation(Direction.TOP)) {
-                    if (synsets.contains(relUp.getChild())) {
-                        synsetGroupQueue.add(relUp.getChild());
-                        synsets.remove(relUp.getChild());
-                    }
-                }
+                synsetToNode.get(synsetInGroup)
+                        .getRelation(Direction.TOP)
+                        .stream()
+                        .filter((relUp) -> (synsets.contains(relUp.getChild()))).map((relUp) -> {
+                            synsetGroupQueue.add(relUp.getChild());
+                    return relUp;
+                }).forEachOrdered((relUp) -> {
+                    synsets.remove(relUp.getChild());
+                });
             }
 
-            TreeSet<ViwnNodeSynset> candGroup = new TreeSet<ViwnNodeSynset>();
-            for (Long id : synsetGroup) {
+            TreeSet<ViwnNodeSynset> candGroup = new TreeSet<>();
+            synsetGroup.forEach((id) -> {
                 candGroup.add(synsetToNode.get(id));
-            }
+            });
             groups.add(candGroup);
         }
         return groups;
     }
 
     private ArrayList<ViwnNodeCand> createNodeRoots(ArrayList<TreeSet<ViwnNodeSynset>> groups, String word) {
-        ArrayList<ViwnNodeCand> roots = new ArrayList<ViwnNodeCand>();
+        ArrayList<ViwnNodeCand> roots = new ArrayList<>();
 
         for (TreeSet<ViwnNodeSynset> group : groups) {
-            if (group.size() == 0) {
+            if (group.isEmpty()) {
                 roots.add(null);
                 continue;
             }
@@ -165,11 +170,11 @@ public class ViwnGraphView extends AbstractView {
             for (ViwnNodeSynset n : group) {
                 if (n instanceof ViwnNodeCand) {
                     ViwnNodeCand node = (ViwnNodeCand) n;
-                    if (max == null
-                            || node.getExt().getScore1() > max.getExt().getScore1()
-                            || (node.getExt().getScore1() == max.getExt().getScore1()
+                    if ((max == null || node.getExt().getScore1() > max.getExt().getScore1())
+                            || (Objects.equals(node.getExt().getScore1(), max.getExt().getScore1())
                             && node.getExt().getScore2() > max.getExt().getScore2())) {
                         max = node;
+                    } else {
                     }
 
                     if (node.isAdded()) {
@@ -217,9 +222,9 @@ public class ViwnGraphView extends AbstractView {
 
         for (int i = 0; i < groups.size(); ++i) {
             roots.get(i).setSpawner(root, Direction.BOTTOM);
-            TreeSet<ViwnNodeSynset> setuped = new TreeSet<ViwnNodeSynset>();
+            TreeSet<ViwnNodeSynset> setuped = new TreeSet<>();
             setuped.add(roots.get(i));
-            ArrayDeque<ViwnNodeSynset> to_setup = new ArrayDeque<ViwnNodeSynset>(groups.get(i));
+            ArrayDeque<ViwnNodeSynset> to_setup = new ArrayDeque<>(groups.get(i));
 
             int count = 0;
             while (!to_setup.isEmpty() && count != to_setup.size()) {
@@ -269,7 +274,7 @@ public class ViwnGraphView extends AbstractView {
 
         if (graphs != null) {
 
-            HashMap<Long, ExtGraphExtension> graphExts = new HashMap<Long, ExtGraphExtension>();
+            HashMap<Long, ExtGraphExtension> graphExts = new HashMap<>();
 
             for (ExtGraphExtension ege : extensions) {
                 for (ExtGraph eg : graphs) {
@@ -288,39 +293,37 @@ public class ViwnGraphView extends AbstractView {
             //Stworzenie odpowiednich węzłów na podstawie pobranych informacji
             if (synsets != null && synsets.size() > 0) {
 
-                HashMap<Long, ExtGraph> synGraphs = new HashMap<Long, ExtGraph>();
+                HashMap<Long, ExtGraph> synGraphs = new HashMap<>();
 
                 for (ExtGraph eg : graphs) {
-                    for (Synset ss : synsets) {
-                        if (eg.getSynset().getId().equals(ss.getId())) {
-                            synGraphs.put(ss.getId(), eg);
-                        }
-                    }
+                    synsets.stream().filter((ss) -> (eg.getSynset().getId().equals(ss.getId()))).forEachOrdered((ss) -> {
+                        synGraphs.put(ss.getId(), eg);
+                    });
                 }
 
                 //Uzupełnienie synsetów
                 //synsets = RemoteUtils.synsetRemote.dbGetUnits(synsets);
                 //	synsets = RemoteUtils.synsetRemote.dbGetSynsetsRels(synsets);
                 //Uzupełnienie jednostek w rozszerzeniach
-                for (Synset syn : synsets) {
-                    ExtGraphExtension exge = graphExts.get(synGraphs.get(syn.getId()).getId());
+                synsets.stream().map((syn) -> graphExts.get(synGraphs.get(syn.getId()).getId())).forEachOrdered((exge) -> {
                     // TODO: check me
                     //graphExts.get(synGraphs.get(syn.getId()).getId()).setLexicalUnit(syn);
                     RemoteUtils.extGraphExtensionRemote.mergeObject(exge);
-                }
+                });
 
-                ArrayList<ViwnNodeCandExtension> result = new ArrayList<ViwnNodeCandExtension>();
+                ArrayList<ViwnNodeCandExtension> result = new ArrayList<>();
 
-                for (Synset s : synsets) {
+                synsets.stream().map((s) -> {
                     ViwnNodeCandExtension ext = new ViwnNodeCandExtension(s, graphExts.get(synGraphs.get(s.getId()).getId()), getUI());
                     ext.setRelName(graphExts.get(synGraphs.get(s.getId()).
                             getId()).
                             getRelationType().
                             getName().getText());
                     ext.setColor(graphExts.get(synGraphs.get(s.getId()).getId()).getColor());
-
+                    return ext;
+                }).forEachOrdered((ext) -> {
                     result.add(ext);
-                }
+                });
                 return result;
             } else {
                 return null;
@@ -336,13 +339,13 @@ public class ViwnGraphView extends AbstractView {
 
         Collection<ExtGraph> cands = RemoteUtils.extGraphRemote.dbFullGet(word, packageNo);
         mode = Mode.CANDS;
-        List<Synset> synsets = new ArrayList<Synset>();
-        for (ExtGraph ext : cands) {
+        List<Synset> synsets = new ArrayList<>();
+        cands.forEach((ext) -> {
             synsets.add(ext.getSynset());
-        }
+        });
 
-        TreeSet<Long> synsetsWithWord = new TreeSet<Long>();
-        List<Synset> synsetsWithWordCol = new ArrayList<Synset>();
+        TreeSet<Long> synsetsWithWord = new TreeSet<>();
+        List<Synset> synsetsWithWordCol = new ArrayList<>();
         synsetsWithWordCol = RemoteUtils.synsetRemote.dbFastGetSynsets(word, LexiconManager.getInstance().getLexicons());
 
         for (Synset synset : synsetsWithWordCol) {
@@ -352,8 +355,8 @@ public class ViwnGraphView extends AbstractView {
         ExtGraph extMaxRwf = null;
         int nodesAddedCount = 0;
 
-        ArrayList<ViwnNodeSynset> viwnCands = new ArrayList<ViwnNodeSynset>();
-        ArrayList<ViwnNodeSynset> freeSyns = new ArrayList<ViwnNodeSynset>();
+        ArrayList<ViwnNodeSynset> viwnCands = new ArrayList<>();
+        ArrayList<ViwnNodeSynset> freeSyns = new ArrayList<>();
 
         if (cands.size() > 0) {
             for (ExtGraph ext : cands) {
@@ -410,7 +413,7 @@ public class ViwnGraphView extends AbstractView {
         ArrayList<ViwnNodeCand> roots = createNodeRoots(groups, word);
         setupNodes(groups, roots, nodeWord, freeSyns);
 
-        return new Quadruple<ViwnNodeWord, ArrayList<TreeSet<ViwnNodeSynset>>, ArrayList<ViwnNodeCand>, ArrayList<ViwnNodeSynset>>(nodeWord, groups, roots, freeSyns);
+        return new Quadruple<>(nodeWord, groups, roots, freeSyns);
     }
 
     /**
@@ -431,6 +434,7 @@ public class ViwnGraphView extends AbstractView {
      * make getUI public
      *
      */
+    @Override
     public ViwnGraphViewUI getUI() {
         return (ViwnGraphViewUI) super.getUI();
     }
