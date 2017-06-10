@@ -100,25 +100,19 @@ public class ButtonExt extends JButton implements KeyListener {
         this.addKeyListener(keyListener);
     }
 
+    @Override
     public void keyTyped(KeyEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void keyReleased(KeyEvent arg0) {
-        /**
-         *
-         */
     }
 
-    /**
-     * zdarzenie naciśnięcia enter na przycisku
-     */
-    public void keyPressed(KeyEvent arg0) {
+    @Override
+    public void keyPressed(KeyEvent event) {
         // aby enter działał na przyciskach
-        if (arg0.getSource() == this && arg0.getModifiers() == 0 && arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-            arg0.consume();
+        if (event.getSource() == this && event.getModifiers() == 0 && event.getKeyCode() == KeyEvent.VK_ENTER) {
+            event.consume();
             this.doClick();
         }
     }

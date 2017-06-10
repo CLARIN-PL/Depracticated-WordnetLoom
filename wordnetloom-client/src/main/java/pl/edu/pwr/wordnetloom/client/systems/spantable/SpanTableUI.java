@@ -1,20 +1,3 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.systems.spantable;
 
 import java.awt.Color;
@@ -30,14 +13,9 @@ import javax.swing.table.TableCellRenderer;
  * element interfejsu dla tabeli z połaczonymi komórkami
  *
  * @author Max
- *
  */
 public class SpanTableUI extends BasicTableUI {
 
-    /*
-	 * (non-Javadoc)
-	 * @see javax.swing.plaf.ComponentUI#paint(java.awt.Graphics, javax.swing.JComponent)
-     */
     @Override
     public void paint(Graphics g, JComponent c) {
         Rectangle r = g.getClipBounds();
@@ -87,7 +65,7 @@ public class SpanTableUI extends BasicTableUI {
         g.setColor(table.getGridColor());
         g.drawLine(area.x + area.width - 1, area.y, area.x + area.width - 1, area.y + area.height - 1);
         g.drawLine(area.x, area.y + area.height - 1, area.x + area.width - 1, area.y + area.height - 1);
-        //g.drawRect(area.x, area.y, area.width, area.height);
+
         g.setColor(oldColor);
 
         area.setBounds(area.x + horizontalMargin / 2, area.y + verticalMargin

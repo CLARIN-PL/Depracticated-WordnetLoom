@@ -50,11 +50,11 @@ public class ReverseRelationFrame extends IconDialog implements ActionListener, 
 
     private static final long serialVersionUID = 1L;
 
-    private ButtonExt buttonChoose, buttonCancel, buttonNoReverse;
+    private final ButtonExt buttonChoose, buttonCancel, buttonNoReverse;
     private RelationType lastReverse = null;
     private RelationType selectedRelation = null;
-    private JTree tree;
-    private JCheckBox autoReverse;
+    private final JTree tree;
+    private final JCheckBox autoReverse;
 
     /**
      * konstruktor
@@ -129,37 +129,31 @@ public class ReverseRelationFrame extends IconDialog implements ActionListener, 
     static public Pair<RelationType, Boolean> showModal(JFrame owner, RelationType lastReverse, Boolean autoReverse) {
         ReverseRelationFrame frame = new ReverseRelationFrame(owner);
         frame.lastReverse = lastReverse;
-        frame.autoReverse.setSelected(autoReverse.booleanValue());
+        frame.autoReverse.setSelected(autoReverse);
         frame.refreshTree();
         frame.setVisible(true);
-        Pair<RelationType, Boolean> result = new Pair<RelationType, Boolean>(frame.lastReverse, new Boolean(frame.autoReverse.isSelected()));
+        Pair<RelationType, Boolean> result = new Pair<>(frame.lastReverse, frame.autoReverse.isSelected());
         frame.dispose();
         return result;
     }
 
-    /**
-     * wciśnięto przycisk
-     */
-    public void actionPerformed(ActionEvent arg0) {
-        // wcisnieto anuluj
-        if (arg0.getSource() == buttonCancel) {
+    @Override
+    public void actionPerformed(ActionEvent event) {
+
+        if (event.getSource() == buttonCancel) {
             setVisible(false);
 
-            // wcisnieto wybierz
-        } else if (arg0.getSource() == buttonChoose) {
+        } else if (event.getSource() == buttonChoose) {
             lastReverse = selectedRelation;
             setVisible(false);
 
-            // wcisnieto bez relacji
-        } else if (arg0.getSource() == buttonNoReverse) {
+        } else if (event.getSource() == buttonNoReverse) {
             lastReverse = null;
             setVisible(false);
         }
     }
 
-    /**
-     * zmienilo sie zaznaczenie w drzewie
-     */
+    @Override
     public void valueChanged(TreeSelectionEvent arg0) {
         RelationType rel = null;
         if (arg0 != null && arg0.getNewLeadSelectionPath() != null) {
@@ -168,7 +162,7 @@ public class ReverseRelationFrame extends IconDialog implements ActionListener, 
                 rel = (RelationType) lastElem;
             }
         }
-        buttonChoose.setEnabled(rel != null && RemoteUtils.relationTypeRemote.dbGetChildren(rel, LexiconManager.getInstance().getLexicons()).size() == 0);
+        buttonChoose.setEnabled(rel != null && RemoteUtils.relationTypeRemote.dbGetChildren(rel, LexiconManager.getInstance().getLexicons()).isEmpty());
         selectedRelation = rel;
     }
 

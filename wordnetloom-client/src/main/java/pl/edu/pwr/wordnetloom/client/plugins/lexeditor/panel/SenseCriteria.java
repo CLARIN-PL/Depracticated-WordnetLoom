@@ -9,12 +9,10 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
 
-@SuppressWarnings("serial")
-public class SenseCriteria extends CriteriaPanel {
+public final class SenseCriteria extends CriteriaPanel {
 
     private ComboBoxPlain<RegisterTypes> registerComboBox;
     private TextFieldPlain comment;
@@ -29,8 +27,8 @@ public class SenseCriteria extends CriteriaPanel {
 
     private void init() {
         crit = new CriteriaDTO();
-        registerComboBox = new ComboBoxPlain<RegisterTypes>();
-        registerComboBox.addItem(new CustomDescription<PartOfSpeech>(Labels.VALUE_ALL, null));
+        registerComboBox = new ComboBoxPlain<>();
+        registerComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
         for (RegisterTypes reg : RegisterTypes.values()) {
             registerComboBox.addItem(reg);
         }
@@ -102,7 +100,7 @@ public class SenseCriteria extends CriteriaPanel {
     }
 
     public void setSensesToHold(List<Sense> sense) {
-        crit.setSense(new ArrayList<Sense>(sense));
+        crit.setSense(new ArrayList<>(sense));
     }
 
     @Override

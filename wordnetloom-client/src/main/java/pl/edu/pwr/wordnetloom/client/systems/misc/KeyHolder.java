@@ -40,7 +40,7 @@ public class KeyHolder {
             sb = new StringBuilder();
         }
         lastSave = now;
-        return sb.append("" + key).toString();
+        return sb.append("").append(key).toString();
     }
 
     /*
@@ -60,7 +60,7 @@ public class KeyHolder {
      */
     public boolean isProperCode(char key) {
         final String ALLOWED = "!$0123456789-ęóąśłżźćńĘÓĄŚŁŻŹĆŃ. >_#@";
-        return (key >= 'a' && key <= 'z') || (key >= 'A' && key <= 'Z') || ALLOWED.indexOf("" + key) != -1;
+        return (key >= 'a' && key <= 'z') || (key >= 'A' && key <= 'Z') || ALLOWED.contains("" + key);
     }
 
 }

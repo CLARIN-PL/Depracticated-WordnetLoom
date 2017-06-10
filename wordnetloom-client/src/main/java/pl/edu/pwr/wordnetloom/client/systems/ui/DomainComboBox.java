@@ -15,7 +15,7 @@ public class DomainComboBox extends ComboBoxPlain<Domain> {
 
     private static final long serialVersionUID = -5108640841659123235L;
     private List<Domain> all;
-    private String nullRepresentation;
+    private final String nullRepresentation;
 
     public DomainComboBox(String nullItemRepresentation) {
         this.nullRepresentation = nullItemRepresentation;
@@ -28,8 +28,8 @@ public class DomainComboBox extends ComboBoxPlain<Domain> {
 
     public void filterDomainsByLexicon(Lexicon lexicon, boolean withPrefix) {
         removeAllItems();
-        addItem(new CustomDescription<Domain>(nullRepresentation, null));
-        List<Domain> domains = new ArrayList<Domain>();
+        addItem(new CustomDescription<>(nullRepresentation, null));
+        List<Domain> domains = new ArrayList<>();
         for (Domain domain : all) {
             if (domain.getLexicon().equals(lexicon)) {
                 domains.add(domain);
@@ -37,7 +37,7 @@ public class DomainComboBox extends ComboBoxPlain<Domain> {
         }
         domains = DomainManager.getInstance().sortDomains(domains);
         for (Domain domain : domains) {
-            addItem(new CustomDescription<Domain>(withPrefix == true ? domain.toString() : nameWithoutPrefix(domain.toString()), domain));
+            addItem(new CustomDescription<>(withPrefix == true ? domain.toString() : nameWithoutPrefix(domain.toString()), domain));
         }
     }
 
@@ -59,26 +59,26 @@ public class DomainComboBox extends ComboBoxPlain<Domain> {
     private void loadItems(boolean withPrefix) {
         removeAllItems();
         all = DomainManager.getInstance().sortDomains(all);
-        addItem(new CustomDescription<Domain>(nullRepresentation, null));
+        addItem(new CustomDescription<>(nullRepresentation, null));
         for (Domain domain : all) {
-            addItem(new CustomDescription<Domain>(
+            addItem(new CustomDescription<>(
                     withPrefix == true ? domain.toString() : nameWithoutPrefix(domain.toString()), domain));
         }
     }
 
     private List<Domain> filterDomainByUbyPos(pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech posUby) {
-        Set<Domain> result = new HashSet<Domain>();
-        List<PartOfSpeech> poses = new ArrayList<PartOfSpeech>(PosManager.getInstance().getAllPOSes());
+        Set<Domain> result = new HashSet<>();
+        List<PartOfSpeech> poses = new ArrayList<>(PosManager.getInstance().getAllPOSes());
         for (PartOfSpeech pos : poses) {
             if (pos.getUbyType() == posUby) {
                 result.addAll(pos.getDomains());
             }
         }
-        return new ArrayList<Domain>(result);
+        return new ArrayList<>(result);
     }
 
     private List<Domain> filterByDomainByPos(PartOfSpeech pos) {
-        return new ArrayList<Domain>(pos.getDomains());
+        return new ArrayList<>(pos.getDomains());
     }
 
     public static String nameWithoutPrefix(String name) {

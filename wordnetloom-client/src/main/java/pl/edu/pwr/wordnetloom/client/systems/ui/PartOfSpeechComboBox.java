@@ -28,19 +28,19 @@ public class PartOfSpeechComboBox extends ComboBoxPlain<PartOfSpeech> {
 
     private void loadItems() {
         removeAllItems();
-        addItem(new CustomDescription<PartOfSpeech>(nullRepresentation, null));
-        for (PartOfSpeech pos : all) {
-            addItem(new CustomDescription<PartOfSpeech>(pos.toString(), pos));
-        }
+        addItem(new CustomDescription<>(nullRepresentation, null));
+        all.stream().forEach((pos) -> {
+            addItem(new CustomDescription<>(pos.toString(), pos));
+        });
     }
 
     public void showUbyItems() {
         removeAllItems();
         List<PartOfSpeech> ubyOnly = PosManager.getInstance().getPOSForLexicon(1);
-        addItem(new CustomDescription<PartOfSpeech>(nullRepresentation, null));
+        addItem(new CustomDescription<>(nullRepresentation, null));
         for (PartOfSpeech pos : ubyOnly) {
             String desc = Main.getResouce("label." + pos.getUbyType().toString());
-            addItem(new CustomDescription<PartOfSpeech>(desc, pos));
+            addItem(new CustomDescription<>(desc, pos));
         }
     }
 

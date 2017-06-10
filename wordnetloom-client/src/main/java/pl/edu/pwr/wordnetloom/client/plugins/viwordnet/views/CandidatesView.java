@@ -32,11 +32,6 @@ public class CandidatesView extends AbstractView {
         super(workbench, title, new CandidatesViewUI());
     }
 
-    /**
-     * adds candidate changed listener
-     *
-     * @param newListener - listener
-     */
     public void addCandidateChangeListener(SimpleListenerInterface newListener) {
         CandidatesViewUI ui = (CandidatesViewUI) getUI();
         ui.addCandidateChangedListener(newListener);

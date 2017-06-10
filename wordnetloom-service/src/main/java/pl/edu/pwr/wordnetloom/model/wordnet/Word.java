@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.model.wordnet;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -57,27 +58,29 @@ public class Word implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || !(o instanceof Word)) {
-            return false;
-        }
-        Word e = (Word) o;
-
-        if (id == null) {
-            return false;
-        }
-        return id.equals(e.getId());
+    public int hashCode() {
+        int hash = 3;
+        hash = 37 * hash + Objects.hashCode(this.id);
+        hash = 37 * hash + Objects.hashCode(this.word);
+        return hash;
     }
 
     @Override
-    public int hashCode() {
-        int hashCode = (id.hashCode());
-        if (hashCode == 0) {
-            return super.hashCode();
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
         }
-        return hashCode;
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Word other = (Word) obj;
+        if (!Objects.equals(this.word, other.word)) {
+            return false;
+        }
+        return Objects.equals(this.id, other.id);
     }
+
 }

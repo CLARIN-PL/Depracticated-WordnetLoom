@@ -27,14 +27,14 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
-import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
+import java.util.List;
+import java.util.Objects;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
@@ -47,7 +47,6 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import org.apache.commons.collections15.Transformer;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.LockerChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
@@ -73,7 +72,7 @@ public class ViwnLockerViewUI extends AbstractViewUI
      * Holds MarkedElements to avoid adding same element more than one time
      *
      */
-    private Vector<LockerElement> list = new Vector<LockerElement>();
+    private List<LockerElement> list = new ArrayList<>();
 
     /**
      * DefaultListModel give a possibility to add and remove elements to JList
@@ -94,13 +93,13 @@ public class ViwnLockerViewUI extends AbstractViewUI
      * change.
      *
      */
-    protected Collection<SynsetSelectionChangeListener> synsetSelectionChangeListeners = new ArrayList<SynsetSelectionChangeListener>();
+    protected Collection<SynsetSelectionChangeListener> synsetSelectionChangeListeners = new ArrayList<>();
 
     /**
      * Collection of object which listen for an event of locker focus change
      *
      */
-    protected Collection<LockerChangeListener> lockerSelectionChangeListeners = new ArrayList<LockerChangeListener>();
+    protected Collection<LockerChangeListener> lockerSelectionChangeListeners = new ArrayList<>();
 
     @Override
     public JComponent getRootComponent() {
@@ -157,11 +156,11 @@ public class ViwnLockerViewUI extends AbstractViewUI
      *
      */
     public void remFromLocker(LockerElement me) {
-
-        list.removeElement(me);
+        list.remove(me);
         dlm.removeElement(me);
     }
 
+    @Override
     public void vertexSelectionChange(ViwnNode vertex) {
         for (SynsetSelectionChangeListener l : synsetSelectionChangeListeners) {
             l.synsetSelectionChangeListener(vertex);
@@ -188,7 +187,9 @@ public class ViwnLockerViewUI extends AbstractViewUI
     /**
      * ListSelectionChangeListener
      *
+     * @param lse
      */
+    @Override
     public void valueChanged(ListSelectionEvent lse) {
         // When the user release the mouse button and completes the selection,
         // getValueIsAdjusting() becomes false
@@ -210,37 +211,13 @@ public class ViwnLockerViewUI extends AbstractViewUI
         jl.setCursor(cursor);
     }
 
-    /* LOCKER ELEMENT */
-    //////////////////////////////////////////////////////
-    /**
-     * MarkedElement class class used to create panels which are displayed as an
-     * elements of jl every type of data added to list should has its
-     * MerkedElementType and a constructor in MerkedElementClass, it could be
-     * done by inheritance from that class... but who cares?
-     *
-     */
     private class LockerElement extends JPanel {
 
-        /**
-         *
-         */
         Object val;
-
-        /**
-         * need it to distinct a type of element, to allow generate popups
-         * depending on type
-         *
-         */
         LockerElementType type;
 
-        /**
-         *
-         */
         private static final long serialVersionUID = 910828919149035565L;
 
-        /**
-         *
-         */
         protected LockerElement() {
             super();
             set();
@@ -288,20 +265,22 @@ public class ViwnLockerViewUI extends AbstractViewUI
         /* TODO: probably a comparator will be needed to avoid
 		 * adding same LockerElement two times
 		 * */
+        @Override
         public boolean equals(Object o) {
             return (o != null
                     && this.getClass().equals(o.getClass())
                     && this.val.equals(((LockerElement) o).val));
         }
 
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 71 * hash + Objects.hashCode(this.val);
+            return hash;
+        }
+
     }
 
-    /* CELL RENDERER */
-    //////////////////////////////////////////////////////////////
-    /**
-     * CustomCellRenderer class draw a panel as an element of JList
-     *
-     */
     private class CustomCellRenderer implements ListCellRenderer {
 
         @Override
@@ -319,14 +298,9 @@ public class ViwnLockerViewUI extends AbstractViewUI
         }
     }
 
-    /* LOCKER MOUSE ADAPTER */
-    ///////////////////////////////////////////////////////////////
-    /**
-     * LockerMouseAdapter handles mouse clicking at the locker
-     *
-     */
     private class LockerMouseAdapter extends MouseAdapter {
 
+        @Override
         public void mouseClicked(MouseEvent mE) {
             ViWordNetService s = (ViWordNetService) workbench.getService("pl.edu.pwr.wordnetloom.client.plwordnet.plugins.viwordnet.ViWordNetService");
             // if make relation mode is on
@@ -372,11 +346,10 @@ public class ViwnLockerViewUI extends AbstractViewUI
             JPopupMenu jpm = new JPopupMenu();
 
             jpm.add(new AbstractAction("Usuń ze schowka") {
-                /**
-                 *
-                 */
+
                 private static final long serialVersionUID = -4830433852737055434L;
 
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     remFromLocker(me);
                 }
@@ -391,6 +364,7 @@ public class ViwnLockerViewUI extends AbstractViewUI
                          */
                         private static final long serialVersionUID = -987233321164815L;
 
+                        @Override
                         public void actionPerformed(ActionEvent ae) {
                             /* TODO: implement me
 						 * mark or something else,
@@ -405,6 +379,7 @@ public class ViwnLockerViewUI extends AbstractViewUI
                     jpm.add(new AbstractAction("Połącz synset z ...") {
                         private static final long serialVersionUID = 1L;
 
+                        @Override
                         public void actionPerformed(ActionEvent ae) {
                             ViWordNetService s = (ViWordNetService) workbench.getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
                             s.setFirstMergeSynsets(me.val);
@@ -416,11 +391,10 @@ public class ViwnLockerViewUI extends AbstractViewUI
 				 * generate popup menu and it actions for lexical unit
 				 * */
                     jpm.add(new AbstractAction("Utwórz relację z jednostką ...") {
-                        /**
-                         *
-                         */
+
                         private static final long serialVersionUID = -987233321164815L;
 
+                        @Override
                         public void actionPerformed(ActionEvent ae) {
                             /* TODO: implement me
 						 * mark or something else,
@@ -438,44 +412,17 @@ public class ViwnLockerViewUI extends AbstractViewUI
         }
     }
 
-    /* LOCKER ELEMENTS TYPE */
-    ////////////////////////////////////////////////////////////
-    /**
-     * popup menu depends on type of element
-     *
-     */
     public enum LockerElementType {
-        /**
-         *
-         */
         SYNSET,
-        /**
-         *
-         */
         LEXICAL_UNIT,
-        /**
-         *
-         */
         OBJECT;
     }
 
-    /* LOCKER ELEMENTS RENDERING */
-    ////////////////////////////////////////////////////////////////
-    /**
-     * @author amusial
-     */
     public abstract class LockerElementRenderer {
 
-        /**
-         * @param jp panel to render on
-         * @param elem
-         */
         public abstract void renderElement(JPanel jp, Object elem);
     }
 
-    /**
-     * @author amusial LockerElementRenderer for ViwnNode type
-     */
     public class ViwnNodeRenderer extends LockerElementRenderer {
 
         @Override
@@ -484,15 +431,13 @@ public class ViwnLockerViewUI extends AbstractViewUI
                 ViwnNode vn = (ViwnNode) elem;
 
                 // one node graph
-                Graph<ViwnNode, ViwnEdge> g = new DirectedSparseGraph<ViwnNode, ViwnEdge>();
+                Graph<ViwnNode, ViwnEdge> g = new DirectedSparseGraph<>();
                 g.addVertex(vn);
-                VisualizationViewer<ViwnNode, ViwnEdge> vv = new VisualizationViewer<ViwnNode, ViwnEdge>(new StaticLayout<ViwnNode, ViwnEdge>(g));
+                VisualizationViewer<ViwnNode, ViwnEdge> vv = new VisualizationViewer<>(new StaticLayout<>(g));
                 vv.getRenderer().setVertexRenderer(new ViwnVertexRenderer(vv.getRenderer().getVertexRenderer()));
-                vv.getRenderContext().setVertexShapeTransformer(new Transformer<ViwnNode, Shape>() {
-                    public Shape transform(ViwnNode v) {
-                        return v.getShape();
-                    }
-                });
+
+                vv.getRenderContext().setVertexShapeTransformer((ViwnNode v) -> v.getShape());
+
                 vv.getRenderContext().setVertexFillPaintTransformer(new ViwnVertexFillColor(vv.getPickedVertexState(), null));
                 vv.setVertexToolTipTransformer(new ViwnVertexToolTipTransformer());
                 vv.setPreferredSize(new Dimension(110, 50));
@@ -527,12 +472,9 @@ public class ViwnLockerViewUI extends AbstractViewUI
     }
 
     public void refreshData() {
-        for (LockerElement l : list) {
-            if (l.val instanceof ViwnNodeSynset) {
-                ViwnNodeSynset s = (ViwnNodeSynset) l.val;
-                s.setLabel(null);
-            }
-        }
+        list.stream().filter((l) -> (l.val instanceof ViwnNodeSynset)).map((l) -> (ViwnNodeSynset) l.val).forEach((s) -> {
+            s.setLabel(null);
+        });
         jl.repaint();
     }
 

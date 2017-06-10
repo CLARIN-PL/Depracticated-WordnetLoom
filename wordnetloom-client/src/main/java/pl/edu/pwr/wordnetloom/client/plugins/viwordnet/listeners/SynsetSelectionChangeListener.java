@@ -27,6 +27,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
  */
 public interface SynsetSelectionChangeListener {
 
-    public void synsetSelectionChangeListener(ViwnNode node);
+    void synsetSelectionChangeListener(ViwnNode node);
 
 }

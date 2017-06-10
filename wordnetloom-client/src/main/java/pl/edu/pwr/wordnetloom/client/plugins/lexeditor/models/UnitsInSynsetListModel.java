@@ -34,15 +34,17 @@ public class UnitsInSynsetListModel extends GenericListModel<Sense> {
     public void setCollection(Collection<Sense> collection, int splitPosition) {
         this.splitPosition = splitPosition;
         if (collection == null) {
-            itemsCollection = new ArrayList<Sense>();
+            itemsCollection = new ArrayList<>();
         } else {
             itemsCollection = collection;
         }
-        notifyAllListeners(); // powiadomienie słuchaczy o zmianie
+        notifyAllListeners();
     }
 
     /**
      * odczytanie wielkosci z uwzglednieniem linii podzialu (+1)
+     *
+     * @return
      */
     @Override
     public int getSize() {
@@ -51,17 +53,19 @@ public class UnitsInSynsetListModel extends GenericListModel<Sense> {
 
     /**
      * odczytanie elemtu o podanym indeksie z uwzglednieniem linii podzialu
+     *
+     * @param index
+     * @return
      */
     @Override
     public String getElementAt(int index) {
-        Sense unit = null;
+        Sense unit;
         if (index != splitPosition) {
-            unit = getObjectAt(index); // bez zmian
+            unit = getObjectAt(index);
         } else {
-            return VALUE_SPLIT_LINE; // linia podzialu
+            return VALUE_SPLIT_LINE;
         }
-        if (unit != null) // uodpornienie na nulla
-        {
+        if (unit != null) {
             return unit.toString();
         }
         return ".";
@@ -69,6 +73,8 @@ public class UnitsInSynsetListModel extends GenericListModel<Sense> {
 
     /**
      * odczytanie obiektu o podanym indeksie z uwzglednieniem lini podzialu
+     *
+     * @return
      */
     @Override
     public Sense getObjectAt(int index) {
@@ -94,7 +100,7 @@ public class UnitsInSynsetListModel extends GenericListModel<Sense> {
      * @return lista indeksow
      */
     public Collection<Integer> getIndices(Collection<Sense> list) {
-        Collection<Integer> result = new ArrayList<Integer>();
+        Collection<Integer> result = new ArrayList<>();
         int size = getSize();
         for (int i = 0; i < size; i++) {
             if (i == splitPosition) {
@@ -104,7 +110,7 @@ public class UnitsInSynsetListModel extends GenericListModel<Sense> {
             if (elem != null) {
                 for (Sense t : list) {
                     if (t != null && t.equals(elem)) {
-                        result.add(new Integer(i));
+                        result.add(i);
                         break;
                     }
                 }

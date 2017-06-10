@@ -2,10 +2,9 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -40,7 +39,7 @@ public abstract class CriteriaPanel extends JPanel {
     private PartOfSpeechComboBox partsOfSpeachComboBox;
     private ComboBoxPlain<RelationType> relationsComboBox;
     private JCheckBox limitResultCheckBox;
-    private RelationArgument relationArgument;
+    private final RelationArgument relationArgument;
 
     public CriteriaPanel(RelationArgument relationArgumentType, int scrollHeight) {
         this.SCROLL_PANE_HEIGHT = scrollHeight;
@@ -56,17 +55,14 @@ public abstract class CriteriaPanel extends JPanel {
 
         lexiconComboBox = new LexiconComboBox(Labels.VALUE_ALL);
         lexiconComboBox.setPreferredSize(new Dimension(150, 20));
-        lexiconComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Lexicon lex = lexiconComboBox.retriveComboBoxItem();
-                if (lex != null) {
-                    domainComboBox.filterDomainsByLexicon(lex, true);
-                } else {
-                    domainComboBox.allDomains(true);
-                }
-                refreshRelations();
+        lexiconComboBox.addActionListener((ActionEvent e) -> {
+            Lexicon lex = lexiconComboBox.retriveComboBoxItem();
+            if (lex != null) {
+                domainComboBox.filterDomainsByLexicon(lex, true);
+            } else {
+                domainComboBox.allDomains(true);
             }
+            refreshRelations();
         });
 
         searchTextField = new TextFieldPlain(STANDARD_VALUE_FILTER);
@@ -74,20 +70,17 @@ public abstract class CriteriaPanel extends JPanel {
         partsOfSpeachComboBox = new PartOfSpeechComboBox(Labels.VALUE_ALL);
         partsOfSpeachComboBox.showUbyItems();
         partsOfSpeachComboBox.setPreferredSize(new Dimension(150, 20));
-        partsOfSpeachComboBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                PartOfSpeech pos = partsOfSpeachComboBox.retriveComboBoxItem();
-                Lexicon lex = lexiconComboBox.retriveComboBoxItem();
-                if (pos != null && lex != null) {
-                    domainComboBox.filterDomainByUbyPosAndLexcion(pos, lex, true);
-                } else if (lex != null && pos == null) {
-                    domainComboBox.filterDomainsByLexicon(lex, true);
-                } else if (pos != null && lex == null) {
-                    domainComboBox.filterDomainByUbyPos(pos, true);
-                } else {
-                    domainComboBox.allDomains(true);
-                }
+        partsOfSpeachComboBox.addItemListener((ItemEvent e) -> {
+            PartOfSpeech pos = partsOfSpeachComboBox.retriveComboBoxItem();
+            Lexicon lex = lexiconComboBox.retriveComboBoxItem();
+            if (pos != null && lex != null) {
+                domainComboBox.filterDomainByUbyPosAndLexcion(pos, lex, true);
+            } else if (lex != null && pos == null) {
+                domainComboBox.filterDomainsByLexicon(lex, true);
+            } else if (pos != null && lex == null) {
+                domainComboBox.filterDomainByUbyPos(pos, true);
+            } else {
+                domainComboBox.allDomains(true);
             }
         });
 
@@ -138,8 +131,8 @@ public abstract class CriteriaPanel extends JPanel {
     }
 
     private ComboBoxPlain<RelationType> createRelationsComboBox() {
-        ComboBoxPlain<RelationType> combo = new ComboBoxPlain<RelationType>();
-        combo.addItem(new CustomDescription<RelationType>(Labels.VALUE_ALL, null));
+        ComboBoxPlain<RelationType> combo = new ComboBoxPlain<>();
+        combo.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
         combo.setPreferredSize(new Dimension(150, 20));
         return combo;
     }
@@ -170,19 +163,19 @@ public abstract class CriteriaPanel extends JPanel {
         int selected = relationsComboBox.getSelectedIndex();
 
         relationsComboBox.removeAllItems();
-        relationsComboBox.addItem(new CustomDescription<RelationType>(Labels.VALUE_ALL, null));
+        relationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
 
         if (lexiconComboBox.retriveComboBoxItem() != null) {
             for (RelationType relation : relations) {
-                if (relation.getLexicon().getId() == lexiconComboBox.retriveComboBoxItem().getId()) {
+                if (Objects.equals(relation.getLexicon().getId(), lexiconComboBox.retriveComboBoxItem().getId())) {
                     RelationType currentRelation = RelationTypes.get(relation.getId()).getRelationType();
-                    relationsComboBox.addItem(new CustomDescription<RelationType>(RelationTypes.getFullNameFor(currentRelation.getId()), currentRelation));
+                    relationsComboBox.addItem(new CustomDescription<>(RelationTypes.getFullNameFor(currentRelation.getId()), currentRelation));
                 }
             }
         } else {
             for (RelationType relation : relations) {
                 RelationType currentRelation = RelationTypes.get(relation.getId()).getRelationType();
-                relationsComboBox.addItem(new CustomDescription<RelationType>(RelationTypes.getFullNameFor(currentRelation.getId()), currentRelation));
+                relationsComboBox.addItem(new CustomDescription<>(RelationTypes.getFullNameFor(currentRelation.getId()), currentRelation));
             }
         }
 

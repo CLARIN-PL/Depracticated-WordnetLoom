@@ -52,7 +52,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 
 public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
 
-    public static HashMap<PartOfSpeech, Color> PosFrameColors = new HashMap<PartOfSpeech, Color>();
+    public static HashMap<PartOfSpeech, Color> PosFrameColors = new HashMap<>();
 
     private Renderer.Vertex<ViwnNode, ViwnEdge> delegate = null;
 
@@ -60,6 +60,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
         this.delegate = delegate;
     }
 
+    @Override
     public void paintVertex(RenderContext<ViwnNode, ViwnEdge> rc,
             Layout<ViwnNode, ViwnEdge> layout, ViwnNode v) {
         Graph<ViwnNode, ViwnEdge> graph = layout.getGraph();

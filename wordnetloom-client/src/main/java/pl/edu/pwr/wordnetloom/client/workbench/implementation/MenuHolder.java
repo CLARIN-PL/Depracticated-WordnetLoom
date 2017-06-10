@@ -19,7 +19,6 @@ package pl.edu.pwr.wordnetloom.client.workbench.implementation;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collection;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -36,15 +35,9 @@ public class MenuHolder {
 
     private static final String SHORTCUTS = "Shortcuts";
 
-    // obiekt przechowujący menu
-    private JMenuBar menuBar;
-    // menu dla skrótów klawiszowych, niewidzlane
-    private JMenu shortCutsMenu;
+    private final JMenuBar menuBar;
+    private final JMenu shortCutsMenu;
 
-    /**
-     * Konstructor
-     *
-     */
     public MenuHolder() {
         menuBar = new JMenuBar();
         shortCutsMenu = new JMenu(SHORTCUTS);
@@ -115,14 +108,13 @@ public class MenuHolder {
         // po wszystkich skrotach
         for (ShortCut cut : shortCuts) {
             MenuItemExt newItem = new MenuItemExt(".", cut.getKeyStroke());
-            newItem.setTag(cut); // dodanie taga
-            newItem.addActionListener(new ActionListener() { // instalacja akcji
-                public void actionPerformed(ActionEvent arg0) {
-                    MenuItemExt item = (MenuItemExt) arg0.getSource();
-                    ShortCut shortCut = (ShortCut) item.getTag(); // odczytane obiektu
-                    shortCut.doAction(); // wykonanie akcji
-                }
-            });
+            newItem.setTag(cut);
+            newItem.addActionListener((ActionEvent arg0) -> {
+                MenuItemExt item = (MenuItemExt) arg0.getSource();
+                ShortCut shortCut = (ShortCut) item.getTag();
+                shortCut.doAction();
+            }
+            );
             shortCutsMenu.add(newItem);
         }
     }

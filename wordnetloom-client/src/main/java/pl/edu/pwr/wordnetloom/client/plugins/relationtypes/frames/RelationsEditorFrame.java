@@ -23,12 +23,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -83,8 +82,8 @@ import se.datadosen.component.RiverLayout;
  */
 public class RelationsEditorFrame extends IconFrame implements ActionListener, TreeSelectionListener, CaretListener, ListSelectionListener, MouseListener {
 
-    private static String REVERSE_RELATION_NAME_NO_AUTO = "%s";
-    private static String REVERSE_RELATION_NAME_AUTO = "%s " + Labels.AUTO;
+    private static final String REVERSE_RELATION_NAME_NO_AUTO = "%s";
+    private static final String REVERSE_RELATION_NAME_AUTO = "%s " + Labels.AUTO;
     private static String lastText = "<x#> / <y#>";
 
     private static final long serialVersionUID = 1L;
@@ -109,9 +108,9 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
     private JCheckBox multilingual;
     private SwitchPanel objectSwitch;
 
-    private GenericListModel<RelationTest> testsModel = new GenericListModel<RelationTest>();
+    private final GenericListModel<RelationTest> testsModel = new GenericListModel<>();
     private RelationType lastRelation = null;
-    private RelationTreeModel model = new RelationTreeModel();
+    private final RelationTreeModel model = new RelationTreeModel();
 
     /**
      * konstruktor
@@ -134,7 +133,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
         Dimension normal = new Dimension(200, 25);
         Dimension smaller = new Dimension(150, 25);
 
-        lexicon = new ComboBoxPlain<Lexicon>();
+        lexicon = new ComboBoxPlain<>();
         lexicon.setPreferredSize(normal);
         lexicon.setEnabled(false);
         lexicon.addActionListener(this);
@@ -183,7 +182,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
         buttonReverse.setToolTipText(Hints.CHOOSE_REVERSE_RELATION);
         buttonReverse.setEnabled(false);
 
-        objectType = new ComboBoxPlain<RelationArgument>(
+        objectType = new ComboBoxPlain<>(
                 new RelationArgument[]{
                     new RelationArgument(0L, Labels.LEXICAL_RELATIONS),
                     new RelationArgument(1L, Labels.SYNSET_BETWEEN_RELATIONS),
@@ -382,9 +381,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
         frame.showModal();
     }
 
-    /**
-     * zmienilo sie znazaczenie w drzewie
-     */
+    @Override
     public void valueChanged(TreeSelectionEvent event) {
         RelationType rel = null;
         if (event != null && event.getNewLeadSelectionPath() != null) {
@@ -413,11 +410,6 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
         refreshDetails(rel);
     }
 
-    /**
-     * odswiezenie detali relacji
-     *
-     * @param rel - relacja do odswiezenia
-     */
     private void refreshDetails(RelationType rel) {
         rel = RemoteUtils.relationTypeRemote.getEagerRelationTypeByID(rel);
         int childrenRealtionsSize = RemoteUtils.relationTypeRemote.dbGetChildren(rel, LexiconManager.getInstance().getLexicons()).size();
@@ -487,29 +479,26 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
             List<RelationTest> tests = RelationTypesDA.getTests(lastRelation);
 
             if (tests.size() > 0) {
-                Collections.sort(tests, new Comparator<RelationTest>() {
-                    @Override
-                    public int compare(final RelationTest object1, final RelationTest object2) {
-                        return object1.getOrder().compareTo(object2.getOrder());
-                    }
-                });
+                Collections.sort(tests, (final RelationTest object1, final RelationTest object2) -> object1.getOrder().compareTo(object2.getOrder()));
             }
 
             lastRelation.setRelationTests(tests);
-            Vector<RelationTest> to_set = new Vector<RelationTest>();
-            Vector<RelationTest> to_model = new Vector<RelationTest>();
+            List<RelationTest> to_set = new ArrayList<>();
+            List<RelationTest> to_model = new ArrayList<>();
 
-            for (RelationTest t : tests) {
+            tests.stream().forEach((t) -> {
                 to_model.add(t);
-            }
+            });
 
-            for (RelationTest t : to_set) {
+            to_set.stream().map((t) -> {
                 RemoteUtils.testRemote.merge(t);
+                return t;
+            }).forEach((t) -> {
                 to_model.add(t);
-            }
+            });
 
             testsModel.setCollection(to_model);
-            testsList.setEnabled(RemoteUtils.relationTypeRemote.dbGetChildren(lastRelation, LexiconManager.getInstance().getLexicons()).size() == 0);
+            testsList.setEnabled(RemoteUtils.relationTypeRemote.dbGetChildren(lastRelation, LexiconManager.getInstance().getLexicons()).isEmpty());
         } else {
             testsList.setEnabled(false);
             testsModel.setCollection(null);
@@ -517,9 +506,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
         testsList.clearSelection();
     }
 
-    /**
-     * zmienilo sie cos w polach edycyjnych
-     */
+    @Override
     public void caretUpdate(CaretEvent arg0) {
         if (lastRelation == null) {
             return;
@@ -533,9 +520,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
         }
     }
 
-    /**
-     * wcisnieto jakis przycisk albo zmienil sie typ obiektu
-     */
+    @Override
     public void actionPerformed(ActionEvent event) {
 
         // proba zmiany statusu
@@ -615,7 +600,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
             // zapisanie zmian
             RelationTypesDA.update(lastRelation, newReverse.getA(), newReverse.getB());
             String format = REVERSE_RELATION_NAME_NO_AUTO;
-            if (newReverse.getB().booleanValue()) {
+            if (newReverse.getB()) {
                 format = REVERSE_RELATION_NAME_AUTO;
             }
             String reverseRelationName = RelationTypesDA.getReverseRelationName(lastRelation);
@@ -640,7 +625,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
                 lastPos = result.getB();
                 RelationTypesDA.newTest(lastText, lastPos, lastRelation);
                 refreshTests();
-                buttonNewSub.setEnabled(lastRelation != null && lastRelation.getParent() == null && lastRelation.getRelationTests().size() == 0);
+                buttonNewSub.setEnabled(lastRelation != null && lastRelation.getParent() == null && lastRelation.getRelationTests().isEmpty());
             }
 
             // edycja testu
@@ -662,7 +647,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
             if (DialogBox.showYesNoCancel(Messages.QUESTION_SURE_TO_REMOVE_TEST) == DialogBox.YES) {
                 RelationTypesDA.delete(test);
                 refreshTests();
-                buttonNewSub.setEnabled(lastRelation != null && lastRelation.getParent() == null && lastRelation.getRelationTests().size() == 0);
+                buttonNewSub.setEnabled(lastRelation != null && lastRelation.getParent() == null && lastRelation.getRelationTests().isEmpty());
             }
         } else if (lastRelation != null && event.getSource() == buttonDownTest) {
             final int sel_idx = testsList.getSelectedIndex();
@@ -698,8 +683,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
 
     private void switchTestsOrder(int idx_a, int idx_b) {
         Collection<RelationTest> tests = testsModel.getCollection();
-        Vector<RelationTest> new_tests = new Vector<RelationTest>();
-        new_tests.setSize(tests.size());
+        List<RelationTest> new_tests = new ArrayList<>();
 
         Iterator<RelationTest> itr = tests.iterator();
 
@@ -730,11 +714,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
         testsModel.setCollection(new_tests);
     }
 
-    /**
-     * zmienilo sie zaznaczenie na liscie
-     *
-     * @param event
-     */
+    @Override
     public void valueChanged(ListSelectionEvent event) {
         if (testsList == null) {
             return;
@@ -763,34 +743,29 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
 
     /**
      * Double click on test
+     *
+     * @param event
      */
-    public void mouseClicked(MouseEvent arg0) {
-        if (arg0.getClickCount() == 2) {
+    @Override
+    public void mouseClicked(MouseEvent event) {
+        if (event.getClickCount() == 2) {
             actionPerformed(new ActionEvent(buttonEditTest, 0, null));
         }
     }
 
+    @Override
     public void mousePressed(MouseEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void mouseReleased(MouseEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void mouseEntered(MouseEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void mouseExited(MouseEvent arg0) {
-        /**
-         *
-         */
     }
 }

@@ -43,10 +43,10 @@ public class OwnerFrame extends IconDialog implements CaretListener, KeyListener
     private static final long serialVersionUID = 1L;
     private static final String USER_NAME_FORMAT = "%s.%s";
 
-    private JTextArea infoLabel;
-    private JTextField nameEdit;
-    private JTextField surnameEdit;
-    private ButtonExt buttonOk;
+    private final JTextArea infoLabel;
+    private final JTextField nameEdit;
+    private final JTextField surnameEdit;
+    private final ButtonExt buttonOk;
 
     private String newOwner = null;
 
@@ -113,8 +113,11 @@ public class OwnerFrame extends IconDialog implements CaretListener, KeyListener
 
     /**
      * zmienił się tekst w polach edycyjnych
+     *
+     * @param event
      */
-    public void caretUpdate(CaretEvent arg0) {
+    @Override
+    public void caretUpdate(CaretEvent event) {
         String name = nameEdit.getText();
         String surname = surnameEdit.getText();
         buttonOk.setEnabled(name != null && name.length() > 0 && surname != null && surname.length() > 0);
@@ -122,14 +125,17 @@ public class OwnerFrame extends IconDialog implements CaretListener, KeyListener
 
     /**
      * wcisnieto klawisz w polach edycyjnych
+     *
+     * @param event
      */
-    public void keyPressed(KeyEvent arg0) {
-        if (arg0.getKeyChar() == KeyEvent.VK_ENTER) {            // kliknieto enter
-            if (arg0.getSource() == nameEdit) { // w polu z imieniem
-                arg0.consume();
+    @Override
+    public void keyPressed(KeyEvent event) {
+        if (event.getKeyChar() == KeyEvent.VK_ENTER) {            // kliknieto enter
+            if (event.getSource() == nameEdit) { // w polu z imieniem
+                event.consume();
                 surnameEdit.grabFocus();
-            } else if (arg0.getSource() == surnameEdit) { // w polu z nazwiskiem
-                arg0.consume();
+            } else if (event.getSource() == surnameEdit) { // w polu z nazwiskiem
+                event.consume();
                 if (buttonOk.isEnabled()) {
                     buttonOk.doClick();
                 } else {
@@ -139,15 +145,11 @@ public class OwnerFrame extends IconDialog implements CaretListener, KeyListener
         }
     }
 
+    @Override
     public void keyTyped(KeyEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void keyReleased(KeyEvent arg0) {
-        /**
-         *
-         */
     }
 }

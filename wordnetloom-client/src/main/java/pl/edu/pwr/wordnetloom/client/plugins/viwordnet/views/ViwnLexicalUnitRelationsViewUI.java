@@ -123,6 +123,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
      * @param object <code>Sense</code> root of the tree
      *
      */
+    @Override
     public void doAction(Object object, int tag) {
         fillTree(object);
     }
@@ -138,12 +139,14 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
             Collection<SenseRelation> relations;
             Collection<SenseRelation> relations_sub;
 
+            @Override
             protected String doInBackground() throws Exception {
                 relations = RemoteUtils.lexicalRelationRemote.dbGetFullRelations((Sense) object);
                 relations_sub = RemoteUtils.lexicalRelationRemote.dbGetUpperRelations((Sense) object, null);
                 return null;
             }
 
+            @Override
             protected void done() {
                 if (((DefaultMutableTreeNode) tree.getModel().getRoot())
                         .getUserObject() != object) {
@@ -172,9 +175,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                     }
 
                     if (rel.getSenseTo() != null && rel.getSenseFrom() != null) {
-                        DefaultMutableTreeNode node = new DefaultMutableTreeNode(
-                                new Pair<Sense, SenseRelation>(
-                                        rel.getSenseTo(), rel));
+                        DefaultMutableTreeNode node = new DefaultMutableTreeNode(new Pair<>(rel.getSenseTo(), rel));
                         rel_node.add(node);
                     }
                 }
@@ -192,9 +193,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                     }
 
                     if (rel.getSenseTo() != null && rel.getSenseFrom() != null) {
-                        DefaultMutableTreeNode node = new DefaultMutableTreeNode(
-                                new Pair<Sense, SenseRelation>(
-                                        rel.getSenseFrom(), rel));
+                        DefaultMutableTreeNode node = new DefaultMutableTreeNode(new Pair<>(rel.getSenseFrom(), rel));
                         rel_node.add(node);
                     }
                 }
@@ -318,8 +317,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         if (ae.getSource() == addRelation) {
             Point location = addRelation.getLocationOnScreen();
             // choose second lexical unit
-            ValueContainer<Boolean> created = new ValueContainer<Boolean>(
-                    new Boolean(false));
+            ValueContainer<Boolean> created = new ValueContainer<>(false);
 
             Rectangle r = workbench.getFrame().getBounds();
             int x = r.x + r.width - AbstractListFrame.WIDTH / 2 - 50;
@@ -443,10 +441,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         }
     }
 
-    /**
-     * @author amusial
-     *
-     */
+    @Override
     public void valueChanged(TreeSelectionEvent evt) {
         // Get all nodes whose selection status has changed
         TreePath[] paths = evt.getPaths();

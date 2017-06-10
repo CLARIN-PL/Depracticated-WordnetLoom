@@ -79,8 +79,6 @@ public interface CloseableTabbedPaneListener extends EventListener {
      * was pressed
      *
      * @author amusial
-     *
-     *
      */
     void tabButtonClicked();
 }

@@ -115,7 +115,7 @@ public class PosManager {
      * no manager is found, manager will be created.
      */
     public static PosManager getInstance(String languageCode) {
-        PosManager toReturn = null;
+        PosManager toReturn;
         synchronized (PosManager.class) {
             if (defaultPosManager != null && PosManager.getDefaultLanguageCode().equals(languageCode)) {
                 toReturn = defaultPosManager;
@@ -214,12 +214,10 @@ public class PosManager {
     }
 
     public List<PartOfSpeech> getPOSForLexicon(long id) {
-        List<PartOfSpeech> filtred = new ArrayList<PartOfSpeech>();
-        for (PartOfSpeech pos : cache) {
-            if (pos.getLexicon().getId() == id) {
-                filtred.add(pos);
-            }
-        }
+        List<PartOfSpeech> filtred = new ArrayList<>();
+        cache.stream().filter((pos) -> (pos.getLexicon().getId() == id)).forEach((pos) -> {
+            filtred.add(pos);
+        });
         return filtred;
     }
 

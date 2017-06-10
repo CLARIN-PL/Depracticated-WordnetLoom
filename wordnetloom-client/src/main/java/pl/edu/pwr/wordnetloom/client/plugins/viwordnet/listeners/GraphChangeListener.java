@@ -27,6 +27,6 @@ public interface GraphChangeListener {
     /**
      * action made when changes in graph occurs
      */
-    public void graphChanged();
+    void graphChanged();
 
 }

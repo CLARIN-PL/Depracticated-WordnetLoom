@@ -34,7 +34,7 @@ public class ViwnNodeAlphabeticComparator implements Comparator<ViwnNode> {
 
     public ViwnNodeAlphabeticComparator() {
         if (order == null) {
-            rel_order = new ArrayList<RelationTypes>();
+            rel_order = new ArrayList<>();
 
             rel_order.add(RelationTypes.getByName("hiperonimia"));
             rel_order.add(RelationTypes.getByName("hiponimia"));
@@ -45,6 +45,7 @@ public class ViwnNodeAlphabeticComparator implements Comparator<ViwnNode> {
         }
     }
 
+    @Override
     public int compare(ViwnNode arg0, ViwnNode arg1) {
         if (!(arg1 instanceof ViwnNodeSynset)) {
             return -1;

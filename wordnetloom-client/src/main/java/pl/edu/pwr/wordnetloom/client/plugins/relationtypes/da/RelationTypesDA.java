@@ -99,12 +99,13 @@ public class RelationTypesDA {
      * @param pos - czesci mowy
      * @param lexicon
      * @param objectType - typ relacji (leksykalna czy synsetow)
+     * @param multilingual
      */
     public static void update(RelationType rel, String name, String display, String shortcut, String desc, String pos,
             Lexicon lexicon, RelationArgument objectType, boolean multilingual) {
-        rel.getName().setText(name);;
+        rel.getName().setText(name);
         rel.getDisplayText().setText(display);
-        rel.getShortDisplayText().setText(shortcut);;
+        rel.getShortDisplayText().setText(shortcut);
         rel.getDescription().setText(desc);
         rel.setArgumentType(objectType);
         rel.setLexicon(lexicon);
@@ -286,11 +287,6 @@ public class RelationTypesDA {
     static public HashMap<String, RelationType> getRelationSymbols() {
         // FIXME: hidden!
         return null;
-//		HashMap<String, RelationType> mapping = new HashMap<String, RelationType>();
-//		Collection<RelationType> relations = RemoteUtils.relationTypeRemote.dbFullGetRelationTypes();
-//		for (RelationType r : relations)
-//			mapping.put(r.getPwn(), r);
-//		return mapping;
     }
 
 }

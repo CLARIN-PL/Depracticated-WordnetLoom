@@ -26,26 +26,17 @@ public enum Source {
     SYSTEM("systemowy"),
     USER("użytkownika");
 
-    private String name;
+    private final String name;
 
     Source(String name) {
         this.name = name;
     }
 
-    /**
-     * @see java.lang.Enum#toString()
-     */
     @Override
     public String toString() {
         return this.name;
     }
 
-    /**
-     * dekodowanie nazwy
-     *
-     * @param name - nazwa
-     * @return SOURCE
-     */
     public static Source decode(String name) {
         Source[] d = Source.values();
         for (Source source : d) {

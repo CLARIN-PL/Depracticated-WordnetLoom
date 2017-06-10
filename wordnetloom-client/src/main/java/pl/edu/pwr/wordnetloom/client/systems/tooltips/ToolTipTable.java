@@ -44,25 +44,21 @@ public class ToolTipTable extends JTable {
         this.toolTipsGenerator = toolTipsGenerator;
     }
 
-    /*
-	 *  (non-Javadoc)
-	 * @see javax.swing.JComponent#getToolTipText(java.awt.event.MouseEvent)
-     */
     @Override
     public String getToolTipText(MouseEvent event) {
-        // fast check
+
         if (!toolTipsGenerator.hasEnabledTooltips()) {
             return null;
         }
 
         int col = this.columnAtPoint(event.getPoint());
         int row = this.rowAtPoint(event.getPoint());
-        AbstractSimpleTableModel model = (AbstractSimpleTableModel) getModel(); // odczytanie modelu
-        if (toolTipsGenerator != null && model != null && col != -1 && row != -1) { // czy kursur jest w polu
-            Object item = model.getRealValueAt(row, col); // odczytanie obiektu
-            return toolTipsGenerator.getToolTipText(item); // odczytanie tooltipa
+        AbstractSimpleTableModel model = (AbstractSimpleTableModel) getModel();
+        if (toolTipsGenerator != null && model != null && col != -1 && row != -1) {
+            Object item = model.getRealValueAt(row, col);
+            return toolTipsGenerator.getToolTipText(item);
         }
-        return super.getToolTipText(event);          // standardowy tooltip
+        return super.getToolTipText(event);
     }
 
 }

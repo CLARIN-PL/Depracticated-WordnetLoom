@@ -34,5 +34,5 @@ public interface LockerChangeListener {
      * false if new <code>ViwnGraphViewUI</code> was created
      *
      */
-    public ViwnNode lockerSelectionChanged(ViwnNode vn);
+    ViwnNode lockerSelectionChanged(ViwnNode vn);
 }

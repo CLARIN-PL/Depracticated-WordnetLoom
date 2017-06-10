@@ -81,7 +81,7 @@ import se.datadosen.component.RiverLayout;
  * Jastrzebski</a>
  * @author Max - modyfikacja i rozbudowa
  */
-public class PanelWorkbench implements WindowListener, Workbench {
+public final class PanelWorkbench implements WindowListener, Workbench {
 
     public static final String WORKBENCH_CONFIG_FILE = "workbench.cfg";
     private static final String PLUGIN_CONFIG_FILE = "plugins.cfg";
@@ -109,7 +109,7 @@ public class PanelWorkbench implements WindowListener, Workbench {
     private MenuHolder menuHolder;
     private static BusyGlassPane busyPanel;
 
-    private static final AtomicBoolean busy_lock = new AtomicBoolean(false);
+    private static final AtomicBoolean BUSY_LOCK = new AtomicBoolean(false);
 
     private final String version;
     public static ConfigurationManager config;
@@ -146,6 +146,7 @@ public class PanelWorkbench implements WindowListener, Workbench {
 
                 public Plugin plugin;
 
+                @Override
                 public void run() {
                     plugin.install(workbench);
                 }
@@ -157,9 +158,10 @@ public class PanelWorkbench implements WindowListener, Workbench {
 
             try {
                 SwingUtilities.invokeAndWait(run);
-            } catch (InterruptedException | InvocationTargetException e1) {
-                e1.printStackTrace();
+            } catch (InterruptedException | InvocationTargetException ex) {
+                java.util.logging.Logger.getLogger(PanelWorkbench.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
+
         }
 
         // instalaja pierwszej napotkanej perspektywy
@@ -272,9 +274,10 @@ public class PanelWorkbench implements WindowListener, Workbench {
 
         try {
             GUIUtils.delegateToEDT(run);
-        } catch (InterruptedException | InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | InvocationTargetException ex) {
+            java.util.logging.Logger.getLogger(PanelWorkbench.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+
     }
 
     @Override
@@ -342,18 +345,12 @@ public class PanelWorkbench implements WindowListener, Workbench {
 
         try {
             GUIUtils.delegateToEDT(run);
-        } catch (InterruptedException | InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | InvocationTargetException ex) {
+            java.util.logging.Logger.getLogger(PanelWorkbench.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+
     }
 
-    /*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * pl.wroc.pwr.ci.plwordnet.workbench.interfaces.Workbench#choosePerspective
-	 * (java.lang.String)
-     */
     @Override
     public void choosePerspective(final String perspectiveName) {
 
@@ -404,9 +401,10 @@ public class PanelWorkbench implements WindowListener, Workbench {
 
         try {
             GUIUtils.delegateToEDT(run);
-        } catch (InterruptedException | InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | InvocationTargetException ex) {
+            java.util.logging.Logger.getLogger(PanelWorkbench.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+
     }
 
     @Override
@@ -625,14 +623,14 @@ public class PanelWorkbench implements WindowListener, Workbench {
 
     @Override
     public void setBusy(final boolean busy) {
-        if (busy_lock.compareAndSet(false, true)) {
+        if (BUSY_LOCK.compareAndSet(false, true)) {
             try {
                 SwingUtilities.invokeLater(() -> {
                     busyPanel.setVisible(busy);
                 });
             } catch (Exception e) {
             } finally {
-                busy_lock.set(false);
+                BUSY_LOCK.set(false);
             }
         }
 

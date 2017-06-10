@@ -56,12 +56,16 @@ public class RMIUtils {
             synchronized (RMIUtils.class) {
                 localContext = RMIUtils.initialContext;
                 if (localContext == null) {
+
+                    String host = System.getProperty("wordnetloom.server.host") != null ? System.getProperty("wordnetloom.server.host") : "127.0.0.1";
+                    String port = System.getProperty("wordnetloom.server.port") != null ? System.getProperty("wordnetloom.server.host") : "8080";
+
                     Properties ejbProperties = new Properties();
                     ejbProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
                     ejbProperties.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", false);
                     ejbProperties.put("remote.connections", "default");
-                    ejbProperties.put("remote.connection.default.host", "127.0.0.1");
-                    ejbProperties.put("remote.connection.default.port", "8080");
+                    ejbProperties.put("remote.connection.default.host", host);
+                    ejbProperties.put("remote.connection.default.port", port);
                     ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_POLICY_NOANONYMOUS", false);
                     ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SSL_STARTTLS", false);
                     ejbProperties.put("remote.connection.default.username", "wordnet");

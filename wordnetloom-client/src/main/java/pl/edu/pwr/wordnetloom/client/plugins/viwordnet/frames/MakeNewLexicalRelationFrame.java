@@ -50,9 +50,6 @@ import se.datadosen.component.RiverLayout;
  */
 public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 5479457915334417348L;
 
     protected ButtonExt buttonSwitch;
@@ -96,7 +93,7 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
         relationType.addKeyListener(this);
 
         // show relations
-        mainRelations = new ArrayList<RelationType>();
+        mainRelations = new ArrayList<>();
         Collection<RelationType> readRelations = LexicalDA.getHighestRelations(
                 type, pos);
         for (RelationType relType : readRelations) {
@@ -166,22 +163,17 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
         this.add("", this.buttonCancel);
     }
 
-    /**
-     * ActionListener
-     */
     @Override
-    public void actionPerformed(ActionEvent arg0) {
-        // chooseButton pressed
-        if (arg0.getSource() == buttonChoose) {
+    public void actionPerformed(ActionEvent event) {
+
+        if (event.getSource() == buttonChoose) {
             chosenType = getSelectedRelation();
             this.setVisible(false);
 
-            // cancelButton pressed
-        } else if (arg0.getSource() == buttonCancel) {
+        } else if (event.getSource() == buttonCancel) {
             this.setVisible(false);
 
-            // switchButton pressed
-        } else if (arg0.getSource() == buttonSwitch) {
+        } else if (event.getSource() == buttonSwitch) {
             // switch elements
             Sense pom = from;
             from = to;
@@ -199,7 +191,7 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
             }
 
             // relation type changed
-        } else if (arg0.getSource() == relationType) {
+        } else if (event.getSource() == relationType) {
             relationSubType.removeAllItems();
             description.setText("");
             testsLit.setListData(new String[]{});
@@ -209,20 +201,12 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
             for (RelationType type : mainRelations) {
                 if (index-- == 0) {
                     // refresh subrelation
-                    subRelations = new ArrayList<RelationType>();
+                    subRelations = new ArrayList<>();
                     Collection<RelationType> readRelations = LexicalDA
                             .getChildren(type);
                     for (RelationType relType : readRelations) {
-                        if (fixedRelationType == null
-                                || // gdy nie zdefiniowana
-                                // relacji
-                                fixedRelationType.getId().longValue() == relType
-                                .getId().longValue()) { // lub gdy
-                            // zgadza sie ze
-                            // zdefiniowana
-                            // relacja
-                            relationSubType.addItem(RelationTypes
-                                    .getFullNameFor(relType.getId()));
+                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
+                            relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
                             subRelations.add(relType);
                         }
                     }
@@ -240,10 +224,10 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
                     && subRelations.size() > 0);
 
             // subtype changed
-        } else if (arg0.getSource() == relationSubType
-                || arg0.getSource() == parentItem
-                || arg0.getSource() == childItem
-                || arg0.getSource() == middleItem) {
+        } else if (event.getSource() == relationSubType
+                || event.getSource() == parentItem
+                || event.getSource() == childItem
+                || event.getSource() == middleItem) {
             testsLit.setListData(new String[]{});
             RelationType relation = getSelectedRelation();
             if (relation != null) {
@@ -252,9 +236,11 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
         }
     }
 
+    @Override
     public void keyReleased(KeyEvent arg0) {
     }
 
+    @Override
     public void keyTyped(KeyEvent arg0) {
     }
 

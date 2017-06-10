@@ -30,7 +30,7 @@ abstract public class ViwnEdge {
 
     /**
      * @return edge color
-	 *
+     *
      */
     abstract public Color getColor();
 }

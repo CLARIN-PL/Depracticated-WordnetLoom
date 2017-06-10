@@ -101,12 +101,12 @@ public class DeleteRelationFrame extends IconDialog implements ActionListener {
      */
     private void initialize(Collection<ViwnEdgeSynset> edges) {
 
-        toRemove = new HashMap<Integer, ViwnEdgeSynset>();
+        toRemove = new HashMap<>();
         Iterator<ViwnEdgeSynset> iter = edges.iterator();
         for (int i = 0; i < edges.size(); ++i) {
-            toRemove.put(new Integer(i), iter.next());
+            toRemove.put(i, iter.next());
         }
-        removed = new HashSet<ViwnEdge>();
+        removed = new HashSet<>();
 
         this.setResizable(false);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -127,6 +127,7 @@ public class DeleteRelationFrame extends IconDialog implements ActionListener {
         this.add(cancel);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == delete) {
             ViwnEdgeSynset ves = toRemove.get(relations.getSelectedItem());
@@ -175,32 +176,20 @@ public class DeleteRelationFrame extends IconDialog implements ActionListener {
                 DialogBox.showInformation(Messages.SUCCESS_SELECTED_RELATION_DELETED);
             }
 
-            // if nothing left, return
             if (toRemove.isEmpty()) {
                 this.setVisible(false);
             }
-//			}
-//			else {
-//				// display failure message
-//				DialogBox.showInformation(MESSAGE_FAILURE);
-//			}
+
         } else if (e.getSource() == cancel) {
             this.setVisible(false);
         }
     }
 
-    /**
-     *
-     *
-     */
     private class DeletionCellRenderer extends JLabel implements ListCellRenderer {
 
-        /**
-         *
-         */
         private static final long serialVersionUID = -4423464499504059166L;
 
-        private HashMap<Long, String> synsetCache = new HashMap<Long, String>();
+        private HashMap<Long, String> synsetCache = new HashMap<>();
 
         public DeletionCellRenderer() {
             super();
@@ -263,7 +252,7 @@ public class DeleteRelationFrame extends IconDialog implements ActionListener {
 
                 // unselected, and not the DnD drop location
             } else if (value instanceof Integer) {
-                if (((Integer) value).intValue() % 2 == 0) {
+                if (((Integer) value) % 2 == 0) {
                     background = Color.getHSBColor(0f, 0f, .85f);
                     foreground = Color.BLACK;
                 } else {
@@ -273,7 +262,7 @@ public class DeleteRelationFrame extends IconDialog implements ActionListener {
             } else {
                 background = Color.GRAY;
                 foreground = Color.BLACK;
-            };
+            }
 
             setBackground(background);
             setForeground(foreground);

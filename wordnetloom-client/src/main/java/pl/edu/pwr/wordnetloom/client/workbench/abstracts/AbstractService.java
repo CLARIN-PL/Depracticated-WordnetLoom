@@ -27,7 +27,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
  */
 public abstract class AbstractService implements Service {
 
-    protected Workbench workbench; // uchwyt dla workbench
+    protected Workbench workbench;
 
     public AbstractService(Workbench workbench) {
         super();

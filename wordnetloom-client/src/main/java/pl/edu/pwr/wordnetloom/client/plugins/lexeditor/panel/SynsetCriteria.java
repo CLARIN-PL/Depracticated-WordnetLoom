@@ -15,8 +15,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
 import se.datadosen.component.RiverLayout;
 
-@SuppressWarnings("serial")
-public class SynsetCriteria extends CriteriaPanel implements ActionListener {
+public final class SynsetCriteria extends CriteriaPanel implements ActionListener {
 
     private TextFieldPlain definition;
     private TextFieldPlain comment;
@@ -132,7 +131,7 @@ public class SynsetCriteria extends CriteriaPanel implements ActionListener {
     }
 
     public void setSensesToHold(List<Sense> sense) {
-        crit.setSense(new ArrayList<Sense>(sense));
+        crit.setSense(new ArrayList<>(sense));
     }
 
     @Override

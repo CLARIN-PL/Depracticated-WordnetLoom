@@ -37,7 +37,7 @@ public class RelationTreeModel implements TreeModel {
 
     private EventListenerList listeners = new EventListenerList();
     private RelationType[] relationTable = new RelationType[0];
-    private Object root = new String(Labels.RELATIONS);
+    private Object root = Labels.RELATIONS;
 
     /**
      * konstruktor
@@ -95,28 +95,20 @@ public class RelationTreeModel implements TreeModel {
         return RemoteUtils.relationTypeRemote.dbGetChildren(relType, LexiconManager.getInstance().getLexicons()).size();
     }
 
-    /*
-	 *  (non-Javadoc)
-	 * @see javax.swing.tree.TreeModel#isLeaf(java.lang.Object)
-     */
+    @Override
     public boolean isLeaf(Object obj) {
         if (obj == root) {
             return relationTable.length == 0;
         }
         RelationType relType = (RelationType) obj;
-        return RemoteUtils.relationTypeRemote.dbGetChildren(relType, LexiconManager.getInstance().getLexicons()).size() == 0;
+        return RemoteUtils.relationTypeRemote.dbGetChildren(relType, LexiconManager.getInstance().getLexicons()).isEmpty();
     }
 
-    /*
-	 *  (non-Javadoc)
-	 * @see javax.swing.tree.TreeModel#valueForPathChanged(javax.swing.tree.TreePath, java.lang.Object)
-     */
+    @Override
     public void valueForPathChanged(TreePath arg0, Object arg1) {
-        /**
-         *
-         */
     }
 
+    @Override
     public int getIndexOfChild(Object arg0, Object arg1) {
         int i = 0;
         RelationType child = (RelationType) arg1;
@@ -141,18 +133,12 @@ public class RelationTreeModel implements TreeModel {
         }
     }
 
-    /*
-	 *  (non-Javadoc)
-	 * @see javax.swing.tree.TreeModel#addTreeModelListener(javax.swing.event.TreeModelListener)
-     */
+    @Override
     public void addTreeModelListener(TreeModelListener dataListener) {
         listeners.add(TreeModelListener.class, dataListener);
     }
 
-    /*
-	 *  (non-Javadoc)
-	 * @see javax.swing.tree.TreeModel#removeTreeModelListener(javax.swing.event.TreeModelListener)
-     */
+    @Override
     public void removeTreeModelListener(TreeModelListener dataListener) {
         listeners.remove(TreeModelListener.class, dataListener);
     }
@@ -187,9 +173,6 @@ public class RelationTreeModel implements TreeModel {
                 i++;
             }
 
-//			PairUtils<RelationType, RelationType> result = RemoteUtils.relationTypeRemote.dbSwitchOrder(relationTable[i], relationTable[i+offset]);
-//			relationTable[i] = result.first;
-//			relationTable[i+offset] = result.second;
             RelationType curr = relationTable[i];
             relationTable[i] = relationTable[i + offset];
             relationTable[i + offset] = curr;
@@ -202,9 +185,6 @@ public class RelationTreeModel implements TreeModel {
                 i++;
             }
 
-//			PairUtils<RelationType, RelationType> result = RemoteUtils.relationTypeRemote.dbSwitchOrder(children[i], children[i+offset]);
-//			children[i] = result.first;
-//			children[i+offset] = result.second;
             RelationType curr = children[i];
             children[i] = children[i + offset];
             children[i + offset] = curr;

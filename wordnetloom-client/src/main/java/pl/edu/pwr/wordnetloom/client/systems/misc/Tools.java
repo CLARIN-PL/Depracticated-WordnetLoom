@@ -42,47 +42,6 @@ public class Tools {
 
     private static final String CHARSET = "UTF-8";
 
-//	/**
-//	 * usuniecie katalogu wraz z podkatalogami
-//	 * @param path - katalog do usuniecie
-//	 * @return TRUE jeśli się udało
-//	 */
-//	static public boolean deleteDirectory(File path) {
-//		if (path.exists()) {
-//			File[] files = path.listFiles();
-//			if (files!=null) {
-//				for (int i = 0; i < files.length; i++) {
-//					if (files[i].isDirectory()) {
-//						deleteDirectory(files[i]);
-//					} else {
-//						files[i].delete();
-//					}
-//				}
-//			}
-//		}
-//		return (path.delete());
-//	}
-//
-//	/**
-//	 * usuniecie katalogu wraz z podkatalogami
-//	 * @param dir - katalog do usuniecie
-//	 * @return TRUE jeśli się udało
-//	 */
-//	static public boolean deleteDirectory(String dir) {
-//		return deleteDirectory(new File(dir));
-//	}
-//	/**
-//	 * utworzenie katalogu wraz z podkatalogami
-//	 * @param dir - katalog
-//	 */
-//	static public void forceDirectory(String dir) {
-//		new File(dir).mkdirs();
-//	}
-    /**
-     * utworzenie katalogu wraz z podkatalogami dla podanego pliku
-     *
-     * @param file - plik
-     */
     static public void forceParentDirectory(String file) {
         File root = new File(file); // bezpieczniejsza wersja
         if (root != null) {
@@ -174,10 +133,7 @@ public class Tools {
             writer.print(value);
             writer.close();
             return true;
-        } catch (FileNotFoundException e) {
-            Logger.getLogger(Tools.class).log(Level.ERROR, "Saving file" + e);
-            return false;
-        } catch (UnsupportedEncodingException e) {
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
             Logger.getLogger(Tools.class).log(Level.ERROR, "Saving file" + e);
             return false;
         }

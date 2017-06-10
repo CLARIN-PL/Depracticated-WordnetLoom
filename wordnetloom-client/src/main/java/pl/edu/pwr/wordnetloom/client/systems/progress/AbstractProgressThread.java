@@ -64,18 +64,15 @@ abstract public class AbstractProgressThread implements Runnable {
      */
     public AbstractProgressThread(final JFrame baseFrame, final String title, final Object tag,
             final boolean showCancelButton, final boolean noModal, boolean start) {
-        Runnable run = new Runnable() {
-            public void run() {
-                progress = new ProgressFrame(baseFrame, title, showCancelButton, noModal);
-            }
+
+        Runnable run = () -> {
+            progress = new ProgressFrame(baseFrame, title, showCancelButton, noModal);
         };
 
         try {
             GUIUtils.delegateToEDT(run);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | InvocationTargetException ex) {
+            java.util.logging.Logger.getLogger(AbstractProgressThread.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         this.tag = tag;
@@ -84,7 +81,7 @@ abstract public class AbstractProgressThread implements Runnable {
         }
     }
 
-    public void start() {
+    public final void start() {
         start(true);
     }
 
@@ -92,21 +89,16 @@ abstract public class AbstractProgressThread implements Runnable {
         if (RUN_THREAD) {
             final AbstractProgressThread apt = this;
 
-            Runnable run = new Runnable() {
-                public void run() {
-                    thread = new Thread(apt);
-                    thread.start();
-                    progress.setVisible(true);
-                }
+            Runnable run = () -> {
+                thread = new Thread(apt);
+                thread.start();
+                progress.setVisible(true);
             };
 
             try {
                 GUIUtils.delegateToEDT(run);
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
+            } catch (InterruptedException | InvocationTargetException ex) {
+                java.util.logging.Logger.getLogger(AbstractProgressThread.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
 
             if (wait) {
@@ -121,33 +113,19 @@ abstract public class AbstractProgressThread implements Runnable {
         }
     }
 
-    /**
-     * procedura robocza
-     */
     abstract protected void mainProcess();
 
-    /**
-     * uruchomienie watku
-     */
+    @Override
     final public void run() {
         mainProcess();
 
         progress.close();
     }
 
-    /**
-     * odczytanie obiektu
-     *
-     * @return obiekt
-     */
     final public Object getTag() {
         return tag;
     }
 
-    /**
-     * zatrzymanie watku
-     *
-     */
     final public void stop() {
         thread = null;
     }

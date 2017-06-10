@@ -27,25 +27,18 @@ import javax.swing.ImageIcon;
  */
 public class RelationsIM {
 
-    private static ImageIcon toNew = new ImageIcon("icons/toNew.gif");
-    private static ImageIcon toExisten = new ImageIcon("icons/toExisten.gif");
-    private static ImageIcon toMerge = new ImageIcon("icons/toMerge.gif");
-    private static ImageIcon onlyRelation = new ImageIcon("icons/onlyRelation.gif");
-    private static ImageIcon deleteImage = new ImageIcon("icons/delete.gif");
-    private static ImageIcon switchImage = new ImageIcon("icons/switch.gif");
-    private static ImageIcon switchSecondImage = new ImageIcon("icons/switchD.gif");
-    private static ImageIcon switchBothImage = new ImageIcon("icons/switchBoth.gif");
-    private static ImageIcon addImage = new ImageIcon("icons/add.gif");
-    private static ImageIcon newWindow = new ImageIcon("icons/newWindow.gif");
+    private static final ImageIcon toNew = new ImageIcon(RelationsIM.class.getClassLoader().getResource("icons/toNew.gif"));
+    private static final ImageIcon toExisten = new ImageIcon(RelationsIM.class.getClassLoader().getResource("icons/toExisten.gif"));
+    private static final ImageIcon toMerge = new ImageIcon(RelationsIM.class.getClassLoader().getResource("icons/toMerge.gif"));
+    private static final ImageIcon onlyRelation = new ImageIcon(RelationsIM.class.getClassLoader().getResource("icons/onlyRelation.gif"));
+    private static final ImageIcon deleteImage = new ImageIcon(RelationsIM.class.getClassLoader().getResource("icons/delete.gif"));
+    private static final ImageIcon switchImage = new ImageIcon(RelationsIM.class.getClassLoader().getResource("icons/switch.gif"));
+    private static final ImageIcon switchSecondImage = new ImageIcon(RelationsIM.class.getClassLoader().getResource("icons/switchD.gif"));
+    private static final ImageIcon switchBothImage = new ImageIcon(RelationsIM.class.getClassLoader().getResource("icons/switchBoth.gif"));
+    private static final ImageIcon addImage = new ImageIcon(RelationsIM.class.getClassLoader().getResource("icons/add.gif"));
+    private static final ImageIcon newWindow = new ImageIcon(RelationsIM.class.getClassLoader().getResource("icons/newWindow.gif"));
 
-    /**
-     * konstruktor prywatny
-     *
-     */
     private RelationsIM() {
-        /**
-         *
-         */
     }
 
     /**

@@ -109,7 +109,7 @@ public class MakeNewRelationFrame extends RelationTypeFrame {
         relationType.addKeyListener(this);
 
         // show relations
-        mainRelations = new ArrayList<RelationType>();
+        mainRelations = new ArrayList<>();
         Collection<RelationType> readRelations = LexicalDA.getHighestRelations(
                 type, pos);
         for (RelationType relType : readRelations) {
@@ -183,22 +183,17 @@ public class MakeNewRelationFrame extends RelationTypeFrame {
         this.add("", this.buttonCancel);
     }
 
-    /**
-     * ActionListener
-     */
     @Override
-    public void actionPerformed(ActionEvent arg0) {
-        // chooseButton pressed
-        if (arg0.getSource() == buttonChoose) {
+    public void actionPerformed(ActionEvent event) {
+
+        if (event.getSource() == buttonChoose) {
             chosenType = getSelectedRelation();
             this.setVisible(false);
 
-            // cancelButton pressed
-        } else if (arg0.getSource() == buttonCancel) {
+        } else if (event.getSource() == buttonCancel) {
             this.setVisible(false);
 
-            // switchButton pressed
-        } else if (arg0.getSource() == buttonSwitch) {
+        } else if (event.getSource() == buttonSwitch) {
             // switch elements
             ViwnNode pom = from[0];
             from[0] = to[0];
@@ -216,7 +211,7 @@ public class MakeNewRelationFrame extends RelationTypeFrame {
             }
 
             // relation type changed
-        } else if (arg0.getSource() == relationType) {
+        } else if (event.getSource() == relationType) {
             relationSubType.removeAllItems();
             description.setText("");
             testsLit.setListData(new String[]{});
@@ -226,20 +221,12 @@ public class MakeNewRelationFrame extends RelationTypeFrame {
             for (RelationType type : mainRelations) {
                 if (index-- == 0) {
                     // refresh subrelation
-                    subRelations = new ArrayList<RelationType>();
+                    subRelations = new ArrayList<>();
                     Collection<RelationType> readRelations = LexicalDA
                             .getChildren(type);
                     for (RelationType relType : readRelations) {
-                        if (fixedRelationType == null
-                                || // gdy nie zdefiniowana
-                                // relacji
-                                fixedRelationType.getId().longValue() == relType
-                                .getId().longValue()) { // lub gdy
-                            // zgadza sie ze
-                            // zdefiniowana
-                            // relacja
-                            relationSubType.addItem(RelationTypes
-                                    .getFullNameFor(relType.getId()));
+                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
+                            relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
                             subRelations.add(relType);
                         }
                     }
@@ -257,10 +244,10 @@ public class MakeNewRelationFrame extends RelationTypeFrame {
                     && subRelations.size() > 0);
 
             // subtype changed
-        } else if (arg0.getSource() == relationSubType
-                || arg0.getSource() == parentItem
-                || arg0.getSource() == childItem
-                || arg0.getSource() == middleItem) {
+        } else if (event.getSource() == relationSubType
+                || event.getSource() == parentItem
+                || event.getSource() == childItem
+                || event.getSource() == middleItem) {
             testsLit.setListData(new String[]{});
             RelationType relation = getSelectedRelation();
             if (relation != null) {
@@ -269,9 +256,11 @@ public class MakeNewRelationFrame extends RelationTypeFrame {
         }
     }
 
+    @Override
     public void keyReleased(KeyEvent arg0) {
     }
 
+    @Override
     public void keyTyped(KeyEvent arg0) {
     }
 
@@ -320,10 +309,9 @@ public class MakeNewRelationFrame extends RelationTypeFrame {
                             .getItemAt(parentItem.getSelectedIndex()),
                             pos);
                     String test = "\n\n";
-                    for (String i : tests) {
-                        test += i + "\n";
-                    }
-                    boolean hasReversRelation = framew.chosenType.getReverse() != null ? true : false;
+                    test = tests.stream().map((i) -> i + "\n").reduce(test, String::concat);
+                    boolean hasReversRelation = framew.chosenType.getReverse() != null;
+
                     if (framew.chosenType.isAutoReverse()
                             || hasReversRelation && (DialogBox.showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION + test,
                                     LexicalDA.getRelationName(RelationsDA.getReverseRelation(framew.chosenType)))) == DialogBox.YES)) {
@@ -334,9 +322,7 @@ public class MakeNewRelationFrame extends RelationTypeFrame {
                 DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
                 return true;
             } else {
-                // cannot make relation
-                DialogBox
-                        .showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
+                DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
             }
         }
         return false;

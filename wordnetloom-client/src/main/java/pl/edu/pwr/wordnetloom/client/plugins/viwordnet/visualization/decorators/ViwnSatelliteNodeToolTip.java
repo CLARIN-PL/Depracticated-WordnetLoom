@@ -29,6 +29,7 @@ public class ViwnSatelliteNodeToolTip<E> implements Transformer<ViwnNode, String
 
     private static String MAIN_NODE = "Węzeł główny";
 
+    @Override
     public String transform(ViwnNode arg0) {
         return (arg0.getSpawner() == null ? MAIN_NODE + " " : "") + arg0.getLabel();
     }

@@ -120,41 +120,16 @@ public class LexicalDA {
      */
     static public Synset exchangeUnitsInSynset(Synset synset, Sense firstUnit, Sense secondUnit, int firstUnitIndex, int splitLineIndex) {
         if (firstUnitIndex == splitLineIndex) {
-            // ...
-            // --------------------  -> firstUnitIndex, splitPointIndex
-            // jednostka leksyklana  -> firstUnitIndex+1
-            // ...
-            // =
-            // linia podzialu przesunieta o jeden w dol, jednostki bez zmian
-            // splitPointIndex +1
-            synset.setSplit(new Integer(splitLineIndex + 1));
-//			synset.rebuildUnitsStr(); // odswiezenie opisu, bo zmienil sie split
-            // NOWY WLASCICIEL
-//			synset.setOwner(Synset.getDefaultOwner());
-            // KONIE NOWY WLASCICIEL
+            synset.setSplit(splitLineIndex + 1);
             RemoteUtils.synsetRemote.updateSynset(synset);
         } else if (firstUnitIndex + 1 == splitLineIndex) {
-            // ...
-            // jednostka leksykalna  -> firstUnitIndex
-            // ------------          -> firstUnitIndex+1, splitPointIndex
-            // ...
-            // =
-            // linia podzialu przesunieta o jeden do gory, jednostki bez zmian
-            // spitPointIndex -1
-            synset.setSplit(new Integer(splitLineIndex - 1));
-//			synset.rebuildUnitsStr(); // odswiezenie opisu, bo zmienil sie split
-            // NOWY WLASCICIEL
-//			synset.setOwner(Synset.getDefaultOwner());
-            // KONIEC NOWY WLASCICIEL
+            synset.setSplit(splitLineIndex - 1);
             RemoteUtils.synsetRemote.updateSynset(synset);
         } else {
             // zwykla zamiana jednostek na liscie
             // exchange firstUnit,secondUnit
             RemoteUtils.unitAndSynsetRemote.dbExchangeUnits(synset, firstUnit, secondUnit);
-            // NOWY WLASCICIEL
-//			synset.setOwner(Synset.getDefaultOwner());
             RemoteUtils.synsetRemote.updateSynset(synset);
-            // KONIEC NOWY WLASCICIEL
         }
         return refresh(synset);
     }
@@ -280,15 +255,6 @@ public class LexicalDA {
             if (oldDefinition == null || oldDefinition.equals("")) {
                 oldDefinition = "brak danych";
             }
-//			TERAZ NAS NIE INTERESUJE
-//			// czy są jakieś zmiany takie aby można było zmienić właściciela
-//			if (!comment.equals(oldComment) ||
-//					synset.isAbstractsynset().booleanValue()!=isAbstract ||
-//					!definition.equals(oldDefinition)) {
-//				// NOWY WLASCICICEL
-////				synset.setOwner(Synset.getDefaultOwner());
-//				// KONIEC NOWY WLASCICIEL
-//			}
 
             RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(synset, Synset.COMMENT, comment);
             RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(synset, Synset.ISABSTRACT, Synset.isAbstract(isAbstract));
@@ -362,11 +328,9 @@ public class LexicalDA {
         for (Sense unitDTO : units) {
             RemoteUtils.unitAndSynsetRemote.dbDeleteConnection(unitDTO, synset);
         }
-        // NOWY WLASCICICEL
         if (updateOwner) {
             RemoteUtils.synsetRemote.updateSynset(synset);
         }
-        // KONIEC NOWY WLASCICICEL
     }
 
     /**
@@ -377,7 +341,7 @@ public class LexicalDA {
      * @param synset - synset
      */
     public static void deleteConnection(Sense unit, Synset synset) {
-        Collection<Sense> units = new ArrayList<Sense>();
+        Collection<Sense> units = new ArrayList<>();
         units.add(unit);
         deleteConnections(units, synset);
     }
@@ -391,7 +355,7 @@ public class LexicalDA {
      * zalogowanego użytkownika
      */
     public static void deleteConnection(Sense unit, Synset synset, boolean updateOwner) {
-        Collection<Sense> units = new ArrayList<Sense>();
+        Collection<Sense> units = new ArrayList<>();
         units.add(unit);
         deleteConnections(units, synset, updateOwner);
     }
@@ -436,7 +400,7 @@ public class LexicalDA {
      */
     public static Synset addToNewSynset(Sense unit) {
         Synset newSynset = new Synset();
-        newSynset.setSplit(new Integer(1));
+        newSynset.setSplit(1);
         newSynset = RemoteUtils.synsetRemote.updateSynset(newSynset);
         RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(newSynset, Synset.OWNER, PanelWorkbench.getOwnerFromConfigManager());
         RemoteUtils.unitAndSynsetRemote.dbAddConnection(unit, newSynset, true);
@@ -536,7 +500,7 @@ public class LexicalDA {
      * @return jednostki synsetu
      */
     public static ArrayList<Sense> getLexicalUnits(Synset synset, List<Long> lexicons) {
-        return new ArrayList<Sense>(RemoteUtils.synsetRemote.dbFastGetUnits(synset, lexicons));
+        return new ArrayList<>(RemoteUtils.synsetRemote.dbFastGetUnits(synset, lexicons));
     }
 
     /**
@@ -626,7 +590,7 @@ public class LexicalDA {
      * @return odmienione formy
      */
     static private Collection<String> getForms(Collection<String> defs, String unit) {
-        Collection<String> forms = new ArrayList<String>();
+        Collection<String> forms = new ArrayList<>();
         // ustawieni suffixu
         String suffix = "";
         if (unit.endsWith("się")) { // konczy sie z się, a ma to zostać odcięte
@@ -651,7 +615,7 @@ public class LexicalDA {
      */
     public static List<String> getTests(RelationType rel, String parentUnit, String childUnit, PartOfSpeech pos) {
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         List<RelationTest> tests = RemoteUtils.testRemote.getRelationTestsFor(rel);
 
         int testIndex = 1;
@@ -659,9 +623,9 @@ public class LexicalDA {
         for (RelationTest test : tests) {
             if (test.getPos().equals(pos)) { // wybranie tego co ma dobra czesc mowy
                 String text = test.getText().getText();
-                Collection<String> defOfUnitA = new ArrayList<String>();
-                Collection<String> defOfUnitB = new ArrayList<String>();
-                String[] parseResult = null;
+                Collection<String> defOfUnitA = new ArrayList<>();
+                Collection<String> defOfUnitB = new ArrayList<>();
+                String[] parseResult;
                 boolean found = true;
                 while (found) {
                     parseResult = extractUnitDefinition(text, "<x#", "<x" + defOfUnitA.size() + ">");

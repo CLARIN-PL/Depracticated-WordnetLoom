@@ -43,7 +43,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Service;
  * @author amusial
  *
  */
-public class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
+public final class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
         implements ModalGraphMouse, ItemSelectable {
 
     protected ViwnGraphViewPopupGraphMousePlugin popupPlugin;
@@ -76,11 +76,7 @@ public class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
 
     @Override
     protected void loadPlugins() {
-
-//		pickingPlugin = new PickingGraphMousePlugin<ViwnNode,ViwnEdge>(InputEvent.BUTTON1_MASK, InputEvent.BUTTON1_MASK | InputEvent.CTRL_MASK);
         pickingPlugin = new ViwnPickingGraphMousePlugin();
-//		animatedPickingPlugin = new AnimatedPickingGraphMousePlugin<ViwnNode,ViwnEdge>(InputEvent.BUTTON1_MASK | InputEvent.SHIFT_MASK);
-//		translatingPlugin = new TranslatingGraphMousePlugin(InputEvent.BUTTON1_MASK | InputEvent.SHIFT_MASK);
         translatingPlugin = new ViwnTranslatingGraphMousePlugin();
 
         scalingPlugin = new ScalingGraphMousePlugin(new ViewScalingControl(), 0, in, out);
@@ -94,6 +90,8 @@ public class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
 
     /**
      * setter for the Mode.
+     *
+     * @param mode
      */
     @Override
     public void setMode(Mode mode) {
@@ -120,13 +118,11 @@ public class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
     protected void setPickingMode() {
         remove(translatingPlugin);
         add(pickingPlugin);
-//		add(animatedPickingPlugin);;
     }
 
     @Override
     protected void setTransformingMode() {
         remove(pickingPlugin);
-//		remove(animatedPickingPlugin);
         add(translatingPlugin);
     }
 
@@ -135,7 +131,6 @@ public class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
      */
     public void setUniversalMode() {
         add(pickingPlugin);
-        //add(animatedPickingPlugin);
         add(translatingPlugin);
     }
 
@@ -179,7 +174,7 @@ public class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
                 c.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }
-    } // ViwnPickingGraphMousePlugin
+    }
 
     /**
      * ViwnTranslatingGraphMousePlugin is a combination of
@@ -193,7 +188,7 @@ public class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
             super(InputEvent.BUTTON2_MASK);
         }
 
-        @SuppressWarnings("unchecked")
+        @Override
         public void mousePressed(MouseEvent e) {
             // TRANSLATING PART
             VisualizationViewer<ViwnNode, ViwnEdge> vv = (VisualizationViewer<ViwnNode, ViwnEdge>) e.getSource();
@@ -204,7 +199,7 @@ public class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
             }
         }
 
-        @SuppressWarnings("unchecked")
+        @Override
         public void mouseReleased(MouseEvent e) {
             // TRANSLATING PART
             final VisualizationViewer<ViwnNode, ViwnEdge> vv = (VisualizationViewer<ViwnNode, ViwnEdge>) e.getSource();

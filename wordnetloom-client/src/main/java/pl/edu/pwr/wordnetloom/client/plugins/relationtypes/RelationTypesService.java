@@ -43,38 +43,30 @@ public class RelationTypesService extends AbstractService implements ActionListe
         super(workbench);
     }
 
-    /**
-     * instalacja akcji
-     */
+    @Override
     public void installMenuItems() {
-        JMenu other = workbench.getMenu(Labels.OTHER);
+        JMenu other = workbench.getMenu(Labels.SETTINGS);
         if (other == null) {
             return;
         }
-        other.addSeparator();
         other.add(new MenuItemExt(Labels.EDIT_RELATION_TYPES, KeyEvent.VK_Y, this));
     }
 
+    @Override
     public boolean onClose() {
         return true;
     }
 
+    @Override
     public void installViews() {
-        /**
-         *
-         */
     }
 
+    @Override
     public void onStart() {
-        /**
-         *
-         */
     }
 
-    /**
-     * wywolanie akcji z menu
-     */
-    public void actionPerformed(ActionEvent arg0) {
+    @Override
+    public void actionPerformed(ActionEvent event) {
         RelationsEditorFrame.showModal(workbench);
     }
 }

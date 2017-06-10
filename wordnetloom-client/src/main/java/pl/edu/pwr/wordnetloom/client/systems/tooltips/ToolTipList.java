@@ -30,7 +30,6 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -78,25 +77,23 @@ public class ToolTipList extends JList {
             this.component = component;
         }
 
+        @Override
         public String load(final Object o) throws Exception {
 
-            ListenableFuture<String> future = lex.submit(new Callable<String>() {
+            ListenableFuture<String> future = lex.submit(() -> {
+                String result = toolTipsGenerator.getToolTipText(o);
 
-                @Override
-                public String call() throws Exception {
-                    String result = toolTipsGenerator.getToolTipText(o);
+                getCache().invalidate(o);
+                getCache().put(o, result);
 
-                    getCache().invalidate(o);
-                    getCache().put(o, result);
-
-                    return result;
-                }
+                return result;
             });
             Futures.addCallback(future, this);
 
             return Labels.LOADING;
         }
 
+        @Override
         public void onSuccess(final Object o) {
 
             /**
@@ -115,6 +112,7 @@ public class ToolTipList extends JList {
             }
         }
 
+        @Override
         public void onFailure(Throwable thrown) {
         }
 

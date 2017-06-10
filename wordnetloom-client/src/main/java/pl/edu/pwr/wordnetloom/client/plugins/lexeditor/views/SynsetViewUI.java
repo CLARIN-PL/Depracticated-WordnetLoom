@@ -41,7 +41,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     private ButtonExt btnSearch, btnReset;
     private ToolTipList synsetList;
     private JLabel infoLabel;
-    private GenericListModel<Sense> senseListModel = new GenericListModel<Sense>(true);
+    private final GenericListModel<Sense> senseListModel = new GenericListModel<>(true);
     private Sense lastSelectedValue;
 
     @Override
@@ -95,7 +95,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         final String definition = criteria.getDefinition().getText();
         final String comment = criteria.getComment().getText();
         final String artificial = criteria.getIsArtificial();
-        final List<Long> lexicons = new ArrayList<Long>();
+        final List<Long> lexicons = new ArrayList<>();
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
@@ -109,18 +109,18 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
                 } else {
                     lexicons.addAll(LexiconManager.getInstance().getLexicons());
                 }
-                List<Sense> sense = new ArrayList<Sense>();
+                List<Sense> sense = new ArrayList<>();
                 sense = LexicalDA.getSenseBySynsets(oldFilter, oldDomain, oldRelation,
                         definition, comment, artificial, limitSize,
                         criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem().getUbyType(), lexicons);
                 if (lastSelectedValue == null && synsetList != null && !synsetList.isSelectionEmpty()) {
                     lastSelectedValue = senseListModel.getObjectAt(synsetList.getSelectedIndex());
                 }
-                if (sense.size() == 0) {
+                if (sense.isEmpty()) {
                     workbench.setBusy(false);
                 }
                 senseListModel.setCollectionToSynsets(sense, oldFilter);
-                criteria.setSensesToHold(new ArrayList<Sense>(senseListModel.getCollection()));
+                criteria.setSensesToHold(new ArrayList<>(senseListModel.getCollection()));
                 return null;
             }
 
@@ -155,11 +155,9 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         synsetList.setEnabled(false);
         listeners.notifyAllListeners(synsetList.getSelectedIndices().length == 1 ? unit : null);
         synsetList.setEnabled(true);
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                synsetList.grabFocus();
-            }
+
+        SwingUtilities.invokeLater(() -> {
+            synsetList.grabFocus();
         });
     }
 
@@ -172,10 +170,8 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == btnSearch) {
             refreshData();
-            return;
         } else if (event.getSource() == btnReset) {
             criteria.resetFields();
-            return;
         }
     }
 

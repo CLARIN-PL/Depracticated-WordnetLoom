@@ -45,13 +45,10 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI {
         editPanel = new LexicalUnitPropertiesPanel(graphUI.getWorkbench().getFrame());
         content.add("hfill", editPanel);
 
-        editPanel.getBtnSave().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                editPanel.getBtnSave().setEnabled(false);
-                saveChangesInUnit();
-                editPanel.getBtnSave().setEnabled(false);
-            }
+        editPanel.getBtnSave().addActionListener((ActionEvent e) -> {
+            editPanel.getBtnSave().setEnabled(false);
+            saveChangesInUnit();
+            editPanel.getBtnSave().setEnabled(false);
         });
     }
 
@@ -119,7 +116,6 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI {
             } catch (Exception e) {
                 Logger.getLogger(LexicalUnitPropertiesViewUI.class).log(
                         Level.ERROR, "Number format" + e);
-                e.printStackTrace();
                 DialogBox.showError(Messages.ERROR_WRONG_NUMBER_FORMAT);
             }
         }

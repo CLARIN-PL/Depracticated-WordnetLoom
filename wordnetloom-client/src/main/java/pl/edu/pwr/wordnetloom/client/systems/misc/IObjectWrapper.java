@@ -24,8 +24,5 @@ package pl.edu.pwr.wordnetloom.client.systems.misc;
  */
 public interface IObjectWrapper {
 
-    /**
-     * @return object wrapped by this object
-     */
     public Object getObject();
 }

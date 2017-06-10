@@ -35,7 +35,7 @@ public class ViwnNodeSet extends ViwnNode {
     public final static Color vertexBackgroundColor = Color.getHSBColor(0.25f, 0.5f, 1);
     public final static Shape shape = new Ellipse2D.Float(-20, -20, 40, 40);
 
-    private HashSet<ViwnNodeSynset> syns_ = new HashSet<ViwnNodeSynset>();
+    private final HashSet<ViwnNodeSynset> syns_ = new HashSet<>();
 
     public void add(final ViwnNodeSynset synset) {
         syns_.add(synset);

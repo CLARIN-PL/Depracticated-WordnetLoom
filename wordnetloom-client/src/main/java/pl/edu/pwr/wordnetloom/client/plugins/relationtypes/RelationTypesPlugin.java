@@ -28,11 +28,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
  */
 public class RelationTypesPlugin implements Plugin {
 
-    /**
-     * instalacja pluginu
-     *
-     * @param workbench - srodowisko pracy
-     */
+    @Override
     public void install(Workbench workbench) {
         Service databasemgr = new RelationTypesService(workbench);
         workbench.installService(databasemgr);

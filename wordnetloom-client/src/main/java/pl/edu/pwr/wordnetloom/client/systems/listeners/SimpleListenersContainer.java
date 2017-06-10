@@ -27,8 +27,7 @@ import javax.swing.event.EventListenerList;
  */
 public class SimpleListenersContainer {
 
-    // kontener na słuchaczy
-    private EventListenerList listeners = new EventListenerList();
+    private final EventListenerList listeners = new EventListenerList();
 
     /**
      * dodanie obsługi zdarzenia zmiany danych
@@ -67,7 +66,7 @@ public class SimpleListenersContainer {
      * @param object - obiekt do wyslania
      */
     public void notifyAllListeners(Object object) {
-        // wywołanie wszystkich nasłuchujących
+
         for (SimpleListenerInterface simpleListener : this.listeners.getListeners(SimpleListenerInterface.class)) {
             simpleListener.doAction(object, 0);
         }

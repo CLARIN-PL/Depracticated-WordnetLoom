@@ -22,13 +22,14 @@ import edu.uci.ics.jung.graph.Graph;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.map.LazyMap;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
@@ -57,15 +58,9 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
      * nodes and its locations
      *
      */
-    protected Map<ViwnNode, Point2D> locations = LazyMap.decorate(
-            new HashMap<ViwnNode, Point2D>(),
-            new Transformer<ViwnNode, Point2D>() {
-        public Point2D transform(ViwnNode arg0) {
-            return new Point2D.Double();
-        }
-    });
+    protected Map<ViwnNode, Point2D> locations = LazyMap.decorate(new HashMap<ViwnNode, Point2D>(), (ViwnNode arg0) -> new Point2D.Double());
 
-    protected transient Set<ViwnNode> alreadyDone = new HashSet<ViwnNode>();
+    protected transient Set<ViwnNode> alreadyDone = new HashSet<>();
 
     /**
      * default distance from node to node at x axis
@@ -111,21 +106,27 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
         this.distY = disty;
     }
 
+    @Override
     public Graph<ViwnNode, ViwnEdge> getGraph() {
         return graph;
     }
 
+    @Override
     public Dimension getSize() {
         return size;
     }
 
+    @Override
     public void initialize() {
     }
 
     /**
      * allow to drag 'n' drop all nodes
      *
+     * @param v
+     * @return
      */
+    @Override
     public boolean isLocked(ViwnNode v) {
         return false;
     }
@@ -134,10 +135,12 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
      * at the moment this feature is not implemented in this graph layout
      *
      */
+    @Override
     public void lock(ViwnNode v, boolean state) {
     }
 
     // TODO Check
+    @Override
     public void reset() {
         this.alreadyDone.clear();
         ViwnNode center = findRoot();
@@ -161,29 +164,37 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
         return null;
     }
 
+    @Override
     public void setGraph(Graph<ViwnNode, ViwnEdge> graph) {
         this.graph = graph;
     }
 
+    @Override
     public void setInitializer(Transformer<ViwnNode, Point2D> initializer) {
-        for (ViwnNode n : graph.getVertices()) {
+        graph.getVertices().stream().map((n) -> {
             setLocation(n, initializer.transform(n));
+            return n;
+        }).forEach((n) -> {
             alreadyDone.add(n);
-        }
+        });
     }
 
+    @Override
     public void setLocation(ViwnNode v, Point2D location) {
         locations.get(v).setLocation(location);
     }
 
+    @Override
     public void setSize(Dimension d) {
         this.size = d;
     }
 
     /**
+     * @param arg0
      * @return location of the node
      *
      */
+    @Override
     public Point2D transform(ViwnNode arg0) {
         return locations.get(arg0);
     }
@@ -229,11 +240,11 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
             root = true;
         }
         if (placed == null) {
-            placed = new HashSet<ViwnNode>();
+            placed = new HashSet<>();
         }
 
         // nodes mapped in actual method call
-        Set<ViwnNode> actual = new HashSet<ViwnNode>();
+        Set<ViwnNode> actual = new HashSet<>();
 
         // map all nodes
         if (!placed.contains(center)) {
@@ -246,10 +257,10 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
             // now, time to place its neighbors
             // Divide neighbors according to relation type, and future place
             // in graph
-            Set<ViwnNode> sbottom = new HashSet<ViwnNode>();
-            Set<ViwnNode> stop = new HashSet<ViwnNode>();
-            Set<ViwnNode> sright = new HashSet<ViwnNode>();
-            Set<ViwnNode> sleft = new HashSet<ViwnNode>();
+            Set<ViwnNode> sbottom = new HashSet<>();
+            Set<ViwnNode> stop = new HashSet<>();
+            Set<ViwnNode> sright = new HashSet<>();
+            Set<ViwnNode> sleft = new HashSet<>();
 
             Collection<ViwnEdge> edges = graph.getIncidentEdges(center);
 
@@ -276,10 +287,10 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
             }
 
             // sort children alphabetically
-            Vector<ViwnNode> bottom = new Vector<ViwnNode>(sbottom);
-            Vector<ViwnNode> top = new Vector<ViwnNode>(stop);
-            Vector<ViwnNode> right = new Vector<ViwnNode>(sright);
-            Vector<ViwnNode> left = new Vector<ViwnNode>(sleft);
+            List<ViwnNode> bottom = new ArrayList<>(sbottom);
+            List<ViwnNode> top = new ArrayList<>(stop);
+            List<ViwnNode> right = new ArrayList<>(sright);
+            List<ViwnNode> left = new ArrayList<>(sleft);
             Collections.sort(bottom, new ViwnNodeAlphabeticComparator());
             Collections.sort(top, new ViwnNodeAlphabeticComparator());
             Collections.sort(right, new ViwnNodeAlphabeticComparator());
@@ -433,10 +444,10 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
      */
     protected void correctNode2PointMapping(Collection<ViwnNode> col, int dx,
             int dy) {
-        for (ViwnNode vn : col) {
+        col.stream().forEach((vn) -> {
             Point2D current = locations.get(vn);
             setLocation(vn, new Point2D.Double(current.getX() + dx, current.getY() + dy));
-        }
+        });
     }
 
     /**
@@ -460,7 +471,7 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
         boolean end = false;
         int[] dim;
 
-        Set<ViwnNode> ad = new HashSet<ViwnNode>(upper);
+        Set<ViwnNode> ad = new HashSet<>(upper);
         ad.removeAll(lower);
 
         // calculate boundaries of subgraph
@@ -487,7 +498,7 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
      */
     @SuppressWarnings("unused")
     private Set<ViwnNode> getSubGraphOf(ViwnNode center) {
-        Set<ViwnNode> ret = new HashSet<ViwnNode>();
+        Set<ViwnNode> ret = new HashSet<>();
         ret.add(center);
 
         for (ViwnEdge edge : graph.getIncidentEdges(center)) {

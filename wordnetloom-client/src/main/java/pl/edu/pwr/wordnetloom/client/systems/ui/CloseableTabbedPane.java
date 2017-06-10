@@ -233,6 +233,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      * @param title the title to be displayed in this tab
      * @param component the component to be displayed when this tab is clicked
      */
+    @Override
     public void addTab(String title, Component component) {
         addTab(title, component, null);
     }
@@ -247,12 +248,13 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
     public void addTab(String title, Component component, Icon extraIcon) {
         boolean doPaintCloseIcon = true;
         try {
-            Object prop = null;
+            Object prop;
             if ((prop = ((JComponent) component)
                     .getClientProperty("isClosable")) != null) {
                 doPaintCloseIcon = (Boolean) prop;
             }
-        } catch (Exception ignored) {/* Could probably be a ClassCastException */
+        } catch (Exception ignored) {
+
         }
 
         super.addTab(title, doPaintCloseIcon ? new CloseTabIcon(extraIcon)
@@ -269,8 +271,6 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
 
     /**
      * adds add tab-button add tab
-     *
-     *
      */
     private void addAddTab() {
         addTabLabel = new JLabel("ADD_TAB");
@@ -297,6 +297,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      *
      * @param e the <code>MouseEvent</code>
      */
+    @Override
     public void mouseClicked(MouseEvent e) {
         processMouseEvents(e);
     }
@@ -306,6 +307,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      *
      * @param e the <code>MouseEvent</code>
      */
+    @Override
     public void mouseEntered(MouseEvent e) {
     }
 
@@ -314,6 +316,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      *
      * @param e the <code>MouseEvent</code>
      */
+    @Override
     public void mouseExited(MouseEvent e) {
         for (int i = 0; i < getTabCount(); i++) {
             CloseTabIcon icon = (CloseTabIcon) getIconAt(i);
@@ -329,6 +332,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      *
      * @param e the <code>MouseEvent</code>
      */
+    @Override
     public void mousePressed(MouseEvent e) {
         processMouseEvents(e);
     }
@@ -338,6 +342,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      *
      * @param e the <code>MouseEvent</code>
      */
+    @Override
     public void mouseReleased(MouseEvent e) {
     }
 
@@ -346,14 +351,15 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      * <code>MOUSE_DRAGGED</code> events will continue to be delivered to the
      * component where the drag originated until the mouse button is released
      * (regardless of whether the mouse position is within the bounds of the
-     * component).<br/>
-     * <br/>
+     * component).<br>
+     * <br>
      * Due to platform-dependent Drag&Drop implementations,
      * <code>MOUSE_DRAGGED</code> events may not be delivered during a native
      * Drag&Drop operation.
      *
      * @param e the <code>MouseEvent</code>
      */
+    @Override
     public void mouseDragged(MouseEvent e) {
         processMouseEvents(e);
     }
@@ -364,6 +370,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      *
      * @param e the <code>MouseEvent</code>
      */
+    @Override
     public void mouseMoved(MouseEvent e) {
         processMouseEvents(e);
     }
@@ -386,7 +393,6 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
         if (icon != null) {
             // TODO: draw states of button '+'
             if (icon instanceof AddTabIcon && (e.getID() == MouseEvent.MOUSE_CLICKED)) {
-//				System.out.println("dodaj!");
                 tabButtonPressed();
                 return;
             }
@@ -588,6 +594,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          * @param x the upper left point of the icon in the x direction
          * @param y the upper left point of the icon in the y direction
          */
+        @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             boolean doPaintCloseIcon = true;
             try {
@@ -598,7 +605,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
                         x, y);
                 JComponent curPanel = (JComponent) tabbedpane
                         .getComponentAt(tabNumber);
-                Object prop = null;
+                Object prop;
                 if ((prop = curPanel.getClientProperty("isClosable")) != null) {
                     doPaintCloseIcon = (Boolean) prop;
                 }
@@ -654,6 +661,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          *
          * @return an int specifying the fixed width of the icon.
          */
+        @Override
         public int getIconWidth() {
             return width + (fileIcon != null ? fileIcon.getIconWidth() : 0);
         }
@@ -663,6 +671,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          *
          * @return an int specifying the fixed height of the icon.
          */
+        @Override
         public int getIconHeight() {
             return height;
         }
@@ -744,6 +753,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          * @param x the upper left point of the icon in the x direction
          * @param y the upper left point of the icon in the y direction
          */
+        @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             boolean doPaintAddIcon = true;
             try {
@@ -754,7 +764,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
                         x, y);
                 JComponent curPanel = (JComponent) tabbedpane
                         .getComponentAt(tabNumber);
-                Object prop = null;
+                Object prop;
                 if ((prop = curPanel.getClientProperty("isAddTab")) != null) {
                     doPaintAddIcon = (Boolean) prop;
                 }
@@ -808,6 +818,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          *
          * @return an int specifying the fixed width of the icon.
          */
+        @Override
         public int getIconWidth() {
             return width + (fileIcon != null ? fileIcon.getIconWidth() : 0);
         }
@@ -817,6 +828,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          *
          * @return an int specifying the fixed height of the icon.
          */
+        @Override
         public int getIconHeight() {
             return height;
         }
@@ -828,10 +840,11 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          *
          * @return a rectangle indicating this icon's bounds
          */
+        @Override
         public Rectangle getBounds() {
             return new Rectangle(x_pos, y_pos, width, height);
         }
-    } // AddTabIcon
+    }
 
     /**
      * A specific <code>BasicTabbedPaneUI</code>.
@@ -872,6 +885,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          * @param textRect the text boundaries
          * @param isSelected true whether the tab is selected, false otherwise
          */
+        @Override
         protected void layoutLabel(int tabPlacement, FontMetrics metrics,
                 int tabIndex, String title, Icon icon, Rectangle tabRect,
                 Rectangle iconRect, Rectangle textRect, boolean isSelected) {
@@ -899,7 +913,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
             textRect.x += xNudge;
             textRect.y += yNudge;
         }
-    } // class CloseableTabbedPaneUI
+    }
 
     /**
      * A specific <code>MetalTabbedPaneUI</code>.
@@ -940,6 +954,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          * @param textRect the text boundaries
          * @param isSelected true whether the tab is selected, false otherwise
          */
+        @Override
         protected void layoutLabel(int tabPlacement, FontMetrics metrics,
                 int tabIndex, String title, Icon icon, Rectangle tabRect,
                 Rectangle iconRect, Rectangle textRect, boolean isSelected) {
@@ -967,6 +982,6 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
             textRect.x += xNudge;
             textRect.y += yNudge;
         }
-    } // class CloseableMetalTabbedPaneUI
+    }
 
 }

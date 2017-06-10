@@ -38,11 +38,10 @@ public class LexiconService extends AbstractService {
 
     @Override
     public void installMenuItems() {
-        JMenu help = workbench.getMenu(Labels.HELP);
+        JMenu help = workbench.getMenu(Labels.SETTINGS);
         if (help == null) {
             return;
         }
-        help.addSeparator();
         help.add(lexiconItem);
     }
 

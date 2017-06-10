@@ -19,12 +19,10 @@ package pl.edu.pwr.wordnetloom.client.plugins.core;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-import javax.swing.text.DefaultEditorKit;
 import pl.edu.pwr.wordnetloom.client.plugins.core.frames.AboutFrame;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
@@ -44,12 +42,12 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 public class CoreService extends AbstractService implements MenuListener {
 
     private static final String SHOW_TOOLTIPS_PARAM = "ShowTooltips";
-    private JMenu edit, other, window; //perspective
+    private JMenu settings;
     private JCheckBoxMenuItem showTooltips;
 
     public CoreService(Workbench workbench) {
         super(workbench);
-        // ustawienie domyslnego okna nadzrzednego dla komunikatow
+        //Sets default Dialog window to this frame
         DialogBox.setParentWindow(workbench.getFrame());
     }
 
@@ -60,47 +58,13 @@ public class CoreService extends AbstractService implements MenuListener {
         JMenu file = new JMenu(Labels.FILE);
         file.setMnemonic(KeyEvent.VK_P);
 
-        file.add(new JMenu(Labels.IMPORT));
-        file.add(new JMenu(Labels.EXPORT));
-
-        // wyjscie z programu
         file.add(new MenuItemExt(Labels.EXIT, KeyEvent.VK_W, (ActionEvent arg0) -> {
             System.exit(0);
         }));
 
-        edit = new JMenu(Labels.EDIT);
-        edit.addMenuListener(this);
-        edit.setMnemonic(KeyEvent.VK_E);
-        edit.add(new DefaultEditorKit.CopyAction() {
-            private static final long serialVersionUID = 1L;
-
-            {
-                putValue(Action.NAME, Labels.CUT);
-                putValue(Action.MNEMONIC_KEY, KeyEvent.VK_W);
-            }
-        });
-
-        edit.add(new DefaultEditorKit.CopyAction() {
-            private static final long serialVersionUID = 1L;
-
-            {
-                putValue(Action.NAME, Labels.COPY);
-                putValue(Action.MNEMONIC_KEY, KeyEvent.VK_K);
-            }
-        });
-        edit.add(new DefaultEditorKit.PasteAction() {
-            private static final long serialVersionUID = 1L;
-
-            {
-                putValue(Action.NAME, Labels.PASTE);
-                putValue(Action.MNEMONIC_KEY, KeyEvent.VK_E);
-            }
-        });
-
         JMenu help = new JMenu(Labels.HELP);
         help.setMnemonic(KeyEvent.VK_C);
 
-        // o programie
         help.add(new MenuItemExt(Labels.ABOUT_APP, KeyEvent.VK_O, (ActionEvent e) -> {
             AboutFrame.showModal(w);
         }));
@@ -108,37 +72,30 @@ public class CoreService extends AbstractService implements MenuListener {
         // wyswietlanie tooltipow
         showTooltips = new JCheckBoxMenuItem(Labels.SHOW_TOOLTIPS);
         showTooltips.setMnemonic(KeyEvent.VK_D);
-        
+
         showTooltips.addActionListener((ActionEvent e) -> {
-            // wywolanie zdarzenia
+
             JCheckBoxMenuItem item = (JCheckBoxMenuItem) e.getSource();
-            w.setParam(SHOW_TOOLTIPS_PARAM, item.isSelected() ? "1" : "0"); // ustawienie pokazywnia tooltipow
+            w.setParam(SHOW_TOOLTIPS_PARAM, item.isSelected() ? "1" : "0");
             ToolTipGenerator.getGenerator().setEnabledTooltips(item.isSelected());
+
         });
 
-        window = new JMenu(Labels.WINDOW);
-        window.setMnemonic(KeyEvent.VK_O);
+        settings = new JMenu(Labels.SETTINGS);
+        settings.setMnemonic(KeyEvent.VK_S);
 
         // standardowe ustawienia okna
-        window.add(new MenuItemExt(Labels.DEFAULT_SETTINGS, KeyEvent.VK_S, (ActionEvent arg0) -> {
+        settings.add(new MenuItemExt(Labels.DEFAULT_SETTINGS, KeyEvent.VK_S, (ActionEvent e) -> {
             w.getActivePerspective().resetViews();
         }));
 
-        window.addSeparator();
-        window.addMenuListener(this);
-        window.add(showTooltips);
-
-        other = new JMenu(Labels.OTHER);
-        other.setMnemonic(KeyEvent.VK_I);
-        other.addMenuListener(this);
+        settings.addMenuListener(this);
+        settings.add(showTooltips);
 
         workbench.installMenu(file);
-        workbench.installMenu(edit);
-        workbench.installMenu(other);
-        workbench.installMenu(window);
+        workbench.installMenu(settings);
         workbench.installMenu(help);
     }
-
 
     @Override
     public void menuSelected(MenuEvent arg0) {

@@ -65,79 +65,18 @@ import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import se.datadosen.component.RiverLayout;
 
-class ListElement {
-
-    private String word;
-    private Integer pkg;
-    private PartOfSpeech pos;
-    private String descrString;
-    boolean longDescr;
-
-    public ListElement(String word, Integer pkg, PartOfSpeech pos) {
-        this.word = word;
-        this.pkg = pkg;
-        this.pos = pos;
-        this.longDescr = false;
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append(word);
-        sb.append("<br><font size=-2>");
-        sb.append(pos);
-        sb.append(" #" + pkg);
-        sb.append("</font>");
-        sb.append("</html>");
-        descrString = sb.toString();
-    }
-
-    public String getWord() {
-        return word;
-    }
-
-    public Integer getPkg() {
-        return pkg;
-    }
-
-    public PartOfSpeech getPos() {
-        return pos;
-    }
-
-    public String toString() {
-        if (longDescr) {
-            return descrString;
-        } else {
-            return word;
-        }
-    }
-
-    public boolean equals(Object o) {
-        ListElement e = (ListElement) o;
-        return descrString.equals(e.descrString);
-    }
-
-    public int hashCode() {
-        return descrString.hashCode();
-    }
-
-    public void setDescrSize(boolean descrSize) {
-        longDescr = descrSize;
-    }
-}
-
 public class CandidatesViewUI extends AbstractViewUI
         implements ListSelectionListener, ActionListener, ChangeListener {
 
-    private HashMap<Pair<Integer, PartOfSpeech>, RebuildGraphsTask> tasks
-            = new HashMap<Pair<Integer, PartOfSpeech>, RebuildGraphsTask>();
+    private final HashMap<Pair<Integer, PartOfSpeech>, RebuildGraphsTask> tasks
+            = new HashMap<>();
 
-    private ListOrderedSet<ListElement> list_elems
-            = new ListOrderedSet<ListElement>();
+    private final ListOrderedSet<ListElement> list_elems = new ListOrderedSet<>();
 
-    private SimpleListenersContainer candidateChanged_
-            = new SimpleListenersContainer();
+    private final SimpleListenersContainer candidateChanged_ = new SimpleListenersContainer();
 
     //Choose noun as default
-    private PartOfSpeech pos_default = PosManager.getInstance().getFromID(2);
+    private final PartOfSpeech pos_default = PosManager.getInstance().getFromID(2);
     private int packageNo = 1;
     private int currentMaxPkg = 0;
     private SpinnerListModel packageNoModel = null;
@@ -194,6 +133,7 @@ public class CandidatesViewUI extends AbstractViewUI
         ((JSpinner.DefaultEditor) pckgSpinner.getEditor()).
                 getTextField().addKeyListener(
                         new KeyAdapter() {
+                    @Override
                     public void keyReleased(final KeyEvent e) {
                         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                             ActionEvent ae = new ActionEvent(pckgSpinner, 0, "click");
@@ -282,7 +222,7 @@ public class CandidatesViewUI extends AbstractViewUI
     private void loadListData() {
         loadSpinnerModel();
 
-        packageNo = ((Integer) packageNoModel.getValue()).intValue();
+        packageNo = ((Integer) packageNoModel.getValue());
 
         PartOfSpeech pos = (PartOfSpeech) posCombo.getItemAt(posCombo.getSelectedIndex());
         Collection<String> words = RemoteUtils.extGraphRemote.dbGetNewWords(packageNo, pos);
@@ -312,18 +252,14 @@ public class CandidatesViewUI extends AbstractViewUI
         if (spinnerLoaded) {
             return;
         }
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                workbench.setBusy(true);
-            }
+
+        SwingUtilities.invokeLater(() -> {
+            workbench.setBusy(true);
         });
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                spinnerLoaded = true;
-                loadSpinnerModel();
-            }
+
+        Runnable run = () -> {
+            spinnerLoaded = true;
+            loadSpinnerModel();
         };
         new Thread(run).start();
     }
@@ -344,8 +280,7 @@ public class CandidatesViewUI extends AbstractViewUI
             public int indexOf(Object o) {
                 if (o instanceof String) {
                     try {
-                        o = new Integer(
-                                Integer.parseInt(((String) o).trim()));
+                        o = Integer.parseInt(((String) o).trim());
                     } catch (NumberFormatException ex) {
                         return -1;
                     }
@@ -367,7 +302,7 @@ public class CandidatesViewUI extends AbstractViewUI
         }
 
         if (packages.isEmpty()) {
-            ArrayList<String> al = new ArrayList<String>();
+            ArrayList<String> al = new ArrayList<>();
             al.add("");
             packageNoModel.setList(al);
             buttonRecalc.setEnabled(false);
@@ -383,12 +318,9 @@ public class CandidatesViewUI extends AbstractViewUI
             pckgSpinner.setEnabled(true);
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                content.repaint();
-                workbench.setBusy(false);
-            }
+        SwingUtilities.invokeLater(() -> {
+            content.repaint();
+            workbench.setBusy(false);
         });
     }
 
@@ -397,6 +329,7 @@ public class CandidatesViewUI extends AbstractViewUI
         return candsList;
     }
 
+    @Override
     public void valueChanged(ListSelectionEvent e) {
         spinnerCheck();
 
@@ -404,11 +337,12 @@ public class CandidatesViewUI extends AbstractViewUI
                 && !candsList.isSelectionEmpty()) {
             ListElement elem = (ListElement) candsList.getSelectedValue();
             candidateChanged_.notifyAllListeners(
-                    new Pair<String, PartOfSpeech>(elem.getWord(), elem.getPos()),
+                    new Pair<>(elem.getWord(), elem.getPos()),
                     elem.getPkg());
         }
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         spinnerCheck();
 
@@ -440,12 +374,10 @@ public class CandidatesViewUI extends AbstractViewUI
             }
         } else if (e.getSource() == buttonRecalc
                 && currentMaxPkg != 0) {
-            Integer packageNo = ((Integer) packageNoModel.getValue()).intValue();
+            Integer packageNo = ((Integer) packageNoModel.getValue());
             PartOfSpeech pos = (PartOfSpeech) posCombo.getItemAt(posCombo.getSelectedIndex());
 
-            RebuildGraphsTask t
-                    = tasks.get(new Pair<Integer, PartOfSpeech>(
-                            new Integer(packageNo), pos));
+            RebuildGraphsTask t = tasks.get(new Pair<>(packageNo, pos));
 
             if (t != null) {
                 t.show();
@@ -460,12 +392,12 @@ public class CandidatesViewUI extends AbstractViewUI
                     == JOptionPane.YES_OPTION) {
                 RebuildGraphsTask t1
                         = new RebuildGraphsTask(pos, packageNo, this);
-                tasks.put(new Pair<Integer, PartOfSpeech>(
-                        new Integer(packageNo), pos), t1);
+                tasks.put(new Pair<>(packageNo, pos), t1);
             }
         }
     }
 
+    @Override
     public void stateChanged(ChangeEvent e) {
         spinnerCheck();
 
@@ -474,9 +406,7 @@ public class CandidatesViewUI extends AbstractViewUI
         if (e.getSource() instanceof RebuildGraphsTask) {
             synchronized (tasks) {
                 RebuildGraphsTask t = (RebuildGraphsTask) e.getSource();
-                Pair<Integer, PartOfSpeech> key
-                        = new Pair<Integer, PartOfSpeech>(
-                                new Integer(t.getPackageNo()), t.getPos());
+                Pair<Integer, PartOfSpeech> key = new Pair<>(t.getPackageNo(), t.getPos());
 
                 tasks.remove(key);
 

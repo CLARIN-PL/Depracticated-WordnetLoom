@@ -17,16 +17,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.owner;
 
-import java.awt.event.KeyEvent;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import pl.edu.pwr.wordnetloom.client.plugins.owner.data.SessionData;
 import pl.edu.pwr.wordnetloom.client.plugins.owner.frames.OwnerFrame;
-import pl.edu.pwr.wordnetloom.client.systems.misc.ActionWrapper;
-import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
-import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
@@ -49,9 +41,7 @@ public class OwnerService extends AbstractService {
         super(workbench);
     }
 
-    /**
-     * gdy serwis jest uruchamiany
-     */
+    @Override
     public void onStart() {
 
         if (workbench.getParam(PARAM_OWNER) == null || workbench.getParam(PARAM_PROJECT) == null) {
@@ -66,36 +56,17 @@ public class OwnerService extends AbstractService {
         }
     }
 
-    /**
-     * instalacja akcji
-     */
+    @Override
     public void installMenuItems() {
-        JMenu other = workbench.getMenu(Labels.OTHER);
-        if (other == null) {
-            return;
-        }
-        JMenuItem removeItem = new MenuItemExt(Labels.REMOVE_USER_DATA, KeyEvent.VK_U, new ActionWrapper(this, "menuClick_removeUserData"));
-        // dodanie na samym koncu
-        other.insert(removeItem, other.getItemCount());
     }
 
+    @Override
     public boolean onClose() {
         return true;
     }
 
+    @Override
     public void installViews() {
-        /**
-         *
-         */
     }
 
-    /**
-     * usuniecie danych uzytkownika
-     */
-    public void menuClick_removeUserData() {
-        if (DialogBox.showYesNo(Messages.QUESTION_REMOVE_USER_DATA) == DialogBox.YES) {
-            workbench.removeParam(PARAM_OWNER); // usuniecie wpisu w danych
-            workbench.setVisible(false);    // wylaczenie programu
-        }
-    }
 }

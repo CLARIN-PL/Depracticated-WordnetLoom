@@ -19,7 +19,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 abstract public class ViwnNodeRoot extends ViwnNode {
 
-    private ViwnNodeSet[] sets_;
+    private final ViwnNodeSet[] sets_;
 
     public ViwnNodeSet getSynsetSet(Direction dir) {
         return sets_[dir.ordinal()];

@@ -75,6 +75,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
         super(name, workbench);
     }
 
+    @Override
     public JComponent getContent() {
         return getFirstSplitter();
     }
@@ -155,6 +156,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
 
         // TODO: second graph view actions
         graphView.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent me) {
                 if (me.getClickCount() == 2
                         && service != null
@@ -209,6 +211,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
             }
         });
         secondGraphView.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent me) {
                 if (me.getClickCount() == 2 && service != null) {
 
@@ -238,15 +241,18 @@ public class ViWordNetPerspective extends AbstractPerspective implements
 
     }
 
+    @Override
     public void refreshViews() {
         if (service != null && workbench.getActivePerspective() == this) {
         }
     }
 
+    @Override
     public Object getState() {
         return null;
     }
 
+    @Override
     public boolean setState(Object state) {
         return false;
     }
@@ -320,6 +326,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
      */
     private class TabChangeListener implements ChangeListener {
 
+        @Override
         public void stateChanged(ChangeEvent ce) {
             try {
                 JTabbedPane pane = (JTabbedPane) ce.getSource();
@@ -350,12 +357,15 @@ public class ViWordNetPerspective extends AbstractPerspective implements
      */
     private class MouseGraphClickListener implements MouseListener {
 
+        @Override
         public void mouseEntered(MouseEvent e) {
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {
         }
 
+        @Override
         public void mousePressed(MouseEvent e) {
             if (service != null) {
                 try {
@@ -368,13 +378,16 @@ public class ViWordNetPerspective extends AbstractPerspective implements
             }
         }
 
-        public void mouseExited(MouseEvent e) {/**/
+        @Override
+        public void mouseExited(MouseEvent e) {
         }
 
-        public void mouseClicked(MouseEvent e) {/**/
+        @Override
+        public void mouseClicked(MouseEvent e) {
         }
     }
 
+    @Override
     public boolean closeTab(int tabIndexToClose) {
         try {
             if (service != null) {
@@ -392,6 +405,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
         return true;
     }
 
+    @Override
     public void tabButtonClicked() {
         if (service != null) {
             service.addGraphView();
@@ -407,6 +421,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
      * single second graph view
      *
      */
+    @Override
     public void propertyChange(PropertyChangeEvent e) {
     }
 

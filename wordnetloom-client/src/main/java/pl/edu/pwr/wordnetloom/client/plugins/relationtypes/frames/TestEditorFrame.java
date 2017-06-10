@@ -41,11 +41,10 @@ public class TestEditorFrame extends IconDialog implements ActionListener {
 
     private static final long serialVersionUID = 1L;
 
-    private ButtonExt buttonOk, buttonCancel;
+    private final ButtonExt buttonOk, buttonCancel;
 
-    // elementy interfejsu
-    private TextFieldPlain testText;
-    private ComboBoxPlain testPos;
+    private final TextFieldPlain testText;
+    private final ComboBoxPlain testPos;
 
     private PartOfSpeech lastPos = PosManager.getInstance().getFromID(0);
     private String lastText = "";
@@ -104,20 +103,17 @@ public class TestEditorFrame extends IconDialog implements ActionListener {
     static public Pair<String, PartOfSpeech> showModal(JFrame owner, String text, PartOfSpeech pos) {
         TestEditorFrame frame = new TestEditorFrame(owner, pos, text);
         frame.setVisible(true);
-        return new Pair<String, PartOfSpeech>(frame.lastText, frame.lastPos);
+        return new Pair<>(frame.lastText, frame.lastPos);
     }
 
-    /**
-     * wciśnięto przycisk
-     */
+    @Override
     public void actionPerformed(ActionEvent arg0) {
-        // wcisnieto anuluj
+
         if (arg0.getSource() == buttonCancel) {
             lastText = null;
             lastPos = null;
             setVisible(false);
 
-            // wcisnieto ok
         } else if (arg0.getSource() == buttonOk) {
             lastText = testText.getText();
             lastPos = (PartOfSpeech) testPos.getItemAt(testPos.getSelectedIndex());

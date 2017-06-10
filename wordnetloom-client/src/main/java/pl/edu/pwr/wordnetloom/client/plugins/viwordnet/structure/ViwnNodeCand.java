@@ -43,9 +43,9 @@ public class ViwnNodeCand extends ViwnNodeSynset {
 
     private final static Geometry geom = new Geometry();
 
-    private ExtGraph ext;
+    private final ExtGraph ext;
 
-    private boolean added;
+    private final boolean added;
     private boolean center;
     private boolean evaluated;
 

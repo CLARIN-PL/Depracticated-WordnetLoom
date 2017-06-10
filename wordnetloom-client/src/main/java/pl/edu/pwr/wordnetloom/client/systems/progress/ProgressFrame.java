@@ -1,24 +1,9 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.systems.progress;
 
 import java.awt.Dimension;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -112,19 +97,16 @@ public class ProgressFrame extends IconDialog {
      * @param info - opis akcji
      */
     public void setProgressParams(final int value, final int max, final String info) {
+
         try {
-            GUIUtils.delegateToEDT(new Runnable() {
-                public void run() {
-                    progressBar.setIndeterminate(value == 0 && max == 0);
-                    progressBar.setMaximum(max);
-                    progressBar.setValue(value);
-                    infoLabel.setText(info + ":");
-                }
+            GUIUtils.delegateToEDT(() -> {
+                progressBar.setIndeterminate(value == 0 && max == 0);
+                progressBar.setMaximum(max);
+                progressBar.setValue(value);
+                infoLabel.setText(info + ":");
             });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | InvocationTargetException ex) {
+            Logger.getLogger(ProgressFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -135,18 +117,16 @@ public class ProgressFrame extends IconDialog {
      * @param max - maksymalna wartosc
      */
     public void setGlobalProgressParams(final int value, final int max) {
+
         try {
-            GUIUtils.delegateToEDT(new Runnable() {
-                public void run() {
-                    globalProgress.setMaximum(max);
-                    globalProgress.setValue(value);
-                }
+            GUIUtils.delegateToEDT(() -> {
+                globalProgress.setMaximum(max);
+                globalProgress.setValue(value);
             });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | InvocationTargetException ex) {
+            Logger.getLogger(ProgressFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     /**
@@ -155,74 +135,49 @@ public class ProgressFrame extends IconDialog {
      * @param value - nowa wartosc
      */
     public void setProgressValue(final int value) {
+
         try {
-            GUIUtils.delegateToEDT(new Runnable() {
-                public void run() {
-                    progressBar.setValue(value);
-                }
+            GUIUtils.delegateToEDT(() -> {
+                progressBar.setValue(value);
             });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | InvocationTargetException ex) {
+            Logger.getLogger(ProgressFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
-    /**
-     * utawienie wartosci globlanego paska postepu
-     *
-     * @param value - nowa wartosc
-     */
     public void setGlobalProgressValue(final int value) {
+
         try {
-            GUIUtils.delegateToEDT(new Runnable() {
-                public void run() {
-                    globalProgress.setValue(value);
-                }
+            GUIUtils.delegateToEDT(() -> {
+                globalProgress.setValue(value);
             });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | InvocationTargetException ex) {
+            Logger.getLogger(ProgressFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
-    /**
-     * zamkniecie okna
-     *
-     */
     public void close() {
-        Runnable run = new Runnable() {
-
-            public void run() {
-                setDefaultCloseOperation(DISPOSE_ON_CLOSE); // zmienienie akcji na dispose
-                setVisible(false);		// schowanie okna
-                dispose();		        // usuniecie okna z pamieci
-            }
+        Runnable run = () -> {
+            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            setVisible(false);
+            dispose();
         };
 
         try {
             GUIUtils.delegateToEDT(run);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | InvocationTargetException ex) {
+            Logger.getLogger(ProgressFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
-    /**
-     * wcisnieto przycisk anuluj
-     */
     public void cancelButton_OnClick() {
         canceled = true;
         cancelButton.setEnabled(false);
     }
 
-    /**
-     * odczytuje czy proces zostal przerwany
-     *
-     * @return TRUE jesli proces zostal przerwany
-     */
     public boolean isCanceled() {
         return canceled;
     }

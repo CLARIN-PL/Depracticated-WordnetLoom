@@ -64,6 +64,7 @@ public class Labels {
     public static final String CREATE_RELATION_WITH = Main.getResouce("label.create.relation.with");
     public static final String SAVE_GRAPH_TO_FILE_COLON = Main.getResouce("label.save.graph.to.file.colon");
     public static final String WINDOW = Main.getResouce("label.window");
+    public static final String SETTINGS = Main.getResouce("label.settings");
     public static final String DEFAULT_SETTINGS = Main.getResouce("label.default.settings");
     public static final String SHOW_TOOLTIPS = Main.getResouce("label.show.tooltips");
     public static final String PERSPECTIVE = Main.getResouce("label.perspective");

@@ -20,8 +20,8 @@ package pl.edu.pwr.wordnetloom.client.systems.ui;
 import java.awt.BorderLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JFrame;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -39,7 +39,7 @@ public class FamilyManager<T extends AbstractViewUI> {
     private static final int DEFAULT_HEIGHT = 400;
     private static final int DEFAULT_WIDTH = 500;
     private JFrame parentFrame = null;
-    private List<T> children = new Vector<T>();
+    private final List<T> children = new ArrayList<>();
 
     final void clearParentFrame() {
         this.parentFrame = null;
@@ -105,73 +105,34 @@ public class FamilyManager<T extends AbstractViewUI> {
             this.childManager = childManager;
         }
 
-        /*
-		 * (non-Javadoc)
-		 * @see java.awt.event.WindowListener#windowActivated(java.awt.event.WindowEvent)
-         */
+        @Override
         public void windowActivated(WindowEvent e) {
-            /**
-             *
-             */
         }
 
-        /*
-		 * (non-Javadoc)
-		 * @see java.awt.event.WindowListener#windowClosed(java.awt.event.WindowEvent)
-         */
+        @Override
         public void windowClosed(WindowEvent e) {
             childManager.clearParentFrame();
             parentManager.removeChild(childObject);
         }
 
-        /*
-		 * (non-Javadoc)
-		 * @see java.awt.event.WindowListener#windowClosing(java.awt.event.WindowEvent)
-         */
+        @Override
         public void windowClosing(WindowEvent e) {
-            /**
-             *
-             */
         }
 
-        /*
-		 * (non-Javadoc)
-		 * @see java.awt.event.WindowListener#windowDeactivated(java.awt.event.WindowEvent)
-         */
+        @Override
         public void windowDeactivated(WindowEvent e) {
-            /**
-             *
-             */
         }
 
-        /*
-		 * (non-Javadoc)
-		 * @see java.awt.event.WindowListener#windowDeiconified(java.awt.event.WindowEvent)
-         */
+        @Override
         public void windowDeiconified(WindowEvent e) {
-            /**
-             *
-             */
         }
 
-        /*
-		 * (non-Javadoc)
-		 * @see java.awt.event.WindowListener#windowIconified(java.awt.event.WindowEvent)
-         */
+        @Override
         public void windowIconified(WindowEvent e) {
-            /**
-             *
-             */
         }
 
-        /*
-		 * (non-Javadoc)
-		 * @see java.awt.event.WindowListener#windowOpened(java.awt.event.WindowEvent)
-         */
+        @Override
         public void windowOpened(WindowEvent e) {
-            /**
-             *
-             */
         }
     }
 }

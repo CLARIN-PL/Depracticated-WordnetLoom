@@ -28,11 +28,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
  */
 public class OwnerPlugin implements Plugin {
 
-    /**
-     * instalacja pluginu
-     *
-     * @param workbench - srodowisko pracy
-     */
+    @Override
     public void install(Workbench workbench) {
         Service databasemgr = new OwnerService(workbench);
         workbench.installService(databasemgr);

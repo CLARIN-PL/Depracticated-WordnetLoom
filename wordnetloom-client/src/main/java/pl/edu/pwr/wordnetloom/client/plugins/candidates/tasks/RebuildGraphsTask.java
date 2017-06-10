@@ -29,7 +29,7 @@ public class RebuildGraphsTask extends AbstractProgressThread {
     private PartOfSpeech pos = null;
     private int packageNo = -1;
 
-    private ChangeListener cl;
+    private final ChangeListener cl;
 
     public RebuildGraphsTask(PartOfSpeech pos, int packageNo, ChangeListener cl) {
         super(null, "Przeliczanie paczki " + packageNo, null, true, true, false);
@@ -53,19 +53,8 @@ public class RebuildGraphsTask extends AbstractProgressThread {
 
         boolean finish = false;
         while (!finish) {
-//			PkgLockDTO lock = RemoteUtils.pkgLockRemote.dbGet(new Long(packageNo), pos);
-//			if (lock == null) {
-//				finish = true;
-//				break;
-//			}
-
             int local = 0;
-//			if (lock.getLProgress() != null)
-//				local = lock.getLProgress().intValue();
-
             int global = 0;
-//			if (lock.getGProgress() != null)
-//				global = lock.getGProgress().intValue();
 
             progress.setProgressValue(local);
             progress.setGlobalProgressValue(global);

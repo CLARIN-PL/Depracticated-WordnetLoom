@@ -31,7 +31,7 @@ import se.datadosen.component.RiverLayout;
  */
 public class IconFrame extends JFrame {
 
-    private static final String FILE_MAIN_ICON = "./icons/wordnet.gif";
+    private static final String FILE_MAIN_ICON = "icons/wordnet.gif";
     private static final long serialVersionUID = 1L;
     static private int BOTTOM_MARGIN = 40;
     JFrame baseFrame;
@@ -41,7 +41,7 @@ public class IconFrame extends JFrame {
      *
      */
     public IconFrame() {
-        setIconImage(new ImageIcon(FILE_MAIN_ICON).getImage());
+        setIconImage(new ImageIcon(IconFrame.class.getClassLoader().getResource(FILE_MAIN_ICON)).getImage());
     }
 
     /**
@@ -69,7 +69,7 @@ public class IconFrame extends JFrame {
      *
      */
     public IconFrame(String title, int x, int y, int width, int height) {
-        this.setIconImage(new ImageIcon(FILE_MAIN_ICON).getImage());
+        this.setIconImage(new ImageIcon(IconFrame.class.getClassLoader().getResource(FILE_MAIN_ICON)).getImage());
         // odczytanie rozmiarow ekranu
 
         Dimension screenSize = new Dimension(

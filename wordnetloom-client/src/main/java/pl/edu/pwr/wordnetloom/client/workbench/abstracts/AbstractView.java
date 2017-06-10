@@ -32,7 +32,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 public abstract class AbstractView implements View {
 
     private final AbstractViewUI viewUI;
-    private boolean wasViewInitialized; // czy widok byl inicjalizowany
+    private boolean wasViewInitialized;
     private final String title;
     protected Workbench workbench;
 
@@ -58,9 +58,9 @@ public abstract class AbstractView implements View {
      * @return wyglad
      */
     synchronized protected AbstractViewUI getUI() {
-        if (!wasViewInitialized) {   // czy UI został już utworzony
+        if (!wasViewInitialized) {
             wasViewInitialized = true;
-            viewUI.init(workbench);  // utworzene UI
+            viewUI.init(workbench);
         }
         return viewUI;
     }

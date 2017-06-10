@@ -36,6 +36,7 @@ import java.awt.geom.Point2D;
 
 public class AstrideLabelRenderer<V, E> implements Renderer.EdgeLabel<V, E> {
 
+    @Override
     public void labelEdge(RenderContext<V, E> rc, Layout<V, E> layout, E e, String label) {
         if (label == null || label.length() == 0) {
             return;
@@ -83,7 +84,7 @@ public class AstrideLabelRenderer<V, E> implements Renderer.EdgeLabel<V, E> {
 
         Shape edgeShape = rc.getEdgeShapeTransformer().transform(Context.<Graph<V, E>, E>getInstance(graph, e));
 
-        BasicEdgeRenderer<V, E> ber = new BasicEdgeRenderer<V, E>();
+        BasicEdgeRenderer<V, E> ber = new BasicEdgeRenderer<>();
 
         AffineTransform xf = AffineTransform.getTranslateInstance(x2, y2);
         destVertexShape = xf.createTransformedShape(destVertexShape);
@@ -99,7 +100,7 @@ public class AstrideLabelRenderer<V, E> implements Renderer.EdgeLabel<V, E> {
         AffineTransform att
                 = ber.getEdgeArrowRenderingSupport().getArrowTransform(rc, new GeneralPath(edgeShape), destVertexShape);
 
-        BasicEdgeLabelRenderer<V, E> belr = new BasicEdgeLabelRenderer<V, E>();
+        BasicEdgeLabelRenderer<V, E> belr = new BasicEdgeLabelRenderer<>();
         Component component = belr.prepareRenderer(rc, rc.getEdgeLabelRenderer(), label,
                 rc.getPickedEdgeState().isPicked(e), e);
 

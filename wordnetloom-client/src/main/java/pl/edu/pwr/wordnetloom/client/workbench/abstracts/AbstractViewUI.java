@@ -42,16 +42,12 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
  */
 public abstract class AbstractViewUI implements KeyListener {
 
-    // lista sluchaczy wykorzystywana
     protected SimpleListenersContainer listeners = new SimpleListenersContainer();
 
-    protected Workbench workbench;  // środowisko
-    private JPanel content;       // głowny panel
-    // lista skrótów działających w obrębie widoku, są one obsługiwane
-    // lokalnie przez tą klasę
+    protected Workbench workbench;
+
+    private JPanel mainContentPanel;
     protected Collection<ShortCut> viewScopeShortCuts = new ArrayList<>();
-    // lista skrótów działających w obrębie całej persepetywy, są zarządzane
-    // przez workbench
     protected Collection<ShortCut> perspectiveScopeShortCuts = new ArrayList<>();
 
     /**
@@ -61,9 +57,9 @@ public abstract class AbstractViewUI implements KeyListener {
      */
     public void init(Workbench workbench) {
         this.workbench = workbench;
-        content = new JPanel();           // przygotowanie głównego panelu
-        initialize(content);            // inicjalizacja elementów należących do panelu
-        setKeyListeners(content);       // ustawienie słuchaczy dla wszystkich elementów należących do panel
+        mainContentPanel = new JPanel();           // przygotowanie głównego panelu
+        initialize(mainContentPanel);            // inicjalizacja elementów należących do panelu
+        setKeyListeners(mainContentPanel);       // ustawienie słuchaczy dla wszystkich elementów należących do panel
     }
 
     /**
@@ -108,9 +104,9 @@ public abstract class AbstractViewUI implements KeyListener {
      * @param color - nowy kolor
      */
     public void setBackgroundColor(Color color) {
-        if (content != null) {
-            content.setBackground(color);
-            Component[] components = content.getComponents();
+        if (mainContentPanel != null) {
+            mainContentPanel.setBackground(color);
+            Component[] components = mainContentPanel.getComponents();
             if (components != null) {
                 for (Component component : components) {
                     if (component instanceof JPanel || component instanceof JCheckBox
@@ -158,6 +154,7 @@ public abstract class AbstractViewUI implements KeyListener {
     /**
      * Wcisnieto jakiś przycisk na kontrolkach, w tym przypadku może to być
      * jakiś skrót klawiaturowy
+     *
      * @param arg0
      */
     @Override
@@ -187,11 +184,11 @@ public abstract class AbstractViewUI implements KeyListener {
     }
 
     /**
-     * Get main content of the view.
+     * Get main mainContentPanel of the view.
      *
      * @return main panel
      */
     public JPanel getContent() {
-        return content;
+        return mainContentPanel;
     }
 }

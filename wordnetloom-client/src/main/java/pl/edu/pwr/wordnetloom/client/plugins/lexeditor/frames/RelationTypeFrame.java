@@ -1,20 +1,3 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
 import java.awt.event.ActionEvent;
@@ -115,7 +98,7 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
 
         // element posredni
         middleItem = new ComboBoxPlain();
-        if (middleUnits != null && middleUnits.size() != 0) {
+        if (middleUnits != null && !middleUnits.isEmpty()) {
             for (Sense middle : middleUnits) {
                 middleItem.addItem(middle.getLemma());
             }
@@ -141,7 +124,7 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
         relationType.addKeyListener(this);
 
         // wyswietlenie relacji
-        mainRelations = new ArrayList<RelationType>();
+        mainRelations = new ArrayList<>();
         Collection<RelationType> readRelations = LexicalDA.getHighestRelations(type, pos);
         for (RelationType relType : readRelations) {
             relType = LexicalDA.getEagerRelationTypeByID(relType);
@@ -203,7 +186,8 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
 
         this.add("br", new LabelExt(Labels.SOURCE_UNIT_COLON, 'r', parentItem));
         this.add("tab hfill", parentItem);
-        if (middleItem.isEnabled()) { // dodanie tylko gdy dostarczono jednostki posrednie
+
+        if (middleItem.isEnabled()) {
             this.add("br", new LabelExt(Labels.INTERMEDIATE_UNIT_COLON, 'p', parentItem));
             this.add("tab hfill", middleItem);
         }
@@ -280,7 +264,7 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
      * @return lista zawierajaca jednostek
      */
     public static Collection<Sense> unitToList(Sense unit) {
-        Collection<Sense> list = new ArrayList<Sense>();
+        Collection<Sense> list = new ArrayList<>();
         list.add(unit);
         return list;
     }
@@ -313,13 +297,11 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
         return framew.chosenType;
     }
 
-    /**
-     * uzyto klawiatury
-     */
-    public void keyPressed(KeyEvent arg0) {
-        switch (arg0.getKeyCode()) {
-            case KeyEvent.VK_ESCAPE: // gdy wcisnieto esc
-                arg0.consume();
+    @Override
+    public void keyPressed(KeyEvent event) {
+        switch (event.getKeyCode()) {
+            case KeyEvent.VK_ESCAPE:
+                event.consume();
                 setVisible(false);
                 break;
         }
@@ -384,37 +366,31 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
         }
     }
 
-    /**
-     * nacisnieto ktorys z przyciskow
-     */
-    public void actionPerformed(ActionEvent arg0) {
-        // nacisnieto wybierz
-        if (arg0.getSource() == buttonChoose) {
+    @Override
+    public void actionPerformed(ActionEvent event) {
+
+        if (event.getSource() == buttonChoose) {
             chosenType = getSelectedRelation();
             this.setVisible(false);
 
-            // nacisnieto anuluj
-        } else if (arg0.getSource() == buttonCancel) {
+        } else if (event.getSource() == buttonCancel) {
             this.setVisible(false);
 
-            // zmienil sie typ relacji
-        } else if (arg0.getSource() == relationType) {
+        } else if (event.getSource() == relationType) {
             relationSubType.removeAllItems();
             description.setText("");
             testsLit.setListData(new String[]{});
 
-            // odczytanie indeksu wybranej relacji
             int index = relationType.getSelectedIndex();
             for (RelationType type : mainRelations) {
 
                 if (index-- == 0) {
-                    // odswiezenenie podrelacji
-                    subRelations = new ArrayList<RelationType>();
+
+                    subRelations = new ArrayList<>();
                     Collection<RelationType> readRelations = LexicalDA.getChildren(type);
+
                     for (RelationType relType : readRelations) {
-                        if (fixedRelationType == null
-                                || // gdy nie zdefiniowana relacji
-                                fixedRelationType.getId().longValue() == relType.getId().longValue()) { // lub gdy zgadza sie ze zdefiniowana relacja
+                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
                             relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
                             subRelations.add(relType);
                         }
@@ -430,8 +406,7 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
             }
             relationSubType.setEnabled(subRelations != null && subRelations.size() > 0);
 
-            // zmienil sie podtyp lub zmienila sie nadzedna lub podrzedna jednostka
-        } else if (arg0.getSource() == relationSubType || arg0.getSource() == parentItem || arg0.getSource() == childItem || arg0.getSource() == middleItem) {
+        } else if (event.getSource() == relationSubType || event.getSource() == parentItem || event.getSource() == childItem || event.getSource() == middleItem) {
 
             testsLit.setListData(new String[]{});
             RelationType relation = getSelectedRelation();
@@ -441,15 +416,11 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
         }
     }
 
+    @Override
     public void keyReleased(KeyEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void keyTyped(KeyEvent arg0) {
-        /**
-         *
-         */
     }
 }

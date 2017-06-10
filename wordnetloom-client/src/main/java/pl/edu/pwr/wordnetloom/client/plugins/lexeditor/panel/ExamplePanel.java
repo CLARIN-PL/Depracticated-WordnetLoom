@@ -18,9 +18,9 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 public class ExamplePanel extends JPanel {
 
     private static final long serialVersionUID = -7961855308764934738L;
-    private JTextArea exampleTextArea;
-    private JButton btnSave;
-    private JButton btnCancel;
+    private final JTextArea exampleTextArea;
+    private final JButton btnSave;
+    private final JButton btnCancel;
 
     public ExamplePanel() {
         setLayout(new FormLayout(new ColumnSpec[]{

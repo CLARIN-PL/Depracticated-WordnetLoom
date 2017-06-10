@@ -21,7 +21,7 @@ public class ViwnExampleKPWrView extends AbstractView {
     public void load_examples(Sense unit) {
         List<CorpusExample> examples = RemoteUtils.testRemote.getCorpusExamplesFor(unit.getLemma());
 
-        List<String> exampleList = new ArrayList<String>();
+        List<String> exampleList = new ArrayList<>();
         for (CorpusExample ex : examples) {
             String text = ex.getText();
             if (text.contains(KPWR_TAG)) {
@@ -35,7 +35,7 @@ public class ViwnExampleKPWrView extends AbstractView {
         List<CorpusExample> examples = RemoteUtils.testRemote.getCorpusExamplesFor(new Word(lemma));
 
         StringBuilder b = new StringBuilder();
-        List<String> exampleList = new ArrayList<String>();
+        List<String> exampleList = new ArrayList<>();
         for (CorpusExample ex : examples) {
             exampleList.add(ex.getText());
         }

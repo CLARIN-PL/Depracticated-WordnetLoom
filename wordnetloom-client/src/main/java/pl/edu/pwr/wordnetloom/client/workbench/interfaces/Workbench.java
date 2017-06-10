@@ -34,7 +34,7 @@ public interface Workbench {
      *
      * @param isVisible - TRUE okno jest widoczne, FALSE nie jest schowane
      */
-    public void setVisible(boolean isVisible);
+    void setVisible(boolean isVisible);
 
     /**
      * Ustawienei widiczoności paska narzędziowego na którym znajdują się
@@ -42,14 +42,14 @@ public interface Workbench {
      *
      * @param isVisible - TRUE okno jest widoczny, FALSE nie
      */
-    public void setToolbarVisible(boolean isVisible);
+    void setToolbarVisible(boolean isVisible);
 
     /**
      * Odczytanie widocznosci paska
      *
      * @return TRUE jesli widoczny
      */
-    public boolean isToolbarVisible();
+    boolean isToolbarVisible();
 
     /**
      * Instalacja nowego menu w workbench. Pozycja jest dodawana na końcu
@@ -58,7 +58,7 @@ public interface Workbench {
      *
      * @param item - menu do zainstalowania
      */
-    public void installMenu(JMenu item);
+    void installMenu(JMenu item);
 
     /**
      * Install menu on given position. If index is negative the position is
@@ -67,9 +67,9 @@ public interface Workbench {
      * @param item
      * @param index
      */
-    public void installMenu(JMenu item, int index);
+    void installMenu(JMenu item, int index);
 
-    public void installMenu(String topMenu, String subMenu, JMenuItem item);
+    void installMenu(String topMenu, String subMenu, JMenuItem item);
 
     /**
      * Odczytanie menu o konkretnej nazwie. Przeszukiwana jest lista
@@ -78,7 +78,7 @@ public interface Workbench {
      * @param itemName - nazwa menu do odczytania
      * @return menu lub NULL gdy nie znaleziono
      */
-    public JMenu getMenu(String itemName);
+    JMenu getMenu(String itemName);
 
     /**
      * Instalacja kontkretnego widoku, na konktretnej pozycji w konkretnej
@@ -90,21 +90,21 @@ public interface Workbench {
      * @param perspectiveName - nazwa perspektywy, w której widok ma zostać
      * zainstalowany
      */
-    public void installView(View view, int pos, String perspectiveName);
+    void installView(View view, int pos, String perspectiveName);
 
     /**
      * Instalacja perspektywy w środowisku
      *
      * @param perspective - perspektywa do instalacji
      */
-    public void installPerspective(Perspective perspective);
+    void installPerspective(Perspective perspective);
 
     /**
      * odczytanie aktualnej perspektywy
      *
      * @return aktualna perspektywa
      */
-    public Perspective getActivePerspective();
+    Perspective getActivePerspective();
 
     /**
      * Instalacja usługi dostarczającej jakiejś funkcjonalności poprzez np.
@@ -112,7 +112,7 @@ public interface Workbench {
      *
      * @param service - usługa do zainstalowania
      */
-    public void installService(Service service);
+    void installService(Service service);
 
     /**
      * Odczytanie usługi o konktretnej nazwie
@@ -120,7 +120,7 @@ public interface Workbench {
      * @param name - nazwa usługi
      * @return obiekt z usługą lub NULL
      */
-    public Service getService(String name);
+    Service getService(String name);
 
     /**
      * Odczytanie określonego parametru z listy przechowywanej przez środowisko.
@@ -129,7 +129,7 @@ public interface Workbench {
      * @param paramName - nazwa parametru
      * @return przechowywana wartość
      */
-    public String getParam(String paramName);
+    String getParam(String paramName);
 
     /**
      * Zapisanie określonego parametru do środowiska
@@ -137,21 +137,21 @@ public interface Workbench {
      * @param paramName - nazwa parametru
      * @param value - nowa wartość
      */
-    public void setParam(String paramName, String value);
+    void setParam(String paramName, String value);
 
     /**
      * Usuniecie parametru z konfiguracji
      *
      * @param paramName - nazwa parametru
      */
-    public void removeParam(String paramName);
+    void removeParam(String paramName);
 
     /**
      * Odczytanie wersji programu
      *
      * @return wersja programu
      */
-    public String getVersion();
+    String getVersion();
 
     /**
      * Wybranie perspektywy o określonej nazwie jako aktywnej. Spowoduje to
@@ -159,14 +159,14 @@ public interface Workbench {
      *
      * @param perspectiveName - nazwa perspektywy
      */
-    public void choosePerspective(String perspectiveName);
+    void choosePerspective(String perspectiveName);
 
     /**
      * Ustawienie tekstu dla paska statusu
      *
      * @param text - tekst dla statusu
      */
-    public void setStatusText(String text);
+    void setStatusText(String text);
 
     /**
      * Odczytanie głównego kontenera okna na którym wszystko bazuje. Jest to
@@ -174,10 +174,10 @@ public interface Workbench {
      *
      * @return nadrzędny komponent
      */
-    public JFrame getFrame();
+    JFrame getFrame();
 
-    public void setBusy(boolean busy);
+    void setBusy(boolean busy);
 
-    public void updateOwner();
+    void updateOwner();
 
 }

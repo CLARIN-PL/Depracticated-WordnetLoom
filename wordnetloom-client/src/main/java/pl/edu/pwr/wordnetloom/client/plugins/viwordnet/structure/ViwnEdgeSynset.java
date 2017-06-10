@@ -32,7 +32,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.SynsetRelation;
  */
 public class ViwnEdgeSynset extends ViwnEdge {
 
-    public static HashMap<Long, Color> relsColors = new HashMap<Long, Color>();
+    public static HashMap<Long, Color> relsColors = new HashMap<>();
 
     private final SynsetRelation srel_dto_;
     private ViwnNodeSynset s1_ = null;

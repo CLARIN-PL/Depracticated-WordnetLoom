@@ -19,7 +19,7 @@ public enum RegisterTypes {
 
     private final String abbreviation;
 
-    private static final Map<String, RegisterTypes> lookup = new HashMap<String, RegisterTypes>();
+    private static final Map<String, RegisterTypes> lookup = new HashMap<>();
 
     static {
         for (RegisterTypes abbr : RegisterTypes.values()) {

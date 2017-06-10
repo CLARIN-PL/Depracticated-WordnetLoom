@@ -102,12 +102,12 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             buttonRelations, buttonSwitchToLexicalPerspective, buttonToNew;
     private Collection<Sense> lastUnits = null;
     private TextAreaPlain commentValue = null;
-    ArrayList<Sense> lastSelectedUnits = new ArrayList<Sense>();
+    ArrayList<Sense> lastSelectedUnits = new ArrayList<>();
 
-    private SimpleListenersContainer clickListeners = new SimpleListenersContainer();
-    private SimpleListenersContainer synsetUpdateListeners = new SimpleListenersContainer();
+    private final SimpleListenersContainer clickListeners = new SimpleListenersContainer();
+    private final SimpleListenersContainer synsetUpdateListeners = new SimpleListenersContainer();
 
-    private UnitsInSynsetListModel listModel = new UnitsInSynsetListModel();
+    private final UnitsInSynsetListModel listModel = new UnitsInSynsetListModel();
     private Synset lastSynset = null;
     private final boolean showRelations;
     private final boolean showSwitch;
@@ -263,13 +263,11 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         }
     }
 
-    /**
-     * obsługa akcji przycisków
-     */
-    public void actionPerformed(ActionEvent arg0) {
+    @Override
+    public void actionPerformed(ActionEvent event) {
         int index = unitsList.getSelectedIndex(); // odczytanie zaznaczenia
 
-        if (arg0.getSource() == buttonUp) { // czy przycisk W GÓRE
+        if (event.getSource() == buttonUp) { // czy przycisk W GÓRE
             // odczytanie punktu podzialu
             int splitPosition = listModel.getSplitPosition();
             // zamiana danych
@@ -288,7 +286,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 // dodano nowy synset, nie istnieje on nigdzie w grafie
                 graphUI.graphChanged();
             }
-        } else if (arg0.getSource() == buttonDown) { // czy przycos W DÓŁ
+        } else if (event.getSource() == buttonDown) { // czy przycos W DÓŁ
             // odczytanie punktu podzialu
             int splitPosition = listModel.getSplitPosition();
             // zamiana danych
@@ -307,20 +305,19 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 // dodano nowy synset, nie istnieje on nigdzie w grafie
                 graphUI.graphChanged();
             }
-        } else if (arg0.getSource() == buttonAdd) { // dodanie nowego leksemu
+        } else if (event.getSource() == buttonAdd) { // dodanie nowego leksemu
             Point location = buttonAdd.getLocationOnScreen();
-            ValueContainer<Boolean> created = new ValueContainer<Boolean>(
-                    new Boolean(false));
+            ValueContainer<Boolean> created = new ValueContainer<>(false);
 
             Rectangle r = workbench.getFrame().getBounds();
             int x = r.x + r.width - AbstractListFrame.WIDTH / 2 - 50;
 
-            Collection<Sense> selectedUnits = new ArrayList<Sense>();
+            Collection<Sense> selectedUnits = new ArrayList<>();
             selectedUnits = UnitsListFrame.showModal(
                     workbench, x, location.y, true,
                     LexicalDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()), created);
 
-            if (created.getValue().booleanValue()) {
+            if (created.getValue()) {
                 clickListeners.notifyAllListeners(lastSynset, UNIT_CREATED);
             }
 
@@ -328,7 +325,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 // okienko z testami dla relacji, nie wyswietla gdy nie ma
                 // takich relacji w bazie
                 if (LexicalDA.areRelations(RelationArgument.LEXICAL_SPECIAL)) {
-                    RelationType rel = null;
+                    RelationType rel;
                     rel = RelationTypeFrame.showModal(workbench,
                             RelationArgument.LEXICAL_SPECIAL, LexicalDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()),
                             RemoteUtils.lexicalUnitRemote.dbFastGetUnits(lastSynset, LexiconManager.getInstance().getLexicons()), selectedUnits);
@@ -347,7 +344,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 refreshData(lastSynset);
                 getViWordNetService().refreshViews();
             }
-        } else if (arg0.getSource() == buttonDelete) { // usuniecie zaznaczonej
+        } else if (event.getSource() == buttonDelete) { // usuniecie zaznaczonej
             // jednostki
             Collection<Sense> selectedUnits = getSelectedUnits();
             int result = DialogBox.YES;
@@ -381,10 +378,10 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             clickListeners.notifyAllListeners(lastSynset, UNIT_REMOVED);
             refreshData(lastSynset);
             getViWordNetService().refreshViews();
-        } else if (arg0.getSource() == buttonRelations) { // wywoalanie relacji
+        } else if (event.getSource() == buttonRelations) { // wywoalanie relacji
             int[] selectedItems = unitsList.getSelectedIndices();
             // odczytanie zaznaczonych jednostek
-            Collection<Sense> lexicalUnits = new ArrayList<Sense>();
+            Collection<Sense> lexicalUnits = new ArrayList<>();
             if (selectedItems != null) {
                 for (int i : selectedItems) {
                     lexicalUnits.add(listModel.getObjectAt(i));
@@ -394,7 +391,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
             // powiadomienie zainteresowanych
             clickListeners.notifyAllListeners(pairs, SYNSET_RELATIONS);
-        } else if (arg0.getSource() == buttonSwitchToLexicalPerspective) {
+        } else if (event.getSource() == buttonSwitchToLexicalPerspective) {
             int[] selectedItems = unitsList.getSelectedIndices();
             // odczytanie zaznaczonych jednostek
             if (selectedItems != null) {
@@ -405,7 +402,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                             .notifyAllListeners(unit, LEXICAL_PERSPECTIVE);
                 }
             }
-        } else if (arg0.getSource() == buttonToNew) {
+        } else if (event.getSource() == buttonToNew) {
             lastSelectedUnits.clear();
             lastSelectedUnits.add(listModel.getObjectAt(index));
             // czy nie ma przypadkiem do przeniesienia wszystkich jednostek
@@ -494,9 +491,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         unitsList.invalidate(); // odrysowanie listy
     }
 
-    /**
-     * zmieniono zaznaczenie na liscie
-     */
+    @Override
     public void valueChanged(ListSelectionEvent arg0) {
         if (arg0 != null && arg0.getValueIsAdjusting()) {
             return;
@@ -530,7 +525,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
      * @return kolekcja zaznaczonych jednostek
      */
     public Collection<Sense> getSelectedUnits() {
-        Collection<Sense> selectedUnits = new ArrayList<Sense>();
+        Collection<Sense> selectedUnits = new ArrayList<>();
         int[] selectedIndices = unitsList.getSelectedIndices();
         int size = listModel.getSize();
         if (selectedIndices != null && selectedIndices.length < size
@@ -560,14 +555,14 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
      */
     public void refreshData(Synset synset) {
 
-        lastSynset = synset; // zapamietanie nowej jednostki
+        lastSynset = synset;
 
         int newSplitPoint = 0;
         List<Sense> units = null;
 
         if (synset != null) {
             // odczytanie punktu podzialu
-            newSplitPoint = synset.getSplit().intValue();
+            newSplitPoint = synset.getSplit();
             // odczytanie jednostek
             units = RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
             if (units == null) {
@@ -646,13 +641,8 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         return unitsList;
     }
 
-    /**
-     * zmienilo sie cos w polach
-     */
+    @Override
     public void caretUpdate(CaretEvent arg0) {
-        if (lastSynset == null) {
-            return;
-        }
     }
 
     @Override
@@ -670,11 +660,8 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             JPanel pan = new JPanel();
             lui.initialize(pan);
             lui.refreshData(unit);
-            lui.closeWindow(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    dia.dispose();
-                }
+            lui.closeWindow((ActionEvent e1) -> {
+                dia.dispose();
             });
             dia.setLocationRelativeTo(this.workbench.getFrame());
             dia.setContentPane(pan);

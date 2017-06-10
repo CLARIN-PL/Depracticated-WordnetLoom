@@ -95,11 +95,11 @@ public class RelationsDA {
         if (status == 0) {      // wszystko
             // nic nie robi, daje null
         } else if (status == 1) { // przetworzone i czesciowo przetworzone
-            workStates = new ArrayList<WorkState>();
+            workStates = new ArrayList<>();
             workStates.add(WorkState.WORKING);
             workStates.add(WorkState.TODO);
         } else if (status > 1) {
-            workStates = new ArrayList<WorkState>();
+            workStates = new ArrayList<>();
             workStates.add(WorkState.values()[status - 2]); // uwzglednienie all ktorego normalnie nie ma, dlatego -2
         }
         Domain domain = null;
@@ -108,11 +108,6 @@ public class RelationsDA {
         }
         List<Synset> synsets = RemoteUtils.synsetRemote.dbFastGetSynsets(filterText, domain, relationType, limitSize, posIndex, lexicons);
 
-//		// Odrzyć synsety z opisem systemowym, tj. "!(...)!"
-//		Collection <Synset> synsetsf = new ArrayList<Synset>();
-//		for (Synset synset : synsets)
-//			if (!(synset.getUnitsStr().startsWith("!") && synset.getUnitsStr().endsWith("!")))
-//					synsetsf.add(synset);
         return synsets;
     }
 
@@ -129,12 +124,6 @@ public class RelationsDA {
             RemoteUtils.unitAndSynsetRemote.dbDeleteConnection(unit, mainSynset);
             RemoteUtils.unitAndSynsetRemote.dbAddConnection(unit, descSynset, false);
         }
-        // NOWY WLASCICIEL
-//		mainSynset.setOwner(Synset.getDefaultOwner());
-//		descSynset.setOwner(Synset.getDefaultOwner());
-//		RemoteUtils.synsetRemote.updateSynset(mainSynset);
-//		RemoteUtils.synsetRemote.updateSynset(descSynset);
-        // KONIEC NOWY WLASCICIEL
     }
 
     /**
@@ -145,16 +134,6 @@ public class RelationsDA {
      */
     @Deprecated
     public static void setValid(SynsetRelation relation, boolean valid) {
-        // zapisanie stanu relacji
-//		relation.setValid(new Boolean(valid));
-//		RemoteUtils.synsetRelationRemote.dbUpdate(relation);
-
-//		if (!valid) { // nie jest poprawna, wiec zmieniamy satus
-//			Synset synset=relation.getParentItem();
-//			synset = RemoteUtils.synsetRemote.dbRefresh(synset);
-//			synset.setStatus(WorkState.MISTAKE);
-//			RemoteUtils.synsetRemote.dbUpdate(synset);
-//		}
     }
 
     /**
@@ -178,9 +157,6 @@ public class RelationsDA {
         return RemoteUtils.synsetRelationRemote.dbRelationExists(parent, child, rel);
     }
 
-//	public static boolean checkIfRelationExists(Long parent, Long child, Long rel) {
-//		return RemoteUtils.synsetRelationRemote.dbRelationExists(parent,child,rel);
-//	}
     /**
      * utworzenie relacji
      *
@@ -254,7 +230,7 @@ public class RelationsDA {
      */
     public static Collection<Sense> getUnits(Synset synset, Collection<Sense> ignoredUnits, List<Long> lexicons) {
         Collection<Sense> temp = getUnits(synset, lexicons);
-        Collection<Sense> result = new ArrayList<Sense>();
+        Collection<Sense> result = new ArrayList<>();
         // sprawdzenie wszytkich jednostek
         for (Sense synsetUnit : temp) {
             boolean found = false;
@@ -314,38 +290,13 @@ public class RelationsDA {
         Collection<RelationType> relations = null;
         if (synset != null) {
             relations = RemoteUtils.synsetRelationRemote.dbGetRelationTypesOfSynset(synset);
-//			for (RelationType typeDTO : relations) {
-//				typeDTO = RemoteUtils.relationTypeRemote.dbGetFullName(typeDTO);
-//			}
         } else {
-            relations = new ArrayList<RelationType>();
+            relations = new ArrayList<>();
         }
 
         return relations;
     }
 
-//	/**
-//	 * odczytanie wszystkich relacji w jakich wystepuje synset
-//	 * @param synset - synset
-//	 * @return lista informacji o relacjach
-//	 */
-//	public static Collection<SynsetsRelationsDC> getRelations(Synset synset) {
-//		Collection<SynsetsRelationsDC> relations=SynsetsRelationsDC.dbGetRelations(synset,null,SynsetsRelationsDC.IS_PARENT, false);
-//		relations.addAll(SynsetsRelationsDC.dbGetRelations(synset,null,SynsetsRelationsDC.IS_CHILD, false));
-//		return relations;
-//	}
-//	/**
-//	 * odczytanie wszystkich relacji w jakich wystepuje synset, odczytywany jest jedynie ID obiektu
-//	 * oraz jego opis
-//	 * @param synset - synset
-//	 * @param hideAutoReverse
-//	 * @return lista informacji o relacjach
-//	 */
-//	public static Collection<SynsetsRelationsDC> getFastRelations(Synset synset, boolean hideAutoReverse) {
-//		Collection<SynsetsRelationsDC> relations=SynsetsRelationsDC.dbFastGetRelations(synset,SynsetsRelationsDC.IS_PARENT, false);
-//		relations.addAll(SynsetsRelationsDC.dbFastGetRelations(synset,SynsetsRelationsDC.IS_CHILD, hideAutoReverse));
-//		return relations;
-//	}
     static void buildRelationsTreeIdx(Long synsetId, Collection<SynsetRelation> relations, Collection<Long> usedSynsetsID, ArrayList<Long> idx) {
         if (synsetId == null) {
             return;
@@ -425,23 +376,23 @@ public class RelationsDA {
                 Collection<SynsetRelation> relations = RemoteUtils.synsetRelationRemote.dbFastGetRelations(relationType);
 
                 // przerobienie kolekcji na hashmape
-                HashMap<Long, ArrayList<Long>> map = new HashMap<Long, ArrayList<Long>>();
+                HashMap<Long, ArrayList<Long>> map = new HashMap<>();
                 for (SynsetRelation item : relations) {
                     ArrayList<Long> values = map.get(item.getSynsetFrom().getId());
                     if (values == null) {
-                        values = new ArrayList<Long>();
+                        values = new ArrayList<>();
                         map.put(item.getSynsetFrom().getId(), values);
                     }
                     values.add(item.getSynsetTo().getId());
                 }
 
                 // generate synsets IDx
-                ArrayList<Long> idx = new ArrayList<Long>();
-                buildRelationsTreeIdx(synset != null ? synset.getId() : null, relations, new ArrayList<Long>(), idx);
+                ArrayList<Long> idx = new ArrayList<>();
+                buildRelationsTreeIdx(synset != null ? synset.getId() : null, relations, new ArrayList<>(), idx);
 
                 Map<Long, String> synsetsDescriptions = RemoteUtils.synsetRemote.dbGetSynsetsDescriptionIdx(idx, lexicons);
 
-                this.tag = buildRelationsTree(synset != null ? synset.getId() : null, relations, new ArrayList<Long>(), synsetsDescriptions, progress, 2);
+                this.tag = buildRelationsTree(synset != null ? synset.getId() : null, relations, new ArrayList<>(), synsetsDescriptions, progress, 2);
             }
         };
         if (progress.getTag() != null) {
@@ -456,52 +407,6 @@ public class RelationsDA {
         }
 
         throw new RuntimeException("//TODO: FIXME"); // TODO: FIXME
-//		src = RemoteUtils.commonRemote.dbGet(Sense.class, src.getId());
-//		dst = RemoteUtils.commonRemote.dbGet(Sense.class, dst.getId());
-//
-//		for (SenseRelation rel : RemoteUtils.lexicalRelationRemote.dbGetUpperRelations(src, null)) {
-//
-//			RemoteUtils.commonRemote.dbDelete(rel);
-//
-//			rel.setSenseTo(dst);
-//
-//			if (!RemoteUtils.lexicalRelationRemote.dbRelationExists(rel.getSenseFrom(), rel.getSenseTo(), rel.getRelation()) &&
-//					!(rel.getSenseTo().equals(rel.getSenseFrom())) )
-//			{
-//				RemoteUtils.lexicalRelationRemote.dbMakeRelation(
-//						rel.getSenseFrom(),
-//						rel.getSenseTo(),
-//						rel.getRelation());
-//			}
-//		}
-//
-//		for (SenseRelation rel : RemoteUtils.lexicalRelationRemote.dbGetSubRelations(src, null)) {
-//
-//			RemoteUtils.commonRemote.dbDelete(rel);
-//
-//			rel.setSenseFrom(dst);
-//
-//			if (!RemoteUtils.lexicalRelationRemote.dbRelationExists(rel.getSenseFrom(), rel.getSenseTo(), rel.getRelation())
-//					&& !(rel.getSenseTo().equals(rel.getSenseFrom() )))
-//			{
-//				RemoteUtils.lexicalRelationRemote.dbMakeRelation(
-//						rel.getSenseFrom(),
-//						rel.getSenseTo(),
-//						rel.getRelation());
-//			}
-//		}
-//
-//		String old_comment = Common.getSenseAttribute(dst, Sense.COMMENT);
-//		String src_comment = Common.getSenseAttribute(src, Sense.COMMENT);
-//
-//		if (old_comment.isEmpty())
-//			Common.addSenseAttribute(dst, Sense.COMMENT, src_comment);
-//		else if (!src_comment.isEmpty()) {
-//			Common.addSenseAttribute(dst, Sense.COMMENT, old_comment + "; " + src_comment);
-//		}
-//
-//		RemoteUtils.lexicalUnitRemote.updateSense(dst);
-//		RemoteUtils.lexicalUnitRemote.dbDelete(src);
     }
 
     public static void mergeSynsets(Synset src, Synset dst, List<Long> lexicons) {
@@ -548,31 +453,29 @@ public class RelationsDA {
             src_comment = "";
         }
 
-        if (old_comment.isEmpty()) //			Common.addSynsetAttribute(dst, Synset.COMMENT, src_comment);
-        {
+        if (old_comment.isEmpty()) {
             RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(dst, Synset.COMMENT, src_comment);
-        } else if (!src_comment.isEmpty()) //			Common.addSynsetAttribute(dst, Synset.COMMENT, old_comment + "; " + src_comment);
-        {
+        } else if (!src_comment.isEmpty()) {
             RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(dst, Synset.COMMENT, old_comment + "; " + src_comment);
         }
 
         RemoteUtils.synsetRemote.updateSynset(dst);
 
-        HashMap<String, Sense> dst_lemma_to_str = new HashMap<String, Sense>();
+        HashMap<String, Sense> dst_lemma_to_str = new HashMap<>();
         for (Sense unit : RelationsDA.getUnits(dst, lexicons)) {
             dst_lemma_to_str.put(unit.getLemma().getWord(), unit);
         }
 
-        ArrayList<Sense> units_to_move = new ArrayList<Sense>();
+        ArrayList<Sense> units_to_move = new ArrayList<>();
 
-        for (Sense unit_src : RelationsDA.getUnits(src, lexicons)) {
+        RelationsDA.getUnits(src, lexicons).stream().forEach((unit_src) -> {
             Sense unit_dst = dst_lemma_to_str.get(unit_src.getLemma());
             if (unit_dst == null) {
                 units_to_move.add(unit_src);
             } else {
                 mergeUnits(unit_src, unit_dst);
             }
-        }
+        });
 
         RelationsDA.moveUnitsToExistenSynset(src, units_to_move, dst);
         RemoteUtils.synsetRemote.dbDelete(src);

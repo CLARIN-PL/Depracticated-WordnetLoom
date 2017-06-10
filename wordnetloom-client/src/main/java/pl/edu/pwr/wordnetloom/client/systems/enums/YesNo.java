@@ -9,9 +9,9 @@ public enum YesNo {
     YES(Labels.YES),
     NO(Labels.NO);
 
-    private String caption;
+    private final String caption;
 
-    private static final Map<String, YesNo> lookup = new HashMap<String, YesNo>();
+    private static final Map<String, YesNo> lookup = new HashMap<>();
 
     static {
         for (YesNo abbr : YesNo.values()) {

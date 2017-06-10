@@ -22,6 +22,8 @@ import java.awt.Container;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -49,18 +51,18 @@ public class DialogBox {
      */
     public static final int CANCEL = 2;
 
-    private static String INPUT_TITLE = "Wprowadzanie danych";
-    private static String QUESTION_TITLE = "Pytanie";
-    private static String INFORMATION_TITLE = "Informacja";
-    private static String ERROR_TITLE = "Błąd";
-    private static String BUTTON_YES_CAPTION = "Tak";
-    private static String BUTTON_NO_CAPTION = "Nie";
-    private static String BUTTON_OK_CAPTION = "OK";
-    private static String BUTTON_CANCEL_CAPTION = "Anuluj";
-    private static String BUTTON_YES_MNEMONIC = "T";
-    private static String BUTTON_NO_MNEMONIC = "N";
-    private static String BUTTON_OK_MNEMONIC = "O";
-    private static String BUTTON_CANCEL_MNEMONIC = "A";
+    private static final String INPUT_TITLE = "Wprowadzanie danych";
+    private static final String QUESTION_TITLE = "Pytanie";
+    private static final String INFORMATION_TITLE = "Informacja";
+    private static final String ERROR_TITLE = "Błąd";
+    private static final String BUTTON_YES_CAPTION = "Tak";
+    private static final String BUTTON_NO_CAPTION = "Nie";
+    private static final String BUTTON_OK_CAPTION = "OK";
+    private static final String BUTTON_CANCEL_CAPTION = "Anuluj";
+    private static final String BUTTON_YES_MNEMONIC = "T";
+    private static final String BUTTON_NO_MNEMONIC = "N";
+    private static final String BUTTON_OK_MNEMONIC = "O";
+    private static final String BUTTON_CANCEL_MNEMONIC = "A";
 
     private static JFrame parentWindow = null;
 
@@ -86,17 +88,15 @@ public class DialogBox {
      * @param message - komunikat
      */
     static public void showError(final String message) {
+
         try {
-            GUIUtils.delegateToEDT(new Runnable() {
-                public void run() {
-                    showError(ERROR_TITLE, message);
-                }
+            GUIUtils.delegateToEDT(() -> {
+                showError(ERROR_TITLE, message);
             });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | InvocationTargetException ex) {
+            Logger.getLogger(DialogBox.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     /**
@@ -202,6 +202,7 @@ public class DialogBox {
 
             public int result;
 
+            @Override
             public void run() {
                 // Create option pane and dialog.
                 JOptionPane pane = new JOptionPane(msg, type, option);
@@ -219,7 +220,7 @@ public class DialogBox {
                 Object selectedValue = pane.getValue();
                 if (selectedValue != null) {
                     if (selectedValue instanceof Integer) {
-                        result = ((Integer) selectedValue).intValue();
+                        result = ((Integer) selectedValue);
                     }
                 }
             }
@@ -229,10 +230,8 @@ public class DialogBox {
 
         try {
             GUIUtils.delegateToEDT(run);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | InvocationTargetException ex) {
+            Logger.getLogger(DialogBox.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return run.result;
@@ -271,7 +270,7 @@ public class DialogBox {
      * @return tablica komponentow
      */
     private static Collection<Component> getAllSubComponents(Component c) {
-        Collection<Component> table = new ArrayList<Component>();
+        Collection<Component> table = new ArrayList<>();
         if (c instanceof Container) {
             Component[] children = ((Container) c).getComponents();
             for (Component child : children) {

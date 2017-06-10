@@ -108,23 +108,15 @@ public class TextFieldPlain extends JTextField {
     /**
      * ustawia odpowiednią obsługę zdarzenia uzyskania focusu przez co
      * kliknięcie w kontrolke zazancza cały tekst
-     *
      */
     private void setFocusHandler() {
         this.addFocusListener(new FocusListener() {
-            /**
-             * *
-             * Kontrolka utraciła focus
-             */
+
+            @Override
             public void focusLost(FocusEvent e) {
-                /**
-                 *
-                 */
             }
 
-            /**
-             * Kontrolka uzyskała focus
-             */
+            @Override
             public void focusGained(FocusEvent e) {
                 setSelectionStart(0);
                 setSelectionEnd(getText().length());

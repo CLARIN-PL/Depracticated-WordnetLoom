@@ -38,6 +38,7 @@ import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
  */
 public class ViwnVertexToolTipTransformer implements Transformer<ViwnNode, String> {
 
+    @Override
     public String transform(ViwnNode vn) {
         String ret = "";
         if (!ToolTipGenerator.getGenerator().hasEnabledTooltips()) {
@@ -80,9 +81,9 @@ public class ViwnVertexToolTipTransformer implements Transformer<ViwnNode, Strin
 
             StringBuilder sb = new StringBuilder();
             sb.append("<html>");
-            sb.append("<b>Liczba synsetów:</b> " + syns);
+            sb.append("<b>Liczba synsetów:</b> ").append(syns);
             if (cand != 0) {
-                sb.append("<br><b>Liczba kandydatów:</b> " + cand);
+                sb.append("<br><b>Liczba kandydatów:</b> ").append(cand);
             }
             sb.append("</html>");
             ret = sb.toString();

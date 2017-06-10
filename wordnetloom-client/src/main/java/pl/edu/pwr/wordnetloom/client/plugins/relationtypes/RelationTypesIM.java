@@ -27,20 +27,17 @@ import javax.swing.ImageIcon;
  */
 public class RelationTypesIM {
 
-    private static ImageIcon newImage = new ImageIcon("icons/add.gif");
-    private static ImageIcon newSubImage = new ImageIcon("icons/new.gif");
-    private static ImageIcon deleteImage = new ImageIcon("icons/delete.gif");
-    private static ImageIcon editImage = new ImageIcon("icons/edit.gif");
-    private static ImageIcon openImage = new ImageIcon("./icons/openIcon.gif");
-    private static ImageIcon closedImage = new ImageIcon("./icons/closedIcon.gif");
-    private static ImageIcon leafImage = new ImageIcon("./icons/leafIcon.gif");
-    private static ImageIcon upImage = new ImageIcon("./icons/upLU.gif");
-    private static ImageIcon downImage = new ImageIcon("./icons/downLU.gif");
+    private static ImageIcon newImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/add.gif"));
+    private static ImageIcon newSubImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/new.gif"));
+    private static ImageIcon deleteImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/delete.gif"));
+    private static ImageIcon editImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/edit.gif"));
+    private static ImageIcon openImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/openIcon.gif"));
+    private static ImageIcon closedImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/closedIcon.gif"));
+    private static ImageIcon leafImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/leafIcon.gif"));
+    private static ImageIcon upImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/upLU.gif"));
+    private static ImageIcon downImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/downLU.gif"));
 
     private RelationTypesIM() {
-        /**
-         *
-         */
     }
 
     /**

@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
-import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -120,7 +119,7 @@ public class ViWordNetService extends AbstractService implements
 
     private final static int GRAPH_VIEWS_LIMIT = 6;
     private ViwnGraphView activeGraphView = null;
-    private final Vector<ViwnGraphView> graphViews = new Vector<>(GRAPH_VIEWS_LIMIT);
+    private final List<ViwnGraphView> graphViews = new ArrayList<>(GRAPH_VIEWS_LIMIT);
 
     private LexicalUnitsView luView = null;
     private SynsetView synsetView = null;
@@ -177,15 +176,12 @@ public class ViWordNetService extends AbstractService implements
                     return false;
                 });
 
-        JMenu other = workbench.getMenu(Labels.OTHER);
+        JMenu other = workbench.getMenu(Labels.SETTINGS);
         if (other == null) {
             return;
         }
-        other
-                .add(new MenuItemExt(Labels.SAVE_CANDIDATES_GRAPH, KeyEvent.VK_Z,
-                        this));
+        other.add(new MenuItemExt(Labels.SAVE_CANDIDATES_GRAPH, KeyEvent.VK_Z, this));
         other.addSeparator();
-
     }
 
     public void refreshViews() {
@@ -364,7 +360,7 @@ public class ViWordNetService extends AbstractService implements
                 RelationTypes rt = RelationTypes.getByName(rel);
                 if (rt != null) {
                     Collection<RelationTypes> children = rt.getChildren();
-                    if (children != null && children.size() != 0) {
+                    if (children != null && !children.isEmpty()) {
                         for (RelationTypes r : children) {
                             rel_colors.put(r.Id(), col);
                         }
@@ -412,9 +408,9 @@ public class ViWordNetService extends AbstractService implements
                             Collection<RelationTypes> children = rt
                                     .getChildren();
                             if (children != null) {
-                                for (RelationTypes r : children) {
+                                children.stream().forEach((r) -> {
                                     relTypes[dir.ordinal()].add(r);
-                                }
+                                });
                             } else {
                                 relTypes[dir.ordinal()].add(rt);
                             }
@@ -446,7 +442,7 @@ public class ViWordNetService extends AbstractService implements
             relTypes[3].add(RelationTypes.getByName("hiponimia"));
         }
 
-        ArrayList<RelationTypes> order = new ArrayList<RelationTypes>();
+        ArrayList<RelationTypes> order = new ArrayList<>();
 
         for (Direction dir : Direction.values()) {
             ViwnNodeSynset.relTypes[dir.ordinal()].addAll(relTypes[dir.ordinal()]);
@@ -456,17 +452,15 @@ public class ViWordNetService extends AbstractService implements
         ViwnNodeAlphabeticComparator.order = order;
     }
 
+    @Override
     public void onStart() {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                loadRelationsSides();
-                loadRelsColors();
-                loadPosBackgroundColors();
-                loadPosFrameColors();
-                workbench.setBusy(false);
-            }
+        new Thread(() -> {
+            loadRelationsSides();
+            loadRelsColors();
+            loadPosBackgroundColors();
+            loadPosFrameColors();
+            workbench.setBusy(false);
         }, "Starting").start();
         workbench.setBusy(true);
 
@@ -476,6 +470,7 @@ public class ViWordNetService extends AbstractService implements
         candidateSelection(objectForReload, tagForReload);
     }
 
+    @Override
     public void synsetSelectionChangeListener(ViwnNode node) {
         if (node != null && node instanceof ViwnNodeSynset) {
             ViwnNodeSynset synset = (ViwnNodeSynset) node;
@@ -485,6 +480,7 @@ public class ViWordNetService extends AbstractService implements
         }
     }
 
+    @Override
     public void doAction(Object object, int tag) {
         if (object instanceof Sense) {
             getActiveGraphView().getUI().setCriteria(luView.getCriteria());
@@ -500,7 +496,7 @@ public class ViWordNetService extends AbstractService implements
 
         public LoadGraphTask(Sense unit, int tag) {
             this.unit = unit;
-            this.my_tag = new Integer(tag);
+            this.my_tag = tag;
         }
 
         @Override
@@ -595,7 +591,7 @@ public class ViWordNetService extends AbstractService implements
     class CandidateTask extends SwingWorker<Void, Void> {
 
         Quadruple<ViwnNodeWord, ArrayList<TreeSet<ViwnNodeSynset>>, ArrayList<ViwnNodeCand>, ArrayList<ViwnNodeSynset>> result;
-        ArrayList<ViwnNodeCandExtension> extensionResult = new ArrayList<ViwnNodeCandExtension>();
+        ArrayList<ViwnNodeCandExtension> extensionResult = new ArrayList<>();
         final Pair<String, PartOfSpeech> p;
         final Integer tag;
 
@@ -651,6 +647,7 @@ public class ViWordNetService extends AbstractService implements
      *
      */
     // TODO: do not show message here, after return from here do something
+    @Override
     public ViwnNode lockerSelectionChanged(ViwnNode vn) {
         for (ViwnGraphView vgv : graphViews) {
             if (((Graph<ViwnNode, ViwnEdge>) vgv.getUI().getGraph())
@@ -1016,11 +1013,9 @@ public class ViWordNetService extends AbstractService implements
         } else if (relationType.getArgumentType() == RelationArgument.LEXICAL_SPECIAL) {
             // // New synonim relation
             LexicalDA.addConnection(newUnit, synset.getSynset());
-            // this.synset.rebuildText();
-            // this.synset.setBackgroundColor(CustomColor.nodeNewWord);
-            //
+
         } else {
-            // //SynsetDAO.dbSave(assignedSynset, CommonDAO.REFRESH_ID);
+
             LexicalDA.addConnection(newUnit, assignedSynset);
 
             if (RelationsDA.checkIfRelationExists(assignedSynset,
@@ -1043,30 +1038,18 @@ public class ViWordNetService extends AbstractService implements
             } else {
                 DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
             }
-
-            // NodeSynsetExp exp = new NodeSynsetExp(assignedSynset);
-            // exp.nodeShape = NodeShape.DOUBLEOCTAGON;
-            //
-            // edge.setEdgeType(EdgeType.STRAIGHT);
-            // edge.setEdgeHeadStyle(EdgeEnding.FILLED_ARROW);
-            // exp.setBackgroundColor(CustomColor.nodeNewWord);
-            //
-            // graph.addNode(exp);
-            // graph.addEdge(edge);
-            // assignedSynset.rebuildUnitsStr();
         }
         reload();
-        // graph.removeEdge(this.synset.parentGroupNode, this.nodeWord);
-        // this.synset.setHighlight(false);
+
         return true;
     }
 
     private void newCandRelation(ViwnNodeSynset synset, ViwnNodeWord word) {
-        ArrayList<Sense> parentUnits = new ArrayList<Sense>();
+        ArrayList<Sense> parentUnits = new ArrayList<>();
         Synset s = synset.getSynset();
         Collection<Sense> units = RemoteUtils.lexicalUnitRemote.dbFullGetUnits(
                 s, 1, LexiconManager.getInstance().getLexicons());
-        if (units.size() == 0) {
+        if (units.isEmpty()) {
             System.err.println("Nie mozna przetwarzac pustego synsetu");
         }
         Sense lu = (Sense) units.toArray()[0];
@@ -1078,12 +1061,12 @@ public class ViWordNetService extends AbstractService implements
         toAdd.setDomain(DomainManager.getInstance().getByID(0));
         parentUnits.add(toAdd);
 
-        ArrayList<Sense> childUnits = new ArrayList<Sense>();
+        ArrayList<Sense> childUnits = new ArrayList<>();
         for (Sense unit : RemoteUtils.lexicalUnitRemote.dbFullGetUnits(s, 0,
                 LexiconManager.getInstance().getLexicons())) {
             childUnits.add(unit);
         }
-        if (childUnits.size() == 0) {
+        if (childUnits.isEmpty()) {
             DialogBox.showError("Synset docelowy nie zawiera jednostek.");
             return;
         }
@@ -1150,7 +1133,7 @@ public class ViWordNetService extends AbstractService implements
                     src.getUnitsStr(), dst.getUnitsStr())) == DialogBox.YES) {
                 RelationsDA.mergeSynsets(src.getSynset(), dst.getSynset(),
                         LexiconManager.getInstance().getLexicons());
-                for (ViwnGraphView gv : new ArrayList<ViwnGraphView>(graphViews)) {
+                for (ViwnGraphView gv : new ArrayList<>(graphViews)) {
                     gv.getUI().removeSynset(src);
                     gv.getUI().updateSynset(dst);
                 }
@@ -1210,6 +1193,7 @@ public class ViWordNetService extends AbstractService implements
 
                     private static final long serialVersionUID = 712639812536152L;
 
+                    @Override
                     public void actionPerformed(ActionEvent ae) {
                         if (MakeNewLexicalRelationFrame
                                 .showMakeLexicalRelationModal(workbench,
@@ -1250,6 +1234,7 @@ public class ViWordNetService extends AbstractService implements
         }
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         String graph_export_dir = "graph_export";
         Collection<Integer> pkgs = RemoteUtils.extGraphRemote
@@ -1262,7 +1247,7 @@ public class ViWordNetService extends AbstractService implements
             String path = new File(graph_export_dir, pkg.toString()).toString();
             new File(path).mkdirs();
             for (String word : words) {
-                candidateSelection(new Pair<String, PartOfSpeech>(word,
+                candidateSelection(new Pair<>(word,
                         PosManager.getInstance().decode("rzeczownik")), pkg);
                 String fname = new File(path, word + ".png").toString();
                 getActiveGraphView().getUI().saveToFile(fname);
@@ -1272,10 +1257,12 @@ public class ViWordNetService extends AbstractService implements
     }
 
     public void clearAllViews() {
-        for (ViwnGraphView vgv : graphViews) {
+        graphViews.stream().map((vgv) -> {
             vgv.getUI().clear();
-            vgv.getUI().getCriteria().setSense(new ArrayList<Sense>());
-        }
+            return vgv;
+        }).forEach((vgv) -> {
+            vgv.getUI().getCriteria().setSense(new ArrayList<>());
+        });
     }
 
     public void reloadCurrentListSelection() {

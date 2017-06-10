@@ -32,7 +32,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.IconFrame;
 public class TextViewer extends IconFrame {
 
     private static final long serialVersionUID = 1L;
-    private JTextArea textArea; // obiekt do przechowywania tekstu
+    private final JTextArea textArea;
 
     /**
      * Convert list of object to string representation
@@ -43,10 +43,12 @@ public class TextViewer extends IconFrame {
      */
     static public <T> String convert(Collection<T> items) {
         StringBuilder sb = new StringBuilder();
-        for (T t : items) {
+        items.stream().map((t) -> {
             sb.append(t);
+            return t;
+        }).forEach((_item) -> {
             sb.append("\n");
-        }
+        });
         return sb.toString();
     }
 

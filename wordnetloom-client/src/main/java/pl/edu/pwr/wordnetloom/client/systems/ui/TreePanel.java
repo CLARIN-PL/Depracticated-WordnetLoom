@@ -78,13 +78,9 @@ public class TreePanel extends JPanel {
         this.repaint();
     }
 
-    /*
-	 *  (non-Javadoc)
-	 * @see java.awt.Component#paint(java.awt.Graphics)
-     */
     @Override
     public void paint(Graphics g) {
-        super.paint(g); // odrysowanie z nadrzednego
+        super.paint(g);
 
         if (parent != null) {
             g.setFont(g.getFont().deriveFont(9f));
@@ -96,7 +92,6 @@ public class TreePanel extends JPanel {
                 parent.drawX(g, 10, 10, focusTag);
             }
 
-            // korekta wymiarow
             if (!sizeSet) {
                 sizeSet = true;
                 Dimension size = new Dimension(parent.getBound().width + 20, parent.getBound().height + 20);

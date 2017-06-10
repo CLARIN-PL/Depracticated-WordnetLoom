@@ -28,6 +28,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
  */
 public class StatusBarPlugin implements Plugin {
 
+    @Override
     public void install(Workbench workbench) {
         workbench.installService(new StatusBarService(workbench));
     }

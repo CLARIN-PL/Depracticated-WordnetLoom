@@ -41,7 +41,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Paint;
 import java.awt.RenderingHints;
-import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
@@ -206,20 +205,16 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         // Create a panel for graph visualisation.
         JPanel graph;
+
         try {
             graph = this.getSampleGraphViewer();
             content.add(graph, "hfill vfill");
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(ViwnGraphViewUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+
     }
 
-    /**
-     * @author amusial
-     * @return JPanel filled with jung's graph visualization
-     * @throws IOException from inside methods
-     *
-     */
     private JPanel getSampleGraphViewer() throws IOException {
         vv = new VisualizationViewer<>(layout);
 
@@ -244,11 +239,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         RenderContext<ViwnNode, ViwnEdge> rc = vv.getRenderContext();
 
-        rc.setVertexShapeTransformer(new Transformer<ViwnNode, Shape>() {
-            public Shape transform(ViwnNode v) {
-                return v.getShape();
-            }
-        });
+        rc.setVertexShapeTransformer((ViwnNode v) -> v.getShape());
 
         rc.setVertexFillPaintTransformer(new ViwnVertexFillColor(vv
                 .getPickedVertexState(), rootNode));
@@ -505,7 +496,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         forest.getVertices().stream().filter((n) -> (n instanceof ViwnNodeSynset
                 && !(n instanceof ViwnNodeCandExtension))).forEachOrdered((n) -> {
-                    addMissingRelations((ViwnNodeSynset) n);
+            addMissingRelations((ViwnNodeSynset) n);
         });
 
         checkAllStates();
@@ -911,7 +902,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             recreateLayoutWithFix(synsetNode, synsetNode);
             recreateLayout();
             vv.repaint();
-            
+
             workbench.setBusy(false);
         });
     }
@@ -1011,11 +1002,11 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     public void clear() {
         // Lock the graph object
         synchronized (this.forest) {
-            
+
             new ArrayList<>(forest.getEdges()).forEach((o) -> {
                 this.forest.removeEdge(o);
             });
-            
+
             new ArrayList<>(forest.getVertices()).forEach((o) -> {
                 this.forest.removeVertex(o);
             });
@@ -1086,10 +1077,10 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
     protected void checkMissing() {
         List<ViwnNode> nodes = new ArrayList<>(forest.getVertices());
-       
+
         nodes.stream().filter((node) -> ((node instanceof ViwnNodeSynset)
                 && !(node instanceof ViwnNodeCandExtension))).forEachOrdered((node) -> {
-                    addMissingRelations((ViwnNodeSynset) node);
+            addMissingRelations((ViwnNodeSynset) node);
         });
 
         nodes.stream().filter((node) -> (node instanceof ViwnNodeSynset)).forEachOrdered((node) -> {
@@ -1447,7 +1438,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         Image img = vv.getImage(new Point2D.Float(0, 0), size);
         g2.drawImage(img, 0, 0, null);
-
 
         try (OutputStream out = new FileOutputStream(filename)) {
             ImageIO.write(myImage, "png", out);

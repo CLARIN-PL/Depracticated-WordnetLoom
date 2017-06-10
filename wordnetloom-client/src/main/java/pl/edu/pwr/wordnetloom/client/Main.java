@@ -119,7 +119,7 @@ public class Main {
 
         if (cl.hasOption("help")) {
             HelpFormatter form = new HelpFormatter();
-            form.printHelp("plWordNet.jar", options);
+            form.printHelp("wordnetloom-client.jar", options);
             return;
         }
 

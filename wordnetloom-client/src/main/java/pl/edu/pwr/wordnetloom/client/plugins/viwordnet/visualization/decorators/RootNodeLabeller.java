@@ -26,6 +26,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
  */
 public class RootNodeLabeller implements Transformer<ViwnNode, String> {
 
+    @Override
     public String transform(ViwnNode node) {
         return (node.getSpawner() == null ? node.getLabel() : null);
     }

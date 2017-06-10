@@ -39,13 +39,11 @@ public class ViWordNetConfService extends AbstractService
 
     @Override
     public void installMenuItems() {
-        JMenu other = workbench.getMenu(Labels.OTHER);
+        JMenu other = workbench.getMenu(Labels.SETTINGS);
         if (other == null) {
             return;
         }
-        other.addSeparator();
         other.add(new MenuItemExt(Labels.RELATIONS_CONFIGURATION, KeyEvent.VK_K, this));
-        other.addSeparator();
     }
 
     @Override
@@ -61,6 +59,7 @@ public class ViWordNetConfService extends AbstractService
     public void onStart() {
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         RelationDisplayConfFrame.showModal(workbench);
     }

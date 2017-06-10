@@ -53,7 +53,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
     @Override
     protected void initialize(JPanel content) {
-        // ustawienie layoutu
+
         content.setLayout(new RiverLayout());
 
         definitionValue = new TextAreaPlain(Labels.VALUE_UNKNOWN);
@@ -83,10 +83,10 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         content.add("br center", buttonSave);
 
         // ustawienie akywnosci
-        statusValue.setEnabled(false); // czy combo jest aktywne
-        commentValue.setEnabled(false);// czy dostepny jest komentarz
-        definitionValue.setEnabled(false);// czy definicja jest dostepna
-        abstractValue.setEnabled(false); // czy abstrakcyjny ma byc dostepny
+        statusValue.setEnabled(false);
+        commentValue.setEnabled(false);
+        definitionValue.setEnabled(false);
+        abstractValue.setEnabled(false);
     }
 
     @Override
@@ -111,10 +111,10 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         statusValue.setSelectedItem(synset == null ? null : "");
         commentValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.COMMENT)) : formatValue(null));
         abstractValue.setSelected(synset != null && Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT)));
-        statusValue.setEnabled(synset != null); // czy combo jest aktywne
-        commentValue.setEnabled(synset != null); // czy komentarz mozna dodac
-        definitionValue.setEnabled(synset != null);// czy definicja jest dostepna
-        abstractValue.setEnabled(synset != null);// czy abstrakcyjny jest dostpeny
+        statusValue.setEnabled(synset != null);
+        commentValue.setEnabled(synset != null);
+        definitionValue.setEnabled(synset != null);
+        abstractValue.setEnabled(synset != null);
         buttonSave.setEnabled(false);
         quiteMode = false;
     }
@@ -131,17 +131,20 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
     /**
      * została wywołana jakaś akcja
+     *
+     * @param event
      */
-    public void actionPerformed(ActionEvent arg0) {
+    @Override
+    public void actionPerformed(ActionEvent event) {
         if (quiteMode == true || lastSynset == null) {
             return; // nie ma co aktualizować
         }
         // zmiana zaznaczenia w checkboxie
-        if (arg0.getSource() == abstractValue) {
+        if (event.getSource() == abstractValue) {
             buttonSave.setEnabled(true);
 
             // proba zmiany statusu
-        } else if (arg0.getSource() == statusValue) {
+        } else if (event.getSource() == statusValue) {
             if (statusValue.getSelectedIndex() > 2 && (workbench.getParam(SUPER_MODE) == null || !workbench.getParam(SUPER_MODE).equals(SUPER_MODE_VALUE))) {
                 DialogBox.showError(Messages.ERROR_CANNOT_CHANGE_STATUS_RESERVED_FOR_ADMIN);
                 statusValue.setSelectedItem("");
@@ -150,7 +153,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             }
 
             // zapisanie zmian
-        } else if (arg0.getSource() == buttonSave) { // zapisanie zmian
+        } else if (event.getSource() == buttonSave) { // zapisanie zmian
             String definition = definitionValue.getText();
             int statusIndex = statusValue.getSelectedIndex();
             String comment = commentValue.getText();
@@ -183,9 +186,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         }
     }
 
-    /**
-     * zmienilo sie cos w polach
-     */
+    @Override
     public void caretUpdate(CaretEvent arg0) {
         if (quiteMode == true || lastSynset == null) {
             return; // nie ma co aktualizować

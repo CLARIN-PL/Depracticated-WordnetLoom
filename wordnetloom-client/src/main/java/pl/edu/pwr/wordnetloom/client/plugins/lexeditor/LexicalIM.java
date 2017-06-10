@@ -27,21 +27,21 @@ import javax.swing.ImageIcon;
  */
 public class LexicalIM {
 
-    private static final ImageIcon newImage = new ImageIcon("icons/new.gif");
-    private static final ImageIcon newImage2 = new ImageIcon("icons/new2.gif");
-    private static final ImageIcon upLUImage = new ImageIcon("icons/upLU.gif");
-    private static final ImageIcon downLUImage = new ImageIcon("icons/downLU.gif");
-    private static final ImageIcon relationsImage = new ImageIcon("icons/relations.gif");
-    private static final ImageIcon switchImage = new ImageIcon("icons/switchToUnits.gif");
-    private static final ImageIcon addImage = new ImageIcon("icons/add.gif");
-    private static final ImageIcon deleteImage = new ImageIcon("icons/delete.gif");
-    private static final ImageIcon duplicateImage = new ImageIcon("icons/duplicateSynset.gif");
-    private static final ImageIcon insertBetweenImage = new ImageIcon("icons/insertBetween.gif");
-    private static final ImageIcon toNew = new ImageIcon("icons/toNewSmall.gif");
-    private static final ImageIcon edit = new ImageIcon("icons/edit.gif");
-    private static final ImageIcon busy = new ImageIcon("icons/busy.gif");
-    private static final ImageIcon right = new ImageIcon("icons/right.png");
-    private static final ImageIcon user = new ImageIcon("icons/user.png");
+    private static final ImageIcon newImage = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/new.gif"));
+    private static final ImageIcon newImage2 = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/new2.gif"));
+    private static final ImageIcon upLUImage = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/upLU.gif"));
+    private static final ImageIcon downLUImage = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/downLU.gif"));
+    private static final ImageIcon relationsImage = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/relations.gif"));
+    private static final ImageIcon switchImage = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/switchToUnits.gif"));
+    private static final ImageIcon addImage = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/add.gif"));
+    private static final ImageIcon deleteImage = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/delete.gif"));
+    private static final ImageIcon duplicateImage = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/duplicateSynset.gif"));
+    private static final ImageIcon insertBetweenImage = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/insertBetween.gif"));
+    private static final ImageIcon toNew = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/toNewSmall.gif"));
+    private static final ImageIcon edit = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/edit.gif"));
+    private static final ImageIcon busy = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/busy.gif"));
+    private static final ImageIcon right = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/right.png"));
+    private static final ImageIcon user = new ImageIcon(LexicalIM.class.getClassLoader().getResource("icons/user.png"));
 
     private LexicalIM() {
     }

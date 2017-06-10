@@ -45,7 +45,7 @@ public class LanguageService extends AbstractService {
         buildLanguagesMenu();
 
         menuItems.stream().forEach((menuItem) -> {
-            workbench.installMenu(Labels.HELP, Labels.LANGUAGE, menuItem);
+            workbench.installMenu(Labels.SETTINGS, Labels.LANGUAGE, menuItem);
         });
     }
 

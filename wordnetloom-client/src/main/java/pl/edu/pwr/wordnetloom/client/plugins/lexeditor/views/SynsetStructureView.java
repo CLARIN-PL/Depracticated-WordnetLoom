@@ -16,7 +16,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
  */
 public class SynsetStructureView extends AbstractView implements SimpleListenerInterface {
 
-    static private Color colorOfSecond = new Color(220, 220, 255); // kolor drugiego okna
+    private static final Color colorOfSecond = new Color(220, 220, 255);
 
     /**
      * kontruktor dla klasy
@@ -36,80 +36,40 @@ public class SynsetStructureView extends AbstractView implements SimpleListenerI
         }
     }
 
-    /**
-     * przyszedl komunikat o tym, ze zmieniony zostal zaznaczony synset
-     */
+    @Override
     public void doAction(Object object, int tag) {
         SynsetStructureViewUI view = (SynsetStructureViewUI) getUI();
         view.refreshData((Synset) object);
     }
 
-    /**
-     * odswiezenie listy leksemow
-     */
     public void refreshData() {
         getViewUI().refreshData(getViewUI().getLastSynset());
     }
 
-    /**
-     * odczytanie ostatniego synsetu
-     *
-     * @return ostani synset
-     */
     public Synset getLastSynset() {
         return getViewUI().getLastSynset();
     }
 
-    /**
-     * odczytanie wybranych jednostek
-     *
-     * @return kolekcja jednostka
-     */
     public Collection<Sense> getSelectedUnits() {
         return getViewUI().getSelectedUnits();
     }
 
-    /**
-     * dodanie obiektu nasługującego klikniecia zmiane zaznaczenia na liscie
-     *
-     * @param newListener - sluchacz
-     */
     public void addSelectionListener(SimpleListenerInterface newListener) {
         getUI().addActionListener(newListener);
     }
 
-    /**
-     * dodanie sluchacza dla zdarzenia klikniecia w przycisk
-     *
-     * @param newListener - sluchacz
-     */
     public void addClickListener(SimpleListenerInterface newListener) {
         getViewUI().addClickListener(newListener);
     }
 
-    /**
-     * ostatnio zaznaczone jednostki
-     *
-     * @param units - ostatnio zaznaczone jednostki
-     */
     public void setLastUnits(Collection<Sense> units) {
         getViewUI().setLastUnits(units);
     }
 
-    /**
-     * odczytanie prawdziwego ui widoku
-     *
-     * @return ui widoku
-     */
     private SynsetStructureViewUI getViewUI() {
         return (SynsetStructureViewUI) getUI();
     }
 
-    /**
-     * dodanie obiektu nasługującego zmian w zaznaczeniu jednostki
-     *
-     * @param newListener - sluchacz
-     */
     public void addUnitChangeListener(SimpleListenerInterface newListener) {
         getUI().addActionListener(newListener);
     }

@@ -50,6 +50,7 @@ public final class ViwnVertexFillColor implements Transformer<ViwnNode, Paint> {
         this.root = root_node;
     }
 
+    @Override
     public Paint transform(ViwnNode v) {
         if (pi.isPicked(v)) {
             return ViwnNodeSynset.vertexBackgroundColorSelected;

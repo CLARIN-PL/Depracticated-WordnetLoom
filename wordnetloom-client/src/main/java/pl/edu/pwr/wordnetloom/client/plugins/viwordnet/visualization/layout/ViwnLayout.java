@@ -56,17 +56,11 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
 
     protected Dimension size = new Dimension(600, 600);
     protected Graph<ViwnNode, ViwnEdge> graph;
-    protected Map<ViwnNode, Integer> basePositions = new HashMap<ViwnNode, Integer>();
+    protected Map<ViwnNode, Integer> basePositions = new HashMap<>();
 
-    protected Map<ViwnNode, Point2D> locations = LazyMap.decorate(
-            new HashMap<ViwnNode, Point2D>(),
-            new Transformer<ViwnNode, Point2D>() {
-        public Point2D transform(ViwnNode arg0) {
-            return new Point2D.Double();
-        }
-    });
+    protected Map<ViwnNode, Point2D> locations = LazyMap.decorate(new HashMap<ViwnNode, Point2D>(), (ViwnNode arg0) -> new Point2D.Double());
 
-    protected transient Set<ViwnNode> alreadyDone = new HashSet<ViwnNode>();
+    protected transient Set<ViwnNode> alreadyDone = new HashSet<>();
 
     /**
      * The default horizontal vertex spacing. Initialized to 50.
@@ -158,8 +152,8 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
             int startXofChild;
 
             // Divide accessors according to relation type (minor and major)
-            Set<ViwnNode> minorVertex = new HashSet<ViwnNode>();
-            Set<ViwnNode> majorVertex = new HashSet<ViwnNode>();
+            Set<ViwnNode> minorVertex = new HashSet<>();
+            Set<ViwnNode> majorVertex = new HashSet<>();
             for (ViwnEdge edge : graph.getOutEdges(v)) {
                 System.out.println(((ViwnEdgeSynset) edge).getRelation());
                 if (((ViwnEdgeSynset) edge).getRelation() != 11) {
@@ -195,8 +189,8 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
             }
 
             // Divide accessors according to relation type (minor and major)
-            Set<ViwnNode> minorVertexParent = new HashSet<ViwnNode>();
-            Set<ViwnNode> majorVertexParent = new HashSet<ViwnNode>();
+            Set<ViwnNode> minorVertexParent = new HashSet<>();
+            Set<ViwnNode> majorVertexParent = new HashSet<>();
             for (ViwnEdge edge : graph.getInEdges(v)) {
                 System.out.println(((ViwnEdgeSynset) edge).getRelation());
                 if (((ViwnEdgeSynset) edge).getRelation() != 11) {
@@ -243,8 +237,8 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
     private int calculateDimensionX(ViwnNode v) {
 
         // Divide accessors according to relation type (minor and major)
-        Set<ViwnNode> minorVertex = new HashSet<ViwnNode>();
-        Set<ViwnNode> majorVertex = new HashSet<ViwnNode>();
+        Set<ViwnNode> minorVertex = new HashSet<>();
+        Set<ViwnNode> majorVertex = new HashSet<>();
         for (ViwnEdge edge : graph.getOutEdges(v)) {
 
             if (((ViwnEdgeSynset) edge).getRelation() != 11) {
@@ -267,7 +261,10 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
      * This method is not supported by this class. The size of the layout is
      * determined by the topology of the tree, and by the horizontal and
      * vertical spacing (optionally set by the constructor).
+     *
+     * @param size
      */
+    @Override
     public void setSize(Dimension size) {
         throw new UnsupportedOperationException("Size of TreeLayout is set"
                 + " by vertex spacing in constructor");
@@ -295,28 +292,35 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
         locations.get(vertex).setLocation(m_currentPoint);
     }
 
+    @Override
     public Graph<ViwnNode, ViwnEdge> getGraph() {
         return graph;
     }
 
+    @Override
     public Dimension getSize() {
         return size;
     }
 
+    @Override
     public void initialize() {
 
     }
 
+    @Override
     public boolean isLocked(ViwnNode v) {
         return false;
     }
 
+    @Override
     public void lock(ViwnNode v, boolean state) {
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     public void setGraph(Graph<ViwnNode, ViwnEdge> graph) {
         if (graph instanceof Forest) {
             this.graph = (Forest<ViwnNode, ViwnEdge>) graph;
@@ -325,6 +329,7 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
         }
     }
 
+    @Override
     public void setInitializer(Transformer<ViwnNode, Point2D> initializer) {
     }
 
@@ -335,10 +340,12 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
         return new Point2D.Double(size.getWidth() / 2, size.getHeight() / 2);
     }
 
+    @Override
     public void setLocation(ViwnNode v, Point2D location) {
         locations.get(v).setLocation(location);
     }
 
+    @Override
     public Point2D transform(ViwnNode v) {
         return locations.get(v);
     }

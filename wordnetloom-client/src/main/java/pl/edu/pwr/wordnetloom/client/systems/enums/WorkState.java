@@ -48,15 +48,12 @@ public enum WorkState {
     DOUBT("Wątpliwe");
 
 //  ----------------------------------------------------------------------------
-    private String name;
+    private final String name;
 
     WorkState(String name) {
         this.name = name;
     }
 
-    /**
-     * @see java.lang.Enum#toString()
-     */
     @Override
     public String toString() {
         return this.name;

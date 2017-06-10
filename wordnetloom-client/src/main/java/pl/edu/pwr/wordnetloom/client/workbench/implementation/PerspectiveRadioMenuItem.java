@@ -33,8 +33,8 @@ public class PerspectiveRadioMenuItem extends JRadioButtonMenuItem {
 
     private static final long serialVersionUID = 1L;
 
-    private String perspectiveName;
-    private Workbench workbench;
+    private final String perspectiveName;
+    private final Workbench workbench;
 
     /**
      * Konstruktor, który tworzy obiekt menu a jego kliknięcie (obiektu)

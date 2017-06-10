@@ -26,9 +26,9 @@ import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 
 public class ViwnNodeWord extends ViwnNodeRoot {
 
-    private String word_;
-    private int package_no_;
-    private PartOfSpeech pos_;
+    private final String word_;
+    private final int package_no_;
+    private final PartOfSpeech pos_;
     private final Color color = Color.getHSBColor(245 / 360.0f, 0.38f, 1.0f);
 
     public ViwnNodeWord(String word, int packageNo, PartOfSpeech pos) {
@@ -45,15 +45,18 @@ public class ViwnNodeWord extends ViwnNodeRoot {
         return package_no_;
     }
 
+    @Override
     public String getLabel() {
         return word_;
     }
 
+    @Override
     public Shape getShape() {
         Ellipse2D p = new Ellipse2D.Float(-40, -20, 80, 40);
         return p;
     }
 
+    @Override
     public void mouseClick(MouseEvent me, ViwnGraphViewUI ui) {
     }
 
@@ -61,10 +64,12 @@ public class ViwnNodeWord extends ViwnNodeRoot {
         return color;
     }
 
+    @Override
     public int hashCode() {
         return word_.hashCode();
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o != null && o instanceof ViwnNodeWord) {
             return word_.equals(((ViwnNodeWord) o).word_);

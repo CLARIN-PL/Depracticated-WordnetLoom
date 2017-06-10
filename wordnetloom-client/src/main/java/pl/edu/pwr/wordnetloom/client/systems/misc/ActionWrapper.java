@@ -19,6 +19,7 @@ package pl.edu.pwr.wordnetloom.client.systems.misc;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -40,46 +41,36 @@ import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 // cała ta klasa to jeden wielki syf do skasowania, za dużo porętnej refleksji która będzie tylko przyciemniać kod.
 public class ActionWrapper implements ActionListener, SimpleListenerInterface {
 
-    private Method method = null; // metoda do wywołania
-    private Object owner = null;  // obiekt do którego należy metoda
-    private Object[] args = new Object[0]; // tablica z argumentami, aby nie tworzyc jej za każdym razem
+    private Method method;
+    private Object owner;
+    private Object[] args = new Object[0];
     private final String methodName;
 
-    /**
-     * konstruktor
-     *
-     * @param owner - obiekt z którego pochodzi metoda zastępująca
-     * actionListener
-     * @param methodName - nazwa metody zastępująca actionListener
-     */
     public ActionWrapper(Object owner, String methodName) {
         this.owner = owner;
         this.methodName = methodName;
-        try { // odczytanie metody zastępczej
+        try {
             this.method = owner.getClass().getMethod(methodName, new Class[0]);
-        } catch (Exception e) {
+        } catch (NoSuchMethodException | SecurityException e) {
             Logger.getLogger(ActionWrapper.class).log(Level.ERROR, "Trying to call method" + e);
         }
     }
 
-    /*
-	 *  (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-     */
+    @Override
     public void actionPerformed(ActionEvent arg0) {
         try {
             method.invoke(owner, args); // wywołanie metody zastępczej
-        } catch (Exception e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             System.err.println("Problem invoking method: " + methodName + " in object: " + owner);
             Logger.getLogger(ActionWrapper.class).log(Level.ERROR, "Trying to call method" + e);
         }
     }
 
+    @Override
     public void doAction(Object object, int tag) {
         try {
             method.invoke(owner, args); // wywołanie metody zastępczej
-        } catch (Exception e) {
-            System.err.println("Problem invoking method: " + methodName + " in object: " + owner);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             Logger.getLogger(ActionWrapper.class).log(Level.ERROR, "Trying to call method" + e);
         }
     }

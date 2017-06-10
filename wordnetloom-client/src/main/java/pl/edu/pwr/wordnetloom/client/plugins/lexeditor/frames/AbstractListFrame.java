@@ -57,16 +57,14 @@ abstract public class AbstractListFrame<T, G> extends
     private static final String STANDARD_VALUE_FILTER = "";
     public static final int WIDTH = 300, HEIGHT = 400;
 
-    // id
     private static final long serialVersionUID = 1L;
 
-    // elementu interfejsu uzytkownika
     protected JTextField filterEdit;
-    private JList itemsList; // rozłączny model i lista? że co?
-    private ButtonExt buttonChoose;
-    private ButtonExt buttonSearch;
-    private ButtonExt buttonCancel;
-    private ButtonExt buttonNew;
+    private final JList itemsList;
+    private final ButtonExt buttonChoose;
+    private final ButtonExt buttonSearch;
+    private final ButtonExt buttonCancel;
+    private final ButtonExt buttonNew;
 
     // model z danymi
     protected GenericListModel<T> listModel = null;
@@ -200,28 +198,27 @@ abstract public class AbstractListFrame<T, G> extends
     /**
      * kliknięto w przycisk wybierz/zmieniono filtr
      */
-    public void actionPerformed(ActionEvent arg0) {
-        if (arg0.getSource() == buttonSearch) {
+    @Override
+    public void actionPerformed(ActionEvent event) {
+        if (event.getSource() == buttonSearch) {
             refreshListModel(); // uruchomienie szukania
-        } else if (arg0.getSource() == buttonCancel) {
+        } else if (event.getSource() == buttonCancel) {
             setVisible(false); // uruchomienie szukania
             this.listModel.setCollection(null);
-        } else if (arg0.getSource() == buttonNew) {
+        } else if (event.getSource() == buttonNew) {
             invokeNew(); // uruchomienie szukania
-        } else if (arg0.getSource() == buttonChoose) {
+        } else if (event.getSource() == buttonChoose) {
             // odczytanie listy zaznaczonych pozycji
             int indexs[] = itemsList.getSelectedIndices();
             if (indexs == null || indexs.length == 0) {
-                return; // nic nie zaznaczono
+                return;
             }
-            // utworzenie list dla referencji
-            selectedElements = new ArrayList<T>();
+
+            selectedElements = new ArrayList<>();
 
             for (int selectedIndex : indexs) {
-                T elem = this.listModel.getObjectAt(selectedIndex); // odczyt
-                // zaznaczone
-                // elementu
-                selectedElements.add(elem); // dodanie do listy zaznaczonych
+                T elem = this.listModel.getObjectAt(selectedIndex);
+                selectedElements.add(elem);
             }
 
             if (this.verifySelectedElements()) {
@@ -242,33 +239,29 @@ abstract public class AbstractListFrame<T, G> extends
         return true;
     }
 
-    /**
-     * zmienione zazanaczenie na liście
-     */
-    public void valueChanged(ListSelectionEvent arg0) {
-        if (arg0 != null && arg0.getValueIsAdjusting()) {
+    @Override
+    public void valueChanged(ListSelectionEvent event) {
+        if (event != null && event.getValueIsAdjusting()) {
             return;
         }
         int index = this.itemsList.getSelectedIndex();
         this.buttonChoose.setEnabled(index != -1);
     }
 
-    /**
-     * zdarzenie wciśnięcia klawisza
-     */
-    public void keyPressed(KeyEvent arg0) {
-        switch (arg0.getKeyChar()) {
-            case KeyEvent.VK_ENTER: // gdy wcisnieto enter
-                if (arg0.getSource() == filterEdit) {
-                    refreshListModel(); // wywołanie szukania
+    @Override
+    public void keyPressed(KeyEvent event) {
+        switch (event.getKeyChar()) {
+            case KeyEvent.VK_ENTER:
+                if (event.getSource() == filterEdit) {
+                    refreshListModel();
                 }
-                if (arg0.getSource() == itemsList && buttonChoose.isEnabled()) {
-                    buttonChoose.doClick(); // wybranie jednostki
+                if (event.getSource() == itemsList && buttonChoose.isEnabled()) {
+                    buttonChoose.doClick();
                 }
-                arg0.consume();
+                event.consume();
                 break;
-            case KeyEvent.VK_ESCAPE: // gdy wcisnieto esc
-                arg0.consume();
+            case KeyEvent.VK_ESCAPE:
+                event.consume();
                 setVisible(false);
                 break;
         }
@@ -290,48 +283,34 @@ abstract public class AbstractListFrame<T, G> extends
         }
     }
 
-    /**
-     * gdy kliknięto myszką na liście
-     */
-    public void mouseClicked(MouseEvent arg0) {
-        if (arg0.getClickCount() == 2) { // czy był to dwuclick
+    @Override
+    public void mouseClicked(MouseEvent event) {
+        if (event.getClickCount() == 2) {
             buttonChoose.doClick();
         }
     }
 
+    @Override
     public void mousePressed(MouseEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void mouseReleased(MouseEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void mouseEntered(MouseEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void mouseExited(MouseEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void keyReleased(KeyEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void keyTyped(KeyEvent arg0) {
-        /**
-         *
-         */
     }
 }

@@ -29,6 +29,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 public class ViwnSatelliteNodeStrokeTransformer
         implements Transformer<ViwnNode, Stroke> {
 
+    @Override
     public Stroke transform(ViwnNode arg0) {
         return (new BasicStroke((arg0.getSpawner() == null ? 0.1f : 0.0f)));
     }

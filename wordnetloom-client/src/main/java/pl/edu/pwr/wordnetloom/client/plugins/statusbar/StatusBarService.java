@@ -63,12 +63,11 @@ public class StatusBarService extends AbstractService implements Runnable, Actio
      */
     @Override
     public void installMenuItems() {
-        JMenu other = workbench.getMenu(Labels.OTHER);
+        JMenu other = workbench.getMenu(Labels.SETTINGS);
         if (other == null) {
             return;
         }
         clearCache = new MenuItemExt(Labels.CLEAR_CACHE, KeyEvent.VK_W, this);
-        other.addSeparator();
         other.add(clearCache);
     }
 

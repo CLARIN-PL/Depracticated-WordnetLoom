@@ -64,6 +64,7 @@ public class ViwnSatelliteGraphView extends AbstractView implements GraphChangeL
         ((ViwnSatelliteGraphViewUI) this.getUI()).refreshViewUI();
     }
 
+    @Override
     public void graphChanged() {
         refreshView();
     }

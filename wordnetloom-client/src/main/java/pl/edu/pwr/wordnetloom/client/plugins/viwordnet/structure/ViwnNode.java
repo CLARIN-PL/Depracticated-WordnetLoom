@@ -39,7 +39,7 @@ abstract public class ViwnNode {
         BOTTOM("BOTTOM"),
         TOP("TOP");
 
-        private String str;
+        private final String str;
 
         Direction(String name) {
             str = name;

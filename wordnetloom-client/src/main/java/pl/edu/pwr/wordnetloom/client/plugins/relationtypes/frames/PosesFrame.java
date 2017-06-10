@@ -41,8 +41,8 @@ public class PosesFrame extends IconDialog implements ActionListener {
 
     // tablica dostepnych czesci mowy
     private static final PartOfSpeech[] posesTab = PosManager.getInstance().getAllPOSes().toArray(new PartOfSpeech[]{});
-    private ButtonExt buttonOk, buttonCancel;
-    private JCheckBox checkPoses[] = new JCheckBox[posesTab.length];
+    private final ButtonExt buttonOk, buttonCancel;
+    private final JCheckBox checkPoses[] = new JCheckBox[posesTab.length];
     private Collection<PartOfSpeech> poses;
 
     /**
@@ -81,7 +81,7 @@ public class PosesFrame extends IconDialog implements ActionListener {
      */
     static public String showModal(JFrame owner, String oldPoses) {
         PosesFrame frame = new PosesFrame(owner);
-        frame.poses = new ArrayList<PartOfSpeech>();
+        frame.poses = new ArrayList<>();
 
         // dekodowanie starych posow
         String[] splitted = oldPoses.split("\\,");
@@ -107,15 +107,12 @@ public class PosesFrame extends IconDialog implements ActionListener {
         return sb.toString();
     }
 
-    /**
-     * wciśnięto przycisk
-     */
+    @Override
     public void actionPerformed(ActionEvent arg0) {
-        // wcisnieto anuluj
+
         if (arg0.getSource() == buttonCancel) {
             setVisible(false);
 
-            // wcisnieto OK
         } else if (arg0.getSource() == buttonOk) {
             poses.clear();
             for (int i = 0; i < checkPoses.length; i++) {

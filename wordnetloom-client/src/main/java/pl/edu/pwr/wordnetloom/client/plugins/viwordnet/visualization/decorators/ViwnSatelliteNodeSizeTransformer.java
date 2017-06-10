@@ -33,21 +33,10 @@ public class ViwnSatelliteNodeSizeTransformer implements
     protected Transformer<ViwnNode, Integer> vsf;
     protected Transformer<ViwnNode, Float> varf;
     protected VertexShapeFactory<ViwnNode> factory;
-    /**
-     *
-     */
+
     public final static int DEFAULT_ROOT_SIZE = 8;
-    /**
-     *
-     */
     public final static int DEFAULT_MARKED_SIZE = 9;
-    /**
-     *
-     */
     public final static int DEFAULT_SIZE = 4;
-    /**
-     *
-     */
     public final static float DEFAULT_ASPECT_RATIO = 1.0f;
 
     /**
@@ -58,40 +47,32 @@ public class ViwnSatelliteNodeSizeTransformer implements
             Transformer<ViwnNode, Float> varf) {
         this.vsf = vsf;
         this.varf = varf;
-        factory = new VertexShapeFactory<ViwnNode>(vsf, varf);
+        factory = new VertexShapeFactory<>(vsf, varf);
     }
 
-    /**
-     *
-     */
     public ViwnSatelliteNodeSizeTransformer() {
-        this.vsf = new Transformer<ViwnNode, Integer>() {
-            public Integer transform(ViwnNode arg0) {
-                return (arg0.getSpawner() == null
-                        ? DEFAULT_ROOT_SIZE
-                        : arg0.isMarked()
-                                ? DEFAULT_MARKED_SIZE
-                                : DEFAULT_SIZE);
-            }
-        };
-        this.varf = new Transformer<ViwnNode, Float>() {
-            public Float transform(ViwnNode arg0) {
-                return DEFAULT_ASPECT_RATIO;
-            }
-        };
-        this.factory = new VertexShapeFactory<ViwnNode>(vsf, varf);
+        this.vsf = (ViwnNode arg0) -> (arg0.getSpawner() == null
+                ? DEFAULT_ROOT_SIZE
+                : arg0.isMarked()
+                        ? DEFAULT_MARKED_SIZE
+                        : DEFAULT_SIZE);
+        this.varf = (ViwnNode arg0) -> DEFAULT_ASPECT_RATIO;
+        this.factory = new VertexShapeFactory<>(vsf, varf);
     }
 
+    @Override
     public void setSizeTransformer(Transformer<ViwnNode, Integer> vsf) {
         this.vsf = vsf;
-        factory = new VertexShapeFactory<ViwnNode>(vsf, varf);
+        factory = new VertexShapeFactory<>(vsf, varf);
     }
 
+    @Override
     public void setAspectRatioTransformer(Transformer<ViwnNode, Float> varf) {
         this.varf = varf;
-        factory = new VertexShapeFactory<ViwnNode>(vsf, varf);
+        factory = new VertexShapeFactory<>(vsf, varf);
     }
 
+    @Override
     public Shape transform(ViwnNode arg0) {
         return (arg0.getSpawner() == null
                 ? factory.getEllipse(arg0)

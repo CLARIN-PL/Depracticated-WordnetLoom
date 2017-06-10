@@ -61,46 +61,50 @@ public class Localizer {
                 String className = item.getA().substring(0, classSeparator);
                 String fieldName = item.getA().substring(classSeparator + 1);
 
-                if (className.equals(UIMANAGER_PARAM)) {
-                    // specjalny przypadek, ustawienia dla Swinga
-                    UIManager.put(fieldName, item.getB());
-                } else if (className.equals(LOCALE_PARAM)) {
-                    // specjalny przypadek, ustawienia dla systemu
-                    Locale.setDefault(new Locale(fieldName, item.getB()));
-                } else {
-                    try {
-                        Class<?> c = Class.forName(className);
-                        if (!c.isEnum()) {
-                            Field field = c.getDeclaredField(fieldName);
-                            field.setAccessible(true);
-                            field.set(null, item.getB());
-                            field.setAccessible(false);
-                        } else {
-                            int fieldSeparator = fieldName.indexOf("*");
-                            if (fieldSeparator != -1) {
-                                String enumName = fieldName.substring(0, fieldSeparator);
-                                String varName = fieldName.substring(fieldSeparator + 1);
-
-                                // odczytanie pola i wartosci pola
-                                Field enumField = c.getDeclaredField(enumName);
-                                Object entry = enumField.get(null);
-
-                                // ustawienie pola w obiekcie
-                                Field toSet = entry.getClass().getDeclaredField(varName);
-                                toSet.setAccessible(true);
-                                toSet.set(entry, item.getB());
-                                toSet.setAccessible(false);
+                switch (className) {
+                    case UIMANAGER_PARAM:
+                        // specjalny przypadek, ustawienia dla Swinga
+                        UIManager.put(fieldName, item.getB());
+                        break;
+                    case LOCALE_PARAM:
+                        // specjalny przypadek, ustawienia dla systemu
+                        Locale.setDefault(new Locale(fieldName, item.getB()));
+                        break;
+                    default:
+                        try {
+                            Class<?> c = Class.forName(className);
+                            if (!c.isEnum()) {
+                                Field field = c.getDeclaredField(fieldName);
+                                field.setAccessible(true);
+                                field.set(null, item.getB());
+                                field.setAccessible(false);
                             } else {
-                                System.err.println("Invalid class definition: " + item.getA());
+                                int fieldSeparator = fieldName.indexOf("*");
+                                if (fieldSeparator != -1) {
+                                    String enumName = fieldName.substring(0, fieldSeparator);
+                                    String varName = fieldName.substring(fieldSeparator + 1);
+
+                                    // odczytanie pola i wartosci pola
+                                    Field enumField = c.getDeclaredField(enumName);
+                                    Object entry = enumField.get(null);
+
+                                    // ustawienie pola w obiekcie
+                                    Field toSet = entry.getClass().getDeclaredField(varName);
+                                    toSet.setAccessible(true);
+                                    toSet.set(entry, item.getB());
+                                    toSet.setAccessible(false);
+                                } else {
+                                    System.err.println("Invalid class definition: " + item.getA());
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            if (debugMode) {
+                                System.err.println("Class: " + className);
+                                System.err.println("Line: " + item.getA() + "=" + item.getB());
                             }
                         }
-
-                    } catch (Exception e) {
-                        if (debugMode) {
-                            System.err.println("Class: " + className);
-                            System.err.println("Line: " + item.getA() + "=" + item.getB());
-                        }
-                    }
+                        break;
                 }
             } else {
                 System.err.println("Invalid class definition: " + item.getA());
@@ -108,7 +112,7 @@ public class Localizer {
         }
 
         // zastosowanie polski usatwien jesli nie zdefiniowano innych
-        if (params.size() == 0) {
+        if (params.isEmpty()) {
             setPolishStrings();
         }
     }
@@ -139,8 +143,8 @@ public class Localizer {
                 }
             } while (line != null);
             fi.close();
-        } catch (FileNotFoundException e) { // brak plik, moze sie zdarzyc
-        } catch (IOException e) {           // tutaj zdecydowanie cos poszlo nie tak ;)
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
         }
         return params;
     }

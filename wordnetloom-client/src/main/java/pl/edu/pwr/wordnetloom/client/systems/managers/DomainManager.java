@@ -2,7 +2,6 @@ package pl.edu.pwr.wordnetloom.client.systems.managers;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,16 +95,18 @@ public class DomainManager {
      * exception otherwise.
      */
     public static DomainManager getInstance() {
-        if (defaultDomainManager == null) {
+        DomainManager defaultDM = DomainManager.defaultDomainManager;
+        if (defaultDM == null) {
             synchronized (DomainManager.class) {
+                defaultDM = DomainManager.defaultDomainManager;
                 // we want to believe
-                if (defaultDomainManager == null) {
+                if (defaultDM == null) {
                     defaultLanguageCode = "pl";
-                    defaultDomainManager = new DomainManager(defaultLanguageCode);
+                    DomainManager.defaultDomainManager = defaultDM = new DomainManager(defaultLanguageCode);
                 }
             }
         }
-        return defaultDomainManager;
+        return defaultDM;
     }
 
     /**
@@ -116,7 +117,7 @@ public class DomainManager {
      * if no manager is found, manager will be created.
      */
     public static DomainManager getInstance(String languageCode) {
-        DomainManager toReturn = null;
+        DomainManager toReturn;
         synchronized (DomainManager.class) {
             if (defaultDomainManager != null && DomainManager.getDefaultLanguageCode().equals(languageCode)) {
                 toReturn = defaultDomainManager;
@@ -205,12 +206,7 @@ public class DomainManager {
 
     public List<Domain> sortDomains(List<Domain> doaminsToSort) {
         List<Domain> toReturn = Arrays.asList(doaminsToSort.toArray(new Domain[]{}));
-        Collections.sort(toReturn, new Comparator<Domain>() {
-            @Override
-            public int compare(Domain a, Domain b) {
-                return a.getName().getText().compareTo(b.getName().getText());
-            }
-        });
+        Collections.sort(toReturn, (Domain a, Domain b) -> a.getName().getText().compareTo(b.getName().getText()));
         return toReturn;
     }
 
@@ -244,9 +240,9 @@ public class DomainManager {
         Domain[] toReturn = new Domain[(int) max];
         Arrays.fill(toReturn, cache.get(0));
 
-        for (Domain d : cache) {
+        cache.stream().forEach((d) -> {
             toReturn[(int) (d.getId() + 0)] = d;
-        }
+        });
 
         return toReturn;
     }

@@ -17,6 +17,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.misc;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -31,32 +32,26 @@ import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
  */
 public class SimpleListenerWrapper implements SimpleListenerInterface {
 
-    private Method method = null; // metoda do wywołania
-    private Object owner = null;  // obiekt do którego należy metoda
-    private Object[] args = new Object[2]; // tablica z argumentami, aby nie tworzyc jej za każdym razem
+    private Method method;
+    private Object owner;
+    private Object[] args = new Object[2];
 
-    /**
-     * konstruktor
-     *
-     * @param owner - obiekt z którego pochodzi metoda zastępująca
-     * actionListener
-     * @param methodName - nazwa metody zastępująca actionListener
-     */
     public SimpleListenerWrapper(Object owner, String methodName) {
         this.owner = owner;
-        try { // odczytanie metody zastępczej
+        try {
             this.method = owner.getClass().getMethod(methodName, new Class[]{Object.class, Integer.class});
-        } catch (Exception e) {
+        } catch (NoSuchMethodException | SecurityException e) {
             Logger.getLogger(SimpleListenerWrapper.class).log(Level.ERROR, "Trying to call method" + e);
         }
     }
 
+    @Override
     public void doAction(Object object, int tag) {
         try {
             args[0] = object;
-            args[1] = new Integer(tag);
+            args[1] = tag;
             method.invoke(owner, args); // wywołanie metody zastępczej
-        } catch (Exception e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             Logger.getLogger(SimpleListenerWrapper.class).log(Level.ERROR, "Trying to call doAction" + e);
         }
     }

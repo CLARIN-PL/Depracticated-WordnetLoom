@@ -14,7 +14,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
  */
 public class SynsetPropertiesView extends AbstractView implements SimpleListenerInterface {
 
-    static private Color colorOfSecond = new Color(220, 220, 255); // kolor drugiego okna
+    private static final Color colorOfSecond = new Color(220, 220, 255);
 
     /**
      * kontruktor dla klasy
@@ -33,7 +33,11 @@ public class SynsetPropertiesView extends AbstractView implements SimpleListener
 
     /**
      * przyszedl komunikat o tym, ze zmieniony zostal zaznaczony synset
+     *
+     * @param object
+     * @param tag
      */
+    @Override
     public void doAction(Object object, int tag) {
         SynsetPropertiesViewUI view = (SynsetPropertiesViewUI) getUI();
         view.refreshData((Synset) object);

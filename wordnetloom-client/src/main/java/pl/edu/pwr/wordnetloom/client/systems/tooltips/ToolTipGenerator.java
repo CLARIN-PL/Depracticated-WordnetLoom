@@ -118,14 +118,16 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface {
      * @return generator
      */
     static public ToolTipGenerator getGenerator() {
-        if (generator == null) {
+        ToolTipGenerator gen = ToolTipGenerator.generator;
+        if (gen == null) {
             synchronized (ToolTipGenerator.class) {
-                if (generator == null) {
-                    generator = new ToolTipGenerator();
+                gen = ToolTipGenerator.generator;
+                if (gen == null) {
+                    ToolTipGenerator.generator = gen = new ToolTipGenerator();
                 }
             }
         }
-        return generator;
+        return gen;
     }
 
     /**
@@ -281,7 +283,7 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface {
             return null;
         }
 
-        object = RemoteUtils.synsetRelationRemote.dbGet(object.getId());;
+        object = RemoteUtils.synsetRelationRemote.dbGet(object.getId());
 
         String global = String.format(SYNSET_RELATION_TEMPLATE,
                 object, "", "tak", object.getSynsetFrom(), object.getSynsetTo());
@@ -312,8 +314,9 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface {
      * wygenerowanie tooltipu da obiektu
      *
      * @param object - obiekt dla ktorego ma zostać wygenerowany opis
-     * @return @return hint do wyswietlenia
+     * @return
      */
+    @Override
     public String getToolTipText(Object object) {
         if (!isEnabled) {
             return null;

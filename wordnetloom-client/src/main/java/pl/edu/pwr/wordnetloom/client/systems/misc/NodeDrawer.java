@@ -43,7 +43,7 @@ public class NodeDrawer {
     protected Point position = new Point();
     protected int fontHeight = 0;
     protected Collection<String> itemsToDraw = null;
-    protected Collection<NodeDrawer> nodes = new ArrayList<NodeDrawer>();
+    protected Collection<NodeDrawer> nodes = new ArrayList<>();
     protected Object tag;
 
     /**
@@ -70,7 +70,7 @@ public class NodeDrawer {
      * @param item - teskt do narysowania
      */
     public NodeDrawer(String item) {
-        itemsToDraw = new ArrayList<String>();
+        itemsToDraw = new ArrayList<>();
         itemsToDraw.add(item);
     }
 
@@ -152,7 +152,7 @@ public class NodeDrawer {
         bound.height = dimension.height + Y_DISTANCE + bound.height;
 
         // korekta na odstep
-        if (nodes.size() == 0) {
+        if (nodes.isEmpty()) {
             bound.height -= Y_DISTANCE;
         }
     }
@@ -224,7 +224,7 @@ public class NodeDrawer {
         bound.width = dimension.width + Y_DISTANCE + bound.width;
 
         // korekta na odstep
-        if (nodes.size() == 0) {
+        if (nodes.isEmpty()) {
             bound.width -= Y_DISTANCE;
         }
     }

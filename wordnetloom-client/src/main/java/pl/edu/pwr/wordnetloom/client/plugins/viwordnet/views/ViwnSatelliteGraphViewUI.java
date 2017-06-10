@@ -37,7 +37,6 @@ import java.awt.geom.Point2D;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import org.apache.commons.collections15.Predicate;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeCand;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
@@ -94,19 +93,14 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
 
         this.vv = graphUI.getVisualizationViewer();
 
-        satellite = new SatelliteVisualizationViewer<ViwnNode, ViwnEdge>(vv,
+        satellite = new SatelliteVisualizationViewer<>(vv,
                 new Dimension(WIDTH, HEIGHT));
         satellite.getRenderContext().setEdgeDrawPaintTransformer(
-                new PickableEdgePaintTransformer<ViwnEdge>(satellite
-                        .getPickedEdgeState(), Color.black, Color.cyan));
+                new PickableEdgePaintTransformer<>(satellite.getPickedEdgeState(), Color.black, Color.cyan));
 
-        satellite.getRenderContext().setVertexFillPaintTransformer(
-                new ViwnVertexFillColor(vv.getPickedVertexState(), graphUI
-                        .getRootNode()));
-        satellite.getRenderContext().setEdgeShapeTransformer(
-                new EdgeShape.Line<ViwnNode, ViwnEdge>());
+        satellite.getRenderContext().setVertexFillPaintTransformer(new ViwnVertexFillColor(vv.getPickedVertexState(), graphUI.getRootNode()));
+        satellite.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
 
-        // rescale
         satellite.scaleToLayout(satelliteScaler);
 
     }
@@ -205,10 +199,8 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
     private void refreshSatellite() {
 
         // refresh satellite view
-        satellite = new SatelliteVisualizationViewer<ViwnNode, ViwnEdge>(vv,
+        satellite = new SatelliteVisualizationViewer<>(vv,
                 new Dimension(WIDTH, HEIGHT));
-//		satellite = new SatelliteVisualizationViewer<ViwnNode, ViwnEdge>(vv,
-//				rootPanel.getSize());
 
         // set vertex shape transformer
         satellite.getRenderContext().setVertexShapeTransformer(
@@ -232,32 +224,30 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
 
         // set edge draw
         satellite.getRenderContext().setEdgeDrawPaintTransformer(
-                new PickableEdgePaintTransformer<ViwnEdge>(satellite
+                new PickableEdgePaintTransformer<>(satellite
                         .getPickedEdgeState(), Color.black, Color.cyan));
 
         // set edge shape to line
-        satellite.getRenderContext().setEdgeShapeTransformer(
-                new EdgeShape.Line<ViwnNode, ViwnEdge>());
+        satellite.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
 
         // set edge arrow predicate
         satellite.getRenderContext().setEdgeArrowPredicate(
                 new ViwnSatelliteEdgeTransformer());
 
-        satellite.getRenderContext().setEdgeIncludePredicate(new Predicate<Context<Graph<ViwnNode, ViwnEdge>, ViwnEdge>>() {
-            public boolean evaluate(Context<Graph<ViwnNode, ViwnEdge>, ViwnEdge> context) {
-                if (context.element instanceof ViwnEdgeCand) {
-                    ViwnEdgeCand cand = (ViwnEdgeCand) context.element;
-                    return !cand.isHidden();
-                }
-                return true;
+        satellite.getRenderContext().setEdgeIncludePredicate((Context<Graph<ViwnNode, ViwnEdge>, ViwnEdge> context) -> {
+            if (context.element instanceof ViwnEdgeCand) {
+                ViwnEdgeCand cand = (ViwnEdgeCand) context.element;
+                return !cand.isHidden();
             }
+            return true;
         });
 
         // set tool tips
-        satellite.setVertexToolTipTransformer(new ViwnSatelliteNodeToolTip<ViwnEdge>());
+        satellite.setVertexToolTipTransformer(new ViwnSatelliteNodeToolTip<>());
 
         // add mouse listener to focus view at click point
         satellite.addMouseListener(new MouseListener() {
+            @Override
             public void mousePressed(MouseEvent e) {
                 Point2D q = satellite.getRenderContext().getMultiLayerTransformer()
                         .inverseTransform(new Point2D.Double(e.getX(), e.getY()));
@@ -268,15 +258,19 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
                                 lvc.getY() - q.getY());
             }
 
+            @Override
             public void mouseReleased(MouseEvent e) {
             }
 
+            @Override
             public void mouseExited(MouseEvent e) {
             }
 
+            @Override
             public void mouseEntered(MouseEvent e) {
             }
 
+            @Override
             public void mouseClicked(MouseEvent e) {
             }
         });
@@ -290,14 +284,11 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
     public static void ShowSatelliteView(
             VisualizationViewer<ViwnNode, ViwnEdge> vv) {
 
-        SatelliteVisualizationViewer<ViwnNode, ViwnEdge> satellite = new SatelliteVisualizationViewer<ViwnNode, ViwnEdge>(
+        SatelliteVisualizationViewer<ViwnNode, ViwnEdge> satellite = new SatelliteVisualizationViewer<>(
                 vv, new Dimension(WIDTH, HEIGHT));
-        satellite.getRenderContext().setEdgeDrawPaintTransformer(
-                new PickableEdgePaintTransformer<ViwnEdge>(satellite
-                        .getPickedEdgeState(), Color.black, Color.cyan));
-        satellite.getRenderContext().setVertexFillPaintTransformer(
-                new PickableVertexPaintTransformer<ViwnNode>(satellite
-                        .getPickedVertexState(), Color.red, Color.yellow));
+
+        satellite.getRenderContext().setEdgeDrawPaintTransformer(new PickableEdgePaintTransformer<>(satellite.getPickedEdgeState(), Color.black, Color.cyan));
+        satellite.getRenderContext().setVertexFillPaintTransformer(new PickableVertexPaintTransformer<>(satellite.getPickedVertexState(), Color.red, Color.yellow));
 
         ScalingControl satelliteScaler = new CrossoverScalingControl();
         satellite.scaleToLayout(satelliteScaler);

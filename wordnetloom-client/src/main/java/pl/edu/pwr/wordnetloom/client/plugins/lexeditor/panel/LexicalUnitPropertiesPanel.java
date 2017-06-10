@@ -17,7 +17,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
@@ -156,14 +155,11 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         mainPanel.add(lblLexicon, "2, 5, left, fill");
         lexicon = new LexiconComboBox(Labels.NOT_CHOSEN);
         lexicon.addActionListener(this);
-        lexicon.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                Lexicon lex = lexicon.retriveComboBoxItem();
-                if (lex != null) {
-                    partOfSpeech.filterByLexicon(lex);
-                    domain.filterDomainsByLexicon(lex, false);
-                }
+        lexicon.addItemListener((ItemEvent e) -> {
+            Lexicon lex = lexicon.retriveComboBoxItem();
+            if (lex != null) {
+                partOfSpeech.filterByLexicon(lex);
+                domain.filterDomainsByLexicon(lex, false);
             }
         });
         mainPanel.add(lexicon, "4, 5, 3, 1, fill, fill");
@@ -175,13 +171,10 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         partOfSpeech = new PartOfSpeechComboBox(Labels.NOT_CHOSEN);
         partOfSpeech.withoutFilter();
         partOfSpeech.addActionListener(this);
-        partOfSpeech.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                PartOfSpeech pos = partOfSpeech.retriveComboBoxItem();
-                if (pos != null) {
-                    domain.filterDomainByPos(pos, false);
-                }
+        partOfSpeech.addItemListener((ItemEvent e) -> {
+            PartOfSpeech pos = partOfSpeech.retriveComboBoxItem();
+            if (pos != null) {
+                domain.filterDomainByPos(pos, false);
             }
         });
         mainPanel.add(partOfSpeech, "4, 7, 3, 1, fill, fill");
@@ -256,17 +249,12 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         scrollPaneExamples.setViewportView(examplesList);
 
         btnNewExample = new JButton(LexicalIM.getAdd());
-        btnNewExample.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                String exa = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE,
-                        "", false);
-                if (exa != null && exa != "") {
-                    examplesModel.addElement(exa);
-                    btnSave.setEnabled(true);
-                    examplesList.setModel(examplesModel);
-                }
+        btnNewExample.addActionListener((ActionEvent e) -> {
+            String exa = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
+            if (exa != null && !"".equals(exa)) {
+                examplesModel.addElement(exa);
+                btnSave.setEnabled(true);
+                examplesList.setModel(examplesModel);
             }
         });
 
@@ -277,33 +265,27 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         mainPanel.add(btnNewExample, "12, 17, fill, fill");
 
         btnEditExample = new JButton(LexicalIM.getEdit());
-        btnEditExample.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int idx = examplesList.getSelectedIndex();
-                if (idx >= 0) {
-                    String modified = ExampleFrame.showModal(frame,
-                            Labels.EDIT_EXAMPLE,
-                            (String) examplesModel.get(idx), true);
-                    String old = examplesModel.get(idx).toString();
-                    if (modified != null && !old.equals(modified)) {
-                        examplesModel.set(idx, modified);
-                        btnSave.setEnabled(true);
-                    }
+        btnEditExample.addActionListener((ActionEvent e) -> {
+            int idx = examplesList.getSelectedIndex();
+            if (idx >= 0) {
+                String modified = ExampleFrame.showModal(frame,
+                        Labels.EDIT_EXAMPLE,
+                        (String) examplesModel.get(idx), true);
+                String old = examplesModel.get(idx).toString();
+                if (modified != null && !old.equals(modified)) {
+                    examplesModel.set(idx, modified);
+                    btnSave.setEnabled(true);
                 }
             }
         });
         mainPanel.add(btnEditExample, "12, 19, fill, fill");
 
         btnRemoveExample = new JButton(LexicalIM.getDelete());
-        btnRemoveExample.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int idx = examplesList.getSelectedIndex();
-                if (idx >= 0) {
-                    examplesModel.remove(idx);
-                    btnSave.setEnabled(true);
-                }
+        btnRemoveExample.addActionListener((ActionEvent e) -> {
+            int idx = examplesList.getSelectedIndex();
+            if (idx >= 0) {
+                examplesModel.remove(idx);
+                btnSave.setEnabled(true);
             }
         });
         mainPanel.add(btnRemoveExample, "12, 21, fill, fill");
@@ -318,14 +300,11 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         link.setColumns(10);
 
         btnGoToLink = new JButton(LexicalIM.getRight());
-        btnGoToLink.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    URI uri = new java.net.URI(link.getText());
-                    (new LinkRunner(uri)).execute();
-                } catch (URISyntaxException use) {
-                }
+        btnGoToLink.addActionListener((ActionEvent e) -> {
+            try {
+                URI uri = new java.net.URI(link.getText());
+                (new LinkRunner(uri)).execute();
+            } catch (URISyntaxException use) {
             }
         });
         mainPanel.add(btnGoToLink, "12, 25, fill, fill");
@@ -523,10 +502,8 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         protected void done() {
             try {
                 get();
-            } catch (ExecutionException ee) {
+            } catch (ExecutionException | InterruptedException ee) {
                 handleException(uri, ee);
-            } catch (InterruptedException ie) {
-                handleException(uri, ie);
             }
         }
 
@@ -538,20 +515,19 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
 
     public class MyCellRenderer implements ListCellRenderer {
 
-        private JPanel p;
-        private JTextArea ta;
+        private final JPanel panel;
+        private final JTextArea textArea;
 
         public MyCellRenderer() {
-            p = new JPanel();
-            p.setLayout(new BorderLayout());
+            panel = new JPanel();
+            panel.setLayout(new BorderLayout());
 
-            // text
-            ta = new JTextArea();
+            textArea = new JTextArea();
 
-            ta.setLineWrap(true);
-            ta.setWrapStyleWord(true);
+            textArea.setLineWrap(true);
+            textArea.setWrapStyleWord(true);
 
-            p.add(ta, BorderLayout.CENTER);
+            panel.add(textArea, BorderLayout.CENTER);
         }
 
         @Override
@@ -559,19 +535,19 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                 final Object value, final int index, final boolean isSelected,
                 final boolean hasFocus) {
 
-            ta.setText((String) value);
+            textArea.setText((String) value);
             if (isSelected) {
-                ta.setBackground(new Color(135, 206, 250));
+                textArea.setBackground(new Color(135, 206, 250));
             } else if (index % 2 == 0) {
-                ta.setBackground(Color.LIGHT_GRAY);
+                textArea.setBackground(Color.LIGHT_GRAY);
             } else {
-                ta.setBackground(Color.gray);
+                textArea.setBackground(Color.gray);
             }
             int width = list.getWidth();
             if (width > 0) {
-                ta.setSize(width, Short.MAX_VALUE);
+                textArea.setSize(width, Short.MAX_VALUE);
             }
-            return p;
+            return panel;
 
         }
     }

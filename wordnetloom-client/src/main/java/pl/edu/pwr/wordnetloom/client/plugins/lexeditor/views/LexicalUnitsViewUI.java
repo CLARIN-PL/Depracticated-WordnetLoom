@@ -62,9 +62,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     private JLabel infoLabel;
     private ButtonExt btnSearch, btnReset, btnNew, btnDelete, btnNewWithSyns, btnAddToSyns;
 
-    private boolean quietMode = false;
+    private final boolean quietMode = false;
 
-    private GenericListModel<Sense> listModel = new GenericListModel<Sense>();
+    private final GenericListModel<Sense> listModel = new GenericListModel<>();
     private Sense lastSelectedValue = null;
 
     @Override
@@ -84,7 +84,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         infoLabel = new JLabel();
         infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "0"));
 
-        // dodatkowe przyciski
         btnNewWithSyns = new ButtonExt(LexicalIM.getNew(), this);
         btnNewWithSyns.setToolTipText(Hints.CREATE_NEW_UNIT_AND_SYNSET);
 
@@ -129,15 +128,18 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     /**
      * zaznaczenie w tabeli zostalo zmienione
+     *
+     * @param event
      */
-    public void valueChanged(ListSelectionEvent arg0) {
+    @Override
+    public void valueChanged(ListSelectionEvent event) {
         if (unitsList == null) {
             return;
         }
-        if (arg0 != null && arg0.getValueIsAdjusting()) {
+        if (event != null && event.getValueIsAdjusting()) {
             return;
         }
-        if (arg0 == null) {
+        if (event == null) {
             return;
         }
 
@@ -154,11 +156,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         listeners.notifyAllListeners(unitsList.getSelectedIndices().length == 1 ? unit : null);
         unitsList.setEnabled(true);
         unitsList.grabFocus();
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                unitsList.grabFocus();
-            }
+
+        SwingUtilities.invokeLater(() -> {
+            unitsList.grabFocus();
         });
     }
 
@@ -178,14 +178,15 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         final String register = criteria.getRegisterComboBox().getSelectedIndex() == 0 ? null : criteria.getRegisterComboBox().getSelectedItem().toString();
         final String comment = criteria.getComment().getText();
         final String example = criteria.getExample().getText();
-        final List<Long> lexicons = new ArrayList<Long>();
+
+        final List<Long> lexicons = new ArrayList<>();
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
             @Override
             protected Void doInBackground() throws Exception {
                 workbench.setBusy(true);
-                List<Sense> units = new ArrayList<Sense>();
+                List<Sense> units = new ArrayList<>();
                 Lexicon lex = criteria.getLexiconComboBox().retriveComboBoxItem();
                 if (lex != null) {
                     lexicons.clear();
@@ -203,7 +204,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                         && !unitsList.isSelectionEmpty()) {
                     lastSelectedValue = listModel.getObjectAt(unitsList.getSelectedIndex());
                 }
-                if (units.size() == 0) {
+                if (units.isEmpty()) {
                     workbench.setBusy(false);
                 }
                 criteria.setSensesToHold(units);
@@ -214,17 +215,14 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             @Override
             protected void done() {
                 if (unitsList != null) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            unitsList.clearSelection();
-                            if (listModel.getSize() != 0) {
-                                unitsList.grabFocus();
-                                unitsList.setSelectedIndex(0);
-                                unitsList.ensureIndexIsVisible(0);
-                            }
-                            infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "" + listModel.getSize()));
+                    SwingUtilities.invokeLater(() -> {
+                        unitsList.clearSelection();
+                        if (listModel.getSize() != 0) {
+                            unitsList.grabFocus();
+                            unitsList.setSelectedIndex(0);
+                            unitsList.ensureIndexIsVisible(0);
                         }
+                        infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "" + listModel.getSize()));
                     });
                 }
                 lastSelectedValue = null;
@@ -235,7 +233,10 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     /**
      * wciśnięto przycisk szukaj
+     *
+     * @param event
      */
+    @Override
     public void actionPerformed(ActionEvent event) {
         if (quietMode) {
             return;
@@ -244,10 +245,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         // wywolanie search
         if (event.getSource() == btnSearch) {
             refreshData();
-            return;
         } else if (event.getSource() == btnReset) {
             criteria.resetFields();
-            // wywolanie usun
         } else if (event.getSource() == btnDelete) {
             int returnValues[] = unitsList.getSelectedIndices();
             if (returnValues == null || returnValues.length == 0) {
@@ -280,7 +279,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                     }
                 }
 
-                // usuniecie jednostki
                 if (result == DialogBox.YES) {
                     LexicalDA.delete(unit);
                     ViWordNetService s = (ViWordNetService) workbench
@@ -297,7 +295,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             Sense unit = listModel.getObjectAt(i);
             LexicalDA.addToNewSynset(unit);
 
-            //refreshData();
             lastSelectedValue = null;
 
             if (lastSelectedValue == null && unitsList != null
@@ -308,19 +305,16 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
             // przywrocenie zaznaczenia
             if (unitsList != null) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        unitsList.clearSelection();
-                        if (listModel.getSize() != 0) {
-                            unitsList.grabFocus();
-                            unitsList.setSelectedIndex(0);
-                            unitsList.ensureIndexIsVisible(0);
-                        }
-                        infoLabel.setText(String.format(
-                                Labels.VALUE_COUNT_SIMPLE,
-                                "" + listModel.getSize()));
+                SwingUtilities.invokeLater(() -> {
+                    unitsList.clearSelection();
+                    if (listModel.getSize() != 0) {
+                        unitsList.grabFocus();
+                        unitsList.setSelectedIndex(0);
+                        unitsList.ensureIndexIsVisible(0);
                     }
+                    infoLabel.setText(String.format(
+                            Labels.VALUE_COUNT_SIMPLE,
+                            "" + listModel.getSize()));
                 });
             }
             // dodanie nowej jednostki
@@ -328,7 +322,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             // wyswietlenie okienka
             Sense newUnit = NewLexicalUnitFrame.showModal(workbench, null);
             if (newUnit != null) {
-                ArrayList<Sense> col = new ArrayList<Sense>();
+                ArrayList<Sense> col = new ArrayList<>();
                 col.add(newUnit);
                 listModel.setCollection(col);
                 unitsList.setSelectedIndex(0);
@@ -339,7 +333,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             Sense newUnit = NewLexicalUnitFrame.showModal(workbench, null);
             if (newUnit != null) {
                 newUnit = LexicalDA.saveUnitWithReturn(newUnit);
-                ArrayList<Sense> col = new ArrayList<Sense>();
+                ArrayList<Sense> col = new ArrayList<>();
                 col.add(newUnit);
                 listModel.setCollection(col);
                 unitsList.setSelectedIndex(0);
@@ -350,48 +344,32 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         }
     }
 
-    /**
-     * zdarzenie wciśnięcia klawisza w oknie z filtrem
-     */
     @Override
-    public void keyPressed(KeyEvent arg0) {
+    public void keyPressed(KeyEvent event) {
     }
 
-    /**
-     * użytko myszi na liście
-     */
+    @Override
     public void mouseReleased(MouseEvent arg0) {
     }
 
+    @Override
     public void mouseClicked(MouseEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void mousePressed(MouseEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void mouseEntered(MouseEvent arg0) {
-        /**
-         *
-         */
     }
 
+    @Override
     public void mouseExited(MouseEvent arg0) {
-        /**
-         *
-         */
     }
 
     @Override
     public void keyTyped(KeyEvent arg0) {
-        /**
-         *
-         */
     }
 
     @Override
@@ -403,11 +381,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         }
     }
 
-    /**
-     * ustawienie ostatnio uzywnej jednostki
-     *
-     * @param unit
-     */
     public void setSelectedUnit(Sense unit) {
         this.lastSelectedValue = unit;
     }

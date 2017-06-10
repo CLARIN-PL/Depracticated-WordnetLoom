@@ -38,10 +38,12 @@ public class ViwnSatelliteEdgeTransformer implements Transformer<ViwnEdge, Strok
      */
     public static final float DEFAULT_LINE_WIDHT = 0.5f;
 
+    @Override
     public Stroke transform(ViwnEdge arg0) {
         return new BasicStroke(DEFAULT_LINE_WIDHT);
     }
 
+    @Override
     public boolean evaluate(Context<Graph<ViwnNode, ViwnEdge>, ViwnEdge> arg0) {
         /* false, because we do not want any arrows on preview */
         return false;

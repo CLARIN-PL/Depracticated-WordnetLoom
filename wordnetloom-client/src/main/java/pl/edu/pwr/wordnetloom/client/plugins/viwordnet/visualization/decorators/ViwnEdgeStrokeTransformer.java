@@ -29,6 +29,7 @@ public class ViwnEdgeStrokeTransformer
 
     protected final Stroke solid = new BasicStroke(1);
 
+    @Override
     public Stroke transform(ViwnEdge e) {
         if (e instanceof ViwnEdgeSynset) {
             ViwnEdgeSynset es = (ViwnEdgeSynset) e;

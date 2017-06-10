@@ -33,7 +33,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
  */
 public class ViwnGraphMouseListener implements GraphMouseListener<ViwnNode> {
 
-    private ViwnGraphViewUI owner;
+    private final ViwnGraphViewUI owner;
 
     /**
      * @param owner ViwnGraphViewUI owner of this graph listener
@@ -42,14 +42,17 @@ public class ViwnGraphMouseListener implements GraphMouseListener<ViwnNode> {
         this.owner = owner;
     }
 
+    @Override
     public void graphClicked(ViwnNode v, MouseEvent me) {
     }
 
     /* we don't need this */
+    @Override
     public void graphPressed(ViwnNode v, MouseEvent me) {
 
     }
 
+    @Override
     public void graphReleased(ViwnNode v, MouseEvent me) {
         /* the 'everything wrecking jumping graphs' ultimate problem solver */
 
