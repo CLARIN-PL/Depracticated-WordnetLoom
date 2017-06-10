@@ -68,6 +68,7 @@ public class SynsetAttributeDaoBean implements SynsetAttributeDaoLocal {
         local.persistObject(s);
     }
 
+    @Override
     public void saveOrUpdateSynsetAttribute(Synset synset, String key, String value) {
         EntityManager em = local.getEM();
         SynsetAttribute synsetAttribute = null;

@@ -57,7 +57,7 @@ public class ExtGraphDAOBean implements ExtGraphDAOLocal {
         Root<ExtGraph> root = criteriaQuery.from(ExtGraph.class);
         Join<ExtGraph, Synset> synset = root.join("synset", JoinType.INNER);
         Join<Synset, SenseToSynset> sts = synset.join("senseToSynset", JoinType.LEFT);
-        List<Predicate> criteriaList = new ArrayList<Predicate>();
+        List<Predicate> criteriaList = new ArrayList<>();
 
         Predicate firstCondition = criteriaBuilder.equal(root.get("word"), word);
         criteriaList.add(firstCondition);
@@ -98,7 +98,7 @@ public class ExtGraphDAOBean implements ExtGraphDAOLocal {
         List<Long> longs = local.getEM().createNamedQuery("ExtGraph.GetPackages", Long.class)
                 .setParameter("pos", pos)
                 .getResultList();
-        List<Integer> ints = new ArrayList<Integer>();
+        List<Integer> ints = new ArrayList<>();
         for (Long l : longs) {
             ints.add(l.intValue());
         }

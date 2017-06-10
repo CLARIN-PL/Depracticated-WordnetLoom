@@ -52,11 +52,11 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
      * powielenie synsetu
      *
      * @param synset - synset do sklonowania
-     * @param owner - nowy wlasciciel
+     * @param lexicons
      */
     @Override
     public void dbClone(Synset synset, List<Long> lexicons) {
-        // utworzenie synsetu
+
         Synset newSynset = new Synset();
         newSynset.setSplit(0);
         dao.persistObject(newSynset);
@@ -64,8 +64,6 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
         setSynsetAtrribute(newSynset, Synset.COMMENT, getSynsetAtrribute(newSynset, Synset.COMMENT));
         setSynsetAtrribute(newSynset, Synset.DEFINITION, getSynsetAtrribute(newSynset, Synset.DEFINITION));
 
-        // skopiowanie jednostek
-//		Collection<LexicalUnitDTO> units=dbFastGetUnits(synset);
         int index = 0;
         for (Sense unit : lexicalUnitDAO.dbFullGetUnits(synset, 0, lexicons)) {
             Sense newUnit = lexicalUnitDAO.dbClone(unit);
@@ -96,11 +94,8 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
                 .setParameter("synset", synset.getId())
                 .executeUpdate();
         // usuniecie jednostki
-        try {
-            dao.deleteObject(Synset.class, synset.getId());
-        } catch (Exception e) {
-//			e.printStackTrace();
-        }
+
+        dao.deleteObject(Synset.class, synset.getId());
         return true;
     }
 
@@ -108,6 +103,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
      * odczytanie jednostek leksykalnych podanego synsetu
      *
      * @param synset - synset dla ktorego maja zostac pobrane jednostki
+     * @param lexicons
      * @return lista jednostek
      */
     @Override
@@ -122,7 +118,8 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
     /**
      * odczytanie jednostek leksykalnych dla podanego id synsetu
      *
-     * @param synsetID - ID synsetu dla ktorego maja zostac pobrane jednostki
+     * @param synsetId
+     * @param lexicons
      * @return lista jednostek
      */
     @Override
@@ -137,6 +134,8 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
      * odczytanie jednostek leksykalnych podanych synsetów
      *
      * @param synset - synset dla którego mają zostać pobrane jednostki
+     * @param lexicons
+     * @return
      */
     @Override
     public Synset dbGetUnit(Synset synset, List<Long> lexicons) {
@@ -158,7 +157,9 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
     /**
      * odczytanie jednostek leksykalnych podanych synsetów
      *
+     * @param synsets
      * @param synset - synset dla którego mają zostać pobrane jednostki
+     * @return
      */
     @Override
     public List<Synset> dbGetUnits(List<Synset> synsets) {
@@ -166,7 +167,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
             return synsets;
         }
 
-        ArrayList<Long> ids = new ArrayList<Long>();
+        ArrayList<Long> ids = new ArrayList<>();
         for (Synset s : synsets) {
             ids.add(s.getId());
         }
@@ -177,12 +178,12 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
     /**
      * odczytanie jednostek leksykalnych dla ID synsetow
      *
-     * @param synset - synset dla którego mają zostać pobrane jednostki
+     * @param iDs
      */
     @Override
     public List<Synset> dbGetUnits(Collection<Long> iDs) {
         if (iDs.isEmpty()) {
-            return new ArrayList<Synset>();
+            return new ArrayList<>();
         }
 
         List<Synset> list = dao.getEM().createNamedQuery("Synset.dbGetUnitsByIDs", Synset.class)
@@ -215,6 +216,8 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
      * odbudowa opisu synsetu
      *
      * @param synset - synset
+     * @param lexicons
+     * @return
      */
     @Override
     public String dbRebuildUnitsStr(Synset synset, List<Long> lexicons) {
@@ -243,6 +246,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
      * odczytanie domeny synsetu
      *
      * @param synset - synset
+     * @param lexicons
      * @return domena albo NULL gdy nie zdefiniowana
      */
     @Override // TODO: check me
@@ -316,7 +320,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
         Join<SenseToSynset, Sense> sense = stsRoot.join("sense", JoinType.LEFT);
         Join<Sense, Word> word = sense.join("lemma", JoinType.LEFT);
 
-        List<Predicate> criteriaList = new ArrayList<Predicate>();
+        List<Predicate> criteriaList = new ArrayList<>();
 
         Predicate first_predicate = criteriaBuilder.like(
                 criteriaBuilder.lower(word.<String>get("word")), "%" + filter.toLowerCase() + "%");
@@ -344,7 +348,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
             Subquery<Long> subquery = criteriaQuery.subquery(Long.class);
             Root<SynsetAttribute> relRoot = subquery.from(SynsetAttribute.class);
             subquery.select(relRoot.get("synset").<Long>get("id"));
-            List<Predicate> predicates = new ArrayList<Predicate>();
+            List<Predicate> predicates = new ArrayList<>();
             Predicate type = criteriaBuilder.equal(relRoot.<String>get("type").get("typeName").get("text"), Synset.DEFINITION);
             predicates.add(type);
             Predicate value = criteriaBuilder.like(relRoot.<String>get("value").<String>get("text"), "%" + definition + "%");
@@ -358,7 +362,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
             Subquery<Long> subquery = criteriaQuery.subquery(Long.class);
             Root<SynsetAttribute> relRoot = subquery.from(SynsetAttribute.class);
             subquery.select(relRoot.get("synset").<Long>get("id"));
-            List<Predicate> predicates = new ArrayList<Predicate>();
+            List<Predicate> predicates = new ArrayList<>();
             Predicate type = criteriaBuilder.equal(relRoot.<String>get("type").get("typeName").get("text"), Synset.COMMENT);
             predicates.add(type);
             Predicate value = criteriaBuilder.like(relRoot.get("value").<String>get("text"), "%" + comment + "%");
@@ -372,7 +376,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
             Subquery<Long> subquery = criteriaQuery.subquery(Long.class);
             Root<SynsetAttribute> relRoot = subquery.from(SynsetAttribute.class);
             subquery.select(relRoot.get("synset").<Long>get("id"));
-            List<Predicate> predicates = new ArrayList<Predicate>();
+            List<Predicate> predicates = new ArrayList<>();
             Predicate type = criteriaBuilder.equal(relRoot.<String>get("type").get("typeName").get("text"), Synset.ISABSTRACT);
             predicates.add(type);
             Predicate value = criteriaBuilder.equal(relRoot.get("value").<String>get("text"), artificial);
@@ -391,10 +395,10 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
             query.setMaxResults(limitSize);
         }
         List<Long> synsetIds = query.getResultList();
-        List<Sense> result = new ArrayList<Sense>();
-        for (Long id : synsetIds) {
+        List<Sense> result = new ArrayList<>();
+        synsetIds.stream().forEach((id) -> {
             result.addAll(dbFastGetUnits(id, lexicons));
-        }
+        });
 
         return result;
     }
@@ -407,8 +411,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
      * @param relationType - typ relacji jakie musza byc zdefiniowane dla
      * synsetow wynikowych
      * @param limitSize - maksymalna liczba zwroconych elementów
-     * @param realSize - obiekt w którym zapisywana jest prawdziwa wielkość
-     * kolekcji
+     * @param lexicon
      * @param posIndex - indeks części mowy (-1 wszystkie, 0 nieznany, itd.
      * zgodnie z enum Pos)
      * @return lista synsetow (bez detali)
@@ -421,7 +424,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
         Join<SenseToSynset, Sense> sense = stsRoot.join("sense", JoinType.LEFT);
         Join<Sense, Word> word = sense.join("lemma", JoinType.LEFT);
 
-        List<Predicate> criteriaList = new ArrayList<Predicate>();
+        List<Predicate> criteriaList = new ArrayList<>();
 
         Predicate first_predicate = criteriaBuilder.like(
                 criteriaBuilder.lower(word.<String>get("word")), "%" + filter.toLowerCase() + "%");
@@ -496,6 +499,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
      *
      * @param filter - filtr dla przechowywanych jednostek
      * @param filterObject - filtr obietkowy, musi miec taki sam POS
+     * @param lexicons
      * @return lista synsetow (bez detali)
      */
     @Override // TODO: check me // FIXME
@@ -505,7 +509,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
         }
 
         StringBuilder sb = new StringBuilder();
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
         sb.append("SELECT s FROM Synset s"
                 + " WHERE s IN ("
@@ -549,7 +553,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
      */
     @Override // TODO: refactor
     public List<Synset> dbFullGetSynsets(String filter) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
         String selectString = "SELECT s.senseToSynset.synset FROM Sense s";
         if (filter != null && !"".equals(filter)) {
@@ -575,7 +579,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
      */
     @Override
     public List<Synset> dbGetNotEmptySynsets(String filter) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT s.senseToSynset.synset FROM Sense s ");
@@ -591,9 +595,9 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
         }
 
         TypedQuery<Synset> query = dao.getEM().createQuery(sb.toString(), Synset.class);
-        for (Map.Entry<String, Object> param : params.entrySet()) {
+        params.entrySet().stream().forEach((param) -> {
             query.setParameter(param.getKey(), param.getValue());
-        }
+        });
 
         return query.getResultList();
     }
@@ -723,28 +727,26 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
     @Override
     public String rebuildUnitsStr(Integer split, String unitsstr, List<Sense> senses) {
         // jest pusty synset
-        if (senses == null || senses.size() == 0) {
+        if (senses == null || senses.isEmpty()) {
             unitsstr = "! S.y.n.s.e.t p.u.s.t.y !";
-            split = new Integer(0);
+            split = 0;
         } else {
-            StringBuffer temp = new StringBuffer();
+            StringBuilder temp = new StringBuilder();
 
             temp.append("(");
 
             int index = 0, size = senses.size();
-            int pos = split.intValue();
-            if (pos > size) // czy nie jest za duzo
-            {
+            int pos = split;
+            if (pos > size) {
                 pos = size;
-            } else if (pos == 0) // jesli jest na zerowej pozycji, to przenoszony na 1
-            {
+            } else if (pos == 0) {
                 pos = 1;
             }
-            split = new Integer(pos);
+            split = pos;
 
             for (Sense lexicalUnit : senses) {
                 temp.append(lexicalUnit.toString());
-                if (index == 0) { // dodanie informacji o domenie do pierwszej jednostki
+                if (index == 0) {
                     temp.append(" [");
                     temp.append(lexicalUnit.getDomain().getName().getText());
                     temp.append("]");
@@ -766,15 +768,14 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
      * sprwadzenie czy synset zawiera jednostke
      *
      * @param unit - jednostka do sprawdzenia
+     * @param senses
      * @return TRUE jesli ja zawiera
      */
     @Override
     public boolean contains(Sense unit, List<Sense> senses) {
         if (senses != null) {
-            for (Sense base : senses) {
-                if (base.getId().equals(unit.getId())) {
-                    return true;
-                }
+            if (senses.stream().anyMatch((base) -> (base.getId().equals(unit.getId())))) {
+                return true;
             }
         }
         return false;
@@ -784,6 +785,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
      * sprwadzenie czy synset zawiera jednostke o danym lemacie
      *
      * @param lemma - lemat jednostki
+     * @param senses
      * @return TRUE jesli ja zawiera
      */
     @Override
@@ -801,13 +803,13 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
     /**
      * pobiera dynamiczne atrybuty - definition, comment, isabstract itd
      *
-     * @param Synet - Synset
-     * @param key - klucz (nazwa pola dynamicznego)
+     * @param synset
+     * @param fieldName
      * @return value - wartosc pola
      */
     @Override
-    public String getSynsetAtrribute(Synset synset, String nazwaPola) {
-        SynsetAttribute synsetAttribute = synsetAttributeDao.getSynsetAttributeForName(synset, nazwaPola);
+    public String getSynsetAtrribute(Synset synset, String fieldName) {
+        SynsetAttribute synsetAttribute = synsetAttributeDao.getSynsetAttributeForName(synset, fieldName);
         if (null == synsetAttribute
                 || null == synsetAttribute.getValue()
                 || null == synsetAttribute.getValue().getText()) {
@@ -819,7 +821,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
     /**
      * zapisuje dynamiczne atrybuty - definition, comment, isabstract itd
      *
-     * @param Synet - Synset
+     * @param synset
      * @param key - klucz (nazwa pola dynamicznego)
      * @param value - wartosc pola
      */
@@ -828,13 +830,14 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
         synsetAttributeDao.saveOrUpdateSynsetAttribute(synset, key, value);
     }
 
+    @Override
     public Synset updateSynset(Synset synset) {
         if (null == synset.getId()) {
             persistObject(synset);
             refresh(synset);
         }
 
-        try {// zabezpieczenie przed LazyInitializationException
+        try {
             List<SynsetAttribute> attributes = synset.getSynsetAttributes();
 
             if (attributes != null) {
@@ -852,6 +855,9 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
     /**
      * odbudowanie opisu
      *
+     * @param synset
+     * @param lexicons
+     * @return
      */
     @Override
     public String rebuildUnitsStr(Synset synset, List<Long> lexicons) {
@@ -862,12 +868,12 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
             unitsstr = "! S.y.n.s.e.t p.u.s.t.y !";
             synset.setSplit(0);
         } else {
-            StringBuffer temp = new StringBuffer();
+            StringBuilder temp = new StringBuilder();
 
             temp.append("(");
 
             int index = 0, size = senses.size();
-            int pos = synset.getSplit().intValue();
+            int pos = synset.getSplit();
             if (pos > size) // czy nie jest za duzo
             {
                 pos = size;
@@ -925,7 +931,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
         Join<SenseToSynset, Sense> sense = stsRoot.join("sense", JoinType.LEFT);
         Join<Sense, Word> word = sense.join("lemma", JoinType.LEFT);
 
-        List<Predicate> criteriaList = new ArrayList<Predicate>();
+        List<Predicate> criteriaList = new ArrayList<>();
 
         Predicate first_predicate = criteriaBuilder.like(
                 criteriaBuilder.lower(word.<String>get("word")), "%" + filter.toLowerCase() + "%");
@@ -953,7 +959,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
             Subquery<Long> subquery = criteriaQuery.subquery(Long.class);
             Root<SynsetAttribute> relRoot = subquery.from(SynsetAttribute.class);
             subquery.select(relRoot.get("synset").<Long>get("id"));
-            List<Predicate> predicates = new ArrayList<Predicate>();
+            List<Predicate> predicates = new ArrayList<>();
             Predicate type = criteriaBuilder.equal(relRoot.<String>get("type").get("typeName").get("text"), Synset.DEFINITION);
             predicates.add(type);
             Predicate value = criteriaBuilder.like(relRoot.<String>get("value").<String>get("text"), "%" + definition + "%");
@@ -967,7 +973,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
             Subquery<Long> subquery = criteriaQuery.subquery(Long.class);
             Root<SynsetAttribute> relRoot = subquery.from(SynsetAttribute.class);
             subquery.select(relRoot.get("synset").<Long>get("id"));
-            List<Predicate> predicates = new ArrayList<Predicate>();
+            List<Predicate> predicates = new ArrayList<>();
             Predicate type = criteriaBuilder.equal(relRoot.<String>get("type").get("typeName").get("text"), Synset.COMMENT);
             predicates.add(type);
             Predicate value = criteriaBuilder.like(relRoot.get("value").<String>get("text"), "%" + comment + "%");
@@ -981,7 +987,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
             Subquery<Long> subquery = criteriaQuery.subquery(Long.class);
             Root<SynsetAttribute> relRoot = subquery.from(SynsetAttribute.class);
             subquery.select(relRoot.get("synset").<Long>get("id"));
-            List<Predicate> predicates = new ArrayList<Predicate>();
+            List<Predicate> predicates = new ArrayList<>();
             Predicate type = criteriaBuilder.equal(relRoot.<String>get("type").get("typeName").get("text"), Synset.ISABSTRACT);
             predicates.add(type);
             Predicate value = criteriaBuilder.equal(relRoot.get("value").<String>get("text"), artificial);
@@ -1000,7 +1006,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
             query.setMaxResults(limitSize);
         }
         List<Long> synsetIds = query.getResultList();
-        List<Sense> result = new ArrayList<Sense>();
+        List<Sense> result = new ArrayList<>();
         for (Long id : synsetIds) {
             result.addAll(dbFastGetUnits(id, lexicons));
         }

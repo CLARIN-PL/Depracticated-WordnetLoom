@@ -38,7 +38,7 @@ public class ExtGraphExtensionDAOBean implements ExtGraphExtensionDAOLocal {
     @Override
     public Collection<ExtGraphExtension> dbFullGet(Long[] extgraph_ids) {
         if (extgraph_ids.length == 0) {
-            return new ArrayList<ExtGraphExtension>();
+            return new ArrayList<>();
         }
         return local.getEM().createNamedQuery("ExtGraphExtension.dbFullGetIDs", ExtGraphExtension.class)
                 .setParameter("ids", Arrays.asList(extgraph_ids))

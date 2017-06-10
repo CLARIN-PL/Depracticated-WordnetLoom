@@ -19,7 +19,6 @@ import pl.edu.pwr.wordnetloom.service.NativeServiceRemote;
 public class RMIUtils {
 
     private static volatile Context initialContext;
-    private static final String EJB_PROPERTIES = "config/server/jboss-ejb-client.properties";
 
     @SuppressWarnings("unchecked")
     public static <E> E lookupForService(Class<E> remoteClass) {

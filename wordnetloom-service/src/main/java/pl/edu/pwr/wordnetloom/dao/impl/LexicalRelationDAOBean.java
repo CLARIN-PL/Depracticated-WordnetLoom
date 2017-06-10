@@ -37,6 +37,7 @@ public class LexicalRelationDAOBean extends DAOBean implements LexicalRelationDA
                 .executeUpdate();
     }
 
+    @Override
     public SenseRelation dbGet(Long id) {
         List<SenseRelation> list = local.getEM()
                 .createNamedQuery("SenseRelation.findSenseRelationByID", SenseRelation.class)
@@ -76,7 +77,7 @@ public class LexicalRelationDAOBean extends DAOBean implements LexicalRelationDA
     public Set<Long> dbSelftRelations() {
         List<SenseRelation> sr = local.getEM().createNamedQuery("LexicalRelation.dbSelftRelations", SenseRelation.class)
                 .getResultList();
-        Set<Long> ids = new HashSet<Long>();
+        Set<Long> ids = new HashSet<>();
         for (SenseRelation s : sr) {
             ids.add(s.getSenseFrom().getId());
         }
@@ -118,7 +119,7 @@ public class LexicalRelationDAOBean extends DAOBean implements LexicalRelationDA
 
     @Override
     public SenseRelation dbGetRelation(Sense parent, Sense child, RelationType relationType) {
-        List<SenseRelation> list = new ArrayList<SenseRelation>();
+        List<SenseRelation> list = new ArrayList<>();
         if (relationType == null) {
             list = local.getEM().createNamedQuery("LexicalRelation.dbGetRelations", SenseRelation.class)
                     .setParameter("parent", parent)

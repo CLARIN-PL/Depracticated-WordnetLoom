@@ -51,7 +51,6 @@ public class DAOBean implements DAOLocal {
         return entityManager.find(entity, id);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <E> List<E> getAllObjects(Class<E> entity) {
         return entityManager.createQuery(

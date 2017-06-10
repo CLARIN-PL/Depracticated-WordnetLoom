@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.dao.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
@@ -46,10 +47,8 @@ public class RelationTypeDAOBean implements RelationTypeDAOLocal {
 
     @Override
     public boolean isReverseRelation(Collection<RelationType> relations, RelationType test) {
-        for (RelationType relation : relations) {
-            if (relation.isAutoReverse() && relation.getReverse().getId() == test.getId()) {
-                return true;
-            }
+        if (relations.stream().anyMatch((relation) -> (relation.isAutoReverse() && Objects.equals(relation.getReverse().getId(), test.getId())))) {
+            return true;
         }
         return false;
     }
@@ -104,9 +103,9 @@ public class RelationTypeDAOBean implements RelationTypeDAOLocal {
     @Override
     public List<RelationType> dbGetLeafs(RelationArgument argument, List<Long> lexicons) {
         List<RelationType> highs = dbGetHighest(argument, null, lexicons);
-        List<RelationType> toReturn = new ArrayList<RelationType>();
+        List<RelationType> toReturn = new ArrayList<>();
 
-        for (RelationType relationType : highs) {
+        highs.stream().forEach((relationType) -> {
             List<RelationType> children = dbGetChildren(relationType, lexicons);
 
             if (children == null || children.isEmpty()) {
@@ -114,7 +113,7 @@ public class RelationTypeDAOBean implements RelationTypeDAOLocal {
             } else {
                 toReturn.addAll(children);
             }
-        }
+        });
         return toReturn;
     }
 

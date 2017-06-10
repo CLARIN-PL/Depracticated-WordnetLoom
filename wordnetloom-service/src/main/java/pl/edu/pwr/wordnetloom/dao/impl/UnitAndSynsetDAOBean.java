@@ -42,30 +42,9 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
     @EJB
     private SynsetRelationDAOLocal srDAO;
 
-    // histogramy
-//	final static String UNITS_HISTOGRAM="SELECT w.`c`,COUNT(w.`c`) FROM (SELECT COUNT(`SYN_ID`) AS c FROM `unitandsynset` GROUP BY `LEX_ID`) as w GROUP BY w.`c`";
-//	final static String SYNSETS_HISTOGRAM="SELECT w.`c`,COUNT(w.`c`) FROM (SELECT COUNT(`LEX_ID`) AS c FROM `unitandsynset` GROUP BY `SYN_ID`) as w GROUP BY w.`c`";
-//	final static String SIMILAR_COUNT="SELECT COUNT(A.`LEX_ID`) FROM `unitandsynset` AS A, `unitandsynset` AS B WHERE A.`SYN_ID`=%s AND B.`SYN_ID`=%s AND A.`LEX_ID`=B.`LEX_ID`";
     public UnitAndSynsetDAOBean() {
     }
 
-//	/**
-//	 * odczytanie histogramu jednostek leksykalnych
-//	 * @return dane do histogramu
-//	 */
-//	@Deprecated
-//	public Collection<String[]> dbGetUnitsHistogram() {
-//		return dbq.rawQuery(UNITS_HISTOGRAM).getItems();
-//	}
-//
-//	/**
-//	 * odczytanie histogramu synsetow
-//	 * @return histogram synsetow
-//	 */
-//	@Deprecated
-//	public Collection<String[]> dbGetSynsetsHistogram() {
-//		return dbq.rawQuery(SYNSETS_HISTOGRAM).getItems();
-//	}
     /**
      * odczytanie liczby identycznych jednostek w synsetach
      *
@@ -123,7 +102,7 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
         newRel.setSense(unit);
         newRel.setIdSense(unit.getId());
         newRel.setIdSynset(synset.getId());
-        newRel.setSenseIndex(new Integer(index++));
+        newRel.setSenseIndex(index++);
 
         dao.persistObject(newRel);
 
@@ -135,7 +114,6 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
      *
      * @param unit - jednostka
      * @param synset - synset
-     * @param rebuildUnitsStr - czy odbudować opis jakie jednostki sa w synsecie
      * @return TRUE jesli sie udalo
      */
     @Override
@@ -150,7 +128,7 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
     /**
      * usuniecie powiazan jednostka - synset z bazy danych
      *
-     * @param template - wzor jednostki
+     * @param sense
      */
     @Override
     public void dbDeleteConnection(Sense sense) {
@@ -163,12 +141,6 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
         for (SenseToSynset sts : senseToSynsets) {
             dao.deleteObject(SenseToSynset.class, sts.getId());
         }
-
-        // odbudowa synsetow - wylaczona odbudowa
-//		for (SenseToSynset sts : sensetoSynsets) {
-//			Synset synset = dao.getObject(Synset.class, sts.getIdSynset());
-//			synset.rebuildUnitsStr();
-//		}
     }
 
     /**
@@ -207,7 +179,7 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
         // przeindeksowanie
         int index = 0;
         for (SenseToSynset synsetDTO : rest) {
-            synsetDTO.setSenseIndex(new Integer(index++));
+            synsetDTO.setSenseIndex(index++);
             dao.mergeObject(synsetDTO);
         }
 
@@ -241,10 +213,10 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
         for (SenseToSynset synsetDTO : old) {
             // zamienieni indeksow
             if (synsetDTO.getIdSense().longValue() == firstUnit.getId().longValue()) {
-                synsetDTO.setSenseIndex(new Integer(synsetDTO.getSenseIndex() + 1));
+                synsetDTO.setSenseIndex(synsetDTO.getSenseIndex() + 1);
                 dao.mergeObject(synsetDTO);
             } else if (synsetDTO.getIdSense().longValue() == secondUnit.getId().longValue()) {
-                synsetDTO.setSenseIndex(new Integer(synsetDTO.getSenseIndex().intValue() - 1));
+                synsetDTO.setSenseIndex(synsetDTO.getSenseIndex() - 1);
                 dao.mergeObject(synsetDTO);
             }
         }
@@ -268,6 +240,7 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
      *
      * @return lista powiazan
      */
+    @Override
     public List<SenseToSynset> dbFullGetConnections() {
         return dao.getEM().createNamedQuery("SenseToSynset.findAll", SenseToSynset.class).getResultList();
     }

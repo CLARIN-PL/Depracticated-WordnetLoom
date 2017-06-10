@@ -8,7 +8,6 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import pl.edu.pwr.wordnetloom.dao.AttributeTypeDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.DAOLocal;
-import pl.edu.pwr.wordnetloom.dao.LexicalUnitDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.SenseAttributeDaoLocal;
 import pl.edu.pwr.wordnetloom.model.wordnet.AttributeType;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
@@ -21,8 +20,6 @@ public class SenseAttributeDaoBean implements SenseAttributeDaoLocal {
 
     @EJB
     private DAOLocal local;
-    @EJB
-    private LexicalUnitDAOLocal lexiconDAO;
 
     @EJB
     private AttributeTypeDaoLocal attributeTypeDao;
@@ -83,6 +80,7 @@ public class SenseAttributeDaoBean implements SenseAttributeDaoLocal {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    @Override
     public void saveOrUpdateSenseAttribute(Sense sense, String key, String value) {
         EntityManager em = local.getEM();
         SenseAttribute senseAttribute = null;

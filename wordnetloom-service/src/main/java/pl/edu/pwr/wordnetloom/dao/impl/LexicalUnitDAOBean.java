@@ -208,40 +208,38 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
         final Collator myFavouriteCollator = collator;
 
-        Comparator<Sense> senseComparator = new Comparator<Sense>() {
-            @Override
-            public int compare(Sense a, Sense b) {
-                String aa = a.getLemma().getWord().toLowerCase();
-                String bb = b.getLemma().getWord().toLowerCase();
+        Comparator<Sense> senseComparator = (Sense a, Sense b) -> {
 
-                int c = myFavouriteCollator.compare(aa, bb);
-                if (c == 0) {
-                    aa = a.getPartOfSpeech().getId().toString();
-                    bb = b.getPartOfSpeech().getId().toString();
-                    c = myFavouriteCollator.compare(aa, bb);
-                }
-                if (c == 0) {
-                    if (a.getSenseNumber() == b.getSenseNumber()) {
-                        c = 0;
-                    }
-                    if (a.getSenseNumber() > b.getSenseNumber()) {
-                        c = 1;
-                    }
-                    if (a.getSenseNumber() < b.getSenseNumber()) {
-                        c = -1;
-                    }
-                }
-                if (c == 0) {
-                    aa = a.getLexicon().getId().toString();
-                    bb = b.getLexicon().getId().toString();
-                    c = myFavouriteCollator.compare(aa, bb);
-                }
-                return c;
+            String aa = a.getLemma().getWord().toLowerCase();
+            String bb = b.getLemma().getWord().toLowerCase();
+
+            int c = myFavouriteCollator.compare(aa, bb);
+            if (c == 0) {
+                aa = a.getPartOfSpeech().getId().toString();
+                bb = b.getPartOfSpeech().getId().toString();
+                c = myFavouriteCollator.compare(aa, bb);
             }
+            if (c == 0) {
+                if (a.getSenseNumber() == b.getSenseNumber()) {
+                    c = 0;
+                }
+                if (a.getSenseNumber() > b.getSenseNumber()) {
+                    c = 1;
+                }
+                if (a.getSenseNumber() < b.getSenseNumber()) {
+                    c = -1;
+                }
+            }
+            if (c == 0) {
+                aa = a.getLexicon().getId().toString();
+                bb = b.getLexicon().getId().toString();
+                c = myFavouriteCollator.compare(aa, bb);
+            }
+            return c;
         };
 
         if (existCriteria) {
-            Map<String, Object> parameters = new HashMap<String, Object>();
+            Map<String, Object> parameters = new HashMap<>();
 
             int critCounter = (domain == null ? 0 : 1) + (pos == null ? 0 : 1) + (posUby == null ? 0 : 1) + (relationType == null ? 0 : 1);
 
@@ -269,8 +267,8 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
                 List<Long> wordsIDs = wordIDQuery.getResultList();
 
-                if (wordsIDs.size() == 0) {
-                    return new ArrayList<Sense>();
+                if (wordsIDs.isEmpty()) {
+                    return new ArrayList<>();
                 }
 
                 senseQuery += "s.lemma.word.id IN (:wordsID) AND ";
@@ -384,7 +382,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
             if (limitSize != 0 && senses.size() > limitSize) {
                 senses = senses.subList(0, limitSize);
-                senses = new ArrayList<Sense>(senses);
+                senses = new ArrayList<>(senses);
             }
             senses = filterSenseByLexicon(senses, lexicons);
             return senses;
@@ -412,8 +410,8 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
         List<Long> wordsIDs = wordIDQuery.getResultList(); // lista idków
 
-        if (wordsIDs.size() == 0) {
-            return new ArrayList<Sense>();
+        if (wordsIDs.isEmpty()) {
+            return new ArrayList<>();
         }
 
         senseQuery += "s.lemma.word.id IN (:wordsID)";
@@ -509,6 +507,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
      * gramatycznej.
      *
      * @param lemma
+     * @param pos
      * @param PartOfSpeach
      * @return pierwsza wolna pozycja w bd
      */
@@ -530,9 +529,9 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
     @Override
     public int dbDelete(List<Sense> list, String owner) {
         int odp = list.size();
-        for (Sense sense : list) {
+        list.stream().forEach((sense) -> {
             dbDelete(sense, owner);
-        }
+        });
         return odp;
     }
 
@@ -548,7 +547,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
     @Override
     public Set<Long> dbUsedUnitsIDs() {
-        return new HashSet<Long>(
+        return new HashSet<>(
                 dao.getEM().createNamedQuery("SenseToSynset.dbUsedUnitsIDs", Long.class)
                 .getResultList()
         );
@@ -571,13 +570,14 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
      */
     @Override // TODO: check me
     public List<Sense> dbGetUnitsWithoutForms() {
-        return new ArrayList<Sense>();
+        return new ArrayList<>();
     }
 
     /**
      * Odczytuje najwyższy numerek wariantu dla podanego lematu
      *
      * @param word
+     * @param lexicons
      * @return najwyższy numer wariantu lematu
      */
     @Override
@@ -593,7 +593,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
     @Override // TODO: check me
     public List<Sense> dbGetUnitsNotInAnySynset(String filter, PartOfSpeech pos) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         String queryString = "SELECT s FROM SenseToSynset sts right join sts.sense s "
                 + "WHERE sts.idSynset is null AND s.lemma.word like :filter";
         if (filter != null && !"".equals(filter)) {
@@ -646,6 +646,8 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
     /**
      * pobiera dynamiczne atrybuty - definition, comment, isabstract itd
      *
+     * @param sense
+     * @param nazwaPola
      * @param Sense - Sense
      * @param key - klucz (nazwa pola dynamicznego)
      * @return value - wartosc pola
@@ -677,9 +679,9 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
         List<SenseAttribute> atrributes = senseAttributeDao.getSenseAttributes(sense);
 
         if (atrributes != null) {
-            for (SenseAttribute senseAttribute : atrributes) {
+            atrributes.stream().forEach((senseAttribute) -> {
                 setSenseAtrribute(sense, senseAttribute.getType().getTypeName().getText(), senseAttribute.getValue().getText());
-            }
+            });
         }
 
         return mergeObject(sense);
@@ -745,7 +747,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
     @Override
     public List<Sense> getSensesForLemmaID(long id, long lexicon) {
-        Query query = getEM().createQuery("FROM Sense s WHERE s.lemma.id = :id AND s.lexicon.id = :lexicon)");
+        Query query = getEM().createQuery("FROM Sense s WHERE s.lemma.id = :id AND s.lexicon.id = :lexicon");
         query.setParameter("id", id);
         query.setParameter("lexicon", lexicon);
         return query.getResultList();
