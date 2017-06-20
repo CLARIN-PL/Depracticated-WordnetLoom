@@ -18,7 +18,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -53,6 +55,9 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
     private SynsetDAOLocal synsetDAO;
     @EJB
     private TrackerDaoLocal tracker;
+
+    @Resource
+    EJBContext context;
 
     public LexicalUnitDAOBean() {
     }
@@ -179,6 +184,8 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
     private List<Sense> getSenses(String filter, PartOfSpeech pos, Domain domain, RelationType relationType,
             String register, String comment, String example, int limitSize, List<Long> lexicons, pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech posUby) {
+
+        System.out.println("---> USER: " + context.getCallerPrincipal().getName());
 
         String wordQuery = "";
         String senseQuery = "SELECT s FROM Sense s JOIN FETCH s.domain JOIN FETCH s.lemma JOIN FETCH s.partOfSpeech WHERE ";

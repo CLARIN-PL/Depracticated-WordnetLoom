@@ -55,13 +55,13 @@ public class Synset implements Serializable {
      * Position of head split line;
      */
     @Column(name = "split")
-    private Integer split = new Integer(0);
+    private Integer split = 0;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "synset")
     private List<SenseToSynset> senseToSynset;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "synset")
-    private List<SynsetAttribute> synsetAttributes = new ArrayList<SynsetAttribute>();
+    private List<SynsetAttribute> synsetAttributes = new ArrayList<>();
 
     public Long getId() {
         return id;

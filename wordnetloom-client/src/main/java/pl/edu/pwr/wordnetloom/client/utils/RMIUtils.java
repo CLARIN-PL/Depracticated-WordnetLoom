@@ -61,12 +61,14 @@ public class RMIUtils {
 
                     Properties ejbProperties = new Properties();
                     ejbProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
-                    ejbProperties.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", false);
+                    ejbProperties.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
                     ejbProperties.put("remote.connections", "default");
                     ejbProperties.put("remote.connection.default.host", host);
                     ejbProperties.put("remote.connection.default.port", port);
-                    ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_POLICY_NOANONYMOUS", false);
-                    ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SSL_STARTTLS", false);
+                    ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_POLICY_NOANONYMOUS", "false");
+                    ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_DISALLOWED_MECHANISMS", "JBOSS-LOCAL-USER");
+                    ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_POLICY_NOPLAINTEXT", "false");
+                    ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SSL_STARTTLS", "false");
                     ejbProperties.put("remote.connection.default.username", "wordnet");
                     ejbProperties.put("remote.connection.default.password", "123");
 
