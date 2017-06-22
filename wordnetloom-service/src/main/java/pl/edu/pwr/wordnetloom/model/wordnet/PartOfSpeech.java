@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.model.wordnet;
 
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Column;

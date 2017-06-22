@@ -33,7 +33,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
-import pl.edu.pwr.wordnetloom.model.wordnet.Lexicon;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
 /**
  * Window to choose lexicons

@@ -7,7 +7,7 @@ import javax.management.InvalidAttributeValueException;
 import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
-import pl.edu.pwr.wordnetloom.model.wordnet.Lexicon;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
 public final class LexiconManager {
 

@@ -31,7 +31,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPlugin;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
-import pl.edu.pwr.wordnetloom.model.wordnet.Lexicon;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationTest;

@@ -3,7 +3,7 @@ package pl.edu.pwr.wordnetloom.client.systems.ui;
 import java.util.List;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
-import pl.edu.pwr.wordnetloom.model.wordnet.Lexicon;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
 //Lexcion combo
 public class LexiconComboBox extends ComboBoxPlain<Lexicon> {

@@ -32,7 +32,7 @@ import pl.edu.pwr.wordnetloom.dao.SynsetDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.TrackerDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.UnitAndSynsetDAOLocal;
 import pl.edu.pwr.wordnetloom.model.wordnet.Domain;
-import pl.edu.pwr.wordnetloom.model.wordnet.Lexicon;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;

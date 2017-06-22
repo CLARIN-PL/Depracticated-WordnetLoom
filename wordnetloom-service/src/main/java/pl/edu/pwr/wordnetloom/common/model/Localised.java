@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.model.wordnet;
+package pl.edu.pwr.wordnetloom.common.model;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ public class Localised implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @ElementCollection
     private Map<String, String> strings = new HashMap<>();
