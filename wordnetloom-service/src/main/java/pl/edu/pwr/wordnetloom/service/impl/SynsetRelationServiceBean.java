@@ -4,9 +4,9 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.SynsetRelationDAOLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
-import pl.edu.pwr.wordnetloom.model.wordnet.SynsetRelation;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.relation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.service.SynsetRelationServiceRemote;
 
 @Stateless

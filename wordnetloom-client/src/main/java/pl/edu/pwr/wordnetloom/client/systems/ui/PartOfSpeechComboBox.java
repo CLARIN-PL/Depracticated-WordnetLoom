@@ -5,7 +5,7 @@ import pl.edu.pwr.wordnetloom.client.Main;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 //Pos Combo
 public class PartOfSpeechComboBox extends ComboBoxPlain<PartOfSpeech> {

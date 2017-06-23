@@ -6,9 +6,9 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.RelationTypeDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.impl.DAOBean;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.service.RelationTypeServiceRemote;
 
 @Stateless

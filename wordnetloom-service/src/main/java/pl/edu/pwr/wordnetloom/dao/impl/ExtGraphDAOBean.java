@@ -16,10 +16,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import pl.edu.pwr.wordnetloom.dao.DAOLocal;
 import pl.edu.pwr.wordnetloom.dao.ExtGraphDAOLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.ExtGraph;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraph;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 @Stateless
 public class ExtGraphDAOBean implements ExtGraphDAOLocal {

@@ -3,9 +3,9 @@ package pl.edu.pwr.wordnetloom.dao;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Local;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
-import pl.edu.pwr.wordnetloom.model.wordnet.SenseRelation;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.relation.model.SenseRelation;
 
 @Local
 public interface LexicalRelationDAOLocal extends DAOLocal {

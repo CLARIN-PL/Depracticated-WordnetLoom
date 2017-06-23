@@ -11,8 +11,8 @@ import javax.swing.JRadioButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
 
 public final class SynsetCriteria extends CriteriaPanel implements ActionListener {

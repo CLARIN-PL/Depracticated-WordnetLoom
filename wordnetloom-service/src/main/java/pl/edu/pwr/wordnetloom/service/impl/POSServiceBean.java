@@ -4,7 +4,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.POSDaoLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.service.POSServiceRemote;
 
 @Stateless

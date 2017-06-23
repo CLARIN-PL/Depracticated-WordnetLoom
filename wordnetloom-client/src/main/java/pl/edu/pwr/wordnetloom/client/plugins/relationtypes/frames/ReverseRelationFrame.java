@@ -39,7 +39,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 
 /**
  * okienko do wybierania relacji odwrotnej

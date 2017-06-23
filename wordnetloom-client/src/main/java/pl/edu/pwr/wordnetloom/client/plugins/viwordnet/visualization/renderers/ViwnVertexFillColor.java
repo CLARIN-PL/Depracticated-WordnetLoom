@@ -28,7 +28,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSet;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeWord;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 /**
  * Class responsible for setting color of a vertex.

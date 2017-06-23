@@ -5,8 +5,8 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.ExtGraphDAOLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.ExtGraph;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraph;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.service.ExtGraphServiceRemote;
 
 @Stateless

@@ -34,8 +34,8 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import org.apache.commons.collections15.map.HashedMap;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationTest;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.relation.model.RelationTest;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 /**
  * klasa dostarczajaca danych do JList

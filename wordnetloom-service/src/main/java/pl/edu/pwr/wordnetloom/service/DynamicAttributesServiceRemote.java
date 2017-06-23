@@ -3,10 +3,10 @@ package pl.edu.pwr.wordnetloom.service;
 import java.util.List;
 import javax.ejb.Remote;
 import pl.edu.pwr.wordnetloom.model.wordnet.AttributeType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
-import pl.edu.pwr.wordnetloom.model.wordnet.SenseAttribute;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
-import pl.edu.pwr.wordnetloom.model.wordnet.SynsetAttribute;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttribute;
 import pl.edu.pwr.wordnetloom.model.wordnet.Text;
 
 @Remote
@@ -20,19 +20,19 @@ public interface DynamicAttributesServiceRemote {
 
     List<AttributeType> getAttributeTypesForName(String tableName);
 
-    List<SenseAttribute> getSenseAttributesForName(Text typeName);
+    List<SenseAttributes> getSenseAttributesForName(Text typeName);
 
     List<SynsetAttribute> getSynsetAttributesForName(Text typeName);
 
-    SenseAttribute getSenseAttribute(Long index);
+    SenseAttributes getSenseAttribute(Long index);
 
-    List<SenseAttribute> getSenseAttributes(Sense sense);
+    List<SenseAttributes> getSenseAttributes(Sense sense);
 
     SynsetAttribute getSynsetAttribute(Long index);
 
     List<SynsetAttribute> getSynsetAttributes(Synset sense);
 
-    void synchronizeAttributeList(Sense sense, List<SenseAttribute> list);
+    void synchronizeAttributeList(Sense sense, List<SenseAttributes> list);
 
     void synchronizeAttributeList(Synset synset, List<SynsetAttribute> list);
 

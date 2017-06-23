@@ -21,9 +21,9 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Shape;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
-import pl.edu.pwr.wordnetloom.model.wordnet.CustomColor;
-import pl.edu.pwr.wordnetloom.model.wordnet.ExtGraph;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
+import pl.edu.pwr.wordnetloom.common.model.CustomColor;
+import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraph;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 public class ViwnNodeCand extends ViwnNodeSynset {
 

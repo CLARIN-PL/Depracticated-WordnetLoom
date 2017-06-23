@@ -28,7 +28,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 /**
  * okienko do wybierania czesci mowy

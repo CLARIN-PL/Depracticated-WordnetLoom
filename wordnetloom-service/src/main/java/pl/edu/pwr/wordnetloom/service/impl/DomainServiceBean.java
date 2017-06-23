@@ -4,7 +4,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.DomainDaoLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.Domain;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.service.DomainServiceRemote;
 
 @Stateless

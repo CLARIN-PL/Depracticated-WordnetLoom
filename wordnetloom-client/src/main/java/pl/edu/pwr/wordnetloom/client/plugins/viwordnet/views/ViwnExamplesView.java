@@ -23,8 +23,8 @@ import java.util.regex.Pattern;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractView;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.model.wordnet.CorpusExample;
-import pl.edu.pwr.wordnetloom.model.wordnet.Word;
+import pl.edu.pwr.wordnetloom.corpusexample.model.CorpusExample;
+import pl.edu.pwr.wordnetloom.word.model.Word;
 
 public class ViwnExamplesView extends AbstractView {
 

@@ -16,9 +16,9 @@ import javax.persistence.Query;
 import pl.edu.pwr.wordnetloom.dao.DAOLocal;
 import pl.edu.pwr.wordnetloom.dao.RelationTypeDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.SynsetRelationDAOLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
-import pl.edu.pwr.wordnetloom.model.wordnet.SynsetRelation;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.relation.model.SynsetRelation;
 
 @Stateless
 // FIXME: poprawić nazwy

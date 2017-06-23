@@ -5,9 +5,9 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.UnitAndSynsetDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.impl.DAOBean;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.service.UnitAndSynsetServiceRemote;
 
 /**

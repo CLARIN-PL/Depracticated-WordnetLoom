@@ -24,7 +24,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
 
 public class ViwnExampleKPWrViewUI extends AbstractViewUI implements

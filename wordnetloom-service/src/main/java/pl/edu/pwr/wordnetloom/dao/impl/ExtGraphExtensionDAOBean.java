@@ -9,8 +9,8 @@ import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.DAOLocal;
 import pl.edu.pwr.wordnetloom.dao.ExtGraphDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.ExtGraphExtensionDAOLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.ExtGraphExtension;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
+import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraphExtension;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 @Stateless
 // FIXME: refactor names

@@ -1,7 +1,7 @@
 package pl.edu.pwr.wordnetloom.service;
 
 import javax.ejb.Remote;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 @Remote
 public interface TrackerServiceRemote {

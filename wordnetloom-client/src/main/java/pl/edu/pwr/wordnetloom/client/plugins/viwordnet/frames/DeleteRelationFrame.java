@@ -43,10 +43,10 @@ import pl.edu.pwr.wordnetloom.client.utils.Common;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
-import pl.edu.pwr.wordnetloom.model.wordnet.SynsetRelation;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.relation.model.SynsetRelation;
 import se.datadosen.component.RiverLayout;
 
 /**

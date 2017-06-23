@@ -38,10 +38,10 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractView;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.model.wordnet.ExtGraph;
-import pl.edu.pwr.wordnetloom.model.wordnet.ExtGraphExtension;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
+import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraph;
+import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraphExtension;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 /**
  * [View] VisualizesactiveGraphView a graph.

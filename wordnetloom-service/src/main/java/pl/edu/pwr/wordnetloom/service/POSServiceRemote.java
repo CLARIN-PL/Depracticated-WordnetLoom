@@ -2,7 +2,7 @@ package pl.edu.pwr.wordnetloom.service;
 
 import java.util.List;
 import javax.ejb.Remote;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 @Remote
 public interface POSServiceRemote {

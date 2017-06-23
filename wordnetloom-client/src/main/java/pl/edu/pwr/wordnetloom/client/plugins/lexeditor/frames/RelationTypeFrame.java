@@ -19,10 +19,10 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 /**
  * okienko do wprowadzania parametrow dla nowej relacji

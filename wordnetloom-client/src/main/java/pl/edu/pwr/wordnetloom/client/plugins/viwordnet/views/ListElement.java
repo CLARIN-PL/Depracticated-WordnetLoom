@@ -5,7 +5,7 @@
  */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 public class ListElement {
 

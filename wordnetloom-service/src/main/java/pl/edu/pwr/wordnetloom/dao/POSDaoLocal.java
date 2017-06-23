@@ -2,7 +2,7 @@ package pl.edu.pwr.wordnetloom.dao;
 
 import java.util.List;
 import javax.ejb.Local;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 @Local
 public interface POSDaoLocal {

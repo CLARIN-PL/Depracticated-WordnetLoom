@@ -1,9 +1,9 @@
 package pl.edu.pwr.wordnetloom.dao;
 
 import javax.ejb.Local;
-import pl.edu.pwr.wordnetloom.model.tracker.Tracker;
-import pl.edu.pwr.wordnetloom.model.tracker.Tracker.TABLE;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.tracker.Tracker;
+import pl.edu.pwr.wordnetloom.tracker.Tracker.TABLE;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 @Local
 public interface TrackerDaoLocal {

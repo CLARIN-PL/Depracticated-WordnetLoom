@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
-import pl.edu.pwr.wordnetloom.model.wordnet.SynsetRelation;
+import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.relation.model.SynsetRelation;
 
 /**
  * klasa przechowujaca relacje oraz powiazana synsetow

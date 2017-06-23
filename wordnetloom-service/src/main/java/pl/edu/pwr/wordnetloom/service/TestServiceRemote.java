@@ -2,10 +2,10 @@ package pl.edu.pwr.wordnetloom.service;
 
 import java.util.List;
 import javax.ejb.Remote;
-import pl.edu.pwr.wordnetloom.model.wordnet.CorpusExample;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationTest;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Word;
+import pl.edu.pwr.wordnetloom.corpusexample.model.CorpusExample;
+import pl.edu.pwr.wordnetloom.relation.model.RelationTest;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Remote
 public interface TestServiceRemote {

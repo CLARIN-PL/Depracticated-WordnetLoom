@@ -2,7 +2,7 @@ package pl.edu.pwr.wordnetloom.dao;
 
 import java.util.List;
 import javax.ejb.Local;
-import pl.edu.pwr.wordnetloom.model.wordnet.Dictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
 
 @Local
 public interface DictionaryDaoLocal {

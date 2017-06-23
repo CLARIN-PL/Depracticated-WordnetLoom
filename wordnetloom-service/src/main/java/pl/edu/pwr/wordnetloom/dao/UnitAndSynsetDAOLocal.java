@@ -2,9 +2,9 @@ package pl.edu.pwr.wordnetloom.dao;
 
 import java.util.List;
 import javax.ejb.*;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 @Local
 public interface UnitAndSynsetDAOLocal extends DAOLocal {

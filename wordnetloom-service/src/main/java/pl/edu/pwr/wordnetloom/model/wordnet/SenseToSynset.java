@@ -1,5 +1,7 @@
 package pl.edu.pwr.wordnetloom.model.wordnet;
 
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;

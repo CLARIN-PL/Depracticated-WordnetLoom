@@ -3,10 +3,10 @@ package pl.edu.pwr.wordnetloom.dao;
 import java.util.Collection;
 import java.util.List;
 import javax.ejb.Local;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationTest;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.relation.model.RelationTest;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 
 @Local
 public interface RelationTypeDAOLocal {

@@ -23,15 +23,15 @@ import pl.edu.pwr.wordnetloom.dao.DAOLocal;
 import pl.edu.pwr.wordnetloom.dao.LexicalUnitDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.SynsetAttributeDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.SynsetDAOLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.Domain;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
-import pl.edu.pwr.wordnetloom.model.wordnet.SynsetAttribute;
-import pl.edu.pwr.wordnetloom.model.wordnet.SynsetRelation;
-import pl.edu.pwr.wordnetloom.model.wordnet.Word;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttribute;
+import pl.edu.pwr.wordnetloom.relation.model.SynsetRelation;
+import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Stateless
 public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {

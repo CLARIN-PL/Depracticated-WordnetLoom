@@ -3,7 +3,7 @@ package pl.edu.pwr.wordnetloom.service.impl;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.TrackerDaoLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.service.TrackerServiceRemote;
 
 @Stateless

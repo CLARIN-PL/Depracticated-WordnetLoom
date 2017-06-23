@@ -36,10 +36,10 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
 import pl.edu.pwr.wordnetloom.client.utils.Common;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.model.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
-import pl.edu.pwr.wordnetloom.model.wordnet.SynsetRelation;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.relation.model.SynsetRelation;
 
 @SuppressWarnings("unchecked")
 public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeSynset> {

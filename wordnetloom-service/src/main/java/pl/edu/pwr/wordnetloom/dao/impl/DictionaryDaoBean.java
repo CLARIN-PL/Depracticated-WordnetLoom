@@ -8,7 +8,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import pl.edu.pwr.wordnetloom.dao.DAOLocal;
 import pl.edu.pwr.wordnetloom.dao.DictionaryDaoLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.Dictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
 
 @Stateless
 public class DictionaryDaoBean implements DictionaryDaoLocal {

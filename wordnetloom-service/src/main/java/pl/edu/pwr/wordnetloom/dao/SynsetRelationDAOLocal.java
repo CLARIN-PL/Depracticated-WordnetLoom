@@ -3,9 +3,9 @@ package pl.edu.pwr.wordnetloom.dao;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Local;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
-import pl.edu.pwr.wordnetloom.model.wordnet.SynsetRelation;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.relation.model.SynsetRelation;
 
 @Local
 public interface SynsetRelationDAOLocal {

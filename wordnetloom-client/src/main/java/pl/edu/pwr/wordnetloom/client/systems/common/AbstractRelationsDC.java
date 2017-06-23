@@ -2,7 +2,7 @@ package pl.edu.pwr.wordnetloom.client.systems.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 
 @Deprecated
 // TODO: remove me

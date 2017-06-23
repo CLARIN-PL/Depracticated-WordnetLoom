@@ -12,10 +12,10 @@ import pl.edu.pwr.wordnetloom.dao.LexicalRelationDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.RelationTestDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.RelationTypeDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.SynsetRelationDAOLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationTest;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.relation.model.RelationTest;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 
 @Stateless
 // TODO: refaktora nazw

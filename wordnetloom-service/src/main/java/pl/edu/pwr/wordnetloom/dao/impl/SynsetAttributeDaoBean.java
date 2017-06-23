@@ -8,8 +8,8 @@ import pl.edu.pwr.wordnetloom.dao.AttributeTypeDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.DAOLocal;
 import pl.edu.pwr.wordnetloom.dao.SynsetAttributeDaoLocal;
 import pl.edu.pwr.wordnetloom.model.wordnet.AttributeType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
-import pl.edu.pwr.wordnetloom.model.wordnet.SynsetAttribute;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttribute;
 import pl.edu.pwr.wordnetloom.model.wordnet.Text;
 
 @Stateless

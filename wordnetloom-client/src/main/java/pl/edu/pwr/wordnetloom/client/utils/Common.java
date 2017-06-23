@@ -1,7 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.utils;
 
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 public class Common {
 

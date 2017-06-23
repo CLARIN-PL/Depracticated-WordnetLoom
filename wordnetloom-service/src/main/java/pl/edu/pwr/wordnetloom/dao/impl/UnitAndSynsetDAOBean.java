@@ -11,9 +11,9 @@ import pl.edu.pwr.wordnetloom.dao.SynsetAttributeDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.SynsetDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.SynsetRelationDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.UnitAndSynsetDAOLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 /**
  * klasa odpowiadajaca za zarzadzanie danymi o polaczeniach

@@ -2,8 +2,8 @@ package pl.edu.pwr.wordnetloom.dao;
 
 import java.util.List;
 import javax.ejb.Local;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationTest;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
+import pl.edu.pwr.wordnetloom.relation.model.RelationTest;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 
 @Local
 public interface RelationTestDaoLocal {

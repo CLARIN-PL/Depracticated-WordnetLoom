@@ -19,7 +19,7 @@ package pl.edu.pwr.wordnetloom.client.workbench.implementation;
 
 import java.util.ArrayList;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 public class GlobalEventListener {
 

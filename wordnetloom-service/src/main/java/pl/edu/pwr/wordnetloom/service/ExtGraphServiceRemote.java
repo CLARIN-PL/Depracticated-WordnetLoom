@@ -3,8 +3,8 @@ package pl.edu.pwr.wordnetloom.service;
 import java.util.Collection;
 import java.util.List;
 import javax.ejb.Remote;
-import pl.edu.pwr.wordnetloom.model.wordnet.ExtGraph;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraph;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 @Remote
 //FIXME: refactor names

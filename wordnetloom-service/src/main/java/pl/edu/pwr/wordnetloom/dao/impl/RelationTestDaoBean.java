@@ -6,8 +6,8 @@ import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.DAOLocal;
 import pl.edu.pwr.wordnetloom.dao.RelationTestDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.RelationTypeDAOLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationTest;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
+import pl.edu.pwr.wordnetloom.relation.model.RelationTest;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 
 @Stateless
 public class RelationTestDaoBean implements RelationTestDaoLocal {

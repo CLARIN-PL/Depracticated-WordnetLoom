@@ -48,7 +48,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset.State;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeWord;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
 

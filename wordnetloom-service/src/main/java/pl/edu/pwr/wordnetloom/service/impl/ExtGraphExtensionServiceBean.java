@@ -6,7 +6,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.ExtGraphExtensionDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.impl.DAOBean;
-import pl.edu.pwr.wordnetloom.model.wordnet.ExtGraphExtension;
+import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraphExtension;
 import pl.edu.pwr.wordnetloom.service.ExtGraphExtensionServiceRemote;
 
 /**

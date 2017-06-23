@@ -2,9 +2,9 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import java.awt.Color;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
-import pl.edu.pwr.wordnetloom.model.wordnet.ExtGraph;
-import pl.edu.pwr.wordnetloom.model.wordnet.ExtGraphExtension;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
+import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraph;
+import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraphExtension;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 public class ViwnNodeCandExtension extends ViwnNodeCand {
 

@@ -7,9 +7,9 @@ import java.util.Set;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
-import pl.edu.pwr.wordnetloom.model.wordnet.Domain;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 public class DomainComboBox extends ComboBoxPlain<Domain> {
 

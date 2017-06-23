@@ -5,8 +5,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.CorpusExampleDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.DAOLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.CorpusExample;
-import pl.edu.pwr.wordnetloom.model.wordnet.Word;
+import pl.edu.pwr.wordnetloom.corpusexample.model.CorpusExample;
+import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Stateless
 public class CorpusExampleDaoBean implements CorpusExampleDaoLocal {

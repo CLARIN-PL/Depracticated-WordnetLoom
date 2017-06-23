@@ -5,9 +5,9 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.DAOLocal;
 import pl.edu.pwr.wordnetloom.dao.TrackerDaoLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
-import pl.edu.pwr.wordnetloom.model.tracker.TLexicalUnit;
-import pl.edu.pwr.wordnetloom.model.tracker.Tracker;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.tracker.TLexicalUnit;
+import pl.edu.pwr.wordnetloom.tracker.Tracker;
 
 @Stateless
 public class TrackerDaoBean implements TrackerDaoLocal {

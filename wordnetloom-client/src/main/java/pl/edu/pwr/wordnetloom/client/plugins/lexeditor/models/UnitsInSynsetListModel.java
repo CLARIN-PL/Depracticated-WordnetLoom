@@ -3,7 +3,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.models;
 import java.util.ArrayList;
 import java.util.Collection;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 /**
  * klasa dostarczajaca danych z uwzglednieniem linii podzialu

@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.Remote;
 import pl.edu.pwr.wordnetloom.model.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.model.wordnet.Domain;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 @Remote
 public interface SynsetServiceRemote extends DAORemote {

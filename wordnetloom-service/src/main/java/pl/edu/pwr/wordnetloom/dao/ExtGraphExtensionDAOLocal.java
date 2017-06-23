@@ -3,8 +3,8 @@ package pl.edu.pwr.wordnetloom.dao;
 import java.util.Collection;
 import java.util.List;
 import javax.ejb.Local;
-import pl.edu.pwr.wordnetloom.model.wordnet.ExtGraphExtension;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
+import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraphExtension;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 @Local
 public interface ExtGraphExtensionDAOLocal {

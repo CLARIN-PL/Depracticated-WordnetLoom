@@ -7,10 +7,10 @@ import pl.edu.pwr.wordnetloom.dao.AttributeTypeDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.SenseAttributeDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.SynsetAttributeDaoLocal;
 import pl.edu.pwr.wordnetloom.model.wordnet.AttributeType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
-import pl.edu.pwr.wordnetloom.model.wordnet.SenseAttribute;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
-import pl.edu.pwr.wordnetloom.model.wordnet.SynsetAttribute;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttribute;
 import pl.edu.pwr.wordnetloom.model.wordnet.Text;
 import pl.edu.pwr.wordnetloom.service.DynamicAttributesServiceRemote;
 
@@ -47,17 +47,17 @@ public class DynamicAttributesServiceBean implements DynamicAttributesServiceRem
     }
 
     @Override
-    public List<SenseAttribute> getSenseAttributesForName(Text typeName) {
+    public List<SenseAttributes> getSenseAttributesForName(Text typeName) {
         return senseAttribute.getSenseAttributesForName(typeName);
     }
 
     @Override
-    public SenseAttribute getSenseAttribute(Long index) {
+    public SenseAttributes getSenseAttribute(Long index) {
         return senseAttribute.getSenseAttribute(index);
     }
 
     @Override
-    public List<SenseAttribute> getSenseAttributes(Sense sense) {
+    public List<SenseAttributes> getSenseAttributes(Sense sense) {
         return senseAttribute.getSenseAttributes(sense);
     }
 
@@ -78,7 +78,7 @@ public class DynamicAttributesServiceBean implements DynamicAttributesServiceRem
 
     @Override
     public String getSenseAttribute(Sense sense, String key) {
-        SenseAttribute sa = senseAttribute.getSenseAttributeForName(sense, key);
+        SenseAttributes sa = senseAttribute.getSenseAttributeForName(sense, key);
         if (sa == null || sa.getValue() == null || sa.getValue().getText() == null) {
             return null;
         }
@@ -105,17 +105,17 @@ public class DynamicAttributesServiceBean implements DynamicAttributesServiceRem
     }
 
     @Override
-    public void synchronizeAttributeList(Sense sense, List<SenseAttribute> list) {
+    public void synchronizeAttributeList(Sense sense, List<SenseAttributes> list) {
         // step one, take all Attributes attached to first param.
-        List<SenseAttribute> oldList = getSenseAttributes(sense);
+        List<SenseAttributes> oldList = getSenseAttributes(sense);
 
         // step two, remove them.
-        for (SenseAttribute s : oldList) {
+        for (SenseAttributes s : oldList) {
             senseAttribute.removeSenseAttribute(s);
         }
 
         // step three, persist new attributes
-        for (SenseAttribute s : list) {
+        for (SenseAttributes s : list) {
             senseAttribute.persistSenseAttribute(s);
         }
 
@@ -123,7 +123,7 @@ public class DynamicAttributesServiceBean implements DynamicAttributesServiceRem
         // we can do it better, ie. checking for every change in new list and discard
         // attributes that didn't change, then merge other causing updates / inserts into
         // database. it would recquire far more logic in this method
-        // and changes in Sense and SenseAttribute classes as well (hashCode and equals
+        // and changes in Sense and SenseAttributes classes as well (hashCode and equals
         // that would need a lot of testing due to Hibernate's nature)
     }
 

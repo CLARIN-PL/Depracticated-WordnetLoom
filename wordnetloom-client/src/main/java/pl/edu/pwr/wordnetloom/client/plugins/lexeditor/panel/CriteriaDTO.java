@@ -1,7 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import java.util.List;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 public class CriteriaDTO {
 

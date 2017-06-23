@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import pl.edu.pwr.wordnetloom.client.utils.RMIUtils;
-import pl.edu.pwr.wordnetloom.model.wordnet.Domain;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.service.DomainServiceRemote;
 
 public class DomainManager {

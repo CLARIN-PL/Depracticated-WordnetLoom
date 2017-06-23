@@ -20,7 +20,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.candidates.tasks;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import pl.edu.pwr.wordnetloom.client.systems.progress.AbstractProgressThread;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 @Deprecated
 // TODO: rebuild!

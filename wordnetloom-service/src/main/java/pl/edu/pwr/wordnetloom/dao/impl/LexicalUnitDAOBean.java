@@ -31,14 +31,14 @@ import pl.edu.pwr.wordnetloom.dao.SenseAttributeDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.SynsetDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.TrackerDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.UnitAndSynsetDAOLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.Domain;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
-import pl.edu.pwr.wordnetloom.model.wordnet.SenseAttribute;
-import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
-import pl.edu.pwr.wordnetloom.model.wordnet.Word;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Stateless
 public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
@@ -89,7 +89,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
     @Override
     public boolean dbDelete(Sense sense, String owner) {
         Sense s = dbGet(sense.getId());
-        SenseAttribute sa = senseAttributeDao.getSenseAttributeForName(sense, Sense.COMMENT);
+        SenseAttributes sa = senseAttributeDao.getSenseAttributeForName(sense, Sense.COMMENT);
         String sas = sa == null ? null : sa.getValue() == null ? null : "" + sa.getValue();
         tracker.deletedLexicalUnit(s, sas, owner);
 
@@ -661,7 +661,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
      */
     @Override
     public String getSenseAtrribute(Sense sense, String nazwaPola) {
-        SenseAttribute senseAttribute = senseAttributeDao.getSenseAttributeForName(sense, nazwaPola);
+        SenseAttributes senseAttribute = senseAttributeDao.getSenseAttributeForName(sense, nazwaPola);
         if (null == senseAttribute
                 || null == senseAttribute.getValue()
                 || null == senseAttribute.getValue().getText()) {
@@ -683,7 +683,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
             persistObject(sense);
         }
 
-        List<SenseAttribute> atrributes = senseAttributeDao.getSenseAttributes(sense);
+        List<SenseAttributes> atrributes = senseAttributeDao.getSenseAttributes(sense);
 
         if (atrributes != null) {
             atrributes.stream().forEach((senseAttribute) -> {

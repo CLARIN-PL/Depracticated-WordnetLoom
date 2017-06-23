@@ -19,7 +19,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractView;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 /**
  * [View User Interface] Displays a list of lexical relations for given unit.

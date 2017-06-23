@@ -9,9 +9,9 @@ import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
 import pl.edu.pwr.wordnetloom.dao.DAOLocal;
 import pl.edu.pwr.wordnetloom.dao.UnitsRelationsDAOLocal;
-import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
-import pl.edu.pwr.wordnetloom.model.wordnet.SenseRelation;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.relation.model.SenseRelation;
 
 @Stateless
 public class UnitsRelationsDAOBean implements UnitsRelationsDAOLocal {

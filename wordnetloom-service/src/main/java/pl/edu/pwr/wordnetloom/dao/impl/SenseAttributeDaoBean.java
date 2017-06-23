@@ -10,10 +10,10 @@ import pl.edu.pwr.wordnetloom.dao.AttributeTypeDaoLocal;
 import pl.edu.pwr.wordnetloom.dao.DAOLocal;
 import pl.edu.pwr.wordnetloom.dao.SenseAttributeDaoLocal;
 import pl.edu.pwr.wordnetloom.model.wordnet.AttributeType;
-import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
-import pl.edu.pwr.wordnetloom.model.wordnet.SenseAttribute;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.model.wordnet.Text;
-import pl.edu.pwr.wordnetloom.model.wordnet.Word;
+import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Stateless
 public class SenseAttributeDaoBean implements SenseAttributeDaoLocal {
@@ -25,10 +25,10 @@ public class SenseAttributeDaoBean implements SenseAttributeDaoLocal {
     private AttributeTypeDaoLocal attributeTypeDao;
 
     @Override
-    public SenseAttribute getSenseAttributeForName(Sense sense, String typeName) {
+    public SenseAttributes getSenseAttributeForName(Sense sense, String typeName) {
 
-        List<SenseAttribute> list = local.getEM()
-                .createNamedQuery("SenseAttribute.getSenseAttributeForName", SenseAttribute.class)
+        List<SenseAttributes> list = local.getEM()
+                .createNamedQuery("SenseAttribute.getSenseAttributeForName", SenseAttributes.class)
                 .setParameter("typeName", typeName)
                 .setParameter("sense", sense.getId())
                 .getResultList();
@@ -41,28 +41,28 @@ public class SenseAttributeDaoBean implements SenseAttributeDaoLocal {
     }
 
     @Override
-    public List<SenseAttribute> getSenseAttributesForName(Text typeName) {
+    public List<SenseAttributes> getSenseAttributesForName(Text typeName) {
         return local.getEM()
-                .createNamedQuery("SenseAttribute.getForName", SenseAttribute.class)
+                .createNamedQuery("SenseAttribute.getForName", SenseAttributes.class)
                 .setParameter("typeName", typeName)
                 .getResultList();
     }
 
     @Override
-    public SenseAttribute getSenseAttribute(Long index) {
-        return local.getObject(SenseAttribute.class, index);
+    public SenseAttributes getSenseAttribute(Long index) {
+        return local.getObject(SenseAttributes.class, index);
     }
 
     @Override
-    public List<SenseAttribute> getSenseAttributes(Sense sense) {
+    public List<SenseAttributes> getSenseAttributes(Sense sense) {
         return local.getEM()
-                .createNamedQuery("SenseAttribute.getForSense", SenseAttribute.class)
+                .createNamedQuery("SenseAttribute.getForSense", SenseAttributes.class)
                 .setParameter("sense", sense)
                 .getResultList();
     }
 
     @Override
-    public void removeSenseAttribute(SenseAttribute s) {
+    public void removeSenseAttribute(SenseAttributes s) {
         local.deleteObject(s);
     }
 
@@ -75,7 +75,7 @@ public class SenseAttributeDaoBean implements SenseAttributeDaoLocal {
     }
 
     @Override
-    public void persistSenseAttribute(SenseAttribute s) {
+    public void persistSenseAttribute(SenseAttributes s) {
         local.persistObject(s);
     }
 
@@ -83,7 +83,7 @@ public class SenseAttributeDaoBean implements SenseAttributeDaoLocal {
     @Override
     public void saveOrUpdateSenseAttribute(Sense sense, String key, String value) {
         EntityManager em = local.getEM();
-        SenseAttribute senseAttribute = null;
+        SenseAttributes senseAttribute = null;
 
         if (null != sense.getId()) {
             senseAttribute = getSenseAttributeForName(sense, key);//sprawdzamy czy jest taki atrybut dla sensu
@@ -111,7 +111,7 @@ public class SenseAttributeDaoBean implements SenseAttributeDaoLocal {
                 attributeType.setTypeName(textKey);
                 em.persist(attributeType);
             }
-            senseAttribute = new SenseAttribute();
+            senseAttribute = new SenseAttributes();
 
             Text textValue = new Text(value);
             em.persist(textValue);
