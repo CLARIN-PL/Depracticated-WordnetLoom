@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.dictionary.model;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -10,7 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import pl.edu.pwr.wordnetloom.common.model.Localised;
 
 @Entity
 @Table(name = "dictionaries")
@@ -18,7 +22,7 @@ import javax.persistence.Table;
 @DiscriminatorColumn(
         name = "dtype",
         discriminatorType = DiscriminatorType.STRING)
-public class Dictionary implements Serializable {
+public abstract class Dictionary implements Serializable {
 
     private static final long serialVersionUID = -7858918337069154092L;
 
@@ -27,21 +31,20 @@ public class Dictionary implements Serializable {
     @Column(unique = true, nullable = false)
     protected Long id;
 
-    protected String name;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "name_id")
+    protected Localised nameStrings = new Localised();
 
-    protected String description;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "description_id")
+    protected Localised descriptionStrings = new Localised();
 
     public Dictionary() {
     }
 
-    public Dictionary(String name, String desc) {
-        this.name = name;
-        this.description = desc;
-    }
-
-    @Override
-    public String toString() {
-        return name + " ( " + description + " )";
+    public Dictionary(String locale, String name, String description) {
+        this.nameStrings.addString(locale, name);
+        this.descriptionStrings.addString(locale, description);
     }
 
     public Long getId() {
@@ -52,20 +55,20 @@ public class Dictionary implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getName(String locale) {
+        return this.nameStrings.getString(locale);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String locale, String name) {
+        this.nameStrings.addString(locale, name);
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescription(String locale) {
+        return this.descriptionStrings.getString(locale);
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescription(String locale, String description) {
+        this.descriptionStrings.addString(locale, description);
     }
 
     @Override

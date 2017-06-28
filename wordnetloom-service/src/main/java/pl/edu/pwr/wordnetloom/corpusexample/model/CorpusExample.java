@@ -10,15 +10,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Entity
 @Table(name = "corpus_example")
-@NamedQueries({
-    @NamedQuery(name = "CorpusExample.getCorpusExamplesFor", query = "SELECT c FROM CorpusExample c WHERE c.word.word = :word")})
 public class CorpusExample implements Serializable {
 
     private static final long serialVersionUID = -86878893575269138L;

@@ -1,18 +1,18 @@
 package pl.edu.pwr.wordnetloom.client.utils;
 
 import pl.edu.pwr.wordnetloom.service.DynamicAttributesServiceRemote;
-import pl.edu.pwr.wordnetloom.service.ExtGraphExtensionServiceRemote;
-import pl.edu.pwr.wordnetloom.service.ExtGraphServiceRemote;
-import pl.edu.pwr.wordnetloom.service.LexicalRelationServiceRemote;
-import pl.edu.pwr.wordnetloom.service.LexicalUnitServiceRemote;
-import pl.edu.pwr.wordnetloom.service.NativeServiceRemote;
-import pl.edu.pwr.wordnetloom.service.RelationTypeServiceRemote;
-import pl.edu.pwr.wordnetloom.service.SynsetRelationServiceRemote;
-import pl.edu.pwr.wordnetloom.service.SynsetServiceRemote;
-import pl.edu.pwr.wordnetloom.service.TestServiceRemote;
-import pl.edu.pwr.wordnetloom.service.TrackerServiceRemote;
-import pl.edu.pwr.wordnetloom.service.UnitAndSynsetServiceRemote;
-import pl.edu.pwr.wordnetloom.service.UnitsRelationsServiceRemote;
+import pl.edu.pwr.wordnetloom.extgraph.service.ExtGraphExtensionServiceRemote;
+import pl.edu.pwr.wordnetloom.extgraph.service.ExtGraphServiceRemote;
+import pl.edu.pwr.wordnetloom.relation.service.LexicalRelationServiceRemote;
+import pl.edu.pwr.wordnetloom.sense.service.LexicalUnitServiceRemote;
+import pl.edu.pwr.wordnetloom.common.service.NativeServiceRemote;
+import pl.edu.pwr.wordnetloom.relation.service.RelationTypeServiceRemote;
+import pl.edu.pwr.wordnetloom.relation.service.SynsetRelationServiceRemote;
+import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
+import pl.edu.pwr.wordnetloom.relation.service.TestServiceRemote;
+import pl.edu.pwr.wordnetloom.tracker.TrackerServiceRemote;
+import pl.edu.pwr.wordnetloom.synset.service.UnitAndSynsetServiceRemote;
+import pl.edu.pwr.wordnetloom.relation.service.UnitsRelationsServiceRemote;
 import pl.edu.pwr.wordnetloom.service.WordFormServiceRemote;
 
 /**

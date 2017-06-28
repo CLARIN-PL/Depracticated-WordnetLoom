@@ -6,18 +6,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "word")
-@NamedQueries({
-    @NamedQuery(name = "Word.countWordByLemma",
-            query = "select count(w.word) from Word w where w.word =:lemma"),
-    @NamedQuery(name = "Word.getWordByLemma",
-            query = "select w from Word w where w.word =:lemma")})
 public class Word implements Serializable {
 
     private static final long serialVersionUID = -1256292370070216845L;

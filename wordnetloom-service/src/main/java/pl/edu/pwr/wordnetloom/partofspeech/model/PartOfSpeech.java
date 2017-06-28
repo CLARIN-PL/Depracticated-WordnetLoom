@@ -8,19 +8,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.Valid;
 import pl.edu.pwr.wordnetloom.common.model.Localised;
 
 @Entity
 @Table(name = "part_of_speech")
-@NamedQueries({
-    @NamedQuery(name = "PartOfSpeech.getAllPOSes",
-            query = "SELECT DISTINCT p FROM PartOfSpeech p LEFT JOIN FETCH p.name LEFT JOIN FETCH p.domains WHERE p.lexicon.id IN (:ids)"),
-    @NamedQuery(name = "PartOfSpeech.getAllPOSesNoLexicon",
-            query = "SELECT DISTINCT p FROM PartOfSpeech p LEFT JOIN FETCH p.name LEFT JOIN FETCH p.domains")
-})
 public class PartOfSpeech implements Serializable {
 
     private static final long serialVersionUID = 6240656223603990725L;
@@ -31,6 +24,7 @@ public class PartOfSpeech implements Serializable {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "name_id")
+    @Valid
     private Localised nameStrings = new Localised();
 
     public PartOfSpeech() {

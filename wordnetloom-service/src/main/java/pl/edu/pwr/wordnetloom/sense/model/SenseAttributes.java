@@ -1,23 +1,25 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
 import java.io.Serializable;
+import java.util.List;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import pl.edu.pwr.wordnetloom.user.model.User;
 
 @Entity
 @Table(name = "sense_attributes")
-@NamedQueries({
-    @NamedQuery(name = "SenseAttribute.getForName", query = "SELECT sa FROM SenseAttribute sa, AttributeType at WHERE at.typeName = :typeName AND at.tableName = 'sense' AND sa.type = at"),
-    @NamedQuery(name = "SenseAttribute.getForSense", query = "SELECT sa FROM SenseAttribute sa WHERE sa.sense = :sense"),
-    @NamedQuery(name = "SenseAttribute.getSenseAttributeForName", query = "SELECT sa FROM SenseAttribute sa, AttributeType at WHERE "
-            + "at.typeName.text = :typeName AND at.tableName = 'sense' AND sa.type = at AND sa.sense.id = :sense"),
-    @NamedQuery(name = "SenseAttribute.deleteBySense", query = "DELETE FROM SenseAttribute sa WHERE sa.sense.id = :senseID"),})
 public class SenseAttributes implements Serializable {
 
     private static final long serialVersionUID = -6738496417082820449L;
@@ -36,13 +38,25 @@ public class SenseAttributes implements Serializable {
 
     private String link;
 
-    private String examples;
+    @ElementCollection
+    @CollectionTable(name = "sense_examples", joinColumns = @JoinColumn(name = "sense_attributes_id"))
+    @Column(name = "example")
+    private List<String> examples;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    private User owner;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    @MapsId
+    private Sense sense;
 
     public SenseAttributes() {
         super();
     }
 
-    public SenseAttributes(String definition, String comment, String register, String link, String examples, Sense sense) {
+    public SenseAttributes(String definition, String comment, String register, String link, List<String> examples) {
         this.definition = definition;
         this.comment = comment;
         this.register = register;
@@ -90,12 +104,28 @@ public class SenseAttributes implements Serializable {
         this.link = link;
     }
 
-    public String getExamples() {
+    public List<String> getExamples() {
         return examples;
     }
 
-    public void setExamples(String examples) {
+    public void setExamples(List<String> examples) {
         this.examples = examples;
+    }
+
+    public Sense getSense() {
+        return sense;
+    }
+
+    public void setSense(Sense sense) {
+        this.sense = sense;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
 }

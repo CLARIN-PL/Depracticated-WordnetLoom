@@ -45,7 +45,7 @@ public class LexiconServicesUTest {
     }
 
     @Test(expected = LexiconNotFoundException.class)
-    public void findCategoryByIdNotFound() {
+    public void LexiconByIdNotFound() {
         when(lexiconRepository.findById(1L)).thenReturn(null);
 
         lexiconService.findById(1L);

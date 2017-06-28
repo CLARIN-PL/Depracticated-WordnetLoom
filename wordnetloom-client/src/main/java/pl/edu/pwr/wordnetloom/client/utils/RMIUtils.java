@@ -14,7 +14,7 @@ import org.jboss.ejb.client.EJBClientContext;
 import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
-import pl.edu.pwr.wordnetloom.service.NativeServiceRemote;
+import pl.edu.pwr.wordnetloom.common.service.NativeServiceRemote;
 
 public class RMIUtils {
 

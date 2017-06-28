@@ -3,13 +3,18 @@ package pl.edu.pwr.wordnetloom.common.model;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "localised")
 public class Localised implements Serializable {
 
     @Id
@@ -17,6 +22,8 @@ public class Localised implements Serializable {
     private long id;
 
     @ElementCollection
+    @NotNull
+    @CollectionTable(name = "localised_strings", joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"))
     private Map<String, String> strings = new HashMap<>();
 
     public Localised() {

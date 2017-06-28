@@ -1,26 +1,25 @@
 package pl.edu.pwr.wordnetloom.synset.model;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import pl.edu.pwr.wordnetloom.user.model.User;
 
 @Entity
 @Table(name = "synset_attributes")
-@NamedQueries({
-    @NamedQuery(name = "SynsetAttribute.getForName",
-            query = "SELECT sa FROM SynsetAttribute sa, AttributeType at WHERE at.typeName = :typeName AND at.tableName = 'synset' AND sa.type = at"),
-    @NamedQuery(name = "SynsetAttribute.getForSynset",
-            query = "SELECT sa FROM SynsetAttribute sa WHERE sa.synset = :synset"),
-    @NamedQuery(name = "SynsetAttribute.getSynsetAttributeForName",
-            query = "SELECT sa FROM SynsetAttribute sa WHERE sa.type.tableName='synset' AND sa.type.typeName.text = :typeName AND sa.synset.id = :synset "),
-    @NamedQuery(name = "SynsetAttribute.deleteForSynset",
-            query = "DELETE FROM SynsetAttribute sa WHERE sa.synset.id = :synset"),})
 public class SynsetAttributes implements Serializable {
 
     private static final long serialVersionUID = -3305787239727633359L;
@@ -33,18 +32,30 @@ public class SynsetAttributes implements Serializable {
 
     private String comment;
 
+    @ElementCollection
+    @CollectionTable(name = "synset_examples", joinColumns = @JoinColumn(name = "synset_attributes_id"))
+    @Column(name = "example")
+    private List<String> examples;
+
     @Basic
     private Boolean isAbstract;
 
-    private String owner;
+    @ManyToOne
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    private User owner;
 
     private String princetonId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    @MapsId
+    private Synset synset;
 
     public SynsetAttributes() {
         super();
     }
 
-    public SynsetAttributes(String definition, String comment, boolean isAbstract, String owner, String princetonId) {
+    public SynsetAttributes(String definition, String comment, boolean isAbstract, User owner, String princetonId) {
         this.definition = definition;
         this.comment = comment;
         this.isAbstract = isAbstract;
@@ -84,12 +95,20 @@ public class SynsetAttributes implements Serializable {
         this.isAbstract = isAbstract;
     }
 
-    public String getOwner() {
+    public User getOwner() {
         return owner;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public Synset getSynset() {
+        return synset;
+    }
+
+    public void setSynset(Synset synset) {
+        this.synset = synset;
     }
 
     public String getPrincetonId() {
@@ -98,6 +117,14 @@ public class SynsetAttributes implements Serializable {
 
     public void setPrincetonId(String princetonId) {
         this.princetonId = princetonId;
+    }
+
+    public List<String> getExamples() {
+        return examples;
+    }
+
+    public void setExamples(List<String> examples) {
+        this.examples = examples;
     }
 
 }
