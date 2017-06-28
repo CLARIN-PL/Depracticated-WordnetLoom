@@ -15,6 +15,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 @Entity
@@ -54,6 +55,7 @@ public class Synset implements Serializable {
     @OneToMany(mappedBy = "synset")
     private List<Sense> senses = new ArrayList<>();
 
+    @NotNull
     @OneToOne(mappedBy = "synset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private SynsetAttributes synsetAttributes;
 

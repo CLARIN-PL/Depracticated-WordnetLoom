@@ -38,7 +38,7 @@ public class SynsetAttributes implements Serializable {
     private List<String> examples;
 
     @Basic
-    private Boolean isAbstract;
+    private Boolean isAbstract = false;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")

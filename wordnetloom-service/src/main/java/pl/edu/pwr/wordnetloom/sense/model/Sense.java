@@ -14,6 +14,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -25,8 +27,6 @@ import pl.edu.pwr.wordnetloom.word.model.Word;
 @NamedQueries({
     @NamedQuery(name = "Sense.findAll",
             query = "SELECT s FROM Sense s"),
-    @NamedQuery(name = "Sense.findSenseByID",
-            query = "SELECT s FROM Sense s where s.id =:id"),
     @NamedQuery(name = "Sense.findCountAll",
             query = "SELECT COUNT(s) FROM Sense s"),
     @NamedQuery(name = "Sense.findByLema",
@@ -37,8 +37,6 @@ import pl.edu.pwr.wordnetloom.word.model.Word;
             query = "select s.sense from SenseToSynset s where s.sense.lexicon.id IN( :lexicons ) and s.idSynset =:idSynset order by s.senseIndex"),
     @NamedQuery(name = "Sense.CountSenseBySynsetID",
             query = "select count(s.sense) from SenseToSynset s where s.idSynset =:idSynset"),
-    @NamedQuery(name = "Sense.dbGetNextVariant",
-            query = "SELECT MAX(s.senseNumber) FROM Sense AS s WHERE LOWER(s.lemma.word) = :word AND s.partOfSpeech.id = :pos"),
     @NamedQuery(name = "Sense.findSensesBySynsetIDs",
             query = "select s.sense from SenseToSynset s where s.idSynset in (:ids)")
 })
@@ -54,27 +52,33 @@ public class Sense implements Serializable {
     @JoinColumn(name = "domain_id", referencedColumnName = "id", nullable = false)
     private Domain domain;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "word_id", referencedColumnName = "id", nullable = false)
     private Word word;
 
     @ManyToOne
     @JoinColumn(name = "part_of_speech_id", referencedColumnName = "id", nullable = false)
+    @NotNull
     private PartOfSpeech partOfSpeech;
 
+    @NotNull
     @Column(name = "variant", nullable = false, columnDefinition = "int default = '1'")
-    private Integer variant;
+    private Integer variant = 1;
 
     @ManyToOne
     @JoinColumn(name = "synset_id", referencedColumnName = "id")
     private Synset synset;
 
-    @Column(name = "synset_position", nullable = false)
+    @Column(name = "synset_position")
     private Integer synsetPosition = 0;
 
     @OneToOne(mappedBy = "sense", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Valid
+    @NotNull
     private SenseAttributes senseAttributes;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "lexicon_id", referencedColumnName = "id", nullable = false)
     private Lexicon lexicon;

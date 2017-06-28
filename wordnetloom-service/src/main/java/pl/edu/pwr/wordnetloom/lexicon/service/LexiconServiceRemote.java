@@ -12,6 +12,8 @@ public interface LexiconServiceRemote {
     List<Lexicon> findAllByLexicon(List<Long> lexiconIds);
 
     List<Lexicon> findAll();
-
+    
+    List<Long> findAllLexiconIds();
+    
     Lexicon add(Lexicon lexicon);
 }

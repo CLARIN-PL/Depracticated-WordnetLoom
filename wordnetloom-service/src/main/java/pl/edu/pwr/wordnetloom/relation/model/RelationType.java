@@ -6,10 +6,14 @@ import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
@@ -20,8 +24,7 @@ import javax.persistence.Table;
 import pl.edu.pwr.wordnetloom.common.model.Localised;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
-@Entity
-@Table(name = "relation_type")
+
 @NamedQueries({
     @NamedQuery(name = "RelationType.dbDelete",
             query = "DELETE FROM RelationType rt WHERE rt.parent = :parent"),
@@ -38,7 +41,13 @@ import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
             query = "SELECT rt FROM RelationType rt WHERE rt.parent = NULL AND rt.lexicon.id IN (:lexicons)"),
     @NamedQuery(name = "RelationType.dbGetHighestArgument",
             query = "SELECT rt FROM RelationType rt WHERE rt.parent = NULL AND rt.argumentType.id = :argument AND rt.lexicon.id IN (:lexicons)")})
-public class RelationType implements Serializable {
+@Entity
+@Table(name = "relation_type")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(
+        name = "dtype",
+        discriminatorType = DiscriminatorType.STRING)
+public abstract class RelationType implements Serializable {
 
     private static final long serialVersionUID = -1464680230571457108L;
 
@@ -53,10 +62,6 @@ public class RelationType implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "lexicon_id")
     )
     private Set<Lexicon> lexicons;
-
-    @Basic
-    @Column(name = "multilingual", nullable = false, columnDefinition = "bit")
-    private Boolean multilingual = false;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "name_id")
@@ -73,18 +78,6 @@ public class RelationType implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "short_display_text_id")
     private Localised shortDisplayStrings = new Localised();
-
-    @ManyToOne
-    @JoinColumn(name = "argument_type_id", referencedColumnName = "id", nullable = false)
-    private RelationArgument argumentType;
-
-    @ManyToOne
-    @JoinColumn(name = "parent_relation_type_id", nullable = true)
-    private RelationType parent;
-
-    @ManyToOne
-    @JoinColumn(name = "reverse_relation_type_id", nullable = true)
-    private RelationType reverse;
 
     @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL)
     private List<RelationTest> relationTests;
@@ -145,39 +138,7 @@ public class RelationType implements Serializable {
         this.lexicons = lexicons;
     }
 
-    public Boolean getMultilingual() {
-        return multilingual;
-    }
-
-    public void setMultilingual(Boolean multilingual) {
-        this.multilingual = multilingual;
-    }
-
-    public RelationArgument getArgumentType() {
-        return argumentType;
-    }
-
-    public void setArgumentType(RelationArgument argumentType) {
-        this.argumentType = argumentType;
-    }
-
-    public RelationType getParent() {
-        return parent;
-    }
-
-    public void setParent(RelationType parent) {
-        this.parent = parent;
-    }
-
-    public RelationType getReverse() {
-        return reverse;
-    }
-
-    public void setReverse(RelationType reverse) {
-        this.reverse = reverse;
-    }
-
-    public List<RelationTest> getRelationTests() {
+      public List<RelationTest> getRelationTests() {
         return relationTests;
     }
 

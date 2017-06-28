@@ -15,11 +15,6 @@ public class RelationTestRepository extends GenericRepository<RelationTest> {
     EntityManager em;
 
     @Override
-    public void removeRelationTest(RelationTest relationTest) {
-        local.deleteObject(local.getObject(RelationTest.class, relationTest.getId()));
-    }
-
-    @Override
     public void removeRelationTestsFor(RelationType relationType) {
         local.getEM().createNamedQuery("RelationTest.removeRelationTestsFor", RelationTest.class)
                 .setParameter("relationType", relationType)
@@ -56,16 +51,6 @@ public class RelationTestRepository extends GenericRepository<RelationTest> {
             local.mergeObject(test);
         }
 
-    }
-
-    @Override
-    public void persist(RelationTest test) {
-        local.persistObject(test);
-    }
-
-    @Override
-    public void merge(RelationTest test) {
-        local.mergeObject(test);
     }
 
     @Override

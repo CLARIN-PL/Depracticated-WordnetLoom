@@ -18,44 +18,29 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.relation.service.LexicalRelationDAOLocal;
-import pl.edu.pwr.wordnetloom.dao.SenseAttributeDaoLocal;
-import pl.edu.pwr.wordnetloom.synset.service.SynsetDAOLocal;
-import pl.edu.pwr.wordnetloom.tracker.TrackerDaoLocal;
-import pl.edu.pwr.wordnetloom.synset.service.UnitAndSynsetDAOLocal;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
-import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Stateless
 public class SenseRepository extends GenericRepository<Sense> {
 
-    @EJB
-    private SenseAttributeDaoLocal senseAttributeDao;
-    @EJB
-    private UnitAndSynsetDAOLocal unitAndSynsetDAO;
-    @EJB
-    private LexicalRelationDAOLocal lexicalRelationDAO;
-    @EJB
-    private SynsetDAOLocal synsetDAO;
-    @EJB
-    private TrackerDaoLocal tracker;
+    @PersistenceContext
+    EntityManager em;
 
-    @Override
-    public Sense dbClone(Sense sense) {
+    public Sense clone(Sense sense) {
         Sense clone = new Sense(sense);
         clone.setId(null);
-        dao.persistObject(clone);
+        em.persist(clone);
         return clone;
     }
 
@@ -67,12 +52,6 @@ public class SenseRepository extends GenericRepository<Sense> {
         dao.persistObject(sense);
         dao.refresh(sense);
         return sense;
-    }
-
-    @Override
-    public Lexicon dbSaveLexicon(Lexicon lexicon) {
-        dao.persistObject(lexicon);
-        return lexicon;
     }
 
     @Override
@@ -91,17 +70,6 @@ public class SenseRepository extends GenericRepository<Sense> {
         // usuniecie jednostki
         dao.deleteObject(Sense.class, sense.getId());
         return true;
-    }
-
-    @Override
-    public Sense dbGet(Long id) {
-        List<Sense> list = dao.getEM().createNamedQuery("Sense.findSenseByID", Sense.class)
-                .setParameter("id", id)
-                .getResultList();
-        if (list.isEmpty() || list.get(0) == null) {
-            return null;
-        }
-        return list.get(0);
     }
 
     @Override
@@ -485,32 +453,9 @@ public class SenseRepository extends GenericRepository<Sense> {
                 .getMaxResults();
     }
 
-    /**
-     * odczytanie domen użytych w bazie danych
-     *
-     * @param emptyParam
-     * @return tablica domen
-     */
-    @Override
-    public Domain[] dbGetUsedDomains() {
-        return dao.getEM().createNamedQuery("Domain.getFromSenses", Domain.class)
-                .getResultList()
-                .toArray(new Domain[]{});
-    }
-
-    /**
-     * Odczytuje pierwszy wolny wariant dla danego lematu i kategorii
-     * gramatycznej.
-     *
-     * @param lemma
-     * @param pos
-     * @param PartOfSpeach
-     * @return pierwsza wolna pozycja w bd
-     */
-    @Override
-    public int dbGetNextVariant(String lemma, PartOfSpeech pos) {
+    public int findNextVariant(String lemma, PartOfSpeech pos) {
         int odp = 0;
-        TypedQuery<Integer> q = dao.getEM().createNamedQuery("Sense.dbGetNextVariant", Integer.class)
+        TypedQuery<Integer> q = em.createQuery("SELECT MAX(s.senseNumber) FROM Sense AS s WHERE LOWER(s.word.word) = :word AND s.partOfSpeech.id = :pos", Integer.class)
                 .setParameter("word", lemma.toLowerCase())
                 .setParameter("pos", pos.getId());
         try {
@@ -559,17 +504,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         return list.get(0).intValue();
     }
 
-    /**
-     * odczytanie jednostek nie majacych odmienionych form
-     *
-     * @return lista jednostek
-     */
-    @Override // TODO: check me
-    public List<Sense> dbGetUnitsWithoutForms() {
-        return new ArrayList<>();
-    }
-
-    /**
+      /**
      * Odczytuje najwyższy numerek wariantu dla podanego lematu
      *
      * @param word
@@ -639,31 +574,6 @@ public class SenseRepository extends GenericRepository<Sense> {
         return list.get(0).intValue() > 0;
     }
 
-    /**
-     * pobiera dynamiczne atrybuty - definition, comment, isabstract itd
-     *
-     * @param sense
-     * @param nazwaPola
-     * @param Sense - Sense
-     * @param key - klucz (nazwa pola dynamicznego)
-     * @return value - wartosc pola
-     */
-    @Override
-    public String getSenseAtrribute(Sense sense, String nazwaPola) {
-        SenseAttributes senseAttribute = senseAttributeDao.getSenseAttributeForName(sense, nazwaPola);
-        if (null == senseAttribute
-                || null == senseAttribute.getValue()
-                || null == senseAttribute.getValue().getText()) {
-            return "";
-        }
-        return senseAttribute.getValue().getText();
-    }
-
-    @Override
-    public void setSenseAtrribute(Sense sense, String key, String value) {
-        senseAttributeDao.saveOrUpdateSenseAttribute(sense, key, value);
-    }
-
     @Override
     public Sense updateSense(Sense sense) {
 
@@ -684,78 +594,27 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     @Override
-    public Lexicon getLexiconById(Long id) {
-        try {
-            return getEM()
-                    .createNamedQuery("Lexicon.findLexById", Lexicon.class)
-                    .setParameter("id", id)
-                    .getSingleResult();
-
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Lexicon> getLexiconsByIds(List<Long> lexiconsIds) {
-        Query query = getEM().createQuery("FROM Lexicon l JOIN FETCH l.name WHERE l.id IN (:ids)");
-        return query
-                .setParameter("ids", lexiconsIds)
-                .getResultList();
-    }
-
-    @Override
-    public List<Lexicon> getAllLexicons() {
-        return getEM()
-                .createNamedQuery("Lexicon.allLexicons", Lexicon.class)
-                .getResultList();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Long> getAllLexiconIds() {
-        return getEM().createQuery("SELECT l.id FROM Lexicon l").getResultList();
-    }
-
-    @Override
-    public Word seekOrSaveWord(Word word) {
-        List<Word> list = getEM().createNamedQuery("Word.getWordByLemma", Word.class)
-                .setParameter("lemma", word.getWord())
-                .getResultList();
-        if (list == null || list.isEmpty() || list.get(0) == null) {
-            return mergeObject(word);
-        }
-        return list.get(0);
-    }
-
-    @Override
-    public Word saveWord(Word word) {
-        return mergeObject(word);
-    }
-
-    @Override
     public List<Long> getAllLemmasForLexicon(List<Long> lexicon) {
         Query query = getEM().createQuery("SELECT s.lemma.id FROM Sense s WHERE s.lexicon.id IN (:lexicon) GROUP BY s.lemma.id");
         query.setParameter("lexicon", lexicon);
         return query.getResultList();
     }
 
-    @Override
-    public List<Sense> getSensesForLemmaID(long id, long lexicon) {
-        Query query = getEM().createQuery("FROM Sense s WHERE s.lemma.id = :id AND s.lexicon.id = :lexicon");
+    public List<Sense> findSensesByWordId(Long id, Long lexicon) {
+        Query query = em.createQuery("FROM Sense s WHERE s.word.id = :id AND s.lexicon.id = :lexicon");
         query.setParameter("id", id);
         query.setParameter("lexicon", lexicon);
         return query.getResultList();
     }
 
     @Override
-    public List<Sense> dbFastGetUnitsUby(String filter,
-            pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos,
-            Domain domain, RelationType relationType, String register,
-            String comment, String example, int limitSize, List<Long> lexicons) {
+    protected Class<Sense> getPersistentClass() {
+        return Sense.class;
+    }
 
-        return getSenses(filter, null, domain, relationType, register, comment, example, limitSize, lexicons, pos);
+    @Override
+    protected EntityManager getEntityManager() {
+        return em;
     }
 
 }

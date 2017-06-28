@@ -52,7 +52,7 @@ public class SynsetRelation implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "relation_type_id", referencedColumnName = "id", nullable = false)
-    private RelationType relationType;
+    private SynsetRelationType relationType;
 
     @OneToOne
     @JoinColumn(name = "parent_id", referencedColumnName = "id", nullable = false)
@@ -77,7 +77,7 @@ public class SynsetRelation implements Serializable {
         return relationType;
     }
 
-    public void setRelationType(RelationType relationType) {
+    public void setRelationType(SynsetRelationType relationType) {
         this.relationType = relationType;
     }
 

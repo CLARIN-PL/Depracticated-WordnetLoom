@@ -65,4 +65,27 @@ public class LexiconRepositoryUTest extends TestBaseRepository {
         final Lexicon l = lexiconRepository.findById(999L);
         assertThat(l, is(nullValue()));
     }
+    
+    @Test
+    public void shouldReturnAllLexiconIds(){
+         final Long lexiconAddedId1 = dbCommandExecutor.executeCommand(() -> {
+            return lexiconRepository.save(princenton()).getId();
+        });
+
+        final Long lexiconAddedId2 = dbCommandExecutor.executeCommand(() -> {
+            return lexiconRepository.save(slowosiec()).getId();
+        });
+        
+        final Long lexiconAddedId3 = dbCommandExecutor.executeCommand(() -> {
+            return lexiconRepository.save(germanet()).getId();
+        });
+        
+        assertThat(lexiconAddedId1, is(notNullValue()));
+        assertThat(lexiconAddedId2, is(notNullValue()));
+        assertThat(lexiconAddedId3, is(notNullValue()));
+        
+        final List<Long> list = lexiconRepository.findAllLexiconIds();
+
+        assertThat(list.size(), equalTo(3));
+    }
 }

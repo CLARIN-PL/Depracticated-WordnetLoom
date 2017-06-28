@@ -44,4 +44,9 @@ public class LexiconServiceBean implements LexiconServiceLocal {
         return lexiconRepository.save(lexicon);
     }
 
+    @Override
+    public List<Long> findAllLexiconIds() {
+        return lexiconRepository.findAllLexiconIds();
+    }
+
 }

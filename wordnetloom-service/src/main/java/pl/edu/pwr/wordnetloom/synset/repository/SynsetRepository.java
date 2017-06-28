@@ -35,12 +35,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
     @PersistenceContext
     EntityManager em;
 
-    /**
-     * powielenie synsetu
-     *
-     * @param synset - synset do sklonowania
-     * @param lexicons
-     */
     @Override
     public void dbClone(Synset synset, List<Long> lexicons) {
 
@@ -785,36 +779,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
             }
         }
         return false;
-    }
-
-    /**
-     * pobiera dynamiczne atrybuty - definition, comment, isabstract itd
-     *
-     * @param synset
-     * @param fieldName
-     * @return value - wartosc pola
-     */
-    @Override
-    public String getSynsetAtrribute(Synset synset, String fieldName) {
-        SynsetAttribute synsetAttribute = synsetAttributeDao.getSynsetAttributeForName(synset, fieldName);
-        if (null == synsetAttribute
-                || null == synsetAttribute.getValue()
-                || null == synsetAttribute.getValue().getText()) {
-            return "";
-        }
-        return synsetAttribute.getValue().getText();
-    }
-
-    /**
-     * zapisuje dynamiczne atrybuty - definition, comment, isabstract itd
-     *
-     * @param synset
-     * @param key - klucz (nazwa pola dynamicznego)
-     * @param value - wartosc pola
-     */
-    @Override
-    public void setSynsetAtrribute(Synset synset, String key, String value) {
-        synsetAttributeDao.saveOrUpdateSynsetAttribute(synset, key, value);
     }
 
     @Override

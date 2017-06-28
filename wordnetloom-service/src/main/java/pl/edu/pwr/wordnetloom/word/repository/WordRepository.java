@@ -1,6 +1,5 @@
 package pl.edu.pwr.wordnetloom.word.repository;
 
-import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,15 +22,16 @@ public class WordRepository extends GenericRepository<Word> {
         return em;
     }
 
-    public List<Word> findByWord(Word word) {
+    public Word findByWord(String word) {
         return em.createQuery("SELECT w FROM Word w WHERE w.word = :word", Word.class)
-                .setParameter("word", word.getWord())
-                .getResultList();
-    }
-
-    public Integer countByWord(Word word) {
-        return em.createQuery("SELECT COUNT(w.word) FROM Word w WHERE w.word = :word", Integer.class)
-                .setParameter("word", word.getWord())
+                .setParameter("word", word)
                 .getSingleResult();
     }
+
+    public Integer countByWord(String word) {
+        return em.createQuery("SELECT COUNT(w.word) FROM Word w WHERE w.word = :word", Integer.class)
+                .setParameter("word", word)
+                .getSingleResult();
+    }
+
 }

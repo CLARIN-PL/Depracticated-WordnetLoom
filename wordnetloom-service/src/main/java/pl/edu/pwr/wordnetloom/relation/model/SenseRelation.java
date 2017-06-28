@@ -57,7 +57,7 @@ public class SenseRelation implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "relation_type_id", referencedColumnName = "id", nullable = false)
-    private RelationType relationType;
+    private SenseRelationType relationType;
 
     @ManyToOne
     @JoinColumn(name = "parent_id", referencedColumnName = "id", nullable = false)
@@ -71,7 +71,7 @@ public class SenseRelation implements Serializable {
         super();
     }
 
-    public SenseRelation(RelationType relationType, Sense parent, Sense child) {
+    public SenseRelation(SenseRelationType relationType, Sense parent, Sense child) {
         this.relationType = relationType;
         this.parent = parent;
         this.child = child;
@@ -85,11 +85,11 @@ public class SenseRelation implements Serializable {
         this.id = id;
     }
 
-    public RelationType getRelationType() {
+    public SenseRelationType getRelationType() {
         return relationType;
     }
 
-    public void setRelationType(RelationType relationType) {
+    public void setRelationType(SenseRelationType relationType) {
         this.relationType = relationType;
     }
 

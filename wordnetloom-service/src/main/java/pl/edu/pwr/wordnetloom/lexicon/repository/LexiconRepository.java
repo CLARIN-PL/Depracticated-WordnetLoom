@@ -30,5 +30,8 @@ public class LexiconRepository extends GenericRepository<Lexicon> {
                 .setParameter("ids", lexiconsIds)
                 .getResultList();
     }
-
+    
+    public List<Long> findAllLexiconIds() {
+        return em.createQuery("SELECT l.id FROM Lexicon l").getResultList();
+    }
 }
