@@ -14,6 +14,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -53,6 +54,7 @@ public class Synset implements Serializable {
     private Integer split = 0;
 
     @OneToMany(mappedBy = "synset")
+    @OrderBy("synsetPosition")
     private List<Sense> senses = new ArrayList<>();
 
     @NotNull

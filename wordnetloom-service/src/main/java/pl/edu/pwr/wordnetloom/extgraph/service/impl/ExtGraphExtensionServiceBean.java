@@ -2,8 +2,8 @@ package pl.edu.pwr.wordnetloom.extgraph.service.impl;
 
 import java.util.Collection;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraph;
 import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraphExtension;
 import pl.edu.pwr.wordnetloom.extgraph.repository.ExtGraphExtensionRepository;
@@ -13,10 +13,9 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 @Stateless
 public class ExtGraphExtensionServiceBean implements ExtGraphExtensionServiceLocal {
 
-    @EJB
+    @Inject
     private ExtGraphExtensionRepository extGraphExtensionRepository;
 
-    @Override
     public void dbSave(Collection<ExtGraphExtension> exts) {
         extGraphExtensionRepository.dbSave(exts);
     }

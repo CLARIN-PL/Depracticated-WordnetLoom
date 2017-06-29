@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.relation.model.SynsetRelation;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 public class DataEntry implements Serializable {
 

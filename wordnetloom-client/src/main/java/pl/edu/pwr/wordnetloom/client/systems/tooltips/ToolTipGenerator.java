@@ -33,9 +33,9 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.relation.model.SenseRelation;
+import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.relation.model.SynsetRelation;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 /**
  * klasa dostarcza metod zwracajacych tooltipy dla jednostki leksyklanej i

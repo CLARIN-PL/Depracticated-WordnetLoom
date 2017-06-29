@@ -23,7 +23,7 @@ import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.relation.model.SynsetRelation;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 /**
  * Edge between synsets.

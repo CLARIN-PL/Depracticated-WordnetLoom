@@ -7,7 +7,7 @@ import pl.edu.pwr.wordnetloom.relation.service.LexicalRelationServiceRemote;
 import pl.edu.pwr.wordnetloom.sense.service.LexicalUnitServiceRemote;
 import pl.edu.pwr.wordnetloom.common.service.NativeServiceRemote;
 import pl.edu.pwr.wordnetloom.relation.service.RelationTypeServiceRemote;
-import pl.edu.pwr.wordnetloom.relation.service.SynsetRelationServiceRemote;
+import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceRemote;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
 import pl.edu.pwr.wordnetloom.relation.service.TestServiceRemote;
 import pl.edu.pwr.wordnetloom.tracker.TrackerServiceRemote;

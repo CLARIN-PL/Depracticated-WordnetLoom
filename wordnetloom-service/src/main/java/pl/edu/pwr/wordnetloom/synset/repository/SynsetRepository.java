@@ -24,7 +24,7 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relation.model.RelationType;
-import pl.edu.pwr.wordnetloom.relation.model.SynsetRelation;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
@@ -35,18 +35,13 @@ public class SynsetRepository extends GenericRepository<Synset> {
     @PersistenceContext
     EntityManager em;
 
-    @Override
-    public void dbClone(Synset synset, List<Long> lexicons) {
+    public void clone(Synset synset, List<Long> lexicons) {
 
         Synset newSynset = new Synset();
-        newSynset.setSplit(0);
-        dao.persistObject(newSynset);
-        setSynsetAtrribute(newSynset, Synset.ISABSTRACT, getSynsetAtrribute(newSynset, Synset.ISABSTRACT));
-        setSynsetAtrribute(newSynset, Synset.COMMENT, getSynsetAtrribute(newSynset, Synset.COMMENT));
-        setSynsetAtrribute(newSynset, Synset.DEFINITION, getSynsetAtrribute(newSynset, Synset.DEFINITION));
+        em.persist(synset);
 
         int index = 0;
-        for (Sense unit : lexicalUnitDAO.dbFullGetUnits(synset, 0, lexicons)) {
+        for (Sense unit : synset.getSenses()) {
             Sense newUnit = lexicalUnitDAO.dbClone(unit);
             SenseToSynset newRel = new SenseToSynset();
             newRel.setIdSynset(newSynset.getId());
@@ -56,14 +51,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         }
     }
 
-    /**
-     * usuniecie obiektu
-     *
-     * @param synset - synset do usuniecia
-     * @return TRUE jesli sie udalo
-     */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    @Override
     public boolean dbDelete(Synset synset) {
         EntityManager em = dao.getEM();
         // usuniecie z synsetow
@@ -80,13 +68,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return true;
     }
 
-    /**
-     * odczytanie jednostek leksykalnych podanego synsetu
-     *
-     * @param synset - synset dla ktorego maja zostac pobrane jednostki
-     * @param lexicons
-     * @return lista jednostek
-     */
     @Override
     public List<Sense> dbFastGetUnits(Synset synset, List<Long> lexicons) {
         List<Sense> result = dao.getEM().createNamedQuery("Sense.findSenseBySynsetID", Sense.class)

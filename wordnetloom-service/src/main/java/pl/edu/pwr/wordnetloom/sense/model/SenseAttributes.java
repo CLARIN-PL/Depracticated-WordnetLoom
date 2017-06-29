@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -62,6 +63,16 @@ public class SenseAttributes implements Serializable {
         this.register = register;
         this.link = link;
         this.examples = examples;
+    }
+
+    public SenseAttributes(SenseAttributes sa) {
+        this.definition = sa.definition;
+        this.comment = sa.comment;
+        this.register = sa.register;
+        this.link = sa.link;
+        this.owner = sa.owner;
+        this.examples = new ArrayList<>();
+        sa.getExamples().forEach(this.examples::add);
     }
 
     public Long getId() {

@@ -34,7 +34,7 @@ import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relation.model.RelationTest;
 import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.relation.model.SenseRelation;
+import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;

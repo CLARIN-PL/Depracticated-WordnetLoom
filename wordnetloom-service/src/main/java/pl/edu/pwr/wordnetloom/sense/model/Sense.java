@@ -25,8 +25,6 @@ import pl.edu.pwr.wordnetloom.word.model.Word;
 @Entity
 @Table(name = "sense")
 @NamedQueries({
-    @NamedQuery(name = "Sense.findAll",
-            query = "SELECT s FROM Sense s"),
     @NamedQuery(name = "Sense.findCountAll",
             query = "SELECT COUNT(s) FROM Sense s"),
     @NamedQuery(name = "Sense.findByLema",
@@ -48,16 +46,16 @@ public class Sense implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "domain_id", referencedColumnName = "id", nullable = false)
     private Domain domain;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "word_id", referencedColumnName = "id", nullable = false)
     private Word word;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "part_of_speech_id", referencedColumnName = "id", nullable = false)
     @NotNull
     private PartOfSpeech partOfSpeech;
@@ -66,7 +64,7 @@ public class Sense implements Serializable {
     @Column(name = "variant", nullable = false, columnDefinition = "int default = '1'")
     private Integer variant = 1;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "synset_id", referencedColumnName = "id")
     private Synset synset;
 
@@ -88,12 +86,12 @@ public class Sense implements Serializable {
     }
 
     public Sense(Sense sense) {
-        this.id = sense.id;
         this.domain = sense.domain;
         this.word = sense.word;
         this.partOfSpeech = sense.partOfSpeech;
         this.variant = sense.variant;
         this.lexicon = sense.lexicon;
+        this.senseAttributes = new SenseAttributes(sense.senseAttributes);
     }
 
     public Long getId() {

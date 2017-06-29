@@ -12,7 +12,6 @@ import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServceLocal;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Stateless
 public class SenseServiceBean implements SenseServceLocal {
@@ -320,21 +319,6 @@ public class SenseServiceBean implements SenseServceLocal {
     }
 
     @Override
-    public Word seekOrSaveWord(Word word) {
-        return local.seekOrSaveWord(word);
-    }
-
-    @Override
-    public Word saveWord(Word word) {
-        return local.saveWord(word);
-    }
-
-    @Override
-    public List<Lexicon> getAllLexicons() {
-        return local.getAllLexicons();
-    }
-
-    @Override
     public List<Lexicon> getLexiconsFromList(List<Long> lexicons) {
         return local.getLexiconsByIds(lexicons);
     }
@@ -347,11 +331,6 @@ public class SenseServiceBean implements SenseServceLocal {
     @Override
     public List<Sense> getSensesByLemmaID(long id, long lexicon) {
         return local.getSensesForLemmaID(id, lexicon);
-    }
-
-    @Override
-    public Lexicon dbSaveLexicon(Lexicon lexicon) {
-        return local.dbSaveLexicon(lexicon);
     }
 
     @Override

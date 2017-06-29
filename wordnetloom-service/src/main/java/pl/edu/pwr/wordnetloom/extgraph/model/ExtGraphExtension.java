@@ -13,20 +13,11 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @IdClass(ExtGraphPK.class)
 @Table(name = "extgraphextension")
-@NamedQueries({
-    @NamedQuery(name = "ExtGraphExtension.dbFullGet",
-            query = "SELECT e FROM ExtGraphExtension e"),
-    @NamedQuery(name = "ExtGraphExtension.dbFullGetIDs",
-            query = "SELECT e FROM ExtGraphExtension e WHERE e.extGraph.id IN (:ids)"),
-    @NamedQuery(name = "ExtGraphExtension.deleteForSynset",
-            query = "DELETE FROM ExtGraphExtension e WHERE e.extGraph.id IN (SELECT ee.id FROM ExtGraph ee WHERE ee.synset.id = :synset)"),})
 public class ExtGraphExtension implements Serializable {
 
     private static final long serialVersionUID = -6545962357461967746L;

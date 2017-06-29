@@ -3,8 +3,8 @@ package pl.edu.pwr.wordnetloom.extgraph.repository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
@@ -17,49 +17,35 @@ public class ExtGraphExtensionRepository extends GenericRepository<ExtGraphExten
     @PersistenceContext
     EntityManager em;
 
-    @Override
-    public void dbSave(Collection<ExtGraphExtension> exts) {
+    @Inject
+    ExtGraphRepository extGraphRepository;
+
+    public void save(Collection<ExtGraphExtension> exts) {
         for (ExtGraphExtension e : exts) {
-            local.persistObject(e);
+            save(e);
         }
     }
 
-    @Override
-    public Collection<ExtGraphExtension> dbFullGet() {
-        return local.getEM().createNamedQuery("ExtGraphExtension.dbFullGet", ExtGraphExtension.class)
-                .getResultList();
-    }
-
-    @Override
-    public Collection<ExtGraphExtension> dbFullGet(Long[] extgraph_ids) {
-        if (extgraph_ids.length == 0) {
+    public Collection<ExtGraphExtension> finaAll(Long[] extgraphIds) {
+        if (extgraphIds.length == 0) {
             return new ArrayList<>();
         }
-        return local.getEM().createNamedQuery("ExtGraphExtension.dbFullGetIDs", ExtGraphExtension.class)
-                .setParameter("ids", Arrays.asList(extgraph_ids))
+        return getEntityManager().createQuery("SELECT e FROM ExtGraphExtension e WHERE e.extGraph.id IN (:ids)", ExtGraphExtension.class)
+                .setParameter("ids", Arrays.asList(extgraphIds))
                 .getResultList();
     }
 
-    @Override
-    public Collection<ExtGraphExtension> dbFullGet(String word) {
-        return dbFullGet(extGraphDAO.getIDsFromWord(word).toArray(new Long[]{}));
+    public Collection<ExtGraphExtension> findByWord(String word) {
+        return finaAll(extGraphRepository.findIDsByWord(word).toArray(new Long[]{}));
     }
 
-    @Override
-    public Collection<ExtGraphExtension> dbFullGet(String word, int packageno) {
-        Long[] ids = (extGraphDAO.getIDsFromWord(word, packageno)).toArray(new Long[]{});
-        return dbFullGet(ids);
+    public Collection<ExtGraphExtension> findByWordAndPackageNo(String word, int packageno) {
+        Long[] ids = (extGraphRepository.findIDsByWordAndPackageNo(word, packageno)).toArray(new Long[]{});
+        return finaAll(ids);
     }
 
-    // FIXME: remove, this won't be necessary anymore with hibernate
-    @Override
-    public List<ExtGraphExtension> dbGetRelation(List<ExtGraphExtension> exts) {
-        return exts;
-    }
-
-    @Override
-    public void dbDeleteForSynset(Synset s) {
-        local.getEM().createNamedQuery("ExtGraphExtension.deleteForSynset")
+    public void deleteBySynset(Synset s) {
+        getEntityManager().createQuery("DELETE FROM ExtGraphExtension e WHERE e.extGraph.id IN (SELECT ee.id FROM ExtGraph ee WHERE ee.synset.id = :synset)")
                 .setParameter("synset", s.getId())
                 .executeUpdate();
     }

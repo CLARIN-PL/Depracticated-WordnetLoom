@@ -3,7 +3,6 @@ package pl.edu.pwr.wordnetloom.extgraph.model;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import java.io.Serializable;
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,23 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "extgraph")
-@NamedQueries({
-    @NamedQuery(name = "ExtGraph.dbFullGet", query = "SELECT e FROM ExtGraph e"),
-    @NamedQuery(name = "ExtGraph.dbFullGetWord", query = "SELECT e FROM ExtGraph e where e.word = :word"),
-    @NamedQuery(name = "ExtGraph.dbFullGetIDs", query = "SELECT e FROM ExtGraph e where e.id in ( :ids )"),
-    @NamedQuery(name = "ExtGraph.dbGetNewWords", query = "SELECT e.word FROM ExtGraph e where e.packageno = :packageno AND e.pos = :pos"),
-    @NamedQuery(name = "ExtGraph.GetPackages", query = "SELECT e.packageno FROM ExtGraph e WHERE e.pos = :pos GROUP BY e.packageno ORDER BY e.packageno ASC"),
-    @NamedQuery(name = "ExtGraph.GetMaxPackageNo", query = "SELECT e.packageno FROM ExtGraph e WHERE e.pos = :pos ORDER BY e.packageno desc"),
-    @NamedQuery(name = "ExtGraph.getIDsFromWord", query = "SELECT e.id FROM ExtGraph e where e.word = :word"),
-    @NamedQuery(name = "ExtGraph.getIDsFromWordAndPkgNo", query = "SELECT e.id FROM ExtGraph e where e.word = :word AND e.packageno = :packageno"),
-
-    @NamedQuery(name = "ExtGraph.deleteForSynsetID", query = "DELETE FROM ExtGraph e WHERE e.synset.id = :synset"),})
 public class ExtGraph implements Serializable {
 
     private static final long serialVersionUID = 3152263756676683954L;
@@ -38,7 +24,6 @@ public class ExtGraph implements Serializable {
     private Long id;
 
     @Column(name = "word")
-    @Basic(fetch = FetchType.EAGER)
     private String word;
 
     @ManyToOne(fetch = FetchType.EAGER)

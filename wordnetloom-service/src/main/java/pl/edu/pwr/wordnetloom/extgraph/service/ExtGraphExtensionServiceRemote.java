@@ -8,7 +8,7 @@ import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraphExtension;
 @Remote
 public interface ExtGraphExtensionServiceRemote {
 
-    void dbSave(Collection<ExtGraphExtension> exts);
+    void save(Collection<ExtGraphExtension> exts);
 
     Collection<ExtGraphExtension> dbFullGet();
 

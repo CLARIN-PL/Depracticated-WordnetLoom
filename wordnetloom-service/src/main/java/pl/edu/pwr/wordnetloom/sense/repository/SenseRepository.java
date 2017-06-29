@@ -26,7 +26,6 @@ import javax.persistence.TypedQuery;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -38,38 +37,23 @@ public class SenseRepository extends GenericRepository<Sense> {
     EntityManager em;
 
     public Sense clone(Sense sense) {
-        Sense clone = new Sense(sense);
-        clone.setId(null);
-        em.persist(clone);
-        return clone;
+        return save(new Sense(sense));
     }
 
     @Override
-    public Sense dbSave(Sense sense) {
+    public Sense save(Sense sense) {
         if (sense.getId() == null) {
-            sense.setSenseNumber(dbGetNextVariant(sense.getLemma().getWord(), sense.getPartOfSpeech()));
+            sense.setVariant(findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech()));
         }
-        dao.persistObject(sense);
-        dao.refresh(sense);
-        return sense;
+        return super.save(sense);
     }
 
     @Override
-    public boolean dbDelete(Sense sense, String owner) {
-        Sense s = dbGet(sense.getId());
-        SenseAttributes sa = senseAttributeDao.getSenseAttributeForName(sense, Sense.COMMENT);
-        String sas = sa == null ? null : sa.getValue() == null ? null : "" + sa.getValue();
-        tracker.deletedLexicalUnit(s, sas, owner);
-
-        // usuniecie z synsetow
-        unitAndSynsetDAO.dbDeleteConnection(sense);
+    public void delete(Sense sense) {
+        Sense s = findById(sense.getId());
         // usuniecei relacji
         lexicalRelationDAO.dbDeleteConnection(sense);
-        // usuniecie atrybutow dynamicznych
-        senseAttributeDao.removeSenseAttribute(sense);
-        // usuniecie jednostki
-        dao.deleteObject(Sense.class, sense.getId());
-        return true;
+        super.delete(s);
     }
 
     @Override
@@ -103,13 +87,11 @@ public class SenseRepository extends GenericRepository<Sense> {
         return synsetDAO.dbGetSynsetsCount(unit);
     }
 
-    @Override
-    public void dbDeleteAll() {
-        List<Sense> senses = dao.getEM().createNamedQuery("Sense.findAll", Sense.class).getResultList();
-        dbDelete(senses, null);
+    public void deleteAll() {
+        List<Sense> senses = findAll("id");
+        delete(senses);
     }
 
-    @Override
     public List<Sense> dbFastGetUnits(String filter, List<Long> lexicons) {
         return dbFastGetUnits(filter, null, null, null, null, null, null, 0, lexicons);
     }
@@ -504,7 +486,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         return list.get(0).intValue();
     }
 
-      /**
+    /**
      * Odczytuje najwyższy numerek wariantu dla podanego lematu
      *
      * @param word
