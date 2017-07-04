@@ -53,16 +53,16 @@ public class WordRepositoryUTest extends TestBaseRepository {
         final Long wordAddedId3 = dbCommandExecutor.executeCommand(() -> {
             return wordRepository.save(pisac()).getId();
         });
-        
+
         assertThat(wordAddedId1, is(notNullValue()));
         assertThat(wordAddedId2, is(notNullValue()));
         assertThat(wordAddedId3, is(notNullValue()));
-        
+
         final Word w = wordRepository.findById(wordAddedId2);
         assertThat(w, is(notNullValue()));
-        
+
         final Word krowa = wordRepository.findByWord(krowa().getWord());
-        
+
         assertThat(w, is(equalTo(krowa)));
     }
 

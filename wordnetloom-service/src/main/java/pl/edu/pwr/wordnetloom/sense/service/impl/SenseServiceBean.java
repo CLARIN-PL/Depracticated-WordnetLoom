@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServceLocal;
@@ -19,31 +18,18 @@ public class SenseServiceBean implements SenseServceLocal {
     @Inject
     private SenseRepository senseRepository;
 
-    /**
-     * Klonuje jednostkę leksykalną; ustala nowy identyfikator i wariant.
-     *
-     * @param unit
-     * @return LexicalUnitDTO
-     */
-    @Override
-    public Sense dbClone(Sense unit) {
-        return local.dbClone(unit);
+    public Sense clone(Sense unit) {
+        return senseRepository.clone(unit);
     }
 
     @Override
-    public Sense dbGet(Long id) {
-        return local.dbGet(id);
+    public Sense findById(Long id) {
+        return senseRepository.findById(id);
     }
 
-    /**
-     * usuniecie obiektu z bazy danych oraz powiazan
-     *
-     * @param unit - jednostka do usuniecia
-     * @return TRUE jesli sie udalo
-     */
     @Override
-    public boolean dbDelete(Sense unit, String owner) {
-        return local.dbDelete(unit, owner);
+    public boolean delete(Sense unit) {
+        return senseRepository.d
     }
 
     /**

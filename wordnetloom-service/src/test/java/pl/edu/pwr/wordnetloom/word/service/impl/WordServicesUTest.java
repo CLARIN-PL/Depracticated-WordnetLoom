@@ -18,7 +18,7 @@ import pl.edu.pwr.wordnetloom.word.model.Word;
 import pl.edu.pwr.wordnetloom.word.repository.WordRepository;
 
 public class WordServicesUTest {
-    
+
     private WordServiceBean wordService;
     private WordRepository wordRepository;
     private Validator validator;
@@ -27,7 +27,7 @@ public class WordServicesUTest {
     public void initTestCase() {
         validator = Validation.buildDefaultValidatorFactory().getValidator();
 
-       wordRepository = mock(WordRepository.class);
+        wordRepository = mock(WordRepository.class);
 
         wordService = new WordServiceBean();
         ((WordServiceBean) wordService).validator = validator;
@@ -43,7 +43,7 @@ public class WordServicesUTest {
         assertThat(w.getWord(), is(equalTo(pisac().getWord())));
     }
 
-     @Test
+    @Test
     public void findWordByWord() {
         when(wordRepository.findByWord("krowa")).thenReturn(wordWithId(krowa(), 1L));
         final Word w = wordService.findByWord("krowa");
@@ -51,24 +51,36 @@ public class WordServicesUTest {
         assertThat(w.getId(), is(equalTo(1L)));
         assertThat(w.getWord(), is(equalTo(krowa().getWord())));
     }
-    
+
     @Test(expected = WordNotFoundException.class)
     public void wordByIdNotFound() {
         when(wordRepository.findById(1L)).thenReturn(null);
         wordService.findById(1L);
     }
-    
+
     @Test(expected = WordNotFoundException.class)
     public void wordByWordNotFound() {
         when(wordRepository.findByWord("zomo")).thenReturn(null);
         wordService.findByWord("zomo");
     }
-    
+
     @Test
     public void addWordWithNullWord() {
         addWordWithInvalidWord(null);
     }
-       
+
+    @Test
+    public void wordShouldBeUnique() {
+        when(wordRepository.alreadyExists("word", "czerwony", null)).thenReturn(true);
+        when(wordRepository.findByWord("czerwony")).thenReturn(wordWithId(czerwony(), 1L));
+        when(wordRepository.save(wordWithId(czerwony(), 1L))).thenReturn(wordWithId(czerwony(), 1L));
+
+        Word w1 = wordService.add(wordWithId(czerwony(), 1L));
+        Word w2 = wordService.add(wordWithId(czerwony(), 2L));
+
+        assertThat(w1, is(equalTo(w2)));
+    }
+
     private void addWordWithInvalidWord(final String word) {
         try {
             wordService.add(new Word(word));
@@ -77,5 +89,5 @@ public class WordServicesUTest {
             assertThat(e.getFieldName(), is(equalTo("word")));
         }
     }
-    
+
 }

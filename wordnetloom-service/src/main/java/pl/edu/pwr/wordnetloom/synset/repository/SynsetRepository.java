@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -23,10 +25,9 @@ import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Stateless
@@ -75,6 +76,25 @@ public class SynsetRepository extends GenericRepository<Synset> {
                 .setParameter("lexicons", lexicons)
                 .getResultList();
         return result;
+    }
+
+    public List<Synset> findOwningSynsetsByLemma(String lemma, List<Long> lexicons) {
+        // Pobierz synsety zawierające w opisie szukany lemat
+        Collection<Synset> synsets = synsetDAO.dbFastGetSynsets(lemma, lexicons);
+        Pattern pattern = Pattern.compile("(\\(|, |\\| )" + lemma.replace("^", "") + " \\d", Pattern.DOTALL);
+
+        // Wybierz synsety, które zawierają pełne lematy, a nie tylko jego fragment
+        List<Synset> filteredSynsets = new ArrayList<Synset>();
+        Iterator<Synset> it = synsets.iterator();
+        while (it.hasNext()) {
+            Synset synset = it.next();
+            String uniStr = synsetDAO.rebuildUnitsStr(synset, lexicons);
+            if (pattern.matcher(uniStr).find()) {
+                filteredSynsets.add(synset);
+            }
+        }
+
+        return filteredSynsets;
     }
 
     /**

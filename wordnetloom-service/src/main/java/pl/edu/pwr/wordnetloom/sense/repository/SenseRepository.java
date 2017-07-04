@@ -4,30 +4,30 @@ import java.text.Collator;
 import java.text.ParseException;
 import java.text.RuleBasedCollator;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
+import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 @Stateless
@@ -35,6 +35,9 @@ public class SenseRepository extends GenericRepository<Sense> {
 
     @PersistenceContext
     EntityManager em;
+
+    @Inject
+    SenseRelationRepository senseRelationRepository;
 
     public Sense clone(Sense sense) {
         return save(new Sense(sense));
@@ -51,40 +54,21 @@ public class SenseRepository extends GenericRepository<Sense> {
     @Override
     public void delete(Sense sense) {
         Sense s = findById(sense.getId());
-        // usuniecei relacji
-        lexicalRelationDAO.dbDeleteConnection(sense);
+
+        // Remove relations between senses
+        senseRelationRepository.deleteConnection(sense);
         super.delete(s);
     }
 
-    @Override
+//    @NamedQuery(name = "Sense.findSenseByListID",
+//            query = "SELECT s FROM Sense s join fetch s.domain join fetch s.lemma join fetch s.partOfSpeech WHERE s.id in (:ids)"),
+//    @NamedQuery(name = "Sense.findSenseBySynsetID",
+//            query = "select s.sense from SenseToSynset s where s.sense.lexicon.id IN( :lexicons ) and s.idSynset =:idSynset order by s.senseIndex"),
+//    @NamedQuery(name = "Sense.CountSenseBySynsetID",
+//            query = "select count(s.sense) from SenseToSynset s where s.idSynset =:idSynset"),
     public List<Synset> dbFastGetSynsets(Sense sense, List<Long> lexicons) {
         sense.setSynsets(new ArrayList<Synset>(synsetDAO.dbFastGetSynsets(sense, lexicons)));
         return sense.getSynsets();
-    }
-
-    @Override // TODO: do sprawdzenia
-    public List<Synset> dbFastGetSynsets(String lemma, List<Long> lexicons) {
-        // Pobierz synsety zawierające w opisie szukany lemat
-        Collection<Synset> synsets = synsetDAO.dbFastGetSynsets(lemma, lexicons);
-        Pattern pattern = Pattern.compile("(\\(|, |\\| )" + lemma.replace("^", "") + " \\d", Pattern.DOTALL);
-
-        // Wybierz synsety, które zawierają pełne lematy, a nie tylko jego fragment
-        List<Synset> filteredSynsets = new ArrayList<Synset>();
-        Iterator<Synset> it = synsets.iterator();
-        while (it.hasNext()) {
-            Synset synset = it.next();
-            String uniStr = synsetDAO.rebuildUnitsStr(synset, lexicons);
-            if (pattern.matcher(uniStr).find()) {
-                filteredSynsets.add(synset);
-            }
-        }
-
-        return filteredSynsets;
-    }
-
-    @Override
-    public int dbGetSynsetsCount(Sense unit) {
-        return synsetDAO.dbGetSynsetsCount(unit);
     }
 
     public void deleteAll() {
@@ -92,39 +76,12 @@ public class SenseRepository extends GenericRepository<Sense> {
         delete(senses);
     }
 
-    public List<Sense> dbFastGetUnits(String filter, List<Long> lexicons) {
-        return dbFastGetUnits(filter, null, null, null, null, null, null, 0, lexicons);
-    }
+    public List<Sense> findByCriteria(SenseCriteriaDTO dto) {
 
-    @Override
-    public List<Sense> dbFastGetUnits(String filter, PartOfSpeech pos, Domain domain, List<Long> lexicons) {
-        return dbFastGetUnits(filter, pos, domain, null, null, null, null, 0, lexicons);
-    }
-
-    /**
-     * odczytanie jednostek spelniajacych kryterium
-     *
-     * @param filter - filtr
-     * @param pos - czesc mowy albo NULL
-     * @param domain - domana albo NULL
-     * @param workStates - akceptiowanlen statusy lub NULL
-     * @param relationType - typ relacji jakie musza byc zdefiniowane dla
-     * jednostek wynikowych
-     * @param limitSize - maksymalna liczba zwroconych elementów
-     * @param realSize - obiekt w którym zapisywana jest prawdziwa wielkość
-     * kolekcji
-     * @return lista jednostek leksykalnych
-     */
-    @Override
-    public List<Sense> dbFastGetUnits(String filter, PartOfSpeech pos, Domain domain, RelationType relationType,
-            String register, String comment, String example, int limitSize, List<Long> lexicons) {
-        return getSenses(filter, pos, domain, relationType, register, comment, example, limitSize, lexicons, null);
     }
 
     private List<Sense> getSenses(String filter, PartOfSpeech pos, Domain domain, RelationType relationType,
             String register, String comment, String example, int limitSize, List<Long> lexicons, pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech posUby) {
-
-        System.out.println("---> USER: " + context.getCallerPrincipal().getName());
 
         String wordQuery = "";
         String senseQuery = "SELECT s FROM Sense s JOIN FETCH s.domain JOIN FETCH s.lemma JOIN FETCH s.partOfSpeech WHERE ";
@@ -377,7 +334,6 @@ public class SenseRepository extends GenericRepository<Sense> {
         return senses;
     }
 
-    @Override
     public List<Sense> filterSenseByLexicon(final List<Sense> senses, final List<Long> lexicons) {
         List<Sense> result = new ArrayList<>();
         senses.stream().filter((sense) -> (lexicons.contains(sense.getLexicon().getId()))).forEach((sense) -> {
@@ -386,58 +342,36 @@ public class SenseRepository extends GenericRepository<Sense> {
         return result;
     }
 
-    @Override
-    public List<Sense> dbFullGetUnits(String filter, List<Long> lexicons) {
-        return dao.getEM().createNamedQuery("Sense.findByLema", Sense.class)
+    public List<Sense> findByLikeLemma(String lemma, List<Long> lexicons) {
+        return getEntityManager().createQuery("SELECT s FROM Sense s WHERE s.lexicon.id IN (:lexicons) AND LOWER(s.word.word) LIKE :lemma ORDER BY s.word.word asc", Sense.class)
+                .setParameter("lemma", lemma.toLowerCase())
+                .setParameter("lexicons", lexicons)
+                .getResultList();
+    }
+
+    public Integer findCountByLikeLemma(String filter) {
+        return getEntityManager().createQuery("SELECT COUNT(s) FROM Sense s WHERE s.lexicon.id IN (:lexicons) AND LOWER(s.word.word) LIKE :lemma")
                 .setParameter("lemma", filter.toLowerCase())
+                .getFirstResult();
+    }
+
+    public List<Sense> findBySynset(Synset synset, List<Long> lexicons) {
+        return getEntityManager().createQuery("FROM Sense s WHERE s.synset.id = :synsetId AND s.lexicon.id IN (:lexicons)", Sense.class)
+                .setParameter("synsetId", synset.getId())
                 .setParameter("lexicons", lexicons)
                 .getResultList();
     }
 
-    @Override // TODO: do sprawdzenia
-    public int dbGetUnitsCount(String filter) {
-        return dao.getEM().createNamedQuery("Sense.findByLema")
-                .setParameter("lemma", filter.toLowerCase())
-                .getMaxResults();
-    }
-
-    @Override
-    public List<Sense> dbFastGetUnits(Synset synset, List<Long> lexicons) {
-        return dao.getEM().createNamedQuery("Sense.findSenseBySynsetID", Sense.class)
-                .setParameter("idSynset", synset.getId())
-                .setParameter("lexicons", lexicons)
-                .getResultList();
-    }
-
-    @Override
-    public List<Sense> dbFullGetUnits(Synset synset, int limit, List<Long> lexicons) {
-        return dao.getEM().createNamedQuery("Sense.findSenseBySynsetID", Sense.class)
-                .setParameter("idSynset", synset.getId())
-                .setParameter("lexicons", lexicons)
-                .setMaxResults(limit)
-                .getResultList();
-    }
-
-    @Override
-    public List<Sense> dbFastGetUnits(Synset synset, int limit, List<Long> lexicons) {
-        return dao.getEM().createNamedQuery("Sense.findSenseBySynsetID", Sense.class)
-                .setParameter("idSynset", synset.getId())
-                .setParameter("lexicons", lexicons)
-                .setMaxResults(limit)
-                .getResultList();
-    }
-
-    @Override
-    public int dbGetUnitsCount(Synset synset, List<Long> lexicons) {
-        return dao.getEM().createNamedQuery("Sense.findSenseBySynsetID")
-                .setParameter("idSynset", synset.getId())
+    public int findCountBySynset(Synset synset, List<Long> lexicons) {
+        return getEntityManager().createQuery("SELECT COUNT(s) FROM Sense s WHERE s.synset.id = :synsetId AND s.lexicon.id IN (:lexicons)")
+                .setParameter("synsetId", synset.getId())
                 .setParameter("lexicon", lexicons)
                 .getMaxResults();
     }
 
     public int findNextVariant(String lemma, PartOfSpeech pos) {
         int odp = 0;
-        TypedQuery<Integer> q = em.createQuery("SELECT MAX(s.senseNumber) FROM Sense AS s WHERE LOWER(s.word.word) = :word AND s.partOfSpeech.id = :pos", Integer.class)
+        TypedQuery<Integer> q = getEntityManager().createQuery("SELECT MAX(s.variant) FROM Sense AS s WHERE LOWER(s.word.word) = :word AND s.partOfSpeech.id = :pos", Integer.class)
                 .setParameter("word", lemma.toLowerCase())
                 .setParameter("pos", pos.getId());
         try {
@@ -449,66 +383,36 @@ public class SenseRepository extends GenericRepository<Sense> {
         return odp + 1;
     }
 
-    @Override
-    public int dbDelete(List<Sense> list, String owner) {
+    public int delete(List<Sense> list) {
         int odp = list.size();
         list.stream().forEach((sense) -> {
-            dbDelete(sense, owner);
+            delete(sense);
         });
         return odp;
     }
 
-    @Override // TODO: sprawdź
-    public int dbUsedUnitsCount() {
-        List<Long> list = dao.getEM().createNamedQuery("Sense.dbUsedUnitsCount", Long.class)
-                .getResultList();
-        if (list.isEmpty() || list.get(0) == null) {
-            return 0;
-        }
-        return list.get(0).intValue();
+    public int findInSynsetsCount() {
+        return getEntityManager().createQuery("SELECT COUNT(s) FROM Sense s WHERE s.synset IS NOT NULL", Integer.class)
+                .getSingleResult();
+
     }
 
-    @Override
-    public Set<Long> dbUsedUnitsIDs() {
-        return new HashSet<>(
-                dao.getEM().createNamedQuery("SenseToSynset.dbUsedUnitsIDs", Long.class)
-                .getResultList()
-        );
+    public Integer countAll() {
+        return getEntityManager().createQuery("SELECT COUNT(s) FROM Sense s", Integer.class)
+                .getFirstResult();
+
     }
 
-    @Override
-    public int dbGetUnitsCount() {
-        List<Long> list = dao.getEM().createNamedQuery("Sense.findCountAll", Long.class)
-                .getResultList();
-        if (list.isEmpty() || list.get(0) == null) {
-            return 0;
-        }
-        return list.get(0).intValue();
+    public int findHighestVariant(String word, Lexicon lexicon) {
+        return getEntityManager().createQuery("SELECT MAX(s.variant) FROM Sense s WHERE s.word.word = :word AND s.lexicon.id = :lexicon", Integer.class)
+                .setParameter("word", word)
+                .setParameter("lexicon", lexicon.getId())
+                .getFirstResult();
     }
 
-    /**
-     * Odczytuje najwyższy numerek wariantu dla podanego lematu
-     *
-     * @param word
-     * @param lexicons
-     * @return najwyższy numer wariantu lematu
-     */
-    @Override
-    public int dbGetHighestVariant(String word, List<Long> lexicons) {
-        int highest = 0;
-        for (Sense unit : dbFastGetUnits(word, null, null, null, null, null, null, 0, lexicons)) {
-            if (unit.getSenseNumber() > highest) {
-                highest = unit.getSenseNumber();
-            }
-        }
-        return highest;
-    }
-
-    @Override // TODO: check me
-    public List<Sense> dbGetUnitsNotInAnySynset(String filter, PartOfSpeech pos) {
+    public List<Sense> findNotInAnySynset(String filter, PartOfSpeech pos) {
         Map<String, Object> params = new HashMap<>();
-        String queryString = "SELECT s FROM SenseToSynset sts right join sts.sense s "
-                + "WHERE sts.idSynset is null AND s.lemma.word like :filter";
+        String queryString = "SELECT s FROM Sense s WHERE s.synset is null AND s.word.word like :filter";
         if (filter != null && !"".equals(filter)) {
             if (filter.startsWith("^")) {
                 params.put("filter", filter.substring(1));
@@ -534,30 +438,13 @@ public class SenseRepository extends GenericRepository<Sense> {
         return sense;
     }
 
-    @Override
-    public List<Sense> dbGetUnitsAppearingInMoreThanOneSynset() {
-        return dao.getEM().createNamedQuery("SenseToSynset.dbGetUnitsAppearingInMoreThanOneSynset", Sense.class)
-                .getResultList();
+    public boolean checkIsInSynset(Sense unit) {
+        Sense s = findById(unit.getId());
+        return s.getSynset() != null;
     }
 
     @Override
-    public boolean dbInAnySynset(Sense unit) {
-        if (null == unit || null == unit.getId()) {
-            return false;
-        }
-
-        List<Long> list = dao.getEM().createNamedQuery("SenseToSynset.CountSenseBySense", Long.class)
-                .setParameter("idSense", unit.getId())
-                .getResultList();
-
-        if (list.isEmpty() || list.get(0) == null) {
-            return false;
-        }
-        return list.get(0).intValue() > 0;
-    }
-
-    @Override
-    public Sense updateSense(Sense sense) {
+    public Sense update(Sense sense) {
 
         if (null == sense.getId()) {
             sense.setLemma(seekOrSaveWord(sense.getLemma()));
@@ -577,13 +464,13 @@ public class SenseRepository extends GenericRepository<Sense> {
 
     @Override
     public List<Long> getAllLemmasForLexicon(List<Long> lexicon) {
-        Query query = getEM().createQuery("SELECT s.lemma.id FROM Sense s WHERE s.lexicon.id IN (:lexicon) GROUP BY s.lemma.id");
+        Query query = getEntityManager().createQuery("SELECT s.lemma.id FROM Sense s WHERE s.lexicon.id IN (:lexicon) GROUP BY s.lemma.id");
         query.setParameter("lexicon", lexicon);
         return query.getResultList();
     }
 
     public List<Sense> findSensesByWordId(Long id, Long lexicon) {
-        Query query = em.createQuery("FROM Sense s WHERE s.word.id = :id AND s.lexicon.id = :lexicon");
+        Query query = getEntityManager().createQuery("FROM Sense s WHERE s.word.id = :id AND s.lexicon.id = :lexicon");
         query.setParameter("id", id);
         query.setParameter("lexicon", lexicon);
         return query.getResultList();

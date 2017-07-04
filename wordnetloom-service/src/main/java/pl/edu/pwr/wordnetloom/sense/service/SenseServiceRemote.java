@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 import javax.ejb.Remote;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
-import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -14,19 +13,21 @@ import pl.edu.pwr.wordnetloom.word.model.Word;
 @Remote
 public interface SenseServiceRemote {
 
-    Sense dbClone(Sense unit);
+    Sense clone(Sense unit);
 
-    Sense dbGet(Long id);
+    Sense findById(Long id);
 
     int dbGetSynsetsCount(Sense unit);
 
-    void dbDeleteAll();
+    void deleteAll();
 
     int dbGetUnitsCount(String filter);
 
     int dbGetNextVariant(String lemma, PartOfSpeech pos);
 
-    int dbDelete(List<Sense> list, String owner);
+    int delete(List<Sense> list);
+
+    boolean delete(Sense unit);
 
     int dbUsedUnitsCount();
 
@@ -40,23 +41,13 @@ public interface SenseServiceRemote {
 
     boolean dbInAnySynset(Sense unit);
 
-    boolean dbDelete(Sense unit, String owner);
-
-    String getSensAtrribute(Sense sense, String nazwaPola);
-
-    void setSenseAtrribute(Sense sense, String key, String value);
-
-    Sense updateSense(Sense sense);
+    Sense update(Sense sense);
 
     Set<Long> dbUsedUnitsIDs();
 
     Word seekOrSaveWord(Word word);
 
     Word saveWord(Word word);
-
-    List<Lexicon> getAllLexicons();
-
-    List<Lexicon> getLexiconsFromList(List<Long> lexicons);
 
     List<Sense> dbFastGetUnits(String filter, List<Long> lexicons);
 
@@ -85,10 +76,6 @@ public interface SenseServiceRemote {
     List<Sense> dbFastGetUnits(String filter, Domain domain,
             RelationType relationType, String register, String comment,
             String example, int limitSize, List<Long> lexicons);
-
-    List<Long> getAllLemasForLexicon(List<Long> lexicon);
-
-    Lexicon dbSaveLexicon(Lexicon lexicon);
 
     List<Sense> getSensesByLemmaID(long id, long lexicon);
 }

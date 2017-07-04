@@ -10,8 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.Valid;
@@ -24,20 +22,6 @@ import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Entity
 @Table(name = "sense")
-@NamedQueries({
-    @NamedQuery(name = "Sense.findCountAll",
-            query = "SELECT COUNT(s) FROM Sense s"),
-    @NamedQuery(name = "Sense.findByLema",
-            query = "SELECT s FROM Sense s join fetch s.domain join fetch s.lemma join fetch s.partOfSpeech WHERE s.lexicon.id IN (:lexicons) AND LOWER(s.lemma.word) LIKE :lemma ORDER BY s.lemma.word asc"),
-    @NamedQuery(name = "Sense.findSenseByListID",
-            query = "SELECT s FROM Sense s join fetch s.domain join fetch s.lemma join fetch s.partOfSpeech WHERE s.id in (:ids)"),
-    @NamedQuery(name = "Sense.findSenseBySynsetID",
-            query = "select s.sense from SenseToSynset s where s.sense.lexicon.id IN( :lexicons ) and s.idSynset =:idSynset order by s.senseIndex"),
-    @NamedQuery(name = "Sense.CountSenseBySynsetID",
-            query = "select count(s.sense) from SenseToSynset s where s.idSynset =:idSynset"),
-    @NamedQuery(name = "Sense.findSensesBySynsetIDs",
-            query = "select s.sense from SenseToSynset s where s.idSynset in (:ids)")
-})
 public class Sense implements Serializable {
 
     private static final long serialVersionUID = 800201228216890725L;
@@ -77,7 +61,7 @@ public class Sense implements Serializable {
     private SenseAttributes senseAttributes;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lexicon_id", referencedColumnName = "id", nullable = false)
     private Lexicon lexicon;
 
