@@ -4,37 +4,21 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import pl.edu.pwr.wordnetloom.dao.DAOLocal;
-import pl.edu.pwr.wordnetloom.synset.service.SynsetDAOLocal;
-import pl.edu.pwr.wordnetloom.relation.service.SynsetRelationDAOLocal;
-import pl.edu.pwr.wordnetloom.dao.impl.DAOBean;
-import pl.edu.pwr.wordnetloom.domain.model.Domain;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
-import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.common.dto.CountInfo;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.dto.SynsetInfo;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
-import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 @Stateless
-public class SynsetServiceBean extends DAOBean implements SynsetServiceRemote {
-
-    public SynsetServiceBean() {
-    }
-
-    @EJB
-    private SynsetDAOLocal local;
-    @EJB
-    private SynsetRelationDAOLocal relations;
-    @EJB
-    private DAOLocal dao;
+public class SynsetServiceBean implements SynsetServiceRemote {
 
     /**
      * powielenie synsetu
@@ -335,44 +319,6 @@ public class SynsetServiceBean extends DAOBean implements SynsetServiceRemote {
         return local.dbGetSimilarityCount(a, b);
     }
 
-    //	/**
-    //	 * odczytanie uzytkownikow wystepujacych w synsetach
-    //	 * @return uzytkownicy wystepujacy w synsetach
-    //	 */
-    //	public List<String> dbGetUsers() {
-    //		return local.dbGetUsers();
-    //	}
-    //
-    //	/**
-    //	 * odczytanie uzytkownikow wystepujacych w synsetach
-    //	 * @param domain - zaweza sprawdzenie do synsetow, ktore naleza do okreslonej dziedziny
-    //	 * @return uzytkownicy wystepujacy w synsetach
-    //	 */
-    //	public List<String> dbGetUsers(Domain domain) {
-    //		return local.dbGetUsers(domain);
-    //	}
-    //
-    //	/**
-    //	 * odczytanie statusow dla konkretnego uzytkownika i domeny
-    //	 * @param owner - uzytkownik
-    //	 * @param domain - domena
-    //	 * @return liczba synsetow blednych, poprawnych i niesprawdzonych
-    //	 */
-    //	public int[] dbGetUserStats(String owner,Domain domain) {
-    //		return local.dbGetUserStats(owner, domain);
-    //	}
-    //	/**
-    //	 * Odczytanie opisow synsetow
-    //	 * @return mapa opisow synsetow
-    //	 */
-    //	public Map<Long,String> dbGetSynsetsDescription() {
-    //		return local.dbGetSynsetsDescription();
-    //	}
-    //	/**
-    //	 * Odczytywanie opisów synsetów o danym ID
-    //	 * @param idx - lista ID sysnetów
-    //	 * @return mapa opisow synsetow
-    //	 */
     @Override
     public Map<Long, String> dbGetSynsetsDescriptionIdx(List<Long> idx, List<Long> lexicons) {
         return local.dbGetSynsetsDescriptionIdx(idx, lexicons);

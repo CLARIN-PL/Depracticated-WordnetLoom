@@ -16,8 +16,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.relation.model.RelationType;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 
 @Stateless
 public class SynsetRelationRepository extends GenericRepository<SynsetRelation> {
@@ -25,11 +26,11 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
     @PersistenceContext
     EntityManager em;
 
-    @Override
-    public void dbDelete(SynsetRelation rel) {
-        RelationType relation = rel.getRelation();
+    public void delete(SynsetRelation rel) {
 
-        if (relation.isAutoReverse()) {
+        SynsetRelationType relation = rel.getRelationType();
+
+        if (relation.getAutoReverse()) {
             RelationType reverse = relationType.dbGetReverseByRelationType(relation);
             dbDelete(rel.getSynsetTo(), rel.getSynsetFrom(), reverse);
         }
@@ -41,8 +42,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         }
     }
 
-    @Override
-    public boolean dbDelete(Synset parent, Synset child, RelationType relation) {
+    public boolean delete(Synset parent, Synset child, RelationType relation) {
         Query q = local.getEM().createNamedQuery("SynsetRelation.dbDelete");
 
         Query qp = q

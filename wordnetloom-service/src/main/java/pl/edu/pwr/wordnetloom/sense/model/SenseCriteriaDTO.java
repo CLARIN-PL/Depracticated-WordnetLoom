@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 
 public class SenseCriteriaDTO implements Serializable {
 

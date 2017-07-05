@@ -10,7 +10,7 @@ public abstract class GenericRepository<T> {
 
     protected abstract EntityManager getEntityManager();
 
-    public T save(T entity) {
+    public T persist(T entity) {
         getEntityManager().persist(entity);
         return entity;
     }

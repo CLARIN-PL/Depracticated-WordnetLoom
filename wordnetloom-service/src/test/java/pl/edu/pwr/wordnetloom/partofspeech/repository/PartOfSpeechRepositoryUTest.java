@@ -30,7 +30,7 @@ public class PartOfSpeechRepositoryUTest extends TestBaseRepository {
     @Test
     public void savePartOfSpeechAndFindIt() {
         final Long posAddedId = dbCommandExecutor.executeCommand(() -> {
-            return posRepository.save(verb()).getId();
+            return posRepository.persist(verb()).getId();
         });
 
         assertThat(posAddedId, is(notNullValue()));
@@ -45,11 +45,11 @@ public class PartOfSpeechRepositoryUTest extends TestBaseRepository {
     public void shouldFindLexiconByIdList() {
 
         final Long posAddedId1 = dbCommandExecutor.executeCommand(() -> {
-            return posRepository.save(verb()).getId();
+            return posRepository.persist(verb()).getId();
         });
 
         final Long posAddedId2 = dbCommandExecutor.executeCommand(() -> {
-            return posRepository.save(noun()).getId();
+            return posRepository.persist(noun()).getId();
         });
 
         assertThat(posAddedId1, is(notNullValue()));

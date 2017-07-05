@@ -3,7 +3,7 @@ package pl.edu.pwr.wordnetloom.senserelation.service;
 import java.util.Collection;
 import java.util.List;
 import javax.ejb.Remote;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 
 @Remote
 public interface SenseRelationTypeServiceRemote {

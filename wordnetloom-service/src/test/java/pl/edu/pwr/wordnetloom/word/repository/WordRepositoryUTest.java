@@ -29,7 +29,7 @@ public class WordRepositoryUTest extends TestBaseRepository {
     @Test
     public void saveWordAndFindIt() {
         final Long wordAddedId = dbCommandExecutor.executeCommand(() -> {
-            return wordRepository.save(czerwony()).getId();
+            return wordRepository.persist(czerwony()).getId();
         });
 
         assertThat(wordAddedId, is(notNullValue()));
@@ -43,15 +43,15 @@ public class WordRepositoryUTest extends TestBaseRepository {
     public void findWordByWord() {
 
         final Long wordAddedId1 = dbCommandExecutor.executeCommand(() -> {
-            return wordRepository.save(czerwony()).getId();
+            return wordRepository.persist(czerwony()).getId();
         });
 
         final Long wordAddedId2 = dbCommandExecutor.executeCommand(() -> {
-            return wordRepository.save(krowa()).getId();
+            return wordRepository.persist(krowa()).getId();
         });
 
         final Long wordAddedId3 = dbCommandExecutor.executeCommand(() -> {
-            return wordRepository.save(pisac()).getId();
+            return wordRepository.persist(pisac()).getId();
         });
 
         assertThat(wordAddedId1, is(notNullValue()));

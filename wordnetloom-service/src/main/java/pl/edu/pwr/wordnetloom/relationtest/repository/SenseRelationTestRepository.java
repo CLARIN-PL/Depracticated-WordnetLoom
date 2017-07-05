@@ -1,12 +1,12 @@
-package pl.edu.pwr.wordnetloom.senserelation.repository;
+package pl.edu.pwr.wordnetloom.relationtest.repository;
 
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationTest;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtest.model.SenseRelationTest;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 
 @Stateless
 public class SenseRelationTestRepository extends GenericRepository<SenseRelationTest> {

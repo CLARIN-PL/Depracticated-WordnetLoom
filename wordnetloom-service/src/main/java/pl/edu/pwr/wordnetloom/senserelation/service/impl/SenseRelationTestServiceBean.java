@@ -3,9 +3,9 @@ package pl.edu.pwr.wordnetloom.senserelation.service.impl;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationTest;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationType;
-import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationTestRepository;
+import pl.edu.pwr.wordnetloom.relationtest.model.SenseRelationTest;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtest.repository.SenseRelationTestRepository;
 import pl.edu.pwr.wordnetloom.senserelation.service.SenseRelationTestServiceLocal;
 
 @Stateless
@@ -46,7 +46,7 @@ public class SenseRelationTestServiceBean implements SenseRelationTestServiceLoc
 
     @Override
     public SenseRelationTest save(SenseRelationTest test) {
-        return relationTestRepository.save(test);
+        return relationTestRepository.persist(test);
     }
 
     @Override

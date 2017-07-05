@@ -8,13 +8,12 @@ import javax.ejb.Remote;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 
 @Remote
-public interface SynsetServiceRemote extends DAORemote {
+public interface SynsetServiceRemote {
 
     boolean dbDelete(Synset synset);
 
@@ -52,17 +51,16 @@ public interface SynsetServiceRemote extends DAORemote {
 
     Synset updateSynset(Synset synset);
 
-    List<SenseToSynset> getSenseToSynsetBySynset(Synset synset);
-
+    //List<SenseToSynset> getSenseToSynsetBySynset(Synset synset);
     Long fastGetPOSID(Synset synset);
 
     List<Synset> dbFastGetSynsets(String filter, List<Long> lexicons);
 
     List<Synset> dbFastGetSynsets(String filter, Domain domain,
-            RelationType relationType, int limitSize, List<Long> lexicons);
+            SynsetRelationType relationType, int limitSize, List<Long> lexicons);
 
     List<Synset> dbFastGetSynsets(String filter, Domain domain,
-            RelationType relationType, int limitSize, long posIndex,
+            SynsetRelationType relationType, int limitSize, long posIndex,
             List<Long> lexicons);
 
     List<Synset> dbFastGetSynsets(String filter, Sense filterObject, List<Long> lexicons);
@@ -91,13 +89,12 @@ public interface SynsetServiceRemote extends DAORemote {
             List<Long> lexicons);
 
     List<Sense> dbFastGetSenseBySynset(String filter, Domain domain,
-            RelationType relationType, String definition, String comment,
+            SynsetRelationType relationType, String definition, String comment,
             String artificial, int limitSize, long posIndex, List<Long> lexicons);
 
     List<Sense> dbFastGetSenseBySynsetUbyPose(String filter, Domain domain,
-            RelationType relationType, String definition, String comment,
+            SynsetRelationType relationType, String definition, String comment,
             String artificial, int limitSize,
-            pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos,
             List<Long> lexicons);
 
     Boolean areSynsetsInSameLexicon(long synset1, long synset2);

@@ -2,8 +2,8 @@ package pl.edu.pwr.wordnetloom.senserelation.service;
 
 import java.util.List;
 import javax.ejb.Remote;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationTest;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtest.model.SenseRelationTest;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 
 @Remote
 public interface SenseRelationTestServiceRemote {

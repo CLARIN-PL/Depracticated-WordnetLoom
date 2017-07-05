@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.ejb.Remote;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 
 @Remote
 public interface SenseRelationServiceRemote {

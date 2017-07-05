@@ -12,6 +12,7 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.ejb.Stateless;
@@ -25,8 +26,8 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
@@ -40,15 +41,15 @@ public class SenseRepository extends GenericRepository<Sense> {
     SenseRelationRepository senseRelationRepository;
 
     public Sense clone(Sense sense) {
-        return save(new Sense(sense));
+        return persist(new Sense(sense));
     }
 
     @Override
-    public Sense save(Sense sense) {
+    public Sense persist(Sense sense) {
         if (sense.getId() == null) {
             sense.setVariant(findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech()));
         }
-        return super.save(sense);
+        return super.persist(sense);
     }
 
     @Override
@@ -60,28 +61,17 @@ public class SenseRepository extends GenericRepository<Sense> {
         super.delete(s);
     }
 
-//    @NamedQuery(name = "Sense.findSenseByListID",
-//            query = "SELECT s FROM Sense s join fetch s.domain join fetch s.lemma join fetch s.partOfSpeech WHERE s.id in (:ids)"),
-//    @NamedQuery(name = "Sense.findSenseBySynsetID",
-//            query = "select s.sense from SenseToSynset s where s.sense.lexicon.id IN( :lexicons ) and s.idSynset =:idSynset order by s.senseIndex"),
-//    @NamedQuery(name = "Sense.CountSenseBySynsetID",
-//            query = "select count(s.sense) from SenseToSynset s where s.idSynset =:idSynset"),
-    public List<Synset> dbFastGetSynsets(Sense sense, List<Long> lexicons) {
-        sense.setSynsets(new ArrayList<Synset>(synsetDAO.dbFastGetSynsets(sense, lexicons)));
-        return sense.getSynsets();
-    }
-
     public void deleteAll() {
         List<Sense> senses = findAll("id");
         delete(senses);
     }
 
     public List<Sense> findByCriteria(SenseCriteriaDTO dto) {
-
+        return null;
     }
 
-    private List<Sense> getSenses(String filter, PartOfSpeech pos, Domain domain, RelationType relationType,
-            String register, String comment, String example, int limitSize, List<Long> lexicons, pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech posUby) {
+    private List<Sense> getSenses(String filter, PartOfSpeech pos, Domain domain, SenseRelationType relationType,
+            String register, String comment, String example, int limitSize, List<Long> lexicons) {
 
         String wordQuery = "";
         String senseQuery = "SELECT s FROM Sense s JOIN FETCH s.domain JOIN FETCH s.lemma JOIN FETCH s.partOfSpeech WHERE ";
@@ -90,8 +80,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         boolean existCriteria = pos != null || domain != null || relationType != null
                 || (register != null && !register.isEmpty())
                 || (comment != null && !comment.isEmpty())
-                || (example != null && !example.isEmpty())
-                || (posUby != null);
+                || (example != null && !example.isEmpty());
 
         if (existFilter && !filter.endsWith("%")) {
             filter += "%";
@@ -113,8 +102,8 @@ public class SenseRepository extends GenericRepository<Sense> {
 
         Comparator<Sense> senseComparator = (Sense a, Sense b) -> {
 
-            String aa = a.getLemma().getWord().toLowerCase();
-            String bb = b.getLemma().getWord().toLowerCase();
+            String aa = a.getWord().getWord().toLowerCase();
+            String bb = b.getWord().getWord().toLowerCase();
 
             int c = myFavouriteCollator.compare(aa, bb);
             if (c == 0) {
@@ -123,13 +112,13 @@ public class SenseRepository extends GenericRepository<Sense> {
                 c = myFavouriteCollator.compare(aa, bb);
             }
             if (c == 0) {
-                if (a.getSenseNumber() == b.getSenseNumber()) {
+                if (Objects.equals(a.getVariant(), b.getVariant())) {
                     c = 0;
                 }
-                if (a.getSenseNumber() > b.getSenseNumber()) {
+                if (a.getVariant() > b.getVariant()) {
                     c = 1;
                 }
-                if (a.getSenseNumber() < b.getSenseNumber()) {
+                if (a.getVariant() < b.getVariant()) {
                     c = -1;
                 }
             }
@@ -144,7 +133,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         if (existCriteria) {
             Map<String, Object> parameters = new HashMap<>();
 
-            int critCounter = (domain == null ? 0 : 1) + (pos == null ? 0 : 1) + (posUby == null ? 0 : 1) + (relationType == null ? 0 : 1);
+            int critCounter = (domain == null ? 0 : 1) + (pos == null ? 0 : 1) + (relationType == null ? 0 : 1);
 
             // TODO: better to find just COUNT of these ...
             if (((existFilter && filter.length() > 3) && critCounter > 0)) {
@@ -158,7 +147,7 @@ public class SenseRepository extends GenericRepository<Sense> {
                     wordQuery = "SELECT w.id FROM Word w ORDER BY w.word ASC";
                 }
 
-                TypedQuery<Long> wordIDQuery = getEM().createQuery(wordQuery, Long.class);
+                TypedQuery<Long> wordIDQuery = getEntityManager().createQuery(wordQuery, Long.class);
 
                 if (existFilter) {
                     wordIDQuery.setParameter("param", filter.toLowerCase());
@@ -181,10 +170,6 @@ public class SenseRepository extends GenericRepository<Sense> {
                 if (pos != null) {
                     senseQuery += "s.partOfSpeech.id = :pos AND ";
                     parameters.put("pos", pos.getId());
-                }
-                if (posUby != null) {
-                    senseQuery += "s.partOfSpeech.ubyLmfType = :pos AND ";
-                    parameters.put("pos", posUby);
                 }
                 if (domain != null) {
                     senseQuery += "s.domain.id = :domain AND ";
@@ -212,7 +197,7 @@ public class SenseRepository extends GenericRepository<Sense> {
                 }
                 senseQuery = senseQuery.substring(0, senseQuery.length() - 4);
 
-                TypedQuery<Sense> q = dao.getEM().createQuery(senseQuery, Sense.class);
+                TypedQuery<Sense> q = getEntityManager().createQuery(senseQuery, Sense.class);
 
                 for (Entry<String, Object> pair : parameters.entrySet()) {
                     q.setParameter(pair.getKey(), pair.getValue());
@@ -228,10 +213,6 @@ public class SenseRepository extends GenericRepository<Sense> {
             if (pos != null) {
                 senseQuery += "s.partOfSpeech.id = :pos AND ";
                 parameters.put("pos", pos.getId());
-            }
-            if (posUby != null) {
-                senseQuery += "s.partOfSpeech.ubyLmfType = :pos AND ";
-                parameters.put("pos", posUby);
             }
             if (domain != null) {
                 senseQuery += "s.domain.id = :domain AND ";
@@ -259,7 +240,7 @@ public class SenseRepository extends GenericRepository<Sense> {
             }
             senseQuery = senseQuery.substring(0, senseQuery.length() - 4);
 
-            TypedQuery<Sense> q = dao.getEM().createQuery(senseQuery, Sense.class);
+            TypedQuery<Sense> q = getEntityManager().createQuery(senseQuery, Sense.class);
 
             for (Entry<String, Object> pair : parameters.entrySet()) {
                 q.setParameter(pair.getKey(), pair.getValue());
@@ -273,7 +254,7 @@ public class SenseRepository extends GenericRepository<Sense> {
                         Pattern.CASE_INSENSITIVE);
                 while (iterator.hasNext()) {
                     Sense s = iterator.next();
-                    String name = s.getLemma().getWord();
+                    String name = s.getWord().getWord();
 
                     Matcher match = p.matcher(name);
                     if (!match.matches()) {
@@ -299,7 +280,7 @@ public class SenseRepository extends GenericRepository<Sense> {
             wordQuery = "SELECT w.id FROM Word w ORDER BY lower(w.word) ASC";
         }
 
-        TypedQuery<Long> wordIDQuery = getEM().createQuery(wordQuery, Long.class);
+        TypedQuery<Long> wordIDQuery = getEntityManager().createQuery(wordQuery, Long.class);
 
         if (existFilter) {
             wordIDQuery.setParameter("param", filter.toLowerCase());
@@ -319,7 +300,7 @@ public class SenseRepository extends GenericRepository<Sense> {
 
         senseQuery += "s.lemma.word.id IN (:wordsID)";
 
-        TypedQuery<Sense> lastQuery = dao.getEM().createQuery(senseQuery, Sense.class);
+        TypedQuery<Sense> lastQuery = getEntityManager().createQuery(senseQuery, Sense.class);
 
         lastQuery.setParameter("wordsID", wordsIDs);
 
@@ -424,7 +405,7 @@ public class SenseRepository extends GenericRepository<Sense> {
             queryString += " AND s.partOfSpeech.id = :pos";
             params.put("pos", pos.getId());
         }
-        TypedQuery<Sense> query = dao.getEM().createQuery(queryString, Sense.class);
+        TypedQuery<Sense> query = getEntityManager().createQuery(queryString, Sense.class);
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
@@ -443,28 +424,8 @@ public class SenseRepository extends GenericRepository<Sense> {
         return s.getSynset() != null;
     }
 
-    @Override
-    public Sense update(Sense sense) {
-
-        if (null == sense.getId()) {
-            sense.setLemma(seekOrSaveWord(sense.getLemma()));
-            persistObject(sense);
-        }
-
-        List<SenseAttributes> atrributes = senseAttributeDao.getSenseAttributes(sense);
-
-        if (atrributes != null) {
-            atrributes.stream().forEach((senseAttribute) -> {
-                setSenseAtrribute(sense, senseAttribute.getType().getTypeName().getText(), senseAttribute.getValue().getText());
-            });
-        }
-
-        return mergeObject(sense);
-    }
-
-    @Override
     public List<Long> getAllLemmasForLexicon(List<Long> lexicon) {
-        Query query = getEntityManager().createQuery("SELECT s.lemma.id FROM Sense s WHERE s.lexicon.id IN (:lexicon) GROUP BY s.lemma.id");
+        Query query = getEntityManager().createQuery("SELECT s.word.id FROM Sense s WHERE s.lexicon.id IN (:lexicon) GROUP BY s.word.id");
         query.setParameter("lexicon", lexicon);
         return query.getResultList();
     }

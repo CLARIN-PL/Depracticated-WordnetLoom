@@ -30,7 +30,7 @@ public class DomainRepositoryUTest extends TestBaseRepository {
     @Test
     public void saveDomianAndFindIt() {
         final Long domainAddedId = dbCommandExecutor.executeCommand(() -> {
-            return domainRepository.save(bhp()).getId();
+            return domainRepository.persist(bhp()).getId();
         });
 
         assertThat(domainAddedId, is(notNullValue()));
@@ -44,11 +44,11 @@ public class DomainRepositoryUTest extends TestBaseRepository {
     public void shouldFindAllDomain() {
 
         final Long domainAddedId1 = dbCommandExecutor.executeCommand(() -> {
-            return domainRepository.save(bhp()).getId();
+            return domainRepository.persist(bhp()).getId();
         });
 
         final Long domainAddedId2 = dbCommandExecutor.executeCommand(() -> {
-            return domainRepository.save(jak()).getId();
+            return domainRepository.persist(jak()).getId();
         });
 
         assertThat(domainAddedId1, is(notNullValue()));

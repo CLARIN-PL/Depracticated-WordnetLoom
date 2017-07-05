@@ -42,7 +42,7 @@ public class PartOfSpeechServiceBean implements PartOfSpeechServiceLocal {
     @Override
     public PartOfSpeech add(final PartOfSpeech pos) {
         ValidationUtils.validateEntityFields(validator, pos);
-        return partOfSpeechRepository.save(pos);
+        return partOfSpeechRepository.persist(pos);
     }
 
 }

@@ -28,6 +28,7 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Stateless
@@ -52,6 +53,27 @@ public class SynsetRepository extends GenericRepository<Synset> {
         }
     }
 
+    //@NamedQueries({
+//    @NamedQuery(name = "Synset.findCountAll",
+//            query = "SELECT COUNT(s) FROM Synset s"),
+//    @NamedQuery(name = "Synset.findSynsetBySensID",
+//            query = "SELECT s.synset FROM SenseToSynset s WHERE s.idSense = :senseID AND s.sense.lexicon.id IN (:lexicons)"),
+//    @NamedQuery(name = "Synset.findListSynsetByID",
+//            query = "SELECT s FROM Synset s WHERE s.id IN ( :synsetsID )"),
+//    @NamedQuery(name = "Synset.getAllIDs",
+//            query = "SELECT s FROM Synset s"),
+//    @NamedQuery(name = "Synset.dbGetUnit",
+//            query = "SELECT s FROM Synset s JOIN s.senseToSynset AS sts LEFT JOIN sts.sense AS sen LEFT JOIN sen.senseAttributes AS sea LEFT JOIN s.synsetAttributes AS sa WHERE sen.lexicon.id IN( :lexicons) AND  s.id = :synsetID ORDER BY s.id, sts.senseIndex"),
+//    @NamedQuery(name = "Synset.dbGetUnitsByIDs",
+//            query = "SELECT s FROM Synset s JOIN s.senseToSynset AS sts LEFT JOIN sts.sense AS sen LEFT JOIN sen.senseAttributes AS sea LEFT JOIN s.synsetAttributes AS sa WHERE s.id IN ( :synsetsIDs ) ORDER BY s.id, sts.senseIndex"),
+//    @NamedQuery(name = "Synset.dbGetSynsetRels",
+//            query = "SELECT sr.synsetFrom FROM SynsetRelation sr WHERE sr.synsetFrom.id IN ( SELECT sr.synsetFrom.id FROM SynsetRelation sr WHERE sr.synsetFrom.id = :synsetID ) OR sr.synsetFrom.id IN ( SELECT sr.synsetTo.id FROM SynsetRelation sr WHERE sr.synsetTo.id = :synsetID )"),
+//    @NamedQuery(name = "Synset.dbGetSynsetsRels",
+//            query = "SELECT sr.synsetFrom FROM SynsetRelation sr WHERE sr.id IN ( SELECT sr.id FROM SynsetRelation sr WHERE sr.synsetFrom IN ( :synsetList ) ) OR sr.id IN ( SELECT sr.id FROM SynsetRelation sr WHERE sr.synsetTo IN ( :synsetList ) )"),
+//    @NamedQuery(name = "Synset.dbGetSimilarityCount",
+//            query = "SELECT COUNT( a.idSense ) FROM SenseToSynset a, SenseToSynset b WHERE a.idSynset = :idA AND b.idSynset = :idB AND a.idSense = b.idSense"),
+//    @NamedQuery(name = "Synset.fastGetPOSID",
+//            query = "SELECT s.sense.partOfSpeech.id FROM SenseToSynset s WHERE s.idSynset = :idSynset ORDER BY s.senseIndex"),})
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public boolean dbDelete(Synset synset) {
         EntityManager em = dao.getEM();
@@ -264,39 +286,17 @@ public class SynsetRepository extends GenericRepository<Synset> {
         }
     }
 
-    /**
-     * odczytanie sysnetow
-     *
-     * @param filter - filtr dla przechowywanych jednostek
-     * @return lista synsetow (bez detali)
-     */
-    @Override
     public List<Synset> dbFastGetSynsets(String filter, List<Long> lexicons) {
         return dbFastGetSynsets(filter, null, null, 0, lexicons);
     }
 
-    /**
-     * odczytanie sysnetow i zwrócenie głownie jednostki
-     *
-     * @param filter - filtr dla przechowywanych jednostek
-     * @param workStates - akceptowalne statusy lub NULL akceptuje wszystkie
-     * @param domain - akceptowalna domena lub NULL aby akceptować wszystko
-     * @param relationType - typ relacji jakie musza byc zdefiniowane dla
-     * synsetow wynikowych
-     * @param limitSize - maksymalna liczba zwroconych elementów
-     * @param realSize - obiekt w którym zapisywana jest prawdziwa wielkość
-     * kolekcji
-     * @return lista synsetow (bez detali)
-     */
-    @Override
-    public List<Synset> dbFastGetSynsets(String filter, Domain domain, RelationType relationType, int limitSize, List<Long> lexicons) {
+    public List<Synset> dbFastGetSynsets(String filter, Domain domain, SynsetRelationType relationType, int limitSize, List<Long> lexicons) {
         return dbFastGetSynsets(filter, domain, relationType, limitSize, -1, lexicons);
     }
 
-    @Override
-    public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain, RelationType relationType, String definition, String comment, String artificial, int limitSize, long posIndex, List<Long> lexicons) {
+    public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain, SynsetRelationType relationType, String definition, String comment, String artificial, int limitSize, long posIndex, List<Long> lexicons) {
 
-        CriteriaBuilder criteriaBuilder = getEM().getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<SenseToSynset> stsRoot = criteriaQuery.from(SenseToSynset.class);
         Join<SenseToSynset, Sense> sense = stsRoot.join("sense", JoinType.LEFT);
@@ -398,7 +398,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
      * zgodnie z enum Pos)
      * @return lista synsetow (bez detali)
      */
-    public List<Synset> dbFastGetSynsets(String filter, Domain domain, RelationType relationType, int limitSize, long posIndex, List<Long> lexicon) {
+    public List<Synset> dbFastGetSynsets(String filter, Domain domain, SynsetRelationType relationType, int limitSize, long posIndex, List<Long> lexicon) {
 
         CriteriaBuilder criteriaBuilder = getEM().getCriteriaBuilder();
         CriteriaQuery<Synset> criteriaQuery = criteriaBuilder.createQuery(Synset.class);
@@ -443,8 +443,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return query.getResultList();
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
     public Boolean areSynsetsInSameLexicon(long synset1, long synset2) {
         List<Sense> sense1 = dao.getEM().createQuery("Select sts.sense from SenseToSynset sts where sts.idSynset = :syn1")
                 .setParameter("syn1", synset1)

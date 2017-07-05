@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.senserelation.repository;
+package pl.edu.pwr.wordnetloom.relationtype.repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +9,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 
 @Stateless
 public class SenseRelationTypeRepository extends GenericRepository<SenseRelationType> {

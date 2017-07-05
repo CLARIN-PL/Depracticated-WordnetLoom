@@ -14,7 +14,7 @@ import javax.persistence.TypedQuery;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 
 @Stateless
 public class SenseRelationRepository extends GenericRepository<SenseRelation> {
@@ -102,7 +102,7 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
 
     public boolean makeRelation(Sense parent, Sense child, SenseRelationType relation) {
         SenseRelation rel = new SenseRelation(relation, parent, child);
-        save(rel);
+        persist(rel);
         return true;
     }
 

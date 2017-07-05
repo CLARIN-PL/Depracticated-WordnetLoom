@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.synsetrelation.repository;
+package pl.edu.pwr.wordnetloom.relationtype.repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +9,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
+import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository;
 
 @Stateless
 public class SynsetRelationTypeRepository extends GenericRepository<SynsetRelationType> {

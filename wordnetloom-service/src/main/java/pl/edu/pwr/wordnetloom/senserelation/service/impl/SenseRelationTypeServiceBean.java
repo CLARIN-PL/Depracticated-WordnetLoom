@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationType;
-import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationTypeRepository;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.repository.SenseRelationTypeRepository;
 import pl.edu.pwr.wordnetloom.senserelation.service.SenseRelationTypeServiceLocal;
 
 @Stateless
@@ -51,7 +51,7 @@ public class SenseRelationTypeServiceBean implements SenseRelationTypeServiceLoc
 
     @Override
     public SenseRelationType save(SenseRelationType rel) {
-        return relationTypeRepository.save(rel);
+        return relationTypeRepository.persist(rel);
     }
 
     @Override

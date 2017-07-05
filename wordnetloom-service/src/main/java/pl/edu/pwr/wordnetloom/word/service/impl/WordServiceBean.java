@@ -25,7 +25,7 @@ public class WordServiceBean implements WordServiceLocal {
         if (wordRepository.alreadyExists("word", word.getWord(), null)) {
             return findByWord(word.getWord());
         }
-        return wordRepository.save(word);
+        return wordRepository.persist(word);
     }
 
     @Override

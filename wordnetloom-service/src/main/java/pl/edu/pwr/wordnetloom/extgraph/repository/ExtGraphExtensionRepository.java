@@ -20,9 +20,9 @@ public class ExtGraphExtensionRepository extends GenericRepository<ExtGraphExten
     @Inject
     ExtGraphRepository extGraphRepository;
 
-    public void save(Collection<ExtGraphExtension> exts) {
+    public void persist(Collection<ExtGraphExtension> exts) {
         for (ExtGraphExtension e : exts) {
-            save(e);
+            persist(e);
         }
     }
 

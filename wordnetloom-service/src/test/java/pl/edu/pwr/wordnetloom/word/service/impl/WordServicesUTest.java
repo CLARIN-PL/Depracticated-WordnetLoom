@@ -73,7 +73,7 @@ public class WordServicesUTest {
     public void wordShouldBeUnique() {
         when(wordRepository.alreadyExists("word", "czerwony", null)).thenReturn(true);
         when(wordRepository.findByWord("czerwony")).thenReturn(wordWithId(czerwony(), 1L));
-        when(wordRepository.save(wordWithId(czerwony(), 1L))).thenReturn(wordWithId(czerwony(), 1L));
+        when(wordRepository.persist(wordWithId(czerwony(), 1L))).thenReturn(wordWithId(czerwony(), 1L));
 
         Word w1 = wordService.add(wordWithId(czerwony(), 1L));
         Word w2 = wordService.add(wordWithId(czerwony(), 2L));

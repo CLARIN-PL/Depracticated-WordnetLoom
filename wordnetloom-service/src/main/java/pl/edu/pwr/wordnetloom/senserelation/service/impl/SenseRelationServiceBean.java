@@ -6,7 +6,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 import pl.edu.pwr.wordnetloom.senserelation.service.SenseRelationServiceLocal;
 

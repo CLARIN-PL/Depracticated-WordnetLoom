@@ -41,7 +41,7 @@ public class LexiconServiceBean implements LexiconServiceLocal {
     @Override
     public Lexicon add(final Lexicon lexicon) {
         ValidationUtils.validateEntityFields(validator, lexicon);
-        return lexiconRepository.save(lexicon);
+        return lexiconRepository.persist(lexicon);
     }
 
     @Override

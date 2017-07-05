@@ -1,13 +1,13 @@
-package pl.edu.pwr.wordnetloom.synsetrelation.repository;
+package pl.edu.pwr.wordnetloom.relationtest.repository;
 
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelationType;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelationTest;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtest.model.SynsetRelationTest;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 
 @Stateless
 public class SynsetRelationTestRepository extends GenericRepository<SynsetRelationTest> {

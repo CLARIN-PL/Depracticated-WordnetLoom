@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.senserelation.model;
 
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,11 +26,11 @@ public class SenseRelation implements Serializable {
     private SenseRelationType relationType;
 
     @ManyToOne
-    @JoinColumn(name = "parent_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "parent_sense_id", referencedColumnName = "id", nullable = false)
     private Sense parent;
 
     @ManyToOne
-    @JoinColumn(name = "child_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "child_sense_id", referencedColumnName = "id", nullable = false)
     private Sense child;
 
     public SenseRelation() {

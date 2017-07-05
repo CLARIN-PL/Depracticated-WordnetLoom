@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.synsetrelation.model;
+package pl.edu.pwr.wordnetloom.relationtype.model;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,10 +18,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import pl.edu.pwr.wordnetloom.common.model.Localised;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.relationtest.model.SenseRelationTest;
 
 @Entity
-@Table(name = "synset_relation_type")
-public class SynsetRelationType implements Serializable {
+@Table(name = "sense_relation_type")
+public class SenseRelationType implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,23 +53,19 @@ public class SynsetRelationType implements Serializable {
     private Localised shortDisplayStrings = new Localised();
 
     @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SynsetRelationTest> relationTests;
+    private List<SenseRelationTest> relationTests;
 
     @Basic
     @Column(name = "auto_reverse", nullable = false, columnDefinition = "bit")
     private Boolean autoReverse;
 
-    @Basic
-    @Column(name = "multilingual", nullable = false, columnDefinition = "bit")
-    private Boolean multilingual = false;
-
     @ManyToOne
     @JoinColumn(name = "parent_relation_type_id", nullable = true)
-    private SynsetRelationType parent;
+    private SenseRelationType parent;
 
     @ManyToOne
     @JoinColumn(name = "reverse_relation_type_id", nullable = true)
-    private SynsetRelationType reverse;
+    private SenseRelationType reverse;
 
     public String getName(String locale) {
         return this.nameStrings.getString(locale);
@@ -118,6 +115,14 @@ public class SynsetRelationType implements Serializable {
         this.lexicons = lexicons;
     }
 
+    public List<SenseRelationTest> getRelationTests() {
+        return relationTests;
+    }
+
+    public void setRelationTests(List<SenseRelationTest> relationTests) {
+        this.relationTests = relationTests;
+    }
+
     public Boolean getAutoReverse() {
         return autoReverse;
     }
@@ -126,36 +131,20 @@ public class SynsetRelationType implements Serializable {
         this.autoReverse = autoReverse;
     }
 
-    public Boolean getMultilingual() {
-        return multilingual;
-    }
-
-    public void setMultilingual(Boolean multilingual) {
-        this.multilingual = multilingual;
-    }
-
-    public SynsetRelationType getParent() {
+    public SenseRelationType getParent() {
         return parent;
     }
 
-    public void setParent(SynsetRelationType parent) {
+    public void setParent(SenseRelationType parent) {
         this.parent = parent;
     }
 
-    public SynsetRelationType getReverse() {
+    public SenseRelationType getReverse() {
         return reverse;
     }
 
-    public void setReverse(SynsetRelationType reverse) {
+    public void setReverse(SenseRelationType reverse) {
         this.reverse = reverse;
-    }
-
-    public List<SynsetRelationTest> getRelationTests() {
-        return relationTests;
-    }
-
-    public void setRelationTests(List<SynsetRelationTest> relationTests) {
-        this.relationTests = relationTests;
     }
 
 }

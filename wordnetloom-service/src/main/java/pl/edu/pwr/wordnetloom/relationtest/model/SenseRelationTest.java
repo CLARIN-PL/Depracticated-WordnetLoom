@@ -1,5 +1,6 @@
-package pl.edu.pwr.wordnetloom.senserelation.model;
+package pl.edu.pwr.wordnetloom.relationtest.model;
 
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
