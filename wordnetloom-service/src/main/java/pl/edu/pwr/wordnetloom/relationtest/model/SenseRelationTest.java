@@ -1,6 +1,5 @@
 package pl.edu.pwr.wordnetloom.relationtest.model;
 
-import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +11,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 
 @Entity
 @Table(name = "sense_relation_test")
@@ -31,11 +31,11 @@ public class SenseRelationTest implements Serializable {
     private SenseRelationType relationType;
 
     @ManyToOne
-    @JoinColumn(name = "sense_A_part_of_speech_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "sense_A_part_of_speech_id", referencedColumnName = "id")
     private PartOfSpeech senseApartOfSpeech;
 
     @ManyToOne
-    @JoinColumn(name = "sense_B_part_of_speech_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "sense_B_part_of_speech_id", referencedColumnName = "id")
     private PartOfSpeech senseBpartOfSpeech;
 
     @Column(name = "position", nullable = false, columnDefinition = "int default = '0'")

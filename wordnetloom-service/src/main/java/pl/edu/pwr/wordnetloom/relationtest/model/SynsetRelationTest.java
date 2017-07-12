@@ -1,6 +1,5 @@
 package pl.edu.pwr.wordnetloom.relationtest.model;
 
-import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +11,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 
 @Entity
 @Table(name = "relation_test")
@@ -31,11 +31,11 @@ public class SynsetRelationTest implements Serializable {
     private SynsetRelationType relationType;
 
     @ManyToOne
-    @JoinColumn(name = "synset_A_part_of_speech_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "synset_A_part_of_speech_id", referencedColumnName = "id")
     private PartOfSpeech synsetApartOfSpeech;
 
     @ManyToOne
-    @JoinColumn(name = "synset_B_part_of_speech_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "synset_B_part_of_speech_id", referencedColumnName = "id")
     private PartOfSpeech synsetBpartOfSpeech;
 
     @Column(name = "position", nullable = false, columnDefinition = "int default = '0'")
