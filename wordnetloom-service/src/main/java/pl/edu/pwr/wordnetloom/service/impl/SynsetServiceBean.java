@@ -10,16 +10,17 @@ import pl.edu.pwr.wordnetloom.dao.DAOLocal;
 import pl.edu.pwr.wordnetloom.dao.SynsetDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.SynsetRelationDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.impl.DAOBean;
+import pl.edu.pwr.wordnetloom.model.dto.CountInfo;
+import pl.edu.pwr.wordnetloom.model.dto.DataEntry;
+import pl.edu.pwr.wordnetloom.model.dto.SynsetInfo;
 import pl.edu.pwr.wordnetloom.model.wordnet.Domain;
 import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
 import pl.edu.pwr.wordnetloom.model.wordnet.SynsetRelation;
-import pl.edu.pwr.wordnetloom.model.dto.CountInfo;
-import pl.edu.pwr.wordnetloom.model.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.model.dto.SynsetInfo;
 import pl.edu.pwr.wordnetloom.service.SynsetServiceRemote;
 
 @Stateless
@@ -193,13 +194,13 @@ public class SynsetServiceBean extends DAOBean implements SynsetServiceRemote {
     }
 
     @Override
-    public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain, RelationType relationType, String definition, String comment, String artificial, int limitSize, long posIndex, List<Long> lexicons) {
-        return local.dbFastGetSenseBySynset(filter, domain, relationType, definition, comment, artificial, limitSize, posIndex, lexicons);
+    public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain, RelationType relationType, String definition, String comment, String artificial, int limitSize, long posIndex, List<Long> lexicons, StatusDictionary status) {
+        return local.dbFastGetSenseBySynset(filter, domain, relationType, definition, comment, artificial, limitSize, posIndex, lexicons, status);
     }
 
     @Override
-    public List<Sense> dbFastGetSenseBySynsetUbyPose(String filter, Domain domain, RelationType relationType, String definition, String comment, String artificial, int limitSize, pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos, List<Long> lexicons) {
-        return local.dbFastGetSenseBySynset(filter, domain, relationType, definition, comment, artificial, limitSize, pos, lexicons);
+    public List<Sense> dbFastGetSenseBySynsetUbyPose(String filter, Domain domain, RelationType relationType, String definition, String comment, String artificial, int limitSize, pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos, List<Long> lexicons, StatusDictionary status) {
+        return local.dbFastGetSenseBySynset(filter, domain, relationType, definition, comment, artificial, limitSize, pos, lexicons, status);
     }
 
     /**

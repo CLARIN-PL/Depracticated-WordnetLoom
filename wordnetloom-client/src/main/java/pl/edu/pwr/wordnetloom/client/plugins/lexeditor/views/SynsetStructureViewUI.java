@@ -113,6 +113,8 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     private final boolean showSwitch;
     private final boolean bottomButtons;
     private final ViwnGraphViewUI graphUI;
+    private JLabel sumo;
+    private JLabel status;
 
     /**
      * konstruktor
@@ -167,6 +169,8 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         commentValue.setRows(3);
         commentValue.setEnabled(false);
 
+        status = new JLabel();
+        sumo = new JLabel();
         isAbstract = new JLabel();
 
         // dodanie przyciskow
@@ -249,6 +253,11 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             content.add("br", commentValue);
 
         }
+        content.add("br", new JLabel("Sumo:"));
+        content.add("", sumo);
+
+        content.add("br", new JLabel("Status:"));
+        content.add("", status);
         content.add("br", isAbstract);
 
         content.add("br", new JLabel("Synset Id:"));
@@ -569,6 +578,9 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 units = LexicalDA.getLexicalUnits(synset, LexiconManager.getInstance().getLexicons());
             }
             commentValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.COMMENT)) : formatValue(null));
+            status.setText(synset.getStatus() != null ? synset.getStatus().getName() : "");
+            sumo.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.SUMO)) : formatValue(null));
+
             if (Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT))) {
                 isAbstract.setText(String.format("<html><font color=red>%s</font></html>", Labels.SYNSET_ARTIFICIAL));
             } else {

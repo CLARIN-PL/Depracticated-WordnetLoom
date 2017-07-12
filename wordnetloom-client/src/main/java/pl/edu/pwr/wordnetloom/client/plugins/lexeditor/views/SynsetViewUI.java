@@ -33,6 +33,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.Lexicon;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 import se.datadosen.component.RiverLayout;
 
 public class SynsetViewUI extends AbstractViewUI implements ActionListener, ListSelectionListener, KeyListener {
@@ -95,6 +96,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         final String definition = criteria.getDefinition().getText();
         final String comment = criteria.getComment().getText();
         final String artificial = criteria.getIsArtificial();
+        final StatusDictionary status = criteria.getStatusComboBox().retriveComboBoxItem();
         final List<Long> lexicons = new ArrayList<>();
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
@@ -112,7 +114,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
                 List<Sense> sense = new ArrayList<>();
                 sense = LexicalDA.getSenseBySynsets(oldFilter, oldDomain, oldRelation,
                         definition, comment, artificial, limitSize,
-                        criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem().getUbyType(), lexicons);
+                        criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem().getUbyType(), lexicons, status);
                 if (lastSelectedValue == null && synsetList != null && !synsetList.isSelectionEmpty()) {
                     lastSelectedValue = senseListModel.getObjectAt(synsetList.getSelectedIndex());
                 }

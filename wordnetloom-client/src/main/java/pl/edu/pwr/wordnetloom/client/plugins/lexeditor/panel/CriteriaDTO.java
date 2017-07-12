@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import java.util.List;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 
 public class CriteriaDTO {
 
@@ -11,6 +12,7 @@ public class CriteriaDTO {
     private int domain;
     private int relation;
     private int register;
+    private StatusDictionary status;
     private String definition;
     private String comment;
     private String example;
@@ -104,4 +106,13 @@ public class CriteriaDTO {
     public void setSense(List<Sense> sense) {
         this.sense = sense;
     }
+
+    public StatusDictionary getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusDictionary status) {
+        this.status = status;
+    }
+
 }

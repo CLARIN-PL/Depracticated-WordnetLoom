@@ -11,6 +11,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.Lexicon;
 import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
 import pl.edu.pwr.wordnetloom.model.wordnet.Word;
 import pl.edu.pwr.wordnetloom.service.LexicalUnitServiceRemote;
@@ -134,8 +135,8 @@ public class LexicalUnitServiceBean extends DAOBean implements LexicalUnitServic
      */
     @Override
     public List<Sense> dbFastGetUnits(String filter, PartOfSpeech pos, Domain domain, RelationType relationType,
-            String register, String comment, String example, int limitSize, List<Long> lexicons) {
-        return local.dbFastGetUnits(filter, pos, domain, relationType, register, comment, example, limitSize, lexicons);
+            String register, String comment, String example, int limitSize, List<Long> lexicons, StatusDictionary status) {
+        return local.dbFastGetUnits(filter, pos, domain, relationType, register, comment, example, limitSize, lexicons, status);
     }
 
     /**
@@ -362,8 +363,8 @@ public class LexicalUnitServiceBean extends DAOBean implements LexicalUnitServic
     public List<Sense> dbFastGetUnits(String filter,
             pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos,
             Domain domain, RelationType relationType, String register,
-            String comment, String example, int limitSize, List<Long> lexicons) {
+            String comment, String example, int limitSize, List<Long> lexicons, StatusDictionary status) {
 
-        return local.dbFastGetUnitsUby(filter, pos, domain, relationType, register, comment, example, limitSize, lexicons);
+        return local.dbFastGetUnitsUby(filter, pos, domain, relationType, register, comment, example, limitSize, lexicons, status);
     }
 }

@@ -14,4 +14,6 @@ public interface DictionaryDaoLocal {
     <T> List<T> findDictionaryByClass(Class<T> clazz);
 
     List<String> findAllDictionaryNames();
+
+    <T> T findDefaultValueByClass(Class<T> clazz);
 }

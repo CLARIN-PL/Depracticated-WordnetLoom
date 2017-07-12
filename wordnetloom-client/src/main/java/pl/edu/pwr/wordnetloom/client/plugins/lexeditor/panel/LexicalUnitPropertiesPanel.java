@@ -2,9 +2,8 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.Sizes;
-import com.jgoodies.forms.util.LayoutStyle;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -53,10 +52,13 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.TextPanePlain;
 import pl.edu.pwr.wordnetloom.client.utils.Common;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.model.wordnet.Domain;
+import pl.edu.pwr.wordnetloom.model.wordnet.LanguageVariantDictionary;
 import pl.edu.pwr.wordnetloom.model.wordnet.Lexicon;
 import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 
 public class LexicalUnitPropertiesPanel extends JPanel implements
         CaretListener, ActionListener {
@@ -84,50 +86,58 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     private JLabel lblDefinition;
     private JScrollPane definitionScrollPane;
     private TextPanePlain definition;
+    private ComboBoxPlain<StatusDictionary> status;
+    private ComboBoxPlain<LanguageVariantDictionary> languageVariant;
+    private JLabel lblStatus;
+    private JLabel lblLangVariant;
 
     public LexicalUnitPropertiesPanel(final JFrame frame) {
         setLayout(new BorderLayout(0, 0));
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new FormLayout(new ColumnSpec[]{
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+            FormSpecs.RELATED_GAP_COLSPEC,
             ColumnSpec.decode("max(57dlu;min)"),
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+            FormSpecs.RELATED_GAP_COLSPEC,
             ColumnSpec.decode("max(48dlu;min)"),
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+            FormSpecs.RELATED_GAP_COLSPEC,
             ColumnSpec.decode("max(49dlu;min)"),
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+            FormSpecs.RELATED_GAP_COLSPEC,
             ColumnSpec.decode("max(28dlu;min):grow"),
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+            FormSpecs.RELATED_GAP_COLSPEC,
             ColumnSpec.decode("max(17dlu;min)"),
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+            FormSpecs.RELATED_GAP_COLSPEC,
             ColumnSpec.decode("max(44dlu;default)"),
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+            FormSpecs.RELATED_GAP_COLSPEC,
             ColumnSpec.decode("max(5dlu;default):grow"),},
                 new RowSpec[]{
                     RowSpec.decode("1dlu"),
                     RowSpec.decode("6dlu"),
                     RowSpec.decode("fill:max(14dlu;default)"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                    FormSpecs.RELATED_GAP_ROWSPEC,
                     RowSpec.decode("fill:max(14dlu;default)"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                    FormSpecs.RELATED_GAP_ROWSPEC,
                     RowSpec.decode("fill:default"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                    FormSpecs.RELATED_GAP_ROWSPEC,
                     RowSpec.decode("fill:default"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                    FormSpecs.RELATED_GAP_ROWSPEC,
                     RowSpec.decode("fill:max(14dlu;default)"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                    FormSpecs.RELATED_GAP_ROWSPEC,
+                    FormSpecs.DEFAULT_ROWSPEC,
+                    FormSpecs.RELATED_GAP_ROWSPEC,
+                    FormSpecs.DEFAULT_ROWSPEC,
+                    FormSpecs.RELATED_GAP_ROWSPEC,
                     RowSpec.decode("max(36dlu;default):grow"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                    FormSpecs.RELATED_GAP_ROWSPEC,
                     RowSpec.decode("fill:max(40dlu;pref):grow"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                    FormSpecs.RELATED_GAP_ROWSPEC,
                     RowSpec.decode("max(14dlu;default)"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                    FormSpecs.RELATED_GAP_ROWSPEC,
                     RowSpec.decode("max(14dlu;default)"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                    FormSpecs.RELATED_GAP_ROWSPEC,
                     RowSpec.decode("max(14dlu;default)"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                    new RowSpec(Sizes.DEFAULT),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                    FormSpecs.RELATED_GAP_ROWSPEC,
+                    FormSpecs.DEFAULT_ROWSPEC,
+                    FormSpecs.RELATED_GAP_ROWSPEC,
                     RowSpec.decode("fill:max(14dlu;default)"),
                     RowSpec.decode("max(10dlu;default):grow"),}));
 
@@ -196,13 +206,40 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         register.addActionListener(this);
         mainPanel.add(register, "4, 11, 3, 1, fill, fill");
 
+        lblStatus = new JLabel(Labels.STATUS_COLON);
+        lblStatus.setVerticalAlignment(SwingConstants.TOP);
+        lblStatus.setHorizontalAlignment(SwingConstants.LEFT);
+        mainPanel.add(lblStatus, "2, 13");
+
+        status = new ComboBoxPlain<>();
+        for (StatusDictionary v : RemoteUtils.dictionaryRemote.findAllStatusDictionary()) {
+            status.addItem(new CustomDescription<>(v.getName(), v));
+        }
+        status.setSelectedItem(RemoteUtils.dictionaryRemote.findDefaultStatusDictionaryValue());
+        status.addActionListener(this);
+
+        mainPanel.add(status, "4, 13, 3, 1, fill, fill");
+
+        lblLangVariant = new JLabel("Language variant:");
+        lblLangVariant.setVerticalAlignment(SwingConstants.TOP);
+        lblLangVariant.setHorizontalAlignment(SwingConstants.LEFT);
+        mainPanel.add(lblLangVariant, "2, 15");
+
+        languageVariant = new ComboBoxPlain<>();
+        for (LanguageVariantDictionary v : RemoteUtils.dictionaryRemote.findAllLanguageVariantDictionary()) {
+            languageVariant.addItem(new CustomDescription<>(v.getName(), v));
+        }
+        languageVariant.setSelectedItem(RemoteUtils.dictionaryRemote.findDefaultLanguageVariantDictionaryValue());
+        languageVariant.addActionListener(this);
+        mainPanel.add(languageVariant, "4, 15, 3, 1, fill, fill");
+
         lblDefinition = new JLabel(Labels.DEFINITION_COLON);
         lblDefinition.setVerticalAlignment(SwingConstants.TOP);
         lblDefinition.setHorizontalAlignment(SwingConstants.LEFT);
-        mainPanel.add(lblDefinition, "2, 13, left, top");
+        mainPanel.add(lblDefinition, "2, 17, left, top");
 
         definitionScrollPane = new JScrollPane();
-        mainPanel.add(definitionScrollPane, "4, 13, 9, 1, default, fill");
+        mainPanel.add(definitionScrollPane, "4, 17, 9, 1, default, fill");
 
         definition = new TextPanePlain();
         definition.addCaretListener(this);
@@ -211,17 +248,17 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         JLabel lblComment = new JLabel(Labels.COMMENT_COLON);
         lblComment.setVerticalAlignment(SwingConstants.TOP);
         lblComment.setHorizontalAlignment(SwingConstants.LEFT);
-        mainPanel.add(lblComment, "2, 15, left, default");
+        mainPanel.add(lblComment, "2, 19, left, default");
 
         commentScrollPane = new JScrollPane();
-        mainPanel.add(commentScrollPane, "4, 15, 9, 1, default, fill");
+        mainPanel.add(commentScrollPane, "4, 19, 9, 1, default, fill");
 
         comment = new TextPanePlain();
         comment.addCaretListener(this);
         commentScrollPane.setViewportView(comment);
 
         scrollPaneExamples = new JScrollPane();
-        mainPanel.add(scrollPaneExamples, "4, 17, 7, 7, default, fill");
+        mainPanel.add(scrollPaneExamples, "4, 21, 7, 7, default, fill");
 
         examplesList = new JList() {
 
@@ -261,8 +298,8 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         JLabel lblExample = new JLabel(Labels.USE_CASE_COLON);
         lblExample.setVerticalAlignment(SwingConstants.TOP);
         lblExample.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblExample, "2, 17, left, fill");
-        mainPanel.add(btnNewExample, "12, 17, fill, fill");
+        mainPanel.add(lblExample, "2, 21, left, fill");
+        mainPanel.add(btnNewExample, "12, 21, fill, fill");
 
         btnEditExample = new JButton(LexicalIM.getEdit());
         btnEditExample.addActionListener((ActionEvent e) -> {
@@ -278,7 +315,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                 }
             }
         });
-        mainPanel.add(btnEditExample, "12, 19, fill, fill");
+        mainPanel.add(btnEditExample, "12, 23, fill, fill");
 
         btnRemoveExample = new JButton(LexicalIM.getDelete());
         btnRemoveExample.addActionListener((ActionEvent e) -> {
@@ -288,15 +325,15 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                 btnSave.setEnabled(true);
             }
         });
-        mainPanel.add(btnRemoveExample, "12, 21, fill, fill");
+        mainPanel.add(btnRemoveExample, "12, 25, fill, fill");
 
         JLabel lblLink = new JLabel(Labels.LINK_COLON);
         lblLink.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblLink, "2, 25, left, fill");
+        mainPanel.add(lblLink, "2, 29, left, fill");
 
         link = new TextFieldPlain(Labels.VALUE_UNKNOWN);
         link.addCaretListener(this);
-        mainPanel.add(link, "4, 25, 7, 1, fill, fill");
+        mainPanel.add(link, "4, 29, 7, 1, fill, fill");
         link.setColumns(10);
 
         btnGoToLink = new JButton(LexicalIM.getRight());
@@ -307,7 +344,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
             } catch (URISyntaxException use) {
             }
         });
-        mainPanel.add(btnGoToLink, "12, 25, fill, fill");
+        mainPanel.add(btnGoToLink, "12, 29, fill, fill");
 
         JTabbedPane tabs = new JTabbedPane();
         tabs.setPreferredSize(new Dimension(620, 500));
@@ -478,6 +515,14 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
 
     public JButton getBtnSave() {
         return btnSave;
+    }
+
+    public ComboBoxPlain<StatusDictionary> getStatus() {
+        return status;
+    }
+
+    public ComboBoxPlain<LanguageVariantDictionary> getLanguageVariant() {
+        return languageVariant;
     }
 
     private static class LinkRunner extends SwingWorker<Void, Void> {

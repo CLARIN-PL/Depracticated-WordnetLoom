@@ -28,6 +28,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
 import pl.edu.pwr.wordnetloom.model.wordnet.SynsetAttribute;
 import pl.edu.pwr.wordnetloom.model.wordnet.SynsetRelation;
@@ -312,7 +313,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
     }
 
     @Override
-    public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain, RelationType relationType, String definition, String comment, String artificial, int limitSize, long posIndex, List<Long> lexicons) {
+    public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain, RelationType relationType, String definition, String comment, String artificial, int limitSize, long posIndex, List<Long> lexicons, StatusDictionary status) {
 
         CriteriaBuilder criteriaBuilder = getEM().getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -333,6 +334,10 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
         if (posIndex > 0) {
             Predicate third_predicate = criteriaBuilder.equal(sense.get("partOfSpeech").get("id"), posIndex);
             criteriaList.add(third_predicate);
+        }
+        if (status != null) {
+            Predicate fourth_pred = criteriaBuilder.equal(stsRoot.get("synset").get("status"), status);
+            criteriaList.add(fourth_pred);
         }
         if (relationType != null) {
             Subquery<Long> subquery = criteriaQuery.subquery(Long.class);
@@ -923,7 +928,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
             RelationType relationType, String definition, String comment,
             String artificial, int limitSize,
             pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos,
-            List<Long> lexicons) {
+            List<Long> lexicons, StatusDictionary status) {
 
         CriteriaBuilder criteriaBuilder = getEM().getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -944,6 +949,10 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
         if (pos != null) {
             Predicate third_predicate = criteriaBuilder.equal(sense.get("partOfSpeech").get("ubyLmfType"), pos);
             criteriaList.add(third_predicate);
+        }
+        if (status != null) {
+            Predicate fourth_pred = criteriaBuilder.equal(stsRoot.get("synset").get("status"), status);
+            criteriaList.add(fourth_pred);
         }
         if (relationType != null) {
             Subquery<Long> subquery = criteriaQuery.subquery(Long.class);

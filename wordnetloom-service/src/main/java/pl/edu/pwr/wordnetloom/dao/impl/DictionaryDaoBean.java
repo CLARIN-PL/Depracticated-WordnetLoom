@@ -6,9 +6,9 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
+import pl.edu.pwr.wordnetloom.dao.DAOLocal;
 import pl.edu.pwr.wordnetloom.dao.DictionaryDaoLocal;
 import pl.edu.pwr.wordnetloom.model.wordnet.Dictionary;
-import pl.edu.pwr.wordnetloom.service.dao.DAOLocal;
 
 @Stateless
 public class DictionaryDaoBean implements DictionaryDaoLocal {
@@ -44,6 +44,13 @@ public class DictionaryDaoBean implements DictionaryDaoLocal {
     public List<String> findAllDictionaryNames() {
         return local.getEM().createNativeQuery("SELECT dtype FROM dictionaries")
                 .getResultList();
+    }
+
+    @Override
+    public <T> T findDefaultValueByClass(Class<T> entity) {
+        return (T) local.getEM().createQuery(
+                "FROM " + entity.getSimpleName() + " e WHERE e.description = 'default'")
+                .getSingleResult();
     }
 
 }

@@ -11,6 +11,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
 
 @Remote
@@ -92,13 +93,13 @@ public interface SynsetServiceRemote extends DAORemote {
 
     List<Sense> dbFastGetSenseBySynset(String filter, Domain domain,
             RelationType relationType, String definition, String comment,
-            String artificial, int limitSize, long posIndex, List<Long> lexicons);
+            String artificial, int limitSize, long posIndex, List<Long> lexicons, StatusDictionary status);
 
     List<Sense> dbFastGetSenseBySynsetUbyPose(String filter, Domain domain,
             RelationType relationType, String definition, String comment,
             String artificial, int limitSize,
             pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos,
-            List<Long> lexicons);
+            List<Long> lexicons, StatusDictionary status);
 
     Boolean areSynsetsInSameLexicon(long synset1, long synset2);
 }

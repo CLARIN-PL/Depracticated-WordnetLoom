@@ -44,6 +44,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.Lexicon;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 import se.datadosen.component.RiverLayout;
 
 /**
@@ -178,7 +179,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         final String register = criteria.getRegisterComboBox().getSelectedIndex() == 0 ? null : criteria.getRegisterComboBox().getSelectedItem().toString();
         final String comment = criteria.getComment().getText();
         final String example = criteria.getExample().getText();
-
+        final StatusDictionary status = criteria.getStatusComboBox().getSelectedIndex() == 0 ? null : criteria.getStatusComboBox().retriveComboBoxItem();
         final List<Long> lexicons = new ArrayList<>();
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
@@ -197,7 +198,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
                 units = LexicalDA.getLexicalUnits(oldFilter,
                         oldDomain, criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem().getUbyType(),
-                        oldRelation, register, comment, example, limitSize, lexicons);
+                        oldRelation, register, comment, example, limitSize, lexicons, status);
 
                 // odczytanie zaznaczonej jednostki
                 if (lastSelectedValue == null && unitsList != null

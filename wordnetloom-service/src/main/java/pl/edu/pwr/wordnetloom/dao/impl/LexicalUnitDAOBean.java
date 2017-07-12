@@ -35,6 +35,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseAttribute;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
 import pl.edu.pwr.wordnetloom.model.wordnet.Word;
 
@@ -149,12 +150,12 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
     @Override
     public List<Sense> dbFastGetUnits(String filter, List<Long> lexicons) {
-        return dbFastGetUnits(filter, null, null, null, null, null, null, 0, lexicons);
+        return dbFastGetUnits(filter, null, null, null, null, null, null, 0, lexicons, null);
     }
 
     @Override
     public List<Sense> dbFastGetUnits(String filter, PartOfSpeech pos, Domain domain, List<Long> lexicons) {
-        return dbFastGetUnits(filter, pos, domain, null, null, null, null, 0, lexicons);
+        return dbFastGetUnits(filter, pos, domain, null, null, null, null, 0, lexicons, null);
     }
 
     /**
@@ -173,12 +174,12 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
      */
     @Override
     public List<Sense> dbFastGetUnits(String filter, PartOfSpeech pos, Domain domain, RelationType relationType,
-            String register, String comment, String example, int limitSize, List<Long> lexicons) {
-        return getSenses(filter, pos, domain, relationType, register, comment, example, limitSize, lexicons, null);
+            String register, String comment, String example, int limitSize, List<Long> lexicons, StatusDictionary status) {
+        return getSenses(filter, pos, domain, relationType, register, comment, example, limitSize, lexicons, null, status);
     }
 
     private List<Sense> getSenses(String filter, PartOfSpeech pos, Domain domain, RelationType relationType,
-            String register, String comment, String example, int limitSize, List<Long> lexicons, pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech posUby) {
+            String register, String comment, String example, int limitSize, List<Long> lexicons, pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech posUby, StatusDictionary status) {
 
         String wordQuery = "";
         String senseQuery = "SELECT s FROM Sense s JOIN FETCH s.domain JOIN FETCH s.lemma JOIN FETCH s.partOfSpeech WHERE ";
@@ -188,6 +189,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
                 || (register != null && !register.isEmpty())
                 || (comment != null && !comment.isEmpty())
                 || (example != null && !example.isEmpty())
+                || (status != null)
                 || (posUby != null);
 
         if (existFilter && !filter.endsWith("%")) {
@@ -307,6 +309,10 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
                             + " AND sa.value.text LIKE :example ) AND ";
                     parameters.put("example", "%" + example + "%");
                 }
+                if (status != null) {
+                    senseQuery += "s.status.id = :status AND ";
+                    parameters.put("status", status.getId());
+                }
                 senseQuery = senseQuery.substring(0, senseQuery.length() - 4);
 
                 TypedQuery<Sense> q = dao.getEM().createQuery(senseQuery, Sense.class);
@@ -334,7 +340,10 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
                 senseQuery += "s.domain.id = :domain AND ";
                 parameters.put("domain", domain.getId());
             }
-
+            if (status != null) {
+                senseQuery += "s.status.id = :status AND ";
+                parameters.put("status", status.getId());
+            }
             if (relationType != null) {
                 senseQuery += "s.id IN (SELECT r.sense_from FROM  SenseRelation r  WHERE r.relation.id = :relationTypeID)) AND ";
                 parameters.put("relationTypeID", relationType.getId());
@@ -583,7 +592,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
     @Override
     public int dbGetHighestVariant(String word, List<Long> lexicons) {
         int highest = 0;
-        for (Sense unit : dbFastGetUnits(word, null, null, null, null, null, null, 0, lexicons)) {
+        for (Sense unit : dbFastGetUnits(word, null, null, null, null, null, null, 0, lexicons, null)) {
             if (unit.getSenseNumber() > highest) {
                 highest = unit.getSenseNumber();
             }
@@ -757,9 +766,9 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
     public List<Sense> dbFastGetUnitsUby(String filter,
             pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos,
             Domain domain, RelationType relationType, String register,
-            String comment, String example, int limitSize, List<Long> lexicons) {
+            String comment, String example, int limitSize, List<Long> lexicons, StatusDictionary status) {
 
-        return getSenses(filter, null, domain, relationType, register, comment, example, limitSize, lexicons, pos);
+        return getSenses(filter, null, domain, relationType, register, comment, example, limitSize, lexicons, pos, status);
     }
 
 }

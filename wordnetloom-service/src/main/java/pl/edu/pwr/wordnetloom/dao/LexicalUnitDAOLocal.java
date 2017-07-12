@@ -8,6 +8,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.Lexicon;
 import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
 import pl.edu.pwr.wordnetloom.model.wordnet.Word;
 
@@ -88,7 +89,7 @@ public interface LexicalUnitDAOLocal extends DAOLocal {
 
     List<Sense> dbFastGetUnits(String filter, PartOfSpeech pos, Domain domain,
             RelationType relationType, String register, String comment,
-            String example, int limitSize, List<Long> lexicons);
+            String example, int limitSize, List<Long> lexicons, StatusDictionary status);
 
     List<Long> getAllLemmasForLexicon(List<Long> lexicon);
 
@@ -97,7 +98,7 @@ public interface LexicalUnitDAOLocal extends DAOLocal {
     List<Sense> dbFastGetUnitsUby(String filter,
             pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos,
             Domain domain, RelationType relationType, String register,
-            String comment, String example, int limitSize, List<Long> lexicons);
+            String comment, String example, int limitSize, List<Long> lexicons, StatusDictionary status);
 
     List<Long> getAllLexiconIds();
 

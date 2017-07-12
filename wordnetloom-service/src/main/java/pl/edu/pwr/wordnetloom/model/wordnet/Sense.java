@@ -81,6 +81,14 @@ public class Sense implements Serializable, Comparable<Sense> {
     @JoinColumn(name = "id_lexicon", referencedColumnName = "id", nullable = false)
     private Lexicon lexicon;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "status_id", referencedColumnName = "id")
+    private StatusDictionary status;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "language_variants_id", referencedColumnName = "id")
+    private LanguageVariantDictionary languageVariant;
+
     @Transient
     private ArrayList<Synset> synsets;
 
@@ -169,6 +177,22 @@ public class Sense implements Serializable, Comparable<Sense> {
 
     public void setLexicon(Lexicon lexicon) {
         this.lexicon = lexicon;
+    }
+
+    public StatusDictionary getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusDictionary status) {
+        this.status = status;
+    }
+
+    public LanguageVariantDictionary getLanguageVariant() {
+        return languageVariant;
+    }
+
+    public void setLanguageVariant(LanguageVariantDictionary languageVariant) {
+        this.languageVariant = languageVariant;
     }
 
     @Override

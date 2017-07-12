@@ -13,7 +13,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
-import pl.edu.pwr.wordnetloom.client.systems.enums.WorkState;
+import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
@@ -23,7 +23,9 @@ import pl.edu.pwr.wordnetloom.client.utils.Common;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
 import se.datadosen.component.RiverLayout;
 
@@ -39,13 +41,16 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
     private TextAreaPlain definitionValue;
     private TextAreaPlain commentValue;
-    private ComboBoxPlain statusValue;
+    private TextFieldPlain sumoValue;
+    private ComboBoxPlain<StatusDictionary> statusValue;
     private ButtonExt buttonSave;
     private JCheckBox abstractValue;
 
     private Synset lastSynset = null;
     private boolean quiteMode = false;
     private final ViwnGraphViewUI graphUI;
+
+    private StatusDictionary defaultStatus = RemoteUtils.dictionaryRemote.findDefaultStatusDictionaryValue();
 
     public SynsetPropertiesViewUI(ViwnGraphViewUI graphUI) {
         this.graphUI = graphUI;
@@ -60,7 +65,14 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         definitionValue.addCaretListener(this);
         definitionValue.setRows(3);
 
-        statusValue = new ComboBoxPlain(WorkState.values());
+        sumoValue = new TextFieldPlain("");
+        sumoValue.addCaretListener(this);
+
+        statusValue = new ComboBoxPlain<>();
+        for (StatusDictionary s : RemoteUtils.dictionaryRemote.findAllStatusDictionary()) {
+            statusValue.addItem(new CustomDescription<>(s.getName(), s));
+        }
+        statusValue.setSelectedItem(defaultStatus);
         statusValue.addActionListener(this);
 
         commentValue = new TextAreaPlain(Labels.VALUE_UNKNOWN);
@@ -79,6 +91,10 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         content.add("tab hfill", new JScrollPane(definitionValue));
         content.add("br vtop", new JLabel(Labels.COMMENT_COLON));
         content.add("tab hfill", new JScrollPane(commentValue));
+        content.add("br vtop", new JLabel("Sumo:"));
+        content.add("tab hfill", sumoValue);
+        content.add("br vtop", new JLabel(Labels.STATUS_COLON));
+        content.add("tab hfill", statusValue);
         content.add("br", abstractValue);
         content.add("br center", buttonSave);
 
@@ -87,6 +103,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         commentValue.setEnabled(false);
         definitionValue.setEnabled(false);
         abstractValue.setEnabled(false);
+        sumoValue.setEnabled(false);
     }
 
     @Override
@@ -108,13 +125,19 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         // ustawienie wartosci elementow
         definitionValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.DEFINITION)) : formatValue(null));
-        statusValue.setSelectedItem(synset == null ? null : "");
         commentValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.COMMENT)) : formatValue(null));
         abstractValue.setSelected(synset != null && Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT)));
-        statusValue.setEnabled(synset != null);
+        StatusDictionary defaultStatus = RemoteUtils.dictionaryRemote.findDefaultStatusDictionaryValue();
+        statusValue.setSelectedItem(synset != null ? new CustomDescription<>(synset.getStatus().getName(), synset.getStatus())
+                : new CustomDescription<>(defaultStatus.getName(), defaultStatus)); // czy combo jest aktywne
+
+        sumoValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.SUMO)) : formatValue(null));
+
         commentValue.setEnabled(synset != null);
         definitionValue.setEnabled(synset != null);
         abstractValue.setEnabled(synset != null);
+        statusValue.setEnabled(synset != null);
+        sumoValue.setEnabled(synset != null);
         buttonSave.setEnabled(false);
         quiteMode = false;
     }
@@ -145,21 +168,17 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
             // proba zmiany statusu
         } else if (event.getSource() == statusValue) {
-            if (statusValue.getSelectedIndex() > 2 && (workbench.getParam(SUPER_MODE) == null || !workbench.getParam(SUPER_MODE).equals(SUPER_MODE_VALUE))) {
-                DialogBox.showError(Messages.ERROR_CANNOT_CHANGE_STATUS_RESERVED_FOR_ADMIN);
-                statusValue.setSelectedItem("");
-            } else {
-                buttonSave.setEnabled(true);
-            }
 
+            buttonSave.setEnabled(true);
             // zapisanie zmian
         } else if (event.getSource() == buttonSave) { // zapisanie zmian
             String definition = definitionValue.getText();
-            int statusIndex = statusValue.getSelectedIndex();
+            StatusDictionary statusIndex = statusValue.getSelectedItem() != null ? statusValue.retriveComboBoxItem() : defaultStatus;
             String comment = commentValue.getText();
             boolean isAbstract = abstractValue.isSelected();
+            String sumo = sumoValue.getText();
 
-            if (!LexicalDA.updateSynset(lastSynset, definition, statusIndex, comment, isAbstract)) {
+            if (!LexicalDA.updateSynset(lastSynset, definition, statusIndex, comment, isAbstract, sumo)) {
                 refreshData(lastSynset); // nieudana zmiana statusu
                 DialogBox.showError(Messages.ERROR_NO_STATUS_CHANGE_BECAUSE_OF_RELATIONS_IN_SYNSETS);
             }

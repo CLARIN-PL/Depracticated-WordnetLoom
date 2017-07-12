@@ -28,6 +28,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Common;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
 import pl.edu.pwr.wordnetloom.model.wordnet.Domain;
+import pl.edu.pwr.wordnetloom.model.wordnet.LanguageVariantDictionary;
 import pl.edu.pwr.wordnetloom.model.wordnet.Lexicon;
 import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
@@ -36,6 +37,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseRelation;
 import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 import pl.edu.pwr.wordnetloom.model.wordnet.Synset;
 import pl.edu.pwr.wordnetloom.model.wordnet.Word;
 
@@ -65,11 +67,11 @@ public class LexicalDA {
      * @return kolekcja z danymi
      */
     static public List<Sense> getLexicalUnits(String filterText, Domain domain, pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos,
-            RelationType relationType, String register, String comment, String example, int limitSize, List<Long> lexicons) {
+            RelationType relationType, String register, String comment, String example, int limitSize, List<Long> lexicons, StatusDictionary status) {
         if (filterText == null) {
             filterText = "";
         }
-        return RemoteUtils.lexicalUnitRemote.dbFastGetUnits(filterText, pos, domain, relationType, register, comment, example, limitSize, lexicons);
+        return RemoteUtils.lexicalUnitRemote.dbFastGetUnits(filterText, pos, domain, relationType, register, comment, example, limitSize, lexicons, status);
     }
 
     /**
@@ -88,11 +90,11 @@ public class LexicalDA {
      *
      */
     static public List<Sense> getSenseBySynsets(String filter, Domain domain, RelationType relationType,
-            String definition, String comment, String artificial, int limitSize, pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos, List<Long> lexicons) {
+            String definition, String comment, String artificial, int limitSize, pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos, List<Long> lexicons, StatusDictionary status) {
         if (filter == null) {
             filter = "";
         }
-        return RemoteUtils.synsetRemote.dbFastGetSenseBySynsetUbyPose(filter, domain, relationType, definition, comment, artificial, limitSize, pos, lexicons);
+        return RemoteUtils.synsetRemote.dbFastGetSenseBySynsetUbyPose(filter, domain, relationType, definition, comment, artificial, limitSize, pos, lexicons, status);
     }
 
     /**
@@ -183,7 +185,7 @@ public class LexicalDA {
     public static boolean updateUnit(
             Sense lexicalUnit, String lemma, Lexicon lexicon,
             int variant, Domain domain, PartOfSpeech pos, int tagCount,
-            WorkState status, String comment, String register, String useCase, String link, String definition) {
+            StatusDictionary status, String comment, String register, String useCase, String link, String definition, LanguageVariantDictionary lang) {
         boolean result = true;
         if (lexicalUnit != null) {
 
@@ -195,6 +197,8 @@ public class LexicalDA {
             lexicalUnit.setDomain(domain);
             lexicalUnit.setSenseNumber(variant);
             lexicalUnit.setPartOfSpeech(pos);
+            lexicalUnit.setStatus(status);
+            lexicalUnit.setLanguageVariant(lang);
 
             RemoteUtils.lexicalUnitRemote.updateSense(lexicalUnit);
             if (definition != null) {
@@ -243,9 +247,11 @@ public class LexicalDA {
      * @param isAbstract - abstrakcyjnosc synsetu
      * @return true jesli mozna bylo ustawic, false jesli sa bledne relacji
      */
-    public static boolean updateSynset(Synset synset, String definition, int statusIndex, String comment, boolean isAbstract) {
+    public static boolean updateSynset(Synset synset, String definition, StatusDictionary statusIndex, String comment, boolean isAbstract, String sumo) {
         boolean result = true;
         if (synset != null) {
+
+            synset.setStatus(statusIndex);
 
             String oldComment = Common.getSynsetAttribute(synset, Synset.COMMENT);
             if (oldComment == null || oldComment.equals("")) {
@@ -255,11 +261,15 @@ public class LexicalDA {
             if (oldDefinition == null || oldDefinition.equals("")) {
                 oldDefinition = "brak danych";
             }
+            String oldSumo = Common.getSynsetAttribute(synset, Synset.SUMO);
+            if (oldSumo == null || oldSumo.equals("")) {
+                oldSumo = "";
+            }
 
             RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(synset, Synset.COMMENT, comment);
             RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(synset, Synset.ISABSTRACT, Synset.isAbstract(isAbstract));
             RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(synset, Synset.DEFINITION, definition);
-
+            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(synset, Synset.SUMO, sumo);
             RemoteUtils.synsetRemote.updateSynset(synset);
 
         }

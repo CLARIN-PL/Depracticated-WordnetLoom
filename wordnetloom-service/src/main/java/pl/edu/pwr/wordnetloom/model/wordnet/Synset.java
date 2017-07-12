@@ -9,6 +9,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -46,6 +48,7 @@ public class Synset implements Serializable {
     public static final String ISABSTRACT = "isabstract";
     public static final String PRINCETON_ID = "princetonId";
     public static final String OWNER = "owner";
+    public static final String SUMO = "Sumo";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,13 +58,17 @@ public class Synset implements Serializable {
      * Position of head split line;
      */
     @Column(name = "split")
-    private Integer split = new Integer(0);
+    private Integer split = 0;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "synset")
     private List<SenseToSynset> senseToSynset;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "synset")
-    private List<SynsetAttribute> synsetAttributes = new ArrayList<SynsetAttribute>();
+    private List<SynsetAttribute> synsetAttributes = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "status_id", referencedColumnName = "id")
+    private StatusDictionary status;
 
     public Long getId() {
         return id;
@@ -108,7 +115,15 @@ public class Synset implements Serializable {
     }
 
     public static boolean isAbstract(String isAbstract) {
-        return "1".equals(isAbstract) ? true : false;
+        return "1".equals(isAbstract);
+    }
+
+    public StatusDictionary getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusDictionary status) {
+        this.status = status;
     }
 
     @Override

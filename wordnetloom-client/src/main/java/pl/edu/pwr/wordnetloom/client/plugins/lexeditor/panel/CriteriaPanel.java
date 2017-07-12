@@ -24,6 +24,7 @@ import pl.edu.pwr.wordnetloom.model.wordnet.Lexicon;
 import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationArgument;
 import pl.edu.pwr.wordnetloom.model.wordnet.RelationType;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 import se.datadosen.component.RiverLayout;
 
 public abstract class CriteriaPanel extends JPanel {
@@ -37,6 +38,7 @@ public abstract class CriteriaPanel extends JPanel {
     private LexiconComboBox lexiconComboBox;
     private DomainComboBox domainComboBox;
     private PartOfSpeechComboBox partsOfSpeachComboBox;
+    private ComboBoxPlain<StatusDictionary> statusComboBox;
     private ComboBoxPlain<RelationType> relationsComboBox;
     private JCheckBox limitResultCheckBox;
     private final RelationArgument relationArgument;
@@ -90,6 +92,10 @@ public abstract class CriteriaPanel extends JPanel {
 
         relationsComboBox = createRelationsComboBox();
         relationsComboBox.setPreferredSize(new Dimension(150, 20));
+
+        statusComboBox = createStatusComboBox();
+        statusComboBox.setPreferredSize(new Dimension(150, 20));
+
         limitResultCheckBox = createLimitResultSearch();
 
     }
@@ -130,9 +136,24 @@ public abstract class CriteriaPanel extends JPanel {
         add("br hfill", searchTextField);
     }
 
+    protected void addStatus() {
+        add("br", new LabelExt(Labels.STATUS_COLON, 'w', statusComboBox));
+        add("br hfill", statusComboBox);
+    }
+
     private ComboBoxPlain<RelationType> createRelationsComboBox() {
         ComboBoxPlain<RelationType> combo = new ComboBoxPlain<>();
         combo.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
+        combo.setPreferredSize(new Dimension(150, 20));
+        return combo;
+    }
+
+    private ComboBoxPlain<StatusDictionary> createStatusComboBox() {
+        ComboBoxPlain<StatusDictionary> combo = new ComboBoxPlain<>();
+        combo.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
+        for (StatusDictionary d : RemoteUtils.dictionaryRemote.findAllStatusDictionary()) {
+            combo.addItem(new CustomDescription<>(d.getName(), d));
+        }
         combo.setPreferredSize(new Dimension(150, 20));
         return combo;
     }
@@ -216,4 +237,7 @@ public abstract class CriteriaPanel extends JPanel {
         return partsOfSpeachComboBox;
     }
 
+    public ComboBoxPlain<StatusDictionary> getStatusComboBox() {
+        return statusComboBox;
+    }
 }

@@ -12,14 +12,16 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
-import pl.edu.pwr.wordnetloom.client.systems.enums.WorkState;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.model.wordnet.Domain;
+import pl.edu.pwr.wordnetloom.model.wordnet.LanguageVariantDictionary;
 import pl.edu.pwr.wordnetloom.model.wordnet.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.wordnet.Sense;
+import pl.edu.pwr.wordnetloom.model.wordnet.StatusDictionary;
 import se.datadosen.component.RiverLayout;
 
 /**
@@ -83,6 +85,9 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI {
                 String example = transformExamplesToString();
                 String link = editPanel.getLink().getText();
                 String comment = editPanel.getComment().getText();
+                StatusDictionary status = editPanel.getStatus().getSelectedItem() != null ? editPanel.getStatus().retriveComboBoxItem() : RemoteUtils.dictionaryRemote.findDefaultStatusDictionaryValue();
+                LanguageVariantDictionary languageVariant = editPanel.getLanguageVariant().getSelectedItem() != null
+                        ? editPanel.getLanguageVariant().retriveComboBoxItem() : RemoteUtils.dictionaryRemote.findDefaultLanguageVariantDictionaryValue();
 
                 // Zmienił się lemat, więc należy uaktualnić numer lematu
                 // (wariant)
@@ -92,8 +97,8 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI {
 
                 if (!LexicalDA.updateUnit(editPanel.getSense(), lemma,
                         editPanel.getLexicon().retriveComboBoxItem(), variant,
-                        domain, pos, 0, WorkState.values()[0], comment,
-                        register, example, link, definition)) {
+                        domain, pos, 0, status, comment,
+                        register, example, link, definition, languageVariant)) {
                     refreshData(editPanel.getSense());
                     DialogBox.showError(Messages.ERROR_NO_STATUS_CHANGE_BECAUSE_OF_RELATIONS_IN_UNITS);
                 }
