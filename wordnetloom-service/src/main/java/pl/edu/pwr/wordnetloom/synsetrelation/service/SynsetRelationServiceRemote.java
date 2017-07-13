@@ -2,57 +2,50 @@ package pl.edu.pwr.wordnetloom.synsetrelation.service;
 
 import java.util.List;
 import javax.ejb.Remote;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 @Remote
 public interface SynsetRelationServiceRemote {
 
-    void dbDelete(SynsetRelation rel);
+    boolean makeRelation(Synset parent, Synset child, SynsetRelationType rel);
 
-    void dbDelete(RelationType relType);
+    boolean delete(Synset parent, Synset child, SynsetRelationType relationType);
 
-    SynsetRelation dbGet(Long id);
+    void delete(SynsetRelationType relationType);
 
-    boolean dbMakeRelation(Synset parent, Synset child, RelationType rel);
+    void deleteAll();
 
-    void dbDeleteAll();
+    List<SynsetRelation> findSubRelations(Synset synset, SynsetRelationType relationType);
 
-    void dbDeleteConnection(Synset template);
+    List<SynsetRelation> findUpperRelations(Synset synset, SynsetRelationType relationType);
 
-    List<SynsetRelation> dbFullGetRelations();
+    void deleteConnection(Synset synset);
 
-    List<SynsetRelation> dbFastGetRelations(RelationType templateType);
+    Long findAllRelationsCount();
 
-    int dbGetRelationsCount();
+    Long findRelationTypeUseCount(SynsetRelationType relation);
 
-    int dbGetRelationUseCount(RelationType relType);
+    void move(SynsetRelationType oldRelation, SynsetRelationType newRelation);
 
-    void dbMove(RelationType oldRel, RelationType newRel);
+    boolean checkRelationExists(Synset parent, Synset child, SynsetRelationType relation);
 
-    boolean dbRelationExists(Synset parent, Synset child, RelationType rel);
+    List<SynsetRelationType> findtRelationTypesBySynset(Synset synset);
 
-    List<RelationType> dbGetRelationTypesOfSynset(Synset synset);
+    int deleteImproper();
 
-    int dbDeleteImproper();
+    List<SynsetRelation> findRelations(Synset parent, Synset child, SynsetRelationType relation);
 
-    List<SynsetRelation> dbGetRelations(Synset parent, Synset child, RelationType templateType);
+    SynsetRelation findRelation(Synset parent, Synset child, SynsetRelationType relation);
 
-    List<SynsetRelation> dbGetRelations(Long id);
+    Long findRelationCountBySynset(Synset synset);
 
-    SynsetRelation dbGetRelation(Synset parent, Synset child, RelationType templateType);
+    List<Long> findTopPath(Synset synset, Long rtype);
 
-    int dbGetRelationCountOfSynset(Synset synset);
+    List<Synset> findTopPathInSynsets(Synset synset, Long rtype);
 
-    List<Long> dbGetTopPath(Synset synset, Long rtype);
+    List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset);
 
-    List<Synset> dbGetTopPathInSynsets(Synset synset, Long rtype);
-
-    List<SynsetRelation> dbGetSubRelations(Synset synset, RelationType templateType, List<Long> lexicons);
-
-    List<SynsetRelation> dbGetUpperRelations(Synset synset, RelationType templateType, List<Long> lexicons);
-
-    List<SynsetRelation> dbGetRelationsSynsetTo(Synset synset);
-
+    List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset);
 }

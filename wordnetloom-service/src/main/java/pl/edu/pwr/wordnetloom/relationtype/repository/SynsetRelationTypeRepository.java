@@ -37,16 +37,6 @@ public class SynsetRelationTypeRepository extends GenericRepository<SynsetRelati
         return false;
     }
 
-    public void delete(SynsetRelationType relation, List<Long> lexicons) {
-        //Removes relation with subrelations
-        Collection<SynsetRelationType> children = findChildren(relation);
-        for (SynsetRelationType item : children) {
-            synsetRelationRepository.delete(relation);
-            delete(item);
-        }
-        delete(relation);
-    }
-
     public List<SynsetRelationType> findChildren(SynsetRelationType relation) {
         return getEntityManager().createQuery("SELECT rt FROM SynsetRelationType rt WHERE rt.parent = :parent", SynsetRelationType.class)
                 .setParameter("parent", relation)

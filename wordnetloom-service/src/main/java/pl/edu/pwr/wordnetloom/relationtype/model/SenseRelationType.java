@@ -52,12 +52,12 @@ public class SenseRelationType implements Serializable {
     @JoinColumn(name = "short_display_text_id")
     private Localised shortDisplayStrings = new Localised();
 
-    @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SenseRelationTest> relationTests;
-
     @Basic
     @Column(name = "auto_reverse", nullable = false, columnDefinition = "bit")
     private Boolean autoReverse;
+
+    @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SenseRelationTest> relationTests;
 
     @ManyToOne
     @JoinColumn(name = "parent_relation_type_id", nullable = true)

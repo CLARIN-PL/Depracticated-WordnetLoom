@@ -3,7 +3,7 @@ package pl.edu.pwr.wordnetloom.synsetrelation.service.impl;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository;
@@ -16,116 +16,119 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     private SynsetRelationRepository synsetRelationRepository;
 
     @Override
-    public void dbDelete(SynsetRelation rel) {
-        synsetRelationRepository.dbDelete(rel);
+    public boolean makeRelation(Synset parent, Synset child, SynsetRelationType rel) {
+        SynsetRelation s = new SynsetRelation();
+        s.setRelationType(rel);
+        s.setParent(parent);
+        s.setChild(child);
+        synsetRelationRepository.persist(s);
+        return true;
     }
 
     @Override
-    public void dbDelete(RelationType relType) {
-        synsetRelationRepository.dbDelete(relType);
-    }
-
-    public SynsetRelation dbGet(Long id) {
-        return synsetRelationRepository.dbGet(id);
+    public boolean delete(Synset parent, Synset child, SynsetRelationType relationType) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean dbMakeRelation(Synset parent, Synset child, RelationType rel) {
-        return synsetRelationRepository.dbMakeRelation(parent, child, rel);
+    public void delete(SynsetRelationType relationType) {
+//        SynsetRelationType relation = rel.getRelationType();
+//
+//        if (relation.getAutoReverse()) {
+//            RelationType reverse = relationType.dbGetReverseByRelationType(relation);
+//            dbDelete(rel.getSynsetTo(), rel.getSynsetFrom(), reverse);
+//        }
+//
+//        try {
+//            local.deleteObject(SynsetRelation.class, rel.getId());
+//        } catch (Exception e) {
+//            System.err.println(this.getClass() + ": WARRNING: " + e.getLocalizedMessage());
+//        }
+//        synsetRelationRepository.dbDelete(rel);
     }
 
     @Override
-    public void dbDeleteAll() {
-        synsetRelationRepository.dbDeleteAll();
+    public void deleteAll() {
+        synsetRelationRepository.deleteAll();
     }
 
     @Override
-    public List<SynsetRelation> dbGetSubRelations(Synset synset, RelationType templateType, List<Long> lexicons) {
-        return synsetRelationRepository.dbGetSubRelations(synset, templateType, lexicons);
+    public List<SynsetRelation> findSubRelations(Synset synset, SynsetRelationType relationType) {
+        return synsetRelationRepository.findSubRelations(synset, relationType);
     }
 
     @Override
-    public List<SynsetRelation> dbGetUpperRelations(Synset synset, RelationType templateType, List<Long> lexicons) {
-        return synsetRelationRepository.dbGetUpperRelations(synset, templateType, lexicons);
+    public List<SynsetRelation> findUpperRelations(Synset synset, SynsetRelationType relationType) {
+        return synsetRelationRepository.findUpperRelations(synset, relationType);
     }
 
     @Override
-    public void dbDeleteConnection(Synset template) {
-        synsetRelationRepository.dbDeleteConnection(template);
+    public void deleteConnection(Synset synset) {
+        synsetRelationRepository.deleteConnection(synset);
     }
 
     @Override
-    public List<SynsetRelation> dbFullGetRelations() {
-        return synsetRelationRepository.dbFullGetRelations();
+    public Long findAllRelationsCount() {
+        return synsetRelationRepository.findAllRelationsCount();
     }
 
     @Override
-    public List<SynsetRelation> dbFastGetRelations(RelationType templateType) {
-        return synsetRelationRepository.dbFastGetRelations(templateType);
+    public Long findRelationTypeUseCount(SynsetRelationType relation) {
+        return synsetRelationRepository.findRelationTypeUseCount(relation);
     }
 
     @Override
-    public int dbGetRelationsCount() {
-        return synsetRelationRepository.dbGetRelationsCount();
+    public void move(SynsetRelationType oldRelation, SynsetRelationType newRelation) {
+        synsetRelationRepository.move(oldRelation, newRelation);
     }
 
     @Override
-    public int dbGetRelationUseCount(RelationType relType) {
-        return synsetRelationRepository.dbGetRelationUseCount(relType);
+    public boolean checkRelationExists(Synset parent, Synset child, SynsetRelationType relation) {
+        return synsetRelationRepository.checkRelationExists(parent, child, relation);
     }
 
     @Override
-    public void dbMove(RelationType oldRel, RelationType newRel) {
-        synsetRelationRepository.dbMove(oldRel, newRel);
+    public List<SynsetRelationType> findtRelationTypesBySynset(Synset synset) {
+        return synsetRelationRepository.findtRelationTypesBySynset(synset);
     }
 
     @Override
-    public boolean dbRelationExists(Synset parent, Synset child, RelationType rel) {
-        return synsetRelationRepository.dbRelationExists(parent, child, rel);
+    public int deleteImproper() {
+        return synsetRelationRepository.deleteImproper();
     }
 
     @Override
-    public List<RelationType> dbGetRelationTypesOfSynset(Synset synset) {
-        return synsetRelationRepository.dbGetRelationTypesOfSynset(synset);
+    public List<SynsetRelation> findRelations(Synset parent, Synset child, SynsetRelationType relation) {
+        return synsetRelationRepository.findRelations(parent, child, relation);
     }
 
     @Override
-    public int dbDeleteImproper() {
-        return synsetRelationRepository.dbDeleteImproper();
+    public SynsetRelation findRelation(Synset parent, Synset child, SynsetRelationType relation) {
+        return synsetRelationRepository.findRelation(parent, child, relation);
     }
 
     @Override
-    public List<SynsetRelation> dbGetRelations(Synset parent, Synset child, RelationType templateType) {
-        return synsetRelationRepository.dbGetRelations(parent, child, templateType);
+    public Long findRelationCountBySynset(Synset synset) {
+        return synsetRelationRepository.findRelationCountBySynset(synset);
     }
 
     @Override
-    public List<SynsetRelation> dbGetRelations(Long id) {
-        return synsetRelationRepository.dbGetRelations(id);
+    public List<Long> findTopPath(Synset synset, Long rtype) {
+        return synsetRelationRepository.findTopPath(synset, rtype);
     }
 
     @Override
-    public SynsetRelation dbGetRelation(Synset parent, Synset child, RelationType templateType) {
-        return synsetRelationRepository.dbGetRelation(parent, child, templateType);
+    public List<Synset> findTopPathInSynsets(Synset synset, Long rtype) {
+        return synsetRelationRepository.findTopPathInSynsets(synset, rtype);
     }
 
     @Override
-    public int dbGetRelationCountOfSynset(Synset synset) {
-        return synsetRelationRepository.dbGetRelationCountOfSynset(synset);
+    public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset) {
+        return synsetRelationRepository.findRelationsWhereSynsetIsChild(synset);
     }
 
     @Override
-    public List<Long> dbGetTopPath(Synset synset, Long rtype) {
-        return synsetRelationRepository.dbGetTopPath(synset, rtype);
-    }
-
-    @Override
-    public List<Synset> dbGetTopPathInSynsets(Synset synset, Long rtype) {
-        return synsetRelationRepository.dbGetTopPathInSynsets(synset, rtype);
-    }
-
-    @Override
-    public List<SynsetRelation> dbGetRelationsSynsetTo(Synset synset) {
-        return synsetRelationRepository.getRelationsSynsetTo(synset);
+    public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset) {
+        return synsetRelationRepository.findRelationsWhereSynsetIsParent(synset);
     }
 }

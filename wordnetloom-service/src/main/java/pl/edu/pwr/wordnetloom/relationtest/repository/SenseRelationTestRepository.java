@@ -15,8 +15,8 @@ public class SenseRelationTestRepository extends GenericRepository<SenseRelation
     EntityManager em;
 
     public void deleteByRelationType(SenseRelationType relationType) {
-        em.createQuery("DELETE FROM SenseRelationTest r WHERE r.relationType = :relationType", SenseRelationTest.class)
-                .setParameter("relationType", relationType)
+        em.createQuery("DELETE FROM SenseRelationTest r WHERE r.relationType.id = :relationType", SenseRelationTest.class)
+                .setParameter("relationType", relationType.getId())
                 .executeUpdate();
     }
 
@@ -26,8 +26,8 @@ public class SenseRelationTestRepository extends GenericRepository<SenseRelation
     }
 
     public List<SenseRelationTest> findByRelationType(SenseRelationType relationType) {
-        return em.createQuery("SELECT r FROM SenseRelationTest r WHERE r.relationType = :relationType", SenseRelationTest.class)
-                .setParameter("relationType", relationType)
+        return em.createQuery("SELECT r FROM SenseRelationTest r WHERE r.relationType.id = :relationType", SenseRelationTest.class)
+                .setParameter("relationType", relationType.getId())
                 .getResultList();
     }
 

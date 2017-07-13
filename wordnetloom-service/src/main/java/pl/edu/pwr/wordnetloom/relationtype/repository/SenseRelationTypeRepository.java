@@ -37,14 +37,14 @@ public class SenseRelationTypeRepository extends GenericRepository<SenseRelation
         return false;
     }
 
-    public void delete(SenseRelationType relation, List<Long> lexicons) {
+    public void delete(SenseRelationType relation) {
         //Removes relation with subrelations
         Collection<SenseRelationType> children = findChildren(relation);
         for (SenseRelationType item : children) {
             senseRelationRepository.delete(relation);
             delete(item);
         }
-        delete(relation);
+        super.delete(relation);
     }
 
     public List<SenseRelationType> findChildren(SenseRelationType relation) {

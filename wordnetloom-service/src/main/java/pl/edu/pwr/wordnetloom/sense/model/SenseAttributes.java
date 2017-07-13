@@ -45,11 +45,11 @@ public class SenseAttributes implements Serializable {
     private List<String> examples;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User owner;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "sense_id")
     @MapsId
     private Sense sense;
 

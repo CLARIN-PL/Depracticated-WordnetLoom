@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.senserelation.service;
+package pl.edu.pwr.wordnetloom.relationtype.service;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +18,7 @@ public interface SenseRelationTypeServiceRemote {
 
     Long findReverseId(SenseRelationType relationType);
 
-    SenseRelationType getEagerRelationTypeByID(SenseRelationType rt);
+    SenseRelationType findFullRelationType(SenseRelationType rt);
 
     SenseRelationType findReverseByRelationType(SenseRelationType relationType);
 
@@ -28,9 +28,9 @@ public interface SenseRelationTypeServiceRemote {
 
     List<SenseRelationType> findLeafs(List<Long> lexicons);
 
-    List<SenseRelationType> dbFullGetRelationTypes(List<Long> lexicons);
+    List<SenseRelationType> findFullRelationTypes(List<Long> lexicons);
 
     List<SenseRelationType> findChildren(SenseRelationType relation, List<Long> lexicons);
 
-    void delete(SenseRelationType relation, List<Long> lexicons);
+    void delete(SenseRelationType relation);
 }

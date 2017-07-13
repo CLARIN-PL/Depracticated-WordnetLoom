@@ -8,10 +8,20 @@
         <class>pl.edu.pwr.wordnetloom.domain.model.Domain</class>
         <class>pl.edu.pwr.wordnetloom.lexicon.model.LexiconAllowedPartOfSpeechDomain</class>
         <class>pl.edu.pwr.wordnetloom.word.model.Word</class>
+        <class>pl.edu.pwr.wordnetloom.wordform.model.WordForm</class>
         <class>pl.edu.pwr.wordnetloom.sense.model.Sense</class>
         <class>pl.edu.pwr.wordnetloom.sense.model.SenseAttributes</class>
         <class>pl.edu.pwr.wordnetloom.synset.model.Synset</class>
         <class>pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes</class>
+        <class>pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation</class>
+        <class>pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation</class>
+        <class>pl.edu.pwr.wordnetloom.corpusexample.model.CorpusExample</class>
+        <class>pl.edu.pwr.wordnetloom.relationtest.model.RelationTest</class>
+        <class>pl.edu.pwr.wordnetloom.relationtest.model.SynsetRelationTest</class>
+        <class>pl.edu.pwr.wordnetloom.relationtest.model.SenseRelationTest</class>
+        <class>pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType</class>
+        <class>pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType</class>
+        <class>pl.edu.pwr.wordnetloom.dictionary.model.Dictionary</class>
         <class>pl.edu.pwr.wordnetloom.user.model.User</class>
         <properties>
             <property name="hibernate.show_sql" value="true" />

@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.senserelation.service;
+package pl.edu.pwr.wordnetloom.relationtest.service;
 
 import java.util.List;
 import javax.ejb.Remote;
@@ -12,13 +12,13 @@ public interface SenseRelationTestServiceRemote {
 
     void delete(SenseRelationType relationType);
 
-    void deleteAll();
+    void deleteAllSenseRelationTests();
 
     List<SenseRelationTest> findByRelationType(SenseRelationType relationType);
 
-    List<SenseRelationTest> findAll();
+    List<SenseRelationTest> findAllSenseRelationTests();
 
-    void switchTestsIntoNewRelation(SenseRelationType oldRelation, SenseRelationType newRelation);
+    void switchSenseRelationTestsIntoNewRelation(SenseRelationType oldRelation, SenseRelationType newRelation);
 
     SenseRelationTest save(SenseRelationTest test);
 

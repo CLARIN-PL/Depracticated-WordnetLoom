@@ -47,7 +47,7 @@ public class SynsetAttributes implements Serializable {
     private String princetonId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "synset_id")
     @MapsId
     private Synset synset;
 

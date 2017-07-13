@@ -1,12 +1,12 @@
-package pl.edu.pwr.wordnetloom.senserelation.service.impl;
+package pl.edu.pwr.wordnetloom.relationtest.service.impl;
 
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import pl.edu.pwr.wordnetloom.relationtest.model.SenseRelationTest;
-import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 import pl.edu.pwr.wordnetloom.relationtest.repository.SenseRelationTestRepository;
-import pl.edu.pwr.wordnetloom.senserelation.service.SenseRelationTestServiceLocal;
+import pl.edu.pwr.wordnetloom.relationtest.service.SenseRelationTestServiceLocal;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 
 @Stateless
 public class SenseRelationTestServiceBean implements SenseRelationTestServiceLocal {
@@ -25,23 +25,13 @@ public class SenseRelationTestServiceBean implements SenseRelationTestServiceLoc
     }
 
     @Override
-    public void deleteAll() {
-        relationTestRepository.deleteAll();
-    }
-
-    @Override
     public List<SenseRelationTest> findByRelationType(SenseRelationType relationType) {
         return relationTestRepository.findByRelationType(relationType);
     }
 
     @Override
-    public List<SenseRelationTest> findAll() {
+    public List<SenseRelationTest> findAllSenseRelationTests() {
         return relationTestRepository.findAll("id");
-    }
-
-    @Override
-    public void switchTestsIntoNewRelation(SenseRelationType oldRelation, SenseRelationType newRelation) {
-        relationTestRepository.switchTestsIntoNewRelation(oldRelation, newRelation);
     }
 
     @Override
@@ -52,6 +42,16 @@ public class SenseRelationTestServiceBean implements SenseRelationTestServiceLoc
     @Override
     public SenseRelationTest update(SenseRelationTest test) {
         return relationTestRepository.update(test);
+    }
+
+    @Override
+    public void deleteAllSenseRelationTests() {
+        relationTestRepository.deleteAll();
+    }
+
+    @Override
+    public void switchSenseRelationTestsIntoNewRelation(SenseRelationType oldRelation, SenseRelationType newRelation) {
+        relationTestRepository.switchTestsIntoNewRelation(oldRelation, newRelation);
     }
 
 }

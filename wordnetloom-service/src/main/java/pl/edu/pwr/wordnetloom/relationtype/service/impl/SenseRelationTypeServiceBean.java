@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.senserelation.service.impl;
+package pl.edu.pwr.wordnetloom.relationtype.service.impl;
 
 import java.util.Collection;
 import java.util.List;
@@ -6,7 +6,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 import pl.edu.pwr.wordnetloom.relationtype.repository.SenseRelationTypeRepository;
-import pl.edu.pwr.wordnetloom.senserelation.service.SenseRelationTypeServiceLocal;
+import pl.edu.pwr.wordnetloom.relationtype.service.SenseRelationTypeServiceLocal;
 
 @Stateless
 public class SenseRelationTypeServiceBean implements SenseRelationTypeServiceLocal {
@@ -40,7 +40,7 @@ public class SenseRelationTypeServiceBean implements SenseRelationTypeServiceLoc
     }
 
     @Override
-    public SenseRelationType getEagerRelationTypeByID(SenseRelationType rt) {
+    public SenseRelationType findFullRelationType(SenseRelationType rt) {
         return relationTypeRepository.findFullByRelationType(rt);
     }
 
@@ -65,7 +65,7 @@ public class SenseRelationTypeServiceBean implements SenseRelationTypeServiceLoc
     }
 
     @Override
-    public List<SenseRelationType> dbFullGetRelationTypes(List<Long> lexicons) {
+    public List<SenseRelationType> findFullRelationTypes(List<Long> lexicons) {
         return relationTypeRepository.findFullRelationTypes(lexicons);
     }
 
@@ -75,8 +75,8 @@ public class SenseRelationTypeServiceBean implements SenseRelationTypeServiceLoc
     }
 
     @Override
-    public void delete(SenseRelationType relation, List<Long> lexicons) {
-        relationTypeRepository.delete(relation, lexicons);
+    public void delete(SenseRelationType relation) {
+        relationTypeRepository.delete(relation);
     }
 
 }

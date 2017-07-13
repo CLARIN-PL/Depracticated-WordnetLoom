@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.senserelation.service;
+package pl.edu.pwr.wordnetloom.relationtype.service;
 
 import javax.ejb.Local;
 

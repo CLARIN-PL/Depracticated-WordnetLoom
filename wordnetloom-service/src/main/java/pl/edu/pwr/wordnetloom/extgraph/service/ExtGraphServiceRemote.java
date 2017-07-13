@@ -5,24 +5,27 @@ import java.util.List;
 import javax.ejb.Remote;
 import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraph;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 @Remote
 public interface ExtGraphServiceRemote {
 
-    Collection<ExtGraph> dbFullGet();
+    Collection<ExtGraph> findByWord(String word);
 
-    Collection<ExtGraph> dbFullGet(String word);
+    Collection<ExtGraph> findByIds(Long[] extgraphIds);
 
-    Collection<ExtGraph> dbFullGet(Long[] extgraph_ids);
+    Collection<ExtGraph> findByWordAndPackageNo(String word, int packageno);
 
-    Collection<ExtGraph> dbFullGet(String word, int packageno);
+    Collection<String> findNewWordsByPackageNoAndPartOfSpeech(int packageno, PartOfSpeech pos);
 
-    Collection<ExtGraph> dbFastGet(String word, int packageno);
+    List<Long> findPackagesByPartOfSpeech(PartOfSpeech pos);
 
-    List<Integer> GetPackages(PartOfSpeech pos);
+    int findMaxPackageNoByPartOfSpeech(PartOfSpeech pos);
 
-    int GetMaxPackageNo(PartOfSpeech pos);
+    List<Long> findIDsByWord(String word);
 
-    Collection<String> dbGetNewWords(int packageno, PartOfSpeech pos);
+    List<Long> findIDsByWordAndPackageNo(String word, int packageno);
+
+    void deleteBySynset(Synset synset);
 
 }
