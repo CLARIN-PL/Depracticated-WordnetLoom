@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 
 // TODO: make a singleton
 public class RelationTypes {

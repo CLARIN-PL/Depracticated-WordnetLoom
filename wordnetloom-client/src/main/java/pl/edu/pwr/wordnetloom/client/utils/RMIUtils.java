@@ -1,8 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.utils;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.Properties;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -13,8 +11,6 @@ import org.jboss.ejb.client.EJBClientConfiguration;
 import org.jboss.ejb.client.EJBClientContext;
 import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
-import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
-import pl.edu.pwr.wordnetloom.common.service.NativeServiceRemote;
 
 public class RMIUtils {
 
@@ -31,22 +27,7 @@ public class RMIUtils {
         } catch (NamingException | IOException ex) {
             Logger.getLogger(RMIUtils.class).log(Level.ERROR, "Service Lookup error:", ex);
         }
-
-        E proxy;
-        final E bbean = bean;
-        if (remoteClass == NativeServiceRemote.class) {
-            return bean;
-        }
-
-        proxy = (E) Proxy.newProxyInstance(remoteClass.getClassLoader(), new Class<?>[]{remoteClass}, (Object proxy1, Method method, Object[] args) -> {
-            if (PanelWorkbench.getOwnerFromConfigManager() != null) {
-                if (!method.getName().toLowerCase().contains("get")) {
-                    RemoteUtils.nativeRemote.setOwner(PanelWorkbench.getOwnerFromConfigManager());
-                }
-            }
-            return method.invoke(bbean, args);
-        });
-        return proxy;
+        return bean;
     }
 
     private static Context getInitialContext() throws NamingException, IOException {
@@ -62,6 +43,7 @@ public class RMIUtils {
                     Properties ejbProperties = new Properties();
                     ejbProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
                     ejbProperties.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
+                    ejbProperties.put("jboss.naming.client.ejb.context", "true");
                     ejbProperties.put("remote.connections", "default");
                     ejbProperties.put("remote.connection.default.host", host);
                     ejbProperties.put("remote.connection.default.port", port);

@@ -5,9 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import pl.edu.pwr.wordnetloom.client.utils.RMIUtils;
+import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
-import pl.edu.pwr.wordnetloom.service.DomainServiceRemote;
 
 public class DomainManager {
 
@@ -62,8 +61,7 @@ public class DomainManager {
              *
              * fixme
              */
-            DomainServiceRemote service = RMIUtils.lookupForService(DomainServiceRemote.class);
-            List<Domain> list = service.getAllDomains(LexiconManager.getInstance().getLexicons());
+            List<Domain> list = RemoteUtils.domainServiceRemote.findAll();      
             cache = Collections.unmodifiableList(Collections.synchronizedList(list));
 
             synchronized (DomainManager.class) {

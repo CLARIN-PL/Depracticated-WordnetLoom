@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 

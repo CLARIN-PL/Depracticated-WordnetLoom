@@ -45,14 +45,13 @@ import pl.edu.pwr.wordnetloom.sense.model.Sense;
  */
 public class GenericListModel<T> implements ListModel {
 
-    protected Collection<T> itemsCollection = Collections
-            .synchronizedList(new ArrayList<T>());
+    protected Collection<T> itemsCollection = Collections.synchronizedList(new ArrayList<>());
     protected Iterator<T> iter = null;
     protected int lastIndex = -1;
     protected String markName = null;
     protected Object tag = null;
     private boolean synsetMode;
-    private Map<Long, String> synsetTags = new HashedMap<Long, String>();
+    private Map<Long, String> synsetTags = new HashedMap<>();
 
     // lista sluchaczy
     private EventListenerList listeners = new EventListenerList();
@@ -98,7 +97,7 @@ public class GenericListModel<T> implements ListModel {
         iter = null;
         lastIndex = -1;
         if (collection == null) {
-            itemsCollection = new ArrayList<T>();
+            itemsCollection = new ArrayList<>();
         } else {
             itemsCollection = collection;
         }
