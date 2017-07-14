@@ -1,25 +1,9 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.frames;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -30,16 +14,12 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.RelationTypesIM;
-import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.da.RelationTypesDA;
-import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.models.RelationTreeModel;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 
 /**
  * okienko do wybierania relacji odwrotnej
@@ -51,8 +31,8 @@ public class ReverseRelationFrame extends IconDialog implements ActionListener, 
     private static final long serialVersionUID = 1L;
 
     private final ButtonExt buttonChoose, buttonCancel, buttonNoReverse;
-    private RelationType lastReverse = null;
-    private RelationType selectedRelation = null;
+    private SynsetRelationType lastReverse = null;
+    private SynsetRelationType selectedRelation = null;
     private final JTree tree;
     private final JCheckBox autoReverse;
 
@@ -105,12 +85,12 @@ public class ReverseRelationFrame extends IconDialog implements ActionListener, 
      *
      */
     private void refreshTree() {
-        Collection<RelationType> relations = RelationTypesDA.getHighestRelations(null, null);
-        for (RelationType type : relations) {
-            RelationTypesDA.getChildren(type);
-            RelationTypesDA.getTests(type);
+        Collection<SynsetRelationType> relations = new ArrayList<>(); //RelationTypesDA.getHighestRelations(null, null);
+        for (SynsetRelationType type : relations) {
+//            RelationTypesDA.getChildren(type);
+//            RelationTypesDA.getTests(type);
         }
-        tree.setModel(new RelationTreeModel(relations));
+        // tree.setModel(new RelationTreeModel(relations));
         int count = tree.getRowCount();
         for (int i = 0; i < count; i++) {
             tree.expandRow(i);
@@ -126,13 +106,13 @@ public class ReverseRelationFrame extends IconDialog implements ActionListener, 
      * @param autoReverse - czy relacja odwrotna ma byc automatycznie tworzona
      * @return nowo wybrana relacja odwrotna
      */
-    static public Pair<RelationType, Boolean> showModal(JFrame owner, RelationType lastReverse, Boolean autoReverse) {
+    static public Pair<SynsetRelationType, Boolean> showModal(JFrame owner, SynsetRelationType lastReverse, Boolean autoReverse) {
         ReverseRelationFrame frame = new ReverseRelationFrame(owner);
         frame.lastReverse = lastReverse;
         frame.autoReverse.setSelected(autoReverse);
         frame.refreshTree();
         frame.setVisible(true);
-        Pair<RelationType, Boolean> result = new Pair<>(frame.lastReverse, frame.autoReverse.isSelected());
+        Pair<SynsetRelationType, Boolean> result = new Pair<>(frame.lastReverse, frame.autoReverse.isSelected());
         frame.dispose();
         return result;
     }
@@ -155,14 +135,14 @@ public class ReverseRelationFrame extends IconDialog implements ActionListener, 
 
     @Override
     public void valueChanged(TreeSelectionEvent arg0) {
-        RelationType rel = null;
+        SynsetRelationType rel = null;
         if (arg0 != null && arg0.getNewLeadSelectionPath() != null) {
             Object lastElem = arg0.getNewLeadSelectionPath().getLastPathComponent();
-            if (lastElem != null && lastElem instanceof RelationType) {
-                rel = (RelationType) lastElem;
+            if (lastElem != null && lastElem instanceof SynsetRelationType) {
+                rel = (SynsetRelationType) lastElem;
             }
         }
-        buttonChoose.setEnabled(rel != null && RemoteUtils.relationTypeRemote.dbGetChildren(rel, LexiconManager.getInstance().getLexicons()).isEmpty());
+        // buttonChoose.setEnabled(rel != null && RemoteUtils.relationTypeRemote.dbGetChildren(rel, LexiconManager.getInstance().getLexicons()).isEmpty());
         selectedRelation = rel;
     }
 

@@ -1,14 +1,19 @@
 package pl.edu.pwr.wordnetloom.relationtest.service.impl;
 
 import java.util.List;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import pl.edu.pwr.wordnetloom.relationtest.model.SynsetRelationTest;
 import pl.edu.pwr.wordnetloom.relationtest.repository.SynsetRelationTestRepository;
 import pl.edu.pwr.wordnetloom.relationtest.service.SynsetRelationTestServiceLocal;
+import pl.edu.pwr.wordnetloom.relationtest.service.SynsetRelationTestServiceRemote;
 import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 
 @Stateless
+@Remote(SynsetRelationTestServiceRemote.class)
+@Local(SynsetRelationTestServiceLocal.class)
 public class SynsetRelationTestServiceBean implements SynsetRelationTestServiceLocal {
 
     @Inject

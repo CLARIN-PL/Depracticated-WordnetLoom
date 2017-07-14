@@ -86,7 +86,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI {
 
                 // Zmienił się lemat, więc należy uaktualnić numer lematu
                 // (wariant)
-                if (!editPanel.getSense().getLemma().getWord().equals(lemma)) {
+                if (!editPanel.getSense().getWord().getWord().equals(lemma)) {
                     variant = LexicalDA.getAvaibleVariantNumber(lemma, pos, LexiconManager.getInstance().getLexicons());
                 }
 

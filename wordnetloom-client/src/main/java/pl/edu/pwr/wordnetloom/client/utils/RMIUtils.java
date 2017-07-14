@@ -78,6 +78,7 @@ public class RMIUtils {
                 .append(distinctName).append(slash)
                 .append(localBeanName).append("!")
                 .append(interfaceName);
+        System.out.println(name.toString());
         return name.toString();
     }
 }

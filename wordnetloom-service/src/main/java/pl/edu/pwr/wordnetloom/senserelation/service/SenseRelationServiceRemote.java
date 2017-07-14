@@ -2,12 +2,10 @@ package pl.edu.pwr.wordnetloom.senserelation.service;
 
 import java.util.List;
 import java.util.Set;
-import javax.ejb.Remote;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 
-@Remote
 public interface SenseRelationServiceRemote {
 
     void delete(SenseRelation rel);

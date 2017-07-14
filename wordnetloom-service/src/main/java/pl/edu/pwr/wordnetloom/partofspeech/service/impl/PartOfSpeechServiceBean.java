@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.partofspeech.service.impl;
 
 import java.util.List;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.validation.Validator;
@@ -10,8 +12,11 @@ import pl.edu.pwr.wordnetloom.partofspeech.exception.PartOfSpeechNotFoundExcepti
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.partofspeech.repository.PartOfSpeechRepository;
 import pl.edu.pwr.wordnetloom.partofspeech.service.PartOfSpeechServiceLocal;
+import pl.edu.pwr.wordnetloom.partofspeech.service.PartOfSpeechServiceRemote;
 
 @Stateless
+@Remote(PartOfSpeechServiceRemote.class)
+@Local(PartOfSpeechServiceLocal.class)
 public class PartOfSpeechServiceBean implements PartOfSpeechServiceLocal {
 
     @Inject

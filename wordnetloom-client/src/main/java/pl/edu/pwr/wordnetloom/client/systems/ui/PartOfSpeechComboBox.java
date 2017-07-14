@@ -1,7 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
 import java.util.List;
-import pl.edu.pwr.wordnetloom.client.Main;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -39,7 +38,7 @@ public class PartOfSpeechComboBox extends ComboBoxPlain<PartOfSpeech> {
         List<PartOfSpeech> ubyOnly = PosManager.getInstance().getPOSForLexicon(1);
         addItem(new CustomDescription<>(nullRepresentation, null));
         for (PartOfSpeech pos : ubyOnly) {
-            String desc = Main.getResouce("label." + pos.getUbyType().toString());
+            String desc = "";//Main.getResouce("label." + pos.getUbyType().toString());
             addItem(new CustomDescription<>(desc, pos));
         }
     }

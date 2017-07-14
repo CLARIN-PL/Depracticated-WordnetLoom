@@ -19,7 +19,6 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
-import pl.edu.pwr.wordnetloom.client.utils.Common;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
@@ -107,10 +106,10 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         quiteMode = true;
 
         // ustawienie wartosci elementow
-        definitionValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.DEFINITION)) : formatValue(null));
-        statusValue.setSelectedItem(synset == null ? null : "");
-        commentValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.COMMENT)) : formatValue(null));
-        abstractValue.setSelected(synset != null && Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT)));
+//        definitionValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.DEFINITION)) : formatValue(null));
+//        statusValue.setSelectedItem(synset == null ? null : "");
+//        commentValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.COMMENT)) : formatValue(null));
+//        abstractValue.setSelected(synset != null && Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT)));
         statusValue.setEnabled(synset != null);
         commentValue.setEnabled(synset != null);
         definitionValue.setEnabled(synset != null);

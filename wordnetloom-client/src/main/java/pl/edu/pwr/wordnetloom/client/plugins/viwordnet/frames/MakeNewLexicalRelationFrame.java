@@ -1,34 +1,13 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.frames;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Collection;
 import javax.swing.ComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
@@ -36,18 +15,11 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
 
-/**
- * @author amusial
- *
- */
 public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
 
     private static final long serialVersionUID = 5479457915334417348L;
@@ -56,7 +28,7 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
     protected JPanel jp;
     protected Sense from, to;
 
-    protected MakeNewLexicalRelationFrame(JFrame frame, RelationArgument type,
+    protected MakeNewLexicalRelationFrame(JFrame frame, String type,
             PartOfSpeech pos, Sense[] from, Sense[] to) {
         super(frame, type, pos, null);
 
@@ -65,11 +37,11 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
 
         // relation from:
         parentItem = new ComboBoxPlain();
-        parentItem.addItem(this.from.getLemma());
+        parentItem.addItem(this.from.getWord());
 
         // relation to:
         childItem = new ComboBoxPlain();
-        childItem.addItem(this.to.getLemma());
+        childItem.addItem(this.to.getWord());
 
         // middle element
         middleItem = new ComboBoxPlain();
@@ -93,22 +65,21 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
         relationType.addKeyListener(this);
 
         // show relations
-        mainRelations = new ArrayList<>();
-        Collection<RelationType> readRelations = LexicalDA.getHighestRelations(
-                type, pos);
-        for (RelationType relType : readRelations) {
-            if (fixedRelationType == null
-                    || relType.getId().longValue() == fixedRelationType.getId()
-                    .longValue()
-                    || (fixedRelationType.getParent() != null && relType
-                    .getId().longValue() == fixedRelationType
-                    .getParent().getId())) {
-                relationType.addItem(RelationTypes.getFullNameFor(relType
-                        .getId()));
-                mainRelations.add(relType);
-            }
-        }
-
+//        mainRelations = new ArrayList<>();
+//        Collection<RelationType> readRelations = LexicalDA.getHighestRelations(
+//                type, pos);
+//        for (RelationType relType : readRelations) {
+//            if (fixedRelationType == null
+//                    || relType.getId().longValue() == fixedRelationType.getId()
+//                    .longValue()
+//                    || (fixedRelationType.getParent() != null && relType
+//                    .getId().longValue() == fixedRelationType
+//                    .getParent().getId())) {
+//                relationType.addItem(RelationTypes.getFullNameFor(relType
+//                        .getId()));
+//                mainRelations.add(relType);
+//            }
+//        }
         // event listeners
         parentItem.addKeyListener(this);
         parentItem.addActionListener(this);
@@ -129,13 +100,12 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
         relationType.addActionListener(this);
 
         // if there are any relations
-        if (mainRelations.size() > 0) {
-            relationType.setSelectedIndex(0);
-            buttonChoose.setEnabled(true);
-        } else {
-            buttonChoose.setEnabled(false);
-        }
-
+//        if (mainRelations.size() > 0) {
+//            relationType.setSelectedIndex(0);
+//            buttonChoose.setEnabled(true);
+//        } else {
+//            buttonChoose.setEnabled(false);
+//        }
         // build interface
         this.add("",
                 new LabelExt(Labels.RELATION_TYPE_COLON, 't', relationType));
@@ -167,7 +137,7 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
     public void actionPerformed(ActionEvent event) {
 
         if (event.getSource() == buttonChoose) {
-            chosenType = getSelectedRelation();
+            //      chosenType = getSelectedRelation();
             this.setVisible(false);
 
         } else if (event.getSource() == buttonCancel) {
@@ -185,10 +155,10 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
 
             // refresh tests
             testsLit.setListData(new String[]{});
-            RelationType relation = getSelectedRelation();
-            if (relation != null) {
-                loadTests(relation);
-            }
+            //      RelationType relation = getSelectedRelation();
+//            if (relation != null) {
+//                loadTests(relation);
+//            }
 
             // relation type changed
         } else if (event.getSource() == relationType) {
@@ -198,41 +168,41 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
 
             // read chosen function index
             int index = relationType.getSelectedIndex();
-            for (RelationType type : mainRelations) {
-                if (index-- == 0) {
-                    // refresh subrelation
-                    subRelations = new ArrayList<>();
-                    Collection<RelationType> readRelations = LexicalDA
-                            .getChildren(type);
-                    for (RelationType relType : readRelations) {
-                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
-                            relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
-                            subRelations.add(relType);
-                        }
-                    }
-                    if (subRelations.size() > 0) {
-                        relationSubType.setSelectedIndex(0);
-                    } else {
-                        loadTests(type);
-                    }
-                    description.setText(RelationTypes.get(type.getId())
-                            .getRelationType().getDescription().getText());
-                    break;
-                }
-            }
-            relationSubType.setEnabled(subRelations != null
-                    && subRelations.size() > 0);
-
-            // subtype changed
-        } else if (event.getSource() == relationSubType
-                || event.getSource() == parentItem
-                || event.getSource() == childItem
-                || event.getSource() == middleItem) {
-            testsLit.setListData(new String[]{});
-            RelationType relation = getSelectedRelation();
-            if (relation != null) {
-                loadTests(relation);
-            }
+//            for (RelationType type : mainRelations) {
+//                if (index-- == 0) {
+//                    // refresh subrelation
+//                    subRelations = new ArrayList<>();
+//                    Collection<RelationType> readRelations = LexicalDA
+//                            .getChildren(type);
+//                    for (RelationType relType : readRelations) {
+//                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
+//                            relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
+//                            subRelations.add(relType);
+//                        }
+//                    }
+//                    if (subRelations.size() > 0) {
+//                        relationSubType.setSelectedIndex(0);
+//                    } else {
+//                        loadTests(type);
+//                    }
+//                    description.setText(RelationTypes.get(type.getId())
+//                            .getRelationType().getDescription().getText());
+//                    break;
+//                }
+//            }
+//            relationSubType.setEnabled(subRelations != null
+//                    && subRelations.size() > 0);
+//
+//            // subtype changed
+//        } else if (event.getSource() == relationSubType
+//                || event.getSource() == parentItem
+//                || event.getSource() == childItem
+//                || event.getSource() == middleItem) {
+//            testsLit.setListData(new String[]{});
+//            RelationType relation = getSelectedRelation();
+//            if (relation != null) {
+//                loadTests(relation);
+//            }
         }
     }
 
@@ -260,43 +230,43 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
             DialogBox.showInformation(Messages.FAILURE_SOURCE_UNIT_SAME_AS_TARGET);
             return false;
         }
-        MakeNewLexicalRelationFrame framew = new MakeNewLexicalRelationFrame(
-                workbench.getFrame(), RelationArgument.LEXICAL,
-                from1[0].getPartOfSpeech(), from1, to1);
-        framew.setVisible(true);
-        if (framew.chosenType != null) {
-
-            // check if relation exists
-            if (!RemoteUtils.lexicalRelationRemote.dbRelationExists(from, to,
-                    framew.chosenType)) {
-                RemoteUtils.lexicalRelationRemote.dbMakeRelation(from, to,
-                        framew.chosenType);
-
-                // if reverse relation exists
-                if (framew.chosenType.getReverse() != null) {
-                    RelationType reverse = framew.chosenType.getReverse();
-                    // add reversed relation
-                    if (!RemoteUtils.lexicalRelationRemote.dbRelationExists(to,
-                            from, reverse)
-                            && (framew.chosenType.isAutoReverse() || DialogBox
-                            .showYesNo(String
-                                    .format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION,
-                                            LexicalDA
-                                            .getRelationName(reverse))) == DialogBox.YES)) {
-                        RemoteUtils.lexicalRelationRemote.dbMakeRelation(to,
-                                from, reverse);
-                    }
-                }
-
-                // show confirmation dialog
-                DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
-                return true;
-
-            } else {
-                // show error dialog
-                DialogBox.showError(Messages.FAILURE_RELATION_EXISTS);
-            }
-        }
+//        MakeNewLexicalRelationFrame framew = new MakeNewLexicalRelationFrame(
+//                workbench.getFrame(), RelationArgument.LEXICAL,
+//                from1[0].getPartOfSpeech(), from1, to1);
+//        framew.setVisible(true);
+//        if (framew.chosenType != null) {
+//
+//            // check if relation exists
+//            if (!RemoteUtils.lexicalRelationRemote.dbRelationExists(from, to,
+//                    framew.chosenType)) {
+//                RemoteUtils.lexicalRelationRemote.dbMakeRelation(from, to,
+//                        framew.chosenType);
+//
+//                // if reverse relation exists
+//                if (framew.chosenType.getReverse() != null) {
+//                    RelationType reverse = framew.chosenType.getReverse();
+//                    // add reversed relation
+//                    if (!RemoteUtils.lexicalRelationRemote.dbRelationExists(to,
+//                            from, reverse)
+//                            && (framew.chosenType.isAutoReverse() || DialogBox
+//                            .showYesNo(String
+//                                    .format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION,
+//                                            LexicalDA
+//                                            .getRelationName(reverse))) == DialogBox.YES)) {
+//                        RemoteUtils.lexicalRelationRemote.dbMakeRelation(to,
+//                                from, reverse);
+//                    }
+//                }
+//
+//                // show confirmation dialog
+//                DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
+//                return true;
+//
+//            } else {
+//                // show error dialog
+//                DialogBox.showError(Messages.FAILURE_RELATION_EXISTS);
+//            }
+//        }
         return false;
     }
 

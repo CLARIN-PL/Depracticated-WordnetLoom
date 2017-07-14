@@ -1,14 +1,19 @@
 package pl.edu.pwr.wordnetloom.extgraph.service.impl;
 
 import java.util.Collection;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraphExtension;
 import pl.edu.pwr.wordnetloom.extgraph.repository.ExtGraphExtensionRepository;
 import pl.edu.pwr.wordnetloom.extgraph.service.ExtGraphExtensionServiceLocal;
+import pl.edu.pwr.wordnetloom.extgraph.service.ExtGraphExtensionServiceRemote;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 @Stateless
+@Local(ExtGraphExtensionServiceLocal.class)
+@Remote(ExtGraphExtensionServiceRemote.class)
 public class ExtGraphExtensionServiceBean implements ExtGraphExtensionServiceLocal {
 
     @Inject

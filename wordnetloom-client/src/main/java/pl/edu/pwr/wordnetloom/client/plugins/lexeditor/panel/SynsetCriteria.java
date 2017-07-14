@@ -11,7 +11,6 @@ import javax.swing.JRadioButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
 
@@ -25,8 +24,8 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
     private JRadioButton notArtificial;
     private CriteriaDTO crit;
 
-    public SynsetCriteria(RelationArgument relationArgumentType) {
-        super(relationArgumentType, 480);
+    public SynsetCriteria() {
+        super(480);
         init();
         initializeFormPanel();
     }
@@ -50,7 +49,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         addLexicon();
         addPartsOfSpeach();
         addDomain();
-        addRelations();
+        addSynsetRelationTypes();
         addDefinition();
         addComment();
         addArificial();
@@ -123,7 +122,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         crit.setLexicon(getLexiconComboBox().getSelectedIndex());
         crit.setPartOfSpeech(getPartsOfSpeachComboBox().getSelectedIndex());
         crit.setDomain(getDomainComboBox().getSelectedIndex());
-        crit.setRelation(getRelationsComboBox().getSelectedIndex());
+        crit.setRelation(getSynsetRelationTypeComboBox().getSelectedIndex());
         crit.setDefinition(getDefinition().getText());
         crit.setComment(getComment().getText());
         crit.setSynsetType(getIsArtificial());
@@ -140,7 +139,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         getLexiconComboBox().setSelectedIndex(criteria.getLexicon());
         getPartsOfSpeachComboBox().setSelectedIndex(criteria.getPartOfSpeech());
         getDomainComboBox().setSelectedIndex(criteria.getDomain());
-        getRelationsComboBox().setSelectedIndex(criteria.getRelation());
+        getSynsetRelationTypeComboBox().setSelectedIndex(criteria.getRelation());
         getDefinition().setText(criteria.getDefinition());
         getComment().setText(criteria.getComment());
         crit.setSense(criteria.getSense());

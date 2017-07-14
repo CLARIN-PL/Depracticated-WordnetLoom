@@ -1,24 +1,5 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -37,24 +18,13 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.LexicalIM;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
-import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
-import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import se.datadosen.component.RiverLayout;
@@ -117,12 +87,6 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         content.add(delRelation);
     }
 
-    /**
-     * action builds tree
-     *
-     * @param object <code>Sense</code> root of the tree
-     *
-     */
     @Override
     public void doAction(Object object, int tag) {
         fillTree(object);
@@ -141,8 +105,8 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
             @Override
             protected String doInBackground() throws Exception {
-                relations = RemoteUtils.lexicalRelationRemote.dbGetFullRelations((Sense) object);
-                relations_sub = RemoteUtils.lexicalRelationRemote.dbGetUpperRelations((Sense) object, null);
+                // relations = RemoteUtils.lexicalRelationRemote.dbGetFullRelations((Sense) object);
+                // relations_sub = RemoteUtils.lexicalRelationRemote.dbGetUpperRelations((Sense) object, null);
                 return null;
             }
 
@@ -167,15 +131,15 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
                 for (SenseRelation rel : relations) {
 
-                    if (rel_id != rel.getRelation().getId().intValue()) {
+                    if (rel_id != rel.getRelationType().getId().intValue()) {
                         rel_node = new DefaultMutableTreeNode(rel);
                         rel_node.setUserObject(rel);
-                        rel_id = rel.getRelation().getId().intValue();
+                        rel_id = rel.getRelationType().getId().intValue();
                         root_from.add(rel_node);
                     }
 
-                    if (rel.getSenseTo() != null && rel.getSenseFrom() != null) {
-                        DefaultMutableTreeNode node = new DefaultMutableTreeNode(new Pair<>(rel.getSenseTo(), rel));
+                    if (rel.getChild() != null && rel.getParent() != null) {
+                        DefaultMutableTreeNode node = new DefaultMutableTreeNode(new Pair<>(rel.getChild(), rel));
                         rel_node.add(node);
                     }
                 }
@@ -185,15 +149,15 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
                 for (SenseRelation rel : relations_sub) {
 
-                    if (rel_id != rel.getRelation().getId().intValue()) {
+                    if (rel_id != rel.getRelationType().getId().intValue()) {
                         rel_node = new DefaultMutableTreeNode(rel);
                         rel_node.setUserObject(rel);
-                        rel_id = rel.getRelation().getId().intValue();
+                        rel_id = rel.getRelationType().getId().intValue();
                         root_to.add(rel_node);
                     }
 
-                    if (rel.getSenseTo() != null && rel.getSenseFrom() != null) {
-                        DefaultMutableTreeNode node = new DefaultMutableTreeNode(new Pair<>(rel.getSenseFrom(), rel));
+                    if (rel.getChild() != null && rel.getParent() != null) {
+                        DefaultMutableTreeNode node = new DefaultMutableTreeNode(new Pair<>(rel.getParent(), rel));
                         rel_node.add(node);
                     }
                 }
@@ -294,8 +258,8 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                 if (dmtn.isRoot()) {
                     this.setIcon(this.openIcon);
                 } else /* else, because, root shouldn't be relation */ if (dmtn.getUserObject() instanceof SenseRelation) {
-                    this.setText((RelationTypes.get(((SenseRelation) dmtn
-                            .getUserObject()).getRelation().getId())).name());
+//                    this.setText((RelationTypes.get(((SenseRelation) dmtn
+//                            .getUserObject()).getRelationType().getId())).name());
                 } else if (dmtn.getUserObject() instanceof Pair<?, ?>) {
                     @SuppressWarnings("unchecked")
                     Pair<Sense, SenseRelation> pair = (Pair<Sense, SenseRelation>) dmtn
@@ -314,131 +278,131 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
      */
     public void actionPerformed(ActionEvent ae) {
         // add relation
-        if (ae.getSource() == addRelation) {
-            Point location = addRelation.getLocationOnScreen();
-            // choose second lexical unit
-            ValueContainer<Boolean> created = new ValueContainer<>(false);
-
-            Rectangle r = workbench.getFrame().getBounds();
-            int x = r.x + r.width - AbstractListFrame.WIDTH / 2 - 50;
-
-            Collection<Sense> selectedUnits = UnitsListFrame.showModal(
-                    workbench, x, location.y, true, null, created);
-            Sense lastUnit = null;
-            if (((DefaultMutableTreeNode) tree.getModel().getRoot())
-                    .getUserObject() instanceof Sense) {
-                lastUnit = (Sense) ((DefaultMutableTreeNode) tree.getModel()
-                        .getRoot()).getUserObject();
-            }
-            if (selectedUnits != null && !selectedUnits.isEmpty()
-                    && lastUnit != null) {
-                for (Sense sense : selectedUnits) {
-                    if (sense.getId().equals(lastUnit.getId())) {
-                        DialogBox
-                                .showError(Messages.FAILURE_SOURCE_UNIT_SAME_AS_TARGET);
-                        return;
-                    }
-                }
-                // choose relation type
-                RelationType rel = RelationTypeFrame.showModal(workbench,
-                        RelationArgument.LEXICAL, lastUnit.getPartOfSpeech(),
-                        RelationTypeFrame.unitToList(lastUnit), selectedUnits);
-
-                if (rel == null) {
-                    return; // no relation type chosen, return
-                }
-                for (Sense selectedUnit : selectedUnits) {
-                    // check if relation already exists
-                    if (LexicalDA.checkIfRelationExists(lastUnit, selectedUnit,
-                            rel)) {
-                        DialogBox.showError(String.format(
-                                Messages.FAILURE_RELATION_EXISTS,
-                                RelationTypes.getFullNameFor(rel.getId()),
-                                lastUnit.getLemma(), selectedUnit.getLemma()));
-                    } else {
-                        LexicalDA.makeRelation(lastUnit, selectedUnit, rel);
-
-                        // reverse relation exists?
-                        if (rel.getReverse() != null) {
-                            // create reverse relation entry?
-                            RelationType reverse = LexicalDA
-                                    .getReverseRelation(rel);
-                            String reverseName = LexicalDA
-                                    .getRelationName(reverse);
-                            // Pobierz testy dla relacji odwrotnej
-                            Collection<String> tests = LexicalDA.getTests(
-                                    reverse, lastUnit.toString(),
-                                    selectedUnit.toString(),
-                                    lastUnit.getPartOfSpeech());
-                            String test = "\n\n";
-                            for (String i : tests) {
-                                test += i + "\n";
-                            }
-                            if (rel.isAutoReverse()
-                                    || DialogBox.showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION
-                                            + test, reverseName)) == DialogBox.YES) {
-                                for (Sense selectedUniti : selectedUnits) {
-                                    if (LexicalDA.checkIfRelationExists(
-                                            selectedUniti, lastUnit, rel)) {
-                                        DialogBox
-                                                .showError(String
-                                                        .format(Messages.FAILURE_RELATION_EXISTS,
-                                                                reverseName,
-                                                                selectedUniti
-                                                                .getLemma(),
-                                                                lastUnit.getLemma()));
-                                    } else {
-                                        LexicalDA.makeRelation(selectedUniti,
-                                                lastUnit, reverse);
-                                    }
-                                }
-                            }
-                        }
-
-                        // show confirmation dialog?
-                        // refresh view
-                        refresh();
-                    }
-                }
-
-            }
-
-            // delete relation
-        } else if (ae.getSource() == delRelation) {
-            @SuppressWarnings("unchecked")
-            SenseRelation relation = ((Pair<Sense, SenseRelation>) ((DefaultMutableTreeNode) ((DefaultMutableTreeNode) tree
-                    .getLastSelectedPathComponent())).getUserObject()).getB();
-
-            if (DialogBox.showYesNo(String.format(
-                    Messages.QUESTION_SURE_TO_REMOVE_RELATION, RelationTypes
-                    .getFullNameFor(relation.getRelation().getId()))) == DialogBox.YES) {
-
-                RemoteUtils.lexicalRelationRemote.dbDelete(relation);
-                if (relation.getRelation().getReverse() != null
-                        && RemoteUtils.lexicalRelationRemote.dbRelationExists(
-                                relation.getSenseTo(), relation.getSenseFrom(),
-                                relation.getRelation().getReverse())
-                        && // if yes, then check if relation is auto reverse of
-                        // user want to delete reverse relation
-                        (relation.getRelation().isAutoReverse() || DialogBox
-                        .showYesNo(String
-                                .format(Messages.QUESTION_SURE_TO_REMOVE_REVERSE_RELATION,
-                                        relation.getRelation()
-                                        .getReverse())) == DialogBox.YES)) {
-
-                    // get relations type reverse type from child to parent
-                    Collection<SenseRelation> rev_rels = RemoteUtils.lexicalRelationRemote
-                            .dbGetRelations(relation.getSenseTo(), relation
-                                    .getSenseFrom(), relation.getRelation()
-                                    .getReverse());
-                    // delete all of them
-                    for (SenseRelation lex_rel : rev_rels) {
-                        RemoteUtils.lexicalRelationRemote.dbDelete(lex_rel);
-                    }
-                }
-                refresh();
-            }
-        }
+//        if (ae.getSource() == addRelation) {
+//            Point location = addRelation.getLocationOnScreen();
+//            // choose second lexical unit
+//            ValueContainer<Boolean> created = new ValueContainer<>(false);
+//
+//            Rectangle r = workbench.getFrame().getBounds();
+//            int x = r.x + r.width - AbstractListFrame.WIDTH / 2 - 50;
+//
+//            Collection<Sense> selectedUnits = UnitsListFrame.showModal(
+//                    workbench, x, location.y, true, null, created);
+//            Sense lastUnit = null;
+//            if (((DefaultMutableTreeNode) tree.getModel().getRoot())
+//                    .getUserObject() instanceof Sense) {
+//                lastUnit = (Sense) ((DefaultMutableTreeNode) tree.getModel()
+//                        .getRoot()).getUserObject();
+//            }
+//            if (selectedUnits != null && !selectedUnits.isEmpty()
+//                    && lastUnit != null) {
+//                for (Sense sense : selectedUnits) {
+//                    if (sense.getId().equals(lastUnit.getId())) {
+//                        DialogBox
+//                                .showError(Messages.FAILURE_SOURCE_UNIT_SAME_AS_TARGET);
+//                        return;
+//                    }
+//                }
+//                // choose relation type
+//                RelationType rel = RelationTypeFrame.showModal(workbench,
+//                        RelationArgument.LEXICAL, lastUnit.getPartOfSpeech(),
+//                        RelationTypeFrame.unitToList(lastUnit), selectedUnits);
+//
+//                if (rel == null) {
+//                    return; // no relation type chosen, return
+//                }
+//                for (Sense selectedUnit : selectedUnits) {
+//                    // check if relation already exists
+//                    if (LexicalDA.checkIfRelationExists(lastUnit, selectedUnit,
+//                            rel)) {
+//                        DialogBox.showError(String.format(
+//                                Messages.FAILURE_RELATION_EXISTS,
+//                                RelationTypes.getFullNameFor(rel.getId()),
+//                                lastUnit.getLemma(), selectedUnit.getLemma()));
+//                    } else {
+//                        LexicalDA.makeRelation(lastUnit, selectedUnit, rel);
+//
+//                        // reverse relation exists?
+//                        if (rel.getReverse() != null) {
+//                            // create reverse relation entry?
+//                            RelationType reverse = LexicalDA
+//                                    .getReverseRelation(rel);
+//                            String reverseName = LexicalDA
+//                                    .getRelationName(reverse);
+//                            // Pobierz testy dla relacji odwrotnej
+//                            Collection<String> tests = LexicalDA.getTests(
+//                                    reverse, lastUnit.toString(),
+//                                    selectedUnit.toString(),
+//                                    lastUnit.getPartOfSpeech());
+//                            String test = "\n\n";
+//                            for (String i : tests) {
+//                                test += i + "\n";
+//                            }
+//                            if (rel.isAutoReverse()
+//                                    || DialogBox.showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION
+//                                            + test, reverseName)) == DialogBox.YES) {
+//                                for (Sense selectedUniti : selectedUnits) {
+//                                    if (LexicalDA.checkIfRelationExists(
+//                                            selectedUniti, lastUnit, rel)) {
+//                                        DialogBox
+//                                                .showError(String
+//                                                        .format(Messages.FAILURE_RELATION_EXISTS,
+//                                                                reverseName,
+//                                                                selectedUniti
+//                                                                .getLemma(),
+//                                                                lastUnit.getLemma()));
+//                                    } else {
+//                                        LexicalDA.makeRelation(selectedUniti,
+//                                                lastUnit, reverse);
+//                                    }
+//                                }
+//                            }
+//                        }
+//
+//                        // show confirmation dialog?
+//                        // refresh view
+//                        refresh();
+//                    }
+//                }
+//
+//            }
+//
+//            // delete relation
+//        } else if (ae.getSource() == delRelation) {
+//            @SuppressWarnings("unchecked")
+//            SenseRelation relation = ((Pair<Sense, SenseRelation>) ((DefaultMutableTreeNode) ((DefaultMutableTreeNode) tree
+//                    .getLastSelectedPathComponent())).getUserObject()).getB();
+//
+//            if (DialogBox.showYesNo(String.format(
+//                    Messages.QUESTION_SURE_TO_REMOVE_RELATION, RelationTypes
+//                    .getFullNameFor(relation.getRelation().getId()))) == DialogBox.YES) {
+//
+//                RemoteUtils.lexicalRelationRemote.dbDelete(relation);
+//                if (relation.getRelation().getReverse() != null
+//                        && RemoteUtils.lexicalRelationRemote.dbRelationExists(
+//                                relation.getSenseTo(), relation.getSenseFrom(),
+//                                relation.getRelation().getReverse())
+//                        && // if yes, then check if relation is auto reverse of
+//                        // user want to delete reverse relation
+//                        (relation.getRelation().isAutoReverse() || DialogBox
+//                        .showYesNo(String
+//                                .format(Messages.QUESTION_SURE_TO_REMOVE_REVERSE_RELATION,
+//                                        relation.getRelation()
+//                                        .getReverse())) == DialogBox.YES)) {
+//
+//                    // get relations type reverse type from child to parent
+//                    Collection<SenseRelation> rev_rels = RemoteUtils.lexicalRelationRemote
+//                            .dbGetRelations(relation.getSenseTo(), relation
+//                                    .getSenseFrom(), relation.getRelation()
+//                                    .getReverse());
+//                    // delete all of them
+//                    for (SenseRelation lex_rel : rev_rels) {
+//                        RemoteUtils.lexicalRelationRemote.dbDelete(lex_rel);
+//                    }
+//                }
+//                refresh();
+//            }
+//        }
     }
 
     @Override

@@ -1,11 +1,9 @@
 package pl.edu.pwr.wordnetloom.extgraph.service;
 
 import java.util.Collection;
-import javax.ejb.Remote;
 import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraphExtension;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
-@Remote
 public interface ExtGraphExtensionServiceRemote {
 
     void persist(Collection<ExtGraphExtension> exts);

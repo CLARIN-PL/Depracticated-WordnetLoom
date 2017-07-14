@@ -2,10 +2,8 @@ package pl.edu.pwr.wordnetloom.relationtype.service;
 
 import java.util.Collection;
 import java.util.List;
-import javax.ejb.Remote;
 import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 
-@Remote
 public interface SynsetRelationTypeServiceRemote {
 
     SynsetRelationType findById(Long id);

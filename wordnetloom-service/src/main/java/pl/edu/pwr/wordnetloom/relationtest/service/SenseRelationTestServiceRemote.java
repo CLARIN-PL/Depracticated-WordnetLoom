@@ -1,11 +1,9 @@
 package pl.edu.pwr.wordnetloom.relationtest.service;
 
 import java.util.List;
-import javax.ejb.Remote;
 import pl.edu.pwr.wordnetloom.relationtest.model.SenseRelationTest;
 import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 
-@Remote
 public interface SenseRelationTestServiceRemote {
 
     void delete(SenseRelationTest relationTest);

@@ -1,20 +1,3 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.frames;
 
 import java.awt.BorderLayout;
@@ -23,11 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -35,7 +13,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
@@ -43,18 +20,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.RelationTypesIM;
-import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.da.RelationTypesDA;
-import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.models.RelationTreeModel;
-import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
-import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.IconFrame;
@@ -65,14 +33,10 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
-import pl.edu.pwr.wordnetloom.relation.model.RelationTest;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import se.datadosen.component.RiverLayout;
 
 /**
@@ -101,17 +65,16 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
     private TextAreaPlain relationDescription;
     private TextFieldPlain relationReverse;
     private TextFieldPlain relationPos;
-    private ComboBoxPlain<RelationArgument> objectType;
+    //private ComboBoxPlain<RelationArgument> objectType;
     private ComboBoxPlain<Lexicon> lexicon;
     private JList testsList;
     private JTree tree;
     private JCheckBox multilingual;
     private SwitchPanel objectSwitch;
 
-    private final GenericListModel<RelationTest> testsModel = new GenericListModel<>();
-    private RelationType lastRelation = null;
-    private final RelationTreeModel model = new RelationTreeModel();
-
+//    private final GenericListModel<RelationTest> testsModel = new GenericListModel<>();
+//    private RelationType lastRelation = null;
+//    private final RelationTreeModel model = new RelationTreeModel();
     /**
      * konstruktor
      *
@@ -138,10 +101,9 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
         lexicon.setEnabled(false);
         lexicon.addActionListener(this);
 
-        for (Lexicon lex : RemoteUtils.lexicalUnitRemote.getLexiconsFromList(LexiconManager.getInstance().getLexicons())) {
-            this.lexicon.addItem(lex);
-        }
-
+//        for (Lexicon lex : RemoteUtils.lexicalUnitRemote.getLexiconsFromList(LexiconManager.getInstance().getLexicons())) {
+//            this.lexicon.addItem(lex);
+//        }
         relationName = new TextFieldPlain("");
         relationName.setEnabled(false);
         relationName.addCaretListener(this);
@@ -182,23 +144,22 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
         buttonReverse.setToolTipText(Hints.CHOOSE_REVERSE_RELATION);
         buttonReverse.setEnabled(false);
 
-        objectType = new ComboBoxPlain<>(
-                new RelationArgument[]{
-                    new RelationArgument(0L, Labels.LEXICAL_RELATIONS),
-                    new RelationArgument(1L, Labels.SYNSET_BETWEEN_RELATIONS),
-                    new RelationArgument(2L, Labels.SYNONYM_RELATIONS)});
-        objectType.addActionListener(this);
-
-        objectSwitch = new SwitchPanel(objectType, new TextFieldPlain(""), normal);
-        objectSwitch.setEnabled(false);
-
-        testsList = new JList();
-        testsList.setEnabled(false);
-        testsList.setModel(testsModel);
-        testsList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        testsList.addListSelectionListener(this);
-        testsList.addMouseListener(this);
-
+//        objectType = new ComboBoxPlain<>(
+//                new RelationArgument[]{
+//                    new RelationArgument(0L, Labels.LEXICAL_RELATIONS),
+//                    new RelationArgument(1L, Labels.SYNSET_BETWEEN_RELATIONS),
+//                    new RelationArgument(2L, Labels.SYNONYM_RELATIONS)});
+//        objectType.addActionListener(this);
+//
+//        objectSwitch = new SwitchPanel(objectType, new TextFieldPlain(""), normal);
+//        objectSwitch.setEnabled(false);
+//
+//        testsList = new JList();
+//        testsList.setEnabled(false);
+//        testsList.setModel(testsModel);
+//        testsList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//        testsList.addListSelectionListener(this);
+//        testsList.addMouseListener(this);
         buttonNewTest = new ButtonExt(RelationTypesIM.getNewImage(), this);
         buttonNewTest.setToolTipText(Hints.CREATE_NEW_TEST);
         buttonNewTest.setEnabled(false);
@@ -274,7 +235,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         tree.setRootVisible(true);
         tree.addTreeSelectionListener(this);
-        tree.setModel(model);
+        // tree.setModel(model);
         tree.setExpandsSelectedPaths(false);
 
         // ustawienie ikonek dla drzewa
@@ -325,48 +286,48 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
      *
      */
     private void refreshTree() {
-        Collection<RelationType> relations = RelationTypesDA.getHighestRelations(null, null);
-        for (RelationType type : relations) {
-            RelationTypesDA.getChildren(type);
-            RelationTypesDA.getTests(type);
-        }
-
-        TreePath selectedPath = tree.getSelectionPath();
-        TreePath transformedPath = new TreePath(model.getRoot());
-        if (selectedPath != null) {
-            try {
-                Object[] nodes = selectedPath.getPath();
-                RelationType lastRel = null;
-                if (nodes.length > 0) {
-                    // zanalezienie nowej relacji
-                    for (RelationType relType : relations) {
-                        if (relType.toString().equals(nodes[1].toString())) {
-                            lastRel = relType;
-                            break;
-                        }
-                    }
-                }
-                if (lastRel != null) {
-                    transformedPath = transformedPath.pathByAddingChild(lastRel);
-                    // znalezienie nowych podtypow
-                    if (nodes.length > 2) {
-                        for (RelationType subType : RemoteUtils.relationTypeRemote.dbGetChildren(lastRel, LexiconManager.getInstance().getLexicons())) {
-                            if (subType.toString().equals(nodes[2].toString())) {
-                                transformedPath = transformedPath.pathByAddingChild(subType);
-                                break;
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                Logger.getLogger(RelationsEditorFrame.class).log(Level.ERROR, "Refreshing tree" + e);
-            }
-        }
-
-        model.setData(relations);
+//        Collection<RelationType> relations = RelationTypesDA.getHighestRelations(null, null);
+//        for (RelationType type : relations) {
+//            RelationTypesDA.getChildren(type);
+//            RelationTypesDA.getTests(type);
+//        }
+//
+//        TreePath selectedPath = tree.getSelectionPath();
+//        TreePath transformedPath = new TreePath(model.getRoot());
+//        if (selectedPath != null) {
+//            try {
+//                Object[] nodes = selectedPath.getPath();
+//                RelationType lastRel = null;
+//                if (nodes.length > 0) {
+//                    // zanalezienie nowej relacji
+//                    for (RelationType relType : relations) {
+//                        if (relType.toString().equals(nodes[1].toString())) {
+//                            lastRel = relType;
+//                            break;
+//                        }
+//                    }
+//                }
+//                if (lastRel != null) {
+//                    transformedPath = transformedPath.pathByAddingChild(lastRel);
+//                    // znalezienie nowych podtypow
+//                    if (nodes.length > 2) {
+//                        for (RelationType subType : RemoteUtils.relationTypeRemote.dbGetChildren(lastRel, LexiconManager.getInstance().getLexicons())) {
+//                            if (subType.toString().equals(nodes[2].toString())) {
+//                                transformedPath = transformedPath.pathByAddingChild(subType);
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//            } catch (Exception e) {
+//                Logger.getLogger(RelationsEditorFrame.class).log(Level.ERROR, "Refreshing tree" + e);
+//            }
+//        }
+//
+//        model.setData(relations);
         tree.updateUI();
-        tree.setSelectionPath(transformedPath);
-        tree.expandPath(transformedPath);
+//        tree.setSelectionPath(transformedPath);
+//        tree.expandPath(transformedPath);
     }
 
     /**
@@ -383,91 +344,91 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
 
     @Override
     public void valueChanged(TreeSelectionEvent event) {
-        RelationType rel = null;
-        if (event != null && event.getNewLeadSelectionPath() != null) {
-            Object lastElem = event.getNewLeadSelectionPath().getLastPathComponent();
-            int len = event.getNewLeadSelectionPath().getPath().length;
-            Object beforeLastElem = null;
-            if (len > 2) {
-                beforeLastElem = event.getNewLeadSelectionPath().getPath()[len - 2];
-            }
-
-            if (lastElem != null && lastElem instanceof RelationType) {
-                rel = (RelationType) lastElem;
-                if (beforeLastElem == null) {
-                    beforeLastElem = model.getRoot();
-                }
-
-                int index = model.getIndexOfChild(beforeLastElem, lastElem);
-                int count = model.getChildCount(beforeLastElem);
-
-                buttonUpRel.setEnabled(index > 0);
-                buttonDownRel.setEnabled(index + 1 < count);
-            }
-        }
-        buttonNewSub.setEnabled(rel != null && rel.getParent() == null);
-        buttonDelete.setEnabled(rel != null);
-        refreshDetails(rel);
+//        RelationType rel = null;
+//        if (event != null && event.getNewLeadSelectionPath() != null) {
+//            Object lastElem = event.getNewLeadSelectionPath().getLastPathComponent();
+//            int len = event.getNewLeadSelectionPath().getPath().length;
+//            Object beforeLastElem = null;
+//            if (len > 2) {
+//                beforeLastElem = event.getNewLeadSelectionPath().getPath()[len - 2];
+//            }
+//
+//            if (lastElem != null && lastElem instanceof RelationType) {
+//                rel = (RelationType) lastElem;
+//                if (beforeLastElem == null) {
+//                    beforeLastElem = model.getRoot();
+//                }
+//
+//                int index = model.getIndexOfChild(beforeLastElem, lastElem);
+//                int count = model.getChildCount(beforeLastElem);
+//
+//                buttonUpRel.setEnabled(index > 0);
+//                buttonDownRel.setEnabled(index + 1 < count);
+//            }
+//        }
+//        buttonNewSub.setEnabled(rel != null && rel.getParent() == null);
+//        buttonDelete.setEnabled(rel != null);
+//        refreshDetails(rel);
     }
 
-    private void refreshDetails(RelationType rel) {
-        rel = RemoteUtils.relationTypeRemote.getEagerRelationTypeByID(rel);
-        int childrenRealtionsSize = RemoteUtils.relationTypeRemote.dbGetChildren(rel, LexiconManager.getInstance().getLexicons()).size();
-        lastRelation = rel;
-        lexicon.setSelectedItem(rel != null ? rel.getLexicon() : "");
-        relationName.setText(rel != null ? rel.getName().getText() : "");
-        relationDisplay.setText(rel != null ? rel.getDisplayText().getText() : "");
-        relationShortcut.setText(rel != null ? rel.getShortDisplayText().getText() : "");
-        relationName.setEnabled(rel != null);
-        lexicon.setEnabled(rel != null);
-        multilingual.setEnabled(rel != null);
-        multilingual.setSelected(rel != null ? rel.isMultilingual() : false);
-        relationDisplay.setEnabled(rel != null && childrenRealtionsSize == 0);
-        relationShortcut.setEnabled(rel != null && childrenRealtionsSize == 0);
-
-        // ustawienie pos
-        if (rel != null && rel.getParent() != null) {
-            relationPos.setText(Labels.INHERITED);
-        } else {
-            relationPos.setText(PosManager.getInstance().getFromID(0).toString());
-        }
-
-        buttonPos.setEnabled(rel != null && rel.getParent() == null);
-
-        // ustawienie opisu
-        if (rel != null && rel.getParent() != null) {
-            relationDescription.setText(Labels.INHERITED);
-        } else {
-            relationDescription.setText(rel != null && rel.getDescription() != null ? rel.getDescription().getText() : Labels.NO_VALUE);
-        }
-        relationDescription.setEnabled(rel != null && rel.getParent() == null);
-
-        // odczytanie relacji odwrotnej
-        String reverseRelation = RelationTypesDA.getReverseRelationName(rel);
-        if (rel != null && childrenRealtionsSize != 0) {
-            relationReverse.setText(Labels.IN_SUBTYPES);
-        } else if (reverseRelation != null) {
-            String format = REVERSE_RELATION_NAME_NO_AUTO;
-            if (rel.isAutoReverse()) {
-                format = REVERSE_RELATION_NAME_AUTO;
-            }
-            relationReverse.setText(String.format(format, reverseRelation));
-        } else {
-            relationReverse.setText(Labels.NO_VALUE);
-        }
-        buttonReverse.setEnabled(rel != null && childrenRealtionsSize == 0);
-
-        // typ obiektu
-        objectType.setSelectedItem(rel == null ? null : rel.getArgumentType());
-        objectSwitch.setEnabled(rel != null && rel.getParent() == null);
-
-        buttonNewTest.setEnabled(rel != null && childrenRealtionsSize == 0);
-        buttonEditTest.setEnabled(false);
-        buttonDeleteTest.setEnabled(false);
-
-        buttonSave.setEnabled(false);
-
-        refreshTests();
+    private void refreshDetails(SynsetRelationType rel) {
+//        rel = RemoteUtils.relationTypeRemote.getEagerRelationTypeByID(rel);
+//        int childrenRealtionsSize = RemoteUtils.relationTypeRemote.dbGetChildren(rel, LexiconManager.getInstance().getLexicons()).size();
+//        lastRelation = rel;
+//        lexicon.setSelectedItem(rel != null ? rel.getLexicon() : "");
+//        relationName.setText(rel != null ? rel.getName().getText() : "");
+//        relationDisplay.setText(rel != null ? rel.getDisplayText().getText() : "");
+//        relationShortcut.setText(rel != null ? rel.getShortDisplayText().getText() : "");
+//        relationName.setEnabled(rel != null);
+//        lexicon.setEnabled(rel != null);
+//        multilingual.setEnabled(rel != null);
+//        multilingual.setSelected(rel != null ? rel.isMultilingual() : false);
+//        relationDisplay.setEnabled(rel != null && childrenRealtionsSize == 0);
+//        relationShortcut.setEnabled(rel != null && childrenRealtionsSize == 0);
+//
+//        // ustawienie pos
+//        if (rel != null && rel.getParent() != null) {
+//            relationPos.setText(Labels.INHERITED);
+//        } else {
+//            relationPos.setText(PosManager.getInstance().getFromID(0).toString());
+//        }
+//
+//        buttonPos.setEnabled(rel != null && rel.getParent() == null);
+//
+//        // ustawienie opisu
+//        if (rel != null && rel.getParent() != null) {
+//            relationDescription.setText(Labels.INHERITED);
+//        } else {
+//            relationDescription.setText(rel != null && rel.getDescription() != null ? rel.getDescription().getText() : Labels.NO_VALUE);
+//        }
+//        relationDescription.setEnabled(rel != null && rel.getParent() == null);
+//
+//        // odczytanie relacji odwrotnej
+//        String reverseRelation = RelationTypesDA.getReverseRelationName(rel);
+//        if (rel != null && childrenRealtionsSize != 0) {
+//            relationReverse.setText(Labels.IN_SUBTYPES);
+//        } else if (reverseRelation != null) {
+//            String format = REVERSE_RELATION_NAME_NO_AUTO;
+//            if (rel.isAutoReverse()) {
+//                format = REVERSE_RELATION_NAME_AUTO;
+//            }
+//            relationReverse.setText(String.format(format, reverseRelation));
+//        } else {
+//            relationReverse.setText(Labels.NO_VALUE);
+//        }
+//        buttonReverse.setEnabled(rel != null && childrenRealtionsSize == 0);
+//
+//        // typ obiektu
+//        objectType.setSelectedItem(rel == null ? null : rel.getArgumentType());
+//        objectSwitch.setEnabled(rel != null && rel.getParent() == null);
+//
+//        buttonNewTest.setEnabled(rel != null && childrenRealtionsSize == 0);
+//        buttonEditTest.setEnabled(false);
+//        buttonDeleteTest.setEnabled(false);
+//
+//        buttonSave.setEnabled(false);
+//
+//        refreshTests();
     }
 
     /**
@@ -475,243 +436,243 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
      *
      */
     private void refreshTests() {
-        if (lastRelation != null) {
-            List<RelationTest> tests = RelationTypesDA.getTests(lastRelation);
-
-            if (tests.size() > 0) {
-                Collections.sort(tests, (final RelationTest object1, final RelationTest object2) -> object1.getOrder().compareTo(object2.getOrder()));
-            }
-
-            lastRelation.setRelationTests(tests);
-            List<RelationTest> to_set = new ArrayList<>();
-            List<RelationTest> to_model = new ArrayList<>();
-
-            tests.stream().forEach((t) -> {
-                to_model.add(t);
-            });
-
-            to_set.stream().map((t) -> {
-                RemoteUtils.testRemote.merge(t);
-                return t;
-            }).forEach((t) -> {
-                to_model.add(t);
-            });
-
-            testsModel.setCollection(to_model);
-            testsList.setEnabled(RemoteUtils.relationTypeRemote.dbGetChildren(lastRelation, LexiconManager.getInstance().getLexicons()).isEmpty());
-        } else {
-            testsList.setEnabled(false);
-            testsModel.setCollection(null);
-        }
+//        if (lastRelation != null) {
+//            List<RelationTest> tests = RelationTypesDA.getTests(lastRelation);
+//
+//            if (tests.size() > 0) {
+//                Collections.sort(tests, (final RelationTest object1, final RelationTest object2) -> object1.getOrder().compareTo(object2.getOrder()));
+//            }
+//
+//            lastRelation.setRelationTests(tests);
+//            List<RelationTest> to_set = new ArrayList<>();
+//            List<RelationTest> to_model = new ArrayList<>();
+//
+//            tests.stream().forEach((t) -> {
+//                to_model.add(t);
+//            });
+//
+//            to_set.stream().map((t) -> {
+//                RemoteUtils.testRemote.merge(t);
+//                return t;
+//            }).forEach((t) -> {
+//                to_model.add(t);
+//            });
+//
+//            testsModel.setCollection(to_model);
+//            testsList.setEnabled(RemoteUtils.relationTypeRemote.dbGetChildren(lastRelation, LexiconManager.getInstance().getLexicons()).isEmpty());
+//        } else {
+//            testsList.setEnabled(false);
+//            testsModel.setCollection(null);
+//        }
         testsList.clearSelection();
     }
 
     @Override
     public void caretUpdate(CaretEvent arg0) {
-        if (lastRelation == null) {
-            return;
-        }
-        if (arg0.getSource() instanceof TextFieldPlain) {
-            TextFieldPlain field = (TextFieldPlain) arg0.getSource();
-            buttonSave.setEnabled(buttonSave.isEnabled() | field.wasTextChanged());
-        } else if (arg0.getSource() instanceof TextAreaPlain) {
-            TextAreaPlain field = (TextAreaPlain) arg0.getSource();
-            buttonSave.setEnabled(buttonSave.isEnabled() | field.wasTextChanged());
-        }
+//        if (lastRelation == null) {
+//            return;
+//        }
+//        if (arg0.getSource() instanceof TextFieldPlain) {
+//            TextFieldPlain field = (TextFieldPlain) arg0.getSource();
+//            buttonSave.setEnabled(buttonSave.isEnabled() | field.wasTextChanged());
+//        } else if (arg0.getSource() instanceof TextAreaPlain) {
+//            TextAreaPlain field = (TextAreaPlain) arg0.getSource();
+//            buttonSave.setEnabled(buttonSave.isEnabled() | field.wasTextChanged());
+//        }
     }
 
     @Override
     public void actionPerformed(ActionEvent event) {
 
         // proba zmiany statusu
-        if (lastRelation != null && event.getSource() == objectType) {
-            buttonSave.setEnabled(true);
-
-        } else if (lastRelation != null && event.getSource() == lexicon) {
-            buttonSave.setEnabled(true);
-        } else if (lastRelation != null && event.getSource() == multilingual) {
-            buttonSave.setEnabled(true);
-            // zapisanie zmian
-        } else if (lastRelation != null && event.getSource() == buttonSave) {
-            RelationTypesDA.update(lastRelation,
-                    relationName.getText(),
-                    relationDisplay.getText(),
-                    relationShortcut.getText(),
-                    relationDescription.getText(),
-                    relationPos.getText(),
-                    (Lexicon) lexicon.getSelectedItem(),
-                    (RelationArgument) objectType.getItemAt(objectType.getSelectedIndex()),
-                    multilingual.isSelected());
-            buttonSave.setEnabled(false);
-            tree.repaint();
-
-            // dodanie nowej relacji
-        } else if (event.getSource() == buttonNew) {
-            String result = DialogBox.inputDialog(Labels.NEW_RELATION_NAME_COLON, Labels.RELATION);
-            if (result != null) {
-                RelationTypesDA.newRelation(result, null, 0, false);
-                refreshTree();
-            }
-
-            // dodanie nowej podrelacji
-        } else if (lastRelation != null && event.getSource() == buttonNewSub) {
-            // nie można utworzyć podtypów dla relacji specjalnych
-            if (lastRelation.getArgumentType() == RelationArgument.LEXICAL_SPECIAL) {
-                DialogBox.showError(Messages.ERROR_RELATION_CANT_HAVE_SUBTYPES);
-                return;
-            }
-            lastRelation.setRelationTests(RelationTypesDA.getTests(lastRelation));
-            boolean hasTests = lastRelation.getRelationTests().size() > 0;
-            boolean isUsed = RelationTypesDA.getRelationUseCount(lastRelation) > 0;
-            // zapytanie co zrobić jeśli relacja ma testy
-            if (hasTests
-                    && DialogBox.showYesNoCancel(Messages.QUESTION_REASSIGN_TEST_TO_SUBTYPE) != DialogBox.YES) {
-                return;
-            }
-            // teraz co zrobić jeśli relacja ma już jakieś wpisy
-            if (isUsed
-                    && DialogBox.showYesNoCancel(Messages.QUESTION_REASSIGN_RELATION_TO_SUBTYPE) != DialogBox.YES) {
-                return;
-            }
-            String result = DialogBox.inputDialog(Labels.SUBTYPE_RELATION_NAME_COLON, Labels.SUBTYPE);
-            if (result != null) {
-
-                RelationTypesDA.newRelation(result, lastRelation, 0, false);
-
-                // czy trzeba stworzyć odpowiedni podtyp
-                if (isUsed || hasTests) {
-                    RelationTypesDA.newRelation(Labels.CANNONICAL_FORM, lastRelation, 0, true);
-                }
-                refreshTree();
-            }
-
-            // ustawienie czesci mowy
-        } else if (lastRelation != null && event.getSource() == buttonPos) {
-            String posString = PosesFrame.showModal(this, relationPos.getText());
-            relationPos.setText(posString);
-            // zapisanie zmian
-            RelationTypesDA.update(lastRelation, relationPos.getText());
-
-            // ustawienie relacji odwrotnej
-        } else if (lastRelation != null && event.getSource() == buttonReverse) {
-            RelationType reverseRelation = RelationTypesDA.getReverseRelation(lastRelation);
-            Pair<RelationType, Boolean> newReverse = ReverseRelationFrame.showModal(this, reverseRelation, lastRelation.isAutoReverse());
-
-            // zapisanie zmian
-            RelationTypesDA.update(lastRelation, newReverse.getA(), newReverse.getB());
-            String format = REVERSE_RELATION_NAME_NO_AUTO;
-            if (newReverse.getB()) {
-                format = REVERSE_RELATION_NAME_AUTO;
-            }
-            String reverseRelationName = RelationTypesDA.getReverseRelationName(lastRelation);
-            if (reverseRelationName != null) {
-                relationReverse.setText(String.format(format, reverseRelationName));
-            } else {
-                relationReverse.setText(Labels.NO_VALUE);
-            }
-
-            // usuniecie relacji
-        } else if (lastRelation != null && event.getSource() == buttonDelete) {
-            if (DialogBox.showYesNoCancel(Messages.QUESTION_SURE_TO_REMOVE_ELEMENT) == DialogBox.YES) {
-                RelationTypesDA.delete(lastRelation);
-                refreshTree();
-            }
-
-            // dodanie nowego testu
-        } else if (lastRelation != null && event.getSource() == buttonNewTest) {
-            Pair<String, PartOfSpeech> result = TestEditorFrame.showModal(this, lastText, lastPos);
-            if (result.getA() != null) {
-                lastText = result.getA();
-                lastPos = result.getB();
-                RelationTypesDA.newTest(lastText, lastPos, lastRelation);
-                refreshTests();
-                buttonNewSub.setEnabled(lastRelation != null && lastRelation.getParent() == null && lastRelation.getRelationTests().isEmpty());
-            }
-
-            // edycja testu
-        } else if (lastRelation != null && event.getSource() == buttonEditTest) {
-            int index = testsList.getSelectedIndex();
-            RelationTest test = testsModel.getObjectAt(index);
-            Pair<String, PartOfSpeech> result = TestEditorFrame.showModal(this, test.getText().getText(), test.getPos());
-            if (result.getA() != null) {
-                lastText = result.getA();
-                lastPos = result.getB();
-                RelationTypesDA.update(test, lastText, lastPos);
-                testsList.repaint();
-            }
-
-            // usuniecie testu
-        } else if (lastRelation != null && event.getSource() == buttonDeleteTest) {
-            int index = testsList.getSelectedIndex();
-            RelationTest test = testsModel.getObjectAt(index);
-            if (DialogBox.showYesNoCancel(Messages.QUESTION_SURE_TO_REMOVE_TEST) == DialogBox.YES) {
-                RelationTypesDA.delete(test);
-                refreshTests();
-                buttonNewSub.setEnabled(lastRelation != null && lastRelation.getParent() == null && lastRelation.getRelationTests().isEmpty());
-            }
-        } else if (lastRelation != null && event.getSource() == buttonDownTest) {
-            final int sel_idx = testsList.getSelectedIndex();
-            final int low_idx = sel_idx + 1;
-            RelationTest test_A = testsModel.getObjectAt(sel_idx);
-            RelationTest test_B = testsModel.getObjectAt(low_idx);
-            RelationTypesDA.update(test_A, sel_idx + 1);
-            RelationTypesDA.update(test_B, low_idx - 1);
-            switchTestsOrder(sel_idx, sel_idx + 1);
-            testsList.setSelectedIndex(sel_idx + 1);
-
-        } else if (lastRelation != null && event.getSource() == buttonUpTest) {
-            final int sel_idx = testsList.getSelectedIndex();
-            final int high_idx = sel_idx - 1;
-            RelationTest test_A = testsModel.getObjectAt(sel_idx);
-            RelationTest test_B = testsModel.getObjectAt(high_idx);
-            RelationTypesDA.update(test_A, sel_idx - 1);
-            RelationTypesDA.update(test_B, high_idx + 1);
-            switchTestsOrder(sel_idx, sel_idx - 1);
-            testsList.setSelectedIndex(sel_idx - 1);
-        } else if (lastRelation != null && event.getSource() == buttonUpRel) {
-            TreePath path = tree.getSelectionPath();
-            model.moveUp(path);
-            tree.setExpandsSelectedPaths(true);
-            tree.setSelectionPath(path);
-        } else if (lastRelation != null && event.getSource() == buttonDownRel) {
-            TreePath path = tree.getSelectionPath();
-            model.moveDown(path);
-            tree.setExpandsSelectedPaths(true);
-            tree.setSelectionPath(path);
-        }
+//        if (lastRelation != null && event.getSource() == objectType) {
+//            buttonSave.setEnabled(true);
+//
+//        } else if (lastRelation != null && event.getSource() == lexicon) {
+//            buttonSave.setEnabled(true);
+//        } else if (lastRelation != null && event.getSource() == multilingual) {
+//            buttonSave.setEnabled(true);
+//            // zapisanie zmian
+//        } else if (lastRelation != null && event.getSource() == buttonSave) {
+//            RelationTypesDA.update(lastRelation,
+//                    relationName.getText(),
+//                    relationDisplay.getText(),
+//                    relationShortcut.getText(),
+//                    relationDescription.getText(),
+//                    relationPos.getText(),
+//                    (Lexicon) lexicon.getSelectedItem(),
+//                    (RelationArgument) objectType.getItemAt(objectType.getSelectedIndex()),
+//                    multilingual.isSelected());
+//            buttonSave.setEnabled(false);
+//            tree.repaint();
+//
+//            // dodanie nowej relacji
+//        } else if (event.getSource() == buttonNew) {
+//            String result = DialogBox.inputDialog(Labels.NEW_RELATION_NAME_COLON, Labels.RELATION);
+//            if (result != null) {
+//                RelationTypesDA.newRelation(result, null, 0, false);
+//                refreshTree();
+//            }
+//
+//            // dodanie nowej podrelacji
+//        } else if (lastRelation != null && event.getSource() == buttonNewSub) {
+//            // nie można utworzyć podtypów dla relacji specjalnych
+//            if (lastRelation.getArgumentType() == RelationArgument.LEXICAL_SPECIAL) {
+//                DialogBox.showError(Messages.ERROR_RELATION_CANT_HAVE_SUBTYPES);
+//                return;
+//            }
+//            lastRelation.setRelationTests(RelationTypesDA.getTests(lastRelation));
+//            boolean hasTests = lastRelation.getRelationTests().size() > 0;
+//            boolean isUsed = RelationTypesDA.getRelationUseCount(lastRelation) > 0;
+//            // zapytanie co zrobić jeśli relacja ma testy
+//            if (hasTests
+//                    && DialogBox.showYesNoCancel(Messages.QUESTION_REASSIGN_TEST_TO_SUBTYPE) != DialogBox.YES) {
+//                return;
+//            }
+//            // teraz co zrobić jeśli relacja ma już jakieś wpisy
+//            if (isUsed
+//                    && DialogBox.showYesNoCancel(Messages.QUESTION_REASSIGN_RELATION_TO_SUBTYPE) != DialogBox.YES) {
+//                return;
+//            }
+//            String result = DialogBox.inputDialog(Labels.SUBTYPE_RELATION_NAME_COLON, Labels.SUBTYPE);
+//            if (result != null) {
+//
+//                RelationTypesDA.newRelation(result, lastRelation, 0, false);
+//
+//                // czy trzeba stworzyć odpowiedni podtyp
+//                if (isUsed || hasTests) {
+//                    RelationTypesDA.newRelation(Labels.CANNONICAL_FORM, lastRelation, 0, true);
+//                }
+//                refreshTree();
+//            }
+//
+//            // ustawienie czesci mowy
+//        } else if (lastRelation != null && event.getSource() == buttonPos) {
+//            String posString = PosesFrame.showModal(this, relationPos.getText());
+//            relationPos.setText(posString);
+//            // zapisanie zmian
+//            RelationTypesDA.update(lastRelation, relationPos.getText());
+//
+//            // ustawienie relacji odwrotnej
+//        } else if (lastRelation != null && event.getSource() == buttonReverse) {
+//            RelationType reverseRelation = RelationTypesDA.getReverseRelation(lastRelation);
+//            Pair<RelationType, Boolean> newReverse = ReverseRelationFrame.showModal(this, reverseRelation, lastRelation.isAutoReverse());
+//
+//            // zapisanie zmian
+//            RelationTypesDA.update(lastRelation, newReverse.getA(), newReverse.getB());
+//            String format = REVERSE_RELATION_NAME_NO_AUTO;
+//            if (newReverse.getB()) {
+//                format = REVERSE_RELATION_NAME_AUTO;
+//            }
+//            String reverseRelationName = RelationTypesDA.getReverseRelationName(lastRelation);
+//            if (reverseRelationName != null) {
+//                relationReverse.setText(String.format(format, reverseRelationName));
+//            } else {
+//                relationReverse.setText(Labels.NO_VALUE);
+//            }
+//
+//            // usuniecie relacji
+//        } else if (lastRelation != null && event.getSource() == buttonDelete) {
+//            if (DialogBox.showYesNoCancel(Messages.QUESTION_SURE_TO_REMOVE_ELEMENT) == DialogBox.YES) {
+//                RelationTypesDA.delete(lastRelation);
+//                refreshTree();
+//            }
+//
+//            // dodanie nowego testu
+//        } else if (lastRelation != null && event.getSource() == buttonNewTest) {
+//            Pair<String, PartOfSpeech> result = TestEditorFrame.showModal(this, lastText, lastPos);
+//            if (result.getA() != null) {
+//                lastText = result.getA();
+//                lastPos = result.getB();
+//                RelationTypesDA.newTest(lastText, lastPos, lastRelation);
+//                refreshTests();
+//                buttonNewSub.setEnabled(lastRelation != null && lastRelation.getParent() == null && lastRelation.getRelationTests().isEmpty());
+//            }
+//
+//            // edycja testu
+//        } else if (lastRelation != null && event.getSource() == buttonEditTest) {
+//            int index = testsList.getSelectedIndex();
+//            RelationTest test = testsModel.getObjectAt(index);
+//            Pair<String, PartOfSpeech> result = TestEditorFrame.showModal(this, test.getText().getText(), test.getPos());
+//            if (result.getA() != null) {
+//                lastText = result.getA();
+//                lastPos = result.getB();
+//                RelationTypesDA.update(test, lastText, lastPos);
+//                testsList.repaint();
+//            }
+//
+//            // usuniecie testu
+//        } else if (lastRelation != null && event.getSource() == buttonDeleteTest) {
+//            int index = testsList.getSelectedIndex();
+//            RelationTest test = testsModel.getObjectAt(index);
+//            if (DialogBox.showYesNoCancel(Messages.QUESTION_SURE_TO_REMOVE_TEST) == DialogBox.YES) {
+//                RelationTypesDA.delete(test);
+//                refreshTests();
+//                buttonNewSub.setEnabled(lastRelation != null && lastRelation.getParent() == null && lastRelation.getRelationTests().isEmpty());
+//            }
+//        } else if (lastRelation != null && event.getSource() == buttonDownTest) {
+//            final int sel_idx = testsList.getSelectedIndex();
+//            final int low_idx = sel_idx + 1;
+//            RelationTest test_A = testsModel.getObjectAt(sel_idx);
+//            RelationTest test_B = testsModel.getObjectAt(low_idx);
+//            RelationTypesDA.update(test_A, sel_idx + 1);
+//            RelationTypesDA.update(test_B, low_idx - 1);
+//            switchTestsOrder(sel_idx, sel_idx + 1);
+//            testsList.setSelectedIndex(sel_idx + 1);
+//
+//        } else if (lastRelation != null && event.getSource() == buttonUpTest) {
+//            final int sel_idx = testsList.getSelectedIndex();
+//            final int high_idx = sel_idx - 1;
+//            RelationTest test_A = testsModel.getObjectAt(sel_idx);
+//            RelationTest test_B = testsModel.getObjectAt(high_idx);
+//            RelationTypesDA.update(test_A, sel_idx - 1);
+//            RelationTypesDA.update(test_B, high_idx + 1);
+//            switchTestsOrder(sel_idx, sel_idx - 1);
+//            testsList.setSelectedIndex(sel_idx - 1);
+//        } else if (lastRelation != null && event.getSource() == buttonUpRel) {
+//            TreePath path = tree.getSelectionPath();
+//            model.moveUp(path);
+//            tree.setExpandsSelectedPaths(true);
+//            tree.setSelectionPath(path);
+//        } else if (lastRelation != null && event.getSource() == buttonDownRel) {
+//            TreePath path = tree.getSelectionPath();
+//            model.moveDown(path);
+//            tree.setExpandsSelectedPaths(true);
+//            tree.setSelectionPath(path);
+//        }
     }
 
     private void switchTestsOrder(int idx_a, int idx_b) {
-        Collection<RelationTest> tests = testsModel.getCollection();
-        List<RelationTest> new_tests = new ArrayList<>();
-
-        Iterator<RelationTest> itr = tests.iterator();
-
-        if (idx_a > idx_b) {
-            int aux = idx_a;
-            idx_a = idx_b;
-            idx_b = aux;
-        }
-
-        for (int i = 0; i != idx_a; ++i) {
-            new_tests.set(i, itr.next());
-        }
-        RelationTest t_a = itr.next();
-
-        for (int i = idx_a + 1; i != idx_b; ++i) {
-            new_tests.set(i, itr.next());
-        }
-
-        RelationTest t_b = itr.next();
-
-        new_tests.set(idx_a, t_b);
-        new_tests.set(idx_b, t_a);
-
-        for (int i = idx_b + 1; itr.hasNext(); ++i) {
-            new_tests.set(i, itr.next());
-        }
-
-        testsModel.setCollection(new_tests);
+//        Collection<RelationTest> tests = testsModel.getCollection();
+//        List<RelationTest> new_tests = new ArrayList<>();
+//
+//        Iterator<RelationTest> itr = tests.iterator();
+//
+//        if (idx_a > idx_b) {
+//            int aux = idx_a;
+//            idx_a = idx_b;
+//            idx_b = aux;
+//        }
+//
+//        for (int i = 0; i != idx_a; ++i) {
+//            new_tests.set(i, itr.next());
+//        }
+//        RelationTest t_a = itr.next();
+//
+//        for (int i = idx_a + 1; i != idx_b; ++i) {
+//            new_tests.set(i, itr.next());
+//        }
+//
+//        RelationTest t_b = itr.next();
+//
+//        new_tests.set(idx_a, t_b);
+//        new_tests.set(idx_b, t_a);
+//
+//        for (int i = idx_b + 1; itr.hasNext(); ++i) {
+//            new_tests.set(i, itr.next());
+//        }
+//
+//        testsModel.setCollection(new_tests);
     }
 
     @Override

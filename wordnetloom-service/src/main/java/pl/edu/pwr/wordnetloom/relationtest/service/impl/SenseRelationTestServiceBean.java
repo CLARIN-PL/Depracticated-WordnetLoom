@@ -1,14 +1,19 @@
 package pl.edu.pwr.wordnetloom.relationtest.service.impl;
 
 import java.util.List;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import pl.edu.pwr.wordnetloom.relationtest.model.SenseRelationTest;
 import pl.edu.pwr.wordnetloom.relationtest.repository.SenseRelationTestRepository;
 import pl.edu.pwr.wordnetloom.relationtest.service.SenseRelationTestServiceLocal;
+import pl.edu.pwr.wordnetloom.relationtest.service.SenseRelationTestServiceRemote;
 import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 
 @Stateless
+@Remote(SenseRelationTestServiceRemote.class)
+@Local(SenseRelationTestServiceLocal.class)
 public class SenseRelationTestServiceBean implements SenseRelationTestServiceLocal {
 
     @Inject

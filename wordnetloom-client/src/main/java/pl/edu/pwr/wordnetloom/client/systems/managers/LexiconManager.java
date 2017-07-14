@@ -34,7 +34,7 @@ public final class LexiconManager {
     }
 
     private void loadFullLexicons(List<Long> lexicons) {
-        cachedFullLexicons = RemoteUtils.lexicalUnitRemote.getLexiconsFromList(lexicons);
+        cachedFullLexicons = RemoteUtils.lexiconServiceRemote.findAllByLexicon(lexicons);
     }
 
     private void loadLexicons() {
@@ -50,7 +50,9 @@ public final class LexiconManager {
         String marker = config.get("LexiconMarker");
         if (!marker.equals("") && marker != null && marker.equals("on")) {
             lexiconMarker = true;
-        } else lexiconMarker = !(!marker.equals("") && marker != null && marker.equals("off"));
+        } else {
+            lexiconMarker = !(!marker.equals("") && marker != null && marker.equals("off"));
+        }
     }
 
     public List<Lexicon> getFullLexicons() {
@@ -86,7 +88,7 @@ public final class LexiconManager {
             try {
                 Long id = Long.parseLong(lexiconArray1);
                 list.add(id);
-            }catch (NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 throw new InvalidAttributeValueException("Invalid character in lexicon string");
             }
         }

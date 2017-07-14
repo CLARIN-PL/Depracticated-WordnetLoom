@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.lexicon.service.impl;
 
 import java.util.List;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.validation.Validator;
@@ -9,8 +11,11 @@ import pl.edu.pwr.wordnetloom.lexicon.exception.LexiconNotFoundException;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.lexicon.repository.LexiconRepository;
 import pl.edu.pwr.wordnetloom.lexicon.service.LexiconServiceLocal;
+import pl.edu.pwr.wordnetloom.lexicon.service.LexiconServiceRemote;
 
 @Stateless
+@Remote(LexiconServiceRemote.class)
+@Local(LexiconServiceLocal.class)
 public class LexiconServiceBean implements LexiconServiceLocal {
 
     @Inject

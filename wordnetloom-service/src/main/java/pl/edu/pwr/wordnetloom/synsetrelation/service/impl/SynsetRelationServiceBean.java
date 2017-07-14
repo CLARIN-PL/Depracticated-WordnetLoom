@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.service.impl;
 
 import java.util.List;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
@@ -8,8 +10,11 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository;
 import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceLocal;
+import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceRemote;
 
 @Stateless
+@Remote(SynsetRelationServiceRemote.class)
+@Local(SynsetRelationServiceLocal.class)
 public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
 
     @Inject

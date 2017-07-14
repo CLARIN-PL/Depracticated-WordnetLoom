@@ -37,12 +37,10 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
 
@@ -71,7 +69,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     protected void initialize(JPanel content) {
         // ustawienie layoutu
         content.setLayout(new RiverLayout());
-        criteria = new SenseCriteria(RelationArgument.LEXICAL);
+        criteria = new SenseCriteria();
         criteria.getDomainComboBox().addActionListener(this);
         criteria.getPartsOfSpeachComboBox().addActionListener(this);
 
@@ -174,7 +172,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         final int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
         final String oldFilter = criteria.getSearchTextField().getText();
         final Domain oldDomain = (Domain) criteria.getDomainComboBox().retriveComboBoxItem();
-        final RelationType oldRelation = (RelationType) criteria.getRelationsComboBox().retriveComboBoxItem();
+        final SenseRelationType oldRelation = (SenseRelationType) criteria.getSenseRelationTypeComboBox().retriveComboBoxItem();
         final String register = criteria.getRegisterComboBox().getSelectedIndex() == 0 ? null : criteria.getRegisterComboBox().getSelectedItem().toString();
         final String comment = criteria.getComment().getText();
         final String example = criteria.getExample().getText();
@@ -196,7 +194,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 }
 
                 units = LexicalDA.getLexicalUnits(oldFilter,
-                        oldDomain, criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem().getUbyType(),
+                        oldDomain, criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem(),
                         oldRelation, register, comment, example, limitSize, lexicons);
 
                 // odczytanie zaznaczonej jednostki
@@ -269,15 +267,15 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
                 // spradzenie czy ma jakies relacje
                 int result = DialogBox.YES;
-                if (RemoteUtils.lexicalRelationRemote
-                        .dbGetRelationCountOfUnit(unit) > 0) {
-                    result = DialogBox.showYesNoCancel(String.format(
-                            Messages.QUESTION_UNIT_HAS_RELATIONS,
-                            unit.toString()));
-                    if (result == DialogBox.CANCEL) {
-                        continue;
-                    }
-                }
+//                if (RemoteUtils.lexicalRelationRemote
+//                        .dbGetRelationCountOfUnit(unit) > 0) {
+//                    result = DialogBox.showYesNoCancel(String.format(
+//                            Messages.QUESTION_UNIT_HAS_RELATIONS,
+//                            unit.toString()));
+//                    if (result == DialogBox.CANCEL) {
+//                        continue;
+//                    }
+//                }
 
                 if (result == DialogBox.YES) {
                     LexicalDA.delete(unit);

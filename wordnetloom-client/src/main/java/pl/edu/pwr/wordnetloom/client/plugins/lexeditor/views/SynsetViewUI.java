@@ -30,8 +30,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
 
@@ -65,7 +64,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     }
 
     private void initilizeComponents() {
-        criteria = new SynsetCriteria(RelationArgument.SYNSET);
+        criteria = new SynsetCriteria();
         criteria.getDomainComboBox().addActionListener(this);
         criteria.getPartsOfSpeachComboBox().addActionListener(this);
         btnSearch = new ButtonExt(Labels.SEARCH_NO_COLON, this, KeyEvent.VK_K);
@@ -91,7 +90,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         final int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
         final String oldFilter = criteria.getSearchTextField().getText();
         final Domain oldDomain = (Domain) criteria.getDomainComboBox().retriveComboBoxItem();
-        final RelationType oldRelation = (RelationType) criteria.getRelationsComboBox().retriveComboBoxItem();
+        final SynsetRelationType oldRelation = (SynsetRelationType) criteria.getSynsetRelationTypeComboBox().retriveComboBoxItem();
         final String definition = criteria.getDefinition().getText();
         final String comment = criteria.getComment().getText();
         final String artificial = criteria.getIsArtificial();
@@ -112,7 +111,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
                 List<Sense> sense = new ArrayList<>();
                 sense = LexicalDA.getSenseBySynsets(oldFilter, oldDomain, oldRelation,
                         definition, comment, artificial, limitSize,
-                        criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem().getUbyType(), lexicons);
+                        criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem(), lexicons);
                 if (lastSelectedValue == null && synsetList != null && !synsetList.isSelectionEmpty()) {
                     lastSelectedValue = senseListModel.getObjectAt(synsetList.getSelectedIndex());
                 }

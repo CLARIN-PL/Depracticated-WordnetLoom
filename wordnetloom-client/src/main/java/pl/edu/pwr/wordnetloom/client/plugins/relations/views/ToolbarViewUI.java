@@ -1,37 +1,18 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.relations.views;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.relations.RelationsIM;
 import pl.edu.pwr.wordnetloom.client.plugins.relations.da.RelationsDA;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
@@ -39,10 +20,7 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.Tools;
 import pl.edu.pwr.wordnetloom.client.systems.progress.AbstractProgressThread;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import se.datadosen.component.RiverLayout;
@@ -158,8 +136,8 @@ public class ToolbarViewUI extends AbstractViewUI implements ActionListener {
         // dodanie do nowej
         if (arg0.getSource() == buttonToNew) {
             // czy nie ma przypadkiem do przeniesienia wszystkich jednostek
-            List<Sense> lastMainSynsetSenses = RemoteUtils.lexicalUnitRemote
-                    .dbFastGetUnits(lastMainSynset, LexiconManager.getInstance().getLexicons());
+            List<Sense> lastMainSynsetSenses = new ArrayList<>();
+            //RemoteUtils.lexicalUnitRemote.dbFastGetUnits(lastMainSynset, LexiconManager.getInstance().getLexicons());
             if (lastSelectedUnits.size() == lastMainSynsetSenses.size()) {
                 DialogBox
                         .showError(ERROR_YOU_CANNOT_MOVE_ALL_UNITS_FROM_SYNSET);
@@ -167,13 +145,13 @@ public class ToolbarViewUI extends AbstractViewUI implements ActionListener {
             }
             Collection<Sense> unitsOfMainSynset = RelationsDA.getUnits(
                     lastMainSynset, lastSelectedUnits, lexicons);
-            final RelationType rel = RelationTypeFrame.showModal(workbench,
-                    RelationArgument.SYNSET,
-                    RelationsDA.getPos(lastMainSynset, lexicons),
-                    unitsOfMainSynset, lastSelectedUnits);
-            if (rel == null) {
-                return;
-            }
+//            final RelationType rel = RelationTypeFrame.showModal(workbench,
+//                    RelationArgument.SYNSET,
+//                    RelationsDA.getPos(lastMainSynset, lexicons),
+//                    unitsOfMainSynset, lastSelectedUnits);
+//            if (rel == null) {
+//                return;
+//            }
 
             // utworzenie nowego synsetu
             final Synset newSynset = RelationsDA.newSynset();
@@ -193,33 +171,32 @@ public class ToolbarViewUI extends AbstractViewUI implements ActionListener {
                             lastSelectedUnits, newSynset);
                     progress.setGlobalProgressValue(2);
                     progress.setProgressParams(0, 0, PROGRESS_MAKE_CONNECTION);
-                    RelationsDA.makeRelation(lastMainSynset, newSynset, rel);
+//                    RelationsDA.makeRelation(lastMainSynset, newSynset, rel);
                 }
             };
 
             // czy istieje relacja odwrotna
-            if (rel.getReverse() != null) {
-                // testy dla relacji odwrotnej
-                Collection<String> tests = LexicalDA.getTests(
-                        RelationsDA.getReverseRelation(rel),
-                        lastMainSynset.toString(), newSynset.toString(),
-                        RelationsDA.getPos(lastMainSynset, lexicons));
-                String test = "\n\n";
-                for (String i : tests) {
-                    test += i + "\n";
-                }
-                // czy utworzyc dla relacji odwrotnej
-                RelationType reverse = RelationsDA.getReverseRelation(rel);
-                String reverseName = RelationsDA.getRelationName(reverse);
-                if (rel.isAutoReverse()
-                        || DialogBox.showYesNoCancel(String.format(
-                                QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION
-                                + test, reverseName)) == DialogBox.YES) {
-                    RelationsDA
-                            .makeRelation(newSynset, lastMainSynset, reverse);
-                }
-            }
-
+//            if (rel.getReverse() != null) {
+//                // testy dla relacji odwrotnej
+//                Collection<String> tests = LexicalDA.getTests(
+//                        RelationsDA.getReverseRelation(rel),
+//                        lastMainSynset.toString(), newSynset.toString(),
+//                        RelationsDA.getPos(lastMainSynset, lexicons));
+//                String test = "\n\n";
+//                for (String i : tests) {
+//                    test += i + "\n";
+//                }
+//                // czy utworzyc dla relacji odwrotnej
+//                RelationType reverse = RelationsDA.getReverseRelation(rel);
+//                String reverseName = RelationsDA.getRelationName(reverse);
+//                if (rel.isAutoReverse()
+//                        || DialogBox.showYesNoCancel(String.format(
+//                                QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION
+//                                + test, reverseName)) == DialogBox.YES) {
+//                    RelationsDA
+//                            .makeRelation(newSynset, lastMainSynset, reverse);
+//                }
+//            }
             // odswiezenie drzewa i jednostek
             refreshUnitsInSynsetListeners.notifyAllListeners(null, 1);
             refreshRelationListeners.notifyAllListeners(lastMainSynset,
@@ -229,90 +206,89 @@ public class ToolbarViewUI extends AbstractViewUI implements ActionListener {
             showSynsetListeners.notifyAllListeners(newSynset, 2);
 
             // dodanie do istniejacego
-        } else if (arg0.getSource() == buttonToExisten) {
-            // czy nie ma przypadkiem do przeniesienia wszystkich jednostek
-            List<Sense> lastMainSynsetSenses = RemoteUtils.lexicalUnitRemote
-                    .dbFastGetUnits(lastMainSynset, LexiconManager.getInstance().getLexicons());
-            if (lastSelectedUnits.size() == lastMainSynsetSenses.size()) {
-                DialogBox
-                        .showError(ERROR_YOU_CANNOT_MOVE_ALL_UNITS_FROM_SYNSET);
-                return;
-            }
-            // odczytanie jednostek
-            Collection<Sense> unitsOfMainSynset = RelationsDA.getUnits(
-                    lastMainSynset, lexicons);
-            Collection<Sense> unitsOfDescSynset = RelationsDA.getUnits(
-                    lastDescSynset, lexicons);
-            // dodanie tych przenoszonych
-            unitsOfDescSynset.addAll(lastSelectedUnits);
-            final RelationType rel = RelationTypeFrame.showModal(workbench,
-                    RelationArgument.SYNSET,
-                    RelationsDA.getPos(lastMainSynset, lexicons),
-                    unitsOfMainSynset, unitsOfDescSynset);
-            if (rel == null) {
-                return;
-            }
-
-            // sprawdzenie czy nie ma już przypadkiem takiej relacji
-            if (RelationsDA.checkIfRelationExists(lastMainSynset,
-                    lastDescSynset, rel)) {
-                DialogBox.showError(String.format(RELATION_ALREADY_EXISTS,
-                        RelationTypes.getFullNameFor(rel.getId()),
-                        lastMainSynset.toString(), lastDescSynset.toString()));
-                return;
-            }
-
-            // utworzenie powiazan
-            new AbstractProgressThread(Tools.findFrame(getContent()),
-                    PROGRESS_WINDOW_TITLE, null) {
-                /**
-                 * glowna procedura watku
-                 */
-                @Override
-                protected void mainProcess() {
-                    // ustawienie parametrow dla paska postepu
-                    progress.setGlobalProgressParams(0, 1);
-                    progress.setProgressParams(0, 0, PROGRESS_MOVE_UNITS);
-                    RelationsDA.moveUnitsToExistenSynset(lastMainSynset,
-                            lastSelectedUnits, lastDescSynset);
-                    progress.setGlobalProgressValue(1);
-                    progress.setProgressParams(0, 0, PROGRESS_MAKE_CONNECTION);
-                    RelationsDA.makeRelation(lastMainSynset, lastDescSynset,
-                            rel);
-                }
-            };
-            // czy istieje relacja odwrotna
-            if (rel.getReverse() != null) {
-                // testy dla relacji odwrotnej
-                Collection<String> tests = LexicalDA.getTests(
-                        RelationsDA.getReverseRelation(rel),
-                        lastMainSynset.toString(), lastDescSynset.toString(),
-                        RelationsDA.getPos(lastMainSynset, lexicons));
-                String test = "\n\n";
-                for (String i : tests) {
-                    test += i + "\n";
-                }
-                // czy utworzyc dla relacji odwrotnej
-                RelationType reverse = RelationsDA.getReverseRelation(rel);
-                String reverseName = RelationsDA.getRelationName(reverse);
-
-                if (rel.isAutoReverse()
-                        || DialogBox.showYesNoCancel(String.format(
-                                QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION
-                                + test, reverseName)) == DialogBox.YES) {
-                    if (RelationsDA.checkIfRelationExists(lastDescSynset,
-                            lastMainSynset, reverse)) {
-                        DialogBox.showError(String.format(
-                                RELATION_ALREADY_EXISTS, reverseName,
-                                lastDescSynset.toString(),
-                                lastMainSynset.toString()));
-                    } else {
-                        RelationsDA.makeRelation(lastDescSynset,
-                                lastMainSynset, reverse);
-                    }
-                }
-            }
-
+//        } else if (arg0.getSource() == buttonToExisten) {
+//            // czy nie ma przypadkiem do przeniesienia wszystkich jednostek
+//            List<Sense> lastMainSynsetSenses = RemoteUtils.lexicalUnitRemote
+//                    .dbFastGetUnits(lastMainSynset, LexiconManager.getInstance().getLexicons());
+//            if (lastSelectedUnits.size() == lastMainSynsetSenses.size()) {
+//                DialogBox
+//                        .showError(ERROR_YOU_CANNOT_MOVE_ALL_UNITS_FROM_SYNSET);
+//                return;
+//            }
+//            // odczytanie jednostek
+//            Collection<Sense> unitsOfMainSynset = RelationsDA.getUnits(
+//                    lastMainSynset, lexicons);
+//            Collection<Sense> unitsOfDescSynset = RelationsDA.getUnits(
+//                    lastDescSynset, lexicons);
+//            // dodanie tych przenoszonych
+//            unitsOfDescSynset.addAll(lastSelectedUnits);
+//            final RelationType rel = RelationTypeFrame.showModal(workbench,
+//                    RelationArgument.SYNSET,
+//                    RelationsDA.getPos(lastMainSynset, lexicons),
+//                    unitsOfMainSynset, unitsOfDescSynset);
+//            if (rel == null) {
+//                return;
+//            }
+//
+//            // sprawdzenie czy nie ma już przypadkiem takiej relacji
+//            if (RelationsDA.checkIfRelationExists(lastMainSynset,
+//                    lastDescSynset, rel)) {
+//                DialogBox.showError(String.format(RELATION_ALREADY_EXISTS,
+//                        RelationTypes.getFullNameFor(rel.getId()),
+//                        lastMainSynset.toString(), lastDescSynset.toString()));
+//                return;
+//            }
+//
+//            // utworzenie powiazan
+//            new AbstractProgressThread(Tools.findFrame(getContent()),
+//                    PROGRESS_WINDOW_TITLE, null) {
+//                /**
+//                 * glowna procedura watku
+//                 */
+//                @Override
+//                protected void mainProcess() {
+//                    // ustawienie parametrow dla paska postepu
+//                    progress.setGlobalProgressParams(0, 1);
+//                    progress.setProgressParams(0, 0, PROGRESS_MOVE_UNITS);
+//                    RelationsDA.moveUnitsToExistenSynset(lastMainSynset,
+//                            lastSelectedUnits, lastDescSynset);
+//                    progress.setGlobalProgressValue(1);
+//                    progress.setProgressParams(0, 0, PROGRESS_MAKE_CONNECTION);
+//                    RelationsDA.makeRelation(lastMainSynset, lastDescSynset,
+//                            rel);
+//                }
+//            };
+//            // czy istieje relacja odwrotna
+//            if (rel.getReverse() != null) {
+//                // testy dla relacji odwrotnej
+//                Collection<String> tests = LexicalDA.getTests(
+//                        RelationsDA.getReverseRelation(rel),
+//                        lastMainSynset.toString(), lastDescSynset.toString(),
+//                        RelationsDA.getPos(lastMainSynset, lexicons));
+//                String test = "\n\n";
+//                for (String i : tests) {
+//                    test += i + "\n";
+//                }
+//                // czy utworzyc dla relacji odwrotnej
+//                RelationType reverse = RelationsDA.getReverseRelation(rel);
+//                String reverseName = RelationsDA.getRelationName(reverse);
+//
+//                if (rel.isAutoReverse()
+//                        || DialogBox.showYesNoCancel(String.format(
+//                                QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION
+//                                + test, reverseName)) == DialogBox.YES) {
+//                    if (RelationsDA.checkIfRelationExists(lastDescSynset,
+//                            lastMainSynset, reverse)) {
+//                        DialogBox.showError(String.format(
+//                                RELATION_ALREADY_EXISTS, reverseName,
+//                                lastDescSynset.toString(),
+//                                lastMainSynset.toString()));
+//                    } else {
+//                        RelationsDA.makeRelation(lastDescSynset,
+//                                lastMainSynset, reverse);
+//                    }
+//                }
+//            }
             // odswiezenie drzewa i jednostek
             refreshUnitsInSynsetListeners.notifyAllListeners(null, 1);
             refreshUnitsInSynsetListeners.notifyAllListeners(null, 2);
@@ -346,70 +322,70 @@ public class ToolbarViewUI extends AbstractViewUI implements ActionListener {
                 return;
             }
 
-            final RelationType rel = RelationTypeFrame.showModal(workbench,
-                    RelationArgument.SYNSET,
-                    RelationsDA.getPos(lastMainSynset, lexicons),
-                    unitsOfMainSynset, unitsOfDescSynset);
-            if (rel == null) {
-                return;
-            }
-
-            // sprawdzenie czy nie ma już przypadkiem takiej relacji
-            if (RelationsDA.checkIfRelationExists(lastMainSynset,
-                    lastDescSynset, rel)) {
-                DialogBox.showError(String.format(RELATION_ALREADY_EXISTS,
-                        RelationTypes.getFullNameFor(rel.getId()),
-                        lastMainSynset.toString(), lastDescSynset.toString()));
-                return;
-            }
-
-            // utworzenie powiazan
-            new AbstractProgressThread(Tools.findFrame(getContent()),
-                    PROGRESS_WINDOW_TITLE, null) {
-                /**
-                 * glowna procedura watku
-                 */
-                @Override
-                protected void mainProcess() {
-                    // ustawienie parametrow dla paska postepu
-                    progress.setGlobalProgressParams(0, 0);
-                    progress.setProgressParams(0, 0, PROGRESS_MAKE_CONNECTION);
-                    RelationsDA.makeRelation(lastMainSynset, lastDescSynset,
-                            rel);
-                }
-            };
-
-            // czy istieje relacja odwrotna
-            if (rel.getReverse() != null) {
-                // testy dla relacji odwrotnej
-                Collection<String> tests = LexicalDA.getTests(
-                        RelationsDA.getReverseRelation(rel),
-                        lastMainSynset.toString(), lastDescSynset.toString(),
-                        RelationsDA.getPos(lastMainSynset, lexicons));
-                String test = "\n\n";
-                for (String i : tests) {
-                    test += i + "\n";
-                }
-                // czy utworzyc dla relacji odwrotnej
-                RelationType reverse = RelationsDA.getReverseRelation(rel);
-                String reverseName = RelationsDA.getRelationName(reverse);
-
-                if (rel.isAutoReverse()
-                        || DialogBox.showYesNoCancel(String.format(
-                                QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION
-                                + test, reverseName)) == DialogBox.YES) {
-                    if (RelationsDA.checkIfRelationExists(lastDescSynset,
-                            lastMainSynset, reverse)) {
-                        DialogBox.showError(String.format(
-                                RELATION_ALREADY_EXISTS, reverseName,
-                                lastDescSynset.toString(),
-                                lastMainSynset.toString()));
-                    } else {
-                        RelationsDA.makeRelation(lastDescSynset,
-                                lastMainSynset, reverse);
-                    }
-                }
-            }
+//            final RelationType rel = RelationTypeFrame.showModal(workbench,
+//                    RelationArgument.SYNSET,
+//                    RelationsDA.getPos(lastMainSynset, lexicons),
+//                    unitsOfMainSynset, unitsOfDescSynset);
+//            if (rel == null) {
+//                return;
+//            }
+//
+//            // sprawdzenie czy nie ma już przypadkiem takiej relacji
+//            if (RelationsDA.checkIfRelationExists(lastMainSynset,
+//                    lastDescSynset, rel)) {
+//                DialogBox.showError(String.format(RELATION_ALREADY_EXISTS,
+//                        RelationTypes.getFullNameFor(rel.getId()),
+//                        lastMainSynset.toString(), lastDescSynset.toString()));
+//                return;
+//            }
+//
+//            // utworzenie powiazan
+//            new AbstractProgressThread(Tools.findFrame(getContent()),
+//                    PROGRESS_WINDOW_TITLE, null) {
+//                /**
+//                 * glowna procedura watku
+//                 */
+//                @Override
+//                protected void mainProcess() {
+//                    // ustawienie parametrow dla paska postepu
+//                    progress.setGlobalProgressParams(0, 0);
+//                    progress.setProgressParams(0, 0, PROGRESS_MAKE_CONNECTION);
+//                    RelationsDA.makeRelation(lastMainSynset, lastDescSynset,
+//                            rel);
+//                }
+//            };
+//
+//            // czy istieje relacja odwrotna
+//            if (rel.getReverse() != null) {
+//                // testy dla relacji odwrotnej
+//                Collection<String> tests = LexicalDA.getTests(
+//                        RelationsDA.getReverseRelation(rel),
+//                        lastMainSynset.toString(), lastDescSynset.toString(),
+//                        RelationsDA.getPos(lastMainSynset, lexicons));
+//                String test = "\n\n";
+//                for (String i : tests) {
+//                    test += i + "\n";
+//                }
+//                // czy utworzyc dla relacji odwrotnej
+//                RelationType reverse = RelationsDA.getReverseRelation(rel);
+//                String reverseName = RelationsDA.getRelationName(reverse);
+//
+//                if (rel.isAutoReverse()
+//                        || DialogBox.showYesNoCancel(String.format(
+//                                QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION
+//                                + test, reverseName)) == DialogBox.YES) {
+//                    if (RelationsDA.checkIfRelationExists(lastDescSynset,
+//                            lastMainSynset, reverse)) {
+//                        DialogBox.showError(String.format(
+//                                RELATION_ALREADY_EXISTS, reverseName,
+//                                lastDescSynset.toString(),
+//                                lastMainSynset.toString()));
+//                    } else {
+//                        RelationsDA.makeRelation(lastDescSynset,
+//                                lastMainSynset, reverse);
+//                    }
+//                }
+//            }
             refreshRelationListeners.notifyAllListeners(lastMainSynset,
                     REFRESH_RELATION);
             refreshRelationListeners.notifyAllListeners(lastDescSynset,

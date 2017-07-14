@@ -2,16 +2,21 @@ package pl.edu.pwr.wordnetloom.synset.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.repository.SynsetRepository;
+import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceLocal;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
 
 @Stateless
-public class SynsetServiceBean implements SynsetServiceRemote {
+@Remote(SynsetServiceRemote.class)
+@Local(SynsetServiceLocal.class)
+public class SynsetServiceBean implements SynsetServiceLocal {
 
     @Inject
     SynsetRepository synsetRepository;

@@ -66,7 +66,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
         if (this.filterObject != null) {
             for (Sense elem : this.selectedElements) {
                 if (LexicalDA.checkIfInAnySynset(elem)) {
-                    DialogBox.showError(String.format(Messages.INFO_UNIT_ALREADY_ASSIGNED_TO_SYNSET, (elem).getLemma()));
+                    DialogBox.showError(String.format(Messages.INFO_UNIT_ALREADY_ASSIGNED_TO_SYNSET, (elem).getWord()));
                     return false;
                 }
             }
@@ -99,7 +99,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
         Sense newUnit = NewLexicalUnitFrame.showModal(workbench, filterObject);
         if (newUnit != null) {
             LexicalDA.saveUnit(newUnit);
-            this.filterEdit.setText(newUnit.getLemma().getWord());
+            this.filterEdit.setText(newUnit.getWord().getWord());
             unitWasCreated = true;
             // odswieżenie listy
             refreshListModel();

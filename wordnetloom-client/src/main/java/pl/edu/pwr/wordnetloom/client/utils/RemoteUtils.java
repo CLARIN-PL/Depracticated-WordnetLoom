@@ -1,8 +1,11 @@
 package pl.edu.pwr.wordnetloom.client.utils;
 
+import pl.edu.pwr.wordnetloom.corpusexample.service.CorpusExampleServiceRemote;
 import pl.edu.pwr.wordnetloom.domain.service.DomainServiceRemote;
 import pl.edu.pwr.wordnetloom.extgraph.service.ExtGraphExtensionServiceRemote;
 import pl.edu.pwr.wordnetloom.extgraph.service.ExtGraphServiceRemote;
+import pl.edu.pwr.wordnetloom.lexicon.service.LexiconServiceRemote;
+import pl.edu.pwr.wordnetloom.partofspeech.service.PartOfSpeechServiceRemote;
 import pl.edu.pwr.wordnetloom.relationtest.service.SynsetRelationTestServiceRemote;
 import pl.edu.pwr.wordnetloom.relationtype.service.SenseRelationTypeServiceRemote;
 import pl.edu.pwr.wordnetloom.relationtype.service.SynsetRelationTypeServiceRemote;
@@ -12,14 +15,6 @@ import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
 import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceRemote;
 import pl.edu.pwr.wordnetloom.wordform.service.WordFormServiceRemote;
 
-/**
- * Klasa przechowuje powiązania do wszystkich remotów. Jej użycie nie jest
- * wymagane, ma za zadanie uprościć proces przepisywania aplikacji na interfacy.
- * Dzieki zastosowaniu tego roziwązania nie wymagają każdorazowej inicjalizacji.
- *
- * @author Piotr Giedziun
- *
- */
 public class RemoteUtils {
 
     public static ExtGraphExtensionServiceRemote extGraphExtensionRemote = RMIUtils.lookupForService(ExtGraphExtensionServiceRemote.class);
@@ -33,7 +28,10 @@ public class RemoteUtils {
     public static WordFormServiceRemote wordFormsRemote = RMIUtils.lookupForService(WordFormServiceRemote.class);
     public static SenseRelationTypeServiceRemote senseRelationTypeRemote = RMIUtils.lookupForService(SenseRelationTypeServiceRemote.class);
     public static DomainServiceRemote domainServiceRemote = RMIUtils.lookupForService(DomainServiceRemote.class);
-   
+    public static LexiconServiceRemote lexiconServiceRemote = RMIUtils.lookupForService(LexiconServiceRemote.class);
+    public static PartOfSpeechServiceRemote partOfSpeechServiceRemote = RMIUtils.lookupForService(PartOfSpeechServiceRemote.class);
+    public static CorpusExampleServiceRemote corpusExampleServiceRemote = RMIUtils.lookupForService(CorpusExampleServiceRemote.class);
+
     private RemoteUtils() {
     }
 }

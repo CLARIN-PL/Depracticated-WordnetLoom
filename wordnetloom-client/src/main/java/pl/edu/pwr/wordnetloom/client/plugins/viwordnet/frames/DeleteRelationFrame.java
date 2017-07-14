@@ -1,20 +1,3 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.frames;
 
 import java.awt.Color;
@@ -26,7 +9,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,24 +16,13 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeSynset;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
-import pl.edu.pwr.wordnetloom.client.utils.Common;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import se.datadosen.component.RiverLayout;
 
-/**
- * @author amusial
- */
 public class DeleteRelationFrame extends IconDialog implements ActionListener {
 
     /* **/
@@ -131,51 +102,50 @@ public class DeleteRelationFrame extends IconDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == delete) {
             ViwnEdgeSynset ves = toRemove.get(relations.getSelectedItem());
-
-            RemoteUtils.synsetRelationRemote.dbDelete(ves.getSynsetRelation());
-
-            boolean autoreverse = false;
-            // check if relation is autoreverse
-            SynsetRelation sr_dto = ves.getSynsetRelation();
-            RelationType rType = RemoteUtils.relationTypeRemote.dbGet(sr_dto.getRelation().getId());
-            Integer rev = null;
-            if (rType.isAutoReverse()) {
-                for (Integer t : toRemove.keySet()) {
-                    SynsetRelation sr_dto_rev = toRemove.get(t).getSynsetRelation();
-                    if (sr_dto_rev.getRelation() == rType.getReverse()) {
-                        // remember reversed
-                        rev = t;
-                        autoreverse = true;
-                    }
-                }
-            }
+//
+//            RemoteUtils.synsetRelationRemote.dbDelete(ves.getSynsetRelation());
+//
+//            boolean autoreverse = false;
+//            // check if relation is autoreverse
+//            SynsetRelation sr_dto = ves.getSynsetRelation();
+//            RelationType rType = RemoteUtils.relationTypeRemote.dbGet(sr_dto.getRelation().getId());
+//            Integer rev = null;
+//            if (rType.isAutoReverse()) {
+//                for (Integer t : toRemove.keySet()) {
+//                    SynsetRelation sr_dto_rev = toRemove.get(t).getSynsetRelation();
+//                    if (sr_dto_rev.getRelation() == rType.getReverse()) {
+//                        // remember reversed
+//                        rev = t;
+//                        autoreverse = true;
+//                    }
+//                }
+//            }
 
             /* if below is ugly, but those methods have to be invoked
 				 * in that order, better copy some code than repeat
 				 * if(autoreverse) three times */
-            if (autoreverse) {
-                // remember that this relation has been removed
-                removed.add(ves);
-                removed.add(toRemove.get(rev));
-                // remove deleted
-                Object i = relations.getSelectedItem();
-                relations.removeItem(i);
-                relations.removeItem(rev);
-                toRemove.remove(i);
-                toRemove.remove(rev);
-                // relation removed successfully, display success message
-                DialogBox.showInformation(Messages.SUCCESS_SELECTED_RELATION_WITH_REVERSED_DELETED);
-            } else {
-                // remember that this relation has been removed
-                removed.add(ves);
-                // remove deleted
-                Object i = relations.getSelectedItem();
-                relations.removeItem(i);
-                toRemove.remove(i);
-                // relation removed successfully, display success message
-                DialogBox.showInformation(Messages.SUCCESS_SELECTED_RELATION_DELETED);
-            }
-
+//            if (autoreverse) {
+//                // remember that this relation has been removed
+//                removed.add(ves);
+//                removed.add(toRemove.get(rev));
+//                // remove deleted
+//                Object i = relations.getSelectedItem();
+//                relations.removeItem(i);
+//                relations.removeItem(rev);
+//                toRemove.remove(i);
+//                toRemove.remove(rev);
+//                // relation removed successfully, display success message
+//                DialogBox.showInformation(Messages.SUCCESS_SELECTED_RELATION_WITH_REVERSED_DELETED);
+//            } else {
+//                // remember that this relation has been removed
+//                removed.add(ves);
+//                // remove deleted
+//                Object i = relations.getSelectedItem();
+//                relations.removeItem(i);
+//                toRemove.remove(i);
+//                // relation removed successfully, display success message
+//                DialogBox.showInformation(Messages.SUCCESS_SELECTED_RELATION_DELETED);
+//            }
             if (toRemove.isEmpty()) {
                 this.setVisible(false);
             }
@@ -203,21 +173,21 @@ public class DeleteRelationFrame extends IconDialog implements ActionListener {
             }
 
             String ret = "";
-            if (Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT))) {
-                ret = "S ";
-            }
-            // check if synset isnt null or empty
-            List<Sense> units = RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
-            if (units != null && !units.isEmpty()) {
-                ret += ((Sense) units.iterator().next()).toString();
-                if (units.size() > 1) {
-                    ret += " ...";
-                }
-            } else {
-                ret = "! S.y.n.s.e.t p.u.s.t.y !";
-            }
+//            if (Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT))) {
+//                ret = "S ";
+//            }
+//            // check if synset isnt null or empty
+//            List<Sense> units = RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
+//            if (units != null && !units.isEmpty()) {
+//                ret += ((Sense) units.iterator().next()).toString();
+//                if (units.size() > 1) {
+//                    ret += " ...";
+//                }
+//            } else {
+//                ret = "! S.y.n.s.e.t p.u.s.t.y !";
+//            }
 
-            synsetCache.put(synset.getId(), ret);
+            //    synsetCache.put(synset.getId(), ret);
             return ret;
         }
 
@@ -230,7 +200,7 @@ public class DeleteRelationFrame extends IconDialog implements ActionListener {
                 ViwnEdgeSynset ves = toRemove.get((Integer) value);
                 SynsetRelation sr = ves.getSynsetRelation();
 
-                setText(String.format(Labels.RELATION_INFO, RelationTypes.get(sr.getRelation().getId()).name(), getLabel(sr.getSynsetFrom()), getLabel(sr.getSynsetTo())));
+                //         setText(String.format(Labels.RELATION_INFO, RelationTypes.get(sr.getRelation().getId()).name(), getLabel(sr.getSynsetFrom()), getLabel(sr.getSynsetTo())));
             }
 
             Color background;

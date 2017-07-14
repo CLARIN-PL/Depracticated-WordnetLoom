@@ -1,27 +1,8 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import java.awt.Color;
 import java.util.HashMap;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
@@ -59,7 +40,7 @@ public class ViwnEdgeSynset extends ViwnEdge {
      * @return relation id
      */
     public Long getRelation() {
-        return srel_dto_.getRelation().getId();
+        return srel_dto_.getRelationType().getId();
     }
 
     public void setSynset1(ViwnNodeSynset s1) {
@@ -88,30 +69,26 @@ public class ViwnEdgeSynset extends ViwnEdge {
      * @return child node id
      */
     public Long getChild() {
-        return srel_dto_.getSynsetTo().getId();
+        return srel_dto_.getChild().getId();
     }
 
     /**
      * @return parent node id
      */
     public Long getParent() {
-        return srel_dto_.getSynsetFrom().getId();
+        return srel_dto_.getParent().getId();
     }
 
     public Synset getSynsetFrom() {
-        return srel_dto_.getSynsetFrom();
+        return srel_dto_.getParent();
     }
 
     public Synset getSynsetTo() {
-        return srel_dto_.getSynsetTo();
+        return srel_dto_.getChild();
     }
 
-    /**
-     * @return relation type
-     *
-     */
     public RelationTypes getRelationType() {
-        RelationTypes rt = RelationTypes.get(srel_dto_.getRelation().getId());
+        RelationTypes rt = RelationTypes.get(srel_dto_.getRelationType().getId());
         if (rt == null) {
             throw new RuntimeException("relation type doesn't exist");
         }
@@ -121,15 +98,15 @@ public class ViwnEdgeSynset extends ViwnEdge {
     @Override
     public String toString() {
         try {
-            return getRelationType().Sname();
+            return "";//getRelationType().Sname();
         } catch (Exception e) {
-            return getRelationType().name();
+            return "";//getRelationType().name();
         }
     }
 
     @Override
     public Color getColor() {
-        Color col = relsColors.get(srel_dto_.getRelation().getId());
+        Color col = relsColors.get(srel_dto_.getRelationType().getId());
         if (col == null) {
             return Color.black;
         } else {
@@ -138,20 +115,19 @@ public class ViwnEdgeSynset extends ViwnEdge {
     }
 
     public ViwnEdgeSynset createDummyReverse() {
-        if (RelationTypes.get(srel_dto_.getRelation().getId()).rev_id() == null) {
+        if (RelationTypes.get(srel_dto_.getRelationType().getId()).rev_id() == null) {
             return null;
         }
 
         SynsetRelation rdto = new SynsetRelation();
-        rdto.setSynsetTo(srel_dto_.getSynsetFrom());
-        rdto.setSynsetFrom(srel_dto_.getSynsetTo());
+        rdto.setChild(srel_dto_.getParent());
+        rdto.setParent(srel_dto_.getChild());
 
-        RelationType currentRelation = RelationTypes.get(srel_dto_.getRelation().getId()).getRelationType();
-        if (LexiconManager.getInstance().getLexicons().contains(currentRelation.getReverse().getLexicon().getId())) {
-            RelationType reverseRelation = RelationTypes.get(currentRelation.getReverse().getId()).getRelationType();
-            rdto.setRelation(reverseRelation);
-        }
-
+//        SynsetRelationType currentRelation = RelationTypes.get(srel_dto_.getRelationType().getId()).getRelationType();
+//        if (LexiconManager.getInstance().getLexicons().contains(currentRelation.getReverse().getLexicon().getId())) {
+//            SynsetRelationType reverseRelation = RelationTypes.get(currentRelation.getReverse().getId()).getRelationType();
+//            rdto.setRelationType(reverseRelation);
+//        }
         ViwnEdgeSynset e = new ViwnEdgeSynset(rdto);
         return e;
     }

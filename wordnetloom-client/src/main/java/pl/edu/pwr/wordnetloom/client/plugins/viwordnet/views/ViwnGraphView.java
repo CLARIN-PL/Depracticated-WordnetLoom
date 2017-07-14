@@ -1,25 +1,7 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -34,8 +16,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeRoot;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeWord;
 import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractView;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraph;
@@ -45,9 +25,6 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 /**
  * [View] VisualizesactiveGraphView a graph.
- *
- * @author Michał Marcińczuk <michal.marcinczuk@pwr.wroc.pl>
- *
  */
 public class ViwnGraphView extends AbstractView {
 
@@ -58,33 +35,18 @@ public class ViwnGraphView extends AbstractView {
 
     private Mode mode;
 
-    /**
-     * @param workbench
-     * @param title
-     */
     public ViwnGraphView(Workbench workbench, String title) {
         this(workbench, title, new ViwnGraphViewUI());
     }
 
-    /**
-     * @param workbench
-     * @param title title of this view
-     * @param graphUI ui of this view
-     */
     public ViwnGraphView(Workbench workbench, String title, ViwnGraphViewUI graphUI) {
         super(workbench, title, graphUI);
     }
 
-    /**
-     * @param listener
-     */
     public void addSynsetSelectionChangeListener(SynsetSelectionChangeListener listener) {
         getUI().synsetSelectionChangeListeners.add(listener);
     }
 
-    /**
-     * @param listener
-     */
     public void removeSynsetSelectionChangeListener(SynsetSelectionChangeListener listener) {
         getUI().synsetSelectionChangeListeners.remove(listener);
     }
@@ -93,9 +55,6 @@ public class ViwnGraphView extends AbstractView {
         return mode;
     }
 
-    /**
-     * @param synset
-     */
     public void loadSynset(Synset synset) {
         mode = Mode.SYNSET;
         getUI().refreshView(synset);
@@ -129,7 +88,7 @@ public class ViwnGraphView extends AbstractView {
 
                 synsetToNode
                         .get(synsetInGroup).getRelation(Direction.BOTTOM).stream().filter((relDown) -> (synsets.contains(relDown.getChild()))).map((relDown) -> {
-                            synsetGroupQueue.add(relDown.getChild());
+                    synsetGroupQueue.add(relDown.getChild());
                     return relDown;
                 }).forEachOrdered((relDown) -> {
                     synsets.remove(relDown.getChild());
@@ -139,7 +98,7 @@ public class ViwnGraphView extends AbstractView {
                         .getRelation(Direction.TOP)
                         .stream()
                         .filter((relUp) -> (synsets.contains(relUp.getChild()))).map((relUp) -> {
-                            synsetGroupQueue.add(relUp.getChild());
+                    synsetGroupQueue.add(relUp.getChild());
                     return relUp;
                 }).forEachOrdered((relUp) -> {
                     synsets.remove(relUp.getChild());
@@ -259,17 +218,17 @@ public class ViwnGraphView extends AbstractView {
     // FIXME: za dużo ustawiania rzeczy jakie zostały już pobrane, usunąć, wywalić niepotrzebne merge etc.
     public ArrayList<ViwnNodeCandExtension> loadExtensions(String word, int packageNo, PartOfSpeech pos) {
         //SELECT i JOIN potrzebnych struktur
-        List<ExtGraphExtension> extensions = (ArrayList<ExtGraphExtension>) RemoteUtils.extGraphExtensionRemote.dbFullGet(word, packageNo);
-        extensions = RemoteUtils.extGraphExtensionRemote.dbGetRelation(extensions);
+        List<ExtGraphExtension> extensions = new ArrayList<>();//(ArrayList<ExtGraphExtension>) RemoteUtils.extGraphExtensionRemote.dbFullGet(word, packageNo);
+        //extensions = RemoteUtils.extGraphExtensionRemote.dbGetRelation(extensions);
         Long[] ids = new Long[extensions.size()];
         for (int i = 0; i < ids.length; i++) {
             ids[i] = extensions.get(i).getExtGraph().getId();
             extensions.get(i).setRelationType(extensions.get(i).getRelationType());
-            RemoteUtils.extGraphExtensionRemote.mergeObject(extensions.get(i));
+            //RemoteUtils.extGraphExtensionRemote.mergeObject(extensions.get(i));
         }
         ArrayList<ExtGraph> graphs = null;
         if (ids.length > 0) {
-            graphs = (ArrayList<ExtGraph>) RemoteUtils.extGraphRemote.dbFullGet(ids);
+            //graphs = (ArrayList<ExtGraph>) RemoteUtils.extGraphRemote.dbFullGet(ids);
         }
 
         if (graphs != null) {
@@ -288,65 +247,66 @@ public class ViwnGraphView extends AbstractView {
             for (int i = 0; i < ids.length; i++) {
                 ids[i] = graphs.get(i).getSynset().getId();
             }
-            List<Synset> synsets = RemoteUtils.synsetRemote.dbFullGet(ids);
+            // List<Synset> synsets = RemoteUtils.synsetRemote.dbFullGet(ids);
 
             //Stworzenie odpowiednich węzłów na podstawie pobranych informacji
-            if (synsets != null && synsets.size() > 0) {
-
-                HashMap<Long, ExtGraph> synGraphs = new HashMap<>();
-
-                for (ExtGraph eg : graphs) {
-                    synsets.stream().filter((ss) -> (eg.getSynset().getId().equals(ss.getId()))).forEachOrdered((ss) -> {
-                        synGraphs.put(ss.getId(), eg);
-                    });
-                }
-
-                //Uzupełnienie synsetów
-                //synsets = RemoteUtils.synsetRemote.dbGetUnits(synsets);
-                //	synsets = RemoteUtils.synsetRemote.dbGetSynsetsRels(synsets);
-                //Uzupełnienie jednostek w rozszerzeniach
-                synsets.stream().map((syn) -> graphExts.get(synGraphs.get(syn.getId()).getId())).forEachOrdered((exge) -> {
-                    // TODO: check me
-                    //graphExts.get(synGraphs.get(syn.getId()).getId()).setLexicalUnit(syn);
-                    RemoteUtils.extGraphExtensionRemote.mergeObject(exge);
-                });
-
-                ArrayList<ViwnNodeCandExtension> result = new ArrayList<>();
-
-                synsets.stream().map((s) -> {
-                    ViwnNodeCandExtension ext = new ViwnNodeCandExtension(s, graphExts.get(synGraphs.get(s.getId()).getId()), getUI());
-                    ext.setRelName(graphExts.get(synGraphs.get(s.getId()).
-                            getId()).
-                            getRelationType().
-                            getName().getText());
-                    ext.setColor(graphExts.get(synGraphs.get(s.getId()).getId()).getColor());
-                    return ext;
-                }).forEachOrdered((ext) -> {
-                    result.add(ext);
-                });
-                return result;
-            } else {
-                return null;
-            }
-        } else {
-            return null;
+//            if (synsets != null && synsets.size() > 0) {
+//
+//                HashMap<Long, ExtGraph> synGraphs = new HashMap<>();
+//
+//                for (ExtGraph eg : graphs) {
+//                    synsets.stream().filter((ss) -> (eg.getSynset().getId().equals(ss.getId()))).forEachOrdered((ss) -> {
+//                        synGraphs.put(ss.getId(), eg);
+//                    });
+//                }
+//
+//                //Uzupełnienie synsetów
+//                //synsets = RemoteUtils.synsetRemote.dbGetUnits(synsets);
+//                //	synsets = RemoteUtils.synsetRemote.dbGetSynsetsRels(synsets);
+//                //Uzupełnienie jednostek w rozszerzeniach
+//                synsets.stream().map((syn) -> graphExts.get(synGraphs.get(syn.getId()).getId())).forEachOrdered((exge) -> {
+//                    // TODO: check me
+//                    //graphExts.get(synGraphs.get(syn.getId()).getId()).setLexicalUnit(syn);
+//                    RemoteUtils.extGraphExtensionRemote.mergeObject(exge);
+//                });
+//
+//                ArrayList<ViwnNodeCandExtension> result = new ArrayList<>();
+//
+//                synsets.stream().map((s) -> {
+//                    ViwnNodeCandExtension ext = new ViwnNodeCandExtension(s, graphExts.get(synGraphs.get(s.getId()).getId()), getUI());
+//                    ext.setRelName(graphExts.get(synGraphs.get(s.getId()).
+//                            getId()).
+//                            getRelationType().
+//                            getName().getText());
+//                    ext.setColor(graphExts.get(synGraphs.get(s.getId()).getId()).getColor());
+//                    return ext;
+//                }).forEachOrdered((ext) -> {
+//                    result.add(ext);
+//                });
+//                return result;
+//            } else {
+//                return null;
+//            }
+//        } else {
+//            return null;
         }
+        return null;
     }
 
     public Quadruple<ViwnNodeWord, ArrayList<TreeSet<ViwnNodeSynset>>, ArrayList<ViwnNodeCand>, ArrayList<ViwnNodeSynset>> loadCandidate(String word, int packageNo, PartOfSpeech pos) {
 
         getUI().getCache().clear();
 
-        Collection<ExtGraph> cands = RemoteUtils.extGraphRemote.dbFullGet(word, packageNo);
+        //Collection<ExtGraph> cands = RemoteUtils.extGraphRemote.dbFullGet(word, packageNo);
         mode = Mode.CANDS;
         List<Synset> synsets = new ArrayList<>();
-        cands.forEach((ext) -> {
-            synsets.add(ext.getSynset());
-        });
+//        cands.forEach((ext) -> {
+//            synsets.add(ext.getSynset());
+//        });
 
         TreeSet<Long> synsetsWithWord = new TreeSet<>();
         List<Synset> synsetsWithWordCol = new ArrayList<>();
-        synsetsWithWordCol = RemoteUtils.synsetRemote.dbFastGetSynsets(word, LexiconManager.getInstance().getLexicons());
+        //  synsetsWithWordCol = RemoteUtils.synsetRemote.dbFastGetSynsets(word, LexiconManager.getInstance().getLexicons());
 
         for (Synset synset : synsetsWithWordCol) {
             synsetsWithWord.add(synset.getId());
@@ -357,63 +317,63 @@ public class ViwnGraphView extends AbstractView {
 
         ArrayList<ViwnNodeSynset> viwnCands = new ArrayList<>();
         ArrayList<ViwnNodeSynset> freeSyns = new ArrayList<>();
+//
+//        if (cands.size() > 0) {
+//            for (ExtGraph ext : cands) {
+//                Synset synset = ext.getSynset();
+//                // remember item with the highest rwf
+//                if (extMaxRwf == null
+//                        || ext.getScore2() > extMaxRwf.getScore2()) {
+//                    extMaxRwf = ext;
+//                }
+//
+//                ViwnNodeCand node = null;
+//
+//                if (synsetsWithWord.contains(ext.getSynset().getId())) {
+//                    node = new ViwnNodeCand(synset, ext, true, getUI());
+//                    synsetsWithWord.remove(ext.getSynset().getId());
+//                } else {
+//                    node = new ViwnNodeCand(synset, ext, false, getUI());
+//                }
+//
+//                viwnCands.add(node);
+//                getUI().getCache().put(synset.getId(), node);
+//                nodesAddedCount++;
+//            }
+//
+//            // add max RWF if any nodes were added
+//            if (nodesAddedCount == 0 && extMaxRwf != null) {
+//                Synset synset = extMaxRwf.getSynset();
+//
+//                ViwnNodeCand node = null;
+//
+//                if (synsetsWithWord.contains(extMaxRwf.getSynset().getId())) {
+//                    node = new ViwnNodeCand(synset, extMaxRwf, true, getUI());
+//                    synsetsWithWord.remove(extMaxRwf.getSynset().getId());
+//                } else {
+//                    node = new ViwnNodeCand(synset, extMaxRwf, false, getUI());
+//                }
+//
+//                viwnCands.add(node);
+//                getUI().getCache().put(synset.getId(), node);
+//            }
+//
+//            // add other synsets which contain selected word
+//            for (Synset synset : synsetsWithWordCol) {
+//                ViwnNodeSynset node = new ViwnNodeSynset(synset, getUI());
+//                node.setFrame(true);
+//                getUI().getCache().put(synset.getId(), node);
+//                freeSyns.add(node);
+//            }
+//        }
+//
+//        ViwnNodeWord nodeWord = new ViwnNodeWord(word, packageNo, pos);
+//
+//        ArrayList<TreeSet<ViwnNodeSynset>> groups = createSubgraphs(viwnCands);
+//        ArrayList<ViwnNodeCand> roots = createNodeRoots(groups, word);
+//        setupNodes(groups, roots, nodeWord, freeSyns);
 
-        if (cands.size() > 0) {
-            for (ExtGraph ext : cands) {
-                Synset synset = ext.getSynset();
-                // remember item with the highest rwf
-                if (extMaxRwf == null
-                        || ext.getScore2() > extMaxRwf.getScore2()) {
-                    extMaxRwf = ext;
-                }
-
-                ViwnNodeCand node = null;
-
-                if (synsetsWithWord.contains(ext.getSynset().getId())) {
-                    node = new ViwnNodeCand(synset, ext, true, getUI());
-                    synsetsWithWord.remove(ext.getSynset().getId());
-                } else {
-                    node = new ViwnNodeCand(synset, ext, false, getUI());
-                }
-
-                viwnCands.add(node);
-                getUI().getCache().put(synset.getId(), node);
-                nodesAddedCount++;
-            }
-
-            // add max RWF if any nodes were added
-            if (nodesAddedCount == 0 && extMaxRwf != null) {
-                Synset synset = extMaxRwf.getSynset();
-
-                ViwnNodeCand node = null;
-
-                if (synsetsWithWord.contains(extMaxRwf.getSynset().getId())) {
-                    node = new ViwnNodeCand(synset, extMaxRwf, true, getUI());
-                    synsetsWithWord.remove(extMaxRwf.getSynset().getId());
-                } else {
-                    node = new ViwnNodeCand(synset, extMaxRwf, false, getUI());
-                }
-
-                viwnCands.add(node);
-                getUI().getCache().put(synset.getId(), node);
-            }
-
-            // add other synsets which contain selected word
-            for (Synset synset : synsetsWithWordCol) {
-                ViwnNodeSynset node = new ViwnNodeSynset(synset, getUI());
-                node.setFrame(true);
-                getUI().getCache().put(synset.getId(), node);
-                freeSyns.add(node);
-            }
-        }
-
-        ViwnNodeWord nodeWord = new ViwnNodeWord(word, packageNo, pos);
-
-        ArrayList<TreeSet<ViwnNodeSynset>> groups = createSubgraphs(viwnCands);
-        ArrayList<ViwnNodeCand> roots = createNodeRoots(groups, word);
-        setupNodes(groups, roots, nodeWord, freeSyns);
-
-        return new Quadruple<>(nodeWord, groups, roots, freeSyns);
+        return null;///new Quadruple<>(nodeWord, groups, roots, freeSyns);
     }
 
     /**

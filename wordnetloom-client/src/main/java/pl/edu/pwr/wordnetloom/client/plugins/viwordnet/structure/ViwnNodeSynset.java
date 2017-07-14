@@ -1,20 +1,3 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import java.awt.Color;
@@ -31,11 +14,6 @@ import java.util.List;
 import java.util.Set;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
-import pl.edu.pwr.wordnetloom.client.utils.Common;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
-import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -48,7 +26,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         EXPANDED, SEMI_EXPANDED, NOT_EXPANDED
     }
 
-    public static HashMap<PartOfSpeech, Color> PosBgColors = new HashMap<PartOfSpeech, Color>();
+    public static HashMap<PartOfSpeech, Color> PosBgColors = new HashMap<>();
 
     public final static Color vertexBackgroundColorVerbStroke = new Color(239, 224, 52);
     public final static Color vertexBackgroundColorNounStroke = new Color(27, 221, 27);
@@ -62,8 +40,8 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     protected static SynsetNodeShape geom = new SynsetNodeShape();
 
     public static Set<RelationTypes>[] relTypes = new Set[]{
-        new HashSet<>(), new HashSet<RelationTypes>(),
-        new HashSet<>(), new HashSet<RelationTypes>()};
+        new HashSet<>(), new HashSet<>(),
+        new HashSet<>(), new HashSet<>()};
 
     private final Set<ViwnEdgeSynset> edges_to_this_ = new HashSet<>();
     private final Set<ViwnEdgeSynset> edges_from_this_ = new HashSet<>();
@@ -130,17 +108,18 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     }
 
     private void add_if_new(SynsetRelation rel) {
-        if (LexiconManager.getInstance().getLexicons().contains(rel.getRelation().getLexicon().getId())) {
-            if (rel.getSynsetTo().getId().equals(synset.getId())) {
-                ViwnEdgeSynset new_edge = new ViwnEdgeSynset(rel);
-                edges_to_this_.add(new_edge);
-            } else if (rel.getSynsetFrom().getId().equals(synset.getId())) {
-                ViwnEdgeSynset new_edge = new ViwnEdgeSynset(rel);
-                edges_from_this_.add(new_edge);
-            } else {
-                System.err.println("Database sanity error");
-            }
-        }
+//        if (LexiconManager.getInstance().getLexicons().contains(rel.getRelationType().getLexicon().getId())) {
+//            if (rel.getChild().getId().equals(synset.getId())) {
+//                ViwnEdgeSynset new_edge = new ViwnEdgeSynset(rel);
+//                edges_to_this_.add(new_edge);
+//            } else if (rel.getParent()
+//                    .getId().equals(synset.getId())) {
+//                ViwnEdgeSynset new_edge = new ViwnEdgeSynset(rel);
+//                edges_from_this_.add(new_edge);
+//            } else {
+//                System.err.println("Database sanity error");
+//            }
+//        }
     }
 
     public void removeRelation(ViwnEdgeSynset e) {
@@ -244,15 +223,14 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         List<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());
 
         // no cache? fetch from database
-        if (relsUP == null) {
-            relsUP = RemoteUtils.synsetRelationRemote.dbGetUpperRelations(
-                    synset, null, LexiconManager.getInstance().getLexicons());
-        }
-        if (relsDW == null) {
-            relsDW = RemoteUtils.synsetRelationRemote.dbGetSubRelations(synset,
-                    null, LexiconManager.getInstance().getLexicons());
-        }
-
+//        if (relsUP == null) {
+//            relsUP = RemoteUtils.synsetRelationRemote.dbGetUpperRelations(
+//                    synset, null, LexiconManager.getInstance().getLexicons());
+//        }
+//        if (relsDW == null) {
+//            relsDW = RemoteUtils.synsetRelationRemote.dbGetSubRelations(synset,
+//                    null, LexiconManager.getInstance().getLexicons());
+//        }
         // Get relations 'OTHER synset' -> 'THIS synset'
         for (SynsetRelation rel : relsUP) {
             add_if_new(rel);
@@ -275,7 +253,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         this.synset = synset;
         this.ui = ui;
         this.ui.addSynsetToCash(synset.getId(), this);
-        units = RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
+        units = null; //RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
         setup();
     }
 
@@ -288,22 +266,22 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
      */
     public PartOfSpeech getPos() {
         if (pos == null && !hadCheckedPOS) {
-            DataEntry dataSet = ui.getEntrySetFor(getId());
-            Long l = null;
-
-            if (dataSet == null || dataSet.getPosID() == null) {
-                l = RemoteUtils.synsetRemote.fastGetPOSID(this.synset);
-            } else {
-                l = dataSet.getPosID();
-            }
-
-            if (l == null) {
-                pos = null;
-                hadCheckedPOS = true;
-                pos = PosManager.getInstance().getFromID(0);
-            } else {
-                pos = PosManager.getInstance().getFromID(l.intValue());
-            }
+//            DataEntry dataSet = ui.getEntrySetFor(getId());
+//            Long l = null;
+//
+//            if (dataSet == null || dataSet.getPosID() == null) {
+//                l = RemoteUtils.synsetRemote.fastGetPOSID(this.synset);
+//            } else {
+//                l = dataSet.getPosID();
+//            }
+//
+//            if (l == null) {
+//                pos = null;
+//                hadCheckedPOS = true;
+//                pos = PosManager.getInstance().getFromID(0);
+//            } else {
+//                pos = PosManager.getInstance().getFromID(l.intValue());
+//            }
         }
         return pos;
     }
@@ -363,35 +341,35 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     @Override
     public String getLabel() {
         if (ret == null) {
-            DataEntry dataSet = ui.getEntrySetFor(getId());
-            if (dataSet == null || dataSet.getLabel() == null) {
-                String ret = "";
-                if (Synset.isAbstract(Common.getSynsetAttribute(synset,
-                        Synset.ISABSTRACT))) {
-                    ret = "S ";
-                }
-                // check if synset isnt null or empty
-                if (units != null && !units.isEmpty()) {
-                    ret += ((Sense) units.iterator().next()).toString();
-                    if (units.size() > 1) {
-                        ret += " ...";
-                    }
-                } else {
-                    ret = "! S.y.n.s.e.t p.u.s.t.y !";
-                }
-                this.ret = ret;
-            } else {
-                this.ret = dataSet.getLabel();
-            }
+//            DataEntry dataSet = ui.getEntrySetFor(getId());
+//            if (dataSet == null || dataSet.getLabel() == null) {
+//                String ret = "";
+//                if (Synset.isAbstract(Common.getSynsetAttribute(synset,
+//                        Synset.ISABSTRACT))) {
+//                    ret = "S ";
+//                }
+//                // check if synset isnt null or empty
+//                if (units != null && !units.isEmpty()) {
+//                    ret += ((Sense) units.iterator().next()).toString();
+//                    if (units.size() > 1) {
+//                        ret += " ...";
+//                    }
+//                } else {
+//                    ret = "! S.y.n.s.e.t p.u.s.t.y !";
+//                }
+//                this.ret = ret;
+//            } else {
+//                this.ret = dataSet.getLabel();
+//            }
         }
         return ret;
     }
 
     public String getLexiconLabel() {
-        if (units != null && !units.isEmpty()) {
-            Sense unit = ((Sense) units.iterator().next());
-            return unit.getLexicon().getLexiconIdentifier().getText();
-        }
+//        if (units != null && !units.isEmpty()) {
+//            Sense unit = ((Sense) units.iterator().next());
+//            return unit.getLexicon().getLexiconIdentifier().getText();
+//        }
         return "";
     }
 
@@ -437,9 +415,9 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     public String getUnitsStr() {
         if (getSynset() != null) {
             if (unitsStr == null) {
-                unitsStr = RemoteUtils.synsetRemote
-                        .dbRebuildUnitsStr(getSynset(), LexiconManager
-                                .getInstance().getLexicons());
+//                unitsStr = RemoteUtils.synsetRemote
+//                        .dbRebuildUnitsStr(getSynset(), LexiconManager
+//                                .getInstance().getLexicons());
             }
             return unitsStr;
         }

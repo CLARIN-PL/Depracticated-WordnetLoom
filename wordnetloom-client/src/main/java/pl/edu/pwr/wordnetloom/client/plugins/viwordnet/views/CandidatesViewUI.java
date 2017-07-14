@@ -1,20 +1,3 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
 import java.awt.BorderLayout;
@@ -25,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -60,7 +42,6 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import se.datadosen.component.RiverLayout;
@@ -225,12 +206,12 @@ public class CandidatesViewUI extends AbstractViewUI
         packageNo = ((Integer) packageNoModel.getValue());
 
         PartOfSpeech pos = (PartOfSpeech) posCombo.getItemAt(posCombo.getSelectedIndex());
-        Collection<String> words = RemoteUtils.extGraphRemote.dbGetNewWords(packageNo, pos);
-
-        for (String word : words) {
-            ListElement l = new ListElement(word, packageNo, pos);
-            list_elems.add(l);
-        }
+//        Collection<String> words = RemoteUtils.extGraphRemote.dbGetNewWords(packageNo, pos);
+//
+//        for (String word : words) {
+//            ListElement l = new ListElement(word, packageNo, pos);
+//            list_elems.add(l);
+//        }
 
         filterEdit.setText("");
         filterList();
@@ -289,18 +270,16 @@ public class CandidatesViewUI extends AbstractViewUI
             }
         };
 
-        currentMaxPkg = RemoteUtils.extGraphRemote.GetMaxPackageNo((PartOfSpeech) posCombo.getItemAt(posCombo.getSelectedIndex()));
+        //currentMaxPkg = RemoteUtils.extGraphRemote.GetMaxPackageNo((PartOfSpeech) posCombo.getItemAt(posCombo.getSelectedIndex()));
         if (currentMaxPkg == -1) {
             currentMaxPkg = 0;
         }
         infoPackages.setText("(" + currentMaxPkg + ")");
 
-        Collection<Integer> list_of_packages = RemoteUtils.extGraphRemote.GetPackages((PartOfSpeech) posCombo.getItemAt(posCombo.getSelectedIndex()));
-
-        if (list_of_packages != null) {
-            packages.addAll(list_of_packages);
-        }
-
+        //Collection<Integer> list_of_packages = RemoteUtils.extGraphRemote.GetPackages((PartOfSpeech) posCombo.getItemAt(posCombo.getSelectedIndex()));
+//        if (list_of_packages != null) {
+//            packages.addAll(list_of_packages);
+//        }
         if (packages.isEmpty()) {
             ArrayList<String> al = new ArrayList<>();
             al.add("");

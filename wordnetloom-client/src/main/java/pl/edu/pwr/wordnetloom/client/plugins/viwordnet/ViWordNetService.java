@@ -1,20 +1,3 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
 import edu.uci.ics.jung.graph.Graph;
@@ -26,7 +9,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -38,16 +20,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
-import javax.swing.AbstractAction;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitsView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetPropertiesView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetStructureView;
@@ -82,27 +59,16 @@ import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
-import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.client.utils.RMIUtils;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.word.model.Word;
-import pl.edu.pwr.wordnetloom.service.POSServiceRemote;
 
 /**
  * [Service] Installs views used by the Viwn perspective.
@@ -153,12 +119,11 @@ public class ViWordNetService extends AbstractService implements
         this.perspectiveName = perspectiveName;
         this.perspective = perspective;
 
-        POSServiceRemote service = RMIUtils
-                .lookupForService(POSServiceRemote.class);
-
-        service.getAllPartsOfSpeech().stream().forEach((pos) -> {
-            posMap.put(pos.getName().getText(), pos);
-        });
+//        POSServiceRemote service = RMIUtils
+//                .lookupForService(POSServiceRemote.class);
+//        service.getAllPartsOfSpeech().stream().forEach((pos) -> {
+//            posMap.put(pos.getName().getText(), pos);
+//        });
     }
 
     @Override
@@ -212,12 +177,10 @@ public class ViWordNetService extends AbstractService implements
         this.workbench.installView(synsetView, ViWordNetPerspective.SPLIT_LEFT_VIEW, this.perspectiveName);
 
         this.candView = new CandidatesView(workbench, Labels.CANDIDATES);
-        this.candView.addCandidateChangeListener(new SimpleListenerWrapper(
-                this, "candidateSelection"));
+        this.candView.addCandidateChangeListener(new SimpleListenerWrapper(this, "candidateSelection"));
         this.workbench.installView(candView, ViWordNetPerspective.SPLIT_LEFT_VIEW, this.perspectiveName);
 
-        this.satelliteGraphView = new ViwnSatelliteGraphView(this.workbench,
-                Labels.PREVIEW, graphUI);
+        this.satelliteGraphView = new ViwnSatelliteGraphView(this.workbench, Labels.PREVIEW, graphUI);
         this.workbench.installView(satelliteGraphView, ViWordNetPerspective.SPLIT_RIGHT_TOP_VIEW, this.perspectiveName);
         this.activeGraphView.addGraphChangeListener(satelliteGraphView);
 
@@ -357,17 +320,17 @@ public class ViWordNetService extends AbstractService implements
                             val + " is not a valid color");
                 }
 
-                RelationTypes rt = RelationTypes.getByName(rel);
-                if (rt != null) {
-                    Collection<RelationTypes> children = rt.getChildren();
-                    if (children != null && !children.isEmpty()) {
-                        for (RelationTypes r : children) {
-                            rel_colors.put(r.Id(), col);
-                        }
-                    } else {
-                        rel_colors.put(rt.Id(), col);
-                    }
-                }
+                //RelationTypes rt = RelationTypes.getByName(rel);
+//                if (rt != null) {
+//                    Collection<RelationTypes> children = rt.getChildren();
+//                    if (children != null && !children.isEmpty()) {
+//                        for (RelationTypes r : children) {
+//                            rel_colors.put(r.Id(), col);
+//                        }
+//                    } else {
+//                        rel_colors.put(rt.Id(), col);
+//                    }
+//                }
             }
 
         } catch (IOException e) {
@@ -403,21 +366,21 @@ public class ViWordNetService extends AbstractService implements
                 if (val != null) {
                     String[] rels = val.split(",");
                     for (String s : rels) {
-                        RelationTypes rt = RelationTypes.getByName(s);
-                        if (rt != null) {
-                            Collection<RelationTypes> children = rt
-                                    .getChildren();
-                            if (children != null) {
-                                children.stream().forEach((r) -> {
-                                    relTypes[dir.ordinal()].add(r);
-                                });
-                            } else {
-                                relTypes[dir.ordinal()].add(rt);
-                            }
-                        } else {
-                            Logger.getLogger(ViWordNetPlugin.class).log(
-                                    Level.WARN, s + " is not a relation");
-                        }
+//                        RelationTypes rt = RelationTypes.getByName(s);
+//                        if (rt != null) {
+//                            Collection<RelationTypes> children = rt
+//                                    .getChildren();
+//                            if (children != null) {
+//                                children.stream().forEach((r) -> {
+//                                    relTypes[dir.ordinal()].add(r);
+//                                });
+//                            } else {
+//                                relTypes[dir.ordinal()].add(rt);
+//                            }
+//                        } else {
+//                            Logger.getLogger(ViWordNetPlugin.class).log(
+//                                    Level.WARN, s + " is not a relation");
+//                        }
                     }
                 } else {
                     Logger.getLogger(ViWordNetPlugin.class).log(
@@ -432,14 +395,14 @@ public class ViWordNetService extends AbstractService implements
             System.err.println("DEFAULT RELATION TYPES");
 
             // adding default relations
-            relTypes[0].addAll(RelationTypes.getByName("holonimia").getChildren());
-            relTypes[1].addAll(RelationTypes.getByName("meronimia").getChildren());
-
-            relTypes[2].add(RelationTypes.getByName("hiperonimia"));
-            relTypes[2].add(RelationTypes.getByName("mieszkaniec"));
-            relTypes[2].add(RelationTypes.getByName("bliskoznaczność"));
-
-            relTypes[3].add(RelationTypes.getByName("hiponimia"));
+//            relTypes[0].addAll(RelationTypes.getByName("holonimia").getChildren());
+//            relTypes[1].addAll(RelationTypes.getByName("meronimia").getChildren());
+//
+//            relTypes[2].add(RelationTypes.getByName("hiperonimia"));
+//            relTypes[2].add(RelationTypes.getByName("mieszkaniec"));
+//            relTypes[2].add(RelationTypes.getByName("bliskoznaczność"));
+//
+//            relTypes[3].add(RelationTypes.getByName("hiponimia"));
         }
 
         ArrayList<RelationTypes> order = new ArrayList<>();
@@ -503,23 +466,23 @@ public class ViWordNetService extends AbstractService implements
         public Void doInBackground() {
 
             workbench.setBusy(true);
-            final Synset rootSynset = RemoteUtils.synsetRemote.fetchSynsetForSense(unit, LexiconManager.getInstance().getLexicons());
-            if (rootSynset != null) {
-                getActiveGraphView().getUI().releaseDataSetCache();
-                HashMap<Long, DataEntry> entries = RemoteUtils.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getLexicons());
-                if (entries != null) {
-                    getActiveGraphView().getUI().setEntrySets(entries);
-                }
-                LoadSynsetTask synsetTask = new LoadSynsetTask(rootSynset, unit, my_tag);
-                synsetTask.execute();
-            } else {
-                getActiveGraphView().getUI().releaseDataSetCache();
-                getActiveGraphView().getUI().clear();
-                Synset empty = new Synset();
-                empty.setId(new Long(0));
-                activeGraphView.loadSynset(empty);
-                workbench.setBusy(false);
-            }
+            // final Synset rootSynset = RemoteUtils.synsetRemote.fetchSynsetForSense(unit, LexiconManager.getInstance().getLexicons());
+//            if (rootSynset != null) {
+//                getActiveGraphView().getUI().releaseDataSetCache();
+//             //   HashMap<Long, DataEntry> entries = RemoteUtils.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getLexicons());
+////                if (entries != null) {
+////                    getActiveGraphView().getUI().setEntrySets(entries);
+////                }
+////                LoadSynsetTask synsetTask = new LoadSynsetTask(rootSynset, unit, my_tag);
+//                synsetTask.execute();
+//            } else {
+//                getActiveGraphView().getUI().releaseDataSetCache();
+//                getActiveGraphView().getUI().clear();
+//                Synset empty = new Synset();
+//                empty.setId(new Long(0));
+//                activeGraphView.loadSynset(empty);
+//                workbench.setBusy(false);
+//            }
 
             return null;
         }
@@ -545,11 +508,11 @@ public class ViWordNetService extends AbstractService implements
         public Void doInBackground() {
 
             activeGraphView.loadSynset(rootSynset);
-            examplesView.load_examples(unit.getLemma().getWord());
+            examplesView.load_examples(unit.getWord().getWord());
             ((ViWordNetPerspective) workbench.getActivePerspective())
-                    .setTabTitle("<html><font color=green>" + unit.getLemma()
+                    .setTabTitle("<html><font color=green>" + unit.getWord()
                             + "</font> #"
-                            + (my_tag == 0 ? unit.getSenseNumber() : my_tag)
+                            + (my_tag == 0 ? unit.getVariant() : my_tag)
                             + "</html>");
             kpwrExamples.load_examples(unit);
             return null;
@@ -936,186 +899,184 @@ public class ViWordNetService extends AbstractService implements
         }
     }
 
-    private boolean evaluateProposedConnection(Sense newUnit,
-            RelationType relationType, ViwnNodeSynset synset, ViwnNodeWord word) {
-
-        Synset assignedSynset = null;
-        Long distance[] = new Long[]{new Long(1)};
-        ViwnNodeSynset found = findProposed(synset, distance);
-        @SuppressWarnings("unused")
-        Synset proposedSynset = null;
-        if (found != null) {
-            proposedSynset = found.getSynset();
-        }
-
-        if (relationType.getArgumentType() == RelationArgument.LEXICAL_SPECIAL) {
-            assignedSynset = synset.getSynset();
-        } else {
-            assignedSynset = new Synset();
-        }
-
-        // Dodane zamiast oceny
-        // TODO: FIXME
-        RemoteUtils.synsetRemote.persistObject(assignedSynset);
-
-        newUnit.setSenseNumber(RemoteUtils.lexicalUnitRemote
-                .dbGetHighestVariant(word.getLabel(), LexiconManager
-                        .getInstance().getLexicons()) + 1);
-        RemoteUtils.lexicalUnitRemote.updateSense(newUnit);
-
-        if (relationType.getArgumentType() == RelationArgument.LEXICAL) {
-            if (synset instanceof ViwnNodeCandExtension) {
-                LexicalDA.addConnection(newUnit, assignedSynset);
-                ViwnNodeCandExtension ext = (ViwnNodeCandExtension) synset;
-                if (ext.getExtGraphExtension().getBase()) {
-                    if (RemoteUtils.lexicalRelationRemote.dbMakeRelation(
-                            newUnit, ext.getExtGraphExtension()
-                            .getLexicalUnit(), relationType)) {
-                        if (relationType.isAutoReverse()
-                                || (RelationsDA
-                                .getReverseRelation(relationType) != null && DialogBox
-                                .showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION,
-                                        LexicalDA.getRelationName(RelationsDA.getReverseRelation(relationType)))) == DialogBox.YES)) {
-                            RemoteUtils.lexicalRelationRemote
-                                    .dbMakeRelation(ext.getExtGraphExtension().getLexicalUnit(),
-                                            newUnit,
-                                            RelationsDA.getReverseRelation(relationType));
-                        }
-                        DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
-                        reload();
-                        return true;
-                    } else {
-                        DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
-                    }
-                } else if (RemoteUtils.lexicalRelationRemote.dbMakeRelation(ext
-                        .getExtGraphExtension().getLexicalUnit(), newUnit,
-                        relationType)) {
-                    if (relationType.isAutoReverse()
-                            || (RelationsDA
-                            .getReverseRelation(relationType) != null && DialogBox
-                            .showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION,
-                                    LexicalDA.getRelationName(RelationsDA
-                                            .getReverseRelation(relationType)))) == DialogBox.YES)) {
-                        RemoteUtils.lexicalRelationRemote.dbMakeRelation(
-                                newUnit, ext.getExtGraphExtension()
-                                .getLexicalUnit(), RelationsDA
-                                .getReverseRelation(relationType));
-                    }
-                    DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
-                    reload();
-                    return true;
-                } else {
-                    DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
-                }
-                RemoteUtils.lexicalRelationRemote.dbMakeRelation(newUnit, ext
-                        .getExtGraphExtension().getLexicalUnit(), relationType);
-            }
-        } else if (relationType.getArgumentType() == RelationArgument.LEXICAL_SPECIAL) {
-            // // New synonim relation
-            LexicalDA.addConnection(newUnit, synset.getSynset());
-
-        } else {
-
-            LexicalDA.addConnection(newUnit, assignedSynset);
-
-            if (RelationsDA.checkIfRelationExists(assignedSynset,
-                    synset.getSynset(), relationType)) {
-                DialogBox.showInformation(Messages.FAILURE_RELATION_EXISTS);
-            } else if (RemoteUtils.synsetRelationRemote.dbMakeRelation(
-                    assignedSynset, synset.getSynset(), relationType)) {
-                if (relationType.isAutoReverse()
-                        || DialogBox.showYesNo(String
-                                .format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION,
-                                        LexicalDA.getRelationName(RelationsDA
-                                                .getReverseRelation(relationType)))) == DialogBox.YES) {
-                    RemoteUtils.synsetRelationRemote.dbMakeRelation(
-                            synset.getSynset(), assignedSynset,
-                            RelationsDA.getReverseRelation(relationType));
-                }
-                DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
-                reload();
-                return true;
-            } else {
-                DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
-            }
-        }
-        reload();
-
-        return true;
-    }
-
+//    private boolean evaluateProposedConnection(Sense newUnit, RelationType relationType, ViwnNodeSynset synset, ViwnNodeWord word) {
+//
+//        Synset assignedSynset = null;
+//        Long distance[] = new Long[]{new Long(1)};
+//        ViwnNodeSynset found = findProposed(synset, distance);
+//        @SuppressWarnings("unused")
+//        Synset proposedSynset = null;
+//        if (found != null) {
+//            proposedSynset = found.getSynset();
+//        }
+//
+//        if (relationType.getArgumentType() == RelationArgument.LEXICAL_SPECIAL) {
+//            assignedSynset = synset.getSynset();
+//        } else {
+//            assignedSynset = new Synset();
+//        }
+//
+//        // Dodane zamiast oceny
+//        // TODO: FIXME
+//        RemoteUtils.synsetRemote.persistObject(assignedSynset);
+//
+//        newUnit.setSenseNumber(RemoteUtils.lexicalUnitRemote
+//                .dbGetHighestVariant(word.getLabel(), LexiconManager
+//                        .getInstance().getLexicons()) + 1);
+//        RemoteUtils.lexicalUnitRemote.updateSense(newUnit);
+//
+//        if (relationType.getArgumentType() == RelationArgument.LEXICAL) {
+//            if (synset instanceof ViwnNodeCandExtension) {
+//                LexicalDA.addConnection(newUnit, assignedSynset);
+//                ViwnNodeCandExtension ext = (ViwnNodeCandExtension) synset;
+//                if (ext.getExtGraphExtension().getBase()) {
+//                    if (RemoteUtils.lexicalRelationRemote.dbMakeRelation(
+//                            newUnit, ext.getExtGraphExtension()
+//                            .getLexicalUnit(), relationType)) {
+//                        if (relationType.isAutoReverse()
+//                                || (RelationsDA
+//                                .getReverseRelation(relationType) != null && DialogBox
+//                                .showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION,
+//                                        LexicalDA.getRelationName(RelationsDA.getReverseRelation(relationType)))) == DialogBox.YES)) {
+//                            RemoteUtils.lexicalRelationRemote
+//                                    .dbMakeRelation(ext.getExtGraphExtension().getLexicalUnit(),
+//                                            newUnit,
+//                                            RelationsDA.getReverseRelation(relationType));
+//                        }
+//                        DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
+//                        reload();
+//                        return true;
+//                    } else {
+//                        DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
+//                    }
+//                } else if (RemoteUtils.lexicalRelationRemote.dbMakeRelation(ext
+//                        .getExtGraphExtension().getLexicalUnit(), newUnit,
+//                        relationType)) {
+//                    if (relationType.isAutoReverse()
+//                            || (RelationsDA
+//                            .getReverseRelation(relationType) != null && DialogBox
+//                            .showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION,
+//                                    LexicalDA.getRelationName(RelationsDA
+//                                            .getReverseRelation(relationType)))) == DialogBox.YES)) {
+//                        RemoteUtils.lexicalRelationRemote.dbMakeRelation(
+//                                newUnit, ext.getExtGraphExtension()
+//                                .getLexicalUnit(), RelationsDA
+//                                .getReverseRelation(relationType));
+//                    }
+//                    DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
+//                    reload();
+//                    return true;
+//                } else {
+//                    DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
+//                }
+//                RemoteUtils.lexicalRelationRemote.dbMakeRelation(newUnit, ext
+//                        .getExtGraphExtension().getLexicalUnit(), relationType);
+//            }
+//        } else if (relationType.getArgumentType() == RelationArgument.LEXICAL_SPECIAL) {
+//            // // New synonim relation
+//            LexicalDA.addConnection(newUnit, synset.getSynset());
+//
+//        } else {
+//
+//            LexicalDA.addConnection(newUnit, assignedSynset);
+//
+//            if (RelationsDA.checkIfRelationExists(assignedSynset,
+//                    synset.getSynset(), relationType)) {
+//                DialogBox.showInformation(Messages.FAILURE_RELATION_EXISTS);
+//            } else if (RemoteUtils.synsetRelationRemote.dbMakeRelation(
+//                    assignedSynset, synset.getSynset(), relationType)) {
+//                if (relationType.isAutoReverse()
+//                        || DialogBox.showYesNo(String
+//                                .format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION,
+//                                        LexicalDA.getRelationName(RelationsDA
+//                                                .getReverseRelation(relationType)))) == DialogBox.YES) {
+//                    RemoteUtils.synsetRelationRemote.dbMakeRelation(
+//                            synset.getSynset(), assignedSynset,
+//                            RelationsDA.getReverseRelation(relationType));
+//                }
+//                DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
+//                reload();
+//                return true;
+//            } else {
+//                DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
+//            }
+//        }
+//        reload();
+//
+//        return true;
+//    }
     private void newCandRelation(ViwnNodeSynset synset, ViwnNodeWord word) {
-        ArrayList<Sense> parentUnits = new ArrayList<>();
-        Synset s = synset.getSynset();
-        Collection<Sense> units = RemoteUtils.lexicalUnitRemote.dbFullGetUnits(
-                s, 1, LexiconManager.getInstance().getLexicons());
-        if (units.isEmpty()) {
-            System.err.println("Nie mozna przetwarzac pustego synsetu");
-        }
-        Sense lu = (Sense) units.toArray()[0];
-        PartOfSpeech p = lu.getPartOfSpeech();
-
-        Sense toAdd = new Sense();
-        toAdd.setLemma(new Word(word.getLabel()));
-        toAdd.setPartOfSpeech(p);
-        toAdd.setDomain(DomainManager.getInstance().getByID(0));
-        parentUnits.add(toAdd);
-
-        ArrayList<Sense> childUnits = new ArrayList<>();
-        for (Sense unit : RemoteUtils.lexicalUnitRemote.dbFullGetUnits(s, 0,
-                LexiconManager.getInstance().getLexicons())) {
-            childUnits.add(unit);
-        }
-        if (childUnits.isEmpty()) {
-            DialogBox.showError("Synset docelowy nie zawiera jednostek.");
-            return;
-        }
-
-        RelationArgument objectType = null;
-        RelationType relType = null;
-        RelationType suggestedRelType = null;
-        Sense suggestedUnit = null;
-
-        if (synset instanceof ViwnNodeCandExtension) {
-            ViwnNodeCandExtension ext = (ViwnNodeCandExtension) synset;
-            suggestedRelType = ext.getExtGraphExtension().getRelationType();
-            suggestedUnit = ext.getExtGraphExtension().getLexicalUnit();
-        }
-
-        Domain domain = DomainManager.getInstance().getByID(0);
-        if (childUnits.size() > 0) {
-            domain = childUnits.get(0).getDomain();
-        }
-
-        // Changed to Pos of candidate instead of existing synset's
-        PartOfSpeech rightPos = word.getPos();
-
-        // New lexical unit dialog
-        Sense newUnit = NewLexicalUnitFrame.showModal(workbench,
-                workbench.getFrame(), word.getLabel(), rightPos, domain);
-        if (newUnit == null) {
-            return;
-        }
-
-        // New synset relation dialog
-        if (synset instanceof ViwnNodeCandExtension) {
-            if (!((ViwnNodeCandExtension) synset).getExtGraphExtension().getBase()) {
-                ArrayList<Sense> temp = childUnits;
-                childUnits = parentUnits;
-                parentUnits = temp;
-            }
-        }
-        RelationType relationType = RelationTypeFrame.showModal(
-                workbench.getFrame(), objectType, rightPos, relType,
-                suggestedRelType, suggestedUnit, parentUnits, null, childUnits);
-        if (relationType == null) {
-            return;
-        }
-
-        if (evaluateProposedConnection(newUnit, relationType, synset, word)) {
-            getActiveGraphView().loadCandidate(word.getLabel(),
-                    word.getPackageNo(), word.getPos());
-        }
+//        ArrayList<Sense> parentUnits = new ArrayList<>();
+//        Synset s = synset.getSynset();
+//        Collection<Sense> units = RemoteUtils.lexicalUnitRemote.dbFullGetUnits(
+//                s, 1, LexiconManager.getInstance().getLexicons());
+//        if (units.isEmpty()) {
+//            System.err.println("Nie mozna przetwarzac pustego synsetu");
+//        }
+//        Sense lu = (Sense) units.toArray()[0];
+//        PartOfSpeech p = lu.getPartOfSpeech();
+//
+//        Sense toAdd = new Sense();
+//        toAdd.setLemma(new Word(word.getLabel()));
+//        toAdd.setPartOfSpeech(p);
+//        toAdd.setDomain(DomainManager.getInstance().getByID(0));
+//        parentUnits.add(toAdd);
+//
+//        ArrayList<Sense> childUnits = new ArrayList<>();
+//        for (Sense unit : RemoteUtils.lexicalUnitRemote.dbFullGetUnits(s, 0,
+//                LexiconManager.getInstance().getLexicons())) {
+//            childUnits.add(unit);
+//        }
+//        if (childUnits.isEmpty()) {
+//            DialogBox.showError("Synset docelowy nie zawiera jednostek.");
+//            return;
+//        }
+//
+//        RelationArgument objectType = null;
+//        RelationType relType = null;
+//        RelationType suggestedRelType = null;
+//        Sense suggestedUnit = null;
+//
+//        if (synset instanceof ViwnNodeCandExtension) {
+//            ViwnNodeCandExtension ext = (ViwnNodeCandExtension) synset;
+//            suggestedRelType = ext.getExtGraphExtension().getRelationType();
+//            suggestedUnit = ext.getExtGraphExtension().getLexicalUnit();
+//        }
+//
+//        Domain domain = DomainManager.getInstance().getByID(0);
+//        if (childUnits.size() > 0) {
+//            domain = childUnits.get(0).getDomain();
+//        }
+//
+//        // Changed to Pos of candidate instead of existing synset's
+//        PartOfSpeech rightPos = word.getPos();
+//
+//        // New lexical unit dialog
+//        Sense newUnit = NewLexicalUnitFrame.showModal(workbench,
+//                workbench.getFrame(), word.getLabel(), rightPos, domain);
+//        if (newUnit == null) {
+//            return;
+//        }
+//
+//        // New synset relation dialog
+//        if (synset instanceof ViwnNodeCandExtension) {
+//            if (!((ViwnNodeCandExtension) synset).getExtGraphExtension().getBase()) {
+//                ArrayList<Sense> temp = childUnits;
+//                childUnits = parentUnits;
+//                parentUnits = temp;
+//            }
+//        }
+//        RelationType relationType = RelationTypeFrame.showModal(
+//                workbench.getFrame(), objectType, rightPos, relType,
+//                suggestedRelType, suggestedUnit, parentUnits, null, childUnits);
+//        if (relationType == null) {
+//            return;
+//        }
+//
+//        if (evaluateProposedConnection(newUnit, relationType, synset, word)) {
+//            getActiveGraphView().loadCandidate(word.getLabel(),
+//                    word.getPackageNo(), word.getPos());
+//        }
     }
 
     public void mergeSynsets(Object second) {
@@ -1185,24 +1146,24 @@ public class ViWordNetService extends AbstractService implements
             // show JPopupMenu with chose second lexical unit
             Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
             javax.swing.JPopupMenu jpm = new javax.swing.JPopupMenu();
-            List<Sense> senses = RemoteUtils.lexicalUnitRemote.dbFastGetUnits(
-                    ((ViwnNodeSynset) second).getSynset(), LexiconManager
-                    .getInstance().getLexicons());
-            for (final Sense lu : senses) {
-                jpm.add(new JMenuItem(new AbstractAction(lu.toString()) {
-
-                    private static final long serialVersionUID = 712639812536152L;
-
-                    @Override
-                    public void actionPerformed(ActionEvent ae) {
-                        if (MakeNewLexicalRelationFrame
-                                .showMakeLexicalRelationModal(workbench,
-                                        (Sense) first, lu)) {
-                            unitsRelationsView.refresh();
-                        }
-                    }
-                }));
-            }
+//            List<Sense> senses = RemoteUtils.lexicalUnitRemote.dbFastGetUnits(
+//                    ((ViwnNodeSynset) second).getSynset(), LexiconManager
+//                    .getInstance().getLexicons());
+//            for (final Sense lu : senses) {
+//                jpm.add(new JMenuItem(new AbstractAction(lu.toString()) {
+//
+//                    private static final long serialVersionUID = 712639812536152L;
+//
+//                    @Override
+//                    public void actionPerformed(ActionEvent ae) {
+//                        if (MakeNewLexicalRelationFrame
+//                                .showMakeLexicalRelationModal(workbench,
+//                                        (Sense) first, lu)) {
+//                            unitsRelationsView.refresh();
+//                        }
+//                    }
+//                }));
+//            }
             jpm.show(workbench.getFrame(), mouseLoc.x
                     - workbench.getFrame().getX(), mouseLoc.y
                     - workbench.getFrame().getY());
@@ -1237,23 +1198,23 @@ public class ViWordNetService extends AbstractService implements
     @Override
     public void actionPerformed(ActionEvent e) {
         String graph_export_dir = "graph_export";
-        Collection<Integer> pkgs = RemoteUtils.extGraphRemote
-                .GetPackages(PosManager.getInstance().decode("rzeczownik"));
-
-        for (Integer pkg : pkgs) {
-            Collection<String> words = RemoteUtils.extGraphRemote
-                    .dbGetNewWords(pkg,
-                            PosManager.getInstance().decode("rzeczownik"));
-            String path = new File(graph_export_dir, pkg.toString()).toString();
-            new File(path).mkdirs();
-            for (String word : words) {
-                candidateSelection(new Pair<>(word,
-                        PosManager.getInstance().decode("rzeczownik")), pkg);
-                String fname = new File(path, word + ".png").toString();
-                getActiveGraphView().getUI().saveToFile(fname);
-                System.out.println("exported: " + fname);
-            }
-        }
+//        Collection<Integer> pkgs = RemoteUtils.extGraphRemote
+//                .GetPackages(PosManager.getInstance().decode("rzeczownik"));
+//
+//        for (Integer pkg : pkgs) {
+//            Collection<String> words = RemoteUtils.extGraphRemote
+//                    .dbGetNewWords(pkg,
+//                            PosManager.getInstance().decode("rzeczownik"));
+//            String path = new File(graph_export_dir, pkg.toString()).toString();
+//            new File(path).mkdirs();
+//            for (String word : words) {
+//                candidateSelection(new Pair<>(word,
+//                        PosManager.getInstance().decode("rzeczownik")), pkg);
+//                String fname = new File(path, word + ".png").toString();
+//                getActiveGraphView().getUI().saveToFile(fname);
+//                System.out.println("exported: " + fname);
+//            }
+//        }
     }
 
     public void clearAllViews() {

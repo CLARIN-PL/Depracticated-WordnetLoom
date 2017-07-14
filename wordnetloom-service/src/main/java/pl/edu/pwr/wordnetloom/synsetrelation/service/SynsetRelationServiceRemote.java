@@ -1,12 +1,10 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.service;
 
 import java.util.List;
-import javax.ejb.Remote;
 import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
-@Remote
 public interface SynsetRelationServiceRemote {
 
     boolean makeRelation(Synset parent, Synset child, SynsetRelationType rel);

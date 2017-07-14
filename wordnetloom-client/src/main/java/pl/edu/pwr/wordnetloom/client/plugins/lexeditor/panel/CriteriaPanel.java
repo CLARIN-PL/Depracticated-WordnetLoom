@@ -3,13 +3,10 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
-import java.util.List;
-import java.util.Objects;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DomainComboBox;
@@ -18,12 +15,11 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.LexiconComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.PartOfSpeechComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import se.datadosen.component.RiverLayout;
 
 public abstract class CriteriaPanel extends JPanel {
@@ -37,13 +33,12 @@ public abstract class CriteriaPanel extends JPanel {
     private LexiconComboBox lexiconComboBox;
     private DomainComboBox domainComboBox;
     private PartOfSpeechComboBox partsOfSpeachComboBox;
-    private ComboBoxPlain<RelationType> relationsComboBox;
+    private ComboBoxPlain<SynsetRelationType> synsetRelationsComboBox;
+    private ComboBoxPlain<SenseRelationType> senseRelationsComboBox;
     private JCheckBox limitResultCheckBox;
-    private final RelationArgument relationArgument;
 
-    public CriteriaPanel(RelationArgument relationArgumentType, int scrollHeight) {
+    public CriteriaPanel(int scrollHeight) {
         this.SCROLL_PANE_HEIGHT = scrollHeight;
-        this.relationArgument = relationArgumentType;
         initialize();
     }
 
@@ -88,8 +83,12 @@ public abstract class CriteriaPanel extends JPanel {
         domainComboBox.allDomains(true);
         domainComboBox.setPreferredSize(new Dimension(150, 20));
 
-        relationsComboBox = createRelationsComboBox();
-        relationsComboBox.setPreferredSize(new Dimension(150, 20));
+        synsetRelationsComboBox = createSynsetRelationsComboBox();
+        synsetRelationsComboBox.setPreferredSize(new Dimension(150, 20));
+
+        senseRelationsComboBox = createSenseRelationsComboBox();
+        senseRelationsComboBox.setPreferredSize(new Dimension(150, 20));
+
         limitResultCheckBox = createLimitResultSearch();
 
     }
@@ -104,9 +103,15 @@ public abstract class CriteriaPanel extends JPanel {
         add("br left", limitResultCheckBox);
     }
 
-    protected void addRelations() {
-        add("br", new LabelExt(Labels.RELATIONS_COLON, 'r', relationsComboBox));
-        add("br hfill", relationsComboBox);
+    protected void addSynsetRelationTypes() {
+        add("br", new LabelExt(Labels.RELATIONS_COLON, 'r', synsetRelationsComboBox));
+        add("br hfill", synsetRelationsComboBox);
+        refreshRelations();
+    }
+
+    protected void addSenseRelationTypes() {
+        add("br", new LabelExt(Labels.RELATIONS_COLON, 'r', senseRelationsComboBox));
+        add("br hfill", senseRelationsComboBox);
         refreshRelations();
     }
 
@@ -130,8 +135,15 @@ public abstract class CriteriaPanel extends JPanel {
         add("br hfill", searchTextField);
     }
 
-    private ComboBoxPlain<RelationType> createRelationsComboBox() {
-        ComboBoxPlain<RelationType> combo = new ComboBoxPlain<>();
+    private ComboBoxPlain<SynsetRelationType> createSynsetRelationsComboBox() {
+        ComboBoxPlain<SynsetRelationType> combo = new ComboBoxPlain<>();
+        combo.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
+        combo.setPreferredSize(new Dimension(150, 20));
+        return combo;
+    }
+
+    private ComboBoxPlain<SenseRelationType> createSenseRelationsComboBox() {
+        ComboBoxPlain<SenseRelationType> combo = new ComboBoxPlain<>();
         combo.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
         combo.setPreferredSize(new Dimension(150, 20));
         return combo;
@@ -159,36 +171,37 @@ public abstract class CriteriaPanel extends JPanel {
 
     public void refreshRelations() {
         RelationTypes.refresh();
-        List<RelationType> relations = RemoteUtils.relationTypeRemote.dbGetLeafs(relationArgument, LexiconManager.getInstance().getLexicons());
-        int selected = relationsComboBox.getSelectedIndex();
-
-        relationsComboBox.removeAllItems();
-        relationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
-
-        if (lexiconComboBox.retriveComboBoxItem() != null) {
-            for (RelationType relation : relations) {
-                if (Objects.equals(relation.getLexicon().getId(), lexiconComboBox.retriveComboBoxItem().getId())) {
-                    RelationType currentRelation = RelationTypes.get(relation.getId()).getRelationType();
-                    relationsComboBox.addItem(new CustomDescription<>(RelationTypes.getFullNameFor(currentRelation.getId()), currentRelation));
-                }
-            }
-        } else {
-            for (RelationType relation : relations) {
-                RelationType currentRelation = RelationTypes.get(relation.getId()).getRelationType();
-                relationsComboBox.addItem(new CustomDescription<>(RelationTypes.getFullNameFor(currentRelation.getId()), currentRelation));
-            }
-        }
-
-        if (selected != -1) {
-            relationsComboBox.setSelectedIndex(selected);
-        }
+//        List<RelationType> relations = RemoteUtils.relationTypeRemote.dbGetLeafs(relationArgument, LexiconManager.getInstance().getLexicons());
+//        int selected = relationsComboBox.getSelectedIndex();
+//
+//        relationsComboBox.removeAllItems();
+//        relationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
+//
+//        if (lexiconComboBox.retriveComboBoxItem() != null) {
+//            for (RelationType relation : relations) {
+//                if (Objects.equals(relation.getLexicon().getId(), lexiconComboBox.retriveComboBoxItem().getId())) {
+//                    RelationType currentRelation = RelationTypes.get(relation.getId()).getRelationType();
+//                    relationsComboBox.addItem(new CustomDescription<>(RelationTypes.getFullNameFor(currentRelation.getId()), currentRelation));
+//                }
+//            }
+//        } else {
+//            for (RelationType relation : relations) {
+//                RelationType currentRelation = RelationTypes.get(relation.getId()).getRelationType();
+//                relationsComboBox.addItem(new CustomDescription<>(RelationTypes.getFullNameFor(currentRelation.getId()), currentRelation));
+//            }
+//        }
+//
+//        if (selected != -1) {
+//            relationsComboBox.setSelectedIndex(selected);
+//        }
     }
 
     public void resetFields() {
         searchTextField.setText("");
         domainComboBox.setSelectedIndex(0);
         partsOfSpeachComboBox.setSelectedIndex(0);
-        relationsComboBox.setSelectedIndex(0);
+        synsetRelationsComboBox.setSelectedIndex(0);
+        senseRelationsComboBox.setSelectedIndex(0);
         lexiconComboBox.setSelectedIndex(0);
     }
 
@@ -200,8 +213,12 @@ public abstract class CriteriaPanel extends JPanel {
         return domainComboBox;
     }
 
-    public ComboBoxPlain<RelationType> getRelationsComboBox() {
-        return relationsComboBox;
+    public ComboBoxPlain<SynsetRelationType> getSynsetRelationTypeComboBox() {
+        return synsetRelationsComboBox;
+    }
+
+    public ComboBoxPlain<SenseRelationType> getSenseRelationTypeComboBox() {
+        return senseRelationsComboBox;
     }
 
     public JCheckBox getLimitResultCheckBox() {

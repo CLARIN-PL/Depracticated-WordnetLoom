@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.word.service.impl;
 
 import java.util.List;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.validation.Validator;
@@ -9,8 +11,11 @@ import pl.edu.pwr.wordnetloom.word.exception.WordNotFoundException;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 import pl.edu.pwr.wordnetloom.word.repository.WordRepository;
 import pl.edu.pwr.wordnetloom.word.service.WordServiceLocal;
+import pl.edu.pwr.wordnetloom.word.service.WordServiceRemote;
 
 @Stateless
+@Remote(WordServiceRemote.class)
+@Local(WordServiceLocal.class)
 public class WordServiceBean implements WordServiceLocal {
 
     @Inject

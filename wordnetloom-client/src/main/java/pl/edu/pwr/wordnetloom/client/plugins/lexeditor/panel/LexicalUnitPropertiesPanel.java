@@ -43,14 +43,12 @@ import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
-import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DomainComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LexiconComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.PartOfSpeechComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextPanePlain;
-import pl.edu.pwr.wordnetloom.client.utils.Common;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
@@ -353,8 +351,8 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
             LexicalDA.refresh(unit);
         }
 
-        lemma.setText(formatValue(unit != null ? unit.getLemma().getWord() : null));
-        variant.setText(unit != null ? "" + unit.getSenseNumber() : null);
+        lemma.setText(formatValue(unit != null ? unit.getWord().getWord() : null));
+        variant.setText(unit != null ? "" + unit.getVariant() : null);
         lexicon.setSelectedItem(unit != null ? new CustomDescription<>(unit.getLexicon().toString(), unit.getLexicon()) : null);
         partOfSpeech.setSelectedItem(unit != null ? new CustomDescription<>(
                 unit.getPartOfSpeech().toString(), unit
@@ -367,25 +365,24 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                         .nameWithoutPrefix(unit.getDomain().toString()), unit
                         .getDomain()));
 
-        definition.setText(formatValue(unit != null ? Common.getSenseAttribute(
-                unit, Sense.DEFINITION) : null));
-        comment.setText(formatValue(unit != null ? Common.getSenseAttribute(
-                unit, Sense.COMMENT) : null));
-        register.setSelectedItem(unit != null ? RegisterTypes.get(Common
-                .getSenseAttribute(unit, Sense.REGISTER))
-                : RegisterTypes.BRAK_REJESTRU);
-
-        if (unit != null) {
-            String use = Common.getSenseAttribute(unit, Sense.USE_CASES);
-            if (use != null) {
-                String[] exampleString = use.split("\\|");
-                for (int i = 0; i < exampleString.length; i++) {
-                    examplesModel.addElement(exampleString[i]);
-                }
-            }
-            examplesList.setModel(examplesModel);
-        }
-        link.setText(formatValue(unit != null ? Common.getSenseAttribute(unit, Sense.LINK) : null));
+//        definition.setText(formatValue(unit != null ? Common.getSenseAttribute(
+//                unit, Sense.DEFINITION) : null));
+//        comment.setText(formatValue(unit != null ? Common.getSenseAttribute(
+//                unit, Sense.COMMENT) : null));
+//        register.setSelectedItem(unit != null ? RegisterTypes.get(Common
+//                .getSenseAttribute(unit, Sense.REGISTER))
+//                : RegisterTypes.BRAK_REJESTRU);
+//        if (unit != null) {
+//            String use = Common.getSenseAttribute(unit, Sense.USE_CASES);
+//            if (use != null) {
+//                String[] exampleString = use.split("\\|");
+//                for (int i = 0; i < exampleString.length; i++) {
+//                    examplesModel.addElement(exampleString[i]);
+//                }
+//            }
+//            examplesList.setModel(examplesModel);
+//        }
+//        link.setText(formatValue(unit != null ? Common.getSenseAttribute(unit, Sense.LINK) : null));
         btnSave.setEnabled(false);
     }
 
@@ -397,13 +394,13 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
             PartOfSpeech goodPOS = PosManager.getInstance().getNormalized(
                     unit.getPartOfSpeech());
 
-            if (goodDomain != null && !goodPOS.contains(goodDomain)) {
-                DialogBox.showError(String.format(
-                        Messages.ERROR_INCORRECT_DOMAIN, goodDomain.toString(),
-                        goodPOS));
-            } else {
-                domainToSet = unit != null && goodDomain != null ? goodDomain.toString() : null;
-            }
+//            if (goodDomain != null && !goodPOS.contains(goodDomain)) {
+//                DialogBox.showError(String.format(
+//                        Messages.ERROR_INCORRECT_DOMAIN, goodDomain.toString(),
+//                        goodPOS));
+//            } else {
+//                domainToSet = unit != null && goodDomain != null ? goodDomain.toString() : null;
+//            }
         }
         return domainToSet;
     }

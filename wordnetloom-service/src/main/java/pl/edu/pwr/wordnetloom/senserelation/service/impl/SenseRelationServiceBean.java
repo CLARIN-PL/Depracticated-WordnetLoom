@@ -2,15 +2,20 @@ package pl.edu.pwr.wordnetloom.senserelation.service.impl;
 
 import java.util.List;
 import java.util.Set;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
-import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 import pl.edu.pwr.wordnetloom.senserelation.service.SenseRelationServiceLocal;
+import pl.edu.pwr.wordnetloom.senserelation.service.SenseRelationServiceRemote;
 
 @Stateless
+@Remote(SenseRelationServiceRemote.class)
+@Local(SenseRelationServiceLocal.class)
 public class SenseRelationServiceBean implements SenseRelationServiceLocal {
 
     @Inject

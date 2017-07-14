@@ -5,9 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import pl.edu.pwr.wordnetloom.client.utils.RMIUtils;
+import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.service.POSServiceRemote;
 
 public class PosManager {
 
@@ -57,15 +56,8 @@ public class PosManager {
         synchronized (languageCode) {
             cache = null;
 
-            /**
-             * currently fetching only default language, despite the argument.
-             *
-             * fixme
-             */
-            POSServiceRemote service = RMIUtils.lookupForService(POSServiceRemote.class);
-
             List<PartOfSpeech> list;
-            list = service.getAllPartsOfSpeech(LexiconManager.getInstance().getLexicons());
+            list = RemoteUtils.partOfSpeechServiceRemote.findAll();
             cache = Collections.unmodifiableList(Collections.synchronizedList(list));
             synchronized (PosManager.class) {
                 if (!managers.containsKey(languageCode)) {
@@ -206,7 +198,7 @@ public class PosManager {
         }
 
         for (int i = 0; i < cache.size() && pos == null; i++) {
-            if (cache.get(i).getName().toString().equals(s)) {
+            if (cache.get(i).getName(languageCode).toString().equals(s)) {
                 pos = cache.get(i);
             }
         }
@@ -215,9 +207,9 @@ public class PosManager {
 
     public List<PartOfSpeech> getPOSForLexicon(long id) {
         List<PartOfSpeech> filtred = new ArrayList<>();
-        cache.stream().filter((pos) -> (pos.getLexicon().getId() == id)).forEach((pos) -> {
-            filtred.add(pos);
-        });
+//        cache.stream().filter((pos) -> (pos.getLexicon().getId() == id)).forEach((pos) -> {
+//            filtred.add(pos);
+//        });
         return filtred;
     }
 

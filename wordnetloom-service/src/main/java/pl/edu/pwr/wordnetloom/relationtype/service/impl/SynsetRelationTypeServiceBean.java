@@ -2,13 +2,18 @@ package pl.edu.pwr.wordnetloom.relationtype.service.impl;
 
 import java.util.Collection;
 import java.util.List;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import pl.edu.pwr.wordnetloom.relationtype.repository.SynsetRelationTypeRepository;
 import pl.edu.pwr.wordnetloom.relationtype.service.SynsetRelationTypeServiceLocal;
+import pl.edu.pwr.wordnetloom.relationtype.service.SynsetRelationTypeServiceRemote;
 
 @Stateless
+@Remote(SynsetRelationTypeServiceRemote.class)
+@Local(SynsetRelationTypeServiceLocal.class)
 public class SynsetRelationTypeServiceBean implements SynsetRelationTypeServiceLocal {
 
     @Inject

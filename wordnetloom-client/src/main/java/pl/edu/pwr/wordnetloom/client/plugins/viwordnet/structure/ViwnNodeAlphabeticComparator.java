@@ -1,31 +1,9 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 
-/**
- * @author amusial
- * @author boombel
- *
- */
 public class ViwnNodeAlphabeticComparator implements Comparator<ViwnNode> {
 
     public static ArrayList<RelationTypes> order = null;
@@ -36,10 +14,10 @@ public class ViwnNodeAlphabeticComparator implements Comparator<ViwnNode> {
         if (order == null) {
             rel_order = new ArrayList<>();
 
-            rel_order.add(RelationTypes.getByName("hiperonimia"));
-            rel_order.add(RelationTypes.getByName("hiponimia"));
-            rel_order.add(RelationTypes.getByName("mieszkaniec"));
-            rel_order.add(RelationTypes.getByName("bliskoznaczność"));
+//            rel_order.add(RelationTypes.getByName("hiperonimia"));
+//            rel_order.add(RelationTypes.getByName("hiponimia"));
+//            rel_order.add(RelationTypes.getByName("mieszkaniec"));
+//            rel_order.add(RelationTypes.getByName("bliskoznaczność"));
         } else {
             rel_order = order;
         }

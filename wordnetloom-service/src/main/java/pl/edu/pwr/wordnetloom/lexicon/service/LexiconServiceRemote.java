@@ -1,10 +1,8 @@
 package pl.edu.pwr.wordnetloom.lexicon.service;
 
 import java.util.List;
-import javax.ejb.Remote;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
-@Remote
 public interface LexiconServiceRemote {
 
     Lexicon findById(Long id);
@@ -12,8 +10,8 @@ public interface LexiconServiceRemote {
     List<Lexicon> findAllByLexicon(List<Long> lexiconIds);
 
     List<Lexicon> findAll();
-    
+
     List<Long> findAllLexiconIds();
-    
+
     Lexicon add(Lexicon lexicon);
 }

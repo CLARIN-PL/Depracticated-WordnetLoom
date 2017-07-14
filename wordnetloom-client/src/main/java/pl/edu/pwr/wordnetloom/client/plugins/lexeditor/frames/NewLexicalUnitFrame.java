@@ -13,11 +13,8 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DomainComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
-import pl.edu.pwr.wordnetloom.client.utils.Common;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
-import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -59,7 +56,7 @@ public class NewLexicalUnitFrame extends IconDialog implements ActionListener {
     public Sense saveAndReturnNewSense() {
         Sense newUnit = new Sense();
 
-        newUnit.setLemma(new Word(editPanel.getLemma().getText()));
+        newUnit.setWord(new Word(editPanel.getLemma().getText()));
         newUnit.setLexicon(editPanel.getLexicon().retriveComboBoxItem());
 
         PartOfSpeech pos = editPanel.getPartOfSpeech().retriveComboBoxItem();
@@ -68,30 +65,30 @@ public class NewLexicalUnitFrame extends IconDialog implements ActionListener {
         Domain domain = editPanel.getDomain().retriveComboBoxItem();
         newUnit.setDomain(domain);
 
-        int variant = RemoteUtils.lexicalUnitRemote.dbGetNextVariant(editPanel.getLemma().getText(), pos);
-        newUnit.setSenseNumber(variant);
-
-        newUnit = LexicalDA.saveUnitRefreshID(newUnit);
-
-        if (editPanel.getDefinition().getText() != null && !editPanel.getDefinition().getText().isEmpty()) {
-            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.DEFINITION, editPanel.getDefinition().getText());
-        }
-        if (editPanel.getComment().getText() != null && !editPanel.getComment().getText().isEmpty()) {
-            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.COMMENT, editPanel.getComment().getText());
-        }
-        if (editPanel.getRegister().getSelectedItem().toString() != null) {
-            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.REGISTER, editPanel.getRegister().getSelectedItem().toString());
-        }
-        String examples = trasfotmExamplesToString(editPanel.getExamplesModel().toArray());
-        if (examples != null && !examples.isEmpty()) {
-            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.USE_CASES, examples);
-        }
-        if (editPanel.getLink().getText() != null && !editPanel.getLink().getText().isEmpty()) {
-            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.LINK, editPanel.getLink().getText());
-        }
-        if (editPanel.getComment().getText() != null && !editPanel.getComment().getText().isEmpty()) {
-            RemoteUtils.trackerRemote.insertedLexicalUnit(newUnit, editPanel.getComment().getText(), PanelWorkbench.getOwnerFromConfigManager());
-        }
+//        int variant = RemoteUtils.lexicalUnitRemote.dbGetNextVariant(editPanel.getLemma().getText(), pos);
+//        newUnit.setSenseNumber(variant);
+//
+//        newUnit = LexicalDA.saveUnitRefreshID(newUnit);
+//
+//        if (editPanel.getDefinition().getText() != null && !editPanel.getDefinition().getText().isEmpty()) {
+//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.DEFINITION, editPanel.getDefinition().getText());
+//        }
+//        if (editPanel.getComment().getText() != null && !editPanel.getComment().getText().isEmpty()) {
+//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.COMMENT, editPanel.getComment().getText());
+//        }
+//        if (editPanel.getRegister().getSelectedItem().toString() != null) {
+//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.REGISTER, editPanel.getRegister().getSelectedItem().toString());
+//        }
+//        String examples = trasfotmExamplesToString(editPanel.getExamplesModel().toArray());
+//        if (examples != null && !examples.isEmpty()) {
+//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.USE_CASES, examples);
+//        }
+//        if (editPanel.getLink().getText() != null && !editPanel.getLink().getText().isEmpty()) {
+//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.LINK, editPanel.getLink().getText());
+//        }
+//        if (editPanel.getComment().getText() != null && !editPanel.getComment().getText().isEmpty()) {
+//            RemoteUtils.trackerRemote.insertedLexicalUnit(newUnit, editPanel.getComment().getText(), PanelWorkbench.getOwnerFromConfigManager());
+//        }
         return newUnit;
     }
 
@@ -191,19 +188,19 @@ public class NewLexicalUnitFrame extends IconDialog implements ActionListener {
             PartOfSpeech testPos = editPanel.getPartOfSpeech().retriveComboBoxItem();
             String testComments = editPanel.getComment().getText();
 
-            for (Sense unit : units) {
-                String comment = Common.getSenseAttribute(unit, Sense.COMMENT);
-                // check domain exists
-                if (testLemma.equals(unit.getLemma().getWord())
-                        && unit.getDomain().getId().equals(testDomain.getId())
-                        && unit.getPartOfSpeech().equals(testPos)
-                        && testComments.equals(comment)) {
-                    this.setAlwaysOnTop(false);
-                    DialogBox.showError(Messages.FAILURE_UNIT_EXISTS);
-                    this.setAlwaysOnTop(true);
-                    return false;
-                }
-            }
+//            for (Sense unit : units) {
+//                String comment = Common.getSenseAttribute(unit, Sense.COMMENT);
+//                // check domain exists
+//                if (testLemma.equals(unit.getLemma().getWord())
+//                        && unit.getDomain().getId().equals(testDomain.getId())
+//                        && unit.getPartOfSpeech().equals(testPos)
+//                        && testComments.equals(comment)) {
+//                    this.setAlwaysOnTop(false);
+//                    DialogBox.showError(Messages.FAILURE_UNIT_EXISTS);
+//                    this.setAlwaysOnTop(true);
+//                    return false;
+//                }
+//            }
         }
         return true;
     }

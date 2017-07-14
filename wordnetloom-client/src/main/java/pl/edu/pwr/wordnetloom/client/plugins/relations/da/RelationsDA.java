@@ -1,20 +1,3 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.relations.da;
 
 import java.util.ArrayList;
@@ -26,15 +9,12 @@ import javax.swing.JFrame;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 import pl.edu.pwr.wordnetloom.client.systems.enums.WorkState;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.NodeDrawer;
 import pl.edu.pwr.wordnetloom.client.systems.progress.AbstractProgressThread;
 import pl.edu.pwr.wordnetloom.client.systems.progress.ProgressFrame;
-import pl.edu.pwr.wordnetloom.client.utils.Common;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
@@ -49,14 +29,7 @@ public class RelationsDA {
     static String RELATION_TREE_BUILDING = "Budowanie drzewa relacji";
     static String RELATION_TREE_DATA_READING = "Odczyt danych";
 
-    /**
-     * prywatny konstruktor, aby nikogo nie krocilo stworzenie obiektu tej klasy
-     * :)
-     */
     private RelationsDA() {
-        /**
-         *
-         */
     }
 
     /**
@@ -71,7 +44,7 @@ public class RelationsDA {
      * @param lexicon
      * @return kolekcja z danymi
      */
-    static public Collection<Synset> getSynsets(String filterText, int status, String domainStr, RelationType relationType, int limitSize, List<Long> lexicon) {
+    static public Collection<Synset> getSynsets(String filterText, int status, String domainStr, SynsetRelationType relationType, int limitSize, List<Long> lexicon) {
         return RelationsDA.getSynsets(filterText, status, domainStr, relationType, limitSize, limitSize, lexicon);
     }
 
@@ -90,7 +63,7 @@ public class RelationsDA {
      * @param lexicons
      * @return kolekcja z danymi
      */
-    static public Collection<Synset> getSynsets(String filterText, int status, String domainStr, RelationType relationType, int limitSize, int posIndex, List<Long> lexicons) {
+    static public Collection<Synset> getSynsets(String filterText, int status, String domainStr, SynsetRelationType relationType, int limitSize, int posIndex, List<Long> lexicons) {
         Collection<WorkState> workStates = null;
         if (status == 0) {      // wszystko
             // nic nie robi, daje null
@@ -106,7 +79,7 @@ public class RelationsDA {
         if (domainStr != null) {
             domain = DomainManager.getInstance().decode(domainStr);
         }
-        List<Synset> synsets = RemoteUtils.synsetRemote.dbFastGetSynsets(filterText, domain, relationType, limitSize, posIndex, lexicons);
+        List<Synset> synsets = new ArrayList<>();//RemoteUtils.synsetRemote.dbFastGetSynsets(filterText, domain, relationType, limitSize, posIndex, lexicons);
 
         return synsets;
     }
@@ -121,19 +94,9 @@ public class RelationsDA {
     public static void moveUnitsToExistenSynset(Synset mainSynset, Collection<Sense> selectedUnits, Synset descSynset) {
 
         for (Sense unit : selectedUnits) {
-            RemoteUtils.unitAndSynsetRemote.dbDeleteConnection(unit, mainSynset);
-            RemoteUtils.unitAndSynsetRemote.dbAddConnection(unit, descSynset, false);
+           // RemoteUtils.unitAndSynsetRemote.dbDeleteConnection(unit, mainSynset);
+           // RemoteUtils.unitAndSynsetRemote.dbAddConnection(unit, descSynset, false);
         }
-    }
-
-    /**
-     * ustawienie poprawnosci relacji
-     *
-     * @param relation - relacja
-     * @param valid - poprawnosc
-     */
-    @Deprecated
-    public static void setValid(SynsetRelation relation, boolean valid) {
     }
 
     /**
@@ -142,7 +105,7 @@ public class RelationsDA {
      * @param relation - relacja do usuniecia
      */
     public static void delete(SynsetRelation relation) {
-        RemoteUtils.synsetRelationRemote.dbDelete(relation);
+        //RemoteUtils.synsetRelationRemote.dbDelete(relation);
     }
 
     /**
@@ -153,8 +116,8 @@ public class RelationsDA {
      * @param rel - typ relacji
      * @return TRUE jesli relacja istnieje
      */
-    public static boolean checkIfRelationExists(Synset parent, Synset child, RelationType rel) {
-        return RemoteUtils.synsetRelationRemote.dbRelationExists(parent, child, rel);
+    public static boolean checkIfRelationExists(Synset parent, Synset child, SynsetRelationType rel) {
+        return false; //RemoteUtils.synsetRelationRemote.dbRelationExists(parent, child, rel);
     }
 
     /**
@@ -164,12 +127,12 @@ public class RelationsDA {
      * @param child - element podrzedny
      * @param rel - typ relacji
      */
-    public static void makeRelation(Synset parent, Synset child, RelationType rel) {
+    public static void makeRelation(Synset parent, Synset child, SynsetRelationType rel) {
         if (parent == null || child == null || parent.getId() == -1 || child.getId() == -1) {
             return;
         }
 
-        RemoteUtils.synsetRelationRemote.dbMakeRelation(parent, child, rel);
+        //RemoteUtils.synsetRelationRemote.dbMakeRelation(parent, child, rel);
     }
 
     /**
@@ -179,10 +142,10 @@ public class RelationsDA {
      * @return pierwsza jednostka
      */
     public static Sense getFirstUnit(Synset synset) {
-        Collection<Sense> units = RemoteUtils.lexicalUnitRemote.dbFullGetUnits(synset, 1, LexiconManager.getInstance().getLexicons());
-        for (Sense unit : units) {
-            return unit;
-        }
+//        Collection<Sense> units = RemoteUtils.lexicalUnitRemote.dbFullGetUnits(synset, 1, LexiconManager.getInstance().getLexicons());
+//        for (Sense unit : units) {
+//            return unit;
+//        }
         return null;
     }
 
@@ -194,7 +157,7 @@ public class RelationsDA {
     public static Synset newSynset() {
         Synset newSynset = new Synset();
         newSynset.setSplit(1);
-        return RemoteUtils.synsetRemote.updateSynset(newSynset);
+        return null;//RemoteUtils.synsetRemote.updateSynset(newSynset);
     }
 
     /**
@@ -205,7 +168,7 @@ public class RelationsDA {
      * @return czesc mowy
      */
     public static PartOfSpeech getPos(Synset synset, List<Long> lexicons) {
-        return RemoteUtils.synsetRemote.dbGetPos(synset, lexicons);
+        return null; //RemoteUtils.synsetRemote.dbGetPos(synset, lexicons);
     }
 
     /**
@@ -216,7 +179,7 @@ public class RelationsDA {
      * @return jednostki synsetu
      */
     public static Collection<Sense> getUnits(Synset synset, List<Long> lexicons) {
-        return RemoteUtils.synsetRemote.dbFastGetUnits(synset, lexicons);
+        return null;//RemoteUtils.synsetRemote.dbFastGetUnits(synset, lexicons);
     }
 
     /**
@@ -253,9 +216,10 @@ public class RelationsDA {
      * @param rel - relacja
      * @return relacja odwrotna
      */
-    public static RelationType getReverseRelation(RelationType rel) {
-        RelationType reverse = RemoteUtils.relationTypeRemote.dbGetReverseByRelationType(rel);
-        return RemoteUtils.relationTypeRemote.dbGet(reverse.getId());
+    public static SynsetRelationType getReverseRelation(SynsetRelationType rel) {
+//        SynsetRelationType reverse = RemoteUtils.relationTypeRemote.dbGetReverseByRelationType(rel);
+//        return RemoteUtils.relationTypeRemote.dbGet(reverse.getId());
+    return null;
     }
 
     /**
@@ -264,15 +228,15 @@ public class RelationsDA {
      * @param rel - relacja dla ktorej ma zostac odczytany opis
      * @return pelna nazwa relacji
      */
-    public static String getRelationName(RelationType rel) {
+    public static String getRelationName(SynsetRelationType rel) {
         if (rel != null) {
             if (rel.getParent() != null) { // ma rodzica
-                RelationType parent = RemoteUtils.relationTypeRemote.dbGet(rel.getParent().getId());
-                parent = RelationTypes.get(parent.getId()).getRelationType();
-
-                if (parent != null) {
-                    return parent.getName() + " / " + rel.getName();
-                }
+//                SynsetRelationType parent = RemoteUtils.relationTypeRemote.dbGet(rel.getParent().getId());
+//                parent = RelationTypes.get(parent.getId()).getRelationType();
+//
+//                if (parent != null) {
+//                    return parent.getName() + " / " + rel.getName();
+//                }
             }
             return RelationTypes.getFullNameFor(rel.getId());
         }
@@ -286,10 +250,10 @@ public class RelationsDA {
      * @param synset - synset
      * @return lista typow relacji
      */
-    public static Collection<RelationType> getRelationsTypes(Synset synset) {
-        Collection<RelationType> relations = null;
+    public static Collection<SynsetRelationType> getRelationsTypes(Synset synset) {
+        Collection<SynsetRelationType> relations = null;
         if (synset != null) {
-            relations = RemoteUtils.synsetRelationRemote.dbGetRelationTypesOfSynset(synset);
+            //relations = RemoteUtils.synsetRelationRemote.dbGetRelationTypesOfSynset(synset);
         } else {
             relations = new ArrayList<>();
         }
@@ -306,8 +270,8 @@ public class RelationsDA {
             usedSynsetsID.add(synsetId);
 
             for (SynsetRelation item : relations) {
-                if (item.getSynsetFrom().getId().longValue() == synsetId.longValue()) {
-                    buildRelationsTreeIdx(item.getSynsetTo().getId(), relations, usedSynsetsID, idx); // zbudowanie podrzednego
+                if (item.getParent().getId().longValue() == synsetId.longValue()) {
+                    buildRelationsTreeIdx(item.getChild().getId(), relations, usedSynsetsID, idx); // zbudowanie podrzednego
                 }
             }
         }
@@ -341,8 +305,8 @@ public class RelationsDA {
             usedSynsetsID.add(synsetId);
 
             for (SynsetRelation item : relations) {
-                if (item.getSynsetFrom().getId().longValue() == synsetId.longValue()) {
-                    NodeDrawer subItem = buildRelationsTree(item.getSynsetTo().getId(), relations, usedSynsetsID, synsetsDescriptions, progress, refreshProgressDepth - 1); // zbudowanie podrzednego
+                if (item.getParent().getId().longValue() == synsetId.longValue()) {
+                    NodeDrawer subItem = buildRelationsTree(item.getChild().getId(), relations, usedSynsetsID, synsetsDescriptions, progress, refreshProgressDepth - 1); // zbudowanie podrzednego
                     mainNode.addNode(subItem); // dodanie do drzewa
                     if (progress.isCanceled()) {
                         break;
@@ -365,7 +329,7 @@ public class RelationsDA {
      * @param lexicons
      * @return drzewo relacji synsetow
      */
-    public static NodeDrawer buildRelationsTree(JFrame parent, final Synset synset, final RelationType relationType, final List<Long> lexicons) {
+    public static NodeDrawer buildRelationsTree(JFrame parent, final Synset synset, final SynsetRelationType relationType, final List<Long> lexicons) {
         AbstractProgressThread progress = new AbstractProgressThread(parent, RELATION_TREE_BUILDING, null, true) {
             @Override
             protected void mainProcess() {
@@ -373,26 +337,26 @@ public class RelationsDA {
                 progress.setProgressParams(0, 100, RELATION_TREE_DATA_READING);
 
                 // odczytanie relacji aby miec w buforze
-                Collection<SynsetRelation> relations = RemoteUtils.synsetRelationRemote.dbFastGetRelations(relationType);
+              //  Collection<SynsetRelation> relations = RemoteUtils.synsetRelationRemote.dbFastGetRelations(relationType);
 
                 // przerobienie kolekcji na hashmape
                 HashMap<Long, ArrayList<Long>> map = new HashMap<>();
-                for (SynsetRelation item : relations) {
-                    ArrayList<Long> values = map.get(item.getSynsetFrom().getId());
-                    if (values == null) {
-                        values = new ArrayList<>();
-                        map.put(item.getSynsetFrom().getId(), values);
-                    }
-                    values.add(item.getSynsetTo().getId());
-                }
+//                for (SynsetRelation item : relations) {
+//                    ArrayList<Long> values = map.get(item.getSynsetFrom().getId());
+//                    if (values == null) {
+//                        values = new ArrayList<>();
+//                        map.put(item.getSynsetFrom().getId(), values);
+//                    }
+//                    values.add(item.getSynsetTo().getId());
+//                }
 
                 // generate synsets IDx
                 ArrayList<Long> idx = new ArrayList<>();
-                buildRelationsTreeIdx(synset != null ? synset.getId() : null, relations, new ArrayList<>(), idx);
+               // buildRelationsTreeIdx(synset != null ? synset.getId() : null, relations, new ArrayList<>(), idx);
 
-                Map<Long, String> synsetsDescriptions = RemoteUtils.synsetRemote.dbGetSynsetsDescriptionIdx(idx, lexicons);
+                //Map<Long, String> synsetsDescriptions = RemoteUtils.synsetRemote.dbGetSynsetsDescriptionIdx(idx, lexicons);
 
-                this.tag = buildRelationsTree(synset != null ? synset.getId() : null, relations, new ArrayList<>(), synsetsDescriptions, progress, 2);
+               // this.tag = buildRelationsTree(synset != null ? synset.getId() : null, relations, new ArrayList<>(), synsetsDescriptions, progress, 2);
             }
         };
         if (progress.getTag() != null) {
@@ -414,62 +378,58 @@ public class RelationsDA {
             return;
         }
 
-        for (SynsetRelation rel : RemoteUtils.synsetRelationRemote.dbGetUpperRelations(src, null, LexiconManager.getInstance().getLexicons())) {
-
-            RemoteUtils.synsetRelationRemote.dbDelete(rel);
-
-            rel.setSynsetTo(dst);
-
-            if (!RelationsDA.checkIfRelationExists(rel.getSynsetFrom(), rel.getSynsetTo(), rel.getRelation())
-                    && !(rel.getSynsetTo().equals(rel.getSynsetFrom()))) {
-                RemoteUtils.synsetRelationRemote.dbMakeRelation(
-                        rel.getSynsetFrom(),
-                        rel.getSynsetTo(),
-                        rel.getRelation());
-            }
-        }
-
-        for (SynsetRelation rel : RemoteUtils.synsetRelationRemote.dbGetSubRelations(src, null, LexiconManager.getInstance().getLexicons())) {
-
-            RemoteUtils.synsetRelationRemote.dbDelete(rel);
-
-            rel.setSynsetFrom(dst);
-
-            if (!RelationsDA.checkIfRelationExists(rel.getSynsetFrom(), rel.getSynsetTo(), rel.getRelation())
-                    && !(rel.getSynsetTo().equals(rel.getSynsetFrom()))) {
-                RemoteUtils.synsetRelationRemote.dbMakeRelation(
-                        rel.getSynsetFrom(),
-                        rel.getSynsetTo(),
-                        rel.getRelation());
-            }
-        }
-
-        String old_comment = Common.getSynsetAttribute(dst, Synset.COMMENT);
-        if (old_comment == null) {
-            old_comment = "";
-        }
-        String src_comment = Common.getSynsetAttribute(src, Synset.COMMENT);
-        if (src_comment == null) {
-            src_comment = "";
-        }
-
-        if (old_comment.isEmpty()) {
-            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(dst, Synset.COMMENT, src_comment);
-        } else if (!src_comment.isEmpty()) {
-            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(dst, Synset.COMMENT, old_comment + "; " + src_comment);
-        }
-
-        RemoteUtils.synsetRemote.updateSynset(dst);
-
+//        for (SynsetRelation rel : RemoteUtils.synsetRelationRemote.dbGetUpperRelations(src, null, LexiconManager.getInstance().getLexicons())) {
+//
+//            RemoteUtils.synsetRelationRemote.dbDelete(rel);
+//
+//            rel.setSynsetTo(dst);
+//
+//            if (!RelationsDA.checkIfRelationExists(rel.getSynsetFrom(), rel.getSynsetTo(), rel.getRelation())
+//                    && !(rel.getSynsetTo().equals(rel.getSynsetFrom()))) {
+//                RemoteUtils.synsetRelationRemote.dbMakeRelation(
+//                        rel.getSynsetFrom(),
+//                        rel.getSynsetTo(),
+//                        rel.getRelation());
+//            }
+//        }
+//
+//        for (SynsetRelation rel : RemoteUtils.synsetRelationRemote.dbGetSubRelations(src, null, LexiconManager.getInstance().getLexicons())) {
+//
+//            RemoteUtils.synsetRelationRemote.dbDelete(rel);
+//
+//            rel.setSynsetFrom(dst);
+//
+//            if (!RelationsDA.checkIfRelationExists(rel.getSynsetFrom(), rel.getSynsetTo(), rel.getRelation())
+//                    && !(rel.getSynsetTo().equals(rel.getSynsetFrom()))) {
+//                RemoteUtils.synsetRelationRemote.dbMakeRelation(
+//                        rel.getSynsetFrom(),
+//                        rel.getSynsetTo(),
+//                        rel.getRelation());
+//            }
+//        }
+//        String old_comment = Common.getSynsetAttribute(dst, Synset.COMMENT);
+//        if (old_comment == null) {
+//            old_comment = "";
+//        }
+//        String src_comment = Common.getSynsetAttribute(src, Synset.COMMENT);
+//        if (src_comment == null) {
+//            src_comment = "";
+//        }
+//        if (old_comment.isEmpty()) {
+//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(dst, Synset.COMMENT, src_comment);
+//        } else if (!src_comment.isEmpty()) {
+//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(dst, Synset.COMMENT, old_comment + "; " + src_comment);
+//        }
+        // RemoteUtils.synsetRemote.updateSynset(dst);
         HashMap<String, Sense> dst_lemma_to_str = new HashMap<>();
         for (Sense unit : RelationsDA.getUnits(dst, lexicons)) {
-            dst_lemma_to_str.put(unit.getLemma().getWord(), unit);
+            dst_lemma_to_str.put(unit.getWord().getWord(), unit);
         }
 
         ArrayList<Sense> units_to_move = new ArrayList<>();
 
         RelationsDA.getUnits(src, lexicons).stream().forEach((unit_src) -> {
-            Sense unit_dst = dst_lemma_to_str.get(unit_src.getLemma());
+            Sense unit_dst = dst_lemma_to_str.get(unit_src.getWord());
             if (unit_dst == null) {
                 units_to_move.add(unit_src);
             } else {
@@ -478,7 +438,7 @@ public class RelationsDA {
         });
 
         RelationsDA.moveUnitsToExistenSynset(src, units_to_move, dst);
-        RemoteUtils.synsetRemote.dbDelete(src);
+        //  RemoteUtils.synsetRemote.dbDelete(src);
     }
 
     /**
@@ -488,11 +448,11 @@ public class RelationsDA {
      * @return domena
      */
     public static Domain getDomain(Sense unit) {
-        RemoteUtils.lexicalUnitRemote.dbGet(unit.getId());
+        // RemoteUtils.lexicalUnitRemote.dbGet(unit.getId());
         return unit.getDomain();
     }
 
     public static Synset refreshSynset(Synset synset) {
-        return RemoteUtils.synsetRemote.dbGet(synset.getId());
+        return null; //RemoteUtils.synsetRemote.dbGet(synset.getId());
     }
 }

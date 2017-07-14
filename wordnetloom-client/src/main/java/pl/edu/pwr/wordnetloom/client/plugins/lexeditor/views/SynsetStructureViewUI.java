@@ -24,39 +24,28 @@ import javax.swing.event.ListSelectionListener;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.LexicalIM;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.models.UnitsInSynsetListModel;
-import pl.edu.pwr.wordnetloom.client.plugins.relations.da.RelationsDA;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.Tools;
-import pl.edu.pwr.wordnetloom.client.systems.progress.AbstractProgressThread;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
-import pl.edu.pwr.wordnetloom.client.utils.Common;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.model.wordnet.SenseToSynset;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import se.datadosen.component.RiverLayout;
 
@@ -324,171 +313,169 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             if (selectedUnits != null) {
                 // okienko z testami dla relacji, nie wyswietla gdy nie ma
                 // takich relacji w bazie
-                if (LexicalDA.areRelations(RelationArgument.LEXICAL_SPECIAL)) {
-                    RelationType rel;
-                    rel = RelationTypeFrame.showModal(workbench,
-                            RelationArgument.LEXICAL_SPECIAL, LexicalDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()),
-                            RemoteUtils.lexicalUnitRemote.dbFastGetUnits(lastSynset, LexiconManager.getInstance().getLexicons()), selectedUnits);
-                    if (rel == null) {
-                        return;
-                    }
-                }
-
-                for (Sense selectedUnit : selectedUnits) {
-                    // dodanie powiazanie
-                    lastSynset = LexicalDA.addConnection(selectedUnit,
-                            lastSynset);
-                }
-                // odswiezenie danych
-
-                refreshData(lastSynset);
-                getViWordNetService().refreshViews();
-            }
-        } else if (event.getSource() == buttonDelete) { // usuniecie zaznaczonej
-            // jednostki
-            Collection<Sense> selectedUnits = getSelectedUnits();
-            int result = DialogBox.YES;
-
-            // usuniecie wszystkich jednostek
-            List<SenseToSynset> senseToSynsetList = LexicalDA
-                    .getSenseToSynsetBySynset(lastSynset);
-            if (selectedUnits.size() == senseToSynsetList.size()
-                    && RemoteUtils.synsetRelationRemote
-                    .dbGetRelationCountOfSynset(lastSynset) > 0) {
-                result = DialogBox.showYesNo(Messages.QUESTION_DELETE_SYNSET);
-            } else {
-                result = DialogBox
-                        .showYesNo(Messages.QUESTION_DETACH_LEXICAL_UNITS_FROM_SYNSET);
+//                if (LexicalDA.areRelations(RelationArgument.LEXICAL_SPECIAL)) {
+//                    RelationType rel;
+//                    rel = RelationTypeFrame.showModal(workbench,
+//                            RelationArgument.LEXICAL_SPECIAL, LexicalDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()),
+                //  RemoteUtils.lexicalUnitRemote.dbFastGetUnits(lastSynset, LexiconManager.getInstance().getLexicons()), selectedUnits);
+                // if (rel == null) {
+                //      return;
+                // }
             }
 
-            if (result == DialogBox.YES) { // odpowiedziano twierdzaco
-                lastSynset = LexicalDA.deleteConnections(selectedUnits,
+            for (Sense selectedUnit : selectedUnits) {
+                // dodanie powiazanie
+                lastSynset = LexicalDA.addConnection(selectedUnit,
                         lastSynset);
-                if (lastSynset != null) {
-                    refreshData(lastSynset);
-                }
-                ViwnNode node = getViWordNetService().getActiveGraphView()
-                        .getUI().getSelectedNode();
-                if (node != null && node instanceof ViwnNodeSynset) {
-                    ((ViwnNodeSynset) node).setLabel(null).getSynset()
-                            .setId((long) -1);
-                }
             }
-            // powiadomienie o usunieciu jednostki
-            clickListeners.notifyAllListeners(lastSynset, UNIT_REMOVED);
-            refreshData(lastSynset);
-            getViWordNetService().refreshViews();
-        } else if (event.getSource() == buttonRelations) { // wywoalanie relacji
-            int[] selectedItems = unitsList.getSelectedIndices();
-            // odczytanie zaznaczonych jednostek
-            Collection<Sense> lexicalUnits = new ArrayList<>();
-            if (selectedItems != null) {
-                for (int i : selectedItems) {
-                    lexicalUnits.add(listModel.getObjectAt(i));
-                }
-            }
-            Object[] pairs = {lexicalUnits, lastSynset};
+            // odswiezenie danych
 
-            // powiadomienie zainteresowanych
-            clickListeners.notifyAllListeners(pairs, SYNSET_RELATIONS);
-        } else if (event.getSource() == buttonSwitchToLexicalPerspective) {
-            int[] selectedItems = unitsList.getSelectedIndices();
-            // odczytanie zaznaczonych jednostek
-            if (selectedItems != null) {
-                for (int i : selectedItems) {
-                    Sense unit = listModel.getObjectAt(i);
-                    // powiadomienie zainteresowanych
-                    clickListeners
-                            .notifyAllListeners(unit, LEXICAL_PERSPECTIVE);
-                }
-            }
-        } else if (event.getSource() == buttonToNew) {
-            lastSelectedUnits.clear();
-            lastSelectedUnits.add(listModel.getObjectAt(index));
-            // czy nie ma przypadkiem do przeniesienia wszystkich jednostek
-            List<Sense> list = RemoteUtils.lexicalUnitRemote
-                    .dbFastGetUnits(lastSynset, LexiconManager.getInstance().getLexicons());
-            if (lastSelectedUnits.size() == list.size()) {
-                DialogBox
-                        .showError(Messages.ERROR_CANNOT_MOVE_ALL_UNITS_FROM_SYNSET);
-                return;
-            }
-            Collection<Sense> unitsOfMainSynset = RelationsDA.getUnits(
-                    lastSynset, lastSelectedUnits, LexiconManager.getInstance().getLexicons());
-            final RelationType rel = RelationTypeFrame.showModal(workbench,
-                    RelationArgument.SYNSET, RelationsDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()),
-                    unitsOfMainSynset, lastSelectedUnits);
-            if (rel == null) {
-                return;
-            }
-
-            // utworzenie nowego synsetu
-            final Synset newSynset = RelationsDA.newSynset();
-
-            // utworzenie powiazan
-            new AbstractProgressThread(Tools.findFrame(getContent()),
-                    Labels.SYNSET_RELATIONS, null) {
-                /**
-                 * glowna procedura watku
-                 */
-                @Override
-                protected void mainProcess() {
-                    // ustawienie parametrow dla paska postepu
-                    progress.setGlobalProgressParams(1, 2);
-                    progress.setProgressParams(0, 0, Labels.MOVING_UNITS);
-                    RelationsDA.moveUnitsToExistenSynset(lastSynset,
-                            lastSelectedUnits, newSynset);
-                    progress.setGlobalProgressValue(2);
-                    progress.setProgressParams(0, 0, Labels.CREATING_CONNECTION);
-                    RelationsDA.makeRelation(lastSynset, newSynset, rel);
-                }
-            };
-
-            // czy istieje relacja odwrotna
-            if (rel.getReverse() != null) {
-                // testy dla relacji odwrotnej
-                Collection<String> tests = LexicalDA.getTests(
-                        RelationsDA.getReverseRelation(rel),
-                        lastSynset.toString(), newSynset.toString(),
-                        RelationsDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()));
-                String test = "\n\n";
-                for (String i : tests) {
-                    test += i + "\n";
-                }
-                // czy utworzyc dla relacji odwrotnej
-                RelationType reverse = RelationsDA.getReverseRelation(rel);
-                reverse = RelationTypes.get(reverse.getId()).getRelationType();
-
-                String reverseName = RelationsDA.getRelationName(reverse);
-                if (rel.isAutoReverse()
-                        || DialogBox
-                        .showYesNoCancel(String
-                                .format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION
-                                        + test, reverseName)) == DialogBox.YES) {
-                    RelationsDA.makeRelation(newSynset, lastSynset, reverse);
-                }
-
-            }
-
-            lastSynset = RelationsDA.refreshSynset(lastSynset);
-            ;
-            getViWordNetService().refreshViews();
-
-            final int returnValue = unitsList.getSelectedIndex();
-            Sense unit = listModel.getObjectAt(returnValue);
-            boolean superMode = workbench.getParam(SUPER_MODE) != null
-                    && workbench.getParam(SUPER_MODE).equals(SUPER_MODE_VALUE);
-            buttonDelete.setEnabled(unit != null ? superMode : false);
-
-            // powiadomienie zainteresowanych
-            listeners
-                    .notifyAllListeners(unitsList.getSelectedIndices().length == 1 ? unit
-                            : null);
-
-            refreshData(lastSynset);
-
+//                refreshData(lastSynset);
+//                getViWordNetService().refreshViews();
         }
-        unitsList.invalidate(); // odrysowanie listy
+//        } else if (event.getSource() == buttonDelete) { // usuniecie zaznaczonej
+//            // jednostki
+//            Collection<Sense> selectedUnits = getSelectedUnits();
+//            int result = DialogBox.YES;
+//
+//            // usuniecie wszystkich jednostek
+//            List<SenseToSynset> senseToSynsetList = LexicalDA
+//                    .getSenseToSynsetBySynset(lastSynset);
+//            if (selectedUnits.size() == senseToSynsetList.size()
+//                    && RemoteUtils.synsetRelationRemote
+//                    .dbGetRelationCountOfSynset(lastSynset) > 0) {
+//                result = DialogBox.showYesNo(Messages.QUESTION_DELETE_SYNSET);
+//            } else {
+//                result = DialogBox
+//                        .showYesNo(Messages.QUESTION_DETACH_LEXICAL_UNITS_FROM_SYNSET);
+//            }
+
+//            if (result == DialogBox.YES) { // odpowiedziano twierdzaco
+//                lastSynset = LexicalDA.deleteConnections(selectedUnits,
+//                        lastSynset);
+//                if (lastSynset != null) {
+//                    refreshData(lastSynset);
+//                }
+//                ViwnNode node = getViWordNetService().getActiveGraphView()
+//                        .getUI().getSelectedNode();
+//                if (node != null && node instanceof ViwnNodeSynset) {
+//                    ((ViwnNodeSynset) node).setLabel(null).getSynset()
+//                            .setId((long) -1);
+//                }
+//            }
+//            // powiadomienie o usunieciu jednostki
+//            clickListeners.notifyAllListeners(lastSynset, UNIT_REMOVED);
+//            refreshData(lastSynset);
+//            getViWordNetService().refreshViews();
+//        } else if (event.getSource() == buttonRelations) { // wywoalanie relacji
+//            int[] selectedItems = unitsList.getSelectedIndices();
+//            // odczytanie zaznaczonych jednostek
+//            Collection<Sense> lexicalUnits = new ArrayList<>();
+//            if (selectedItems != null) {
+//                for (int i : selectedItems) {
+//                    lexicalUnits.add(listModel.getObjectAt(i));
+//                }
+//            }
+//            Object[] pairs = {lexicalUnits, lastSynset};
+//
+//            // powiadomienie zainteresowanych
+//            clickListeners.notifyAllListeners(pairs, SYNSET_RELATIONS);
+//        } else if (event.getSource() == buttonSwitchToLexicalPerspective) {
+//            int[] selectedItems = unitsList.getSelectedIndices();
+//            // odczytanie zaznaczonych jednostek
+//            if (selectedItems != null) {
+//                for (int i : selectedItems) {
+//                    Sense unit = listModel.getObjectAt(i);
+//                    // powiadomienie zainteresowanych
+//                    clickListeners
+//                            .notifyAllListeners(unit, LEXICAL_PERSPECTIVE);
+//                }
+//            }
+//        } else if (event.getSource() == buttonToNew) {
+//            lastSelectedUnits.clear();
+//            lastSelectedUnits.add(listModel.getObjectAt(index));
+        // czy nie ma przypadkiem do przeniesienia wszystkich jednostek
+//            List<Sense> list = RemoteUtils.lexicalUnitRemote
+//                    .dbFastGetUnits(lastSynset, LexiconManager.getInstance().getLexicons());
+//            if (lastSelectedUnits.size() == list.size()) {
+//                DialogBox
+//                        .showError(Messages.ERROR_CANNOT_MOVE_ALL_UNITS_FROM_SYNSET);
+//                return;
+//            }
+//            Collection<Sense> unitsOfMainSynset = RelationsDA.getUnits(
+//                    lastSynset, lastSelectedUnits, LexiconManager.getInstance().getLexicons());
+//            final RelationType rel = RelationTypeFrame.showModal(workbench,
+//                    RelationArgument.SYNSET, RelationsDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()),
+//                    unitsOfMainSynset, lastSelectedUnits);
+//            if (rel == null) {
+//                return;
+//            }
+//            // utworzenie nowego synsetu
+//            final Synset newSynset = RelationsDA.newSynset();
+//
+//            // utworzenie powiazan
+//            new AbstractProgressThread(Tools.findFrame(getContent()),
+//                    Labels.SYNSET_RELATIONS, null) {
+//                /**
+//                 * glowna procedura watku
+//                 */
+//                @Override
+//                protected void mainProcess() {
+//                    // ustawienie parametrow dla paska postepu
+//                    progress.setGlobalProgressParams(1, 2);
+//                    progress.setProgressParams(0, 0, Labels.MOVING_UNITS);
+//                    RelationsDA.moveUnitsToExistenSynset(lastSynset,
+//                            lastSelectedUnits, newSynset);
+//                    progress.setGlobalProgressValue(2);
+//                    progress.setProgressParams(0, 0, Labels.CREATING_CONNECTION);
+//                    RelationsDA.makeRelation(lastSynset, newSynset, rel);
+//                }
+//            };
+        // czy istieje relacja odwrotna
+//            if (rel.getReverse() != null) {
+//                // testy dla relacji odwrotnej
+//                Collection<String> tests = LexicalDA.getTests(
+//                        RelationsDA.getReverseRelation(rel),
+//                        lastSynset.toString(), newSynset.toString(),
+//                        RelationsDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()));
+//                String test = "\n\n";
+//                for (String i : tests) {
+//                    test += i + "\n";
+//                }
+//                // czy utworzyc dla relacji odwrotnej
+//                RelationType reverse = RelationsDA.getReverseRelation(rel);
+//                reverse = RelationTypes.get(reverse.getId()).getRelationType();
+//
+//                String reverseName = RelationsDA.getRelationName(reverse);
+//                if (rel.isAutoReverse()
+//                        || DialogBox
+//                        .showYesNoCancel(String
+//                                .format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION
+//                                        + test, reverseName)) == DialogBox.YES) {
+//                    RelationsDA.makeRelation(newSynset, lastSynset, reverse);
+//                }
+//
+//            }
+//
+//            lastSynset = RelationsDA.refreshSynset(lastSynset);
+//            ;
+//            getViWordNetService().refreshViews();
+//
+//            final int returnValue = unitsList.getSelectedIndex();
+//            Sense unit = listModel.getObjectAt(returnValue);
+//            boolean superMode = workbench.getParam(SUPER_MODE) != null
+//                    && workbench.getParam(SUPER_MODE).equals(SUPER_MODE_VALUE);
+//            buttonDelete.setEnabled(unit != null ? superMode : false);
+//
+//            // powiadomienie zainteresowanych
+//            listeners
+//                    .notifyAllListeners(unitsList.getSelectedIndices().length == 1 ? unit
+//                            : null);
+//
+//            refreshData(lastSynset);
+//
+//        }
+//        unitsList.invalidate(); // odrysowanie listy
     }
 
     @Override
@@ -564,18 +551,18 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             // odczytanie punktu podzialu
             newSplitPoint = synset.getSplit();
             // odczytanie jednostek
-            units = RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
-            if (units == null) {
-                units = LexicalDA.getLexicalUnits(synset, LexiconManager.getInstance().getLexicons());
-            }
-            commentValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.COMMENT)) : formatValue(null));
-            if (Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT))) {
-                isAbstract.setText(String.format("<html><font color=red>%s</font></html>", Labels.SYNSET_ARTIFICIAL));
-            } else {
-                isAbstract.setText("");
-            }
+//            units = RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
+//            if (units == null) {
+//                units = LexicalDA.getLexicalUnits(synset, LexiconManager.getInstance().getLexicons());
+//            }
+//            commentValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.COMMENT)) : formatValue(null));
+//            if (Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT))) {
+//                isAbstract.setText(String.format("<html><font color=red>%s</font></html>", Labels.SYNSET_ARTIFICIAL));
+//            } else {
+//                isAbstract.setText("");
+//            }
             synsetID.setText(Long.toString(synset.getId()));
-            synsetOwner.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.OWNER)) : formatValue(null));
+            //  synsetOwner.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.OWNER)) : formatValue(null));
         }
 
         // odczytanie zaznaczonej jednostki

@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.sense.service.impl;
 
 import java.util.List;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -8,11 +10,14 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
-import pl.edu.pwr.wordnetloom.sense.service.SenseServceLocal;
+import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
+import pl.edu.pwr.wordnetloom.sense.service.SenseServiceRemote;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 @Stateless
-public class SenseServiceBean implements SenseServceLocal {
+@Remote(SenseServiceRemote.class)
+@Local(SenseServiceLocal.class)
+public class SenseServiceBean implements SenseServiceLocal {
 
     @Inject
     private SenseRepository senseRepository;

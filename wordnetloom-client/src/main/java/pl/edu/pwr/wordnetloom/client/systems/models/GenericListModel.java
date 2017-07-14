@@ -1,20 +1,3 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.systems.models;
 
 import java.text.Collator;
@@ -33,8 +16,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import org.apache.commons.collections15.map.HashedMap;
-import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.relation.model.RelationTest;
+import pl.edu.pwr.wordnetloom.relationtest.model.RelationTest;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 /**
@@ -146,23 +128,23 @@ public class GenericListModel<T> implements ListModel {
      */
     public String getElementAt(int index) {
         T element = getObjectAt(index);
-        if (synsetMode) {
-            Long id = ((Sense) element).getSenseToSynset().getIdSynset();
-            return element == null ? Labels.NO_VALUE
-                    : formatString(buildNameTagForSynset(synsetTags.get(id)));
-        }
-        if (element instanceof RelationTest) {
-            return formatString(buildTagForRelationTest((RelationTest) element));
-        }
-        return element == null ? Labels.NO_VALUE : formatString(element
-                .toString() + " " + ((Sense) element).getLexicon().getLexiconIdentifier().getText());
+        return "";
+//        if (synsetMode) {
+//            Long id = ((Sense) element).getSenseToSynset().getIdSynset();
+//            return element == null ? Labels.NO_VALUE
+//                    : formatString(buildNameTagForSynset(synsetTags.get(id)));
+//        }
+//        if (element instanceof RelationTest) {
+//            return formatString(buildTagForRelationTest((RelationTest) element));
+//        }
+//        return element == null ? Labels.NO_VALUE : formatString(element
+//                .toString() + " " + ((Sense) element).getLexicon().getLexiconIdentifier().getText());
     }
 
     public String buildTagForRelationTest(RelationTest relationTest) {
 
         StringBuilder tag = new StringBuilder();
-        tag.append(htmlTagBuilder("3", "green", "[" + relationTest.getPos()
-                + "]"));
+        tag.append(htmlTagBuilder("3", "green", "[" + relationTest.getSenseApartOfSpeech() + "]"));
         tag.append(" ");
         tag.append(formatRelationTest(relationTest));
         return tag.toString();
@@ -324,13 +306,13 @@ public class GenericListModel<T> implements ListModel {
         Collection<Sense> synsets = new ArrayList<Sense>();
         if (!sense.isEmpty()) {
             for (Sense senseItem : sense) {
-                if (senseItem.getSenseToSynset().getSenseIndex() == 0) {
-                    synsets.add(senseItem);
-                }
-                if (senseItem.getLexicon().getId() == 2
-                        && senseItem.getSenseToSynset().getSenseIndex() == 1) {
-                    synsets.add(senseItem);
-                }
+//                if (senseItem.getSenseToSynset().getSenseIndex() == 0) {
+//                    synsets.add(senseItem);
+//                }
+//                if (senseItem.getLexicon().getId() == 2
+//                        && senseItem.getSenseToSynset().getSenseIndex() == 1) {
+//                    synsets.add(senseItem);
+//                }
             }
         }
 
@@ -351,8 +333,8 @@ public class GenericListModel<T> implements ListModel {
         Comparator<Sense> senseComparator = new Comparator<Sense>() {
             @Override
             public int compare(Sense a, Sense b) {
-                String aa = a.getLemma().getWord().toLowerCase();
-                String bb = b.getLemma().getWord().toLowerCase();
+                String aa = a.getWord().getWord().toLowerCase();
+                String bb = b.getWord().getWord().toLowerCase();
 
                 int c = myFavouriteCollator.compare(aa, bb);
                 if (c == 0) {
@@ -361,13 +343,13 @@ public class GenericListModel<T> implements ListModel {
                     c = myFavouriteCollator.compare(aa, bb);
                 }
                 if (c == 0) {
-                    if (a.getSenseNumber() == b.getSenseNumber()) {
+                    if (a.getVariant() == b.getVariant()) {
                         c = 0;
                     }
-                    if (a.getSenseNumber() > b.getSenseNumber()) {
+                    if (a.getVariant() > b.getVariant()) {
                         c = 1;
                     }
-                    if (a.getSenseNumber() < b.getSenseNumber()) {
+                    if (a.getVariant() < b.getVariant()) {
                         c = -1;
                     }
                 }
@@ -381,12 +363,12 @@ public class GenericListModel<T> implements ListModel {
         };
 
         //Items starting with frase
-        List<Sense> withFraseOnBegining = new ArrayList<Sense>();
+        List<Sense> withFraseOnBegining = new ArrayList<>();
         //Other items
-        List<Sense> other = new ArrayList<Sense>();
+        List<Sense> other = new ArrayList<>();
 
         for (Sense se : synsets) {
-            if (se.getLemma().toString().startsWith(sortFrase.toLowerCase())) {
+            if (se.getWord().toString().startsWith(sortFrase.toLowerCase())) {
                 withFraseOnBegining.add(se);
             } else {
                 other.add(se);
@@ -399,14 +381,14 @@ public class GenericListModel<T> implements ListModel {
     }
 
     public Map<Long, String> buildSynsetNameWithContainedUnits(List<Sense> sense) {
-        Map<Long, String> names = new HashedMap<Long, String>();
+        Map<Long, String> names = new HashedMap<>();
         if (!sense.isEmpty()) {
             int i = 0;
             while (i < sense.size()) {
-                Long id = sense.get(i).getSenseToSynset().getIdSynset();
-                List<String> senseName = new ArrayList<String>();
-                while (sense.get(i).getSenseToSynset().getIdSynset().equals(id)) {
-                    senseName.add(sense.get(i).toString() + " " + sense.get(i).getLexicon().getLexiconIdentifier().getText());
+                Long id = sense.get(i).getSynset().getId();
+                List<String> senseName = new ArrayList<>();
+                while (sense.get(i).getSynset().getId().equals(id)) {
+                    senseName.add(sense.get(i).toString() + " " + sense.get(i).getLexicon().getIdentifier());
                     i++;
                     if (i > sense.size() - 1) {
                         break;
@@ -414,7 +396,7 @@ public class GenericListModel<T> implements ListModel {
                 }
                 names.put(id, senseName.toString());
                 if (i < sense.size()) {
-                    id = sense.get(i).getSenseToSynset().getIdSynset();
+                    id = sense.get(i).getSynset().getId();
                 }
             }
         }

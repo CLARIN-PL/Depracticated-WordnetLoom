@@ -9,7 +9,6 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 public final class SenseCriteria extends CriteriaPanel {
@@ -19,8 +18,8 @@ public final class SenseCriteria extends CriteriaPanel {
     private TextFieldPlain example;
     private CriteriaDTO crit;
 
-    public SenseCriteria(RelationArgument relationArgumentType) {
-        super(relationArgumentType, 420);
+    public SenseCriteria() {
+        super(420);
         init();
         initializeFormPanel();
     }
@@ -44,7 +43,7 @@ public final class SenseCriteria extends CriteriaPanel {
         addLexicon();
         addPartsOfSpeach();
         addDomain();
-        addRelations();
+        addSenseRelationTypes();
         addRegister();
         addComment();
         addExample();
@@ -92,7 +91,7 @@ public final class SenseCriteria extends CriteriaPanel {
         crit.setLexicon(getLexiconComboBox().getSelectedIndex());
         crit.setPartOfSpeech(getPartsOfSpeachComboBox().getSelectedIndex());
         crit.setDomain(getDomainComboBox().getSelectedIndex());
-        crit.setRelation(getRelationsComboBox().getSelectedIndex());
+        crit.setRelation(getSenseRelationTypeComboBox().getSelectedIndex());
         crit.setRegister(getRegisterComboBox().getSelectedIndex());
         crit.setComment(getComment().getText());
         crit.setExample(getExample().getText());
@@ -109,7 +108,7 @@ public final class SenseCriteria extends CriteriaPanel {
         getLexiconComboBox().setSelectedIndex(criteria.getLexicon());
         getPartsOfSpeachComboBox().setSelectedIndex(criteria.getPartOfSpeech());
         getDomainComboBox().setSelectedIndex(criteria.getDomain());
-        getRelationsComboBox().setSelectedIndex(criteria.getRelation());
+        getSenseRelationTypeComboBox().setSelectedIndex(criteria.getRelation());
         getRegisterComboBox().setSelectedIndex(criteria.getRegister());
         getComment().setText(criteria.getComment());
         getExample().setText(criteria.getExample());

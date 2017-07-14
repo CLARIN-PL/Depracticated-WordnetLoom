@@ -1,20 +1,3 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.lexicon.frames;
 
 import java.awt.Dimension;
@@ -22,7 +5,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JCheckBox;
@@ -32,14 +14,7 @@ import org.apache.commons.collections15.map.HashedMap;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
-import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
-/**
- * Window to choose lexicons
- *
- * @author tnaskret
- */
 public class LexiconsFrame extends IconDialog implements ActionListener {
 
     private static final long serialVersionUID = 1L;
@@ -67,25 +42,24 @@ public class LexiconsFrame extends IconDialog implements ActionListener {
 
     private void initAndLoadCheckBoxes(List<Long> lexiconsFromConfig) {
 
-        Collection<Lexicon> lexicons = RemoteUtils.lexicalUnitRemote.getAllLexicons();
-        arrayOfLexiconCheckBoxes = new JCheckBox[lexicons.size()];
-
+        // Collection<Lexicon> lexicons = RemoteUtils.lexicalUnitRemote.getAllLexicons();
+        // arrayOfLexiconCheckBoxes = new JCheckBox[lexicons.size()];
         int i = 0;
-        for (Lexicon lexicon : lexicons) {
-            if (i > 0) {
-                this.lexiconMap.put(lexicon.getName().getText(),
-                        lexicon.getId());
-                arrayOfLexiconCheckBoxes[i] = new JCheckBox(lexicon.getName()
-                        .getText());
-                if (lexiconsFromConfig.contains(lexicon.getId())) {
-                    arrayOfLexiconCheckBoxes[i].setSelected(true);
-                } else {
-                    arrayOfLexiconCheckBoxes[i].setSelected(false);
-                }
-                this.add("br center", arrayOfLexiconCheckBoxes[i]);
-            }
-            i++;
-        }
+//        for (Lexicon lexicon : lexicons) {
+//            if (i > 0) {
+//                this.lexiconMap.put(lexicon.getName().getText(),
+//                        lexicon.getId());
+//                arrayOfLexiconCheckBoxes[i] = new JCheckBox(lexicon.getName()
+//                        .getText());
+//                if (lexiconsFromConfig.contains(lexicon.getId())) {
+//                    arrayOfLexiconCheckBoxes[i].setSelected(true);
+//                } else {
+//                    arrayOfLexiconCheckBoxes[i].setSelected(false);
+//                }
+//                this.add("br center", arrayOfLexiconCheckBoxes[i]);
+//            }
+//            i++;
+//        }
     }
 
     private void initButton() {

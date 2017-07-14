@@ -61,7 +61,7 @@ public class DomainManager {
              *
              * fixme
              */
-            List<Domain> list = RemoteUtils.domainServiceRemote.findAll();      
+            List<Domain> list = RemoteUtils.domainServiceRemote.findAll();
             cache = Collections.unmodifiableList(Collections.synchronizedList(list));
 
             synchronized (DomainManager.class) {
@@ -204,7 +204,7 @@ public class DomainManager {
 
     public List<Domain> sortDomains(List<Domain> doaminsToSort) {
         List<Domain> toReturn = Arrays.asList(doaminsToSort.toArray(new Domain[]{}));
-        Collections.sort(toReturn, (Domain a, Domain b) -> a.getName().getText().compareTo(b.getName().getText()));
+        Collections.sort(toReturn, (Domain a, Domain b) -> a.getName(languageCode).compareTo(b.getName(languageCode)));
         return toReturn;
     }
 
@@ -222,7 +222,7 @@ public class DomainManager {
         }
 
         for (int i = 0; i < cache.size() && toReturn == null; i++) {
-            if (cache.get(i).getName().toString().equals(s)) {
+            if (cache.get(i).getName(defaultLanguageCode).equals(s)) {
                 toReturn = cache.get(i);
             }
         }

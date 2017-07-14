@@ -6,11 +6,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
@@ -20,15 +18,9 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relation.model.RelationArgument;
-import pl.edu.pwr.wordnetloom.relation.model.RelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
-/**
- * okienko do wprowadzania parametrow dla nowej relacji
- *
- * @author Max
- */
 public class RelationTypeFrame extends IconDialog implements ActionListener, KeyListener {
 
     protected static final long serialVersionUID = 1L;
@@ -42,12 +34,11 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
     protected static ComboBoxPlain parentItem;
     protected ComboBoxPlain middleItem;
     protected static ComboBoxPlain childItem;
-    protected RelationType fixedRelationType;
+    protected SynsetRelationType fixedRelationType;
 
-    //private RelationArgument type=null;
-    protected RelationType chosenType = null;
-    protected ArrayList<RelationType> mainRelations = null;
-    protected Collection<RelationType> subRelations = null;
+    protected SynsetRelationType chosenType = null;
+    protected ArrayList<SynsetRelationType> mainRelations = null;
+    protected Collection<SynsetRelationType> subRelations = null;
     protected static PartOfSpeech pos;
 
     /**
@@ -62,10 +53,10 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
      * @param childUnits - jednostki nadrzedne
      */
     private RelationTypeFrame(JFrame frame,
-            RelationArgument type,
+            String type,
             PartOfSpeech pos,
-            RelationType fixedRelationType,
-            RelationType suggestedRelationType,
+            SynsetRelationType fixedRelationType,
+            SynsetRelationType suggestedRelationType,
             Sense suggestedUnit,
             Collection<Sense> parentUnits,
             Collection<Sense> middleUnits,
@@ -81,26 +72,26 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
         // element nadrzedny
         parentItem = new ComboBoxPlain();
         for (Sense parent : parentUnits) {
-            parentItem.addItem(parent.getLemma().getWord());
+            parentItem.addItem(parent.getWord().getWord());
         }
 
         // element podrzedny
         childItem = new ComboBoxPlain();
         for (Sense child : childUnits) {
-            childItem.addItem(child.getLemma().getWord());
+            childItem.addItem(child.getWord().getWord());
         }
         //Wybranie zaproponowanej jednostki
         if (suggestedUnit != null) {
 
-            childItem.setSelectedItem(suggestedUnit.getLemma().getWord());
-            parentItem.setSelectedItem(suggestedUnit.getLemma().getWord());
+            childItem.setSelectedItem(suggestedUnit.getWord().getWord());
+            parentItem.setSelectedItem(suggestedUnit.getWord().getWord());
         }
 
         // element posredni
         middleItem = new ComboBoxPlain();
         if (middleUnits != null && !middleUnits.isEmpty()) {
             for (Sense middle : middleUnits) {
-                middleItem.addItem(middle.getLemma());
+                middleItem.addItem(middle.getWord());
             }
         } else {
             middleItem.setEnabled(false);
@@ -125,22 +116,18 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
 
         // wyswietlenie relacji
         mainRelations = new ArrayList<>();
-        Collection<RelationType> readRelations = LexicalDA.getHighestRelations(type, pos);
-        for (RelationType relType : readRelations) {
-            relType = LexicalDA.getEagerRelationTypeByID(relType);
-            if (fixedRelationType == null
-                    || relType.getId().longValue() == fixedRelationType.getId().longValue()
-                    || (fixedRelationType.getParent() != null
-                    && relType.getId().longValue() == fixedRelationType.getParent().getId())) {
-                relationType.addItem(RelationTypes.getFullNameFor(relType.getId()));
-                mainRelations.add(relType);
-            }
-        }
-
-//        System.out.println("POS: "+PosManager.getInstance().getNormalized(pos).getName());
-//        for(RelationType rt : mainRelations){
-//        	System.out.println("ID: "+rt.getId()+"\t"+RelationTypes.getFullNameFor(rt.getId()));
+//        Collection<RelationType> readRelations = LexicalDA.getHighestRelations(type, pos);
+//        for (RelationType relType : readRelations) {
+//            relType = LexicalDA.getEagerRelationTypeByID(relType);
+//            if (fixedRelationType == null
+//                    || relType.getId().longValue() == fixedRelationType.getId().longValue()
+//                    || (fixedRelationType.getParent() != null
+//                    && relType.getId().longValue() == fixedRelationType.getParent().getId())) {
+//                relationType.addItem(RelationTypes.getFullNameFor(relType.getId()));
+//                mainRelations.add(relType);
+//            }
 //        }
+
         // przycisk wybierz
         buttonChoose = new ButtonExt(Labels.SELECT, this, KeyEvent.VK_W);
         buttonChoose.addKeyListener(this);
@@ -208,9 +195,9 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
      *
      */
     protected RelationTypeFrame(JFrame frame,
-            RelationArgument type,
+            String type,
             PartOfSpeech pos,
-            RelationType fixedRelationType) {
+            SynsetRelationType fixedRelationType) {
         super(frame, Labels.RELATION_PARAMS, 650, 500);
         RelationTypeFrame.pos = pos;
         this.fixedRelationType = fixedRelationType;
@@ -229,8 +216,8 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
      * @param childUnits - jednostki podrzedne
      * @return typ relacji albo null
      */
-    public static RelationType showModal(Workbench workbench,
-            RelationArgument type,
+    public static SynsetRelationType showModal(Workbench workbench,
+            String type,
             PartOfSpeech pos,
             Collection<Sense> parentUnits,
             Collection<Sense> childUnits) {
@@ -247,10 +234,10 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
      * @param childUnits
      * @return typ relacji albo null
      */
-    public static RelationType showModal(Workbench workbench,
-            RelationArgument type,
+    public static SynsetRelationType showModal(Workbench workbench,
+            String type,
             PartOfSpeech pos,
-            RelationType fixedRelationType,
+            SynsetRelationType fixedRelationType,
             Collection<Sense> parentUnits,
             Collection<Sense> middleUnits,
             Collection<Sense> childUnits) {
@@ -283,11 +270,11 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
      * @param childUnits - jednostki podrzedne
      * @return typ relacji albo null
      */
-    public static RelationType showModal(JFrame frame,
-            RelationArgument type,
+    public static SynsetRelationType showModal(JFrame frame,
+            String type,
             PartOfSpeech pos,
-            RelationType relationType,
-            RelationType suggestedRelationType,
+            SynsetRelationType relationType,
+            SynsetRelationType suggestedRelationType,
             Sense suggestedUnit,
             Collection<Sense> parentUnits,
             Collection<Sense> middleUnits,
@@ -312,11 +299,11 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
      *
      * @return zaznaczona relacja
      */
-    protected RelationType getSelectedRelation() {
+    protected SynsetRelationType getSelectedRelation() {
         if (subRelations != null && subRelations.size() > 0) {
             // jest pod typ
             int index = relationSubType.getSelectedIndex();
-            for (RelationType type : subRelations) {
+            for (SynsetRelationType type : subRelations) {
                 if (index-- == 0) {
                     return type;
                 }
@@ -324,7 +311,7 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
         } else {
             // brak podtypu
             int index = relationType.getSelectedIndex();
-            for (RelationType type : mainRelations) {
+            for (SynsetRelationType type : mainRelations) {
                 if (index-- == 0) {
                     return type;
                 }
@@ -338,7 +325,7 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
      *
      * @param type - typ relacji
      */
-    protected void loadTests(RelationType type) {
+    protected void loadTests(SynsetRelationType type) {
         if (middleItem.getItemCount() == 0) {
             int a = parentItem.getSelectedIndex();
             int b = childItem.getSelectedIndex();
@@ -347,73 +334,73 @@ public class RelationTypeFrame extends IconDialog implements ActionListener, Key
                 return;
             }
 
-            List<String> tests = LexicalDA.getTests(type,
-                    (parentItem.getItemAt(parentItem.getSelectedIndex())).toString(),
-                    (childItem.getItemAt(childItem.getSelectedIndex())).toString(),
-                    pos);
-            testsLit.setListData(tests.toArray(new String[]{}));
-        } else {
-            List<String> tests = LexicalDA.getTests(type,
-                    (parentItem.getItemAt(parentItem.getSelectedIndex())).toString(),
-                    middleItem.getItemAt(middleItem.getSelectedIndex()).toString(),
-                    pos);
-            tests.addAll(LexicalDA.getTests(type,
-                    (parentItem.getItemAt(parentItem.getSelectedIndex())).toString(),
-                    (childItem.getItemAt(childItem.getSelectedIndex())).toString(),
-                    pos));
-
-            testsLit.setListData(tests.toArray(new String[]{}));
+//            List<String> tests = LexicalDA.getTests(type,
+//                    (parentItem.getItemAt(parentItem.getSelectedIndex())).toString(),
+//                    (childItem.getItemAt(childItem.getSelectedIndex())).toString(),
+//                    pos);
+//            testsLit.setListData(tests.toArray(new String[]{}));
+//        } else {
+//            List<String> tests = LexicalDA.getTests(type,
+//                    (parentItem.getItemAt(parentItem.getSelectedIndex())).toString(),
+//                    middleItem.getItemAt(middleItem.getSelectedIndex()).toString(),
+//                    pos);
+//            tests.addAll(LexicalDA.getTests(type,
+//                    (parentItem.getItemAt(parentItem.getSelectedIndex())).toString(),
+//                    (childItem.getItemAt(childItem.getSelectedIndex())).toString(),
+//                    pos));
+//
+//            testsLit.setListData(tests.toArray(new String[]{}));
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent event) {
 
-        if (event.getSource() == buttonChoose) {
-            chosenType = getSelectedRelation();
-            this.setVisible(false);
-
-        } else if (event.getSource() == buttonCancel) {
-            this.setVisible(false);
-
-        } else if (event.getSource() == relationType) {
-            relationSubType.removeAllItems();
-            description.setText("");
-            testsLit.setListData(new String[]{});
-
-            int index = relationType.getSelectedIndex();
-            for (RelationType type : mainRelations) {
-
-                if (index-- == 0) {
-
-                    subRelations = new ArrayList<>();
-                    Collection<RelationType> readRelations = LexicalDA.getChildren(type);
-
-                    for (RelationType relType : readRelations) {
-                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
-                            relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
-                            subRelations.add(relType);
-                        }
-                    }
-                    if (subRelations.size() > 0) {
-                        relationSubType.setSelectedIndex(0);
-                    } else {
-                        loadTests(type);
-                    }
-                    description.setText(type.getDescription().getText());
-                    break;
-                }
-            }
-            relationSubType.setEnabled(subRelations != null && subRelations.size() > 0);
-
-        } else if (event.getSource() == relationSubType || event.getSource() == parentItem || event.getSource() == childItem || event.getSource() == middleItem) {
-
-            testsLit.setListData(new String[]{});
-            RelationType relation = getSelectedRelation();
-            if (relation != null) {
-                loadTests(relation);
-            }
-        }
+//        if (event.getSource() == buttonChoose) {
+//            chosenType = getSelectedRelation();
+//            this.setVisible(false);
+//
+//        } else if (event.getSource() == buttonCancel) {
+//            this.setVisible(false);
+//
+//        } else if (event.getSource() == relationType) {
+//            relationSubType.removeAllItems();
+//            description.setText("");
+//            testsLit.setListData(new String[]{});
+//
+//            int index = relationType.getSelectedIndex();
+//            for (RelationType type : mainRelations) {
+//
+//                if (index-- == 0) {
+//
+//                    subRelations = new ArrayList<>();
+//                    Collection<RelationType> readRelations = LexicalDA.getChildren(type);
+//
+//                    for (RelationType relType : readRelations) {
+//                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
+//                            relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
+//                            subRelations.add(relType);
+//                        }
+//                    }
+//                    if (subRelations.size() > 0) {
+//                        relationSubType.setSelectedIndex(0);
+//                    } else {
+//                        loadTests(type);
+//                    }
+//                    description.setText(type.getDescription().getText());
+//                    break;
+//                }
+//            }
+//            relationSubType.setEnabled(subRelations != null && subRelations.size() > 0);
+//
+//        } else if (event.getSource() == relationSubType || event.getSource() == parentItem || event.getSource() == childItem || event.getSource() == middleItem) {
+//
+//            testsLit.setListData(new String[]{});
+//            RelationType relation = getSelectedRelation();
+//            if (relation != null) {
+//                loadTests(relation);
+//            }
+//        }
     }
 
     @Override
