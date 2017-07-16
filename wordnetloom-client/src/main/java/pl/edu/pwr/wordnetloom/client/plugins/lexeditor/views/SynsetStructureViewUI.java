@@ -39,7 +39,7 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.Tools;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
@@ -643,7 +643,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
             LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(this.graphUI);
             lui.init(this.workbench);
-            final IconDialog dia = new IconDialog(this.workbench.getFrame(), Labels.UNIT_PROPERTIES, 585, 520);
+            final DialogWindow dia = new DialogWindow(this.workbench.getFrame(), Labels.UNIT_PROPERTIES, 585, 520);
             JPanel pan = new JPanel();
             lui.initialize(pan);
             lui.refreshData(unit);

@@ -2,8 +2,8 @@ package pl.edu.pwr.wordnetloom.relationtest.repository;
 
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.relationtest.model.SenseRelationTest;
 import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
@@ -11,7 +11,7 @@ import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 @Stateless
 public class SenseRelationTestRepository extends GenericRepository<SenseRelationTest> {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     public void deleteByRelationType(SenseRelationType relationType) {

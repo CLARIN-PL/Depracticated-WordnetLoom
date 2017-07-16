@@ -1,25 +1,6 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
-import java.awt.Dimension;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
@@ -61,7 +42,6 @@ public class ViWordNetPerspective extends AbstractPerspective implements
 
     JTabbedPane leftView;
     JTabbedPane graphView;
-    JTabbedPane secondGraphView;
     JTabbedPane rightTopView;
     JTabbedPane rightBottomView;
     JTabbedPane rightCentralView;
@@ -100,9 +80,6 @@ public class ViWordNetPerspective extends AbstractPerspective implements
         rightBottomView = createPane();
         rightCentralView = createPane();
 
-        secondGraphView = createPane();
-        secondGraphView.setMinimumSize(new Dimension(0, 0));
-
         locker = createPane();
 
         // events connected with tabs
@@ -123,19 +100,9 @@ public class ViWordNetPerspective extends AbstractPerspective implements
         splitRightHorizontal.setStartDividerLocation(230);
         splitRightHorizontal.setResizeWeight(0.0f);
 
-        // GraphViews and one graph view
-        final SplitPaneExt splitGraphViewsHorizontal = new SplitPaneExt(
-                JSplitPane.HORIZONTAL_SPLIT, graphView, secondGraphView);
-        splitGraphViewsHorizontal.setResizeWeight(1.0f);
-        splitGraphViewsHorizontal.setDividerLocation(1.0D);
-        splitGraphViewsHorizontal.addPropertyChangeListener(
-                JSplitPane.DIVIDER_LOCATION_PROPERTY, this);
-        splitGraphViewsHorizontal.addPropertyChangeListener(
-                JSplitPane.ONE_TOUCH_EXPANDABLE_PROPERTY, this);
-
         // vertical graphs locker splitter
         SplitPaneExt splitGraphsAndLocker = new SplitPaneExt(
-                JSplitPane.VERTICAL_SPLIT, splitGraphViewsHorizontal, locker);
+                JSplitPane.VERTICAL_SPLIT, graphView, locker);
         splitGraphsAndLocker.setDividerLocation(0.7D);
         splitGraphsAndLocker.setResizeWeight(1.0D);
 
@@ -153,92 +120,6 @@ public class ViWordNetPerspective extends AbstractPerspective implements
         this.addSplitter(splitSearch);
         this.addSplitter(splitMainVertical);
         this.addSplitter(splitRightHorizontal);
-
-        // TODO: second graph view actions
-        graphView.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent me) {
-                if (me.getClickCount() == 2
-                        && service != null
-                        && graphView.getTabCount()
-                        + secondGraphView.getTabCount() > 2) {
-
-                    // remember selected view
-                    int selected = graphView.getSelectedIndex();
-                    ViwnGraphView view = service.getGraphView((JPanel) graphView.getComponentAt(selected));
-                    ViwnGraphView fromSecond = null;
-
-                    // empty visualizations should not be moved to second view
-                    if (view.getUI().getRootNode() == null) {
-                        return;
-                    }
-
-                    // get tab from second view if any
-                    if (secondGraphView.getTabCount() != 0) {
-                        // remember second view
-                        fromSecond = service
-                                .getGraphView((JPanel) secondGraphView
-                                        .getSelectedComponent());
-                        // remove it from second view
-                        secondGraphView.removeTabAt(secondGraphView
-                                .getSelectedIndex());
-                        // add to graph view
-                        graphView.addTab(fromSecond.getTitle(),
-                                fromSecond.getPanel());
-                        // set title and tooltip
-                        graphView.setTitleAt(graphView
-                                .indexOfComponent(fromSecond.getPanel()),
-                                fromSecond.getUI().getRootNode().getLabel());
-                        graphView.setToolTipTextAt(graphView
-                                .indexOfComponent(fromSecond.getPanel()),
-                                fromSecond.getUI().getRootNode().getLabel());
-                    }
-
-                    // remove selected tab
-                    graphView.removeTabAt(selected);
-
-                    // install view in second panel
-                    secondGraphView.addTab(view.getTitle(), view.getPanel());
-                    secondGraphView.setTitleAt(0, view.getUI().getRootNode()
-                            .getLabel());
-                    secondGraphView.setToolTipTextAt(0, view.getUI()
-                            .getRootNode().getLabel());
-
-                    splitGraphViewsHorizontal.setDividerLocation(0.5D);
-                    splitGraphViewsHorizontal.setResizeWeight(0.5D);
-
-                }
-            }
-        });
-        secondGraphView.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent me) {
-                if (me.getClickCount() == 2 && service != null) {
-
-                    // remember second view
-                    ViwnGraphView fromSecond = service
-                            .getGraphView((JPanel) secondGraphView
-                                    .getSelectedComponent());
-                    // remove it from second view
-                    secondGraphView.removeAll();
-                    if (fromSecond != null) {
-                        // add to graph view
-                        graphView.addTab(fromSecond.getTitle(),
-                                fromSecond.getPanel());
-                        // set title and tooltip
-                        graphView.setTitleAt(graphView
-                                .indexOfComponent(fromSecond.getPanel()),
-                                fromSecond.getUI().getRootNode().getLabel());
-                        graphView.setToolTipTextAt(graphView
-                                .indexOfComponent(fromSecond.getPanel()),
-                                fromSecond.getUI().getRootNode().getLabel());
-                    }
-                    splitGraphViewsHorizontal.setDividerLocation(1.0D);
-                    splitGraphViewsHorizontal.setResizeWeight(1.0D);
-                }
-            }
-        });
-
     }
 
     @Override

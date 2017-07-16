@@ -13,8 +13,8 @@ import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceLocal;
 import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceRemote;
 
 @Stateless
-@Remote(SynsetRelationServiceRemote.class)
 @Local(SynsetRelationServiceLocal.class)
+@Remote(SynsetRelationServiceRemote.class)
 public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
 
     @Inject

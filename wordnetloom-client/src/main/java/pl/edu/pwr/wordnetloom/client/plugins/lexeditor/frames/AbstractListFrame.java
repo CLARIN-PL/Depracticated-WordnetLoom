@@ -37,7 +37,7 @@ import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -51,7 +51,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
  * @param <G> typ obiektu sluzacego jako filtr
  */
 abstract public class AbstractListFrame<T, G> extends
-        IconDialog implements ActionListener, ListSelectionListener,
+        DialogWindow implements ActionListener, ListSelectionListener,
         KeyListener, MouseListener {
 
     private static final String STANDARD_VALUE_FILTER = "";

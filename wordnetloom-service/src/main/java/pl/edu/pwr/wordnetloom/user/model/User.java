@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Email;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 public class User implements Serializable {
 
     @Id
@@ -32,12 +32,16 @@ public class User implements Serializable {
     private String email;
 
     @NotNull
-    @Size(min = 8, max = 50)
+    
+    @Size(min = 8, max = 64)
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    public User(){
+    }
+    
     public User(String firstname, String lastname, String email, String password, Role role) {
         this.firstname = firstname;
         this.lastname = lastname;

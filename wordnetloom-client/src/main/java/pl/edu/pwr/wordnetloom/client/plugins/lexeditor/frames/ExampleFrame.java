@@ -4,10 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.ExamplePanel;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 
-public class ExampleFrame extends IconDialog implements ActionListener {
+public class ExampleFrame extends DialogWindow implements ActionListener {
 
     private static final long serialVersionUID = -8880344925810883670L;
     private final ExamplePanel panel;

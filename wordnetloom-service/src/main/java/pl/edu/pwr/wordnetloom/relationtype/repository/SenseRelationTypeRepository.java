@@ -7,7 +7,6 @@ import java.util.Objects;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
@@ -15,7 +14,7 @@ import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 @Stateless
 public class SenseRelationTypeRepository extends GenericRepository<SenseRelationType> {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     @Inject

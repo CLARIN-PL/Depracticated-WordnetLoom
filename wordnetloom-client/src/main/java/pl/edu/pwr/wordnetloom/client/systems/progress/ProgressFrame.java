@@ -10,7 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import pl.edu.pwr.wordnetloom.client.systems.misc.ActionWrapper;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import se.datadosen.component.RiverLayout;
@@ -20,7 +20,7 @@ import se.datadosen.component.RiverLayout;
  *
  * @author Max
  */
-public class ProgressFrame extends IconDialog {
+public class ProgressFrame extends DialogWindow {
 
     private static final long serialVersionUID = 1L;
     private JProgressBar progressBar;

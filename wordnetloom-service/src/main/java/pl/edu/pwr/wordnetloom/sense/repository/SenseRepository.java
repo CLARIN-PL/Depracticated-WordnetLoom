@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
@@ -34,7 +33,7 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 @Stateless
 public class SenseRepository extends GenericRepository<Sense> {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     @Inject

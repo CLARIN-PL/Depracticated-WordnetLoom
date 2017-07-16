@@ -12,7 +12,7 @@ import javax.swing.JScrollPane;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -21,7 +21,7 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
-public class RelationTypeFrame extends IconDialog implements ActionListener, KeyListener {
+public class RelationTypeFrame extends DialogWindow implements ActionListener, KeyListener {
 
     protected static final long serialVersionUID = 1L;
 

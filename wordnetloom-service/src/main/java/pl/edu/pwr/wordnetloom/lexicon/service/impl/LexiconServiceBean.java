@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.lexicon.service.impl;
 
 import java.util.List;
+import javax.annotation.Resource;
+import javax.ejb.EJBContext;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -17,6 +19,9 @@ import pl.edu.pwr.wordnetloom.lexicon.service.LexiconServiceRemote;
 @Remote(LexiconServiceRemote.class)
 @Local(LexiconServiceLocal.class)
 public class LexiconServiceBean implements LexiconServiceLocal {
+
+    @Resource 
+    private EJBContext context;
 
     @Inject
     LexiconRepository lexiconRepository;
@@ -54,4 +59,12 @@ public class LexiconServiceBean implements LexiconServiceLocal {
         return lexiconRepository.findAllLexiconIds();
     }
 
+    @Override
+    public String testUser(){
+         if(context != null){ 
+            System.out.println("USER:"+ context.getCallerPrincipal().getName());
+            return context.getCallerPrincipal().getName();
+        }
+        return null;
+    }
 }

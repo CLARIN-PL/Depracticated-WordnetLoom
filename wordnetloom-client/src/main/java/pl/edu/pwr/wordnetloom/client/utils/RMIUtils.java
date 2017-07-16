@@ -47,12 +47,11 @@ public class RMIUtils {
                     ejbProperties.put("remote.connections", "default");
                     ejbProperties.put("remote.connection.default.host", host);
                     ejbProperties.put("remote.connection.default.port", port);
-                    ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_POLICY_NOANONYMOUS", "false");
                     ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_DISALLOWED_MECHANISMS", "JBOSS-LOCAL-USER");
                     ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_POLICY_NOPLAINTEXT", "false");
                     ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SSL_STARTTLS", "false");
-                    ejbProperties.put("remote.connection.default.username", "wordnet");
-                    ejbProperties.put("remote.connection.default.password", "123");
+                    ejbProperties.put("remote.connection.default.username", "admin@gmail.com");
+                    ejbProperties.put("remote.connection.default.password", "password");
 
                     final EJBClientConfiguration ejbClientConfiguration = new PropertiesBasedEJBClientConfiguration(ejbProperties);
                     final ConfigBasedEJBClientContextSelector selector = new ConfigBasedEJBClientContextSelector(ejbClientConfiguration);
@@ -78,7 +77,6 @@ public class RMIUtils {
                 .append(distinctName).append(slash)
                 .append(localBeanName).append("!")
                 .append(interfaceName);
-        System.out.println(name.toString());
         return name.toString();
     }
 }

@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
@@ -21,7 +21,7 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 @Stateless
 public class SynsetRepository extends GenericRepository<Synset> {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
 //    @NamedQuery(name = "Synset.findSynsetBySensID",

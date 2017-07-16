@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
@@ -19,7 +19,7 @@ import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 @Stateless
 public class SenseRelationRepository extends GenericRepository<SenseRelation> {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     public void delete(SenseRelationType relation) {

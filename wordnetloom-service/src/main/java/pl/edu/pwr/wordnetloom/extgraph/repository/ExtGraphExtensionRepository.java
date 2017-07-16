@@ -6,7 +6,6 @@ import java.util.Collection;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraphExtension;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -14,7 +13,7 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 @Stateless
 public class ExtGraphExtensionRepository extends GenericRepository<ExtGraphExtension> {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     @Inject

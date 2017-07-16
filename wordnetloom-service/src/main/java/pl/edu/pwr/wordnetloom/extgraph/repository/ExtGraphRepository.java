@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -24,7 +24,7 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 @Stateless
 public class ExtGraphRepository extends GenericRepository<ExtGraph> {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     public Collection<ExtGraph> findByWord(String word) {

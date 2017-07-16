@@ -12,7 +12,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DomainComboBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -26,7 +26,7 @@ import pl.edu.pwr.wordnetloom.word.model.Word;
  *
  * @author Max
  */
-public class NewLexicalUnitFrame extends IconDialog implements ActionListener {
+public class NewLexicalUnitFrame extends DialogWindow implements ActionListener {
 
     private final LexicalUnitPropertiesPanel editPanel;
 

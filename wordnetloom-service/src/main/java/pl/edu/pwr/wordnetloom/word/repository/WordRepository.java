@@ -1,15 +1,15 @@
 package pl.edu.pwr.wordnetloom.word.repository;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Stateless
 public class WordRepository extends GenericRepository<Word> {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     @Override

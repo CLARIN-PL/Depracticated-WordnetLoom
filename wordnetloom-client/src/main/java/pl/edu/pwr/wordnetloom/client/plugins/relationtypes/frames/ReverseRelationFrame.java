@@ -16,7 +16,7 @@ import javax.swing.tree.TreeSelectionModel;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.RelationTypesIM;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
@@ -26,7 +26,7 @@ import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
  *
  * @author Max
  */
-public class ReverseRelationFrame extends IconDialog implements ActionListener, TreeSelectionListener {
+public class ReverseRelationFrame extends DialogWindow implements ActionListener, TreeSelectionListener {
 
     private static final long serialVersionUID = 1L;
 

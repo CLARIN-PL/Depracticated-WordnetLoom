@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
@@ -21,7 +21,7 @@ import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 @Stateless
 public class SynsetRelationRepository extends GenericRepository<SynsetRelation> {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     public boolean delete(Synset parent, Synset child, SynsetRelationType relationType) {

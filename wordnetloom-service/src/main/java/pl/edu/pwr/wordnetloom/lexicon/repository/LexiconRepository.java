@@ -2,8 +2,8 @@ package pl.edu.pwr.wordnetloom.lexicon.repository;
 
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -11,7 +11,7 @@ import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 @Stateless
 public class LexiconRepository extends GenericRepository<Lexicon> {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     @Override

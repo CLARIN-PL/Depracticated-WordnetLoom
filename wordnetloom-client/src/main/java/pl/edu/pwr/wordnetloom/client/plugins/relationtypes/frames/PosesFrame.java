@@ -9,11 +9,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
-public class PosesFrame extends IconDialog implements ActionListener {
+public class PosesFrame extends DialogWindow implements ActionListener {
 
     private static final long serialVersionUID = 1L;
 

@@ -12,10 +12,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import org.apache.commons.collections15.map.HashedMap;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 
-public class LexiconsFrame extends IconDialog implements ActionListener {
+public class LexiconsFrame extends DialogWindow implements ActionListener {
 
     private static final long serialVersionUID = 1L;
 

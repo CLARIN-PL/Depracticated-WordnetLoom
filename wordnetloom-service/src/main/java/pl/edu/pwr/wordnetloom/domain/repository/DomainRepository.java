@@ -2,8 +2,8 @@ package pl.edu.pwr.wordnetloom.domain.repository;
 
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
@@ -13,7 +13,7 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 @Stateless
 public class DomainRepository extends GenericRepository<Domain> {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     @Override

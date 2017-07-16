@@ -26,7 +26,7 @@ import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -37,7 +37,7 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
  *
  * @author Max
  */
-public class TestEditorFrame extends IconDialog implements ActionListener {
+public class TestEditorFrame extends DialogWindow implements ActionListener {
 
     private static final long serialVersionUID = 1L;
 

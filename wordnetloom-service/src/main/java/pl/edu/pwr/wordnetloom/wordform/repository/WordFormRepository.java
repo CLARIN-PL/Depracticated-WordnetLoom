@@ -2,8 +2,8 @@ package pl.edu.pwr.wordnetloom.wordform.repository;
 
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.word.model.Word;
@@ -12,7 +12,7 @@ import pl.edu.pwr.wordnetloom.wordform.model.WordForm;
 @Stateless
 public class WordFormRepository extends GenericRepository<WordForm> {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     @Override

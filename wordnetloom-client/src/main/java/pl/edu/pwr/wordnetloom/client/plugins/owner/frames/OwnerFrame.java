@@ -1,20 +1,3 @@
-/*
-    Copyright (C) 2011 Łukasz Jastrzębski, Paweł Koczan, Michał Marcińczuk,
-                       Bartosz Broda, Maciej Piasecki, Adam Musiał,
-                       Radosław Ramocki, Michał Stanek
-    Part of the WordnetLoom
-
-    This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 3 of the License, or (at your option)
-any later version.
-
-    This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.
-
-    See the LICENSE and COPYING files for more details.
- */
 package pl.edu.pwr.wordnetloom.client.plugins.owner.frames;
 
 import java.awt.event.KeyEvent;
@@ -27,18 +10,13 @@ import javax.swing.event.CaretListener;
 import pl.edu.pwr.wordnetloom.client.plugins.owner.data.SessionData;
 import pl.edu.pwr.wordnetloom.client.systems.misc.ActionWrapper;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
-/**
- * okienko z nazwa uzytkownika
- *
- * @author Max
- */
-public class OwnerFrame extends IconDialog implements CaretListener, KeyListener {
+public class OwnerFrame extends DialogWindow implements CaretListener, KeyListener {
 
     private static final long serialVersionUID = 1L;
     private static final String USER_NAME_FORMAT = "%s.%s";
@@ -50,11 +28,6 @@ public class OwnerFrame extends IconDialog implements CaretListener, KeyListener
 
     private String newOwner = null;
 
-    /**
-     * konstruktor
-     *
-     * @param workbench - srodowisko
-     */
     private OwnerFrame(Workbench workbench) {
         super(workbench.getFrame(), Labels.USER_DATA, 270, 190);
         this.setResizable(false);

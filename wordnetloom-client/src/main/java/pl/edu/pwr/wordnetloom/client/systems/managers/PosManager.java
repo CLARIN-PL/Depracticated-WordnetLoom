@@ -13,7 +13,6 @@ public class PosManager {
     private static volatile PosManager defaultPosManager;
     private static String defaultLanguageCode;
 
-    // just to be sure
     private static volatile Map<String, PosManager> managers
             = Collections.synchronizedMap(new HashMap<String, PosManager>());
 

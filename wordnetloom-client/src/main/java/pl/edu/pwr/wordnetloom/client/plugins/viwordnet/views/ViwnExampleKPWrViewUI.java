@@ -20,7 +20,7 @@ import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitPropertiesViewUI;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconDialog;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
@@ -108,7 +108,7 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
             LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(graphUI);
             lui.init(this.workbench);
 
-            final IconDialog dia = new IconDialog(this.workbench.getFrame(),
+            final DialogWindow dia = new DialogWindow(this.workbench.getFrame(),
                     Labels.UNIT_PROPERTIES, 585, 520);
             JPanel pan = new JPanel();
             lui.initialize(pan);
