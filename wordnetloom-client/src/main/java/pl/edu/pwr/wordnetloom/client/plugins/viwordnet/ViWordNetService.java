@@ -31,9 +31,9 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetStructureView
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetView;
 import pl.edu.pwr.wordnetloom.client.plugins.relations.da.RelationsDA;
 import pl.edu.pwr.wordnetloom.client.plugins.relations.views.ToolbarViewUI;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.frames.DeleteRelationFrame;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.frames.MakeNewLexicalRelationFrame;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.frames.MakeNewRelationFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.DeleteRelationWindow;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewLexicalRelationWindow;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.LockerChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
@@ -1123,7 +1123,7 @@ public class ViWordNetService extends AbstractService implements
                 return;
             }
 
-            if (MakeNewRelationFrame.showMakeSynsetRelationModal(workbench, src, dst)) {
+            if (MakeNewRelationWindow.showMakeSynsetRelationModal(workbench, src, dst)) {
                 for (ViwnGraphView gv : graphViews) {
                     gv.getUI().relationAdded(src, dst);
                 }
@@ -1169,7 +1169,7 @@ public class ViWordNetService extends AbstractService implements
                     - workbench.getFrame().getY());
             // make relation between lexical units
         } else if (first instanceof Sense && second instanceof Sense) {
-            if (MakeNewLexicalRelationFrame.showMakeLexicalRelationModal(
+            if (MakeNewLexicalRelationWindow.showMakeLexicalRelationModal(
                     workbench, (Sense) first, (Sense) second)) {
                 unitsRelationsView.refresh();
             }
@@ -1186,7 +1186,7 @@ public class ViWordNetService extends AbstractService implements
         if (relations != null && !relations.isEmpty()) {
             if (relations.iterator().next() instanceof ViwnEdgeSynset) {
                 @SuppressWarnings("unchecked")
-                Collection<ViwnEdge> c = DeleteRelationFrame
+                Collection<ViwnEdge> c = DeleteRelationWindow
                         .showDeleteSynsetDialog(workbench.getFrame(), relations);
                 for (ViwnGraphView vgv : graphViews) {
                     vgv.getUI().relationDeleted(c);

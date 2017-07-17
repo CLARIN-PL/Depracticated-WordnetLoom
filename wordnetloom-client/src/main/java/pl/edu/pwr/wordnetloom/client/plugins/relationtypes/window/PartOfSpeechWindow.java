@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.frames;
+package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +13,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
-public class PosesFrame extends DialogWindow implements ActionListener {
+public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,7 +28,7 @@ public class PosesFrame extends DialogWindow implements ActionListener {
      *
      * @param owner - srodowisko
      */
-    private PosesFrame(JFrame owner) {
+    private PartOfSpeechWindow(JFrame owner) {
         super(owner, Labels.PARTS_OF_SPEECH, 190, 430);
         this.setResizable(false);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -58,7 +58,7 @@ public class PosesFrame extends DialogWindow implements ActionListener {
      * @return czesci mowy
      */
     static public String showModal(JFrame owner, String oldPoses) {
-        PosesFrame frame = new PosesFrame(owner);
+        PartOfSpeechWindow frame = new PartOfSpeechWindow(owner);
         frame.poses = new ArrayList<>();
 
         // dekodowanie starych posow

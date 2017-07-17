@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.frames;
+package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -23,7 +23,7 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import se.datadosen.component.RiverLayout;
 
-public class DeleteRelationFrame extends DialogWindow implements ActionListener {
+public class DeleteRelationWindow extends DialogWindow implements ActionListener {
 
     /* **/
     private static final long serialVersionUID = 2768814045995557133L;
@@ -44,7 +44,7 @@ public class DeleteRelationFrame extends DialogWindow implements ActionListener 
      * @param title
      * @param edges
      */
-    protected DeleteRelationFrame(JFrame baseFrame, String title, Collection<ViwnEdgeSynset> edges) {
+    protected DeleteRelationWindow(JFrame baseFrame, String title, Collection<ViwnEdgeSynset> edges) {
         super(baseFrame, title);
         initialize(edges);
     }
@@ -57,7 +57,7 @@ public class DeleteRelationFrame extends DialogWindow implements ActionListener 
      * @param edges edges collection representing collection of relations from
      * which one or more should be removed
      */
-    protected DeleteRelationFrame(JFrame baseFrame, String title, int width,
+    protected DeleteRelationWindow(JFrame baseFrame, String title, int width,
             int height, Collection<ViwnEdgeSynset> edges) {
         super(baseFrame, title, width, height);
         initialize(edges);
@@ -251,7 +251,7 @@ public class DeleteRelationFrame extends DialogWindow implements ActionListener 
      */
     public static Collection<ViwnEdge> showDeleteSynsetDialog(JFrame baseFrame, String title, int width,
             int height, Collection<ViwnEdgeSynset> edges) {
-        DeleteRelationFrame drf = new DeleteRelationFrame(baseFrame, title, width, height, edges);
+        DeleteRelationWindow drf = new DeleteRelationWindow(baseFrame, title, width, height, edges);
         drf.setVisible(true);
         return drf.removed;
     }
@@ -262,7 +262,7 @@ public class DeleteRelationFrame extends DialogWindow implements ActionListener 
      * @return collection of removed edges
      */
     public static Collection<ViwnEdge> showDeleteSynsetDialog(JFrame baseFrame, Collection<ViwnEdgeSynset> edges) {
-        DeleteRelationFrame drf = new DeleteRelationFrame(baseFrame, Labels.REMOVE_RELATION, WIDTH, HEIGHT, edges);
+        DeleteRelationWindow drf = new DeleteRelationWindow(baseFrame, Labels.REMOVE_RELATION, WIDTH, HEIGHT, edges);
         drf.setVisible(true);
         return drf.removed;
     }

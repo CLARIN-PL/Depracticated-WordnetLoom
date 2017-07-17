@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.frames;
+package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -24,7 +24,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import se.datadosen.component.RiverLayout;
 
-public class MakeNewRelationFrame extends RelationTypeFrame {
+public class MakeNewRelationWindow extends RelationTypeFrame {
 
     private static final long serialVersionUID = 5479457915334417348L;
 
@@ -33,7 +33,7 @@ public class MakeNewRelationFrame extends RelationTypeFrame {
     protected List<Long> lexicons;
     protected ViwnNode from[], to[];
 
-    protected MakeNewRelationFrame(JFrame frame, PartOfSpeech pos, ViwnNode[] from, ViwnNode[] to, Workbench workbench) {
+    protected MakeNewRelationWindow(JFrame frame, PartOfSpeech pos, ViwnNode[] from, ViwnNode[] to, Workbench workbench) {
         super(frame, "", pos, null);
 
         this.from = from;

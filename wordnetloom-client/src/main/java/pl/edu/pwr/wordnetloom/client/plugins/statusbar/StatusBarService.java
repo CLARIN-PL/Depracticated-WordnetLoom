@@ -15,35 +15,18 @@ import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
-/**
- * usluga zarzadzajca wyswietlaniem tekstu na pasku statusu
- *
- * Nie wyświetla się na Mac OS ;(
- *
- * @author Max
- *
- */
 public class StatusBarService extends AbstractService implements Runnable, ActionListener {
 
     private static final int SLEEP_TIME = 5000;
 
-    private Thread thread = null;   // obiekt z watkiem
-    private boolean stop = false;   // zmienna do zatrzymania dzialania watku
-    private JMenuItem clearCache; // menu czyczscenie cache'u
+    private Thread thread = null; 
+    private boolean stop = false;
+    private JMenuItem clearCache;
 
-    /**
-     * konstruktor
-     *
-     * @param workbench - środowisko pracy
-     *
-     */
     public StatusBarService(Workbench workbench) {
         super(workbench);
     }
 
-    /**
-     * intalacja akcji w menu
-     */
     @Override
     public void installMenuItems() {
         JMenu other = workbench.getMenu(Labels.SETTINGS);
@@ -67,9 +50,7 @@ public class StatusBarService extends AbstractService implements Runnable, Actio
         thread.start();
     }
 
-    /**
-     * uruchomienie watku
-     */
+
     volatile int memoryUsage;
 
     @Override

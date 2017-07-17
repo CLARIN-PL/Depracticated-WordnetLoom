@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.frames;
+package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,7 +26,7 @@ import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
  *
  * @author Max
  */
-public class ReverseRelationFrame extends DialogWindow implements ActionListener, TreeSelectionListener {
+public class ReverseRelationWindow extends DialogWindow implements ActionListener, TreeSelectionListener {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,7 +41,7 @@ public class ReverseRelationFrame extends DialogWindow implements ActionListener
      *
      * @param owner - srodowisko
      */
-    private ReverseRelationFrame(JFrame owner) {
+    private ReverseRelationWindow(JFrame owner) {
         super(owner, Labels.REVERSE_RELATION, 400, 450);
         this.setResizable(false);
         //this.setAlwaysOnTop(true);
@@ -107,7 +107,7 @@ public class ReverseRelationFrame extends DialogWindow implements ActionListener
      * @return nowo wybrana relacja odwrotna
      */
     static public Pair<SynsetRelationType, Boolean> showModal(JFrame owner, SynsetRelationType lastReverse, Boolean autoReverse) {
-        ReverseRelationFrame frame = new ReverseRelationFrame(owner);
+        ReverseRelationWindow frame = new ReverseRelationWindow(owner);
         frame.lastReverse = lastReverse;
         frame.autoReverse.setSelected(autoReverse);
         frame.refreshTree();

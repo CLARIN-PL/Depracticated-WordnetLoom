@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.frames;
+package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -44,7 +44,7 @@ import se.datadosen.component.RiverLayout;
  *
  * @author Max
  */
-public class RelationsEditorFrame extends IconFrame implements ActionListener, TreeSelectionListener, CaretListener, ListSelectionListener, MouseListener {
+public class RelationsEditorWindow extends IconFrame implements ActionListener, TreeSelectionListener, CaretListener, ListSelectionListener, MouseListener {
 
     private static final String REVERSE_RELATION_NAME_NO_AUTO = "%s";
     private static final String REVERSE_RELATION_NAME_AUTO = "%s " + Labels.AUTO;
@@ -80,7 +80,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
      *
      * @param workbench - srodowisko
      */
-    private RelationsEditorFrame(Workbench workbench) {
+    private RelationsEditorWindow(Workbench workbench) {
         super(workbench.getFrame(), Labels.EDIT_RELATION_TYPES, 550, 700);
 
         this.setResizable(true);
@@ -336,7 +336,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
      * @param workbench - srodowisko
      */
     public static void showModal(Workbench workbench) {
-        RelationsEditorFrame frame = new RelationsEditorFrame(workbench);
+        RelationsEditorWindow frame = new RelationsEditorWindow(workbench);
         frame.setLocationRelativeTo(workbench.getFrame());
         frame.setVisible(true);
         frame.showModal();

@@ -21,7 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
-import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.frames.RelationsEditorFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window.RelationsEditorWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
@@ -67,6 +67,6 @@ public class RelationTypesService extends AbstractService implements ActionListe
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        RelationsEditorFrame.showModal(workbench);
+        RelationsEditorWindow.showModal(workbench);
     }
 }

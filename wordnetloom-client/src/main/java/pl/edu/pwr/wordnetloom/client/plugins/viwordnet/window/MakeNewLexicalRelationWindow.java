@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.frames;
+package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -20,7 +20,7 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
 
-public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
+public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
 
     private static final long serialVersionUID = 5479457915334417348L;
 
@@ -28,7 +28,7 @@ public class MakeNewLexicalRelationFrame extends RelationTypeFrame {
     protected JPanel jp;
     protected Sense from, to;
 
-    protected MakeNewLexicalRelationFrame(JFrame frame, String type,
+    protected MakeNewLexicalRelationWindow(JFrame frame, String type,
             PartOfSpeech pos, Sense[] from, Sense[] to) {
         super(frame, type, pos, null);
 

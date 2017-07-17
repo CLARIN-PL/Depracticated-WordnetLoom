@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.frames.RelationDisplayConfFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.RelationDisplayConfWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
@@ -44,6 +44,6 @@ public class ViWordNetConfService extends AbstractService
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        RelationDisplayConfFrame.showModal(workbench);
+        RelationDisplayConfWindow.showModal(workbench);
     }
 }
