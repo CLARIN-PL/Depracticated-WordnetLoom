@@ -13,13 +13,6 @@ import pl.edu.pwr.wordnetloom.common.model.Localised;
 
 @Entity
 @Table(name = "domain")
-//@NamedQueries({
-//    @NamedQuery(name = "Domain.getFromSenses",
-//            query = "SELECT DISTINCT s.domain FROM Sense s ORDER BY s.domain ASC"),
-//    @NamedQuery(name = "Domain.getAllDomains",
-//            query = "SELECT DISTINCT d FROM Domain d LEFT JOIN FETCH d.name LEFT JOIN FETCH d.description WHERE d.lexicon.id IN (:lexicons)")
-//
-//})
 public class Domain implements Serializable {
 
     private static final long serialVersionUID = -9015379547562677206L;
