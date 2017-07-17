@@ -1,19 +1,35 @@
-package pl.edu.pwr.wordnetloom.client.plugins.core.window;
+package pl.edu.pwr.wordnetloom.client.plugins.login.window;
 
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
+import pl.edu.pwr.wordnetloom.client.Main;
+import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
+import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.user.model.User;
 
-public class LoginWindow extends DialogWindow {
+public class LoginWindow extends DialogWindow implements KeyListener {
 
-    
     private Thread onSuccessThread;
+
     /**
      * Creates new form LoginWindow
+     *
+     * @param parent
      */
-    public LoginWindow(JFrame parent, boolean modal) {
-        super(parent,"");
+    public LoginWindow(JFrame parent) {
+        super(parent, "");
         initComponents();
+        initListeners();
+        initWindowPosition();
     }
 
     /**
@@ -31,7 +47,7 @@ public class LoginWindow extends DialogWindow {
         txtUsername = new javax.swing.JTextField();
         lblPassword = new javax.swing.JLabel();
         txtPassword = new javax.swing.JPasswordField();
-        cmbLanguage = new javax.swing.JComboBox<>();
+        cmbLanguage = new javax.swing.JComboBox<>(Language.values());
         lblUsername = new javax.swing.JLabel();
         btnPanel = new javax.swing.JPanel();
         btnOk = new javax.swing.JButton();
@@ -40,6 +56,7 @@ public class LoginWindow extends DialogWindow {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Login to WordnetLoom ");
         setBackground(new java.awt.Color(204, 204, 204));
+        setBounds(new java.awt.Rectangle(0, 0, 0, 0));
         setIconImage(Toolkit.getDefaultToolkit().getImage("/icons/wordnet.gif"));
         setIconImages(null);
         setModal(true);
@@ -60,15 +77,15 @@ public class LoginWindow extends DialogWindow {
 
         lblLanguage.setText("Language:");
 
+        txtUsername.setText("admin@gmail.com");
         txtUsername.setMinimumSize(new java.awt.Dimension(14, 25));
         txtUsername.setPreferredSize(new java.awt.Dimension(14, 25));
 
         lblPassword.setText("Password:");
 
+        txtPassword.setText("password");
         txtPassword.setMinimumSize(new java.awt.Dimension(14, 25));
         txtPassword.setPreferredSize(new java.awt.Dimension(14, 25));
-
-        cmbLanguage.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         lblUsername.setText("Username:");
 
@@ -160,14 +177,49 @@ public class LoginWindow extends DialogWindow {
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-        if(onSuccessThread !=null){
-            onSuccessThread.start();
+        if (onSuccessThread != null) {
+            Main.initializLanguage(getSelectedLanguage());
+            RemoteConnectionProvider
+                    .getInstance()
+                    .setUserSessionData(new UserSessionData(txtUsername.getText(), txtPassword.getText(), getSelectedLanguage().getAbbreviation()));
+            try {
+                User user = RemoteConnectionProvider.getInstance().getUser();
+                if (user != null) {
+                    onSuccessThread.start();
+                }
+                dispose();
+            } catch (Exception ex) {
+                Logger.getLogger(LoginWindow.class).log(Priority.ERROR, ex);
+                RemoteConnectionProvider.getInstance().destroyInstance();
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(null,
+                            Messages.ERROR_UNABLE_TO_CONNECT_TO_SERVER_OR_INCORRECT_AUTHORIZATION,
+                            Main.PROGRAM_NAME,
+                            JOptionPane.ERROR_MESSAGE);
+                });
+            }
         }
     }//GEN-LAST:event_btnOkActionPerformed
-    
-    public void setThreadOnSuccess(final Thread t){
+
+    private void initListeners() {
+        txtPassword.addKeyListener(this);
+        txtUsername.addKeyListener(this);
+        cmbLanguage.addKeyListener(this);
+        btnOk.addKeyListener(this);
+    }
+
+    private void initWindowPosition() {
+        this.setInScreenCenter(520, 260);
+    }
+
+    public void setThreadOnSuccess(final Thread t) {
         this.onSuccessThread = t;
     }
+
+    public Language getSelectedLanguage() {
+        return (Language) cmbLanguage.getSelectedItem();
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -175,7 +227,7 @@ public class LoginWindow extends DialogWindow {
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(() -> {
-            LoginWindow dialog = new LoginWindow(new javax.swing.JFrame(), true);
+            LoginWindow dialog = new LoginWindow(new javax.swing.JFrame());
             dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent e) {
@@ -190,7 +242,7 @@ public class LoginWindow extends DialogWindow {
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnOk;
     private javax.swing.JPanel btnPanel;
-    private javax.swing.JComboBox<String> cmbLanguage;
+    private javax.swing.JComboBox<Language> cmbLanguage;
     private javax.swing.JPanel fieldsPanel;
     private javax.swing.JLabel lblLanguage;
     private javax.swing.JLabel lblLogo;
@@ -199,4 +251,20 @@ public class LoginWindow extends DialogWindow {
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent evt) {
+        if (evt.getModifiers() == 0 && evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            evt.consume();
+            btnOk.doClick();
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+    }
 }

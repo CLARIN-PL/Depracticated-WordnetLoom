@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JFrame;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
-import pl.edu.pwr.wordnetloom.client.systems.enums.WorkState;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.NodeDrawer;
 import pl.edu.pwr.wordnetloom.client.systems.progress.AbstractProgressThread;
@@ -36,7 +35,6 @@ public class RelationsDA {
      * odczytane listy synsetow spelnijacych filtr
      *
      * @param filterText - filtr nazw
-     * @param status - status do filtrowania (dochodzi do tego 0- wszystko)
      * @param domainStr - domena do filtrowania
      * @param relationType - typ relacji jakie muszą byc zdefiniowane dla
      * wynikowych synsetow
@@ -44,8 +42,8 @@ public class RelationsDA {
      * @param lexicon
      * @return kolekcja z danymi
      */
-    static public Collection<Synset> getSynsets(String filterText, int status, String domainStr, SynsetRelationType relationType, int limitSize, List<Long> lexicon) {
-        return RelationsDA.getSynsets(filterText, status, domainStr, relationType, limitSize, limitSize, lexicon);
+    static public Collection<Synset> getSynsets(String filterText, String domainStr, SynsetRelationType relationType, int limitSize, List<Long> lexicon) {
+        return RelationsDA.getSynsets(filterText, domainStr, relationType, limitSize, limitSize, lexicon);
     }
 
     /**
@@ -63,18 +61,7 @@ public class RelationsDA {
      * @param lexicons
      * @return kolekcja z danymi
      */
-    static public Collection<Synset> getSynsets(String filterText, int status, String domainStr, SynsetRelationType relationType, int limitSize, int posIndex, List<Long> lexicons) {
-        Collection<WorkState> workStates = null;
-        if (status == 0) {      // wszystko
-            // nic nie robi, daje null
-        } else if (status == 1) { // przetworzone i czesciowo przetworzone
-            workStates = new ArrayList<>();
-            workStates.add(WorkState.WORKING);
-            workStates.add(WorkState.TODO);
-        } else if (status > 1) {
-            workStates = new ArrayList<>();
-            workStates.add(WorkState.values()[status - 2]); // uwzglednienie all ktorego normalnie nie ma, dlatego -2
-        }
+    static public Collection<Synset> getSynsets(String filterText, String domainStr, SynsetRelationType relationType, int limitSize, int posIndex, List<Long> lexicons) {
         Domain domain = null;
         if (domainStr != null) {
             domain = DomainManager.getInstance().decode(domainStr);

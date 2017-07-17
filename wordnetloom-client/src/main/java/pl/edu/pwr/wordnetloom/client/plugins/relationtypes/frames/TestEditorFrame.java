@@ -23,7 +23,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
@@ -46,7 +46,7 @@ public class TestEditorFrame extends DialogWindow implements ActionListener {
     private final TextFieldPlain testText;
     private final ComboBoxPlain testPos;
 
-    private PartOfSpeech lastPos = PosManager.getInstance().getFromID(0);
+    private PartOfSpeech lastPos = PartOfSpeechManager.getInstance().getById(1l);
     private String lastText = "";
 
     /**
@@ -70,7 +70,7 @@ public class TestEditorFrame extends DialogWindow implements ActionListener {
 
         testText = new TextFieldPlain(lastText);
         testText.setPreferredSize(normal);
-        testPos = new ComboBoxPlain(PosManager.getInstance().getAllPOSes().toArray(new PartOfSpeech[]{}));
+        testPos = new ComboBoxPlain(PartOfSpeechManager.getInstance().getAll().toArray(new PartOfSpeech[]{}));
         testPos.setPreferredSize(normal);
 
         buttonOk = new ButtonExt(Labels.OK, this, KeyEvent.VK_O);

@@ -63,7 +63,7 @@ public abstract class CriteriaPanel extends JPanel {
         searchTextField = new TextFieldPlain(STANDARD_VALUE_FILTER);
 
         partsOfSpeachComboBox = new PartOfSpeechComboBox(Labels.VALUE_ALL);
-        partsOfSpeachComboBox.showUbyItems();
+        partsOfSpeachComboBox.withoutFilter();
         partsOfSpeachComboBox.setPreferredSize(new Dimension(150, 20));
         partsOfSpeachComboBox.addItemListener((ItemEvent e) -> {
             PartOfSpeech pos = partsOfSpeachComboBox.retriveComboBoxItem();

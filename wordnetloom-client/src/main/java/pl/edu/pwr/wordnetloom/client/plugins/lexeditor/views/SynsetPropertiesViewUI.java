@@ -13,10 +13,8 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
-import pl.edu.pwr.wordnetloom.client.systems.enums.WorkState;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
@@ -33,12 +31,8 @@ import se.datadosen.component.RiverLayout;
  */
 public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionListener, CaretListener {
 
-    private static final String SUPER_MODE_VALUE = "1";
-    private static final String SUPER_MODE = "SuperMode";
-
     private TextAreaPlain definitionValue;
     private TextAreaPlain commentValue;
-    private ComboBoxPlain statusValue;
     private ButtonExt buttonSave;
     private JCheckBox abstractValue;
 
@@ -58,9 +52,6 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         definitionValue = new TextAreaPlain(Labels.VALUE_UNKNOWN);
         definitionValue.addCaretListener(this);
         definitionValue.setRows(3);
-
-        statusValue = new ComboBoxPlain(WorkState.values());
-        statusValue.addActionListener(this);
 
         commentValue = new TextAreaPlain(Labels.VALUE_UNKNOWN);
         commentValue.addCaretListener(this);
@@ -82,7 +73,6 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         content.add("br center", buttonSave);
 
         // ustawienie akywnosci
-        statusValue.setEnabled(false);
         commentValue.setEnabled(false);
         definitionValue.setEnabled(false);
         abstractValue.setEnabled(false);
@@ -110,7 +100,6 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 //        statusValue.setSelectedItem(synset == null ? null : "");
 //        commentValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.COMMENT)) : formatValue(null));
 //        abstractValue.setSelected(synset != null && Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT)));
-        statusValue.setEnabled(synset != null);
         commentValue.setEnabled(synset != null);
         definitionValue.setEnabled(synset != null);
         abstractValue.setEnabled(synset != null);
@@ -141,24 +130,13 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         // zmiana zaznaczenia w checkboxie
         if (event.getSource() == abstractValue) {
             buttonSave.setEnabled(true);
-
-            // proba zmiany statusu
-        } else if (event.getSource() == statusValue) {
-            if (statusValue.getSelectedIndex() > 2 && (workbench.getParam(SUPER_MODE) == null || !workbench.getParam(SUPER_MODE).equals(SUPER_MODE_VALUE))) {
-                DialogBox.showError(Messages.ERROR_CANNOT_CHANGE_STATUS_RESERVED_FOR_ADMIN);
-                statusValue.setSelectedItem("");
-            } else {
-                buttonSave.setEnabled(true);
-            }
-
             // zapisanie zmian
         } else if (event.getSource() == buttonSave) { // zapisanie zmian
             String definition = definitionValue.getText();
-            int statusIndex = statusValue.getSelectedIndex();
             String comment = commentValue.getText();
             boolean isAbstract = abstractValue.isSelected();
 
-            if (!LexicalDA.updateSynset(lastSynset, definition, statusIndex, comment, isAbstract)) {
+            if (!LexicalDA.updateSynset(lastSynset, definition, comment, isAbstract)) {
                 refreshData(lastSynset); // nieudana zmiana statusu
                 DialogBox.showError(Messages.ERROR_NO_STATUS_CHANGE_BECAUSE_OF_RELATIONS_IN_SYNSETS);
             }

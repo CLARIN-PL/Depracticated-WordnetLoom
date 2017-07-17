@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.client.workbench.interfaces;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import pl.edu.pwr.wordnetloom.user.model.User;
 
 /**
  * Interfejs zapewniający dostęp do funkcji oferowanych przez workbench
@@ -161,6 +162,6 @@ public interface Workbench {
 
     void setBusy(boolean busy);
 
-    void updateOwner();
+    void refreshUserBar(User user);
 
 }

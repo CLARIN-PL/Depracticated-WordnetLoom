@@ -12,5 +12,7 @@ public interface PartOfSpeechServiceRemote {
 
     List<PartOfSpeech> findAll();
 
+    List<PartOfSpeech> findAllWithName();
+
     PartOfSpeech add(PartOfSpeech partOfSpeech);
 }

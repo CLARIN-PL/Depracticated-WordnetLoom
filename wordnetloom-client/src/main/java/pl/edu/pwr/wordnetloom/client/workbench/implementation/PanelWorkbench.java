@@ -34,6 +34,7 @@ import javax.swing.border.BevelBorder;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.LexicalIM;
+import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
 import pl.edu.pwr.wordnetloom.client.systems.managers.ConfigurationManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
@@ -45,6 +46,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Plugin;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Service;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.View;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+import pl.edu.pwr.wordnetloom.user.model.User;
 import se.datadosen.component.RiverLayout;
 
 /**
@@ -55,6 +57,8 @@ import se.datadosen.component.RiverLayout;
  * @author Max - modyfikacja i rozbudowa
  */
 public final class PanelWorkbench implements WindowListener, Workbench {
+
+    private UserSessionData userSessionData;
 
     public static final String WORKBENCH_CONFIG_FILE = "workbench.cfg";
     private static final String PLUGIN_CONFIG_FILE = "plugins.cfg";
@@ -77,7 +81,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
     private JToolBar toolBar;
     private JPanel mainPane;
     protected JLabel statusBar;
-    private JLabel owner;
+    private JLabel user;
     protected JPanel statusPanel;
     private MenuHolder menuHolder;
     private static BusyGlassPane busyPanel;
@@ -192,13 +196,13 @@ public final class PanelWorkbench implements WindowListener, Workbench {
             // ustawienie statusu
             statusBar = new JLabel("");
 
-            owner = new JLabel(getOwnerFromConfigManager());
-            owner.setIcon(LexicalIM.getUser());
+            user = new JLabel("");
+            user.setIcon(LexicalIM.getUser());
             statusPanel = new JPanel();
             statusPanel.setBorder(BorderFactory.createEtchedBorder());
             statusPanel.setLayout(new RiverLayout());
             statusPanel.add(statusBar, "hfill left");
-            statusPanel.add(owner, "right");
+            statusPanel.add(user, "right");
 
             // ustawienie glownego panelu
             mainPane = new JPanel();
@@ -589,9 +593,9 @@ public final class PanelWorkbench implements WindowListener, Workbench {
     }
 
     @Override
-    public void updateOwner() {
-        owner.setText(getOwnerFromConfigManager());
-        owner.repaint();
+    public void refreshUserBar(User u) {
+        user.setText(u.getFullname());
+        user.repaint();
     }
 
     @Override
@@ -608,12 +612,4 @@ public final class PanelWorkbench implements WindowListener, Workbench {
         }
 
     }
-
-    public static String getOwnerFromConfigManager() {
-        if (config == null) {
-            return null;
-        }
-        return config.get("Owner");
-    }
-
 }

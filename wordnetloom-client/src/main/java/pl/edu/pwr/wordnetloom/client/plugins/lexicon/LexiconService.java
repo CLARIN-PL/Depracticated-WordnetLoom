@@ -8,7 +8,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
@@ -59,7 +58,6 @@ public class LexiconService extends AbstractService {
         String lexicons = window.showModal();
         LexiconManager.getInstance().save(lexicons);
         workbench.setParam("Lexicons", lexicons);
-        PosManager.getInstance().refresh();
         DomainManager.getInstance().refresh();
         RelationTypes.refresh();
     }

@@ -12,7 +12,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
-import pl.edu.pwr.wordnetloom.client.systems.enums.WorkState;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
@@ -92,7 +91,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI {
 
                 if (!LexicalDA.updateUnit(editPanel.getSense(), lemma,
                         editPanel.getLexicon().retriveComboBoxItem(), variant,
-                        domain, pos, 0, WorkState.values()[0], comment,
+                        domain, pos, 0, comment,
                         register, example, link, definition)) {
                     refreshData(editPanel.getSense());
                     DialogBox.showError(Messages.ERROR_NO_STATUS_CHANGE_BECAUSE_OF_RELATIONS_IN_UNITS);

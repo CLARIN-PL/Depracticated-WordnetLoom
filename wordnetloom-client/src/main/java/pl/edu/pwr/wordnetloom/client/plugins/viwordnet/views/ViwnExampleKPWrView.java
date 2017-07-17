@@ -2,7 +2,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
 import java.util.ArrayList;
 import java.util.List;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractView;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.corpusexample.model.CorpusExample;
@@ -19,7 +19,7 @@ public class ViwnExampleKPWrView extends AbstractView {
     }
 
     public void load_examples(Sense unit) {
-        List<CorpusExample> examples = RemoteUtils.corpusExampleServiceRemote.findCorpusExamplesByWord(unit.getWord());
+        List<CorpusExample> examples = RemoteService.corpusExampleServiceRemote.findCorpusExamplesByWord(unit.getWord());
 
         List<String> exampleList = new ArrayList<>();
         for (CorpusExample ex : examples) {
@@ -32,7 +32,7 @@ public class ViwnExampleKPWrView extends AbstractView {
     }
 
     public void load_examples(String lemma) {
-        List<CorpusExample> examples = RemoteUtils.corpusExampleServiceRemote.findCorpusExamplesByWord(new Word(lemma));
+        List<CorpusExample> examples = RemoteService.corpusExampleServiceRemote.findCorpusExamplesByWord(new Word(lemma));
 
         StringBuilder b = new StringBuilder();
         List<String> exampleList = new ArrayList<>();

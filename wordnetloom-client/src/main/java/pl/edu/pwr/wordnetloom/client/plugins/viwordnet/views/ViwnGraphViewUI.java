@@ -45,7 +45,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.collections15.Transformer;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
@@ -86,6 +85,7 @@ import se.datadosen.component.RiverLayout;
 public class ViwnGraphViewUI extends AbstractViewUI implements
         VertexSelectionChangeListener<ViwnNode> {
 
+    private static final Logger LOGGER = Logger.getLogger(ViwnGraphViewUI.class);
     /**
      * A graph of synset and relations between synsets.
      */
@@ -193,7 +193,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             graph = this.getSampleGraphViewer();
             content.add(graph, "hfill vfill");
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(ViwnGraphViewUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOGGER.error("IO exception", ex);
         }
 
     }
@@ -1093,8 +1093,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             second = cache.get(edge.getParent());
         }
         if (second == null) {
-            Logger.getLogger(getClass()).log(Level.FATAL,
-                    "node of edge not in cache");
+            LOGGER.fatal("node of edge not in cache");
         }
 
         Direction d = findCommonRelationDir(second, node);
@@ -1106,8 +1105,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
 
         if (d == null) {
-            Logger.getLogger(getClass()).log(Level.FATAL,
-                    "can't find relation in any direction");
+            LOGGER.fatal("can't find relation in any direction");
         }
 
         node.setSpawner(second, d);
@@ -1425,9 +1423,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         try (OutputStream out = new FileOutputStream(filename)) {
             ImageIO.write(myImage, "png", out);
         } catch (FileNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ViwnGraphViewUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOGGER.error("File not found", ex);
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(ViwnGraphViewUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOGGER.error("IO Error", ex);
         }
 
     }

@@ -33,7 +33,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.relations.RelationsIM;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
@@ -57,7 +57,7 @@ public class CandidatesViewUI extends AbstractViewUI
     private final SimpleListenersContainer candidateChanged_ = new SimpleListenersContainer();
 
     //Choose noun as default
-    private final PartOfSpeech pos_default = PosManager.getInstance().getFromID(2);
+    private final PartOfSpeech pos_default = PartOfSpeechManager.getInstance().getById(2l);
     private int packageNo = 1;
     private int currentMaxPkg = 0;
     private SpinnerListModel packageNoModel = null;
@@ -246,7 +246,7 @@ public class CandidatesViewUI extends AbstractViewUI
     }
 
     private void loadPoses() {
-        PartOfSpeech[] poses = PosManager.getInstance().getAllPOSes().toArray(new PartOfSpeech[]{});
+        PartOfSpeech[] poses = PartOfSpeechManager.getInstance().getAll().toArray(new PartOfSpeech[]{});
         posCombo.removeAllItems();
 
         for (PartOfSpeech pos : poses) {

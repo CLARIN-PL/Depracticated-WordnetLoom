@@ -29,6 +29,7 @@ public class Messages {
     public static final String ERROR_NO_STATUS_CHANGE_BECAUSE_OF_RELATIONS_IN_SYNSETS = Main.getResouce("error.no.status.change.because.of.relations.in.synset");
     public static final String ERROR_CANNOT_CHANGE_STATUS_RESERVED_FOR_ADMIN = Main.getResouce("error.cannot.change.status.reserved.for.admin");
     public static final String ERROR_UNABLE_TO_CONNECT_TO_SERVER = Main.getResouce("error.server.connection");
+    public static final String ERROR_UNABLE_TO_CONNECT_TO_SERVER_OR_INCORRECT_AUTHORIZATION = Main.getResouce("error.server.connection.auth");
 
     public static final String SUCCESS_RELATION_ADDED = Main.getResouce("success.message.relation.added");
     public static final String SUCCESS_PACKAGE_RECALCULATION_COMPLETE = Main.getResouce("success.message.package.recalcualtion.complete");

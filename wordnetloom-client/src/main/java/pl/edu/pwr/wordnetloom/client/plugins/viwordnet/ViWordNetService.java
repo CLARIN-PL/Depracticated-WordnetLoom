@@ -55,11 +55,13 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerView;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerViewUI.LockerElementRenderer;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnSatelliteGraphView;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexRenderer;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
@@ -119,11 +121,9 @@ public class ViWordNetService extends AbstractService implements
         this.perspectiveName = perspectiveName;
         this.perspective = perspective;
 
-//        POSServiceRemote service = RMIUtils
-//                .lookupForService(POSServiceRemote.class);
-//        service.getAllPartsOfSpeech().stream().forEach((pos) -> {
-//            posMap.put(pos.getName().getText(), pos);
-//        });
+        PartOfSpeechManager.getInstance().getAll().stream().forEach((pos) -> {
+            posMap.put(pos.getName(RemoteConnectionProvider.getInstance().getLanguage()), pos);
+        });
     }
 
     @Override

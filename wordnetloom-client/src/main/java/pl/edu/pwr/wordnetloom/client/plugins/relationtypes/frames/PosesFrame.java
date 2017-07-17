@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -18,7 +18,7 @@ public class PosesFrame extends DialogWindow implements ActionListener {
     private static final long serialVersionUID = 1L;
 
     // tablica dostepnych czesci mowy
-    private static final PartOfSpeech[] posesTab = PosManager.getInstance().getAllPOSes().toArray(new PartOfSpeech[]{});
+    private static final PartOfSpeech[] posesTab = PartOfSpeechManager.getInstance().getAll().toArray(new PartOfSpeech[]{});
     private final ButtonExt buttonOk, buttonCancel;
     private final JCheckBox checkPoses[] = new JCheckBox[posesTab.length];
     private Collection<PartOfSpeech> poses;
@@ -64,7 +64,7 @@ public class PosesFrame extends DialogWindow implements ActionListener {
         // dekodowanie starych posow
         String[] splitted = oldPoses.split("\\,");
         for (String pos : splitted) {
-            PartOfSpeech p = PosManager.getInstance().decode(pos);
+            PartOfSpeech p = PartOfSpeechManager.getInstance().decode(pos);
             frame.checkPoses[p.getId().intValue()].setSelected(true);
             frame.poses.add(p);
         }

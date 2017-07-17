@@ -5,16 +5,18 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import pl.edu.pwr.wordnetloom.client.plugins.core.window.LoginWindow;
+import pl.edu.pwr.wordnetloom.client.plugins.login.window.LoginWindow;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
-import pl.edu.pwr.wordnetloom.client.systems.managers.ConfigurationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -23,8 +25,8 @@ public class Main {
 
     private static final Logger LOGGER = Logger.getLogger(Main.class);
 
-    private static final String PROGRAM_VERSION = "2.0.9";
-    private static final String PROGRAM_NAME = "WordnetLoom";
+    public static final String PROGRAM_VERSION = "2.0.9";
+    public static final String PROGRAM_NAME = "WordnetLoom";
 
     private static ResourceBundle resource;
 
@@ -42,28 +44,26 @@ public class Main {
             LOGGER.error("Uncaught exception", e);
         });
 
-        LoginWindow dialog = new LoginWindow(new javax.swing.JFrame(), true);
+        LoginWindow dialog = new LoginWindow(new JFrame());
         dialog.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
                 System.exit(0);
             }
         });
-        dialog.setVisible(true);
-        
 
         Thread managers = new Thread(() -> {
             // Must be first other Managers depend on it
-            initializLanguage();
             LexiconManager.getInstance();
-            PosManager.getInstance();
+            PartOfSpeechManager.getInstance();
             DomainManager.getInstance();
             RelationTypes.loadRels();
-
             Workbench workbench;
             try {
                 workbench = new PanelWorkbench(PROGRAM_NAME + " " + PROGRAM_VERSION);
+                workbench.refreshUserBar(RemoteConnectionProvider.getInstance().getUser());
                 workbench.setVisible(true);
+
             } catch (Exception ex) {
                 LOGGER.error("Workbench initialization error:", ex);
             }
@@ -93,22 +93,17 @@ public class Main {
         });
 
         dialog.setThreadOnSuccess(managers);
-
+        dialog.setVisible(true);
     }
 
-    static private void initializLanguage() {
+    public static void initializLanguage(Language lang) {
         Locale locale;
-        ConfigurationManager config = new ConfigurationManager(PanelWorkbench.WORKBENCH_CONFIG_FILE);
-        config.loadConfiguration();
-        String interfaceLanguage = config.get("InterfaceLanguage");
-        if (interfaceLanguage == null) {
-            locale = new Locale("en");
+        if (lang == null) {
+            locale = new Locale(Language.English.getAbbreviation());
         } else {
-            locale = new Locale(interfaceLanguage);
+            locale = new Locale(lang.getAbbreviation());
         }
-        if ("pl".equals(interfaceLanguage) || "en".equals(interfaceLanguage)) {
-            resource = ResourceBundle.getBundle("lang", locale);
-        }
+        resource = ResourceBundle.getBundle("lang", locale);
     }
 
     public static String getResouce(String key) {

@@ -32,4 +32,10 @@ public class PartOfSpeechRepository extends GenericRepository<PartOfSpeech> {
                 .getResultList();
     }
 
+    public List<PartOfSpeech> findAllWithName() {
+        Query query = em.createQuery("FROM PartOfSpeech pos JOIN FETCH pos.nameStrings");
+        return query
+                .getResultList();
+    }
+;
 }

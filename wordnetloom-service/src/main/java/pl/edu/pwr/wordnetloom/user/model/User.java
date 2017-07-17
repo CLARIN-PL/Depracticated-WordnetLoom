@@ -32,16 +32,16 @@ public class User implements Serializable {
     private String email;
 
     @NotNull
-    
+
     @Size(min = 8, max = 64)
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User(){
+    public User() {
     }
-    
+
     public User(String firstname, String lastname, String email, String password, Role role) {
         this.firstname = firstname;
         this.lastname = lastname;
@@ -98,4 +98,7 @@ public class User implements Serializable {
         this.role = role;
     }
 
+    public String getFullname() {
+        return firstname + " " + lastname;
+    }
 }

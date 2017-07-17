@@ -1,7 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
 import java.util.List;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -18,29 +19,19 @@ public class PartOfSpeechComboBox extends ComboBoxPlain<PartOfSpeech> {
     }
 
     private void loadPartOfSpeech() {
-        all = PosManager.getInstance().getAllPOSes();
+        all = PartOfSpeechManager.getInstance().getAll();
     }
 
     private void loadPosByLexicon(long id) {
-        all = PosManager.getInstance().getPOSForLexicon(id);
+        all = PartOfSpeechManager.getInstance().getByLexiconId(id);
     }
 
     private void loadItems() {
         removeAllItems();
         addItem(new CustomDescription<>(nullRepresentation, null));
         all.stream().forEach((pos) -> {
-            addItem(new CustomDescription<>(pos.toString(), pos));
+            addItem(new CustomDescription<>(pos.getName(RemoteConnectionProvider.getInstance().getLanguage()), pos));
         });
-    }
-
-    public void showUbyItems() {
-        removeAllItems();
-        List<PartOfSpeech> ubyOnly = PosManager.getInstance().getPOSForLexicon(1);
-        addItem(new CustomDescription<>(nullRepresentation, null));
-        for (PartOfSpeech pos : ubyOnly) {
-            String desc = "";//Main.getResouce("label." + pos.getUbyType().toString());
-            addItem(new CustomDescription<>(desc, pos));
-        }
     }
 
     public void filterByLexicon(Lexicon lexicon) {

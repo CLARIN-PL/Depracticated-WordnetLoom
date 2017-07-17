@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.management.InvalidAttributeValueException;
 import org.apache.log4j.Logger;
-import pl.edu.pwr.wordnetloom.client.utils.RemoteUtils;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
@@ -34,7 +34,7 @@ public final class LexiconManager {
     }
 
     private void loadFullLexicons(List<Long> lexicons) {
-        cachedFullLexicons = RemoteUtils.lexiconServiceRemote.findAllByLexicon(lexicons);
+        cachedFullLexicons = RemoteService.lexiconServiceRemote.findAllByLexicon(lexicons);
     }
 
     private void loadLexicons() {

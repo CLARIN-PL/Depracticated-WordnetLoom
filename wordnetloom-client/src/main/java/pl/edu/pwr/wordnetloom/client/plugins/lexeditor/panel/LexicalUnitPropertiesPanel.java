@@ -41,7 +41,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DomainComboBox;
@@ -391,7 +391,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         if (unit != null) {
             Domain goodDomain = DomainManager.getInstance().getNormalized(
                     unit.getDomain());
-            PartOfSpeech goodPOS = PosManager.getInstance().getNormalized(
+            PartOfSpeech goodPOS = PartOfSpeechManager.getInstance().getNormalized(
                     unit.getPartOfSpeech());
 
 //            if (goodDomain != null && !goodPOS.contains(goodDomain)) {

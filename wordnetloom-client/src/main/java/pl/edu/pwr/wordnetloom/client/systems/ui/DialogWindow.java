@@ -22,7 +22,7 @@ public class DialogWindow extends JDialog {
         if (y + height + BOTTOM_MARGIN > screenSize.height) {
             y = screenSize.height - height - BOTTOM_MARGIN;
         }
-        
+
         initializeComponents(x, y, width, height);
     }
 
@@ -36,8 +36,9 @@ public class DialogWindow extends JDialog {
 
     /**
      * Fullscreen window with margin 25,25,25,25
-     * @param frame  - parent frame
-     * @param title  - window title
+     *
+     * @param frame - parent frame
+     * @param title - window title
      */
     public DialogWindow(JFrame frame, String title) {
         super(frame, title, true);
@@ -46,16 +47,29 @@ public class DialogWindow extends JDialog {
 
         int width = screenSize.width - 50;
         int height = screenSize.height - 80;
-        
-        initializeComponents( calculateCenterPosition(screenSize.width, width), calculateCenterPosition(screenSize.height, height), width, height);
+
+        initializeComponents(calculateCenterPosition(screenSize.width, width), calculateCenterPosition(screenSize.height, height), width, height);
     }
-    
-    private void initializeComponents(int x, int y, int width, int height){
+
+    private void initializeComponents(int x, int y, int width, int height) {
         this.setBounds(x, y, width, height);
         this.setLayout(new RiverLayout());
     }
-    
-    private int calculateCenterPosition(int a, int b){
+
+    private int calculateCenterPosition(int a, int b) {
         return (a - b) / 2;
+    }
+
+    public void setInScreenCenter(int width, int height) {
+
+        Dimension screenSize = new Dimension(
+                (int) this.getGraphicsConfiguration().getBounds().getWidth(),
+                (int) this.getGraphicsConfiguration().getBounds().getHeight()
+        );
+
+        // set to center of main screen
+        int x = getGraphicsConfiguration().getBounds().x + (screenSize.width - width) / 2;
+        int y = (screenSize.height - height - BOTTOM_MARGIN) / 2;
+        this.setBounds(x, y, width, height);
     }
 }

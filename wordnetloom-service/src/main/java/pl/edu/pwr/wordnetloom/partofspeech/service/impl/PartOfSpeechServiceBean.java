@@ -50,4 +50,9 @@ public class PartOfSpeechServiceBean implements PartOfSpeechServiceLocal {
         return partOfSpeechRepository.persist(pos);
     }
 
+    @Override
+    public List<PartOfSpeech> findAllWithName() {
+        return partOfSpeechRepository.findAllWithName();
+    }
+
 }

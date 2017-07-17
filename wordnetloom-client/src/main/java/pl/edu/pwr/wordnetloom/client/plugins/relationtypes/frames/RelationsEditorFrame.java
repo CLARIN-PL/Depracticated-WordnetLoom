@@ -22,7 +22,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.RelationTypesIM;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PosManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.IconFrame;
@@ -51,7 +51,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
     private static String lastText = "<x#> / <y#>";
 
     private static final long serialVersionUID = 1L;
-    private static PartOfSpeech lastPos = PosManager.getInstance().decode("przymiotnik");
+    private static PartOfSpeech lastPos = PartOfSpeechManager.getInstance().decode("przymiotnik");
 
     private ButtonExt buttonNew, buttonNewSub, buttonDelete, buttonPos, buttonReverse;
     private ButtonExt buttonNewTest, buttonEditTest, buttonDeleteTest;
@@ -123,7 +123,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
         relationShortcut.addCaretListener(this);
         relationShortcut.setPreferredSize(normal);
 
-        relationPos = new TextFieldPlain(PosManager.getInstance().getFromID(0).toString());
+        relationPos = new TextFieldPlain(PartOfSpeechManager.getInstance().getById(1l).toString());
         relationPos.setEnabled(false);
         relationPos.setPreferredSize(smaller);
 
@@ -390,7 +390,7 @@ public class RelationsEditorFrame extends IconFrame implements ActionListener, T
 //        if (rel != null && rel.getParent() != null) {
 //            relationPos.setText(Labels.INHERITED);
 //        } else {
-//            relationPos.setText(PosManager.getInstance().getFromID(0).toString());
+//            relationPos.setText(PartOfSpeechManager.getInstance().getById(0).toString());
 //        }
 //
 //        buttonPos.setEnabled(rel != null && rel.getParent() == null);

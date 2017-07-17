@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
-import pl.edu.pwr.wordnetloom.client.systems.enums.WorkState;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -103,7 +102,7 @@ public class LexicalDA {
      * @param comment - komentarz
      * @return true jesli mozna bylo ustawic, false jesli sa bledne relacji
      */
-    public static boolean updateUnit(Sense lexicalUnit, String lemma, Domain domain, PartOfSpeech pos, int tagCount, WorkState status, String comment) {
+    public static boolean updateUnit(Sense lexicalUnit, String lemma, Domain domain, PartOfSpeech pos, int tagCount, String comment) {
         boolean result = true;
         if (lexicalUnit != null) {
 
@@ -138,8 +137,7 @@ public class LexicalDA {
      */
     public static boolean updateUnit(
             Sense lexicalUnit, String lemma, Lexicon lexicon,
-            int variant, Domain domain, PartOfSpeech pos, int tagCount,
-            WorkState status, String comment, String register, String useCase, String link, String definition) {
+            int variant, Domain domain, PartOfSpeech pos, int tagCount, String comment, String register, String useCase, String link, String definition) {
         boolean result = true;
         if (lexicalUnit != null) {
 
@@ -182,7 +180,7 @@ public class LexicalDA {
      * @param status - status
      * @return true jesli mozna bylo ustawic, false jesli sa bledne relacji
      */
-    public static boolean updateUnit(Sense lexicalUnit, WorkState status) {
+    public static boolean updateUnit(Sense lexicalUnit) {
         if (lexicalUnit != null) {
             //      RemoteUtils.lexicalUnitRemote.updateSense(lexicalUnit);
         }
@@ -194,12 +192,11 @@ public class LexicalDA {
      *
      * @param synset - synset
      * @param definition - definicja
-     * @param statusIndex - status
      * @param comment - komentarz
      * @param isAbstract - abstrakcyjnosc synsetu
      * @return true jesli mozna bylo ustawic, false jesli sa bledne relacji
      */
-    public static boolean updateSynset(Synset synset, String definition, int statusIndex, String comment, boolean isAbstract) {
+    public static boolean updateSynset(Synset synset, String definition, String comment, boolean isAbstract) {
         boolean result = true;
         if (synset != null) {
 
@@ -226,7 +223,7 @@ public class LexicalDA {
      * @param status - status
      * @return true jesli mozna bylo ustawic, false jesli sa bledne relacji
      */
-    public static boolean updateSynset(Synset synset, WorkState status) {
+    public static boolean updateSynset(Synset synset) {
         if (synset != null) {
             //  RemoteUtils.synsetRemote.updateSynset(synset);
         }
