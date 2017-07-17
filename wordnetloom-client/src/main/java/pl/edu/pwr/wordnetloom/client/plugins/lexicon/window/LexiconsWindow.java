@@ -1,21 +1,25 @@
-package pl.edu.pwr.wordnetloom.client.plugins.lexicon.frames;
+package pl.edu.pwr.wordnetloom.client.plugins.lexicon.window;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import org.apache.commons.collections15.map.HashedMap;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
-public class LexiconsFrame extends DialogWindow implements ActionListener {
+public class LexiconsWindow extends DialogWindow implements ActionListener {
 
     private static final long serialVersionUID = 1L;
 
@@ -24,7 +28,7 @@ public class LexiconsFrame extends DialogWindow implements ActionListener {
     private ButtonExt buttonOk;
     private JCheckBox[] arrayOfLexiconCheckBoxes;
 
-    public LexiconsFrame(JFrame owner, List<Long> lexiconsFromConfig) {
+    public LexiconsWindow(JFrame owner, List<Long> lexiconsFromConfig) {
         super(owner, Labels.LEXICON);
         initInfoLabel(Labels.CHOOSE_LEXICON_TO_WORK);
         initAndLoadCheckBoxes(lexiconsFromConfig);
@@ -37,29 +41,25 @@ public class LexiconsFrame extends DialogWindow implements ActionListener {
 
     private void initInfoLabel(String infoMessage) {
         infoLabel = new JLabel(infoMessage);
-        this.add("br center", infoLabel);
+        this.add("br left", infoLabel);
     }
 
     private void initAndLoadCheckBoxes(List<Long> lexiconsFromConfig) {
 
-        // Collection<Lexicon> lexicons = RemoteUtils.lexicalUnitRemote.getAllLexicons();
-        // arrayOfLexiconCheckBoxes = new JCheckBox[lexicons.size()];
+        Collection<Lexicon> lexicons = LexiconManager.getInstance().getFullLexicons();
+        arrayOfLexiconCheckBoxes = new JCheckBox[lexicons.size()];
         int i = 0;
-//        for (Lexicon lexicon : lexicons) {
-//            if (i > 0) {
-//                this.lexiconMap.put(lexicon.getName().getText(),
-//                        lexicon.getId());
-//                arrayOfLexiconCheckBoxes[i] = new JCheckBox(lexicon.getName()
-//                        .getText());
-//                if (lexiconsFromConfig.contains(lexicon.getId())) {
-//                    arrayOfLexiconCheckBoxes[i].setSelected(true);
-//                } else {
-//                    arrayOfLexiconCheckBoxes[i].setSelected(false);
-//                }
-//                this.add("br center", arrayOfLexiconCheckBoxes[i]);
-//            }
-//            i++;
-//        }
+        for (Lexicon lexicon : lexicons) {
+            this.lexiconMap.put(lexicon.getName(), lexicon.getId());
+            arrayOfLexiconCheckBoxes[i] = new JCheckBox(lexicon.getName());
+            if (lexiconsFromConfig.contains(lexicon.getId())) {
+                arrayOfLexiconCheckBoxes[i].setSelected(true);
+            } else {
+                arrayOfLexiconCheckBoxes[i].setSelected(false);
+            }
+            this.add("br tab left", arrayOfLexiconCheckBoxes[i]);
+            i++;
+        }
     }
 
     private void initButton() {
@@ -79,19 +79,14 @@ public class LexiconsFrame extends DialogWindow implements ActionListener {
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
-    private String selectedLexiconsAsIdString() {
-        StringBuilder sb = new StringBuilder();
-
-        // Everyone has access to undefined lexicons
-        sb.append("0");
-
-        for (int i = 1; i < arrayOfLexiconCheckBoxes.length; i++) {
+    private List<Long> getSelectedLexicons() {
+        List selected = new ArrayList();
+        for (int i = 0; i < arrayOfLexiconCheckBoxes.length; i++) {
             if (arrayOfLexiconCheckBoxes[i].isSelected()) {
-                sb.append(",");
-                sb.append(lexiconMap.get(arrayOfLexiconCheckBoxes[i].getText()));
+                selected.add(lexiconMap.get(arrayOfLexiconCheckBoxes[i].getName()));
             }
         }
-        return sb.toString();
+        return selected;
     }
 
     /**
@@ -99,10 +94,10 @@ public class LexiconsFrame extends DialogWindow implements ActionListener {
      *
      * @return Lexicons as string list
      */
-    public String showModal() {
+    public List<Long> showModal() {
         this.setVisible(true);
         this.dispose();
-        return selectedLexiconsAsIdString();
+        return getSelectedLexicons();
     }
 
     @Override

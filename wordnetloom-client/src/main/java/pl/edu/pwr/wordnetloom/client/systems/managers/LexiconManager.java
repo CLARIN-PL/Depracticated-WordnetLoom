@@ -48,10 +48,10 @@ public final class LexiconManager {
     private void loadLexiconMarker() {
         config.loadConfiguration();
         String marker = config.get("LexiconMarker");
-        if (!marker.equals("") && marker != null && marker.equals("on")) {
+        if (!marker.equals("") &&  marker.equals("on")) {
             lexiconMarker = true;
         } else {
-            lexiconMarker = !(!marker.equals("") && marker != null && marker.equals("off"));
+            lexiconMarker = !(!marker.equals("") && marker.equals("off"));
         }
     }
 
@@ -65,20 +65,12 @@ public final class LexiconManager {
 
     public void setLexiconMarkerOn() {
         lexiconMarker = true;
-        saveLexiconMarker("on");
     }
 
     public void setLexiconMarkerOff() {
         lexiconMarker = false;
-        saveLexiconMarker("off");
     }
 
-    private void saveLexiconMarker(String option) {
-        config.loadConfiguration();
-        config.set("LexiconMarker", option);
-        config.saveConfiguration();
-        refresh();
-    }
 
     private List<Long> readLexiconsFromFile() throws InvalidAttributeValueException {
         config.loadConfiguration();
@@ -98,12 +90,10 @@ public final class LexiconManager {
     public List<Long> getLexicons() {
         return cachedLexicons;
     }
-
-    public void save(String lexicons) {
-        config.loadConfiguration();
-        config.set("Lexicons", lexicons);
-        config.saveConfiguration();
-        refresh();
+    
+    public List<Long> setLexicons(List<Long> lexicons){
+        cachedLexicons = lexicons;
+        return cachedLexicons;
     }
 
     public void refresh() {

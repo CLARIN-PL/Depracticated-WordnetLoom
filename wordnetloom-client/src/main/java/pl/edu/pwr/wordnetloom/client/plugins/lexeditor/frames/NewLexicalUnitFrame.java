@@ -11,8 +11,8 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.DomainComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DomainComboBox;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -102,11 +102,11 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     }
 
     static public Sense showModal(Workbench workbench, PartOfSpeech newPos) {
-        return showModal(workbench, workbench.getFrame(), null, newPos, DomainManager.getInstance().getByID(0));
+        return showModal(workbench, workbench.getFrame(), null, newPos, DomainManager.getInstance().getById(0));
     }
 
     static public Sense showModal(Workbench workbench, String word, PartOfSpeech newPos) {
-        return showModal(workbench, workbench.getFrame(), word, newPos, DomainManager.getInstance().getByID(0));
+        return showModal(workbench, workbench.getFrame(), word, newPos, DomainManager.getInstance().getById(0));
     }
 
     /**

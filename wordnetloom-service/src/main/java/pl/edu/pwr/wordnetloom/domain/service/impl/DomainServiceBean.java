@@ -51,4 +51,9 @@ public class DomainServiceBean implements DomainServiceLocal {
         return domainRepository.persist(domain);
     }
 
+    @Override
+    public List<Domain> findAllWithFullNames() {
+        return  domainRepository.findAllWithFullNames();
+    }
+
 }

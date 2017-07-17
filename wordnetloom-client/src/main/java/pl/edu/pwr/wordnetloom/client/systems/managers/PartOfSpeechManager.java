@@ -12,22 +12,12 @@ public class PartOfSpeechManager {
 
     private List<PartOfSpeech> cache;
 
-    /**
-     * Private constructor. We cannot let others to initialize it on their own.
-     *
-     * @param languageCode language code for this instance of manager.
-     */
+
     private PartOfSpeechManager() {
         List<PartOfSpeech> list = RemoteService.partOfSpeechServiceRemote.findAllWithName();
         cache = Collections.unmodifiableList(Collections.synchronizedList(list));
     }
 
-    /**
-     * Simple getInstance method.
-     *
-     * @return default {@link PartOfSpeechManager} instance if exists, throws
-     * exception otherwise.
-     */
     public static PartOfSpeechManager getInstance() {
         if (instance == null) {
             synchronized (PartOfSpeechManager.class) {

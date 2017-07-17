@@ -26,9 +26,9 @@ public class PartOfSpeechRepository extends GenericRepository<PartOfSpeech> {
     }
 
     public List<PartOfSpeech> findByLexicon(Lexicon lexicon) {
-        Query query = em.createQuery("SELECT DISTINCT lapd.partOfSpeech FROM LexiconAllowedPartOfSpeechDomain lapd WHERE lapd.lexicon = :lexicon");
+        Query query = em.createQuery("SELECT DISTINCT lapd.partOfSpeech FROM LexiconAllowedPartOfSpeech lapd WHERE lapd.lexicon.id = :id");
         return query
-                .setParameter("ids", lexicon)
+                .setParameter("id", lexicon.getId())
                 .getResultList();
     }
 

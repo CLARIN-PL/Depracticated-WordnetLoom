@@ -1,12 +1,11 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexicon;
 
 import java.awt.event.ActionEvent;
+import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import pl.edu.pwr.wordnetloom.client.plugins.lexicon.frames.LexiconsFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
-import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -54,11 +53,8 @@ public class LexiconService extends AbstractService {
     }
 
     private void showLexiconWindow() {
-        LexiconsFrame window = new LexiconsFrame(workbench.getFrame(), LexiconManager.getInstance().getLexicons());
-        String lexicons = window.showModal();
-        LexiconManager.getInstance().save(lexicons);
-        workbench.setParam("Lexicons", lexicons);
-        DomainManager.getInstance().refresh();
-        RelationTypes.refresh();
+        LexiconsWindow window = new LexiconsWindow(workbench.getFrame(), LexiconManager.getInstance().getLexicons());
+        List<Long> lexicons = window.showModal();
+        LexiconManager.getInstance().setLexicons(lexicons);
     }
 }

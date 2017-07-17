@@ -14,4 +14,6 @@ public interface DomainServiceRemote {
     List<Domain> findAll();
 
     Domain add(Domain domain);
+
+    public List<Domain> findAllWithFullNames();
 }

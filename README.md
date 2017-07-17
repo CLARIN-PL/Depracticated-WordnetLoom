@@ -5,6 +5,7 @@ Wordnet Visual Editor
 
 Security config
 
+```
 <security-realm name="ApplicationRealm">
 	<server-identities>
 		<ssl>
@@ -28,9 +29,10 @@ Security config
                 </login-module>
 	</authentication>
 </security-domain>
-
+```
 Database config
 
+```
 <datasource jta="true" jndi-name="java:/datasources/wordnet" pool-name="WordnetDS" enabled="true" use-ccm="true">
 	<connection-url>jdbc:mysql://localhost:3306/wordnet</connection-url>
 	        <driver-class>com.mysql.jdbc.Driver</driver-class>
@@ -59,3 +61,4 @@ Database config
 	        <driver-class>com.mysql.jdbc.Driver</driver-class>
         </driver>
 </drivers>
+```
