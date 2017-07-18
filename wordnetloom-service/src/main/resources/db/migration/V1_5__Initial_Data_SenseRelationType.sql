@@ -1,16 +1,17 @@
+SET FOREIGN_KEY_CHECKS = 0;
 # anto
-insert into localised(id) values(109);
-insert into localised(id) values(110);
+insert into localised(id) values(393);
+insert into localised(id) values(394);
 insert into localised(id) values(111);
 insert into localised(id) values(112);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(12, 109, 110, 111, 112, NULL, 12, 1);
-insert into localised_strings(id, strings_KEY, strings) values(109, 'pl', 'antonimia');
-insert into localised_strings(id, strings_KEY, strings) values(110, 'pl', 'anto');
+                          values(12, 393, 394, 111, 112, NULL, 12, 1);
+insert into localised_strings(id, strings_KEY, strings) values(393, 'pl', 'antonimia');
+insert into localised_strings(id, strings_KEY, strings) values(394, 'pl', 'anto');
 insert into localised_strings(id, strings_KEY, strings) values(111, 'pl', 'Relacja antonimii wskazuje każdą znaczeniową przeciwstawność między jednostkami leksykalnymi, wyjąwszy konwersję. Do antonimów zaliczamy antonimy komplementarne jak kręgowiec -- bezkręgowiec, antonimy właściwe, np. dzień -- noc  oraz antonimy kierunkowe, np. północ -- południe i antonimy kulturowe, np. anioł -- diabeł. Antonimia jest relacją zachodzącą między jednostkami o tej samej klasie gramatycznej.');
 insert into localised_strings(id, strings_KEY, strings) values(112, 'pl', '<x#> jest antonimem <y#>');
-insert into localised_strings(id, strings_KEY, strings) values(109, 'en', 'antonimia');
-insert into localised_strings(id, strings_KEY, strings) values(110, 'en', 'anto');
+insert into localised_strings(id, strings_KEY, strings) values(393, 'en', 'antonimia');
+insert into localised_strings(id, strings_KEY, strings) values(394, 'en', 'anto');
 insert into localised_strings(id, strings_KEY, strings) values(111, 'en', 'Relacja antonimii wskazuje każdą znaczeniową przeciwstawność między jednostkami leksykalnymi, wyjąwszy konwersję. Do antonimów zaliczamy antonimy komplementarne jak kręgowiec -- bezkręgowiec, antonimy właściwe, np. dzień -- noc  oraz antonimy kierunkowe, np. północ -- południe i antonimy kulturowe, np. anioł -- diabeł. Antonimia jest relacją zachodzącą między jednostkami o tej samej klasie gramatycznej.');
 insert into localised_strings(id, strings_KEY, strings) values(112, 'en', '<x#> jest antonimem <y#>');
 
@@ -39,11 +40,11 @@ insert into sense_relation_type (id, name_id, short_display_text_id, description
                           values(19, 117, 118, 119, 120, NULL, 19, 1);
 insert into localised_strings(id, strings_KEY, strings) values(117, 'pl', 'fuzzynimia');
 insert into localised_strings(id, strings_KEY, strings) values(118, 'pl', 'fuzz');
-insert into localised_strings(id, strings_KEY, strings) values(119, 'pl', 'Korzystamy z relacji fuzzynimii w przypadku, gdy bez niej jednostka leksykalna miałaby pozostać poza siecią z braku zdefiniowania odpowiedniej relacji. Fuzzynimia pojawi się więc, gdy wszystkie pozostałe testy zawiodą, a wciąż można będzie powiedzieć, że \"X łączy z Y jakaś silna relacja\". Fuzzynimia w Słowosieci łączy jednostki tej samej klasy gramatycznej.', 'czasownik,rzeczownik,przysłówek,przymiotnik');
+insert into localised_strings(id, strings_KEY, strings) values(119, 'pl', 'Korzystamy z relacji fuzzynimii w przypadku, gdy bez niej jednostka leksykalna miałaby pozostać poza siecią z braku zdefiniowania odpowiedniej relacji. Fuzzynimia pojawi się więc, gdy wszystkie pozostałe testy zawiodą, a wciąż można będzie powiedzieć, że \"X łączy z Y jakaś silna relacja\". Fuzzynimia w Słowosieci łączy jednostki tej samej klasy gramatycznej.');
 insert into localised_strings(id, strings_KEY, strings) values(120, 'pl', '<x#> i <y#> to fuzzynimy');
 insert into localised_strings(id, strings_KEY, strings) values(117, 'en', 'fuzzynimia');
 insert into localised_strings(id, strings_KEY, strings) values(118, 'en', 'fuzz');
-insert into localised_strings(id, strings_KEY, strings) values(119, 'en', 'Korzystamy z relacji fuzzynimii w przypadku, gdy bez niej jednostka leksykalna miałaby pozostać poza siecią z braku zdefiniowania odpowiedniej relacji. Fuzzynimia pojawi się więc, gdy wszystkie pozostałe testy zawiodą, a wciąż można będzie powiedzieć, że \"X łączy z Y jakaś silna relacja\". Fuzzynimia w Słowosieci łączy jednostki tej samej klasy gramatycznej.', 'czasownik,rzeczownik,przysłówek,przymiotnik');
+insert into localised_strings(id, strings_KEY, strings) values(119, 'en', 'Korzystamy z relacji fuzzynimii w przypadku, gdy bez niej jednostka leksykalna miałaby pozostać poza siecią z braku zdefiniowania odpowiedniej relacji. Fuzzynimia pojawi się więc, gdy wszystkie pozostałe testy zawiodą, a wciąż można będzie powiedzieć, że \"X łączy z Y jakaś silna relacja\". Fuzzynimia w Słowosieci łączy jednostki tej samej klasy gramatycznej.');
 insert into localised_strings(id, strings_KEY, strings) values(120, 'en', '<x#> i <y#> to fuzzynimy');
 
 # rola
@@ -63,17 +64,17 @@ insert into localised_strings(id, strings_KEY, strings) values(123, 'en', 'Relac
 insert into localised_strings(id, strings_KEY, strings) values(124, 'en', '');
 
 # zawieranie roli
-insert into localised(id) values(124);
+insert into localised(id) values(395);
 insert into localised(id) values(125);
 insert into localised(id) values(126);
 insert into localised(id) values(127);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(33, 124, 125, 126, 127, NULL, NULL, 0);
-insert into localised_strings(id, strings_KEY, strings) values(124, 'pl', 'zawieranie roli');
+                          values(33, 395, 125, 126, 127, NULL, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(395, 'pl', 'zawieranie roli');
 insert into localised_strings(id, strings_KEY, strings) values(125, 'pl', '');
 insert into localised_strings(id, strings_KEY, strings) values(126, 'pl', 'Relacją \"Zawierania roli\" łączymy czasownik odrzeczownikowy z jego podstawą słowotwórczą. Warto zwrócić uwagę na ten fakt, że \"Rola\" i bliźniacza relacja \"Zawierania roli\" nie są relacjami odwrotnymi. Związane to jest z kierunkiem derywacji. Zakłada się, że relacja \"Zawierania roli\" zachodzi między czasownikiem a rzeczownikiem, gdy czasownik odnosi się do sytuacji, w której aktant wyrażony przez rzeczownik pełni pewną rolę, semantycznie charakteryzując ten czasownik.');
 insert into localised_strings(id, strings_KEY, strings) values(127, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(124, 'en', 'zawieranie roli');
+insert into localised_strings(id, strings_KEY, strings) values(395, 'en', 'zawieranie roli');
 insert into localised_strings(id, strings_KEY, strings) values(125, 'en', '');
 insert into localised_strings(id, strings_KEY, strings) values(126, 'en', 'Relacją \"Zawierania roli\" łączymy czasownik odrzeczownikowy z jego podstawą słowotwórczą. Warto zwrócić uwagę na ten fakt, że \"Rola\" i bliźniacza relacja \"Zawierania roli\" nie są relacjami odwrotnymi. Związane to jest z kierunkiem derywacji. Zakłada się, że relacja \"Zawierania roli\" zachodzi między czasownikiem a rzeczownikiem, gdy czasownik odnosi się do sytuacji, w której aktant wyrażony przez rzeczownik pełni pewną rolę, semantycznie charakteryzując ten czasownik.');
 insert into localised_strings(id, strings_KEY, strings) values(127, 'en', '');
@@ -470,14 +471,14 @@ insert into localised(id) values(226);
 insert into localised(id) values(227);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
                           values(59, 224, 225, 226, 227, NULL, NULL, 0);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', 'derywacyjność');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', 'der');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', 'Derywaty synchroniczne reprezentujące procesy mniej regularne łączymy z podstawami słowotwórczymi relacją derywacyjności.');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '<x#> jest derywatem od <y#>');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', 'derywacyjność');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', 'der');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', 'Derywaty synchroniczne reprezentujące procesy mniej regularne łączymy z podstawami słowotwórczymi relacją derywacyjności.');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '<x#> jest derywatem od <y#>');
+insert into localised_strings(id, strings_KEY, strings) values(224, 'pl', 'derywacyjność');
+insert into localised_strings(id, strings_KEY, strings) values(225, 'pl', 'der');
+insert into localised_strings(id, strings_KEY, strings) values(226, 'pl', 'Derywaty synchroniczne reprezentujące procesy mniej regularne łączymy z podstawami słowotwórczymi relacją derywacyjności.');
+insert into localised_strings(id, strings_KEY, strings) values(227, 'pl', '<x#> jest derywatem od <y#>');
+insert into localised_strings(id, strings_KEY, strings) values(224, 'en', 'derywacyjność');
+insert into localised_strings(id, strings_KEY, strings) values(225, 'en', 'der');
+insert into localised_strings(id, strings_KEY, strings) values(226, 'en', 'Derywaty synchroniczne reprezentujące procesy mniej regularne łączymy z podstawami słowotwórczymi relacją derywacyjności.');
+insert into localised_strings(id, strings_KEY, strings) values(227, 'en', '<x#> jest derywatem od <y#>');
 
 # synonimia międzyparadygmatyczna
 insert into localised(id) values(228);
@@ -760,11 +761,11 @@ insert into sense_relation_type (id, name_id, short_display_text_id, description
                           values(148, 296, 297, 298, 299, NULL, NULL, 0);
 insert into localised_strings(id, strings_KEY, strings) values(296, 'pl', 'podobieństwo');
 insert into localised_strings(id, strings_KEY, strings) values(297, 'pl', 'sim');
-insert into localised_strings(id, strings_KEY, strings) values(298, 'pl', 'Relacją tą łączymy przymiotnik odrzeczownikowy z jego bazą słowotwórczą, jeśli przymiotnik jest jakościowy i przypomina byt wyrażony rzeczownikiem pod jakimś względem.', 'rzeczownik,przymiotnik');
+insert into localised_strings(id, strings_KEY, strings) values(298, 'pl', 'Relacją tą łączymy przymiotnik odrzeczownikowy z jego bazą słowotwórczą, jeśli przymiotnik jest jakościowy i przypomina byt wyrażony rzeczownikiem pod jakimś względem.');
 insert into localised_strings(id, strings_KEY, strings) values(299, 'pl', '<x#> przypomina <y#>');
 insert into localised_strings(id, strings_KEY, strings) values(296, 'en', 'podobieństwo');
 insert into localised_strings(id, strings_KEY, strings) values(297, 'en', 'sim');
-insert into localised_strings(id, strings_KEY, strings) values(298, 'en', 'Relacją tą łączymy przymiotnik odrzeczownikowy z jego bazą słowotwórczą, jeśli przymiotnik jest jakościowy i przypomina byt wyrażony rzeczownikiem pod jakimś względem.', 'rzeczownik,przymiotnik');
+insert into localised_strings(id, strings_KEY, strings) values(298, 'en', 'Relacją tą łączymy przymiotnik odrzeczownikowy z jego bazą słowotwórczą, jeśli przymiotnik jest jakościowy i przypomina byt wyrażony rzeczownikiem pod jakimś względem.');
 insert into localised_strings(id, strings_KEY, strings) values(299, 'en', '<x#> przypomina <y#>');
 
 # stopniowanie
@@ -808,7 +809,7 @@ insert into sense_relation_type (id, name_id, short_display_text_id, description
                           values(152, 308, 309, 310, 311, 150, NULL, 0);
 insert into localised_strings(id, strings_KEY, strings) values(308, 'pl', 'stopień najwyższy');
 insert into localised_strings(id, strings_KEY, strings) values(309, 'pl', 'sup');
-insert into localised_strings(id, strings_KEY, strings) values(320, 'pl', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(310, 'pl', '(dziedziczone)');
 insert into localised_strings(id, strings_KEY, strings) values(311, 'pl', '<x#> jest formą stopnia najwyższego, derywowaną od <y#>');
 insert into localised_strings(id, strings_KEY, strings) values(308, 'en', 'stopień najwyższy');
 insert into localised_strings(id, strings_KEY, strings) values(309, 'en', 'sup');
@@ -895,257 +896,244 @@ insert into localised_strings(id, strings_KEY, strings) values(329, 'en', 'instr
 insert into localised_strings(id, strings_KEY, strings) values(330, 'en', '(dziedziczone)');
 insert into localised_strings(id, strings_KEY, strings) values(331, 'en', '<x#> jest w relacji instrumentu do <y#>');
 
-'157', '0', '153', NULL, 'miejsce', '(dziedziczone)', '(dziedziczone)', '0', '<x#> jest w relacji miejsca do <y#>', 'loc', 'p_ravm', '5'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# miejsce
+insert into localised(id) values(332);
+insert into localised(id) values(333);
+insert into localised(id) values(334);
+insert into localised(id) values(335);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(157, 332, 333, 334, 335, 153, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(332, 'pl', 'miejsce');
+insert into localised_strings(id, strings_KEY, strings) values(333, 'pl', 'loc');
+insert into localised_strings(id, strings_KEY, strings) values(334, 'pl', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(335, 'pl', '<x#> jest w relacji miejsca do <y#>');
+insert into localised_strings(id, strings_KEY, strings) values(332, 'en', 'miejsce');
+insert into localised_strings(id, strings_KEY, strings) values(333, 'en', 'loc');
+insert into localised_strings(id, strings_KEY, strings) values(334, 'en', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(335, 'en', '<x#> jest w relacji miejsca do <y#>');
 
-'158', '0', '153', NULL, 'czas', '(dziedziczone)', '(dziedziczone)', '0', '<x#> jest w relacji czasu do <y#>', 'time', 'p_ravczas', '6'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# czas
+insert into localised(id) values(336);
+insert into localised(id) values(337);
+insert into localised(id) values(338);
+insert into localised(id) values(339);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(158, 336, 337, 338, 339, 153, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(336, 'pl', 'czas');
+insert into localised_strings(id, strings_KEY, strings) values(337, 'pl', 'time');
+insert into localised_strings(id, strings_KEY, strings) values(338, 'pl', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(339, 'pl', '<x#> jest w relacji czasu do <y#>');
+insert into localised_strings(id, strings_KEY, strings) values(336, 'en', 'czas');
+insert into localised_strings(id, strings_KEY, strings) values(337, 'en', 'time');
+insert into localised_strings(id, strings_KEY, strings) values(338, 'en', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(339, 'en', '<x#> jest w relacji czasu do <y#>');
 
-'160', '0', '153', NULL, 'rezultat', '(dziedziczone)', '(dziedziczone)', '0', '<x#> jest w relacji rezultatu do <y#>', 'result', 'p_ravres', '7'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# rezultat
+insert into localised(id) values(340);
+insert into localised(id) values(341);
+insert into localised(id) values(342);
+insert into localised(id) values(343);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(160, 340, 341, 342, 343, 153, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(340, 'pl', 'rezultat');
+insert into localised_strings(id, strings_KEY, strings) values(341, 'pl', 'result');
+insert into localised_strings(id, strings_KEY, strings) values(342, 'pl', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(343, 'pl', '<x#> jest w relacji rezultatu do <y#>');
+insert into localised_strings(id, strings_KEY, strings) values(340, 'en', 'rezultat');
+insert into localised_strings(id, strings_KEY, strings) values(341, 'en', 'result');
+insert into localised_strings(id, strings_KEY, strings) values(342, 'en', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(343, 'en', '<x#> jest w relacji rezultatu do <y#>');
 
-'161', '0', '153', NULL, 'kauzacja', '(dziedziczone)', '(dziedziczone)', '0', '<x#> jest w relacji przyczyny do <y#>', 'caus', 'p_ravcau', '8'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# kauzacja
+insert into localised(id) values(345);
+insert into localised(id) values(346);
+insert into localised(id) values(347);
+insert into localised(id) values(348);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(161, 345, 346, 347, 348, 153, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(345, 'pl', 'kauzacja');
+insert into localised_strings(id, strings_KEY, strings) values(346, 'pl', 'caus');
+insert into localised_strings(id, strings_KEY, strings) values(347, 'pl', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(348, 'pl', '<x#> jest w relacji przyczyny do <y#>');
+insert into localised_strings(id, strings_KEY, strings) values(345, 'en', 'kauzacja');
+insert into localised_strings(id, strings_KEY, strings) values(346, 'en', 'caus');
+insert into localised_strings(id, strings_KEY, strings) values(347, 'en', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(348, 'en', '<x#> jest w relacji przyczyny do <y#>');
 
-'162', '0', NULL, NULL, 'predyspozycyjność', '', 'nieznana,czasownik,przymiotnik', '0', '', '', 'p_pred', '46'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# predyspozycyjność
+insert into localised(id) values(349);
+insert into localised(id) values(350);
+insert into localised(id) values(351);
+insert into localised(id) values(352);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(162, 349, 350, 351, 352, NULL, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(349, 'pl', 'predyspozycyjność');
+insert into localised_strings(id, strings_KEY, strings) values(350, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(351, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(352, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(349, 'en', 'predyspozycyjność');
+insert into localised_strings(id, strings_KEY, strings) values(350, 'en', '');
+insert into localised_strings(id, strings_KEY, strings) values(351, 'en', '');
+insert into localised_strings(id, strings_KEY, strings) values(352, 'en', '');
 
-'163', '0', '162', NULL, 'potencjalność', '(dziedziczone)', '(dziedziczone)', '0', '<x#> wchodzi w relację potencjalności z <y#>', 'pot', 'p_predpo', '2'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# potencjalność
+insert into localised(id) values(353);
+insert into localised(id) values(354);
+insert into localised(id) values(355);
+insert into localised(id) values(356);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(163, 353, 354, 355, 356, 163, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(353, 'pl', 'potencjalność');
+insert into localised_strings(id, strings_KEY, strings) values(354, 'pl', 'pot');
+insert into localised_strings(id, strings_KEY, strings) values(355, 'pl', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(356, 'pl', '<x#> wchodzi w relację potencjalności z <y#>');
+insert into localised_strings(id, strings_KEY, strings) values(353, 'en', 'potencjalność');
+insert into localised_strings(id, strings_KEY, strings) values(354, 'en', 'pot');
+insert into localised_strings(id, strings_KEY, strings) values(355, 'en', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(356, 'en', '<x#> wchodzi w relację potencjalności z <y#>');
 
-'164', '0', '162', NULL, 'habitualność', '(dziedziczone)', '(dziedziczone)', '0', '<x#> wchodzi w relację habitualności z <y#>', 'hab', 'p_predhab', '3'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# habitualność
+insert into localised(id) values(357);
+insert into localised(id) values(358);
+insert into localised(id) values(359);
+insert into localised(id) values(360);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(164, 357, 358, 359, 360, 162, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(357, 'pl', 'habitualność');
+insert into localised_strings(id, strings_KEY, strings) values(358, 'pl', 'hab');
+insert into localised_strings(id, strings_KEY, strings) values(359, 'pl', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(360, 'pl', '<x#> wchodzi w relację habitualności z <y#>');
+insert into localised_strings(id, strings_KEY, strings) values(357, 'en', 'habitualność');
+insert into localised_strings(id, strings_KEY, strings) values(358, 'en', 'hab');
+insert into localised_strings(id, strings_KEY, strings) values(359, 'en', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(360, 'en', '<x#> wchodzi w relację habitualności z <y#>');
 
-'165', '0', '162', NULL, 'kwantytatywność', '(dziedziczone)', '(dziedziczone)', '0', '<x#> wchodzi w relację kwantytatywności z <y#>', 'kwant', 'p_predkwa', '4'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# kwantytatywność
+insert into localised(id) values(361);
+insert into localised(id) values(362);
+insert into localised(id) values(363);
+insert into localised(id) values(364);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(165, 361, 362, 363, 364, 162, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(361, 'pl', 'kwantytatywność');
+insert into localised_strings(id, strings_KEY, strings) values(362, 'pl', 'kwant');
+insert into localised_strings(id, strings_KEY, strings) values(363, 'pl', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(364, 'pl', '<x#> wchodzi w relację kwantytatywności z <y#>');
+insert into localised_strings(id, strings_KEY, strings) values(361, 'en', 'kwantytatywność');
+insert into localised_strings(id, strings_KEY, strings) values(362, 'en', 'kwant');
+insert into localised_strings(id, strings_KEY, strings) values(363, 'en', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(364, 'en', '<x#> wchodzi w relację kwantytatywności z <y#>');
 
-'166', '0', '162', NULL, 'ocena', '(dziedziczone)', '(dziedziczone)', '0', '<x#> wchodzi w relację oceny z <y#>', 'ocen', 'p_predoce', '5'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# ocena
+insert into localised(id) values(365);
+insert into localised(id) values(366);
+insert into localised(id) values(367);
+insert into localised(id) values(368);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(166, 365, 366, 367, 368, 162, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(365, 'pl', 'ocena');
+insert into localised_strings(id, strings_KEY, strings) values(366, 'pl', 'ocen');
+insert into localised_strings(id, strings_KEY, strings) values(367, 'pl', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(368, 'pl', '<x#> wchodzi w relację oceny z <y#>');
+insert into localised_strings(id, strings_KEY, strings) values(365, 'en', 'ocena');
+insert into localised_strings(id, strings_KEY, strings) values(366, 'en', 'ocen');
+insert into localised_strings(id, strings_KEY, strings) values(367, 'en', '(dziedziczone)');
+insert into localised_strings(id, strings_KEY, strings) values(368, 'en', '<x#> wchodzi w relację oceny z <y#>');
 
-'168', '0', NULL, NULL, 'nacechowanie-intensywność Adj-Adj', '', 'przymiotnik', '0', '<x#> jest to intensivum od <y#>', 'intens', 'p_diminaa', '47'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# nacechowanie-intensywność Adj-Adj
+insert into localised(id) values(369);
+insert into localised(id) values(370);
+insert into localised(id) values(371);
+insert into localised(id) values(372);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(168, 369, 370, 371, 372, NULL, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(369, 'pl', 'nacechowanie-intensywność Adj-Adj');
+insert into localised_strings(id, strings_KEY, strings) values(370, 'pl', 'intens');
+insert into localised_strings(id, strings_KEY, strings) values(371, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(372, 'pl', '<x#> jest to intensivum od <y#>');
+insert into localised_strings(id, strings_KEY, strings) values(369, 'en', 'nacechowanie-intensywność Adj-Adj');
+insert into localised_strings(id, strings_KEY, strings) values(370, 'en', 'intens');
+insert into localised_strings(id, strings_KEY, strings) values(371, 'en', '');
+insert into localised_strings(id, strings_KEY, strings) values(372, 'en', '<x#> jest to intensivum od <y#>');
 
-'170', '0', NULL, NULL, 'Antonym', 'Opis', 'rzeczownik pwn', '0', '', 'skrot', '!', '61'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# Princeton relations
+# Antonym
+insert into localised(id) values(373);
+insert into localised(id) values(374);
+insert into localised(id) values(375);
+insert into localised(id) values(376);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(170, 373, 374, 375, 376, NULL, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(373, 'pl', 'Antonym');
+insert into localised_strings(id, strings_KEY, strings) values(374, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(375, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(376, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(373, 'en', 'Antonym');
+insert into localised_strings(id, strings_KEY, strings) values(374, 'en', '');
+insert into localised_strings(id, strings_KEY, strings) values(375, 'en', '');
+insert into localised_strings(id, strings_KEY, strings) values(376, 'en', '');
 
-'182', '0', NULL, NULL, 'Derivationally related form', 'Opis', 'czasownik pwn,rzeczownik pwn', '0', '', 'skrot', '+', '74'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# Derivationally related form
+insert into localised(id) values(377);
+insert into localised(id) values(378);
+insert into localised(id) values(379);
+insert into localised(id) values(380);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(182, 377, 378, 379, 380, NULL, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(377, 'pl', 'Derivationally related form');
+insert into localised_strings(id, strings_KEY, strings) values(378, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(379, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(380, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(377, 'en', 'Derivationally related form');
+insert into localised_strings(id, strings_KEY, strings) values(378, 'en', '');
+insert into localised_strings(id, strings_KEY, strings) values(379, 'en', '');
+insert into localised_strings(id, strings_KEY, strings) values(380, 'en', '');
 
-'191', '0', NULL, NULL, 'Also see', 'Opis', 'czasownik pwn', '0', '', 'See', '^', '84'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# Also see
+insert into localised(id) values(381);
+insert into localised(id) values(382);
+insert into localised(id) values(383);
+insert into localised(id) values(384);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(191, 381, 382, 383, 384, NULL, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(381, 'pl', 'Also see');
+insert into localised_strings(id, strings_KEY, strings) values(382, 'pl', 'See');
+insert into localised_strings(id, strings_KEY, strings) values(383, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(384, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(381, 'en', 'Also see');
+insert into localised_strings(id, strings_KEY, strings) values(382, 'en', 'See');
+insert into localised_strings(id, strings_KEY, strings) values(383, 'en', '');
+insert into localised_strings(id, strings_KEY, strings) values(384, 'en', '');
 
-'194', '0', NULL, NULL, 'Participle of verb', 'Opis', 'czasownik pwn', '0', '', 'PP', '<', '87'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# Participle of verb
+insert into localised(id) values(385);
+insert into localised(id) values(386);
+insert into localised(id) values(387);
+insert into localised(id) values(388);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(194, 385, 386, 387, 388, NULL, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(385, 'pl', 'Participle of verb');
+insert into localised_strings(id, strings_KEY, strings) values(386, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(387, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(388, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(385, 'en', 'Participle of verb');
+insert into localised_strings(id, strings_KEY, strings) values(386, 'en', '');
+insert into localised_strings(id, strings_KEY, strings) values(387, 'en', '');
+insert into localised_strings(id, strings_KEY, strings) values(388, 'en', '');
 
-'195', '0', NULL, NULL, 'Pertainym (pertains to noun)', 'Opis', 'rzeczownik pwn', '0', '', 'Pert', '\\', '88'
-#
-insert into localised(id) values(113);
-insert into localised(id) values(114);
-insert into localised(id) values(115);
-insert into localised(id) values(116);
+# Pertainym (pertains to noun)
+insert into localised(id) values(389);
+insert into localised(id) values(390);
+insert into localised(id) values(391);
+insert into localised(id) values(392);
 insert into sense_relation_type (id, name_id, short_display_text_id, description_id, display_text_id, parent_relation_type_id, reverse_relation_type_id, auto_reverse)
-                          values(13, 113, 114, 115, 116, NULL, 13, 1);
-insert into localised_strings(id, strings_KEY, strings) values(113, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'pl', '');
-insert into localised_strings(id, strings_KEY, strings) values(113, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(114, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(115, 'en', '');
-insert into localised_strings(id, strings_KEY, strings) values(116, 'en', '');
+                          values(195, 389, 390, 391, 390, NULL, NULL, 0);
+insert into localised_strings(id, strings_KEY, strings) values(389, 'pl', 'Pertainym (pertains to noun)');
+insert into localised_strings(id, strings_KEY, strings) values(390, 'pl', 'Pert');
+insert into localised_strings(id, strings_KEY, strings) values(391, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(392, 'pl', '');
+insert into localised_strings(id, strings_KEY, strings) values(389, 'en', 'Pertainym (pertains to noun)');
+insert into localised_strings(id, strings_KEY, strings) values(390, 'en', 'Pert');
+insert into localised_strings(id, strings_KEY, strings) values(391, 'en', '');
+insert into localised_strings(id, strings_KEY, strings) values(392, 'en', '');
+SET FOREIGN_KEY_CHECKS = 1;

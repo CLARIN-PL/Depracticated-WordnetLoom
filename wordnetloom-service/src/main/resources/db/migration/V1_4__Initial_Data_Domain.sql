@@ -460,19 +460,19 @@ insert into localised_strings(id, strings_KEY, strings) values(105, 'en', 'caku'
 insert into localised_strings(id, strings_KEY, strings) values(106, 'en', '');
 
 # cper
-insert into localised(id) values(105);
-insert into localised(id) values(106);
-insert into domain(id, name_id, description_id) values(52, 105, 106);
-insert into localised_strings(id, strings_KEY, strings) values(105, 'pl', 'cper');
-insert into localised_strings(id, strings_KEY, strings) values(106, 'pl', 'czasowniki perduratywne');
-insert into localised_strings(id, strings_KEY, strings) values(105, 'en', 'cper');
-insert into localised_strings(id, strings_KEY, strings) values(106, 'en', '');
-
-# cdel
 insert into localised(id) values(107);
 insert into localised(id) values(108);
-insert into domain(id, name_id, description_id) values(53, 107, 108);
-insert into localised_strings(id, strings_KEY, strings) values(107, 'pl', 'cdel');
-insert into localised_strings(id, strings_KEY, strings) values(108, 'pl', 'czasowniki delimitatywne');
-insert into localised_strings(id, strings_KEY, strings) values(107, 'en', 'cdel');
+insert into domain(id, name_id, description_id) values(52, 107, 108);
+insert into localised_strings(id, strings_KEY, strings) values(107, 'pl', 'cper');
+insert into localised_strings(id, strings_KEY, strings) values(108, 'pl', 'czasowniki perduratywne');
+insert into localised_strings(id, strings_KEY, strings) values(107, 'en', 'cper');
 insert into localised_strings(id, strings_KEY, strings) values(108, 'en', '');
+
+# cdel
+insert into localised(id) values(109);
+insert into localised(id) values(110);
+insert into domain(id, name_id, description_id) values(53, 109, 110);
+insert into localised_strings(id, strings_KEY, strings) values(109, 'pl', 'cdel');
+insert into localised_strings(id, strings_KEY, strings) values(110, 'pl', 'czasowniki delimitatywne');
+insert into localised_strings(id, strings_KEY, strings) values(109, 'en', 'cdel');
+insert into localised_strings(id, strings_KEY, strings) values(110, 'en', '');

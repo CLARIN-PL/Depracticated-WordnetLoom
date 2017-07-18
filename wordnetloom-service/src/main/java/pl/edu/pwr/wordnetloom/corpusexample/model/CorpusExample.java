@@ -3,15 +3,11 @@ package pl.edu.pwr.wordnetloom.corpusexample.model;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import pl.edu.pwr.wordnetloom.word.model.Word;
 
 @Entity
 @Table(name = "corpus_example")
@@ -27,9 +23,7 @@ public class CorpusExample implements Serializable {
     @Column(columnDefinition = "text")
     private String text;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "word", referencedColumnName = "id", nullable = false)
-    private Word word;
+    private String word;
 
     public Long getId() {
         return id;
@@ -47,11 +41,11 @@ public class CorpusExample implements Serializable {
         this.text = text;
     }
 
-    public Word getWord() {
+    public String getWord() {
         return word;
     }
 
-    public void setWord(Word word) {
+    public void setWord(String word) {
         this.word = word;
     }
 
