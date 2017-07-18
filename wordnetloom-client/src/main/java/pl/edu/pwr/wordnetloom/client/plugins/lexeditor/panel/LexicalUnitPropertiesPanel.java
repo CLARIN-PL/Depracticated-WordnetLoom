@@ -36,7 +36,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.LexicalIM;
+import pl.edu.pwr.wordnetloom.client.systems.managers.IconsManager;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
@@ -246,7 +246,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         examplesModel = new DefaultListModel();
         scrollPaneExamples.setViewportView(examplesList);
 
-        btnNewExample = new JButton(LexicalIM.getAdd());
+        btnNewExample = new JButton(IconsManager.getAdd());
         btnNewExample.addActionListener((ActionEvent e) -> {
             String exa = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
             if (exa != null && !"".equals(exa)) {
@@ -262,7 +262,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         mainPanel.add(lblExample, "2, 17, left, fill");
         mainPanel.add(btnNewExample, "12, 17, fill, fill");
 
-        btnEditExample = new JButton(LexicalIM.getEdit());
+        btnEditExample = new JButton(IconsManager.getEdit());
         btnEditExample.addActionListener((ActionEvent e) -> {
             int idx = examplesList.getSelectedIndex();
             if (idx >= 0) {
@@ -278,7 +278,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         });
         mainPanel.add(btnEditExample, "12, 19, fill, fill");
 
-        btnRemoveExample = new JButton(LexicalIM.getDelete());
+        btnRemoveExample = new JButton(IconsManager.getDelete());
         btnRemoveExample.addActionListener((ActionEvent e) -> {
             int idx = examplesList.getSelectedIndex();
             if (idx >= 0) {
@@ -297,7 +297,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         mainPanel.add(link, "4, 25, 7, 1, fill, fill");
         link.setColumns(10);
 
-        btnGoToLink = new JButton(LexicalIM.getRight());
+        btnGoToLink = new JButton(IconsManager.getRight());
         btnGoToLink.addActionListener((ActionEvent e) -> {
             try {
                 URI uri = new java.net.URI(link.getText());

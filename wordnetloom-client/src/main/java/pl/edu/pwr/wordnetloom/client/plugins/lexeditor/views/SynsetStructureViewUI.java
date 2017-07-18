@@ -21,7 +21,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.LexicalIM;
+import pl.edu.pwr.wordnetloom.client.systems.managers.IconsManager;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
@@ -159,39 +159,39 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         isAbstract = new JLabel();
 
         // dodanie przyciskow
-        buttonUp = new ButtonExt(LexicalIM.getUp(), this);
+        buttonUp = new ButtonExt(IconsManager.getUp(), this);
         buttonUp.setEnabled(false);
         buttonUp.setToolTipText(Hints.MOVE_UNIT_UP);
         installViewScopeShortCut(buttonUp, KeyEvent.CTRL_MASK, KeyEvent.VK_UP);
 
-        buttonDown = new ButtonExt(LexicalIM.getDown(), this);
+        buttonDown = new ButtonExt(IconsManager.getDown(), this);
         buttonDown.setEnabled(false);
         buttonDown.setToolTipText(Hints.MOVE_UNIT_DOWN);
         installViewScopeShortCut(buttonDown, KeyEvent.CTRL_MASK,
                 KeyEvent.VK_DOWN);
 
-        buttonAdd = new ButtonExt(LexicalIM.getAdd(), this);
+        buttonAdd = new ButtonExt(IconsManager.getAdd(), this);
         buttonAdd.setToolTipText(Hints.ADD_UNITS);
         buttonAdd.setEnabled(false);
         installViewScopeShortCut(buttonAdd, 0, KeyEvent.VK_INSERT);
 
-        buttonDelete = new ButtonExt(LexicalIM.getDelete(), this);
+        buttonDelete = new ButtonExt(IconsManager.getDelete(), this);
         buttonDelete.setEnabled(false);
         buttonDelete.setToolTipText(Hints.DETACH_UNIT_FORM_SYNSET);
         installViewScopeShortCut(buttonDelete, 0, KeyEvent.VK_DELETE);
 
-        buttonToNew = new ButtonExt(LexicalIM.getToNew(), this);
+        buttonToNew = new ButtonExt(IconsManager.getToNew(), this);
         buttonToNew.setToolTipText(Hints.CREATE_SYNSET_AND_MOVE_SELECTED_UNITS);
         buttonToNew.setEnabled(false);
         installViewScopeShortCut(buttonToNew, 0, KeyEvent.VK_N);
 
-        buttonRelations = new ButtonExt(LexicalIM.getRelations(), this);
+        buttonRelations = new ButtonExt(IconsManager.getRelations(), this);
         buttonRelations.setEnabled(false);
         buttonRelations.setToolTipText(Hints.ADD_RELATION);
         installViewScopeShortCut(buttonRelations, KeyEvent.CTRL_MASK,
                 KeyEvent.VK_R);
 
-        buttonSwitchToLexicalPerspective = new ButtonExt(LexicalIM.getSwitch(),
+        buttonSwitchToLexicalPerspective = new ButtonExt(IconsManager.getSwitch(),
                 this);
         buttonSwitchToLexicalPerspective.setEnabled(false);
         buttonSwitchToLexicalPerspective

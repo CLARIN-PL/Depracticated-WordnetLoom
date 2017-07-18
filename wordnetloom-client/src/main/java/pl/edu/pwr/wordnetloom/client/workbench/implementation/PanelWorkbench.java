@@ -33,7 +33,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.LexicalIM;
+import pl.edu.pwr.wordnetloom.client.systems.managers.IconsManager;
 import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
 import pl.edu.pwr.wordnetloom.client.systems.managers.ConfigurationManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
@@ -197,7 +197,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
             statusBar = new JLabel("");
 
             user = new JLabel("");
-            user.setIcon(LexicalIM.getUser());
+            user.setIcon(IconsManager.getUser());
             statusPanel = new JPanel();
             statusPanel.setBorder(BorderFactory.createEtchedBorder());
             statusPanel.setLayout(new RiverLayout());

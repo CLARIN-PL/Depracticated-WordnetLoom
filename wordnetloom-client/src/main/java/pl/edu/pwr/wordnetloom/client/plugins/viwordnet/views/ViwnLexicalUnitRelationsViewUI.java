@@ -17,7 +17,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.LexicalIM;
+import pl.edu.pwr.wordnetloom.client.systems.managers.IconsManager;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
@@ -73,11 +73,11 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         root.add(root_from);
         root.add(root_to);
 
-        addRelation = new ButtonExt(LexicalIM.getAdd(), this);
+        addRelation = new ButtonExt(IconsManager.getAdd(), this);
         addRelation.setEnabled(true);
         addRelation.setToolTipText(Hints.ADD_RELATION_UNITS);
         installViewScopeShortCut(addRelation, 0, KeyEvent.VK_INSERT);
-        delRelation = new ButtonExt(LexicalIM.getDelete(), this);
+        delRelation = new ButtonExt(IconsManager.getDelete(), this);
         delRelation.setEnabled(false);
         delRelation.setToolTipText(Hints.REMOVE_RELTAION_UNITS);
         installViewScopeShortCut(delRelation, 0, KeyEvent.VK_DELETE);

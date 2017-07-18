@@ -20,7 +20,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.LexicalIM;
+import pl.edu.pwr.wordnetloom.client.systems.managers.IconsManager;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
@@ -82,19 +82,19 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         infoLabel = new JLabel();
         infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "0"));
 
-        btnNewWithSyns = new ButtonExt(LexicalIM.getNew(), this);
+        btnNewWithSyns = new ButtonExt(IconsManager.getNew(), this);
         btnNewWithSyns.setToolTipText(Hints.CREATE_NEW_UNIT_AND_SYNSET);
 
-        btnNew = new ButtonExt(LexicalIM.getNew2(), this);
+        btnNew = new ButtonExt(IconsManager.getNew2(), this);
         btnNew.setToolTipText(Hints.CREATE_NEW_UNIT);
         installViewScopeShortCut(btnNew, 0, KeyEvent.VK_INSERT);
 
-        btnDelete = new ButtonExt(LexicalIM.getDelete(), this);
+        btnDelete = new ButtonExt(IconsManager.getDelete(), this);
         btnDelete.setEnabled(false);
         btnDelete.setToolTipText(Hints.REMOVE_UNIT);
         installViewScopeShortCut(btnDelete, 0, KeyEvent.VK_DELETE);
 
-        btnAddToSyns = new ButtonExt(LexicalIM.getNew(), this);
+        btnAddToSyns = new ButtonExt(IconsManager.getNew(), this);
         btnAddToSyns.setEnabled(false);
         btnAddToSyns.setToolTipText(Hints.ADD_TO_NEW_SYNSET);
 
