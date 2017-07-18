@@ -411,7 +411,7 @@ insert into localised(id) values(96);
 insert into domain(id, name_id, description_id) values(47, 95, 96);
 insert into localised_strings(id, strings_KEY, strings) values(95, 'pl', 'adj');
 insert into localised_strings(id, strings_KEY, strings) values(96, 'pl', 'all adjective clusters');
-insert into localised_strings(id, strings_KEY, strings) values(95, 'en', 'all adjective clusters');
+insert into localised_strings(id, strings_KEY, strings) values(95, 'en', 'all adj');
 insert into localised_strings(id, strings_KEY, strings) values(96, 'en', 'all adjective clusters');
 
 # adv
@@ -432,5 +432,47 @@ insert into localised_strings(id, strings_KEY, strings) values(100, 'pl', 'przym
 insert into localised_strings(id, strings_KEY, strings) values(99, 'en', '');
 insert into localised_strings(id, strings_KEY, strings) values(100, 'en', '');
 
+# grad
+insert into localised(id) values(101);
+insert into localised(id) values(102);
+insert into domain(id, name_id, description_id) values(45, 101, 102);
+insert into localised_strings(id, strings_KEY, strings) values(101, 'pl', 'grad');
+insert into localised_strings(id, strings_KEY, strings) values(102, 'pl', 'przymiotniki odprzymiotnikowe (natężenie cechy)');
+insert into localised_strings(id, strings_KEY, strings) values(101, 'en', 'grad');
+insert into localised_strings(id, strings_KEY, strings) values(102, 'en', '');
 
-INSERT INTO temp1 (id, text_value) VALUES (45, "adj deadjectival");
+# cdystr
+insert into localised(id) values(103);
+insert into localised(id) values(104);
+insert into domain(id, name_id, description_id) values(50, 103, 104);
+insert into localised_strings(id, strings_KEY, strings) values(103, 'pl', 'cdystr');
+insert into localised_strings(id, strings_KEY, strings) values(104, 'pl', 'czasownki dystrybutywne');
+insert into localised_strings(id, strings_KEY, strings) values(103, 'en', 'cdystr');
+insert into localised_strings(id, strings_KEY, strings) values(104, 'en', '');
+
+# caku
+insert into localised(id) values(105);
+insert into localised(id) values(106);
+insert into domain(id, name_id, description_id) values(51, 105, 106);
+insert into localised_strings(id, strings_KEY, strings) values(105, 'pl', 'caku');
+insert into localised_strings(id, strings_KEY, strings) values(106, 'pl', 'czasowniki akumulatywne');
+insert into localised_strings(id, strings_KEY, strings) values(105, 'en', 'caku');
+insert into localised_strings(id, strings_KEY, strings) values(106, 'en', '');
+
+# cper
+insert into localised(id) values(105);
+insert into localised(id) values(106);
+insert into domain(id, name_id, description_id) values(52, 105, 106);
+insert into localised_strings(id, strings_KEY, strings) values(105, 'pl', 'cper');
+insert into localised_strings(id, strings_KEY, strings) values(106, 'pl', 'czasowniki perduratywne');
+insert into localised_strings(id, strings_KEY, strings) values(105, 'en', 'cper');
+insert into localised_strings(id, strings_KEY, strings) values(106, 'en', '');
+
+# cdel
+insert into localised(id) values(107);
+insert into localised(id) values(108);
+insert into domain(id, name_id, description_id) values(53, 107, 108);
+insert into localised_strings(id, strings_KEY, strings) values(107, 'pl', 'cdel');
+insert into localised_strings(id, strings_KEY, strings) values(108, 'pl', 'czasowniki delimitatywne');
+insert into localised_strings(id, strings_KEY, strings) values(107, 'en', 'cdel');
+insert into localised_strings(id, strings_KEY, strings) values(108, 'en', '');
