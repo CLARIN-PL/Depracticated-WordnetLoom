@@ -13,7 +13,7 @@ import org.apache.log4j.PropertyConfigurator;
 import pl.edu.pwr.wordnetloom.client.plugins.login.window.LoginWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
@@ -25,7 +25,7 @@ public class Main {
 
     private static final Logger LOGGER = Logger.getLogger(Main.class);
 
-    public static final String PROGRAM_VERSION = "2.0.9";
+    public static final String PROGRAM_VERSION = "2.0";
     public static final String PROGRAM_NAME = "WordnetLoom";
 
     private static ResourceBundle resource;
@@ -57,7 +57,7 @@ public class Main {
             LexiconManager.getInstance();
             PartOfSpeechManager.getInstance();
             DomainManager.getInstance();
-            RelationTypes.loadRels();
+            RelationTypeManager.loadRels();
             Workbench workbench;
             try {
                 workbench = new PanelWorkbench(PROGRAM_NAME + " " + PROGRAM_VERSION);

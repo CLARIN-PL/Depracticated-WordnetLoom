@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.client.systems.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
@@ -34,7 +35,8 @@ public class DomainComboBox extends ComboBoxPlain<Domain> {
         }
         domains = DomainManager.getInstance().sortDomains(domains);
         for (Domain domain : domains) {
-            addItem(new CustomDescription<>(withPrefix == true ? domain.toString() : nameWithoutPrefix(domain.toString()), domain));
+            String name = domain.getName(RemoteConnectionProvider.getInstance().getLanguage());
+            addItem(new CustomDescription<>(withPrefix == true ? name : nameWithoutPrefix(name), domain));
         }
     }
 
@@ -58,8 +60,9 @@ public class DomainComboBox extends ComboBoxPlain<Domain> {
         all = DomainManager.getInstance().sortDomains(all);
         addItem(new CustomDescription<>(nullRepresentation, null));
         for (Domain domain : all) {
+            String name = domain.getName(RemoteConnectionProvider.getInstance().getLanguage());
             addItem(new CustomDescription<>(
-                    withPrefix == true ? domain.toString() : nameWithoutPrefix(domain.toString()), domain));
+                    withPrefix == true ? name : nameWithoutPrefix(name), domain));
         }
     }
 

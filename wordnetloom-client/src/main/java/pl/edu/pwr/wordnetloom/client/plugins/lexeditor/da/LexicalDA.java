@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -634,12 +634,12 @@ public class LexicalDA {
     public static String getRelationName(SenseRelationType rel) {
         if (rel != null) {
             if (rel.getParent() != null) { // ma rodzica
-//                RelationType parent = RelationTypes.get(rel.getId()).getRelationType().getParent();
+//                RelationType parent = RelationTypeManager.get(rel.getId()).getRelationType().getParent();
 //                if (parent != null) {
-//                    return RelationTypes.get(parent.getId()).name() + " / " + RelationTypes.get(rel.getId()).name();
+//                    return RelationTypeManager.get(parent.getId()).name() + " / " + RelationTypeManager.get(rel.getId()).name();
 //                }
             }
-            return RelationTypes.getFullNameFor(rel.getId());
+            return RelationTypeManager.getFullNameFor(rel.getId());
         }
         return null;
     }

@@ -1,17 +1,15 @@
-package pl.edu.pwr.wordnetloom.client.systems.enums;
+package pl.edu.pwr.wordnetloom.client.systems.managers;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 // TODO: make a singleton
-public class RelationTypes {
+public class RelationTypeManager {
 
-    private static final HashMap<Long, RelationTypes> all_rels
-            = new HashMap<>();
+    private static final HashMap<Long, RelationTypeManager> all_rels = new HashMap<>();
 
-    private static final HashMap<Long, List<RelationTypes>> top_child
-            = new HashMap<>();
+    private static final HashMap<Long, List<RelationTypeManager>> top_child = new HashMap<>();
 
     static private boolean loaded = false;
 
@@ -35,7 +33,7 @@ public class RelationTypes {
 //        for (RelationType r : full) {
 //
 //            if (r.getParent() == null) {
-//                RelationTypes rts = new RelationTypes();
+//                RelationTypeManager rts = new RelationTypeManager();
 //                rts.me = r;
 //                if (r.getReverse() != null) {
 //                    rts.rev_id = r.getReverse().getId();
@@ -50,10 +48,10 @@ public class RelationTypes {
 //                continue;
 //            }
 //
-//            RelationTypes parent = null;
+//            RelationTypeManager parent = null;
 //
 //            loop:
-//            for (RelationTypes p : highest) {
+//            for (RelationTypeManager p : highest) {
 //                if (p.me.equals(r.getParent())) {
 //                    parent = p;
 //                    break loop;
@@ -70,7 +68,7 @@ public class RelationTypes {
 //                top_child.put(parent.me.getId(), children);
 //            }
 //
-//            RelationTypes newChild = new RelationTypes();
+//            RelationTypeManager newChild = new RelationTypeManager();
 //            newChild.me = r;
 //            if (r.getReverse() != null) {
 //                newChild.rev_id = r.getReverse().getId();
@@ -81,9 +79,9 @@ public class RelationTypes {
 //        }
     }
 
-//    static public RelationTypes getByName(String name) {
-//        RelationTypes rt = null;
-//        for (RelationTypes r : all_rels.values()) {
+//    static public RelationTypeManager getByName(String name) {
+//        RelationTypeManager rt = null;
+//        for (RelationTypeManager r : all_rels.values()) {
 ////            if (r.me.getName().getText().equals(name)) {
 ////                rt = r;
 ////                break;
@@ -91,7 +89,7 @@ public class RelationTypes {
 //        }
 //        return rt;
 //    }
-    static public RelationTypes get(Long id) {
+    static public RelationTypeManager get(Long id) {
         return all_rels.get(id);
     }
 
@@ -116,7 +114,7 @@ public class RelationTypes {
     private Long rev_id;
     private boolean updated = false;
 
-    public Collection<RelationTypes> getChildren() {
+    public Collection<RelationTypeManager> getChildren() {
 //        if (top_child.get(me.getId()) != null) {
 //            return Collections.unmodifiableCollection(
 //                    top_child.get(me.getId()));
@@ -151,7 +149,7 @@ public class RelationTypes {
 //
 //    @Override
 //    public boolean equals(Object o) {
-//        RelationTypes rt = (RelationTypes) o;
+//        RelationTypeManager rt = (RelationTypeManager) o;
 //        return me.getId().equals(rt.me.getId());
 //    }
 }

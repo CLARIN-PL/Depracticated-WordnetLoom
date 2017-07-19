@@ -9,7 +9,7 @@ import java.util.Collection;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
@@ -123,7 +123,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
 //                    || relType.getId().longValue() == fixedRelationType.getId().longValue()
 //                    || (fixedRelationType.getParent() != null
 //                    && relType.getId().longValue() == fixedRelationType.getParent().getId())) {
-//                relationType.addItem(RelationTypes.getFullNameFor(relType.getId()));
+//                relationType.addItem(RelationTypeManager.getFullNameFor(relType.getId()));
 //                mainRelations.add(relType);
 //            }
 //        }
@@ -142,10 +142,10 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
             //Ustawienie na sugestię, jeśli istnieje
             if (suggestedRelationType != null) {
                 if (suggestedRelationType.getParent() == null) {
-                    relationType.setSelectedItem(RelationTypes.getFullNameFor(suggestedRelationType.getId()));
+                    relationType.setSelectedItem(RelationTypeManager.getFullNameFor(suggestedRelationType.getId()));
                 } else {
-                    relationType.setSelectedItem(RelationTypes.getFullNameFor(suggestedRelationType.getParent().getId()));
-                    relationSubType.setSelectedItem(RelationTypes.getFullNameFor(suggestedRelationType.getId()));
+                    relationType.setSelectedItem(RelationTypeManager.getFullNameFor(suggestedRelationType.getParent().getId()));
+                    relationSubType.setSelectedItem(RelationTypeManager.getFullNameFor(suggestedRelationType.getId()));
                 }
             } else {
                 relationType.setSelectedIndex(0);
@@ -378,7 +378,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
 //
 //                    for (RelationType relType : readRelations) {
 //                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
-//                            relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
+//                            relationSubType.addItem(RelationTypeManager.getFullNameFor(relType.getId()));
 //                            subRelations.add(relType);
 //                        }
 //                    }

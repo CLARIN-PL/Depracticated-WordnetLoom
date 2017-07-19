@@ -47,8 +47,8 @@ public class SenseRelationTypeRepository extends GenericRepository<SenseRelation
     }
 
     public List<SenseRelationType> findChildren(SenseRelationType relation) {
-        return getEntityManager().createQuery("SELECT rt FROM SenseRelationType rt WHERE rt.parent = :parent", SenseRelationType.class)
-                .setParameter("parent", relation)
+        return getEntityManager().createQuery("SELECT rt FROM SenseRelationType rt WHERE rt.parent.id = :parent", SenseRelationType.class)
+                .setParameter("parent", relation.getId())
                 .getResultList();
     }
 
@@ -58,8 +58,7 @@ public class SenseRelationTypeRepository extends GenericRepository<SenseRelation
     }
 
     public List<SenseRelationType> findHighestLeafs(List<Long> lexicons) {
-        return getEntityManager().createQuery("FROM SenseRelationType rt WHERE rt.parent = NULL AND rt.lexicon.id IN (:lexicons)", SenseRelationType.class)
-                .setParameter("lexicons", lexicons)
+        return getEntityManager().createQuery("FROM SenseRelationType rt JOIN FETCH rt.lexicons WHERE rt.parent IS NULL", SenseRelationType.class)
                 .getResultList();
     }
 
@@ -88,7 +87,7 @@ public class SenseRelationTypeRepository extends GenericRepository<SenseRelation
                 .append("left join fetch rt.shortDisplayText ")
                 .append("left join fetch rt.parent ")
                 .append("left join fetch rt.reverse ")
-                .append("rt.lexicon.id IN (:lexicons)");
+                .append("rt.lexicons.id IN (:lexicons)");
 
         return getEntityManager().createQuery(query.toString(), SenseRelationType.class)
                 .setParameter("lexicons", lexicons)

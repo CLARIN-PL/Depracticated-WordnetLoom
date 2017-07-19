@@ -58,7 +58,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.V
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
@@ -320,11 +320,11 @@ public class ViWordNetService extends AbstractService implements
                             val + " is not a valid color");
                 }
 
-                //RelationTypes rt = RelationTypes.getByName(rel);
+                //RelationTypes rt = RelationTypeManager.getByName(rel);
 //                if (rt != null) {
 //                    Collection<RelationTypes> children = rt.getChildren();
 //                    if (children != null && !children.isEmpty()) {
-//                        for (RelationTypes r : children) {
+//                        for (RelationTypeManager r : children) {
 //                            rel_colors.put(r.Id(), col);
 //                        }
 //                    } else {
@@ -351,7 +351,7 @@ public class ViWordNetService extends AbstractService implements
             new ArrayList<>(), new ArrayList<>(),
             new ArrayList<>(), new ArrayList<>()};
 
-        ArrayList<RelationTypes>[] relTypes = arrayLists;
+        ArrayList<RelationTypeManager>[] relTypes = arrayLists;
 
         Properties conf = new Properties();
         try {
@@ -366,7 +366,7 @@ public class ViWordNetService extends AbstractService implements
                 if (val != null) {
                     String[] rels = val.split(",");
                     for (String s : rels) {
-//                        RelationTypes rt = RelationTypes.getByName(s);
+//                        RelationTypeManager rt = RelationTypeManager.getByName(s);
 //                        if (rt != null) {
 //                            Collection<RelationTypes> children = rt
 //                                    .getChildren();
@@ -395,17 +395,17 @@ public class ViWordNetService extends AbstractService implements
             System.err.println("DEFAULT RELATION TYPES");
 
             // adding default relations
-//            relTypes[0].addAll(RelationTypes.getByName("holonimia").getChildren());
-//            relTypes[1].addAll(RelationTypes.getByName("meronimia").getChildren());
+//            relTypes[0].addAll(RelationTypeManager.getByName("holonimia").getChildren());
+//            relTypes[1].addAll(RelationTypeManager.getByName("meronimia").getChildren());
 //
-//            relTypes[2].add(RelationTypes.getByName("hiperonimia"));
-//            relTypes[2].add(RelationTypes.getByName("mieszkaniec"));
-//            relTypes[2].add(RelationTypes.getByName("bliskoznaczność"));
+//            relTypes[2].add(RelationTypeManager.getByName("hiperonimia"));
+//            relTypes[2].add(RelationTypeManager.getByName("mieszkaniec"));
+//            relTypes[2].add(RelationTypeManager.getByName("bliskoznaczność"));
 //
-//            relTypes[3].add(RelationTypes.getByName("hiponimia"));
+//            relTypes[3].add(RelationTypeManager.getByName("hiponimia"));
         }
 
-        ArrayList<RelationTypes> order = new ArrayList<>();
+        ArrayList<RelationTypeManager> order = new ArrayList<>();
 
         for (Direction dir : Direction.values()) {
             ViwnNodeSynset.relTypes[dir.ordinal()].addAll(relTypes[dir.ordinal()]);

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JFrame;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.NodeDrawer;
 import pl.edu.pwr.wordnetloom.client.systems.progress.AbstractProgressThread;
@@ -219,13 +219,13 @@ public class RelationsDA {
         if (rel != null) {
             if (rel.getParent() != null) { // ma rodzica
 //                SynsetRelationType parent = RemoteUtils.relationTypeRemote.dbGet(rel.getParent().getId());
-//                parent = RelationTypes.get(parent.getId()).getRelationType();
+//                parent = RelationTypeManager.get(parent.getId()).getRelationType();
 //
 //                if (parent != null) {
 //                    return parent.getName() + " / " + rel.getName();
 //                }
             }
-            return RelationTypes.getFullNameFor(rel.getId());
+            return RelationTypeManager.getFullNameFor(rel.getId());
         }
         return null;
     }

@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -39,7 +39,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     protected static SynsetNodeShape geom = new SynsetNodeShape();
 
-    public static Set<RelationTypes>[] relTypes = new Set[]{
+    public static Set<RelationTypeManager>[] relTypes = new Set[]{
         new HashSet<>(), new HashSet<>(),
         new HashSet<>(), new HashSet<>()};
 
@@ -180,7 +180,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
             }
             for (Direction dir : Direction.values()) {
                 if (e.getRelationType() != null) {
-                    if (relTypes[dir.ordinal()].contains(RelationTypes.get(e
+                    if (relTypes[dir.ordinal()].contains(RelationTypeManager.get(e
                             .getRelationType().rev_id()))) {
                         if (skip(e)) {
                             continue;

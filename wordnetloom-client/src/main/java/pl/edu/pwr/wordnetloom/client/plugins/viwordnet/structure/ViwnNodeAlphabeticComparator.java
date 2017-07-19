@@ -2,22 +2,22 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 
 public class ViwnNodeAlphabeticComparator implements Comparator<ViwnNode> {
 
-    public static ArrayList<RelationTypes> order = null;
+    public static ArrayList<RelationTypeManager> order = null;
 
-    private ArrayList<RelationTypes> rel_order = null;
+    private ArrayList<RelationTypeManager> rel_order = null;
 
     public ViwnNodeAlphabeticComparator() {
         if (order == null) {
             rel_order = new ArrayList<>();
 
-//            rel_order.add(RelationTypes.getByName("hiperonimia"));
-//            rel_order.add(RelationTypes.getByName("hiponimia"));
-//            rel_order.add(RelationTypes.getByName("mieszkaniec"));
-//            rel_order.add(RelationTypes.getByName("bliskoznaczność"));
+//            rel_order.add(RelationTypeManager.getByName("hiperonimia"));
+//            rel_order.add(RelationTypeManager.getByName("hiponimia"));
+//            rel_order.add(RelationTypeManager.getByName("mieszkaniec"));
+//            rel_order.add(RelationTypeManager.getByName("bliskoznaczność"));
         } else {
             rel_order = order;
         }

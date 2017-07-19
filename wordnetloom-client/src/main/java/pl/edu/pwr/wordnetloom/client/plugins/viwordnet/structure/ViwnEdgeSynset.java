@@ -2,7 +2,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import java.awt.Color;
 import java.util.HashMap;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
@@ -87,8 +87,8 @@ public class ViwnEdgeSynset extends ViwnEdge {
         return srel_dto_.getChild();
     }
 
-    public RelationTypes getRelationType() {
-        RelationTypes rt = RelationTypes.get(srel_dto_.getRelationType().getId());
+    public RelationTypeManager getRelationType() {
+        RelationTypeManager rt = RelationTypeManager.get(srel_dto_.getRelationType().getId());
         if (rt == null) {
             throw new RuntimeException("relation type doesn't exist");
         }
@@ -115,7 +115,7 @@ public class ViwnEdgeSynset extends ViwnEdge {
     }
 
     public ViwnEdgeSynset createDummyReverse() {
-        if (RelationTypes.get(srel_dto_.getRelationType().getId()).rev_id() == null) {
+        if (RelationTypeManager.get(srel_dto_.getRelationType().getId()).rev_id() == null) {
             return null;
         }
 
@@ -123,9 +123,9 @@ public class ViwnEdgeSynset extends ViwnEdge {
         rdto.setChild(srel_dto_.getParent());
         rdto.setParent(srel_dto_.getChild());
 
-//        SynsetRelationType currentRelation = RelationTypes.get(srel_dto_.getRelationType().getId()).getRelationType();
+//        SynsetRelationType currentRelation = RelationTypeManager.get(srel_dto_.getRelationType().getId()).getRelationType();
 //        if (LexiconManager.getInstance().getLexicons().contains(currentRelation.getReverse().getLexicon().getId())) {
-//            SynsetRelationType reverseRelation = RelationTypes.get(currentRelation.getReverse().getId()).getRelationType();
+//            SynsetRelationType reverseRelation = RelationTypeManager.get(currentRelation.getReverse().getId()).getRelationType();
 //            rdto.setRelationType(reverseRelation);
 //        }
         ViwnEdgeSynset e = new ViwnEdgeSynset(rdto);

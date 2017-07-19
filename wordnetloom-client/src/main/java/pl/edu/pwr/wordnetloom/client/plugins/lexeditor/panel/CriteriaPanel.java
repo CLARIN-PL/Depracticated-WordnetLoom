@@ -3,10 +3,14 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RelationTypes;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DomainComboBox;
@@ -57,7 +61,7 @@ public abstract class CriteriaPanel extends JPanel {
             } else {
                 domainComboBox.allDomains(true);
             }
-            refreshRelations();
+            refreshSenseRelations();
         });
 
         searchTextField = new TextFieldPlain(STANDARD_VALUE_FILTER);
@@ -106,13 +110,13 @@ public abstract class CriteriaPanel extends JPanel {
     protected void addSynsetRelationTypes() {
         add("br", new LabelExt(Labels.RELATIONS_COLON, 'r', synsetRelationsComboBox));
         add("br hfill", synsetRelationsComboBox);
-        refreshRelations();
+        refreshSynsetRelations();
     }
 
     protected void addSenseRelationTypes() {
         add("br", new LabelExt(Labels.RELATIONS_COLON, 'r', senseRelationsComboBox));
         add("br hfill", senseRelationsComboBox);
-        refreshRelations();
+        refreshSenseRelations();
     }
 
     protected void addDomain() {
@@ -169,31 +173,34 @@ public abstract class CriteriaPanel extends JPanel {
         }
     }
 
-    public void refreshRelations() {
-        RelationTypes.refresh();
-//        List<RelationType> relations = RemoteUtils.relationTypeRemote.dbGetLeafs(relationArgument, LexiconManager.getInstance().getLexicons());
-//        int selected = relationsComboBox.getSelectedIndex();
-//
-//        relationsComboBox.removeAllItems();
-//        relationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
-//
-//        if (lexiconComboBox.retriveComboBoxItem() != null) {
-//            for (RelationType relation : relations) {
-//                if (Objects.equals(relation.getLexicon().getId(), lexiconComboBox.retriveComboBoxItem().getId())) {
-//                    RelationType currentRelation = RelationTypes.get(relation.getId()).getRelationType();
-//                    relationsComboBox.addItem(new CustomDescription<>(RelationTypes.getFullNameFor(currentRelation.getId()), currentRelation));
-//                }
-//            }
-//        } else {
-//            for (RelationType relation : relations) {
-//                RelationType currentRelation = RelationTypes.get(relation.getId()).getRelationType();
-//                relationsComboBox.addItem(new CustomDescription<>(RelationTypes.getFullNameFor(currentRelation.getId()), currentRelation));
-//            }
-//        }
-//
-//        if (selected != -1) {
-//            relationsComboBox.setSelectedIndex(selected);
-//        }
+    public void refreshSynsetRelations() {
+    }
+
+    public void refreshSenseRelations() {
+        RelationTypeManager.refresh();
+        List<SenseRelationType> relations = RemoteService.senseRelationTypeRemote.findLeafs(LexiconManager.getInstance().getLexicons());
+        int selected = senseRelationsComboBox.getSelectedIndex();
+
+        senseRelationsComboBox.removeAllItems();
+        senseRelationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
+
+        if (lexiconComboBox.retriveComboBoxItem() != null) {
+            for (SenseRelationType relation : relations) {
+                if (relation.getLexicons().contains(lexiconComboBox.retriveComboBoxItem())) {
+                    SenseRelationType currentRelation = relation;//RelationTypeManager.get(relation.getId()).getRelationType(), RelationTypeManager.getFullNameFor(currentRelation.getId();
+                    senseRelationsComboBox.addItem(new CustomDescription<>(relation.getName(RemoteConnectionProvider.getInstance().getLanguage()), currentRelation));
+                }
+            }
+        } else {
+            for (SenseRelationType relation : relations) {
+                SenseRelationType currentRelation = relation; //RelationTypeManager.get(relation.getId()).getRelationType();
+                senseRelationsComboBox.addItem(new CustomDescription<>(relation.getName(RemoteConnectionProvider.getInstance().getLanguage()), currentRelation));
+            }
+        }
+
+        if (selected != -1) {
+            senseRelationsComboBox.setSelectedIndex(selected);
+        }
     }
 
     public void resetFields() {
