@@ -56,11 +56,11 @@ public class SynsetRelationType implements Serializable {
     private List<SynsetRelationTest> relationTests;
 
     @Basic
-    @Column(name = "auto_reverse", nullable = false, columnDefinition = "bit")
+    @Column(name = "auto_reverse", nullable = false, columnDefinition = "bit default 0")
     private Boolean autoReverse;
 
     @Basic
-    @Column(name = "multilingual", nullable = false, columnDefinition = "bit")
+    @Column(name = "multilingual", nullable = false, columnDefinition = "bit default 0")
     private Boolean multilingual = false;
 
     @ManyToOne

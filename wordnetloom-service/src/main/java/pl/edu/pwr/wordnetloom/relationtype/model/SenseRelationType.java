@@ -67,6 +67,15 @@ public class SenseRelationType implements Serializable {
     @JoinColumn(name = "reverse_relation_type_id", nullable = true)
     private SenseRelationType reverse;
 
+    public SenseRelationType(SenseRelationType parent, SenseRelationType reverse, Boolean autoReverse) {
+        this.autoReverse = autoReverse;
+        this.parent = parent;
+        this.reverse = reverse;
+    }
+
+    public SenseRelationType() {
+    }
+
     public String getName(String locale) {
         return this.nameStrings.getString(locale);
     }
