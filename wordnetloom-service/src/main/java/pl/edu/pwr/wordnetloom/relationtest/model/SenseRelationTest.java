@@ -9,7 +9,7 @@ import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 public class SenseRelationTest extends RelationTest {
 
     @ManyToOne
-    @JoinColumn(name = "sense_relation_type_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "sense_relation_type_id", nullable = false)
     private SenseRelationType relationType;
 
     public SenseRelationType getRelationType() {

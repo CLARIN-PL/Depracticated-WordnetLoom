@@ -45,14 +45,14 @@ public class Sense implements Serializable {
     private PartOfSpeech partOfSpeech;
 
     @NotNull
-    @Column(name = "variant", nullable = false, columnDefinition = "int default = '1'")
+    @Column(name = "variant", nullable = false, columnDefinition = "int default 1")
     private Integer variant = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "synset_id", referencedColumnName = "id")
     private Synset synset;
 
-    @Column(name = "synset_position")
+    @Column(name = "synset_position", columnDefinition = "int default 0")
     private Integer synsetPosition = 0;
 
     @OneToOne(mappedBy = "sense", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -7,6 +7,11 @@ import java.util.Objects;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
 import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
@@ -58,8 +63,19 @@ public class SenseRelationTypeRepository extends GenericRepository<SenseRelation
     }
 
     public List<SenseRelationType> findHighestLeafs(List<Long> lexicons) {
-        return getEntityManager().createQuery("FROM SenseRelationType rt JOIN FETCH rt.lexicons WHERE rt.parent IS NULL", SenseRelationType.class)
-                .getResultList();
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<SenseRelationType> q = cb.createQuery(SenseRelationType.class);
+
+        Root<SenseRelationType> root = q.from(SenseRelationType.class);
+        Expression<SenseRelationType> parent = root.get("parent");
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.isNull(parent));
+
+        q.where(predicates.toArray(new Predicate[predicates.size()]));
+
+        return em.createQuery(q).getResultList();
     }
 
     public List<SenseRelationType> findLeafs(List<Long> lexicons) {

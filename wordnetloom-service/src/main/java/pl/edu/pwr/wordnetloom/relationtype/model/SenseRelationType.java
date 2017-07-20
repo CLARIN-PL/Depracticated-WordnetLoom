@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.relationtype.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -53,11 +54,11 @@ public class SenseRelationType implements Serializable {
     private Localised shortDisplayStrings = new Localised();
 
     @Basic
-    @Column(name = "auto_reverse", nullable = false, columnDefinition = "bit")
+    @Column(name = "auto_reverse", columnDefinition = "bit default 0")
     private Boolean autoReverse;
 
     @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SenseRelationTest> relationTests;
+    private List<SenseRelationTest> relationTests = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "parent_relation_type_id", nullable = true)

@@ -41,7 +41,7 @@ public abstract class RelationTest implements Serializable {
     @JoinColumn(name = "element_B_part_of_speech_id", referencedColumnName = "id")
     private PartOfSpeech senseBpartOfSpeech;
 
-    @Column(name = "position", nullable = false, columnDefinition = "int default = '0'")
+    @Column(name = "position", nullable = false, columnDefinition = "int default 0")
     private Integer position;
 
     public Long getId() {

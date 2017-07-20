@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.relationtype.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -30,8 +31,8 @@ public class SynsetRelationType implements Serializable {
 
     @OneToMany
     @JoinTable(
-            name = "sense_relation_type_allowed_lexicons",
-            joinColumns = @JoinColumn(name = "sense_relation_type_id"),
+            name = "synset_relation_type_allowed_lexicons",
+            joinColumns = @JoinColumn(name = "synset_relation_type_id"),
             inverseJoinColumns = @JoinColumn(name = "lexicon_id")
     )
     private Set<Lexicon> lexicons;
@@ -53,14 +54,14 @@ public class SynsetRelationType implements Serializable {
     private Localised shortDisplayStrings = new Localised();
 
     @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SynsetRelationTest> relationTests;
+    private List<SynsetRelationTest> relationTests = new ArrayList<>();
 
     @Basic
-    @Column(name = "auto_reverse", nullable = false, columnDefinition = "bit default 0")
+    @Column(name = "auto_reverse", columnDefinition = "bit default 0")
     private Boolean autoReverse;
 
     @Basic
-    @Column(name = "multilingual", nullable = false, columnDefinition = "bit default 0")
+    @Column(name = "multilingual", columnDefinition = "bit default 0")
     private Boolean multilingual = false;
 
     @ManyToOne

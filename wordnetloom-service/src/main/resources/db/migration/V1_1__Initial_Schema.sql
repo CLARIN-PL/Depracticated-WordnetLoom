@@ -105,7 +105,7 @@ create table sense_relation (
 
 create table sense_relation_type (
     id bigint  NOT NULL AUTO_INCREMENT,
-    auto_reverse bit not null,
+    auto_reverse bit default 0 not null,
     description_id bigint,
     display_text_id bigint,
     name_id bigint,
@@ -119,6 +119,12 @@ create table sense_relation_type_allowed_lexicons (
         sense_relation_type_id bigint not null,
         lexicon_id bigint not null,
         primary key (sense_relation_type_id, lexicon_id)
+);
+
+create table synset_relation_type_allowed_lexicons (
+        synset_relation_type_id bigint not null,
+        lexicon_id bigint not null,
+        primary key (synset_relation_type_id, lexicon_id)
 );
 
 create table synset (
@@ -153,8 +159,8 @@ create table synset_relation (
 
 create table synset_relation_type (
         id bigint  NOT NULL AUTO_INCREMENT,
-        auto_reverse bit not null,
-        multilingual bit not null,
+        auto_reverse bit default 0 not null,
+        multilingual bit default 0 not null,
         description_id bigint,
         display_text_id bigint,
         name_id bigint,
@@ -324,6 +330,16 @@ alter table sense_relation_type_allowed_lexicons
 alter table sense_relation_type_allowed_lexicons
         add constraint FK1te1f64fg0gdrsp8whnxsk5ux
         foreign key (sense_relation_type_id)
+        references synset_relation_type(id);
+
+alter table synset_relation_type_allowed_lexicons
+        add constraint FK5ynuaw5d0qyhywfxj0u8vxuylzxc
+        foreign key (lexicon_id)
+        references lexicon(id);
+
+alter table synset_relation_type_allowed_lexicons
+        add constraint FK1te1f64fg0gdrsp8whnxsk5uxbvb
+        foreign key (synset_relation_type_id)
         references synset_relation_type(id);
 
 alter table synset

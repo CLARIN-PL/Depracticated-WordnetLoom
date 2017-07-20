@@ -20,7 +20,7 @@ public class CorpusExample implements Serializable {
     private Long id;
 
     @Lob
-    @Column(columnDefinition = "text")
+    @Column
     private String text;
 
     private String word;
