@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.relationtype.repository;
 import java.util.ArrayList;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
@@ -48,6 +49,56 @@ public class SenseRelationTypeRepositoryUTest extends TestBaseRepository {
         List<SenseRelationType> child = repository.findLeafs(new ArrayList());
 
         assertThat(child.size(), equalTo(5));
+    }
+
+    @Test
+    public void findReverseRelation() {
+
+        createAspektowosc();
+        List<SenseRelationType> child = repository.findLeafs(new ArrayList());
+        assertThat(child.size(), equalTo(2));
+
+        SenseRelationType ndk_dk = child.stream()
+                .filter(r -> r.getName("pl").equals(aspektowosc_czysta_NDK_DK().getName("pl")))
+                .findFirst().get();
+        SenseRelationType reverse = repository.findReverseByRelationType(ndk_dk);
+
+        assertThat(reverse.getName("pl"), is(equalTo(aspektowosc_czysta_DK_NDK().getName("pl"))));
+    }
+
+    @Test
+    public void shouldDeleteRelationTypeWihhChildren() {
+
+        createAspektowosc();
+        List<SenseRelationType> top = repository.findHighestLeafs(new ArrayList());
+        assertThat(top.size(), equalTo(1));
+
+        List<SenseRelationType> child = repository.findLeafs(new ArrayList());
+        assertThat(child.size(), equalTo(2));
+
+        SenseRelationType toRemove = top.stream().findFirst().get();
+
+        dbCommandExecutor.executeCommand(() -> {
+            repository.deleteRelationWithChilds(toRemove);
+            return null;
+        });
+
+        List<SenseRelationType> result = repository.findAll("id");
+        assertThat(result.size(), equalTo(0));
+    }
+
+    @Test
+    public void findFullByRelationType() {
+        createAntonimia();
+
+        SenseRelationType ant = repository.findById(1l);
+        SenseRelationType expect = repository.findFullByRelationType(ant);
+
+        assertThat(ant.getId(), equalTo(expect.getId()));
+        assertThat(ant.getName("pl"), is(equalTo(antonimia().getName("pl"))));
+        assertThat(ant.getDescription("pl"), is(equalTo(antonimia().getDescription("pl"))));
+        assertThat(ant.getDisplayText("pl"), is(equalTo(antonimia().getDisplayText("pl"))));
+        assertThat(ant.getShortDisplayText("pl"), is(equalTo(antonimia().getShortDisplayText("pl"))));
     }
 
     private void createAntonimia() {

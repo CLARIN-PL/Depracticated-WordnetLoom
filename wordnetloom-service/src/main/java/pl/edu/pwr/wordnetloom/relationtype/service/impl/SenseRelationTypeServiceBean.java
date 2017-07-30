@@ -35,8 +35,8 @@ public class SenseRelationTypeServiceBean implements SenseRelationTypeServiceLoc
     }
 
     @Override
-    public void deleteAll() {
-        relationTypeRepository.deleteAll();
+    public void deleteAll(SenseRelationType type) {
+        relationTypeRepository.deleteRelationWithChilds(type);
     }
 
     @Override

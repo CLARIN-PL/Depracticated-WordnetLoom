@@ -41,14 +41,9 @@ public class SenseRelationTypeRepository extends GenericRepository<SenseRelation
         return false;
     }
 
-    public void delete(SenseRelationType relation) {
-        //Removes relation with subrelations
-        Collection<SenseRelationType> children = findChildren(relation);
-        for (SenseRelationType item : children) {
-            senseRelationRepository.delete(relation);
-            delete(item);
-        }
-        super.delete(relation);
+    public void deleteRelationWithChilds(SenseRelationType relation) {
+       deleteAllChilds(relation);
+       delete(relation);
     }
 
     public List<SenseRelationType> findChildren(SenseRelationType relation) {
@@ -57,8 +52,9 @@ public class SenseRelationTypeRepository extends GenericRepository<SenseRelation
                 .getResultList();
     }
 
-    public void deleteAll() {
-        getEntityManager().createQuery("DELETE FROM SenseRelationType rt WHERE rt.parent = :parent", SenseRelationType.class)
+    public void deleteAllChilds(SenseRelationType relationType) {
+        getEntityManager().createQuery("DELETE FROM SenseRelationType rt WHERE rt.parent = :parent")
+                .setParameter("parent", relationType)
                 .executeUpdate();
     }
 
@@ -97,7 +93,7 @@ public class SenseRelationTypeRepository extends GenericRepository<SenseRelation
     public List<SenseRelationType> findFullRelationTypes(List<Long> lexicons) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT rt FROM SenseRelationType rt ")
-                .append("left join fetch rt.name ")
+                .append("left join fetch rt.nameStrings ")
                 .append("left join fetch rt.description ")
                 .append("left join fetch rt.displayText ")
                 .append("left join fetch rt.shortDisplayText ")
@@ -111,8 +107,8 @@ public class SenseRelationTypeRepository extends GenericRepository<SenseRelation
     }
 
     public SenseRelationType findReverseByRelationType(SenseRelationType relationType) {
-        return getEntityManager().createQuery("SELECT rt.reverse FROM SenseRelationType rt where rt.id = :ID", SenseRelationType.class)
-                .setParameter("ID", relationType.getId())
+        return getEntityManager().createQuery("SELECT rt.reverse FROM SenseRelationType rt where rt.id = :id", SenseRelationType.class)
+                .setParameter("id", relationType.getId())
                 .getSingleResult();
     }
 
@@ -125,17 +121,20 @@ public class SenseRelationTypeRepository extends GenericRepository<SenseRelation
     }
 
     public SenseRelationType findFullByRelationType(SenseRelationType rt) {
+
         StringBuilder query = new StringBuilder();
+
         query.append("select rt from SenseRelationType rt ")
-                .append("left join fetch rt.description ")
-                .append("left join fetch rt.displayText ")
-                .append("left join fetch rt.shortDisplayText ")
-                .append("left join fetch rt.argumentType ")
-                .append("left join fetch rt.parent ")
-                .append("left join fetch rt.reverse ")
-                .append("where rt.id = :ID");
+             .append("left join fetch rt.nameStrings ")
+             .append("left join fetch rt.descriptionStrings ")
+             .append("left join fetch rt.displayStrings ")
+             .append("left join fetch rt.shortDisplayStrings ")
+             .append("left join fetch rt.parent ")
+             .append("left join fetch rt.reverse ")
+             .append("where rt.id = :id");
+
         return getEntityManager().createQuery(query.toString(), SenseRelationType.class)
-                .setParameter("ID", rt.getId()).getSingleResult();
+                .setParameter("id", rt.getId()).getSingleResult();
     }
 
     @Override

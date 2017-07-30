@@ -12,6 +12,8 @@ public class SenseRelationTypeForTestsRepository {
         SenseRelationType anto = new SenseRelationType();
         anto.setName("pl", "antonimia");
         anto.setDispalyText("pl", "anto");
+        anto.setDescription("pl", "antonimia description");
+        anto.setShortDispalyText("pl", "ant");
         return anto;
     }
 

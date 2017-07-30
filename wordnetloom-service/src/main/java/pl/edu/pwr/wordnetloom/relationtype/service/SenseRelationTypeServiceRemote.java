@@ -8,12 +8,6 @@ public interface SenseRelationTypeServiceRemote {
 
     SenseRelationType findById(Long id);
 
-    boolean isReverseRelation(SenseRelationType[] relations, SenseRelationType test);
-
-    boolean isReverseRelation(Collection<SenseRelationType> relations, SenseRelationType test);
-
-    void deleteAll();
-
     Long findReverseId(SenseRelationType relationType);
 
     SenseRelationType findFullRelationType(SenseRelationType rt);
@@ -31,4 +25,10 @@ public interface SenseRelationTypeServiceRemote {
     List<SenseRelationType> findChildren(SenseRelationType relation, List<Long> lexicons);
 
     void delete(SenseRelationType relation);
+
+    void deleteAll(SenseRelationType type);
+    
+    boolean isReverseRelation(SenseRelationType[] relations, SenseRelationType test);
+
+    boolean isReverseRelation(Collection<SenseRelationType> relations, SenseRelationType test);
 }
