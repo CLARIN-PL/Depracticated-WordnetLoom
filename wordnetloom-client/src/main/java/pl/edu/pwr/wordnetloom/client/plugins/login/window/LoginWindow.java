@@ -161,7 +161,7 @@ public class LoginWindow extends DialogWindow implements KeyListener {
                 .addGroup(btnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnOk)
                     .addComponent(btnCancel))
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(142, Short.MAX_VALUE))
         );
 
         getContentPane().add(btnPanel);

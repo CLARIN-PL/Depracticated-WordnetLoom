@@ -8,15 +8,17 @@ import java.util.ResourceBundle;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import jiconfont.icons.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import pl.edu.pwr.wordnetloom.client.plugins.login.window.LoginWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -58,6 +60,8 @@ public class Main {
             PartOfSpeechManager.getInstance();
             DomainManager.getInstance();
             RelationTypeManager.loadRels();
+
+            IconFontSwing.register(FontAwesome.getIconFont());
             Workbench workbench;
             try {
                 workbench = new PanelWorkbench(PROGRAM_NAME + " " + PROGRAM_VERSION);
