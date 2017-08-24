@@ -4,21 +4,32 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-// TODO: make a singleton
 public class RelationTypeManager {
 
     private static final HashMap<Long, RelationTypeManager> all_rels = new HashMap<>();
-
     private static final HashMap<Long, List<RelationTypeManager>> top_child = new HashMap<>();
 
-    static private boolean loaded = false;
-
-    static public void refresh() {
-        loaded = false;
-        loadRels();
+    private static volatile RelationTypeManager instance = null;
+    
+    private RelationTypeManager() {
+        loadLexicons();
+        loadLexiconMarker();
+        loadFullLexicons(cachedLexicons);
+    }
+     
+    public static RelationTypeManager getInstance() {
+        if (instance == null) {
+            synchronized (RelationTypeManager.class) {
+                instance = new RelationTypeManager();
+            }
+        }
+        return instance;
     }
 
-    static public void loadRels() {
+    public static void refresh() {
+    }
+
+    private void loadSenseRelations() {
         if (loaded) {
             return;
         }

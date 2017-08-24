@@ -57,7 +57,7 @@ public class SenseRelationType implements Serializable {
     @Column(name = "auto_reverse", columnDefinition = "bit default 0")
     private Boolean autoReverse;
 
-    @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<SenseRelationTest> relationTests = new ArrayList<>();
 
     @ManyToOne
