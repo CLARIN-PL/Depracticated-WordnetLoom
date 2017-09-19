@@ -138,8 +138,8 @@ create table synset_attributes (
         synset_id bigint not null,
         comment text,
         definition text,
-        isAbstract boolean,
-        princetonId varchar(255),
+        abstract boolean,
+        princeton_id varchar(255),
         owner_id bigint,
         primary key (synset_id)
 );

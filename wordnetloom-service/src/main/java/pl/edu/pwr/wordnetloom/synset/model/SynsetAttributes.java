@@ -38,12 +38,14 @@ public class SynsetAttributes implements Serializable {
     private List<String> examples;
 
     @Basic
+    @Column(name = "abstract")
     private Boolean isAbstract = false;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
 
+    @Column(name = "princenton_id")
     private String princetonId;
 
     @OneToOne(fetch = FetchType.LAZY)
