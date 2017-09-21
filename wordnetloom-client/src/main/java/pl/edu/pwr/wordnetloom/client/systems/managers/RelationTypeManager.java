@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-public class lRelationTypeManager {
+public class RelationTypeManager {
 
     private static final HashMap<Long, RelationTypeManager> all_rels = new HashMap<>();
     private static final HashMap<Long, List<RelationTypeManager>> top_child = new HashMap<>();
@@ -12,9 +12,9 @@ public class lRelationTypeManager {
     private static volatile RelationTypeManager instance = null;
 
     private RelationTypeManager() {
-        loadLexicons();
-        loadLexiconMarker();
-        loadFullLexicons(cachedLexicons);
+        //  loadLexicons();
+        //  loadLexiconMarker();
+        // loadFullLexicons(cachedLexicons);
     }
 
     public static RelationTypeManager getInstance() {
@@ -30,14 +30,13 @@ public class lRelationTypeManager {
     }
 
     private void loadSenseRelations() {
-        if (loaded) {
-            return;
-        }
-        loaded = true;
+        //    if (loaded) {
+        return;
+        //    }
+        //     loaded = true;
 
-        all_rels.clear();
-        top_child.clear();
-
+        //    all_rels.clear();
+        //    top_child.clear();
 //        List<RelationType> full = RemoteUtils.relationTypeRemote.dbFullGetRelationTypes(LexiconManager.getInstance().getLexicons());
 //        List<RelationTypes> highest = new ArrayList<>();
 //

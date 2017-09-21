@@ -18,7 +18,6 @@ import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -59,7 +58,7 @@ public class Main {
             LexiconManager.getInstance();
             PartOfSpeechManager.getInstance();
             DomainManager.getInstance();
-            RelationTypeManager.loadRels();
+            //RelationTypeManager.loadRels();
 
             IconFontSwing.register(FontAwesome.getIconFont());
             Workbench workbench;
