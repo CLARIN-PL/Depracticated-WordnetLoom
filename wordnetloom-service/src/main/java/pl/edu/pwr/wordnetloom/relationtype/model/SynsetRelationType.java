@@ -8,6 +8,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,6 +19,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import pl.edu.pwr.wordnetloom.common.model.GraphPosition;
 import pl.edu.pwr.wordnetloom.common.model.Localised;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.relationtest.model.SynsetRelationTest;
@@ -71,6 +74,12 @@ public class SynsetRelationType implements Serializable {
     @ManyToOne
     @JoinColumn(name = "reverse_relation_type_id", nullable = true)
     private SynsetRelationType reverse;
+
+    @Column(name = "graph_position")
+    @Enumerated(EnumType.STRING)
+    private GraphPosition graphPosition;
+
+    private String color;
 
     public String getName(String locale) {
         return this.nameStrings.getString(locale);
@@ -158,6 +167,22 @@ public class SynsetRelationType implements Serializable {
 
     public void setRelationTests(List<SynsetRelationTest> relationTests) {
         this.relationTests = relationTests;
+    }
+
+    public GraphPosition getGraphPosition() {
+        return graphPosition;
+    }
+
+    public void setGraphPosition(GraphPosition graphPosition) {
+        this.graphPosition = graphPosition;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
 }

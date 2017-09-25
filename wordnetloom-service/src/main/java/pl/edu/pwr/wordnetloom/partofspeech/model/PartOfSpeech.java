@@ -27,6 +27,8 @@ public class PartOfSpeech implements Serializable {
     @Valid
     private Localised nameStrings = new Localised();
 
+    private String color;
+
     public PartOfSpeech() {
         super();
     }
@@ -51,4 +53,11 @@ public class PartOfSpeech implements Serializable {
         this.nameStrings.addString(locale, name);
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
 }

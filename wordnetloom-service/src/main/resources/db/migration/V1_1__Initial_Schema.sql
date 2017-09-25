@@ -23,25 +23,26 @@ CREATE TABLE domain (
     description_id bigint,
     name_id bigint,
     primary key (id)
-);
+) COMMENT 'Table describes domain';
 
 CREATE TABLE part_of_speech (
     id bigint NOT NULL AUTO_INCREMENT,
-    name_id bigint,
+    name_id bigint COMMENT 'Name of part of speech',
+    color varchar(255) COMMENT 'Color displayed on graph',
     primary key (id)
-);
+) COMMENT 'Table describes parts of speech';
 
 CREATE TABLE dictionaries (
     dtype varchar(31) not null,
     id bigint NOT NULL AUTO_INCREMENT,
-    description_id bigint,
-    name_id bigint,
+    description_id bigint COMMENT 'Dictionary description',
+    name_id bigint COMMENT 'Dictionary name',
     primary key (id)
 );
 
 CREATE TABLE corpus_example (
     id bigint NOT NULL AUTO_INCREMENT,
-    text text,
+    text text ,
     word varchar(255),
     primary key (id)
 );
@@ -70,12 +71,12 @@ create table relation_tests (
 
 create table sense (
         id bigint  NOT NULL AUTO_INCREMENT,
-        synset_position integer,
-        variant int default 1 not null,
-        domain_id bigint not null,
-        lexicon_id bigint not null,
-        part_of_speech_id bigint not null,
-        synset_id bigint,
+        synset_position integer COMMENT 'Position order in synset',
+        variant int default 1 not null COMMENT 'Sense variant number',
+        domain_id bigint not null COMMENT 'Domain Id',
+        lexicon_id bigint not null COMMENT 'Lexicon Id',
+        part_of_speech_id bigint not null COMMENT 'Part of speech Id',
+        synset_id bigint COMMENT 'Synset Id',
         word_id bigint not null,
         primary key (id)
 );
@@ -84,7 +85,7 @@ create table sense_attributes (
         sense_id bigint not null,
         comment text,
         definition text,
-        link varchar(255),
+        link varchar(255) ,
         register varchar(255),
         user_id bigint,
         primary key (sense_id)
@@ -112,6 +113,8 @@ create table sense_relation_type (
     parent_relation_type_id bigint,
     reverse_relation_type_id bigint,
     short_display_text_id bigint,
+    color varchar(255) COMMENT 'Color of displayed relation',
+    graph_position varchar(255) COMMENT 'Position of displayed relation',
     primary key (id)
 );
 
@@ -129,7 +132,7 @@ create table synset_relation_type_allowed_lexicons (
 
 create table synset (
         id bigint  NOT NULL AUTO_INCREMENT,
-        split integer,
+        split integer COMMENT 'Position of line spliting synset head',
         lexicon_id bigint not null,
         primary key (id)
 );
@@ -138,9 +141,9 @@ create table synset_attributes (
         synset_id bigint not null,
         comment text,
         definition text,
-        abstract boolean,
-        princeton_id varchar(255),
-        owner_id bigint,
+        abstract boolean COMMENT 'is synset abstract',
+        princeton_id varchar(255) COMMENT 'External original Princeton Id',
+        owner_id bigint COMMENT 'Synset owner',
         primary key (synset_id)
 );
 
@@ -159,14 +162,16 @@ create table synset_relation (
 
 create table synset_relation_type (
         id bigint  NOT NULL AUTO_INCREMENT,
-        auto_reverse bit default 0 not null,
-        multilingual bit default 0 not null,
+        auto_reverse bit default 0 not null COMMENT 'On true application will create automaticly reversed relation',
+        multilingual bit default 0 not null COMMENT 'Relation connects two lexicons',
         description_id bigint,
         display_text_id bigint,
         name_id bigint,
-        parent_relation_type_id bigint,
+        parent_relation_type_id bigint COMMENT 'Parent relation',
         reverse_relation_type_id bigint,
-        short_display_text_id bigint,
+        short_display_text_id bigint COMMENT 'Short name displayed on graph',
+        color varchar(255) COMMENT 'Color of displayed relation',
+        graph_position varchar(255) COMMENT 'Position of displayed relation',
         primary key (id)
 );
 

@@ -46,8 +46,8 @@ import se.datadosen.component.RiverLayout;
  */
 public class RelationsEditorWindow extends IconFrame implements ActionListener, TreeSelectionListener, CaretListener, ListSelectionListener, MouseListener {
 
-    private static final String REVERSE_RELATION_NAME_NO_AUTO = "%s";
-    private static final String REVERSE_RELATION_NAME_AUTO = "%s " + Labels.AUTO;
+    //  private static final String REVERSE_RELATION_NAME_NO_AUTO = "%s";
+//    private static final String REVERSE_RELATION_NAME_AUTO = "%s " + Labels.AUTO;
     private static String lastText = "<x#> / <y#>";
 
     private static final long serialVersionUID = 1L;
