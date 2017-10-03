@@ -75,6 +75,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.0.10.Final</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <version>3.0.19.Final</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -92,10 +104,9 @@
                     <ejbVersion>3.2</ejbVersion>
 
                     <clientIncludes>
-                        <clientInclude>pl/edu/pwr/wordnetloom/*/dto/*</clientInclude>
-                        <clientInclude>pl/edu/pwr/wordnetloom/*/model/*</clientInclude>
-                        <clientInclude>pl/edu/pwr/wordnetloom/*/exception/*</clientInclude>
-                        <clientInclude>pl/edu/pwr/wordnetloom/*/service/*Remote.*</clientInclude>
+                        <clientInclude>pl/edu/pwr/wordnetloom/dto/*</clientInclude>
+                        <clientInclude>pl/edu/pwr/wordnetloom/model/**</clientInclude>
+                        <clientInclude>pl/edu/pwr/wordnetloom/service/*Remote.*</clientInclude>
                     </clientIncludes>
                     <generateClient>true</generateClient>
                 </configuration>

@@ -143,18 +143,6 @@
         </dependency>
     </dependencies>
     <build>
-        <testSourceDirectory>src/main/test/java</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -165,16 +153,53 @@
                 </configuration>
             </plugin>
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-config</id>
+                        <!-- here the phase you need -->
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/wordnetloom-client/config</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>config</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-icons</id>
+                        <!-- here the phase you need -->
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/wordnetloom-client/icons</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>icons</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.6.0</version>
                 <configuration>
                     <executable>java</executable>
-                    <mainClass>pl.edu.pwr.wordnetloom.client.Main</mainClass>
-                    <arguments>
-                        <argument>%classpath:src/main/resources</argument>
-                    </arguments>
-                    <workingDirectory>${project.build.directory}/WordnetLoom-Client</workingDirectory>
+                    <mainClass>pl.edu.pwr.wordnetloom.Main</mainClass>
+                    <workingDirectory>${project.build.directory}/wordnetloom-client</workingDirectory>
                     <detail>false</detail>
                 </configuration>
             </plugin>
@@ -193,13 +218,13 @@
                 <configuration>
                     <finalName>wordnetloom-client</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
-                    <outputDirectory>${project.build.directory}/WordnetLoom-Client</outputDirectory>
+                    <outputDirectory>${project.build.directory}/wordnetloom-client</outputDirectory>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>pl.edu.pwr.wordnetloom.client.Main</mainClass>
+                            <mainClass>pl.edu.pwr.wordnetloom.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
