@@ -1,6 +1,6 @@
 package pl.edu.pwr.wordnetloom.plugins.lexeditor.panel;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -59,8 +59,8 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 	private ComboBoxPlain<StatusDictionary> status;
 	private ComboBoxPlain<LexicalCharacteristicDictionary> lexiaclCharacteristic;
 	private JTextArea meaning;
-	private TextPanePlain comment;
-	private TextPanePlain context;
+	private JTextArea comment;
+	private JTextArea context;
 
 	private ComboBoxPlain<VariantType> varianType;
 	private ComboBoxPlain<DialectalDictionary> dialectal;
@@ -137,6 +137,13 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 		return yiddish;
 	}
 
+	private void setVariantEnabled(boolean enabled)
+	{
+		varianType.setEnabled(enabled);
+		btnNewVariantButton.setEnabled(!enabled);
+		btnRemoveVariant.setEnabled(enabled);
+	}
+
 	public YiddishPropertiesPanel(final LexicalUnitPropertiesPanel parent, final YiddishSenseExtension extension) {
 		this.parent = parent;
 		this.yiddish = extension;
@@ -167,38 +174,22 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 			public void itemStateChanged(ItemEvent e) {
 				VariantType t = ((CustomDescription<VariantType>) e.getItem()).getObject();
 				if (t != null) {
-					if (t == VariantType.Dialectal) {
-						dialectal.setEnabled(true);
-						varianType.setEnabled(true);
-						btnNewVariantButton.setEnabled(false);
-						btnRemoveVariant.setEnabled(true);
-					} else {
-						dialectal.setEnabled(false);
-					}
-					if (t == VariantType.Yiddish_Primary_Lemma) {
-						varianType.setEnabled(false);
-						btnNewVariantButton.setEnabled(true);
-						btnRemoveVariant.setEnabled(false);
-					}
-					if (t == VariantType.Etymological) {
-						varianType.setEnabled(true);
-						btnNewVariantButton.setEnabled(false);
-						btnRemoveVariant.setEnabled(true);
-					}
-					if (t == VariantType.Graphical) {
-						varianType.setEnabled(true);
-						btnNewVariantButton.setEnabled(false);
-						btnRemoveVariant.setEnabled(true);
-					}
-					if (t == VariantType.Morphological) {
-						varianType.setEnabled(true);
-						btnNewVariantButton.setEnabled(false);
-						btnRemoveVariant.setEnabled(true);
-					}
-					if (t == VariantType.Phonological) {
-						varianType.setEnabled(true);
-						btnNewVariantButton.setEnabled(false);
-						btnRemoveVariant.setEnabled(true);
+					switch (t)
+					{
+						case Dialectal:
+							dialectal.setEnabled(true);
+							setVariantEnabled(true);
+							break;
+						case Yiddish_Primary_Lemma:
+							dialectal.setEnabled(false);
+							setVariantEnabled(false);
+						case Etymological:
+						case Graphical:
+						case Morphological:
+						case Phonological:
+							dialectal.setEnabled(false);
+							setVariantEnabled(true);
+							break;
 					}
 				} else {
 					btnNewVariantButton.setEnabled(true);
@@ -418,9 +409,12 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 		
 		commentScrollPane.setViewportView(comment);
 		commentPanel.add(commentScrollPane, "1, 1, 3, 1, default, fill");
-		
-		comment = new TextPanePlain();
+
+		comment = new JTextArea();
+		comment.setLineWrap(true);
+		comment.setWrapStyleWord(true);
 		comment.addCaretListener(this);
+
 		commentScrollPane.setViewportView(comment);
 
 		JPanel contextPanel = new JPanel();
@@ -434,9 +428,10 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 
 		JScrollPane contextScrollPane = new JScrollPane();
 		contextPanel.add(contextScrollPane, "1, 1, 3, 1, default, fill");
-		
-		context = new TextPanePlain();
-		context.addCaretListener(this);
+
+		context = new JTextArea();
+		context.setLineWrap(true);
+		context.setWrapStyleWord(true);
 		contextScrollPane.setViewportView(context);
 		
 		particlesPanel = new ParticlesPanel(extension);
@@ -458,18 +453,18 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 	public void caretUpdate(CaretEvent event) {
 		if (event.getSource() instanceof TextFieldPlain) {
 			TextFieldPlain field = (TextFieldPlain) event.getSource();
-			parent.getBtnSave().setEnabled(parent.getBtnSave().isEnabled() | field.wasTextChanged());
+//			parent.getBtnSave().setEnabled(parent.getBtnSave().isEnabled() | field.wasTextChanged());
 		}
 		if (event.getSource() instanceof TextPanePlain) {
 			TextPanePlain field = (TextPanePlain) event.getSource();
-			parent.getBtnSave().setEnabled(parent.getBtnSave().isEnabled() | field.wasTextChanged());
+//			parent.getBtnSave().setEnabled(parent.getBtnSave().isEnabled() | field.wasTextChanged());
 		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() instanceof JComboBox) {
-			parent.getBtnSave().setEnabled(true);
+//			parent.getBtnSave().setEnabled(true);
 		}
 		if (e.getSource() == btnNewVariantButton) {
 			if (VariantType.Yiddish_Primary_Lemma == yiddish.getVariant()) {
@@ -479,12 +474,11 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 				yse = RemoteUtils.lexicalUnitRemote.save(yse);
 				parent.addTab(yse);
 			}
-			parent.getBtnSave().setEnabled(true);
+//			parent.getBtnSave().setEnabled(true);
 		}
 		if (e.getSource() instanceof JButton) {
-			parent.getBtnSave().setEnabled(true);
+//			parent.getBtnSave().setEnabled(true);
 		}
-
 	}
 
 	public void save() {
@@ -493,7 +487,6 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 		if (yiddish.getId() == null) {
 			yiddish.setId(yse.getId());
 		}
-
 	}
 
 	@Override
@@ -532,5 +525,4 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 			return false;
 		return true;
 	}
-
 }

@@ -1,10 +1,9 @@
 package pl.edu.pwr.wordnetloom.plugins.lexeditor.views;
 
-import java.awt.event.ActionEvent;
+import java.awt.*;
 import java.awt.event.ActionListener;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -14,6 +13,8 @@ import pl.edu.pwr.wordnetloom.plugins.lexeditor.panel.LexicalUnitPropertiesPanel
 import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.plugins.viwordnet.views.ViwnGraphViewUI;
+import pl.edu.pwr.wordnetloom.systems.ui.ToastMessage;
+import pl.edu.pwr.wordnetloom.utils.Labels;
 import pl.edu.pwr.wordnetloom.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.dto.RegisterTypes;
 import pl.edu.pwr.wordnetloom.model.Domain;
@@ -43,14 +44,32 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI {
 		editPanel = new LexicalUnitPropertiesPanel(graphUI.getWorkbench().getFrame());
 		content.add("hfill", editPanel);
 
-		editPanel.getBtnSave().addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				editPanel.getBtnSave().setEnabled(false);
-				saveChangesInUnit();
-				editPanel.getBtnSave().setEnabled(false);
-			}
-		});
+		editPanel.getBtnSave().addActionListener(e -> {
+//				editPanel.getBtnSave().setEnabled(false);
+            saveChangesInUnit();
+//				editPanel.getBtnSave().setEnabled(false);
+			// okieno jednostek posiada kilka paneli. Do każdego panelu podpięty jest odzielny słuchacz, realizujący
+			// zapis danych znajdujących się w konkretnym panelu.
+			// ten słuchacz powinien byc wykonywany jako ostatni, dlatego w tym miejscu zostaje wyświetlony komunikat
+			// informujący o statusie zapisu
+			showSaveMessage(true); //TODO znaleźć sposób, aby rozpoznać czy zapis się udał czy nie
+        });
+	}
+
+	private void showSaveMessage(boolean success)
+	{
+		String messageText;
+		Color textColor;
+		if(success) {
+			messageText = Labels.SAVE_SUCCESS;
+			textColor = Color.GREEN;
+		} else {
+			messageText = Labels.SAVE_FAILURE;
+			textColor = Color.RED;
+		}
+		ToastMessage message = new ToastMessage(messageText, ToastMessage.SHORT_MESSAGE, editPanel.getBtnSave(), new Point(0, -30));
+		message.setTextColor(textColor);
+		message.showMessage();
 	}
 
 	public void fillKPWrExample(Object[] examples) {

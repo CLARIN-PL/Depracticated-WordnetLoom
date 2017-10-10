@@ -1,18 +1,11 @@
 package pl.edu.pwr.wordnetloom.plugins.lexeditor.panel;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -20,20 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.SwingConstants;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
@@ -66,563 +46,526 @@ import pl.edu.pwr.wordnetloom.systems.ui.TextPanePlain;
 import pl.edu.pwr.wordnetloom.utils.Common;
 import pl.edu.pwr.wordnetloom.utils.Messages;
 
+// !!! w przypadku chęci powrotu do stanu, w którym przycisk zapisu był dezaktywowany dopóki nie wprowadzono jakieś zmiany, należy usunąć komentarze
+// przede wszystkim
 public class LexicalUnitPropertiesPanel extends JPanel implements CaretListener, ActionListener {
 
-	private static final long serialVersionUID = 8598891792812358941L;
-	private Sense unit;
-	private LexiconComboBox lexicon;
-	private TextFieldPlain lemma;
-	private TextFieldPlain variant;
-	private TextFieldPlain link;
-	private ComboBoxPlain<RegisterTypes> register;
-	private PartOfSpeechComboBox partOfSpeech;
-	private DomainComboBox domain;
-	private TextPanePlain comment;
-	private TextPanePlain context;
-	private JButton btnCancel;
-	private final JButton btnSave;
-	private JScrollPane commentScrollPane;
-	private JScrollPane scrollPaneExamples;
-	private JButton btnGoToLink;
-	private JButton btnNewExample;
-	private JButton btnEditExample;
-	private JButton btnRemoveExample;
-	private JList examplesList;
-	private DefaultListModel examplesModel;
-	private JLabel lblDefinition;
-	private JScrollPane definitionScrollPane;
-	private TextPanePlain definition;
-	private final JTabbedPane tabs = new JTabbedPane();
+    private static final long serialVersionUID = 8598891792812358941L;
+    private Sense unit;
+    private LexiconComboBox lexicon;
+    private TextFieldPlain lemma;
+    private TextFieldPlain variant;
+    private TextFieldPlain link;
+    private ComboBoxPlain<RegisterTypes> register;
+    private PartOfSpeechComboBox partOfSpeech;
+    private DomainComboBox domain;
+    private TextPanePlain comment;
+    private JButton btnCancel;
+    private final JButton btnSave;
+    private JButton btnGoToLink;
+    private JButton btnNewExample;
+    private JButton btnEditExample;
+    private JButton btnRemoveExample;
+    private JList examplesList;
+    private DefaultListModel examplesModel;
+    private JLabel lblDefinition;
+    private JScrollPane definitionScrollPane;
+    private TextPanePlain definition;
+    private final JTabbedPane tabs = new JTabbedPane();
 
-	/** Mapa zawierająca słuchaczy, którzy będą przypisani do btnSave. Wartości z mapy będą służyć do usuwania odpowiedniego słuchacza z przycisku btnSave
-	 * po usunięciu wariantu YiddishPropertiesPanel. Mapa przechowuje wartości związane tylko z wariantami tworzonymi w YiddishPropertiesPanel, ponieważ tylko one mogą
-	 * być usunięte.  
-	 */
-	private Map<String, ActionListener> saveButtonListeners = new HashMap<String, ActionListener>();;
+    /**
+     * Mapa zawierająca słuchaczy, którzy będą przypisani do btnSave. Wartości z mapy będą służyć do usuwania odpowiedniego słuchacza z przycisku btnSave
+     * po usunięciu wariantu YiddishPropertiesPanel. Mapa przechowuje wartości związane tylko z wariantami tworzonymi w YiddishPropertiesPanel, ponieważ tylko one mogą
+     * być usunięte.
+     */
+    private Map<String, ActionListener> saveButtonListeners = new HashMap<String, ActionListener>();
+    ;
 
-	public LexicalUnitPropertiesPanel(final JFrame frame) {
-		setLayout(new BorderLayout(0, 0));
-		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new FormLayout(
-				new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(57dlu;min)"),
-						FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(48dlu;min)"),
-						FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(49dlu;min)"),
-						FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(28dlu;min):grow"),
-						FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(17dlu;min)"),
-						FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(44dlu;default)"),
-						FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(5dlu;default):grow"), },
-				new RowSpec[] { RowSpec.decode("1dlu"), RowSpec.decode("6dlu"),
-						RowSpec.decode("fill:max(14dlu;default)"), FormSpecs.RELATED_GAP_ROWSPEC,
-						RowSpec.decode("fill:max(14dlu;default)"), FormSpecs.RELATED_GAP_ROWSPEC,
-						RowSpec.decode("fill:default"), FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("fill:default"),
-						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("fill:max(14dlu;default)"),
-						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("max(36dlu;default):grow"),
-						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("fill:max(40dlu;pref):grow"),
-						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("max(14dlu;default)"),
-						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("max(14dlu;default)"),
-						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("max(14dlu;default)"),
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
-						RowSpec.decode("fill:max(14dlu;default)"), RowSpec.decode("max(10dlu;default):grow"), }));
+    public LexicalUnitPropertiesPanel(final JFrame frame) {
+        setLayout(new BorderLayout(0, 0));
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new FormLayout(
+                new ColumnSpec[]{FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(57dlu;min)"),
+                        FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(48dlu;min)"),
+                        FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(49dlu;min)"),
+                        FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(28dlu;min):grow"),
+                        FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(17dlu;min)"),
+                        FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(44dlu;default)"),
+                        FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(5dlu;default):grow"),},
+                new RowSpec[]{RowSpec.decode("1dlu"), RowSpec.decode("6dlu"),
+                        RowSpec.decode("fill:max(14dlu;default)"), FormSpecs.RELATED_GAP_ROWSPEC,
+                        RowSpec.decode("fill:max(14dlu;default)"), FormSpecs.RELATED_GAP_ROWSPEC,
+                        RowSpec.decode("fill:default"), FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("fill:default"),
+                        FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("fill:max(14dlu;default)"),
+                        FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("max(36dlu;default):grow"),
+                        FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("fill:max(40dlu;pref):grow"),
+                        FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("max(14dlu;default)"),
+                        FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("max(14dlu;default)"),
+                        FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("max(14dlu;default)"),
+                        FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
+                        RowSpec.decode("fill:max(14dlu;default)"), RowSpec.decode("max(10dlu;default):grow"),}));
 
-		tabs.setPreferredSize(new Dimension(620, 650));
-		tabs.setLayout(new BorderLayout());
-		tabs.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-		add(tabs, BorderLayout.CENTER);
-		tabs.insertTab("Main", null, mainPanel, "", 0);
+        tabs.setPreferredSize(new Dimension(620, 650));
+        tabs.setLayout(new BorderLayout());
+        tabs.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        add(tabs, BorderLayout.CENTER);
+        tabs.insertTab("Main", null, mainPanel, "", 0);
 
-		JLabel lblLemma = new JLabel(Labels.LEMMA_COLON);
-		lblLemma.setHorizontalAlignment(SwingConstants.RIGHT);
-		mainPanel.add(lblLemma, "2, 3, left, default");
+        JLabel lblLemma = new JLabel(Labels.LEMMA_COLON);
+        lblLemma.setHorizontalAlignment(SwingConstants.RIGHT);
+        mainPanel.add(lblLemma, "2, 3, left, default");
 
-		lemma = new TextFieldPlain(Labels.VALUE_UNKNOWN);
-		lemma.addCaretListener(this);
-		mainPanel.add(lemma, "4, 3, 4, 1, fill, fill");
-		lemma.setColumns(10);
+        lemma = new TextFieldPlain(Labels.VALUE_UNKNOWN);
+        lemma.addCaretListener(this);
+        mainPanel.add(lemma, "4, 3, 4, 1, fill, fill");
+        lemma.setColumns(10);
 
-		JLabel lblVariant = new JLabel(Labels.NUMBER_COLON);
-		lblVariant.setHorizontalAlignment(SwingConstants.RIGHT);
-		mainPanel.add(lblVariant, "8, 3, 3, 1, fill, fill");
+        JLabel lblVariant = new JLabel(Labels.NUMBER_COLON);
+        lblVariant.setHorizontalAlignment(SwingConstants.RIGHT);
+        mainPanel.add(lblVariant, "8, 3, 3, 1, fill, fill");
 
-		variant = new TextFieldPlain(Labels.VALUE_UNKNOWN);
-		variant.addCaretListener(this);
-		mainPanel.add(variant, "12, 3, left, fill");
-		variant.setColumns(10);
+        variant = new TextFieldPlain(Labels.VALUE_UNKNOWN);
+        variant.addCaretListener(this);
+        mainPanel.add(variant, "12, 3, left, fill");
+        variant.setColumns(10);
 
-		JLabel lblLexicon = new JLabel(Labels.LEXICON_COLON);
-		lblLexicon.setHorizontalAlignment(SwingConstants.RIGHT);
-		mainPanel.add(lblLexicon, "2, 5, left, fill");
-		lexicon = new LexiconComboBox(Labels.NOT_CHOSEN);
-		lexicon.addActionListener(this);
-		lexicon.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				Lexicon lex = lexicon.retriveComboBoxItem();
-				if (lex != null) {
-					if (lex.getId().equals(3l)) {
-						lockForJidysz(false);
-					} else {
-						lockForJidysz(true);
-					}
-					partOfSpeech.filterByLexicon(lex);
-					domain.filterDomainsByLexicon(lex, false);
-				}
-			}
-		});
-		mainPanel.add(lexicon, "4, 5, 3, 1, fill, fill");
+        JLabel lblLexicon = new JLabel(Labels.LEXICON_COLON);
+        lblLexicon.setHorizontalAlignment(SwingConstants.RIGHT);
+        mainPanel.add(lblLexicon, "2, 5, left, fill");
+        lexicon = new LexiconComboBox(Labels.NOT_CHOSEN);
+        lexicon.addActionListener(this);
+        lexicon.addItemListener(e -> {
+            Lexicon lex = lexicon.retriveComboBoxItem();
+            if (lex != null) {
+                if (lex.getId().equals(3l)) {
+                    lockForJidysz(false);
+                } else {
+                    lockForJidysz(true);
+                }
+                partOfSpeech.filterByLexicon(lex);
+                domain.filterDomainsByLexicon(lex, false);
+            }
+        });
+        mainPanel.add(lexicon, "4, 5, 3, 1, fill, fill");
 
-		JLabel lblPoS = new JLabel(Labels.PARTS_OF_SPEECH_COLON);
-		lblPoS.setHorizontalAlignment(SwingConstants.RIGHT);
-		mainPanel.add(lblPoS, "2, 7, left, default");
+        JLabel lblPoS = new JLabel(Labels.PARTS_OF_SPEECH_COLON);
+        lblPoS.setHorizontalAlignment(SwingConstants.RIGHT);
+        mainPanel.add(lblPoS, "2, 7, left, default");
 
-		partOfSpeech = new PartOfSpeechComboBox(Labels.NOT_CHOSEN);
-		partOfSpeech.withoutFilter();
-		partOfSpeech.addActionListener(this);
-		partOfSpeech.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				PartOfSpeech pos = partOfSpeech.retriveComboBoxItem();
-				if (pos != null) {
-					domain.filterDomainByPos(pos, false);
-					domain.setSelectedIndex(1);
-				}
-			}
-		});
-		mainPanel.add(partOfSpeech, "4, 7, 3, 1, fill, fill");
+        partOfSpeech = new PartOfSpeechComboBox(Labels.NOT_CHOSEN);
+        partOfSpeech.withoutFilter();
+//		partOfSpeech.addActionListener(this);
+        partOfSpeech.addItemListener(e -> {
+            PartOfSpeech pos = partOfSpeech.retriveComboBoxItem();
+            if (pos != null) {
+                domain.filterDomainByPos(pos, false);
+                domain.setSelectedIndex(1);
+            }
+        });
+        mainPanel.add(partOfSpeech, "4, 7, 3, 1, fill, fill");
 
-		JLabel lblDomain = new JLabel(Labels.DOMAIN_COLON);
-		lblDomain.setHorizontalAlignment(SwingConstants.RIGHT);
-		mainPanel.add(lblDomain, "2, 9, left, fill");
+        JLabel lblDomain = new JLabel(Labels.DOMAIN_COLON);
+        lblDomain.setHorizontalAlignment(SwingConstants.RIGHT);
+        mainPanel.add(lblDomain, "2, 9, left, fill");
 
-		domain = new DomainComboBox(Labels.NOT_CHOSEN);
-		domain.allDomains(false);
-		domain.addActionListener(this);
-		mainPanel.add(domain, "4, 9, 3, 1, fill, fill");
+        domain = new DomainComboBox(Labels.NOT_CHOSEN);
+        domain.allDomains(false);
+//		domain.addActionListener(this);
+        mainPanel.add(domain, "4, 9, 3, 1, fill, fill");
 
-		JLabel lblRegister = new JLabel(Labels.REGISTER_COLON);
-		lblRegister.setHorizontalAlignment(SwingConstants.RIGHT);
-		mainPanel.add(lblRegister, "2, 11, left, fill");
+        JLabel lblRegister = new JLabel(Labels.REGISTER_COLON);
+        lblRegister.setHorizontalAlignment(SwingConstants.RIGHT);
+        mainPanel.add(lblRegister, "2, 11, left, fill");
 
-		register = new ComboBoxPlain<>(RegisterTypes.values());
-		register.addActionListener(this);
-		mainPanel.add(register, "4, 11, 3, 1, fill, fill");
+        register = new ComboBoxPlain<>(RegisterTypes.values());
+//		register.addActionListener(this);
+        mainPanel.add(register, "4, 11, 3, 1, fill, fill");
 
-		lblDefinition = new JLabel(Labels.DEFINITION_COLON);
-		lblDefinition.setVerticalAlignment(SwingConstants.TOP);
-		lblDefinition.setHorizontalAlignment(SwingConstants.LEFT);
-		mainPanel.add(lblDefinition, "2, 13, left, top");
+        lblDefinition = new JLabel(Labels.DEFINITION_COLON);
+        lblDefinition.setVerticalAlignment(SwingConstants.TOP);
+        lblDefinition.setHorizontalAlignment(SwingConstants.LEFT);
+        mainPanel.add(lblDefinition, "2, 13, left, top");
 
-		definitionScrollPane = new JScrollPane();
-		mainPanel.add(definitionScrollPane, "4, 13, 9, 1, default, fill");
+        definitionScrollPane = new JScrollPane();
+        mainPanel.add(definitionScrollPane, "4, 13, 9, 1, default, fill");
 
-		definition = new TextPanePlain();
-		definition.addCaretListener(this);
-		definitionScrollPane.setViewportView(definition);
+        definition = new TextPanePlain();
+        definition.addCaretListener(this);
+        definitionScrollPane.setViewportView(definition);
 
-		JLabel lblComment = new JLabel(Labels.COMMENT_COLON);
-		lblComment.setVerticalAlignment(SwingConstants.TOP);
-		lblComment.setHorizontalAlignment(SwingConstants.LEFT);
-		mainPanel.add(lblComment, "2, 15, left, default");
+        JLabel lblComment = new JLabel(Labels.COMMENT_COLON);
+        lblComment.setVerticalAlignment(SwingConstants.TOP);
+        lblComment.setHorizontalAlignment(SwingConstants.LEFT);
+        mainPanel.add(lblComment, "2, 15, left, default");
 
-		commentScrollPane = new JScrollPane();
-		mainPanel.add(commentScrollPane, "4, 15, 9, 1, default, fill");
+        JScrollPane commentScrollPane = new JScrollPane();
+        mainPanel.add(commentScrollPane, "4, 15, 9, 1, default, fill");
 
-		comment = new TextPanePlain();
-		comment.addCaretListener(this);
-		commentScrollPane.setViewportView(comment);
+        comment = new TextPanePlain();
+        comment.addCaretListener(this);
+        commentScrollPane.setViewportView(comment);
 
-		scrollPaneExamples = new JScrollPane();
-		mainPanel.add(scrollPaneExamples, "4, 17, 7, 7, default, fill");
+        JScrollPane scrollPaneExamples = new JScrollPane();
+        mainPanel.add(scrollPaneExamples, "4, 17, 7, 7, default, fill");
 
-		examplesList = new JList() {
+        examplesList = new JList() {
 
-			private static final long serialVersionUID = 1L;
+            private static final long serialVersionUID = 1L;
 
-			@Override
-			public boolean getScrollableTracksViewportWidth() {
-				return true;
-			}
-		};
-		examplesList.setCellRenderer(new MyCellRenderer());
+            @Override
+            public boolean getScrollableTracksViewportWidth() {
+                return true;
+            }
+        };
+        examplesList.setCellRenderer(new MyCellRenderer());
 
-		ComponentListener l = new ComponentAdapter() {
+        ComponentListener l = new ComponentAdapter() {
 
-			@Override
-			public void componentResized(ComponentEvent e) {
-				examplesList.setFixedCellHeight(10);
-				examplesList.setFixedCellHeight(-1);
-			}
+            @Override
+            public void componentResized(ComponentEvent e) {
+                examplesList.setFixedCellHeight(10);
+                examplesList.setFixedCellHeight(-1);
+            }
 
-		};
+        };
 
-		examplesList.addComponentListener(l);
-		examplesModel = new DefaultListModel();
-		scrollPaneExamples.setViewportView(examplesList);
+        examplesList.addComponentListener(l);
+        examplesModel = new DefaultListModel();
+        scrollPaneExamples.setViewportView(examplesList);
 
-		btnNewExample = new JButton(LexicalIM.getAdd());
-		btnNewExample.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
+        btnNewExample = new JButton(LexicalIM.getAdd());
+        btnNewExample.addActionListener(e -> {
 
-				String exa = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
-				if (exa != null && exa != "") {
-					examplesModel.addElement(exa);
-					btnSave.setEnabled(true);
-					examplesList.setModel(examplesModel);
-				}
-			}
-		});
+            String exa = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
+            if (exa != null && exa != "") {
+                examplesModel.addElement(exa);
+//					btnSave.setEnabled(true);
+                examplesList.setModel(examplesModel);
+            }
+        });
 
-		JLabel lblExample = new JLabel(Labels.USE_CASE_COLON);
-		lblExample.setVerticalAlignment(SwingConstants.TOP);
-		lblExample.setHorizontalAlignment(SwingConstants.RIGHT);
-		mainPanel.add(lblExample, "2, 17, left, fill");
-		mainPanel.add(btnNewExample, "12, 17, fill, fill");
+        JLabel lblExample = new JLabel(Labels.USE_CASE_COLON);
+        lblExample.setVerticalAlignment(SwingConstants.TOP);
+        lblExample.setHorizontalAlignment(SwingConstants.RIGHT);
+        mainPanel.add(lblExample, "2, 17, left, fill");
+        mainPanel.add(btnNewExample, "12, 17, fill, fill");
 
-		btnEditExample = new JButton(LexicalIM.getEdit());
-		btnEditExample.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int idx = examplesList.getSelectedIndex();
-				if (idx >= 0) {
-					String modified = ExampleFrame.showModal(frame, Labels.EDIT_EXAMPLE,
-							(String) examplesModel.get(idx), true);
-					String old = examplesModel.get(idx).toString();
-					if (modified != null && !old.equals(modified)) {
-						examplesModel.set(idx, modified);
-						btnSave.setEnabled(true);
-					}
-				}
-			}
-		});
-		mainPanel.add(btnEditExample, "12, 19, fill, fill");
+        btnEditExample = new JButton(LexicalIM.getEdit());
+        btnEditExample.addActionListener(e -> {
+            int idx = examplesList.getSelectedIndex();
+            if (idx >= 0) {
+                String modified = ExampleFrame.showModal(frame, Labels.EDIT_EXAMPLE,
+                        (String) examplesModel.get(idx), true);
+                String old = examplesModel.get(idx).toString();
+                if (modified != null && !old.equals(modified)) {
+                    examplesModel.set(idx, modified);
+//						btnSave.setEnabled(true);
+                }
+            }
+        });
+        mainPanel.add(btnEditExample, "12, 19, fill, fill");
 
-		btnRemoveExample = new JButton(LexicalIM.getDelete());
-		btnRemoveExample.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int idx = examplesList.getSelectedIndex();
-				if (idx >= 0) {
-					examplesModel.remove(idx);
-					btnSave.setEnabled(true);
-				}
-			}
-		});
-		mainPanel.add(btnRemoveExample, "12, 21, fill, fill");
+        btnRemoveExample = new JButton(LexicalIM.getDelete());
+        btnRemoveExample.addActionListener(e -> {
+            int idx = examplesList.getSelectedIndex();
+            if (idx >= 0) {
+                examplesModel.remove(idx);
+//					btnSave.setEnabled(true);
+            }
+        });
+        mainPanel.add(btnRemoveExample, "12, 21, fill, fill");
 
-		JLabel lblLink = new JLabel(Labels.LINK_COLON);
-		lblLink.setHorizontalAlignment(SwingConstants.RIGHT);
-		mainPanel.add(lblLink, "2, 25, left, fill");
+        JLabel lblLink = new JLabel(Labels.LINK_COLON);
+        lblLink.setHorizontalAlignment(SwingConstants.RIGHT);
+        mainPanel.add(lblLink, "2, 25, left, fill");
 
-		link = new TextFieldPlain(Labels.VALUE_UNKNOWN);
-		link.addCaretListener(this);
-		mainPanel.add(link, "4, 25, 7, 1, fill, fill");
-		link.setColumns(10);
+        link = new TextFieldPlain(Labels.VALUE_UNKNOWN);
+        link.addCaretListener(this);
+        mainPanel.add(link, "4, 25, 7, 1, fill, fill");
+        link.setColumns(10);
 
-		btnGoToLink = new JButton(LexicalIM.getRight());
-		btnGoToLink.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					URI uri = new java.net.URI(link.getText());
-					(new LinkRunner(uri)).execute();
-				} catch (URISyntaxException use) {
-				}
-			}
-		});
-		mainPanel.add(btnGoToLink, "12, 25, fill, fill");
+        btnGoToLink = new JButton(LexicalIM.getRight());
+        btnGoToLink.addActionListener(e -> {
+            try {
+                URI uri = new URI(link.getText());
+                (new LinkRunner(uri)).execute();
+            } catch (URISyntaxException use) {
+            }
+        });
+        mainPanel.add(btnGoToLink, "12, 25, fill, fill");
 
-		JPanel buttons = new JPanel();
-		buttons.setLayout(new FlowLayout());
-		btnCancel = new JButton(Labels.CANCEL);
-		buttons.add(btnCancel);
+        JPanel buttons = new JPanel();
+        buttons.setLayout(new FlowLayout());
+        btnCancel = new JButton(Labels.CANCEL);
+        buttons.add(btnCancel);
 
-		btnSave = new JButton(Labels.SAVE);
-		buttons.add(btnSave);
-		btnSave.addActionListener(this);
-		add(buttons, BorderLayout.SOUTH);
-	}
+        btnSave = new JButton(Labels.SAVE);
 
-	public void removeTab(YiddishPropertiesPanel c) {
-		// jeden jest dodawany, ponieważ pierwszym słuchaczem jest this, a następnie są dodawane słuchacze poszczególnych paneli
-		btnSave.removeActionListener(btnSave.getActionListeners()[0]); 
-		tabs.remove(tabs.getSelectedIndex());
-		btnSave.removeActionListener(saveButtonListeners.get(c.getUIClassID()));
-	}
+        buttons.add(btnSave);
+        add(buttons, BorderLayout.SOUTH);
+    }
 
-	public Sense getSense() {
-		return unit;
-	}
+    void removeTab(YiddishPropertiesPanel c) {
+        btnSave.removeActionListener(btnSave.getActionListeners()[0]);
+        tabs.remove(tabs.getSelectedIndex());
+        btnSave.removeActionListener(saveButtonListeners.get(c.getUIClassID()));
+    }
 
-	public void setSense(Sense unit) {
-		this.unit = unit;
-		refreshData();
-	}
+    public Sense getSense() {
+        return unit;
+    }
 
-	public int getSelectedTabIndex() {
-		return tabs.getSelectedIndex();
-	}
+    public void setSense(Sense unit) {
+        this.unit = unit;
+        refreshData();
+    }
 
-	public void lockForJidysz(boolean enabled) {
-		register.setEnabled(enabled);
-		examplesList.setEnabled(enabled);
-		definition.setEnabled(enabled);
-		btnEditExample.setEnabled(enabled);
-		btnNewExample.setEnabled(enabled);
-		btnRemoveExample.setEnabled(enabled);
-		btnGoToLink.setEnabled(enabled);
-	}
+    private void lockForJidysz(boolean enabled) {
+        register.setEnabled(enabled);
+        examplesList.setEnabled(enabled);
+        definition.setEnabled(enabled);
+        btnEditExample.setEnabled(enabled);
+        btnNewExample.setEnabled(enabled);
+        btnRemoveExample.setEnabled(enabled);
+        btnGoToLink.setEnabled(enabled);
+    }
 
-	@Override
-	public void caretUpdate(CaretEvent event) {
-		if (event.getSource() instanceof TextFieldPlain) {
-			TextFieldPlain field = (TextFieldPlain) event.getSource();
-			btnSave.setEnabled(btnSave.isEnabled() | field.wasTextChanged());
-		}
-		if (event.getSource() instanceof TextPanePlain) {
-			TextPanePlain field = (TextPanePlain) event.getSource();
-			btnSave.setEnabled(btnSave.isEnabled() | field.wasTextChanged());
-		}
-	}
+    @Override
+    public void caretUpdate(CaretEvent event) {
+//		if (event.getSource() instanceof TextFieldPlain) {
+//			TextFieldPlain field = (TextFieldPlain) event.getSource();
+//			btnSave.setEnabled(btnSave.isEnabled() | field.wasTextChanged());
+//		}
+//		if (event.getSource() instanceof TextPanePlain) {
+//			TextPanePlain field = (TextPanePlain) event.getSource();
+//			btnSave.setEnabled(btnSave.isEnabled() | field.wasTextChanged());
+//		}
+    }
 
-	public void refreshData() {
+    public void refreshData() {
 
-		if (unit != null) {
+        if (unit != null) {
 
-			LexicalDA.refresh(unit);
-			lemma.setText(formatValue(unit.getLemma().getWord()));
-			variant.setText("" + unit.getSenseNumber());
-			lexicon.setSelectedItem(unit.getLexicon().toString(), unit.getLexicon());
-			partOfSpeech.setSelectedItem(unit.getPartOfSpeech().toString(), unit.getPartOfSpeech());
-			String domainToSet = isDomainCorrectPartOfSpeach();
+            LexicalDA.refresh(unit);
+            lemma.setText(formatValue(unit.getLemma().getWord()));
+            variant.setText("" + unit.getSenseNumber());
+            lexicon.setSelectedItem(unit.getLexicon().toString(), unit.getLexicon());
+            partOfSpeech.setSelectedItem(unit.getPartOfSpeech().toString(), unit.getPartOfSpeech());
+            String domainToSet = isDomainCorrectPartOfSpeech();
 
-			domain.setSelectedItem(domainToSet == null ? null
-					: new CustomDescription<Domain>(DomainComboBox.nameWithoutPrefix(unit.getDomain().toString()),
-							unit.getDomain()));
+            domain.setSelectedItem(domainToSet == null ? null
+                    : new CustomDescription<>(DomainComboBox.nameWithoutPrefix(unit.getDomain().toString()),
+                    unit.getDomain()));
 
-			RegisterTypes reg = unit != null ? RegisterTypes.get(Common.getSenseAttribute(unit, Sense.REGISTER))
-					: RegisterTypes.BRAK_REJESTRU;
+            RegisterTypes reg = unit != null ? RegisterTypes.get(Common.getSenseAttribute(unit, Sense.REGISTER))
+                    : RegisterTypes.BRAK_REJESTRU;
 
-			definition.setText(formatValue(Common.getSenseAttribute(unit, Sense.DEFINITION)));
-			comment.setText(formatValue(Common.getSenseAttribute(unit, Sense.COMMENT)));
-			register.setSelectedItem(reg.name(), reg);
+            definition.setText(formatValue(Common.getSenseAttribute(unit, Sense.DEFINITION)));
+            comment.setText(formatValue(Common.getSenseAttribute(unit, Sense.COMMENT)));
+            register.setSelectedItem(reg.name(), reg);
 
-			String use = Common.getSenseAttribute(unit, Sense.USE_CASES);
-			if (use != null) {
-				String[] exampleString = use.split("\\|");
-				for (int i = 0; i < exampleString.length; i++) {
-					examplesModel.addElement(exampleString[i]);
-				}
-			}
-			examplesList.setModel(examplesModel);
+            String use = Common.getSenseAttribute(unit, Sense.USE_CASES);
+            if (use != null) {
+                String[] exampleString = use.split("\\|");
+                for (String anExampleString : exampleString) {
+                    examplesModel.addElement(anExampleString);
+                }
+            }
+            examplesList.setModel(examplesModel);
 
-			link.setText(formatValue(Common.getSenseAttribute(unit, Sense.LINK)));
-			addYiddishTabs(unit.getYiddishSenseExtension());
-		}
+            link.setText(formatValue(Common.getSenseAttribute(unit, Sense.LINK)));
+            addYiddishTabs(unit.getYiddishSenseExtension());
+        }
 
-		btnSave.setEnabled(false);
-	}
+//		btnSave.setEnabled(false);
+    }
 
-	private void addYiddishTabs(final Set<YiddishSenseExtension> ext) {
-		if (ext.isEmpty() && unit.getLexicon().getId().equals(3l)) {
-			YiddishSenseExtension yse = new YiddishSenseExtension(unit);
-			ext.add(yse);
-		}
-		ext.stream().forEach(e -> {
-			final YiddishPropertiesPanel panel = new YiddishPropertiesPanel(this, e);
-			/*btnSave.addActionListener(l -> {
-				panel.save();
-				System.out.println(l.getID());
-			});*/
-			ActionListener listener = new ActionListener(){
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
-					panel.save();
-				}
-			};
-			if (VariantType.Yiddish_Primary_Lemma == e.getVariant()) {
-				tabs.insertTab(e.getVariant().name().replaceAll("_", " "), null, new JScrollPane(panel), "", 1);
-			} else { // wariant
-				tabs.addTab(e.getVariant().name().replaceAll("_", " "), new JScrollPane(panel));
-				saveButtonListeners.put(panel.getUIClassID(), listener); // w przypadku dodawania wariantu zapisujemy sluchacza, aby można go było później usunąć z przycisku btnSave
-			}
-			btnSave.addActionListener(listener);
-		
-		});
-	}
+    private void addYiddishTabs(final Set<YiddishSenseExtension> ext) {
+        if (ext.isEmpty() && unit.getLexicon().getId().equals(3l)) {
+            YiddishSenseExtension yse = new YiddishSenseExtension(unit);
+            ext.add(yse);
+        }
+        ext.stream().forEach(e -> {
+            final YiddishPropertiesPanel panel = new YiddishPropertiesPanel(this, e);
+            ActionListener listener = e1 -> {
+                panel.save();
+            };
+            if (VariantType.Yiddish_Primary_Lemma == e.getVariant()) {
+                tabs.insertTab(e.getVariant().name().replaceAll("_", " "), null, new JScrollPane(panel), "", 1);
+            } else { // wariant
+                tabs.addTab(e.getVariant().name().replaceAll("_", " "), new JScrollPane(panel));
+                saveButtonListeners.put(panel.getUIClassID(), listener); // w przypadku dodawania wariantu zapisujemy sluchacza, aby można go było później usunąć z przycisku btnSave
+            }
+            btnSave.addActionListener(listener);
 
-	public void addTab(YiddishSenseExtension e) {
-		final YiddishPropertiesPanel panel = new YiddishPropertiesPanel(this, e);
+        });
+    }
+
+    void addTab(YiddishSenseExtension e) {
+        final YiddishPropertiesPanel panel = new YiddishPropertiesPanel(this, e);
 //		btnSave.addActionListener(l -> panel.save());
-		ActionListener listener = new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				panel.save();
-			}
-		};
-		btnSave.addActionListener(listener);
-		saveButtonListeners.put(panel.getUIClassID(), listener);
-		tabs.addTab(e.getVariant().name().replaceAll("_", " "), new JScrollPane(panel));
-	}
+        ActionListener listener = e1 -> panel.save();
+        btnSave.addActionListener(listener);
+        saveButtonListeners.put(panel.getUIClassID(), listener);
+        tabs.addTab(e.getVariant().name().replaceAll("_", " "), new JScrollPane(panel));
+    }
 
-	private String isDomainCorrectPartOfSpeach() {
-		String domainToSet = null;
-		if (unit != null) {
-			Domain goodDomain = DomainManager.getInstance().getNormalized(unit.getDomain());
-			PartOfSpeech goodPOS = PosManager.getInstance().getNormalized(unit.getPartOfSpeech());
+    private String isDomainCorrectPartOfSpeech() {
+        String domainToSet = null;
+        if (unit != null) {
+            Domain goodDomain = DomainManager.getInstance().getNormalized(unit.getDomain());
+            PartOfSpeech goodPOS = PosManager.getInstance().getNormalized(unit.getPartOfSpeech());
 
-			if (goodDomain != null && !goodPOS.contains(goodDomain)) {
-				DialogBox.showError(String.format(Messages.ERROR_INCORRECT_DOMAIN, goodDomain.toString(), goodPOS));
-			} else {
-				domainToSet = unit != null && goodDomain != null ? goodDomain.toString() : null;
-			}
-		}
-		return domainToSet;
-	}
+            if (goodDomain != null && !goodPOS.contains(goodDomain)) {
+                DialogBox.showError(String.format(Messages.ERROR_INCORRECT_DOMAIN, goodDomain.toString(), goodPOS));
+            } else {
+                domainToSet = unit != null && goodDomain != null ? goodDomain.toString() : null;
+            }
+        }
+        return domainToSet;
+    }
 
-	private String formatValue(String value) {
-		return (value == null || value.length() == 0) ? null : value;
-	}
+    private String formatValue(String value) {
+        return (value == null || value.length() == 0) ? null : value;
+    }
 
-	@Override
-	public void actionPerformed(ActionEvent event) {
+    @Override
+    public void actionPerformed(ActionEvent event) {
 
-		if (event.getSource() == domain) {
-			btnSave.setEnabled(true);
-		} else if (event.getSource() == lexicon) {
-			btnSave.setEnabled(true);
-		} else if (event.getSource() == register) {
-			btnSave.setEnabled(true);
-		} else if (event.getSource() == link) {
-			btnSave.setEnabled(true);
-		} else if (event.getSource() == examplesList) {
-			btnSave.setEnabled(true);
-		} else if (event.getSource() == partOfSpeech) {
-			btnSave.setEnabled(true);
-		} else if (event.getSource() == partOfSpeech) {
-			btnSave.setEnabled(true);
-		}
-	}
+//		if (event.getSource() == domain) {
+//			btnSave.setEnabled(true);
+//		} else if (event.getSource() == lexicon) {
+//			btnSave.setEnabled(true);
+//		} else if (event.getSource() == register) {
+//			btnSave.setEnabled(true);
+//		} else if (event.getSource() == link) {
+//			btnSave.setEnabled(true);
+//		} else if (event.getSource() == examplesList) {
+//			btnSave.setEnabled(true);
+//		} else if (event.getSource() == partOfSpeech) {
+//			btnSave.setEnabled(true);
+//		} else if (event.getSource() == partOfSpeech) {
+//			btnSave.setEnabled(true);
+//		}
+    }
 
-	public ComboBoxPlain<Lexicon> getLexicon() {
-		return lexicon;
-	}
+    public ComboBoxPlain<Lexicon> getLexicon() {
+        return lexicon;
+    }
 
-	public TextFieldPlain getLemma() {
-		return lemma;
-	}
+    public TextFieldPlain getLemma() {
+        return lemma;
+    }
 
-	public TextFieldPlain getVariant() {
-		return variant;
-	}
+    public TextFieldPlain getVariant() {
+        return variant;
+    }
 
-	public TextFieldPlain getLink() {
-		return link;
-	}
+    public TextFieldPlain getLink() {
+        return link;
+    }
 
-	public ComboBoxPlain<RegisterTypes> getRegister() {
-		return register;
-	}
+    public ComboBoxPlain<RegisterTypes> getRegister() {
+        return register;
+    }
 
-	public ComboBoxPlain<PartOfSpeech> getPartOfSpeech() {
-		return partOfSpeech;
-	}
+    public ComboBoxPlain<PartOfSpeech> getPartOfSpeech() {
+        return partOfSpeech;
+    }
 
-	public ComboBoxPlain<Domain> getDomain() {
-		return domain;
-	}
+    public ComboBoxPlain<Domain> getDomain() {
+        return domain;
+    }
 
-	public JTextPane getDefinition() {
-		return definition;
-	}
+    public JTextPane getDefinition() {
+        return definition;
+    }
 
-	public JTextPane getComment() {
-		return comment;
-	}
+    public JTextPane getComment() {
+        return comment;
+    }
 
-	public JButton getBtnCancel() {
-		return btnCancel;
-	}
+    public JButton getBtnCancel() {
+        return btnCancel;
+    }
 
-	public DefaultListModel getExamplesModel() {
-		return examplesModel;
-	}
+    public DefaultListModel getExamplesModel() {
+        return examplesModel;
+    }
 
-	public final JButton getBtnSave() {
-		return btnSave;
-	}
+    public final JButton getBtnSave() {
+        return btnSave;
+    }
 
-	private static class LinkRunner extends SwingWorker<Void, Void> {
+    private static class LinkRunner extends SwingWorker<Void, Void> {
 
-		private final URI uri;
+        private final URI uri;
 
-		private LinkRunner(URI u) {
-			if (u == null) {
-				throw new NullPointerException();
-			}
-			uri = u;
-		}
+        private LinkRunner(URI u) {
+            if (u == null) {
+                throw new NullPointerException();
+            }
+            uri = u;
+        }
 
-		@Override
-		protected Void doInBackground() throws Exception {
-			Desktop desktop = java.awt.Desktop.getDesktop();
-			desktop.browse(uri);
-			return null;
-		}
+        @Override
+        protected Void doInBackground() throws Exception {
+            Desktop desktop = java.awt.Desktop.getDesktop();
+            desktop.browse(uri);
+            return null;
+        }
 
-		@Override
-		protected void done() {
-			try {
-				get();
-			} catch (ExecutionException ee) {
-				handleException(uri, ee);
-			} catch (InterruptedException ie) {
-				handleException(uri, ie);
-			}
-		}
+        @Override
+        protected void done() {
+            try {
+                get();
+            } catch (ExecutionException | InterruptedException ee) {
+                handleException(uri, ee);
+            }
+        }
 
-		private static void handleException(URI u, Exception e) {
-			JOptionPane.showMessageDialog(null, Messages.WRONG_LINK, Labels.ERROR_OCCURED, JOptionPane.ERROR_MESSAGE);
-		}
-	}
+        private static void handleException(URI u, Exception e) {
+            JOptionPane.showMessageDialog(null, Messages.WRONG_LINK, Labels.ERROR_OCCURED, JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-	public class MyCellRenderer implements ListCellRenderer {
+    public class MyCellRenderer implements ListCellRenderer {
 
-		private JPanel p;
-		private JTextArea ta;
+        private JPanel p;
+        private JTextArea ta;
 
-		public MyCellRenderer() {
-			p = new JPanel();
-			p.setLayout(new BorderLayout());
+        MyCellRenderer() {
+            p = new JPanel();
+            p.setLayout(new BorderLayout());
 
-			// text
-			ta = new JTextArea();
+            // text
+            ta = new JTextArea();
 
-			ta.setLineWrap(true);
-			ta.setWrapStyleWord(true);
+            ta.setLineWrap(true);
+            ta.setWrapStyleWord(true);
 
-			p.add(ta, BorderLayout.CENTER);
-		}
+            p.add(ta, BorderLayout.CENTER);
+        }
 
-		@Override
-		public Component getListCellRendererComponent(final JList list, final Object value, final int index,
-				final boolean isSelected, final boolean hasFocus) {
+        @Override
+        public Component getListCellRendererComponent(final JList list, final Object value, final int index,
+                                                      final boolean isSelected, final boolean hasFocus) {
 
-			ta.setText((String) value);
-			if (isSelected) {
-				ta.setBackground(new Color(135, 206, 250));
-			} else {
-				if (index % 2 == 0)
-					ta.setBackground(Color.LIGHT_GRAY);
-				else
-					ta.setBackground(Color.gray);
-			}
-			int width = list.getWidth();
-			if (width > 0)
-				ta.setSize(width, Short.MAX_VALUE);
-			return p;
+            ta.setText((String) value);
+            if (isSelected) {
+                ta.setBackground(new Color(135, 206, 250));
+            } else {
+                if (index % 2 == 0)
+                    ta.setBackground(Color.LIGHT_GRAY);
+                else
+                    ta.setBackground(Color.gray);
+            }
+            int width = list.getWidth();
+            if (width > 0)
+                ta.setSize(width, Short.MAX_VALUE);
+            return p;
 
-		}
-	}
+        }
+    }
 }
+
