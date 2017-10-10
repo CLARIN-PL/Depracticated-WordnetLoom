@@ -40,7 +40,7 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
 //        SynsetRelationType relation = rel.getRelationType();
 //
 //        if (relation.getAutoReverse()) {
-//            RelationType reverse = relationType.dbGetReverseByRelationType(relation);
+//            IRelationType reverse = relationType.dbGetReverseByRelationType(relation);
 //            dbDelete(rel.getSynsetTo(), rel.getSynsetFrom(), reverse);
 //        }
 //

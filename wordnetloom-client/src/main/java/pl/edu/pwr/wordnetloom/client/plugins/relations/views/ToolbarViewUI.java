@@ -145,7 +145,7 @@ public class ToolbarViewUI extends AbstractViewUI implements ActionListener {
             }
             Collection<Sense> unitsOfMainSynset = RelationsDA.getUnits(
                     lastMainSynset, lastSelectedUnits, lexicons);
-//            final RelationType rel = RelationTypeFrame.showModal(workbench,
+//            final IRelationType rel = RelationTypeFrame.showModal(workbench,
 //                    RelationArgument.SYNSET,
 //                    RelationsDA.getPos(lastMainSynset, lexicons),
 //                    unitsOfMainSynset, lastSelectedUnits);
@@ -187,7 +187,7 @@ public class ToolbarViewUI extends AbstractViewUI implements ActionListener {
 //                    test += i + "\n";
 //                }
 //                // czy utworzyc dla relacji odwrotnej
-//                RelationType reverse = RelationsDA.getReverseRelation(rel);
+//                IRelationType reverse = RelationsDA.getReverseRelation(rel);
 //                String reverseName = RelationsDA.getRelationName(reverse);
 //                if (rel.isAutoReverse()
 //                        || DialogBox.showYesNoCancel(String.format(
@@ -222,7 +222,7 @@ public class ToolbarViewUI extends AbstractViewUI implements ActionListener {
 //                    lastDescSynset, lexicons);
 //            // dodanie tych przenoszonych
 //            unitsOfDescSynset.addAll(lastSelectedUnits);
-//            final RelationType rel = RelationTypeFrame.showModal(workbench,
+//            final IRelationType rel = RelationTypeFrame.showModal(workbench,
 //                    RelationArgument.SYNSET,
 //                    RelationsDA.getPos(lastMainSynset, lexicons),
 //                    unitsOfMainSynset, unitsOfDescSynset);
@@ -270,7 +270,7 @@ public class ToolbarViewUI extends AbstractViewUI implements ActionListener {
 //                    test += i + "\n";
 //                }
 //                // czy utworzyc dla relacji odwrotnej
-//                RelationType reverse = RelationsDA.getReverseRelation(rel);
+//                IRelationType reverse = RelationsDA.getReverseRelation(rel);
 //                String reverseName = RelationsDA.getRelationName(reverse);
 //
 //                if (rel.isAutoReverse()
@@ -322,7 +322,7 @@ public class ToolbarViewUI extends AbstractViewUI implements ActionListener {
                 return;
             }
 
-//            final RelationType rel = RelationTypeFrame.showModal(workbench,
+//            final IRelationType rel = RelationTypeFrame.showModal(workbench,
 //                    RelationArgument.SYNSET,
 //                    RelationsDA.getPos(lastMainSynset, lexicons),
 //                    unitsOfMainSynset, unitsOfDescSynset);
@@ -367,7 +367,7 @@ public class ToolbarViewUI extends AbstractViewUI implements ActionListener {
 //                    test += i + "\n";
 //                }
 //                // czy utworzyc dla relacji odwrotnej
-//                RelationType reverse = RelationsDA.getReverseRelation(rel);
+//                IRelationType reverse = RelationsDA.getReverseRelation(rel);
 //                String reverseName = RelationsDA.getRelationName(reverse);
 //
 //                if (rel.isAutoReverse()

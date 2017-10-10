@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.relationtypes;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.text.ParseException;
 import javax.swing.JMenu;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window.RelationsEditorWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
@@ -40,6 +41,10 @@ public class RelationTypesService extends AbstractService implements ActionListe
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        RelationsEditorWindow.showModal(workbench);
+        try {
+            RelationsEditorWindow.showModal(workbench);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

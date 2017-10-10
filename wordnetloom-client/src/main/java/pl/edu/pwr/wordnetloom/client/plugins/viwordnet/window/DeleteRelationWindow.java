@@ -108,7 +108,7 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
 //            boolean autoreverse = false;
 //            // check if relation is autoreverse
 //            SynsetRelation sr_dto = ves.getSynsetRelation();
-//            RelationType rType = RemoteUtils.relationTypeRemote.dbGet(sr_dto.getRelation().getId());
+//            IRelationType rType = RemoteUtils.relationTypeRemote.dbGet(sr_dto.getRelation().getId());
 //            Integer rev = null;
 //            if (rType.isAutoReverse()) {
 //                for (Integer t : toRemove.keySet()) {

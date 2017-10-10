@@ -314,7 +314,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 // okienko z testami dla relacji, nie wyswietla gdy nie ma
                 // takich relacji w bazie
 //                if (LexicalDA.areRelations(RelationArgument.LEXICAL_SPECIAL)) {
-//                    RelationType rel;
+//                    IRelationType rel;
 //                    rel = RelationTypeFrame.showModal(workbench,
 //                            RelationArgument.LEXICAL_SPECIAL, LexicalDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()),
                 //  RemoteUtils.lexicalUnitRemote.dbFastGetUnits(lastSynset, LexiconManager.getInstance().getLexicons()), selectedUnits);
@@ -404,7 +404,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 //            }
 //            Collection<Sense> unitsOfMainSynset = RelationsDA.getUnits(
 //                    lastSynset, lastSelectedUnits, LexiconManager.getInstance().getLexicons());
-//            final RelationType rel = RelationTypeFrame.showModal(workbench,
+//            final IRelationType rel = RelationTypeFrame.showModal(workbench,
 //                    RelationArgument.SYNSET, RelationsDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()),
 //                    unitsOfMainSynset, lastSelectedUnits);
 //            if (rel == null) {
@@ -443,7 +443,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 //                    test += i + "\n";
 //                }
 //                // czy utworzyc dla relacji odwrotnej
-//                RelationType reverse = RelationsDA.getReverseRelation(rel);
+//                IRelationType reverse = RelationsDA.getReverseRelation(rel);
 //                reverse = RelationTypes.get(reverse.getId()).getRelationType();
 //
 //                String reverseName = RelationsDA.getRelationName(reverse);

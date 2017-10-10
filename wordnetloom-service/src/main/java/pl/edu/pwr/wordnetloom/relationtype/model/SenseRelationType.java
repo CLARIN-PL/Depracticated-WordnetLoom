@@ -26,7 +26,7 @@ import pl.edu.pwr.wordnetloom.relationtest.model.SenseRelationTest;
 
 @Entity
 @Table(name = "sense_relation_type")
-public class SenseRelationType implements Serializable {
+public class SenseRelationType  implements Serializable, IRelationType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -106,7 +106,7 @@ public class SenseRelationType implements Serializable {
         return this.displayStrings.getString(locale);
     }
 
-    public void setDispalyText(String locale, String display) {
+    public void setDisplayText(String locale, String display) {
         this.displayStrings.addString(locale, display);
     }
 
@@ -114,7 +114,7 @@ public class SenseRelationType implements Serializable {
         return this.shortDisplayStrings.getString(locale);
     }
 
-    public void setShortDispalyText(String locale, String shortDisplay) {
+    public void setShortDisplayText(String locale, String shortDisplay) {
         this.shortDisplayStrings.addString(locale, shortDisplay);
     }
 
@@ -154,16 +154,18 @@ public class SenseRelationType implements Serializable {
         return parent;
     }
 
-    public void setParent(SenseRelationType parent) {
-        this.parent = parent;
+    public void setParent(IRelationType parent) {
+        assert parent instanceof SenseRelationType;
+        this.parent = (SenseRelationType)parent;
     }
 
     public SenseRelationType getReverse() {
         return reverse;
     }
 
-    public void setReverse(SenseRelationType reverse) {
-        this.reverse = reverse;
+    public void setReverse(IRelationType reverse) {
+        assert reverse instanceof SenseRelationType;
+        this.reverse = (SenseRelationType)reverse;
     }
 
     public GraphPosition getGraphPosition() {
@@ -180,5 +182,15 @@ public class SenseRelationType implements Serializable {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    @Override
+    public boolean isMultilingual() {
+        return false;
+    }
+
+    @Override
+    public void setMultilingual(boolean multilingual) {
+        // Nie robi nic
     }
 }

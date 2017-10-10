@@ -899,7 +899,7 @@ public class ViWordNetService extends AbstractService implements
         }
     }
 
-//    private boolean evaluateProposedConnection(Sense newUnit, RelationType relationType, ViwnNodeSynset synset, ViwnNodeWord word) {
+//    private boolean evaluateProposedConnection(Sense newUnit, IRelationType relationType, ViwnNodeSynset synset, ViwnNodeWord word) {
 //
 //        Synset assignedSynset = null;
 //        Long distance[] = new Long[]{new Long(1)};
@@ -1033,8 +1033,8 @@ public class ViWordNetService extends AbstractService implements
 //        }
 //
 //        RelationArgument objectType = null;
-//        RelationType relType = null;
-//        RelationType suggestedRelType = null;
+//        IRelationType relType = null;
+//        IRelationType suggestedRelType = null;
 //        Sense suggestedUnit = null;
 //
 //        if (synset instanceof ViwnNodeCandExtension) {
@@ -1066,7 +1066,7 @@ public class ViWordNetService extends AbstractService implements
 //                parentUnits = temp;
 //            }
 //        }
-//        RelationType relationType = RelationTypeFrame.showModal(
+//        IRelationType relationType = RelationTypeFrame.showModal(
 //                workbench.getFrame(), objectType, rightPos, relType,
 //                suggestedRelType, suggestedUnit, parentUnits, null, childUnits);
 //        if (relationType == null) {

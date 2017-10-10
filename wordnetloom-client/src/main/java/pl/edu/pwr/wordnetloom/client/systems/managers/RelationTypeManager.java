@@ -37,10 +37,10 @@ public class RelationTypeManager {
 
         //    all_rels.clear();
         //    top_child.clear();
-//        List<RelationType> full = RemoteUtils.relationTypeRemote.dbFullGetRelationTypes(LexiconManager.getInstance().getLexicons());
+//        List<IRelationType> full = RemoteUtils.relationTypeRemote.dbFullGetRelationTypes(LexiconManager.getInstance().getLexicons());
 //        List<RelationTypes> highest = new ArrayList<>();
 //
-//        for (RelationType r : full) {
+//        for (IRelationType r : full) {
 //
 //            if (r.getParent() == null) {
 //                RelationTypeManager rts = new RelationTypeManager();
@@ -53,7 +53,7 @@ public class RelationTypeManager {
 //                highest.add(rts);
 //            }
 //        }
-//        for (RelationType r : full) {
+//        for (IRelationType r : full) {
 //            if (r.getParent() == null) {
 //                continue;
 //            }
@@ -105,8 +105,8 @@ public class RelationTypeManager {
 
     public static String getFullNameFor(long id) {
 //        StringBuilder buf = new StringBuilder();
-//        RelationType rel = get(id).getRelationType();
-//        RelationType parent = rel.getParent();
+//        IRelationType rel = get(id).getRelationType();
+//        IRelationType parent = rel.getParent();
 //        if (parent != null) {
 //            buf.append(parent.getName().getText());
 //            buf.append(":");
@@ -116,8 +116,8 @@ public class RelationTypeManager {
         return "";
     }
 
-    // private RelationType me;
-//    public RelationType getRelationType() {
+    // private IRelationType me;
+//    public IRelationType getRelationType() {
 //        return me;
 //    }
     // TODO: remove me (cache)

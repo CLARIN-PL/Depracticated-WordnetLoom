@@ -26,7 +26,7 @@ import pl.edu.pwr.wordnetloom.relationtest.model.SynsetRelationTest;
 
 @Entity
 @Table(name = "synset_relation_type")
-public class SynsetRelationType implements Serializable {
+public class SynsetRelationType implements Serializable, IRelationType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -99,9 +99,10 @@ public class SynsetRelationType implements Serializable {
 
     public String getDisplayText(String locale) {
         return this.displayStrings.getString(locale);
+
     }
 
-    public void setDispalyText(String locale, String display) {
+    public void setDisplayText(String locale, String display) {
         this.displayStrings.addString(locale, display);
     }
 
@@ -109,7 +110,7 @@ public class SynsetRelationType implements Serializable {
         return this.shortDisplayStrings.getString(locale);
     }
 
-    public void setShortDispalyText(String locale, String shortDisplay) {
+    public void setShortDisplayText(String locale, String shortDisplay) {
         this.shortDisplayStrings.addString(locale, shortDisplay);
     }
 
@@ -145,20 +146,38 @@ public class SynsetRelationType implements Serializable {
         this.multilingual = multilingual;
     }
 
-    public SynsetRelationType getParent() {
+//    public SynsetRelationType getParent() {
+//        return parent;
+//    }
+//
+//    public void setParent(SynsetRelationType parent) {
+//        this.parent = parent;
+//    }
+
+    public IRelationType getParent() {
         return parent;
     }
 
-    public void setParent(SynsetRelationType parent) {
-        this.parent = parent;
+    public void setParent(IRelationType parent) {
+        assert parent instanceof SynsetRelationType;
+        this.parent = (SynsetRelationType)parent;
     }
 
-    public SynsetRelationType getReverse() {
+    /*public SynsetRelationType getReverse() {
         return reverse;
     }
 
     public void setReverse(SynsetRelationType reverse) {
         this.reverse = reverse;
+    }*/
+
+    public IRelationType getReverse() {
+        return reverse;
+    }
+
+    public void setReverse(IRelationType reverse) {
+        assert reverse instanceof SynsetRelationType;
+        this.reverse = (SynsetRelationType) reverse;
     }
 
     public List<SynsetRelationTest> getRelationTests() {
@@ -185,4 +204,13 @@ public class SynsetRelationType implements Serializable {
         this.color = color;
     }
 
+    @Override
+    public boolean isMultilingual() {
+        return multilingual;
+    }
+
+    @Override
+    public void setMultilingual(boolean multilingual) {
+        this.multilingual = multilingual;
+    }
 }

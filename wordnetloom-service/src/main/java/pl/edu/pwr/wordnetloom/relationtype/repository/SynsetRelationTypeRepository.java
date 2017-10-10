@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
+import pl.edu.pwr.wordnetloom.relationtype.model.IRelationType;
 import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
 import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository;
 
@@ -48,7 +49,7 @@ public class SynsetRelationTypeRepository extends GenericRepository<SynsetRelati
     }
 
     public List<SynsetRelationType> findHighestLeafs(List<Long> lexicons) {
-        return getEntityManager().createQuery("FROM SynsetRelationType rt WHERE rt.parent = NULL AND rt.lexicon.id IN (:lexicons)", SynsetRelationType.class)
+        return getEntityManager().createQuery("FROM SynsetRelationType rt WHERE rt.parent = NULL AND rt.lexicons.id IN (:lexicons)", SynsetRelationType.class)
                 .setParameter("lexicons", lexicons)
                 .getResultList();
     }
@@ -92,7 +93,8 @@ public class SynsetRelationTypeRepository extends GenericRepository<SynsetRelati
     }
 
     public Long findReverseId(SynsetRelationType relationType) {
-        SynsetRelationType r = findById(relationType.getId()).getReverse();
+        //SynsetRelationType r = findById(relationType.getId()).getReverse();
+        IRelationType r = findById(relationType.getId()).getReverse();
         if (r == null) {
             return null;
         }

@@ -634,7 +634,7 @@ public class LexicalDA {
     public static String getRelationName(SenseRelationType rel) {
         if (rel != null) {
             if (rel.getParent() != null) { // ma rodzica
-//                RelationType parent = RelationTypeManager.get(rel.getId()).getRelationType().getParent();
+//                IRelationType parent = RelationTypeManager.get(rel.getId()).getRelationType().getParent();
 //                if (parent != null) {
 //                    return RelationTypeManager.get(parent.getId()).name() + " / " + RelationTypeManager.get(rel.getId()).name();
 //                }

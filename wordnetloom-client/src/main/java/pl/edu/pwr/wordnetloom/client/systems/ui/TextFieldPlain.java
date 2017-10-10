@@ -40,11 +40,6 @@ public class TextFieldPlain extends JTextField {
     private static Color enabledBackground = new JTextField().getBackground();
     private String oldValue = null;
 
-    /**
-     * konstruktor
-     *
-     * @param text - tekst
-     */
     public TextFieldPlain(String text) {
         super(text);
         setFont(newFont);
@@ -52,14 +47,6 @@ public class TextFieldPlain extends JTextField {
         setFocusHandler();
     }
 
-    /**
-     * konstruktor
-     *
-     * @param text - tekst
-     * @param keyListener - sluchacz klawiszy
-     * @param width - szerokosc kontrolki
-     * @param height - wysokosc kontrolki
-     */
     public TextFieldPlain(String text, KeyListener keyListener, int width,
             int height) {
         this(text);

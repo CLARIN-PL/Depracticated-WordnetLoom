@@ -116,8 +116,8 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
 
         // wyswietlenie relacji
         mainRelations = new ArrayList<>();
-//        Collection<RelationType> readRelations = LexicalDA.getHighestRelations(type, pos);
-//        for (RelationType relType : readRelations) {
+//        Collection<IRelationType> readRelations = LexicalDA.getHighestRelations(type, pos);
+//        for (IRelationType relType : readRelations) {
 //            relType = LexicalDA.getEagerRelationTypeByID(relType);
 //            if (fixedRelationType == null
 //                    || relType.getId().longValue() == fixedRelationType.getId().longValue()
@@ -369,14 +369,14 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
 //            testsLit.setListData(new String[]{});
 //
 //            int index = relationType.getSelectedIndex();
-//            for (RelationType type : mainRelations) {
+//            for (IRelationType type : mainRelations) {
 //
 //                if (index-- == 0) {
 //
 //                    subRelations = new ArrayList<>();
-//                    Collection<RelationType> readRelations = LexicalDA.getChildren(type);
+//                    Collection<IRelationType> readRelations = LexicalDA.getChildren(type);
 //
-//                    for (RelationType relType : readRelations) {
+//                    for (IRelationType relType : readRelations) {
 //                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
 //                            relationSubType.addItem(RelationTypeManager.getFullNameFor(relType.getId()));
 //                            subRelations.add(relType);
@@ -396,7 +396,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
 //        } else if (event.getSource() == relationSubType || event.getSource() == parentItem || event.getSource() == childItem || event.getSource() == middleItem) {
 //
 //            testsLit.setListData(new String[]{});
-//            RelationType relation = getSelectedRelation();
+//            IRelationType relation = getSelectedRelation();
 //            if (relation != null) {
 //                loadTests(relation);
 //            }

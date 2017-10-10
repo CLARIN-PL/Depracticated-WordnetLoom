@@ -66,9 +66,9 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
 
         // show relations
 //        mainRelations = new ArrayList<>();
-//        Collection<RelationType> readRelations = LexicalDA.getHighestRelations(
+//        Collection<IRelationType> readRelations = LexicalDA.getHighestRelations(
 //                type, pos);
-//        for (RelationType relType : readRelations) {
+//        for (IRelationType relType : readRelations) {
 //            if (fixedRelationType == null
 //                    || relType.getId().longValue() == fixedRelationType.getId()
 //                    .longValue()
@@ -155,7 +155,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
 
             // refresh tests
             testsLit.setListData(new String[]{});
-            //      RelationType relation = getSelectedRelation();
+            //      IRelationType relation = getSelectedRelation();
 //            if (relation != null) {
 //                loadTests(relation);
 //            }
@@ -168,13 +168,13 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
 
             // read chosen function index
             int index = relationType.getSelectedIndex();
-//            for (RelationType type : mainRelations) {
+//            for (IRelationType type : mainRelations) {
 //                if (index-- == 0) {
 //                    // refresh subrelation
 //                    subRelations = new ArrayList<>();
-//                    Collection<RelationType> readRelations = LexicalDA
+//                    Collection<IRelationType> readRelations = LexicalDA
 //                            .getChildren(type);
-//                    for (RelationType relType : readRelations) {
+//                    for (IRelationType relType : readRelations) {
 //                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
 //                            relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
 //                            subRelations.add(relType);
@@ -199,7 +199,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
 //                || event.getSource() == childItem
 //                || event.getSource() == middleItem) {
 //            testsLit.setListData(new String[]{});
-//            RelationType relation = getSelectedRelation();
+//            IRelationType relation = getSelectedRelation();
 //            if (relation != null) {
 //                loadTests(relation);
 //            }
@@ -244,7 +244,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
 //
 //                // if reverse relation exists
 //                if (framew.chosenType.getReverse() != null) {
-//                    RelationType reverse = framew.chosenType.getReverse();
+//                    IRelationType reverse = framew.chosenType.getReverse();
 //                    // add reversed relation
 //                    if (!RemoteUtils.lexicalRelationRemote.dbRelationExists(to,
 //                            from, reverse)

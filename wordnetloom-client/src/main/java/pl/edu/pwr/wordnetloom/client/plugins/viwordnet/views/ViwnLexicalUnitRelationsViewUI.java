@@ -304,7 +304,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 //                    }
 //                }
 //                // choose relation type
-//                RelationType rel = RelationTypeFrame.showModal(workbench,
+//                IRelationType rel = RelationTypeFrame.showModal(workbench,
 //                        RelationArgument.LEXICAL, lastUnit.getPartOfSpeech(),
 //                        RelationTypeFrame.unitToList(lastUnit), selectedUnits);
 //
@@ -325,7 +325,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 //                        // reverse relation exists?
 //                        if (rel.getReverse() != null) {
 //                            // create reverse relation entry?
-//                            RelationType reverse = LexicalDA
+//                            IRelationType reverse = LexicalDA
 //                                    .getReverseRelation(rel);
 //                            String reverseName = LexicalDA
 //                                    .getRelationName(reverse);

@@ -208,4 +208,6 @@ public class Labels {
     public static final String NO = Main.getResouce("label.no");
     public static final String MULTILINGUAL_ONLY_WITH_PRINCETON = Main.getResouce("label.multiligual.only.with.princenton");
 
+    public static final String COLOR_COLON= Main.getResouce("label.color.colon");
+    public static final String DIRECTION_COLON = Main.getResouce("label.direction.colon");
 }

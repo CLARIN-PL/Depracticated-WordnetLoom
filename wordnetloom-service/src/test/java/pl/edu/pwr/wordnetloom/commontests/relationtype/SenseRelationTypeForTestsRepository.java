@@ -11,9 +11,9 @@ public class SenseRelationTypeForTestsRepository {
     public static SenseRelationType antonimia() {
         SenseRelationType anto = new SenseRelationType();
         anto.setName("pl", "antonimia");
-        anto.setDispalyText("pl", "anto");
+        anto.setDisplayText("pl", "anto");
         anto.setDescription("pl", "antonimia description");
-        anto.setShortDispalyText("pl", "ant");
+        anto.setShortDisplayText("pl", "ant");
         return anto;
     }
 
@@ -46,14 +46,14 @@ public class SenseRelationTypeForTestsRepository {
     public static SenseRelationType rola_agens() {
         SenseRelationType r = new SenseRelationType();
         r.setName("pl", "agens|subiekt");
-        r.setDispalyText("pl", "rol:ag");
+        r.setDisplayText("pl", "rol:ag");
         return r;
     }
 
     public static SenseRelationType rola_pacjens() {
         SenseRelationType r = new SenseRelationType();
         r.setName("pl", "pacjens|obiekt");
-        r.setDispalyText("pl", "rol:pacj");
+        r.setDisplayText("pl", "rol:pacj");
         return r;
     }
 
