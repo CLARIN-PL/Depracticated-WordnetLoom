@@ -104,22 +104,19 @@ public abstract class CriteriaPanel extends JPanel {
 		partsOfSpeachComboBox = new PartOfSpeechComboBox(Labels.VALUE_ALL);
 		partsOfSpeachComboBox.showUbyItems();
 		partsOfSpeachComboBox.setPreferredSize(new Dimension(150, 20));
-		partsOfSpeachComboBox.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				PartOfSpeech pos = partsOfSpeachComboBox.retriveComboBoxItem();
-				Lexicon lex = lexiconComboBox.retriveComboBoxItem();
-				if (pos != null && lex != null) {
-					domainComboBox.filterDomainByUbyPosAndLexcion(pos, lex, true);
-				} else if (lex != null && pos == null) {
-					domainComboBox.filterDomainsByLexicon(lex, true);
-				} else if (pos != null && lex == null) {
-					domainComboBox.filterDomainByUbyPos(pos, true);
-				} else {
-					domainComboBox.allDomains(true);
-				}
-			}
-		});
+		partsOfSpeachComboBox.addItemListener(e -> {
+            PartOfSpeech pos = partsOfSpeachComboBox.retriveComboBoxItem();
+            Lexicon lex = lexiconComboBox.retriveComboBoxItem();
+            if (pos != null && lex != null) {
+                domainComboBox.filterDomainByUbyPosAndLexcion(pos, lex, true);
+            } else if (lex != null && pos == null) {
+                domainComboBox.filterDomainsByLexicon(lex, true);
+            } else if (pos != null && lex == null) {
+                domainComboBox.filterDomainByUbyPos(pos, true);
+            } else {
+                domainComboBox.allDomains(true);
+            }
+        });
 
 		domainComboBox = new DomainComboBox(Labels.VALUE_ALL);
 		domainComboBox.allDomains(true);
@@ -221,7 +218,7 @@ public abstract class CriteriaPanel extends JPanel {
 
 	public abstract void restoreCriteria(CriteriaDTO criteria);
 
-	protected void addLimit() {
+	void addLimit() {
 		add("br left", limitResultCheckBox);
 	}
 
@@ -320,6 +317,7 @@ public abstract class CriteriaPanel extends JPanel {
 		combo.addItem(SearchType.Interfix.name(), SearchType.Interfix);
 		combo.addItem(SearchType.Suffix.name(), SearchType.Suffix);
 		combo.addItem(SearchType.Root.name(), SearchType.Root);
+		combo.addItem(SearchType.Sense_number.name(), SearchType.Sense_number);
 		combo.setPreferredSize(new Dimension(150, 20));
 		return combo;
 	}

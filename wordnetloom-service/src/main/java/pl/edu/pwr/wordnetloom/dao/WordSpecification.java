@@ -14,6 +14,10 @@ public class WordSpecification {
         };
     }
 
+    public static Specification<Sense> bySenseNumber(final String senseNumber) {
+        return (root, query, cb) -> cb.equal(root.get("senseNumber"), senseNumber);
+    }
+
     public static String getContainsLikePattern(String lemma) {
         if (lemma == null || lemma.isEmpty()) {
             return "%";

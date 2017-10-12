@@ -7,14 +7,11 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import pl.edu.pwr.wordnetloom.dao.LexicalUnitDAOLocal;
+import pl.edu.pwr.wordnetloom.model.*;
 import pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
 import pl.edu.pwr.wordnetloom.dao.DAOBean;
 import pl.edu.pwr.wordnetloom.dto.CriteriaDTO;
-import pl.edu.pwr.wordnetloom.model.Lexicon;
-import pl.edu.pwr.wordnetloom.model.Sense;
-import pl.edu.pwr.wordnetloom.model.Synset;
-import pl.edu.pwr.wordnetloom.model.Word;
 import pl.edu.pwr.wordnetloom.model.yiddish.particle.Particle;
 
 @Stateless
@@ -367,5 +364,16 @@ public class LexicalUnitServiceBean extends DAOBean implements LexicalUnitServic
 			local.removeParticle(local.getEM().merge(p));
 		}
 	}
-	
+
+	@Override
+	public int dbGetUnitCountByDomain(final String domain)
+	{
+		return local.dbGetUnitCountByDomain(domain);
+	}
+
+	@Override
+	public List<CountModel> dbGetEtymologicalRootsCount() {
+		return local.dbGetEtymologicalRootsCount();
+	}
+
 }

@@ -387,9 +387,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements CaretListener,
         }
         ext.stream().forEach(e -> {
             final YiddishPropertiesPanel panel = new YiddishPropertiesPanel(this, e);
-            ActionListener listener = e1 -> {
-                panel.save();
-            };
+            ActionListener listener = e1 -> panel.save();
             if (VariantType.Yiddish_Primary_Lemma == e.getVariant()) {
                 tabs.insertTab(e.getVariant().name().replaceAll("_", " "), null, new JScrollPane(panel), "", 1);
             } else { // wariant

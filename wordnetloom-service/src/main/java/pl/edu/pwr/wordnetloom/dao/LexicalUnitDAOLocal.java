@@ -6,11 +6,7 @@ import java.util.Set;
 import javax.ejb.Local;
 
 import pl.edu.pwr.wordnetloom.dto.CriteriaDTO;
-import pl.edu.pwr.wordnetloom.model.Domain;
-import pl.edu.pwr.wordnetloom.model.Lexicon;
-import pl.edu.pwr.wordnetloom.model.Sense;
-import pl.edu.pwr.wordnetloom.model.Synset;
-import pl.edu.pwr.wordnetloom.model.Word;
+import pl.edu.pwr.wordnetloom.model.*;
 import pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
 import pl.edu.pwr.wordnetloom.model.yiddish.particle.Particle;
@@ -62,4 +58,6 @@ public interface LexicalUnitDAOLocal extends DAOLocal {
 	Particle saveParticle(Particle p);
 	void removeParticle(Particle p );
 	void dbRemoveYiddishSenseExtension(YiddishSenseExtension sense);
+	int dbGetUnitCountByDomain(final String domain);
+	List<CountModel> dbGetEtymologicalRootsCount();
 }

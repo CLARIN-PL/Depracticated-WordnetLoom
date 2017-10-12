@@ -155,7 +155,6 @@ public class PanelWorkbench implements WindowListener, Workbench {
 				public void run() {
 					plugin.install(workbench);
 				}
-
 			}
 
 			Tmp run = new Tmp();
