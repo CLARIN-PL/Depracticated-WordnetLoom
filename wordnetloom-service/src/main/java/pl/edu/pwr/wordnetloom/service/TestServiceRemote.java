@@ -12,18 +12,18 @@ import pl.edu.pwr.wordnetloom.model.Word;
 @Remote
 public interface TestServiceRemote {
 
-	public void removeRelationTest(RelationTest relationTest);
-	public void removeRelationTestsFor(RelationType relationType);
-	public void removeAllRelationTests();
+	void removeRelationTest(RelationTest relationTest);
+	void removeRelationTestsFor(RelationType relationType);
+	void removeAllRelationTests();
 	
-	public List<RelationTest> getRelationTestsFor(RelationType relationType);
-	public List<RelationTest> getAllRelationTests();
+	List<RelationTest> getRelationTestsFor(RelationType relationType);
+	List<RelationTest> getAllRelationTests();
 	
-	public void switchTestsIntoNewRelation(RelationType oldRelation, RelationType newRelation);
+	void switchTestsIntoNewRelation(RelationType oldRelation, RelationType newRelation);
 	
-	public List<CorpusExample> getCorpusExamplesFor(Word word);
+	List<CorpusExample> getCorpusExamplesFor(Word word);
 	
-	public void persist(RelationTest test);
-	public void merge(RelationTest test);
+	void persist(RelationTest test);
+	void merge(RelationTest test);
 
 }

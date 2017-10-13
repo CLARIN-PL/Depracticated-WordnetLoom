@@ -1,0 +1,17 @@
+/* You can add global styles to this file, and also import other style files */
+@import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+@import "../node_modules/font-awesome/css/font-awesome.min.css";
+
+.form-group{
+  margin-bottom: .5rem;
+}
+
+.small-margin{
+  margin: 10px;
+}
+.full-width{
+  width: 100%;
+}
+.main-content{
+  padding-top: 15px;
+}

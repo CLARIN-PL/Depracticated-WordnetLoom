@@ -72,6 +72,12 @@
                 <version>${project.version}</version>
                 <type>ejb</type>
             </dependency>
+	        <dependency>
+                <groupId>pl.edu.pwr</groupId>
+                <artifactId>wordnetloom-web</artifactId>
+                <version>${project.version}</version>
+                <type>war</type>
+            </dependency>
             <dependency>
                 <groupId>pl.edu.pwr</groupId>
                 <artifactId>wordnetloom-client</artifactId>
@@ -121,5 +127,6 @@
         <module>wordnetloom-service</module>
         <module>wordnetloom-client</module>
         <module>wordnetloom-server</module>
+        <module>wordnetloom-web</module>
     </modules>
 </project>
