@@ -1,7 +1,7 @@
 package pl.edu.pwr.wordnetloom.dto;
 
 public enum SearchType {
-	 YIVO_Spelling, 
+	 YIVO_Spelling,
 	 Yiddish_Spelling,
 	 Yiddish_Transcription,
 	 Latin_YIVO_Transcritption,
@@ -11,5 +11,6 @@ public enum SearchType {
 	 Prefix,
 	 Interfix,
 	 Suffix,
-	 Root
+	 Root,
+	Sense_number
 }

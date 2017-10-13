@@ -136,7 +136,9 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 		// exit make relation mode
 		final ViWordNetService s =
 				((ViWordNetService)vgvui.getWorkbench().getService(
-						"ViWordNetService"));
+						"pl.edu.pwr.wordnetloom.plugins.viwordnet.ViWordNetService"));
+//						"ViWordNetService"));
+
 		if (s.isMakeRelationModeOn()) {
 			s.switchMakeRelationMode();
 			return;

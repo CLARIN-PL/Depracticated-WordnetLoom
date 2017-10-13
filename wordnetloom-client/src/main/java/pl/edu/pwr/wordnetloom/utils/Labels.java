@@ -205,5 +205,9 @@ public class Labels {
 	public static final String YES = Main.getResouce("label.yes");
 	public static final String NO = Main.getResouce("label.no");
 	public static final String MULTILINGUAL_ONLY_WITH_PRINCETON = Main.getResouce("label.multiligual.only.with.princenton");
+	public static final String SAVE_SUCCESS = Main.getResouce("success.message.database.unit.save");
+	public static final String SAVE_FAILURE = Main.getResouce("failure.message.database.unit.save");
+
+	public static final String STATISTICS = Main.getResouce("label.statistics");
 	
 }

@@ -20,21 +20,12 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 
-import pl.edu.pwr.wordnetloom.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.SenseAttribute;
+import pl.edu.pwr.wordnetloom.model.*;
 import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
 import pl.edu.pwr.wordnetloom.model.yiddish.dictionary.SourceDictionary;
 import pl.edu.pwr.wordnetloom.dto.CriteriaDTO;
-import pl.edu.pwr.wordnetloom.model.Domain;
-import pl.edu.pwr.wordnetloom.model.Lexicon;
-import pl.edu.pwr.wordnetloom.model.Sense;
-import pl.edu.pwr.wordnetloom.model.Synset;
-import pl.edu.pwr.wordnetloom.model.Word;
 import pl.edu.pwr.wordnetloom.model.yiddish.Transcription;
 import pl.edu.pwr.wordnetloom.model.yiddish.YiddishDomain;
 import pl.edu.pwr.wordnetloom.model.yiddish.particle.Particle;
@@ -459,7 +450,6 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 		List<Sense> result = q.setMaxResults(3000).getResultList();
 		sort(result);
 		return result;
-
 	}
 
 	private void sort(final List<Sense> list) {
@@ -558,5 +548,30 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 		} else {
 			return dao.mergeObject(ext);
 		}
+	}
+
+	@Override
+	public int dbGetUnitCountByDomain(final String domain)
+	{
+		CriteriaBuilder criteriaBuilder = getEM().getCriteriaBuilder();
+		CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
+		Root<Sense> root = query.from(Sense.class);
+		Join<Sense, Domain> domainJoin = root.join("domain");
+		Join<Sense, Text> textJoin = domainJoin.join("name");
+
+		query.select(criteriaBuilder.count(root))
+				.where(criteriaBuilder.equal(textJoin.get("text"),domain ));
+		return getEM().createQuery(query).getSingleResult().intValue();
+	}
+
+	@Override
+	public List<CountModel> dbGetEtymologicalRootsCount()
+	{
+		CriteriaBuilder criteriaBuilder = getEM().getCriteriaBuilder();
+		CriteriaQuery<CountModel> query = criteriaBuilder.createQuery(CountModel.class);
+		Root<YiddishSenseExtension> root = query.from(YiddishSenseExtension.class);
+		query.select(criteriaBuilder.construct(CountModel.class, root.get("etymologicalRoot"), criteriaBuilder.count(root)));
+		query.groupBy(root.get("etymologicalRoot"));
+		return getEM().createQuery(query).getResultList();
 	}
 }

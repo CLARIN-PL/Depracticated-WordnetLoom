@@ -50,36 +50,38 @@ public class SenseSpecification {
 				} else {
 					switch(dto.getSearchType())
 					{
-					case Yiddish_Spelling:
-						criteriaList.add(SenseYiddishExtensionSpecification.byYddishSpelling(dto.getLemma())
-								.toPredicate(root, query, cb)); break;
-					case YIVO_Spelling:
-						criteriaList.add(SenseYiddishExtensionSpecification.byYivoSpelling(dto.getLemma()).toPredicate(root,
-								query, cb)); break;
-					case Etymological_root:
-						criteriaList.add(SenseYiddishExtensionSpecification.byEtymologicalRoot(dto.getLemma())
-								.toPredicate(root, query, cb)); break;
-					case Latin_Philological_Transcritpiton:
-						criteriaList.add(SenseYiddishExtensionSpecification.byTranscritpiton(dto.getLemma())
-								.toPredicate(root, query, cb)); break;
-					case Latin_YIVO_Transcritption:
-						criteriaList.add(SenseYiddishExtensionSpecification.byTranscritpiton(dto.getLemma())
-								.toPredicate(root, query, cb)); break;
-					case Phonetic_Transcritpiton:
-						criteriaList.add(SenseYiddishExtensionSpecification.byTranscritpiton(dto.getLemma())
-								.toPredicate(root, query, cb)); break;
-					case Prefix:
-						criteriaList.add(SenseYiddishExtensionSpecification.byPrefix(dto.getLemma())
-								.toPredicate(root, query, cb)); break;
-					case Root:
-						criteriaList.add(SenseYiddishExtensionSpecification.byRoot(dto.getLemma())
-								.toPredicate(root, query, cb)); break;
-					case Suffix:
-						criteriaList.add(SenseYiddishExtensionSpecification.bySuffix(dto.getLemma())
-								.toPredicate(root, query, cb)); break;
-					case Interfix:
-						criteriaList.add(SenseYiddishExtensionSpecification.byInterfix(dto.getLemma())
-								.toPredicate(root, query, cb)); break;
+						case Yiddish_Spelling:
+							criteriaList.add(SenseYiddishExtensionSpecification.byYddishSpelling(dto.getLemma())
+									.toPredicate(root, query, cb)); break;
+						case YIVO_Spelling:
+							criteriaList.add(SenseYiddishExtensionSpecification.byYivoSpelling(dto.getLemma()).toPredicate(root,
+									query, cb)); break;
+						case Etymological_root:
+							criteriaList.add(SenseYiddishExtensionSpecification.byEtymologicalRoot(dto.getLemma())
+									.toPredicate(root, query, cb)); break;
+						case Latin_Philological_Transcritpiton:
+							criteriaList.add(SenseYiddishExtensionSpecification.byTranscritpiton(dto.getLemma())
+									.toPredicate(root, query, cb)); break;
+						case Latin_YIVO_Transcritption:
+							criteriaList.add(SenseYiddishExtensionSpecification.byTranscritpiton(dto.getLemma())
+									.toPredicate(root, query, cb)); break;
+						case Phonetic_Transcritpiton:
+							criteriaList.add(SenseYiddishExtensionSpecification.byTranscritpiton(dto.getLemma())
+									.toPredicate(root, query, cb)); break;
+						case Prefix:
+							criteriaList.add(SenseYiddishExtensionSpecification.byPrefix(dto.getLemma())
+									.toPredicate(root, query, cb)); break;
+						case Root:
+							criteriaList.add(SenseYiddishExtensionSpecification.byRoot(dto.getLemma())
+									.toPredicate(root, query, cb)); break;
+						case Suffix:
+							criteriaList.add(SenseYiddishExtensionSpecification.bySuffix(dto.getLemma())
+									.toPredicate(root, query, cb)); break;
+						case Interfix:
+							criteriaList.add(SenseYiddishExtensionSpecification.byInterfix(dto.getLemma())
+									.toPredicate(root, query, cb)); break;
+						case Sense_number:
+							criteriaList.add(WordSpecification.bySenseNumber(dto.getLemma()).toPredicate(root, query, cb)); break;
 					default: 
 						throw new IllegalArgumentException();
 					}

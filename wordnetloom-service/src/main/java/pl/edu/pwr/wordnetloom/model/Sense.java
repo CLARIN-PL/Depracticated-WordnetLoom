@@ -47,7 +47,8 @@ import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
 		query = "SELECT MAX(s.senseNumber) FROM Sense AS s WHERE LOWER(s.lemma.word) = :word AND s.partOfSpeech.id = :pos"),
 	@NamedQuery(name = "Sense.findSensesBySynsetIDs",
 		query = "select s.sense from SenseToSynset s where s.idSynset in (:ids)")
-	}) 
+	})
+
 public class Sense implements Serializable, Comparable<Sense> {
 
 	private static final long serialVersionUID = 800201228216890725L;

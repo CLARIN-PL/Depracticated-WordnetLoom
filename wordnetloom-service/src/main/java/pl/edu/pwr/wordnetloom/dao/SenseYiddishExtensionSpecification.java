@@ -9,6 +9,7 @@ import pl.edu.pwr.wordnetloom.model.yiddish.Transcription;
 import pl.edu.pwr.wordnetloom.model.yiddish.YiddishDomain;
 import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
 import pl.edu.pwr.wordnetloom.model.yiddish.particle.InterfixParticle;
+import pl.edu.pwr.wordnetloom.model.yiddish.particle.PrefixParticle;
 import pl.edu.pwr.wordnetloom.model.yiddish.particle.RootParticle;
 import pl.edu.pwr.wordnetloom.model.yiddish.particle.SuffixParticle;
 import pl.edu.pwr.wordnetloom.model.Sense;
@@ -21,7 +22,6 @@ import pl.edu.pwr.wordnetloom.model.yiddish.dictionary.PrefixDictionary;
 import pl.edu.pwr.wordnetloom.model.yiddish.dictionary.SourceDictionary;
 import pl.edu.pwr.wordnetloom.model.yiddish.dictionary.StatusDictionary;
 import pl.edu.pwr.wordnetloom.model.yiddish.dictionary.StyleDictionary;
-import pl.edu.pwr.wordnetloom.model.yiddish.particle.PrefixParticle;
 
 public class SenseYiddishExtensionSpecification {
 	
@@ -114,7 +114,6 @@ public class SenseYiddishExtensionSpecification {
 		};
 	}
 
-	
 	public static Specification<Sense> bySemanticField(final Long semantic, final Long modifier) {
 		return (root, query, cb) -> {
 			Join<Sense, YiddishSenseExtension> yse = root.join("yiddishSenseExtension");
@@ -154,8 +153,7 @@ public class SenseYiddishExtensionSpecification {
 	{
 		return byParticle(prefix, PrefixParticle.class, "prefix");
 	}
-	
-	
+
 	private static<T> Specification<Sense> byParticle(final String particle, Class<T> particleClass, final String particleAttribute)
 	{
 		return (root, query, cb) -> {
