@@ -4,8 +4,8 @@ import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import pl.edu.pwr.wordnetloom.rest.common.json.EntityJsonConverter;
-import pl.edu.pwr.wordnetloom.rest.common.json.JsonReader;
+import pl.edu.pwr.wordnetloom.common.json.EntityJsonConverter;
+import pl.edu.pwr.wordnetloom.common.json.JsonReader;
 import pl.edu.pwr.wordnetloom.model.PartOfSpeech;
 
 @ApplicationScoped

@@ -25,4 +25,10 @@ public class DomainDaoBean implements DomainDaoLocal {
 		.getResultList();
 	}
 
+	@Override
+	public List<Domain> getAllDomains() {
+		return local.getEM().createQuery("SELECT DISTINCT d FROM Domain d LEFT JOIN FETCH d.name LEFT JOIN FETCH d.description", Domain.class)
+				.getResultList();
+	}
+
 }

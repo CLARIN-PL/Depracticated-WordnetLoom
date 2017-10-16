@@ -10,6 +10,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import pl.edu.pwr.wordnetloom.dto.SenseFilter;
 import pl.edu.pwr.wordnetloom.model.Text;
 import pl.edu.pwr.wordnetloom.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.model.AttributeType;
@@ -136,6 +137,60 @@ public class SenseSpecification {
 				Long domain = dto.getYiddishDomain() != null ? dto.getYiddishDomain().getId() : null;
 				criteriaList.add(SenseYiddishExtensionSpecification.bySemanticField(domain, modifier).toPredicate(root, query, cb));
 			}
+			return cb.and(criteriaList.toArray(new Predicate[criteriaList.size()]));
+		};
+	}
+
+	public static Specification<Sense> byFilter(final SenseFilter filter) {
+
+		return (root, query, cb) -> {
+
+			List<Predicate> criteriaList = new ArrayList<>();
+
+			if (filter.getPartOfSpeechId() != null) {
+				criteriaList.add(byPartOfSpeechId(filter.getPartOfSpeechId()).toPredicate(root, query, cb));
+			}
+			if (filter.getDomainId() != null) {
+				criteriaList.add(byDomainId(filter.getDomainId()).toPredicate(root, query, cb));
+			}
+
+			if (filter.getLexiconId() != null) {
+				criteriaList.add(byLexiconId(filter.getLexiconId()).toPredicate(root, query, cb));
+			}
+
+			if(filter.getDefinition() != null && ! filter.getDefinition().isEmpty()){
+				criteriaList.add(byAttribute(filter.getDefinition(), AttributeType.COLUMN_DEFINITION_SENSE, Sense.DEFINITION).toPredicate(root, query, cb));
+			}
+			if(filter.getAgeId() != null) {
+				criteriaList.add(SenseYiddishExtensionSpecification.byAge(filter.getAgeId())
+						.toPredicate(root, query, cb));
+			}
+			if (filter.getStatusId() != null) {
+				criteriaList.add(SenseYiddishExtensionSpecification.byStatus(filter.getStatusId())
+						.toPredicate(root, query, cb));
+			}
+			if (filter.getStyleId() != null) {
+				criteriaList.add(SenseYiddishExtensionSpecification.byStyle(filter.getStyleId())
+						.toPredicate(root, query, cb));
+			}
+			if (filter.getLexicalCharacteristicId()!= null) {
+				criteriaList.add(SenseYiddishExtensionSpecification.byLexicalCharcteristic(filter.getLexicalCharacteristicId())
+						.toPredicate(root, query, cb));
+			}
+			if (filter.getGrammaticalGenderId() != null) {
+				criteriaList.add(SenseYiddishExtensionSpecification
+						.byGrammaticalGender(filter.getGrammaticalGenderId())
+						.toPredicate(root, query, cb));
+			}
+			if (filter.getEthymology() != null && !filter.getEthymology().isEmpty()) {
+				criteriaList.add(SenseYiddishExtensionSpecification.byEtymology(filter.getEthymology()).toPredicate(root,
+						query, cb));
+			}
+
+			if(filter.getSourceId() !=null){
+				criteriaList.add(SenseYiddishExtensionSpecification.bySource(filter.getSourceId()).toPredicate(root, query, cb));
+			}
+
 			return cb.and(criteriaList.toArray(new Predicate[criteriaList.size()]));
 		};
 	}

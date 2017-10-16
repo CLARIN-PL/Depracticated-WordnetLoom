@@ -9,7 +9,8 @@ import pl.edu.pwr.wordnetloom.model.Domain;
 @Local
 public interface DomainDaoLocal {
 
-	public Domain getDomainByID(Long index);
-	public List<Domain> getAllDomains(List<Long> lexicons);
+	Domain getDomainByID(Long index);
+	List<Domain> getAllDomains(List<Long> lexicons);
+	List<Domain> getAllDomains();
 
 }

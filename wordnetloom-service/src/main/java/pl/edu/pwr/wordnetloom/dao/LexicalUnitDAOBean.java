@@ -22,6 +22,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 
+import pl.edu.pwr.wordnetloom.dto.SenseFilter;
 import pl.edu.pwr.wordnetloom.model.*;
 import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
 import pl.edu.pwr.wordnetloom.model.yiddish.dictionary.SourceDictionary;
@@ -198,30 +199,19 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
 	@Override
 	public int dbGetUnitsCount(Synset synset, List<Long> lexicons) {
-		return dao.getEM().createNamedQuery("Sense.findSenseBySynsetID").setParameter("idSynset", synset.getId())
-				.setParameter("lexicon", lexicons).getMaxResults();
+		return dao.getEM()
+				.createNamedQuery("Sense.findSenseBySynsetID")
+				.setParameter("idSynset", synset.getId())
+				.setParameter("lexicon", lexicons)
+				.getMaxResults();
 	}
 
-	/**
-	 * odczytanie domen użytych w bazie danych
-	 * 
-	 * @param emptyParam
-	 * @return tablica domen
-	 */
 	@Override
 	public Domain[] dbGetUsedDomains() {
 		return dao.getEM().createNamedQuery("Domain.getFromSenses", Domain.class).getResultList()
 				.toArray(new Domain[] {});
 	}
 
-	/**
-	 * Odczytuje pierwszy wolny wariant dla danego lematu i kategorii
-	 * gramatycznej.
-	 * 
-	 * @param lemma
-	 * @param PartOfSpeach
-	 * @return pierwsza wolna pozycja w bd
-	 */
 	@Override
 	public int dbGetNextVariant(String lemma, PartOfSpeech pos) {
 		int odp = 0;
@@ -384,7 +374,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Lexicon> getLexiconsByIds(List<Long> lexiconsIds) {
-		Query query = getEM().createQuery("FROM Lexicon l JOIN FETCH l.name WHERE l.id IN (:ids)");
+		Query query = getEM().createQuery("SELECT l FROM Lexicon l JOIN FETCH l.name WHERE l.id IN (:ids)");
 		return query.setParameter("ids", lexiconsIds).getResultList();
 	}
 
@@ -424,7 +414,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
 	@Override
 	public List<Sense> getSensesForLemmaID(long id, long lexicon) {
-		Query query = getEM().createQuery("FROM Sense s WHERE s.lemma.id = :id AND s.lexicon.id = :lexicon)");
+		Query query = getEM().createQuery("SELECT s FROM Sense s WHERE s.lemma.id = :id AND s.lexicon.id = :lexicon)");
 		query.setParameter("id", id);
 		query.setParameter("lexicon", lexicon);
 		return query.getResultList();
@@ -449,6 +439,27 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 		TypedQuery<Sense> q = getEM().createQuery(qc);
 		List<Sense> result = q.setMaxResults(3000).getResultList();
 		sort(result);
+		return result;
+	}
+
+	@Override
+	public List<Sense> findByFilter(SenseFilter filter) {
+		CriteriaBuilder cb = getEM().getCriteriaBuilder();
+		CriteriaQuery<Sense> qc = cb.createQuery(Sense.class);
+
+		Root<Sense> sense = qc.from(Sense.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(SenseSpecification.byFilter(filter).toPredicate(sense, qc, cb));
+
+		TypedQuery<Sense> q = getEM().createQuery(qc);
+
+		List<Sense> result = q
+				.setFirstResult(filter.getPaginationData().getFirstResult())
+				.setMaxResults(filter.getPaginationData().getMaxResults())
+				.getResultList();
+		sort(result);
+
 		return result;
 	}
 
@@ -574,4 +585,5 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 		query.groupBy(root.get("etymologicalRoot"));
 		return getEM().createQuery(query).getResultList();
 	}
+
 }
