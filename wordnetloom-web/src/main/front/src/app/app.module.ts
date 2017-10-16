@@ -15,8 +15,8 @@ import {CurrentStateService} from './services/current-state.service';
 import {RouterModule, Routes} from '@angular/router';
 
 const appRoutes: Routes = [
-  {path: ':lemma_id', component: RightAreaComponent},
-  {path: ':lemma_id/:variant_id', component: RightAreaComponent}
+  {path: ':lemma_id', component: ResultComponent},
+  {path: ':lemma_id/:variant_id', component: ResultComponent}
 ];
 
 @NgModule({
