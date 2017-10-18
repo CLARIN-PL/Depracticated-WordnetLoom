@@ -17,8 +17,8 @@ export class SearchResultComponent implements OnInit {
   }
 
   optionSelected(id) {
-    this.cnt++;
-    this.router.navigate([id, this.cnt]);
+    // this.cnt++;
+    this.router.navigate([id]);
   }
 
 }
