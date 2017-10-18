@@ -147,6 +147,10 @@ public class SenseSpecification {
 
 			List<Predicate> criteriaList = new ArrayList<>();
 
+			if(filter.getLemma() != null && !"".equals(filter.getLemma())){
+				criteriaList.add(WordSpecification.byWordLemma(filter.getLemma()).toPredicate(root, query, cb));
+			}
+
 			if (filter.getPartOfSpeechId() != null) {
 				criteriaList.add(byPartOfSpeechId(filter.getPartOfSpeechId()).toPredicate(root, query, cb));
 			}
@@ -186,9 +190,11 @@ public class SenseSpecification {
 				criteriaList.add(SenseYiddishExtensionSpecification.byEtymology(filter.getEthymology()).toPredicate(root,
 						query, cb));
 			}
-
 			if(filter.getSourceId() !=null){
 				criteriaList.add(SenseYiddishExtensionSpecification.bySource(filter.getSourceId()).toPredicate(root, query, cb));
+			}
+			if(filter.getYiddishDomainId() != null || filter.getDomainModifierDictionaryId() != null){
+				criteriaList.add(SenseYiddishExtensionSpecification.bySemanticField(filter.getYiddishDomainId(), filter.getDomainModifierDictionaryId()).toPredicate(root, query, cb));
 			}
 
 			return cb.and(criteriaList.toArray(new Predicate[criteriaList.size()]));
@@ -240,7 +246,6 @@ public class SenseSpecification {
 		};
 
 	}
-	
 
 	public static Specification<Sense> byUbyPartOfSpeech(
 			final PartOfSpeech partOfSpeech) {

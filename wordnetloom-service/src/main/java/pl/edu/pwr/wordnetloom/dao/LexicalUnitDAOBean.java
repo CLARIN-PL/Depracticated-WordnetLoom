@@ -22,6 +22,8 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 
+import pl.edu.pwr.wordnetloom.common.model.PaginatedData;
+import pl.edu.pwr.wordnetloom.common.model.filter.PaginationData;
 import pl.edu.pwr.wordnetloom.dto.SenseFilter;
 import pl.edu.pwr.wordnetloom.model.*;
 import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
@@ -107,19 +109,21 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 	@Override
 	public Sense dbGetWithYiddish(Long id) {
 		Sense sense = dao.getEM().find(Sense.class, id);
-		for (YiddishSenseExtension ex : sense.getYiddishSenseExtension()) {
-			ex.getYiddishDomains().size();
-			ex.getParticels().size();
-			ex.getTranscriptions().size();
-			ex.getInflection().size();
-			ex.getYiddishDomains().size();
+		if(null != sense) {
+			for (YiddishSenseExtension ex : sense.getYiddishSenseExtension()) {
+				ex.getYiddishDomains().size();
+				ex.getParticels().size();
+				ex.getTranscriptions().size();
+				ex.getInflection().size();
+				ex.getYiddishDomains().size();
+			}
 		}
 		return sense;
 	}
 
 	@Override
 	public List<Synset> dbFastGetSynsets(Sense sense, List<Long> lexicons) {
-		sense.setSynsets(new ArrayList<Synset>(synsetDAO.dbFastGetSynsets(sense, lexicons)));
+		sense.setSynsets(new ArrayList<>(synsetDAO.dbFastGetSynsets(sense, lexicons)));
 		return sense.getSynsets();
 	}
 
@@ -443,7 +447,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 	}
 
 	@Override
-	public List<Sense> findByFilter(SenseFilter filter) {
+	public PaginatedData<Sense> findByFilter(SenseFilter filter) {
 		CriteriaBuilder cb = getEM().getCriteriaBuilder();
 		CriteriaQuery<Sense> qc = cb.createQuery(Sense.class);
 
@@ -451,6 +455,9 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
 		List<Predicate> predicates = new ArrayList<>();
 		predicates.add(SenseSpecification.byFilter(filter).toPredicate(sense, qc, cb));
+
+		qc.select(sense).distinct(true);
+		qc.where(predicates.toArray(new Predicate[predicates.size()]));
 
 		TypedQuery<Sense> q = getEM().createQuery(qc);
 
@@ -460,7 +467,21 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 				.getResultList();
 		sort(result);
 
-		return result;
+		return new PaginatedData<>(countWithFilter(filter).intValue(), result);
+	}
+
+	private Long countWithFilter(SenseFilter filter) {
+		CriteriaBuilder cb = getEM().getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+
+		Root<Sense> sense = cq.from(Sense.class);
+
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(SenseSpecification.byFilter(filter).toPredicate(sense, cq, cb));
+
+		cq.select(cb.count(sense));
+		cq.where(predicates.toArray(new Predicate[predicates.size()]));
+		return getEM().createQuery(cq).getSingleResult();
 	}
 
 	private void sort(final List<Sense> list) {

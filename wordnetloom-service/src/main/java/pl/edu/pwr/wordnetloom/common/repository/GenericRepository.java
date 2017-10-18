@@ -66,7 +66,7 @@ public abstract class GenericRepository<T> {
 
 	@SuppressWarnings("unchecked")
 	protected PaginatedData<T> findByParameters(final String clause, final PaginationData paginationData,
-                                                final Map<String, Object> queryParameters, final String defaultSortFieldWithDirection) {
+												final Map<String, Object> queryParameters, final String defaultSortFieldWithDirection) {
 		final String clauseSort = "Order by e." + getSortField(paginationData, defaultSortFieldWithDirection);
 		final Query queryEntities = getEntityManager().createQuery(
 				"Select e From " + getPersistentClass().getSimpleName()
