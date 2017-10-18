@@ -1,5 +1,7 @@
 package pl.edu.pwr.wordnetloom.dto;
 
+import pl.edu.pwr.wordnetloom.common.model.filter.GenericFilter;
+
 public class SenseFilter extends GenericFilter {
 
     private String lemma;
@@ -12,9 +14,9 @@ public class SenseFilter extends GenericFilter {
     private Long ageId;
     private Long statusId;
     private Long styleId;
-    private Long yiddishDomain;
+    private Long yiddishDomainId;
     private Long lexicalCharacteristicId;
-    private Long domainModifierDictionary;
+    private Long domainModifierDictionaryId;
     private String ethymology;
     private String definition;
     private String etymologicalRoot;
@@ -100,14 +102,6 @@ public class SenseFilter extends GenericFilter {
         this.styleId = styleId;
     }
 
-    public Long getYiddishDomain() {
-        return yiddishDomain;
-    }
-
-    public void setYiddishDomain(Long yiddishDomain) {
-        this.yiddishDomain = yiddishDomain;
-    }
-
     public Long getLexicalCharacteristicId() {
         return lexicalCharacteristicId;
     }
@@ -116,12 +110,20 @@ public class SenseFilter extends GenericFilter {
         this.lexicalCharacteristicId = lexicalCharacteristicId;
     }
 
-    public Long getDomainModifierDictionary() {
-        return domainModifierDictionary;
+    public Long getYiddishDomainId() {
+        return yiddishDomainId;
     }
 
-    public void setDomainModifierDictionary(Long domainModifierDictionary) {
-        this.domainModifierDictionary = domainModifierDictionary;
+    public void setYiddishDomainId(Long yiddishDomainId) {
+        this.yiddishDomainId = yiddishDomainId;
+    }
+
+    public Long getDomainModifierDictionaryId() {
+        return domainModifierDictionaryId;
+    }
+
+    public void setDomainModifierDictionaryId(Long domainModifierDictionaryId) {
+        this.domainModifierDictionaryId = domainModifierDictionaryId;
     }
 
     public String getEthymology() {

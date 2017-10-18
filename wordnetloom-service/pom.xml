@@ -105,6 +105,7 @@
 
                     <clientIncludes>
                         <clientInclude>pl/edu/pwr/wordnetloom/dto/*</clientInclude>
+                        <clientInclude>pl/edu/pwr/wordnetloom/common/**</clientInclude>
                         <clientInclude>pl/edu/pwr/wordnetloom/model/**</clientInclude>
                         <clientInclude>pl/edu/pwr/wordnetloom/service/*Remote.*</clientInclude>
                     </clientIncludes>

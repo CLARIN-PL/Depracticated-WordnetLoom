@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.rest.partofspeech.resource;
+package pl.edu.pwr.wordnetloom.rest.lexicon.resource;
 
 import com.google.gson.JsonElement;
 import org.slf4j.Logger;
@@ -7,8 +7,8 @@ import pl.edu.pwr.wordnetloom.common.json.JsonUtils;
 import pl.edu.pwr.wordnetloom.common.json.JsonWriter;
 import pl.edu.pwr.wordnetloom.common.model.HttpCode;
 import pl.edu.pwr.wordnetloom.common.model.PaginatedData;
-import pl.edu.pwr.wordnetloom.dao.POSDaoLocal;
-import pl.edu.pwr.wordnetloom.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.dao.LexicalUnitDAOLocal;
+import pl.edu.pwr.wordnetloom.model.Lexicon;
 
 import javax.ejb.EJB;
 import javax.inject.Inject;
@@ -20,26 +20,26 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@Path("/partofspeech")
+@Path("/lexicon")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class PartOfSpeechResource {
+public class LexiconResource {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @EJB
-    POSDaoLocal local;
+    LexicalUnitDAOLocal local;
 
     @Inject
-    PartOfSpeechJsonConverter posJsonConverter;
+    LexiconJsonConverter lexiconJsonConverter;
 
     @GET
-    public Response findAll(){
+    public Response findAll() {
 
-        List<PartOfSpeech> all = local.getAllPOSes();
+        List<Lexicon> all = local.getAllLexicons();
 
         final JsonElement jsonWithPagingAndEntries = JsonUtils.getJsonElementWithPagingAndEntries(
-                new PaginatedData<>(all.size(), all), posJsonConverter);
+                new PaginatedData<>(all.size(), all), lexiconJsonConverter);
         logger.debug("Returning the operation result after getAll: ", all);
         return Response.status(HttpCode.OK.getCode()).entity(JsonWriter.writeToString(jsonWithPagingAndEntries))
                 .build();
