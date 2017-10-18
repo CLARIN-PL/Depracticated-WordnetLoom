@@ -6,15 +6,16 @@ export class SenseContent {
   lemma: string;
   senseId: number;
   yiddishVariantId: number;
+  variant: number;
   currentYiddish: Object;
 
   fields: Array<Object> = [];
   areas: Array<Object> = [];
 
   constructor(json: Object, currentYiddishVariant=null) {
-    console.log(json);
+    console.log(json['Sense number']);
     this.senseId = json['Id'];
-    this.yiddishVariantId = json['Sense number'];
+    this.variant = json['Sense number'];
 
     if (json['Yiddish'].length > 0) {
       if (currentYiddishVariant && json['Yiddish'][currentYiddishVariant]) {
@@ -32,6 +33,8 @@ export class SenseContent {
     this.setBasicFields(json);
     if (this.yiddishVariantId !== null)
       this.setYiddishFields(json);
+
+    console.log(this);
   }
 
   private setBasicFields(json): void {

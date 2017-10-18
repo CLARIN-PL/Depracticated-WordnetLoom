@@ -14,6 +14,7 @@
       <select class="form-control"
               [name]="searchFieldName" ngModel>
         <option value="" disabled selected>{{ searchFields[searchFieldName]['name'] }}</option>
+        <option value="">{{ searchFields[searchFieldName]['name'] }}</option>
         <option *ngFor="let opt of searchFields[searchFieldName]['searchOptions']" [value]="opt.id"> {{opt.name}} </option>
       </select>
     </div>
