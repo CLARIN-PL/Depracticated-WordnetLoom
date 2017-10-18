@@ -37,6 +37,14 @@ public class DictionaryResource {
     }
 
     @GET
+    @Path("status")
+    public Response getAllStatus() {
+
+        List<Dictionary> all = new ArrayList<>(local.findAllStatusDictionary());
+        return buildDictionaryJson(all);
+    }
+
+    @GET
     @Path("grammatical-gender")
     public Response getAllGrammaticalGender() {
 
@@ -46,7 +54,7 @@ public class DictionaryResource {
 
     @GET
     @Path("source")
-    public Response getAllStatus() {
+    public Response getAllSource() {
 
         List<Dictionary> all = new ArrayList<>(local.findAllSourceDictionary());
         return buildDictionaryJson(all);

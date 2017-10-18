@@ -9,10 +9,10 @@ import pl.edu.pwr.wordnetloom.common.json.OperationResultJsonWriter;
 import pl.edu.pwr.wordnetloom.common.model.HttpCode;
 import pl.edu.pwr.wordnetloom.common.model.OperationResult;
 import pl.edu.pwr.wordnetloom.common.model.PaginatedData;
+import pl.edu.pwr.wordnetloom.dao.LexicalRelationDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.LexicalUnitDAOLocal;
 import pl.edu.pwr.wordnetloom.dto.SenseFilter;
 import pl.edu.pwr.wordnetloom.model.Sense;
-
 
 import javax.ejb.EJB;
 import javax.inject.Inject;
@@ -36,6 +36,9 @@ public class SenseResource {
     @EJB
     LexicalUnitDAOLocal local;
 
+    @EJB
+    LexicalRelationDAOLocal relationLocal;
+
     @Inject
     SimpleSenseJsonConverter simpleSenseJsonConverter;
 
@@ -53,7 +56,7 @@ public class SenseResource {
         final JsonElement jsonWithPagingAndEntries = JsonUtils.getJsonElementWithPagingAndEntries(senses,
                 simpleSenseJsonConverter);
         return Response.status(HttpCode.OK.getCode()).entity(JsonWriter.writeToString(jsonWithPagingAndEntries))
-              .build();
+                .build();
     }
 
     @GET
@@ -71,4 +74,11 @@ public class SenseResource {
         }
         return responseBuilder.build();
     }
+
+    @GET
+    @Path("/{id}/relations")
+    public Response getSenseRelations(@PathParam("id") final Long id) {
+        return Response.status(HttpCode.OK.getCode()).build();
+    }
+
 }
