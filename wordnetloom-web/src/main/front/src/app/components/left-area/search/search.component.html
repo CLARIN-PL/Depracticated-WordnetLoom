@@ -11,8 +11,8 @@
   <div class="form-group row">
     <div class="col-12">
       <select class="form-control"
-              name="type" ngModel>
-        <option value="" disabled selected>Typ</option>
+              name="partOfSpeech" ngModel>
+        <option value="" disabled selected>Lexicon</option>
         <option>Typ1</option>
         <option>Typ2</option>
         <option>Typ3</option>
@@ -24,17 +24,30 @@
       <select class="form-control"
               name="partOfSpeech" ngModel>
         <option value="" disabled selected>Part of Speech</option>
+        <!--http://156.17.135.55:8080/yiddish/api/partofspeech-->
         <option>Typ1</option>
         <option>Typ2</option>
         <option>Typ3</option>
       </select>
     </div>
   </div>
+  <!--<div class="form-group row">-->
+    <!--<div class="col-12">-->
+      <!--<select class="form-control"-->
+              <!--name="grammaticalGender" ngModel>-->
+        <!--<option value="" disabled selected>Grammatical gender</option>-->
+        <!--<option>Typ1</option>-->
+        <!--<option>Typ2</option>-->
+        <!--<option>Typ3</option>-->
+      <!--</select>-->
+    <!--</div>-->
+  <!--</div>-->
   <div class="form-group row">
     <div class="col-12">
       <select class="form-control"
-              name="grammaticalGender" ngModel>
-        <option value="" disabled selected>Grammatical gender</option>
+              name="domain" ngModel>
+        <option value="" disabled selected>Domain</option>
+        <!--http://156.17.135.55:8080/yiddish/api/domain-->
         <option>Typ1</option>
         <option>Typ2</option>
         <option>Typ3</option>
@@ -52,17 +65,7 @@
       </select>
     </div>
   </div>
-  <div class="form-group row">
-    <div class="col-12">
-      <select class="form-control"
-              name="domain" ngModel>
-        <option value="" disabled selected>Domain</option>
-        <option>Typ1</option>
-        <option>Typ2</option>
-        <option>Typ3</option>
-      </select>
-    </div>
-  </div>
+
   <div class="form-group row">
     <div class="col-12">
       <select class="form-control"
@@ -77,8 +80,19 @@
   <div class="form-group row">
     <div class="col-12">
       <select class="form-control"
-              name="attested" ngModel>
-        <option value="" disabled selected>Attested(date)</option>
+              name="partOfSpeech" ngModel>
+        <option value="" disabled selected>Lexical characteristic</option>
+        <option>Typ1</option>
+        <option>Typ2</option>
+        <option>Typ3</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group row">
+    <div class="col-12">
+      <select class="form-control"
+              name="age" ngModel>
+        <option value="" disabled selected>Age</option>
         <option>Typ1</option>
         <option>Typ2</option>
         <option>Typ3</option>
@@ -100,7 +114,20 @@
     <div class="col-12">
       <select class="form-control"
               name="relation" ngModel>
-        <option value="" disabled selected>Relation</option>
+        <option value="" disabled selected>Semantic Field</option>
+        <!--http://156.17.135.55:8080/yiddish/api/dictionary/semantic-field/-->
+        <option>Typ1</option>
+        <option>Typ2</option>
+        <option>Typ3</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group row">
+    <div class="col-12">
+      <select class="form-control"
+              name="relation" ngModel>
+        <option value="" disabled selected>Semantic Field Modificator</option>
+        <!--http://156.17.135.55:8080/yiddish/api/dictionary/semantic-field/modifier-->
         <option>Typ1</option>
         <option>Typ2</option>
         <option>Typ3</option>

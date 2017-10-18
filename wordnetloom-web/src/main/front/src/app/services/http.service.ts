@@ -8,7 +8,8 @@ import {SlimLoadingBarService} from 'ng2-slim-loading-bar';
 
 @Injectable()
 export class HttpService {
-  apiBase = 'http://www.mocky.io/v2/';
+  // apiBase = 'http://www.mocky.io/v2/';
+  apiBase = 'http://156.17.135.55:8080/yiddish/api/';
 
   constructor(private http: Http, private slimLoadingBarService: SlimLoadingBarService) {}
 
@@ -28,12 +29,13 @@ export class HttpService {
   }
 
   getLexicalUnitDetails(id) {
-    let uris = ['59d4bb9c270000d90607b435', '59d4bee1270000d90607b44e', '59d4beec270000bb0607b44f'];
-    let uri = uris[Math.floor(Math.random() * uris.length)];
-    return this.get(uri);
+    // let uris = ['59d4bb9c270000d90607b435', '59d4bee1270000d90607b44e', '59d4beec270000bb0607b44f'];
+    // let uri = uris[Math.floor(Math.random() * uris.length)];
+    return this.get('sense/' + id);
   }
 
-  getSearchOptions() {
-    return this.get('59d4b403270000bb0607b419');
+  getSearchOptions(lemma: String) {
+    // todo escape lemma
+    return this.get('sense?lemma=' + lemma + '&per_page=1000');
   }
 }

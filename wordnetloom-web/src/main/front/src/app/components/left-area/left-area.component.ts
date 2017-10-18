@@ -16,7 +16,7 @@ export class LeftAreaComponent implements OnInit {
   }
 
   onSearched(data) {
-    this.searchOptions = data;
+    this.searchOptions = data.entries;
   }
 
 }
