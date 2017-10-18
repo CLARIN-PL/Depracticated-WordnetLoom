@@ -34,8 +34,21 @@ export class HttpService {
     return this.get('sense/' + id);
   }
 
-  getSearchOptions(lemma: String) {
-    // todo escape lemma
-    return this.get('sense?lemma=' + lemma + '&per_page=1000');
+  getSearchOptions(form: String) {
+    let searchStr = 'sense?';
+    for (const key in form) {
+      if (form[key] !== '') {
+        searchStr += key + '=' + form[key] + '&';
+      }
+    }
+    return this.get(searchStr + 'per_page=1000');
+  }
+
+  getDictOptions(searchedKey) {
+    return this.get('dictionary/' + searchedKey);
+  }
+
+  getGlobalOptions(searchedKey) {
+    return this.get(searchedKey);
   }
 }

@@ -1,7 +1,6 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import { HttpService } from '../../../services/http.service';
 
-
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
@@ -11,16 +10,46 @@ export class SearchComponent implements OnInit {
   @Output() onSearchSubmit = new EventEmitter<any>();
   constructor(private http: HttpService) { }
 
+  searchFields: {[id: string]: Object} = {};
+
+  searchFormFields: Array<Object> = [];
+  searchFieldsDict = ['style', 'status', 'lexical-characteristic',
+    'age', 'source', 'semantic-field', 'semantic-field/modifier'];
+
+  searchFieldsGlob = ['lexicon', 'partofspeech', 'domain'];
+
+  searchKeys = ['lexiconId', 'partOfSpeechId', 'domainId', 'styleId', 'statusId', 'lexicalCharacteristicId', 'ageId', 'sourceId', 'yiddishDomainId', 'domainModifierId'];
+
   ngOnInit() {
+    this.searchFields['lexiconId'] =               {apiOptions: 'lexicon', name: 'Lexicon', queryString: 'lexiconId', searchOptions: [] };
+    this.searchFields['partOfSpeechId'] =          {apiOptions: 'partofspeech', name: 'Part of Speech', queryString: 'partOfSpeechId', searchOptions: [] };
+    this.searchFields['domainId'] =                {apiOptions: 'domain', name: 'Domain', queryString: 'domainId', searchOptions: [] };
+    this.searchFields['styleId'] =                 {apiOptions: 'dictionary/style', name: 'Style', queryString: 'styleId', searchOptions: [] };
+    this.searchFields['statusId'] =                {apiOptions: 'dictionary/status', name: 'Status', queryString: 'status', searchOptions: [] };
+    this.searchFields['lexicalCharacteristicId'] = {apiOptions: 'dictionary/lexical-characteristic', name: 'Lexical characteristic', queryString: 'lexicalCharacteristicId', searchOptions: [] };
+    this.searchFields['ageId'] =                   {apiOptions: 'dictionary/age', name: 'Age', queryString: 'ageId', searchOptions: [] };
+    this.searchFields['sourceId'] =                {apiOptions: 'dictionary/source', name: 'Source', queryString: 'sourceId', searchOptions: [] };
+    this.searchFields['yiddishDomainId'] =         {apiOptions: 'dictionary/semantic-field', name: 'Semantic field', queryString: 'yiddishDomainId', searchOptions: [] };
+    this.searchFields['domainModifierId'] =        {apiOptions: 'dictionary/semantic-field/modifier', name: 'Domain modifier', queryString: 'domainModifierId', searchOptions: [] };
+
+    this.assignSearchFields();
+
+  }
+
+  private assignSearchFields() {
+    for (const key in this.searchFields) {
+      const field =  this.searchFields[key];
+      this.http.getGlobalOptions(field['apiOptions']).subscribe(
+        (response) => {
+          this.searchFields[key]['searchOptions'] = response.entries;
+        });
+    }
+
   }
 
   onSubmit(form) {
-    // console.log(form);
-    // const response = JSON.parse('{"paging":{"totalRecords":26},"entries":[{"id":11020,"lemma":"zamek 1 (wytw)"},{"id":11021,"lemma":"zamek 2 (wytw)"},{"id":67927,"lemma":"zamek 3 (wytw)"},{"id":63884,"lemma":"zamek 4 (wytw)"},{"id":75994,"lemma":"zamek 5 (wytw)"},{"id":22013,"lemma":"zamek 6 (wytw)"},{"id":63886,"lemma":"zamek 7 (zdarz)"},{"id":683788,"lemma":"zamek angielski 1 (wytw)"},{"id":11022,"lemma":"zamek błyskawiczny 1 (wytw)"},{"id":664904,"lemma":"zamek czterotaktowy 1 (wytw)"},{"id":701943,"lemma":"zamek do drzwi 1 (!nie ustawiony!)"},{"id":683789,"lemma":"zamek dwutaktowy 1 (wytw)"},{"id":683790,"lemma":"zamek francuski 1 (wytw)"},{"id":683791,"lemma":"zamek hiszpański 1 (wytw)"},{"id":683793,"lemma":"zamek kapiszonowy 1 (wytw)"},{"id":683187,"lemma":"zamek klinowy 1 (wytw)"},{"id":359180,"lemma":"zamek kołowy 1 (wytw)"},{"id":683794,"lemma":"zamek lontowy 1 (wytw)"},{"id":683795,"lemma":"zamek niderlandzki 1 (wytw)"},{"id":654169,"lemma":"Zamek Ogrodzieniec 1 (msc)"},{"id":683796,"lemma":"zamek półswobodny 1 (wytw)"},{"id":683797,"lemma":"zamek ryglowany 1 (wytw)"},{"id":359171,"lemma":"zamek skałkowy 1 (wytw)"},{"id":664905,"lemma":"zamek ślizgowo-obrotowy 1 (wytw)"},{"id":683799,"lemma":"zamek śrubowy 1 (wytw)"},{"id":683798,"lemma":"zamek swobodny 1 (wytw)"}]}');
-    // this.onSearchSubmit.emit(response);
-    this.http.getSearchOptions(form.search).subscribe(
+    this.http.getSearchOptions(form).subscribe(
       (response) => {
-        console.log(response);
         this.onSearchSubmit.emit(response);
       }
     );

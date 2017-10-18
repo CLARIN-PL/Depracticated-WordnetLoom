@@ -4,135 +4,20 @@
       <div class="input-group">
         <span class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></span>
         <input class="form-control" type="text" placeholder="lemmat, zapis fonetyczny, odmiana..."
-          name="search" ngModel>
+          name="lemma" ngModel>
       </div>
     </div>
   </div>
-  <div class="form-group row">
+
+  <div *ngFor="let searchFieldName of searchKeys" class="form-group row">
     <div class="col-12">
       <select class="form-control"
-              name="partOfSpeech" ngModel>
-        <option value="" disabled selected>Lexicon</option>
-        <option>Typ1</option>
-        <option>Typ2</option>
-        <option>Typ3</option>
-      </select>
-    </div>
-  </div>
-  <div class="form-group row">
-    <div class="col-12">
-      <select class="form-control"
-              name="partOfSpeech" ngModel>
-        <option value="" disabled selected>Part of Speech</option>
-        <!--http://156.17.135.55:8080/yiddish/api/partofspeech-->
-        <option>Typ1</option>
-        <option>Typ2</option>
-        <option>Typ3</option>
-      </select>
-    </div>
-  </div>
-  <!--<div class="form-group row">-->
-    <!--<div class="col-12">-->
-      <!--<select class="form-control"-->
-              <!--name="grammaticalGender" ngModel>-->
-        <!--<option value="" disabled selected>Grammatical gender</option>-->
-        <!--<option>Typ1</option>-->
-        <!--<option>Typ2</option>-->
-        <!--<option>Typ3</option>-->
-      <!--</select>-->
-    <!--</div>-->
-  <!--</div>-->
-  <div class="form-group row">
-    <div class="col-12">
-      <select class="form-control"
-              name="domain" ngModel>
-        <option value="" disabled selected>Domain</option>
-        <!--http://156.17.135.55:8080/yiddish/api/domain-->
-        <option>Typ1</option>
-        <option>Typ2</option>
-        <option>Typ3</option>
-      </select>
-    </div>
-  </div>
-  <div class="form-group row">
-    <div class="col-12">
-      <select class="form-control"
-              name="style" ngModel>
-        <option value="" disabled selected>Style</option>
-        <option>Typ1</option>
-        <option>Typ2</option>
-        <option>Typ3</option>
+              [name]="searchFieldName" ngModel>
+        <option value="" disabled selected>{{ searchFields[searchFieldName]['name'] }}</option>
+        <option *ngFor="let opt of searchFields[searchFieldName]['searchOptions']" [value]="opt.id"> {{opt.name}} </option>
       </select>
     </div>
   </div>
 
-  <div class="form-group row">
-    <div class="col-12">
-      <select class="form-control"
-              name="status" ngModel>
-        <option value="" disabled selected>Status</option>
-        <option>Typ1</option>
-        <option>Typ2</option>
-        <option>Typ3</option>
-      </select>
-    </div>
-  </div>
-  <div class="form-group row">
-    <div class="col-12">
-      <select class="form-control"
-              name="partOfSpeech" ngModel>
-        <option value="" disabled selected>Lexical characteristic</option>
-        <option>Typ1</option>
-        <option>Typ2</option>
-        <option>Typ3</option>
-      </select>
-    </div>
-  </div>
-  <div class="form-group row">
-    <div class="col-12">
-      <select class="form-control"
-              name="age" ngModel>
-        <option value="" disabled selected>Age</option>
-        <option>Typ1</option>
-        <option>Typ2</option>
-        <option>Typ3</option>
-      </select>
-    </div>
-  </div>
-  <div class="form-group row">
-    <div class="col-12">
-      <select class="form-control"
-              name="source" ngModel>
-        <option value="" disabled selected>Source</option>
-        <option>Typ1</option>
-        <option>Typ2</option>
-        <option>Typ3</option>
-      </select>
-    </div>
-  </div>
-  <div class="form-group row">
-    <div class="col-12">
-      <select class="form-control"
-              name="relation" ngModel>
-        <option value="" disabled selected>Semantic Field</option>
-        <!--http://156.17.135.55:8080/yiddish/api/dictionary/semantic-field/-->
-        <option>Typ1</option>
-        <option>Typ2</option>
-        <option>Typ3</option>
-      </select>
-    </div>
-  </div>
-  <div class="form-group row">
-    <div class="col-12">
-      <select class="form-control"
-              name="relation" ngModel>
-        <option value="" disabled selected>Semantic Field Modificator</option>
-        <!--http://156.17.135.55:8080/yiddish/api/dictionary/semantic-field/modifier-->
-        <option>Typ1</option>
-        <option>Typ2</option>
-        <option>Typ3</option>
-      </select>
-    </div>
-  </div>
   <button type="submit" class="btn btn-outline-success btn-block">Search</button>
 </form>
