@@ -26,15 +26,12 @@ export class SenseContent {
       this.currentYiddish = json['Yiddish'][this.yiddishVariantId];
       this.lemma = this.currentYiddish['Latin spelling']
         + ' | ' + this.currentYiddish['Yiddish spelling'] + ' | ' +  this.currentYiddish['YIVO spelling'];
+      this.setYiddishFields(json);
     } else {
       this.lemma = json['Lemma'];
     }
 
     this.setBasicFields(json);
-    if (this.yiddishVariantId !== null)
-      this.setYiddishFields(json);
-
-    console.log(this);
   }
 
   private setBasicFields(json): void {

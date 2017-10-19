@@ -9,7 +9,8 @@ import {SlimLoadingBarService} from 'ng2-slim-loading-bar';
 @Injectable()
 export class HttpService {
   // apiBase = 'http://www.mocky.io/v2/';
-  apiBase = 'http://156.17.135.55:8080/yiddish/api/';
+  apiBase = '/yiddish/api/';
+  // apiBase = 'http://156.17.135.29:8080/yiddish/api/';
 
   constructor(private http: Http, private slimLoadingBarService: SlimLoadingBarService) {}
 
