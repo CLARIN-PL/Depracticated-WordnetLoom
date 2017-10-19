@@ -157,7 +157,12 @@ public class GenericListModel<T> implements ListModel {
 	public String getElementAt(int index) {
 		T element = getObjectAt(index);
 		if (synsetMode) {
-			Long id = ((Sense) element).getSenseToSynset().getIdSynset();
+//			Long id = ((Sense) element).getSenseToSynset().getIdSynset();
+			Long id = null;
+			Sense sense = (Sense) element;
+			if(sense.getSynset() != null){
+				id = sense.getSynset().getId();
+			}
 			return element == null ? Labels.NO_VALUE
 					: formatString(buildNameTagForSynset(synsetTags.get(id)));
 		}
@@ -333,11 +338,17 @@ public class GenericListModel<T> implements ListModel {
 		Collection<Sense> synsets = new ArrayList<Sense>();
 		if (!sense.isEmpty()) {
 			for (Sense senseItem : sense) {
-				if (senseItem.getSenseToSynset().getSenseIndex() == 0) {
+//				if (senseItem.getSenseToSynset().getSenseIndex() == 0) {
+//					synsets.add(senseItem);
+//				}
+//				if (senseItem.getLexicon().getId() == 2
+//						&& senseItem.getSenseToSynset().getSenseIndex() == 1) {
+//					synsets.add(senseItem);
+//				}
+				if(senseItem.getSenseIndex() == 0){
 					synsets.add(senseItem);
 				}
-				if (senseItem.getLexicon().getId() == 2
-						&& senseItem.getSenseToSynset().getSenseIndex() == 1) {
+				if(senseItem.getLexicon().getId() == 2 && senseItem.getSenseIndex() == 1){
 					synsets.add(senseItem);
 				}
 			}
@@ -405,20 +416,41 @@ public class GenericListModel<T> implements ListModel {
 		Map<Long, String> names = new HashedMap<Long, String>();
 		if (!sense.isEmpty()) {
 			int i = 0;
+			Sense currentSense;
+			List<String> senseName;
 			while (i < sense.size()) {
-				Long id = sense.get(i).getSenseToSynset().getIdSynset();
-				List<String> senseName = new ArrayList<String>();
-				while (sense.get(i).getSenseToSynset().getIdSynset().equals(id)) {
-					senseName.add(sense.get(i).toString() +" " +sense.get(i).getLexicon().getLexiconIdentifier().getText());
-					i++;
-					if (i > sense.size() - 1) {
-						break;
+				Long id = null;
+				currentSense = sense.get(i);
+				if(currentSense.getSynset() != null){
+					id = currentSense.getSynset().getId();
+					senseName = new ArrayList<>();
+					while(sense.get(i).getSynset().getId().equals(id)){
+						senseName.add(currentSense.toString() +" " +currentSense.getLexicon().getLexiconIdentifier().getText());
+						i++;
+						if (i > sense.size() - 1) {
+							break;
+						}
 					}
+					names.put(id, senseName.toString());
+					if(i < sense.size()){
+						id = sense.get(i).getSynset().getId();
+					}
+
 				}
-				names.put(id, senseName.toString());
-				if (i < sense.size()) {
-					id = sense.get(i).getSenseToSynset().getIdSynset();
-				}
+
+//				Long id = sense.get(i).getSenseToSynset().getIdSynset();
+//				List<String> senseName = new ArrayList<String>();
+//				while (sense.get(i).getSenseToSynset().getIdSynset().equals(id)) {
+//					senseName.add(sense.get(i).toString() +" " +sense.get(i).getLexicon().getLexiconIdentifier().getText());
+//					i++;
+//					if (i > sense.size() - 1) {
+//						break;
+//					}
+//				}
+//				names.put(id, senseName.toString());
+//				if (i < sense.size()) {
+//					id = sense.get(i).getSenseToSynset().getIdSynset();
+//				}
 			}
 		}
 		return names;

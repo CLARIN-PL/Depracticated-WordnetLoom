@@ -190,7 +190,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI
 
 		final int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
 		final pl.edu.pwr.wordnetloom.model.PartOfSpeech pos = criteria.getPartsOfSpeachComboBox().retriveComboBoxItem();
-		final List<Long> lexicons = new ArrayList<Long>();
+		final List<Long> lexicons = new ArrayList<>();
 		CriteriaDTO dto = criteria.getCriteria();
 
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
@@ -198,7 +198,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI
 			@Override
 			protected Void doInBackground() throws Exception {
 				workbench.setBusy(true);
-				List<Sense> units = new ArrayList<Sense>();
+				List<Sense> units;
 				Lexicon lex = criteria.getLexiconComboBox().retriveComboBoxItem();
 				if (lex != null) {
 					lexicons.clear();

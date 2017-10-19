@@ -2,13 +2,10 @@ package pl.edu.pwr.wordnetloom.plugins.lexeditor.panel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.Set;
+import java.util.*;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -22,6 +19,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import EDU.oswego.cs.dl.util.concurrent.FJTask;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
@@ -107,50 +105,46 @@ public class ParticlesPanel extends JPanel {
 		for (ParticleElementType d : ParticleElementType.values()) {
 			particleType.addItem(d);
 		}
-		particleType.addItemListener(new ItemListener() {
+		particleType.addItemListener(e -> {
 
-			@Override
-			public void itemStateChanged(ItemEvent e) {
+            if (e.getItem() != null) {
 
-				if (e.getItem() != null) {
+                if ("Select".equals(e.getItem().toString())) {
+                    root.setVisible(false);
+                    particle.setVisible(false);
+                }
+                if (ParticleElementType.interfix == e.getItem()) {
+                    root.setVisible(false);
+                    particle.setVisible(true);
+                    particle.removeAllItems();
+                    for (InterfixDictionary p : RemoteUtils.dictionaryRemote.findAllInterfixDictionary()) {
+                        particle.addItem(p);
+                    }
+                }
 
-					if ("Select".equals(e.getItem().toString())) {
-						root.setVisible(false);
-						particle.setVisible(false);
-					}
-					if (ParticleElementType.interfix == e.getItem()) {
-						root.setVisible(false);
-						particle.setVisible(true);
-						particle.removeAllItems();
-						for (InterfixDictionary p : RemoteUtils.dictionaryRemote.findAllInterfixDictionary()) {
-							particle.addItem(p);
-						}
-					}
+                if (ParticleElementType.prefix == e.getItem()) {
+                    root.setVisible(false);
+                    particle.setVisible(true);
+                    particle.removeAllItems();
+                    for (PrefixDictionary p : RemoteUtils.dictionaryRemote.findAllPrefixDictionary()) {
+                        particle.addItem(p);
+                    }
+                }
 
-					if (ParticleElementType.prefix == e.getItem()) {
-						root.setVisible(false);
-						particle.setVisible(true);
-						particle.removeAllItems();
-						for (PrefixDictionary p : RemoteUtils.dictionaryRemote.findAllPrefixDictionary()) {
-							particle.addItem(p);
-						}
-					}
+                if (ParticleElementType.suffix == e.getItem()) {
+                    root.setVisible(false);
+                    particle.setVisible(true);
+                    for (SuffixDictionary p : RemoteUtils.dictionaryRemote.findAllSuffixDictionary()) {
+                        particle.addItem(p);
+                    }
+                }
 
-					if (ParticleElementType.suffix == e.getItem()) {
-						root.setVisible(false);
-						particle.setVisible(true);
-						for (SuffixDictionary p : RemoteUtils.dictionaryRemote.findAllSuffixDictionary()) {
-							particle.addItem(p);
-						}
-					}
-
-					if (ParticleElementType.root == e.getItem()) {
-						root.setVisible(true);
-						particle.setVisible(false);
-					}
-				}
-			}
-		});
+                if (ParticleElementType.root == e.getItem()) {
+                    root.setVisible(true);
+                    particle.setVisible(false);
+                }
+            }
+        });
 
 		panel.add(particleType, "2, 4, fill, default");
 
@@ -171,53 +165,56 @@ public class ParticlesPanel extends JPanel {
 		btnRemove.setHorizontalAlignment(SwingConstants.RIGHT);
 		panel.add(btnRemove, "10, 4");
 
-		btnNewButton.addActionListener(new ActionListener() {
+		btnNewButton.addActionListener(e -> {
+            Particle p = null;
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Particle p = null;
+            if (ParticleElementType.interfix == particleType.getSelectedItem()
+                    && particle.getSelectedItem() instanceof InterfixDictionary) {
+                p = new InterfixParticle((InterfixDictionary) particle.getSelectedItem());
+                listModel.addElement(p);
+            }
+            if (ParticleElementType.suffix == particleType.getSelectedItem()
+                    && particle.getSelectedItem() instanceof SuffixDictionary) {
+                p = new SuffixParticle((SuffixDictionary) particle.getSelectedItem());
+                listModel.addElement(p);
+            }
+            if (ParticleElementType.prefix == particleType.getSelectedItem()
+                    && particle.getSelectedItem() instanceof PrefixDictionary) {
+                p = new PrefixParticle((PrefixDictionary) particle.getSelectedItem());
+                listModel.addElement(p);
+            }
+            if (ParticleElementType.root == particleType.getSelectedItem()) {
+                p = new RootParticle(root.getText());
+                listModel.addElement(p);
+            }
+            p.setExtension(ex);
+            RemoteUtils.lexicalUnitRemote.saveParticle(p);
+        });
 
-				if (ParticleElementType.interfix == particleType.getSelectedItem()
-						&& particle.getSelectedItem() instanceof InterfixDictionary) {
-					p = new InterfixParticle((InterfixDictionary) particle.getSelectedItem());
-					listModel.addElement(p);
-				}
-				if (ParticleElementType.suffix == particleType.getSelectedItem()
-						&& particle.getSelectedItem() instanceof SuffixDictionary) {
-					p = new SuffixParticle((SuffixDictionary) particle.getSelectedItem());
-					listModel.addElement(p);
-				}
-				if (ParticleElementType.prefix == particleType.getSelectedItem()
-						&& particle.getSelectedItem() instanceof PrefixDictionary) {
-					p = new PrefixParticle((PrefixDictionary) particle.getSelectedItem());
-					listModel.addElement(p);
-				}
-				if (ParticleElementType.root == particleType.getSelectedItem()) {
-					p = new RootParticle(root.getText());
-					listModel.addElement(p);
-				}
-				p.setExtension(ex);
-				RemoteUtils.lexicalUnitRemote.saveParticle(p);
-			}
-		});
-
-		btnRemove.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (list.getSelectedValue() != null) {
-					RemoteUtils.lexicalUnitRemote
-							.removeParticle((Particle) listModel.getElementAt(list.getSelectedIndex()));
-					listModel.removeElementAt(list.getSelectedIndex());
-				}
-			}
-		});
+		btnRemove.addActionListener(e -> {
+            if (list.getSelectedValue() != null) {
+                RemoteUtils.lexicalUnitRemote
+                        .removeParticle((Particle) listModel.getElementAt(list.getSelectedIndex()));
+                listModel.removeElementAt(list.getSelectedIndex());
+            }
+        });
 	}
 
 	public void setParticles(Set<Particle> particels) {
-		for (Particle p : particels) {
+		// sortowanie afiksów według id. Dzięki temu uzyskamy liste afiksów posortowaną w kolejności dodawania afiksów.
+		List<Particle> particlesList = new ArrayList<>(particels);
+		Collections.sort(particlesList, (o1, o2) -> o1.getId() > o2.getId() ? 1 : -1);
+		for (Particle p : particlesList) {
 			listModel.addElement(p);
 		}
+	}
+
+	public Set<Particle> getParticles() {
+		Set<Particle> particles = new LinkedHashSet<>();
+		for(int i =0; i < listModel.getSize(); i++){
+			particles.add((Particle)listModel.getElementAt(i));
+		}
+		return particles;
 	}
 
 	public JButton getBtnNewButton() {

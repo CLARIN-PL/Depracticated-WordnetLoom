@@ -81,6 +81,12 @@ public class UnitsInSynsetListModel extends GenericListModel<Sense> {
 	public int getSplitPosition() {
 		return splitPosition;
 	}
+
+	/**
+	 * odczytuje liczbe jednostek znajdujących się na liście
+	 * @return liczba jednostek na liście
+	 */
+	public int getUnitsSize(){return itemsCollection.size();}
 	
 	/**
 	 * odczytanie indeksow zaznaczonych elementow

@@ -57,6 +57,7 @@ public class Labels {
 	public static final String SYNSET_UNMARK = Main.getResouce("label.synset.unmark");
 	public static final String SYNSET_CREATE_RELATION_WITH = Main.getResouce("label.synset.create.relation.with");
 	public static final String SYNSET_MERGE_WITH = Main.getResouce("label.synset.merge.with");
+	public static final String SYNSET_DUPLICATE = Main.getResouce("label.synset.duplicate");
 	public static final String EXPAND = Main.getResouce("label.expand");
 	public static final String OPEN_IN_NEW_TAB = Main.getResouce("label.open.in.new.tab");
 	public static final String PATH_TO_HIPERONIM = Main.getResouce("label.path.to.hiperonim");

@@ -184,20 +184,20 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 	@Override
 	public List<Sense> dbFastGetUnits(Synset synset, List<Long> lexicons) {
 		return dao.getEM().createNamedQuery("Sense.findSenseBySynsetID", Sense.class)
-				.setParameter("idSynset", synset.getId()).setParameter("lexicons", lexicons).getResultList();
+				.setParameter("idSynset", synset.getId()).setParameter("lexicon", lexicons).getResultList();
 	}
 
 	@Override
 	public List<Sense> dbFullGetUnits(Synset synset, int limit, List<Long> lexicons) {
 		return dao.getEM().createNamedQuery("Sense.findSenseBySynsetID", Sense.class)
-				.setParameter("idSynset", synset.getId()).setParameter("lexicons", lexicons).setMaxResults(limit)
+				.setParameter("idSynset", synset.getId()).setParameter("lexicon", lexicons).setMaxResults(limit)
 				.getResultList();
 	}
 
 	@Override
 	public List<Sense> dbFastGetUnits(Synset synset, int limit, List<Long> lexicons) {
 		return dao.getEM().createNamedQuery("Sense.findSenseBySynsetID", Sense.class)
-				.setParameter("idSynset", synset.getId()).setParameter("lexicons", lexicons).setMaxResults(limit)
+				.setParameter("idSynset", synset.getId()).setParameter("lexicon", lexicons).setMaxResults(limit)
 				.getResultList();
 	}
 
@@ -249,8 +249,9 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
 	@Override
 	public Set<Long> dbUsedUnitsIDs() {
-		return new HashSet<Long>(
-				dao.getEM().createNamedQuery("SenseToSynset.dbUsedUnitsIDs", Long.class).getResultList());
+//		return new HashSet<Long>(
+//				dao.getEM().createNamedQuery("SenseToSynset.dbUsedUnitsIDs", Long.class).getResultList());
+		return new HashSet<>(dao.getEM().createNamedQuery("Sense.usedUnitsIDs", Long.class).getResultList());
 	}
 
 	@Override
@@ -291,9 +292,11 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 	@Override // TODO: check me
 	public List<Sense> dbGetUnitsNotInAnySynset(String filter, PartOfSpeech pos) {
 		Map<String, Object> params = new HashMap<String, Object>();
-		String queryString = "SELECT s FROM SenseToSynset sts right join sts.sense s "
-				+ "WHERE sts.idSynset is null AND s.lemma.word like :filter";
+//		String queryString = "SELECT s FROM SenseToSynset sts right join sts.sense s "
+//				+ "WHERE sts.idSynset is null AND s.lemma.word like :filter";
+		String queryString = "SELECT s FROM Sense s WHERE s.synset is null";
 		if (filter != null && !"".equals(filter)) {
+			queryString += " AND s.lemma.word like :filter";
 			if (filter.startsWith("^")) {
 				params.put("filter", filter.substring(1));
 			} else {
@@ -320,7 +323,9 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
 	@Override
 	public List<Sense> dbGetUnitsAppearingInMoreThanOneSynset() {
-		return dao.getEM().createNamedQuery("SenseToSynset.dbGetUnitsAppearingInMoreThanOneSynset", Sense.class)
+//		return dao.getEM().createNamedQuery("SenseToSynset.dbGetUnitsAppearingInMoreThanOneSynset", Sense.class)
+//				.getResultList();
+		return dao.getEM().createNamedQuery("Sense.getUnitsAppearingInMoreThanOneSynset", Sense.class)
 				.getResultList();
 	}
 
@@ -329,8 +334,10 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 		if (null == unit || null == unit.getId())
 			return false;
 
-		List<Long> list = dao.getEM().createNamedQuery("SenseToSynset.CountSenseBySense", Long.class)
-				.setParameter("idSense", unit.getId()).getResultList();
+//		List<Long> list = dao.getEM().createNamedQuery("SenseToSynset.CountSenseBySense", Long.class)
+//				.setParameter("idSense", unit.getId()).getResultList();
+		List<Long> list = dao.getEM().createNamedQuery("Sense.countSenseBySense")
+				.setParameter("id", unit.getId()).getResultList();
 
 		if (list.isEmpty() || list.get(0) == null)
 			return false;
@@ -418,7 +425,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
 	@Override
 	public List<Sense> getSensesForLemmaID(long id, long lexicon) {
-		Query query = getEM().createQuery("SELECT s FROM Sense s WHERE s.lemma.id = :id AND s.lexicon.id = :lexicon)");
+		Query query = getEM().createQuery("SELECT s FROM Sense s WHERE s.lemma.id = :id AND s.lexicon.id = :lexicon");
 		query.setParameter("id", id);
 		query.setParameter("lexicon", lexicon);
 		return query.getResultList();

@@ -79,4 +79,8 @@ public class YiddishDomain implements Serializable {
 	public void setModifier(DomainModifierDictionary modifier) {
 		this.modifier = modifier;
 	}
+
+	public void setYiddishSenseExtension(YiddishSenseExtension extension){
+		this.senseExtension = extension;
+	}
 }

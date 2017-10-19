@@ -26,7 +26,6 @@ import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.dao.UnitAndSynsetDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.DAOBean;
 import pl.edu.pwr.wordnetloom.model.Sense;
-import pl.edu.pwr.wordnetloom.model.SenseToSynset;
 import pl.edu.pwr.wordnetloom.model.Synset;
 
 /**
@@ -121,24 +120,24 @@ public class UnitAndSynsetServiceBean extends DAOBean implements UnitAndSynsetSe
 		return local.dbExchangeUnits(synset, firstUnit, secondUnit);
 	}
 	
-	/**
-	 * odczytanie połączeń
-	 * @param synset - synset dla ktorego maja zostać pobrane połączenia
-	 * @return połączenia
-	 */
-	@Override
-	public List<SenseToSynset> dbGetConnections(Synset synset) {
-		return local.dbGetConnections(synset);
-	}
-
-	/**
-	 * odczytanie wszystkich powiazan
-	 * @return lista powiazan
-	 */
-	@Override
-	public List<SenseToSynset> dbFullGetConnections() {
-		return local.dbFullGetConnections();
-	}
+//	/**
+//	 * odczytanie połączeń
+//	 * @param synset - synset dla ktorego maja zostać pobrane połączenia
+//	 * @return połączenia
+//	 */
+//	@Override
+//	public List<SenseToSynset> dbGetConnections(Synset synset) {
+//		return local.dbGetConnections(synset);
+//	}
+//
+//	/**
+//	 * odczytanie wszystkich powiazan
+//	 * @return lista powiazan
+//	 */
+//	@Override
+//	public List<SenseToSynset> dbFullGetConnections() {
+//		return local.dbFullGetConnections();
+//	}
 
 	/**
 	 * odczytanie liczby identycznych jednostek w synsetach

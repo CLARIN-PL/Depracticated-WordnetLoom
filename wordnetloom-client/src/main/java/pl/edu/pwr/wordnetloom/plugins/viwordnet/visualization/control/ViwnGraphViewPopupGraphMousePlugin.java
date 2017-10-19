@@ -292,6 +292,13 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 						}
 					});
 
+					popup.add(new AbstractAction(Labels.SYNSET_DUPLICATE) {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							RemoteUtils.synsetRemote.dbDuplicateSynset(((ViwnNodeSynset) vertex).getSynset());
+						}
+					});
+
 					// split synset options from lexical unit options
 					popup.addSeparator();
 					popup.add(new JLabel(Labels.LEXICAL_UNIT_OPTIONS));

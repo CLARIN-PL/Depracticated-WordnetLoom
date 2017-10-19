@@ -16,7 +16,6 @@ import pl.edu.pwr.wordnetloom.dto.SynsetInfo;
 import pl.edu.pwr.wordnetloom.model.Domain;
 import pl.edu.pwr.wordnetloom.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.RelationType;
-import pl.edu.pwr.wordnetloom.model.SenseToSynset;
 import pl.edu.pwr.wordnetloom.dao.DAOBean;
 import pl.edu.pwr.wordnetloom.dao.SynsetRelationDAOLocal;
 import pl.edu.pwr.wordnetloom.model.Sense;
@@ -365,10 +364,10 @@ public class SynsetServiceBean extends DAOBean implements SynsetServiceRemote {
 		return synsets.get(0);
 	}
 
-	@Override
-	public List<SenseToSynset> getSenseToSynsetBySynset(Synset synset){
-		return local.getSenseToSynsetBySynset(synset);
-	}
+//	@Override
+//	public List<SenseToSynset> getSenseToSynsetBySynset(Synset synset){
+//		return local.getSenseToSynsetBySynset(synset);
+//	}
 
 	@Override
 	public Long fastGetPOSID(Synset synset) {
@@ -429,15 +428,30 @@ public class SynsetServiceBean extends DAOBean implements SynsetServiceRemote {
 			map.put(rootEntry.getSynset().getId(), rootEntry);
 			synsets.put(rootEntry.getSynset().getId(), rootEntry.getSynset());
 			
-			List<SynsetInfo> infos = dao.getEM().
-					createQuery("SELECT NEW pl.edu.pwr.wordnetloom.dto.SynsetInfo(sy.id, se.partOfSpeech.id, name.text, lemma.word, syt.value.text, se.senseNumber, lexId.text) FROM Synset sy JOIN sy.senseToSynset AS sts JOIN sts.sense AS se JOIN se.domain AS dom JOIN dom.name AS name JOIN sy.synsetAttributes AS syt JOIN se.lemma as lemma JOIN se.lexicon as lex JOIN lex.lexiconIdentifier as lexId WHERE sts.senseIndex = 0 AND syt.type.typeName.text = :abstractName AND sy.id IN (:ids)", SynsetInfo.class)
-					.setParameter("abstractName", Synset.ISABSTRACT)
-					.setParameter("ids", 	lexicons)
-					.getResultList();
-			
-			List<CountInfo> counts = dao.getEM()
-					.createQuery("SELECT NEW pl.edu.pwr.wordnetloom.dto.CountInfo(sy.id, count(se)) FROM Synset AS sy JOIN sy.senseToSynset AS sts JOIN sts.sense AS se WHERE sy.id IN (:ids) GROUP BY sy.id", CountInfo.class)
+//			List<SynsetInfo> infos = dao.getEM().
+//					createQuery("SELECT NEW pl.edu.pwr.wordnetloom.dto.SynsetInfo(sy.id, se.partOfSpeech.id, name.text, lemma.word, syt.value.text, se.senseNumber, lexId.text) FROM Synset sy JOIN sy.senseToSynset AS sts JOIN sts.sense AS se JOIN se.domain AS dom JOIN dom.name AS name JOIN sy.synsetAttributes AS syt JOIN se.lemma as lemma JOIN se.lexicon as lex JOIN lex.lexiconIdentifier as lexId WHERE sts.senseIndex = 0 AND syt.type.typeName.text = :abstractName AND sy.id IN (:ids)", SynsetInfo.class)
+//					.setParameter("abstractName", Synset.ISABSTRACT)
+//					.setParameter("ids", 	lexicons)
+//					.getResultList();
+//
+//			List<CountInfo> counts = dao.getEM()
+//					.createQuery("SELECT NEW pl.edu.pwr.wordnetloom.dto.CountInfo(sy.id, count(se)) FROM Synset AS sy JOIN sy.senseToSynset AS sts JOIN sts.sense AS se WHERE sy.id IN (:ids) GROUP BY sy.id", CountInfo.class)
+//					.setParameter("ids", lexicons)
+//					.getResultList();
+			List<SynsetInfo> infos = dao.getEM().createQuery(
+					"SELECT NEW pl.edu.pwr.wordnetloom.dto.SynsetInfo(syn.id, s.partOfSpeech.id, name.text, lemma.word, attr.value.text, s.senseNumber, lexId.text)" +
+							"FROM Sense s LEFT JOIN s.domain AS dom LEFT JOIN s.lemma AS lemma LEFT JOIN s.lexicon AS lex " +
+							"LEFT JOIN s.synset AS syn LEFT JOIN dom.name AS name LEFT JOIN syn.synsetAttributes AS attr " +
+							" LEFT JOIN lex.lexiconIdentifier AS lexId " +
+							"WHERE s.senseIndex=0 AND attr.type.typeName.text=:abstractName AND syn.id IN (:ids)"
+			).setParameter("abstractName", Synset.ISABSTRACT)
 					.setParameter("ids", lexicons)
+					.getResultList();
+			List<CountInfo> counts = dao.getEM().createQuery(
+					"SELECT NEW pl.edu.pwr.wordnetloom.dto.CountInfo(syn.id, COUNT(s))" +
+							"FROM Sense s JOIN s.synset AS syn " +
+							"WHERE syn.id IN(:ids) GROUP BY syn.id"
+			).setParameter("ids", lexicons)
 					.getResultList();
 			
 			HashMap<Long, CountInfo> counter = new HashMap<Long, CountInfo>();
@@ -482,4 +496,8 @@ public class SynsetServiceBean extends DAOBean implements SynsetServiceRemote {
 		return local.areSynsetsInSameLexicon(synset1, synset2);
 	}
 
+	@Override
+	public Synset dbDuplicateSynset(Synset synset){
+		return local.dbDuplicateSynset(synset);
+	}
 }

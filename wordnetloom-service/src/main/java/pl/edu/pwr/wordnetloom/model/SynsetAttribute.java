@@ -19,7 +19,7 @@ import javax.persistence.Table;
 		@NamedQuery(name = "SynsetAttribute.getForName", 
 					query = "SELECT sa FROM SynsetAttribute sa, AttributeType at WHERE at.typeName = :typeName AND at.tableName = 'synset' AND sa.type = at"),
 		@NamedQuery(name = "SynsetAttribute.getForSynset", 
-					query = "SELECT sa FROM SynsetAttribute sa WHERE sa.synset = :synset"),
+					query = "SELECT sa FROM SynsetAttribute sa WHERE sa.synset.id = :synset"),
 		@NamedQuery(name = "SynsetAttribute.getSynsetAttributeForName", 
 					query = "SELECT sa FROM SynsetAttribute sa WHERE sa.type.tableName='synset' AND sa.type.typeName.text = :typeName AND sa.synset.id = :synset "),
 		@NamedQuery(name = "SynsetAttribute.deleteForSynset", 

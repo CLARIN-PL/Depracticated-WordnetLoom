@@ -52,7 +52,7 @@ public class SynsetAttributeDaoBean implements SynsetAttributeDaoLocal {
 		local.mergeObject(synset);
 		return local.getEM()
 				.createNamedQuery("SynsetAttribute.getForSynset", SynsetAttribute.class)
-				.setParameter("synset", synset)
+				.setParameter("synset", synset.getId())
 				.getResultList();
 	}
 

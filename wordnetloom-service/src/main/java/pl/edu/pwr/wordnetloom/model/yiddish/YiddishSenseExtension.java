@@ -65,7 +65,7 @@ public class YiddishSenseExtension implements Serializable {
 	@JoinColumn(name="extension_id")
 	private Set<Transcription> transcriptions = new LinkedHashSet<Transcription>();
 	
-	@OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
 	@OrderBy("id")
 	@JoinColumn(name="extension_id")
 	private Set<YiddishDomain> yiddishDomains = new LinkedHashSet<YiddishDomain>();

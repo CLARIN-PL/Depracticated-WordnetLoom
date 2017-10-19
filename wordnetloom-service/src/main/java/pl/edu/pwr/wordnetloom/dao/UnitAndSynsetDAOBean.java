@@ -19,12 +19,13 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 package pl.edu.pwr.wordnetloom.dao;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
 
-import pl.edu.pwr.wordnetloom.model.SenseToSynset;
+import org.hibernate.Hibernate;
 import pl.edu.pwr.wordnetloom.model.Sense;
 import pl.edu.pwr.wordnetloom.model.Synset;
 
@@ -81,11 +82,15 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
 	 */
 	@Override
 	public int dbGetSimilarityCount(Synset a, Synset b) {
-		String queryString = "select count(a.idSense) from SenseToSynset a,"
-				+ " SenseToSynset b "
-				+ "where a.synset = :a "
-				+ "and b.idSynset = :b "
-				+ "and a.idSense = b.idSense";
+//		String queryString = "select count(a.idSense) from SenseToSynset a,"
+//				+ " SenseToSynset b "
+//				+ "where a.synset = :a "
+//				+ "and b.idSynset = :b "
+//				+ "and a.idSense = b.idSense";
+		String queryString = "SELECT COUNT(sa.id) FROM Sense sa, Sense sb " +
+				"WHERE sa.synset = :a " +
+				"AND sb.synset = :b " +
+				"AND sa.id = sb.id";
 		TypedQuery<Long> q = dao.getEM().createQuery(queryString, Long.class);
 		q.setParameter("a", a.getId());
 		q.setParameter("b", b.getId());
@@ -107,29 +112,53 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
 	@Override
 	public boolean dbAddConnection(Sense unit, Synset synset,boolean rebuildUnitsStr) {
 		
-		// pobranie wszystkich elementow synsetu
-		List<SenseToSynset> old = dbGetConnections(synset);
-	
-		// przeindeksowanie
+//		// pobranie wszystkich elementow synsetu
+//		List<SenseToSynset> old = dbGetConnections(synset);
+//
+//		// przeindeksowanie
+//		int index = 0;
+//		for (SenseToSynset synsetOld : old) {
+//			// czy nie sa identyczne
+//			if (synsetOld.getSynset().getId().equals(synset.getId()) &&
+//					synsetOld.getSense().getId().equals(unit.getId()))
+//				return false;
+//			synsetOld.setSenseIndex(index++);
+//			dao.mergeObject(synsetOld);
+//		}
+//
+//		// dodanie nowego
+//		SenseToSynset newRel=new SenseToSynset();
+//		newRel.setSynset(synset);
+//		newRel.setSense(unit);
+//		newRel.setIdSense(unit.getId());
+//		newRel.setIdSynset(synset.getId());
+//		newRel.setSenseIndex(new Integer(index++));
+//
+//		dao.persistObject(newRel);
+//
+//		return true;
+
+
+//		List<Sense> senses = synset.getSenses(); //TODO zrobić jakieś odleniwienie
+
+		List<Sense> senses = dao.getEM().createNamedQuery("Sense.findSensesBySynsetIDs", Sense.class)
+				.setParameter("ids", synset.getId()).getResultList(); //TODO to przerobić na jakąś metodę, dodatkowo mozna zrobić jeszcze inne zapytanie, które po prostu sprawdza numer id
 		int index = 0;
-		for (SenseToSynset synsetOld : old) {
-			// czy nie sa identyczne
-			if (synsetOld.getSynset().getId().equals(synset.getId()) &&
-					synsetOld.getSense().getId().equals(unit.getId()))
+		//przeindeksowanie
+		for(Sense sense : senses){
+			//sprawdzanie czy wstaiwana jednostka już jest powiązana
+			if(sense.getId().equals(unit.getId())){
 				return false;
-			synsetOld.setSenseIndex(index++);
-			dao.mergeObject(synsetOld);
+			}
+			sense.setSenseIndex(index++);
+			dao.mergeObject(sense);
 		}
-		
-		// dodanie nowego
-		SenseToSynset newRel=new SenseToSynset();
-		newRel.setSynset(synset);
-		newRel.setSense(unit);
-		newRel.setIdSense(unit.getId());
-		newRel.setIdSynset(synset.getId());
-		newRel.setSenseIndex(new Integer(index++));
-		
-		dao.persistObject(newRel);
+
+		//dodanie nowego połączenia
+		unit.setSynset(synset);
+		unit.setSenseIndex(index++);
+
+		dao.mergeObject(unit);
 
 		return true;
 	}	
@@ -138,7 +167,6 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
 	 * dodanie nowego połączenia jednostki i synsetu
 	 * @param unit - jednostka
 	 * @param synset - synset
-	 * @param rebuildUnitsStr - czy odbudować opis jakie jednostki sa w synsecie 
 	 * @return TRUE jesli sie udalo
 	 */
 	@Override
@@ -152,25 +180,23 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
 	
 	/**
 	 * usuniecie powiazan jednostka - synset z bazy danych
-	 * @param template - wzor jednostki
 	 */
 	@Override
 	public void dbDeleteConnection(Sense sense) {
-		// pobranie wszystkich elementow w ktorych jest jednostka
-		List<SenseToSynset> senseToSynsets = dao.getEM().createNamedQuery("SenseToSynset.findAllBySense", SenseToSynset.class)
-			.setParameter("idSense", sense.getId())
-			.getResultList();
-
-		// usuniecie wszystki jednostek
-		for (SenseToSynset sts : senseToSynsets) {
-			dao.deleteObject(SenseToSynset.class, sts.getId());
-		}
-		
-		// odbudowa synsetow - wylaczona odbudowa
-//		for (SenseToSynset sts : sensetoSynsets) {
-//			Synset synset = dao.getObject(Synset.class, sts.getIdSynset());
-//			synset.rebuildUnitsStr();
+//		// pobranie wszystkich elementow w ktorych jest jednostka
+//		List<SenseToSynset> senseToSynsets = dao.getEM().createNamedQuery("SenseToSynset.findAllBySense", SenseToSynset.class)
+//			.setParameter("idSense", sense.getId())
+//			.getResultList();
+//
+//		// usuniecie wszystki jednostek
+//		for (SenseToSynset sts : senseToSynsets) {
+//			dao.deleteObject(SenseToSynset.class, sts.getId());
 //		}
+
+		sense.setSynset(null);
+		sense.setSenseIndex(null);
+		dao.mergeObject(sense);
+
 	}	
 	
 	/**
@@ -186,8 +212,7 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
 				.setParameter("idSynset", template.getId())
 					.executeUpdate();
 	}	
-	
-	
+
 	/**
 	 * usuniecie powiazan jednostka - synset z bazy danych
 	 * @param unit - jednostka do usuniecia
@@ -195,25 +220,50 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
 	 */
 	@Override
 	public Synset dbDeleteConnection(Sense unit,Synset synset) {
-		// usuniecie jednego powiazania
-		dao.getEM()
-		.createNamedQuery("SenseToSynset.DeleteBySynsetIdAndSenseId")
-			.setParameter("idSynset", synset.getId())
-				.setParameter("idSense", unit.getId())
-					.executeUpdate();
+//		// usuniecie jednego powiazania
+//		dao.getEM()
+//		.createNamedQuery("SenseToSynset.DeleteBySynsetIdAndSenseId")
+//			.setParameter("idSynset", synset.getId())
+//				.setParameter("idSense", unit.getId())
+//					.executeUpdate();
+//
+//		// pobranie wszystkich elementow dla synsetu
+//		List<SenseToSynset> rest=dbGetConnections(synset);
+//
+//		// przeindeksowanie
+//		int index=0;
+//		for (SenseToSynset synsetDTO : rest) {
+//			synsetDTO.setSenseIndex(new Integer(index++));
+//			dao.mergeObject(synsetDTO);
+//		}
+//
+//		// synset jest pusty, nastepuje usuniecie takiego synsetu z bazy danych
+//		if (rest.isEmpty()) {
+//			saDAO.deleteAttributesFor(synset);
+//			exeDAO.dbDeleteForSynset(synset);
+//			exDAO.deleteForSynset(synset);
+//			srDAO.dbDeleteConnection(synset);
+//			dao.deleteObject(Synset.class, synset.getId());
+//			return null;
+//		}
+//
+//		return synset;
 
-		// pobranie wszystkich elementow dla synsetu
-		List<SenseToSynset> rest=dbGetConnections(synset);
-
-		// przeindeksowanie
-		int index=0;
-		for (SenseToSynset synsetDTO : rest) {
-			synsetDTO.setSenseIndex(new Integer(index++));
-			dao.mergeObject(synsetDTO);
+		List<Sense> connectedSenses = dao.getEM().createNamedQuery("Sense.findSensesBySynsetIDs", Sense.class)
+				.setParameter("ids", synset.getId()).getResultList();
+		int index = 0;
+		//przeindeksowanie
+		for(Sense sense: connectedSenses){
+			if(Objects.equals(sense.getId(), unit.getId())){
+				sense.setSenseIndex(null);
+				sense.setSynset(null);
+			} else{
+				sense.setSenseIndex(index++);
+			}
+			dao.mergeObject(sense);
 		}
-		
-		// synset jest pusty, nastepuje usuniecie takiego synsetu z bazy danych
-		if (rest.isEmpty()) {
+		//jeżeli synset jest pusty, następuje jego usunięcie z bazy danych
+		if(connectedSenses.isEmpty()){
 			saDAO.deleteAttributesFor(synset);
 			exeDAO.dbDeleteForSynset(synset);
 			exDAO.deleteForSynset(synset);
@@ -221,7 +271,6 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
 			dao.deleteObject(Synset.class, synset.getId());
 			return null;
 		}
-		
 		return synset;
 	}
 	
@@ -234,41 +283,50 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
 	 */
 	@Override
 	public boolean dbExchangeUnits(Synset synset, Sense firstUnit, Sense secondUnit) {
-		// pobranie wszystkich elementow dla synsetu
-		List<SenseToSynset> old=dbGetConnections(synset);
+//		// pobranie wszystkich elementow dla synsetu
+//		List<SenseToSynset> old=dbGetConnections(synset);
+//
+//		// zamiana numerow indeksow
+//		for (SenseToSynset synsetDTO : old) {
+//			// zamienieni indeksow
+//			if (synsetDTO.getIdSense().longValue()==firstUnit.getId().longValue()) {
+//				synsetDTO.setSenseIndex(synsetDTO.getSenseIndex() + 1);
+//				dao.mergeObject(synsetDTO);
+//			} else if (synsetDTO.getIdSense().longValue()==secondUnit.getId().longValue()) {
+//				synsetDTO.setSenseIndex(synsetDTO.getSenseIndex().intValue() - 1);
+//				dao.mergeObject(synsetDTO);
+//			}
+//		}
+//		return true;
 
-		// zamiana numerow indeksow
-		for (SenseToSynset synsetDTO : old) {
-			// zamienieni indeksow
-			if (synsetDTO.getIdSense().longValue()==firstUnit.getId().longValue()) {
-				synsetDTO.setSenseIndex(new Integer(synsetDTO.getSenseIndex()+1));
-				dao.mergeObject(synsetDTO);
-			} else if (synsetDTO.getIdSense().longValue()==secondUnit.getId().longValue()) {
-				synsetDTO.setSenseIndex(new Integer(synsetDTO.getSenseIndex().intValue()-1));
-				dao.mergeObject(synsetDTO);
-			}
-		}
+		assert firstUnit.getSynset().equals(synset);
+		assert secondUnit.getSynset().equals(synset);
+
+		firstUnit.setSenseIndex(secondUnit.getSenseIndex());
+		secondUnit.setSenseIndex(firstUnit.getSenseIndex());
+		dao.mergeObject(firstUnit);
+		dao.mergeObject(secondUnit);
 		return true;
 	}	
 	
-	/**
-	 * odczytanie połączeń
-	 * @param synset - synset dla ktorego maja zostać pobrane połączenia
-	 * @return połączenia
-	 */
-	@Override
-	public List<SenseToSynset> dbGetConnections(Synset synset) {
-		return dao.getEM().createNamedQuery("SenseToSynset.findAllBySynset", SenseToSynset.class)
-				.setParameter("idSynset", synset.getId()).getResultList();
-	}
+//	/**
+//	 * odczytanie połączeń
+//	 * @param synset - synset dla ktorego maja zostać pobrane połączenia
+//	 * @return połączenia
+//	 */
+//	@Override
+//	public List<SenseToSynset> dbGetConnections(Synset synset) {
+//		return dao.getEM().createNamedQuery("SenseToSynset.findAllBySynset", SenseToSynset.class)
+//				.setParameter("idSynset", synset.getId()).getResultList();
+//	}
 
-	/**
-	 * odczytanie wszystkich powiazan
-	 * @return lista powiazan
-	 */
-	public List<SenseToSynset> dbFullGetConnections() {
-		return dao.getEM().createNamedQuery("SenseToSynset.findAll", SenseToSynset.class).getResultList();
-	}
+//	/**
+//	 * odczytanie wszystkich powiazan
+//	 * @return lista powiazan
+//	 */
+//	public List<SenseToSynset> dbFullGetConnections() {
+//		return dao.getEM().createNamedQuery("SenseToSynset.findAll", SenseToSynset.class).getResultList();
+//	}
 	
 	/**
 	 * odczytanie liczby wykorzystanych jednostek
@@ -276,7 +334,8 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
 	 */
 	@Override
 	public int dbGetUsedUnitsCount() {
-		String queryString = "select count(distinct sts.idSense) FROM SenseToSynset sts";
+//		String queryString = "select count(distinct sts.idSense) FROM SenseToSynset sts";
+		String queryString = "SELECT COUNT(DISTINCT s.id) FROM Sense s";
 		TypedQuery<Long> q = dao.getEM().createQuery(queryString, Long.class);
 
 
@@ -292,7 +351,8 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
 	 */
 	@Override
 	public int dbGetUsedSynsetsCount() {
-		String queryString = "select count(distinct sts.idSynset) FROM SenseToSynset sts";
+//		String queryString = "select count(distinct sts.idSynset) FROM SenseToSynset sts";
+		String queryString = "SELECT COUNT(DISTINCT s.synset.id) FROM Sense s";
 		TypedQuery<Long> q = dao.getEM().createQuery(queryString, Long.class);
 
 
@@ -308,7 +368,8 @@ public class UnitAndSynsetDAOBean extends DAOBean implements UnitAndSynsetDAOLoc
 	 */
 	@Override
 	public int dbGetConnectionsCount() {
-		String queryString = "select count(sts.idSense) FROM SenseToSynset sts";
+//		String queryString = "select count(sts.idSense) FROM SenseToSynset sts";
+		String queryString = "SELECT COUNT(s.synset) FROM Sense s";
 		TypedQuery<Long> q = dao.getEM().createQuery(queryString, Long.class);
 
 

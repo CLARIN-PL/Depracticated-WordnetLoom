@@ -1,11 +1,6 @@
 package pl.edu.pwr.wordnetloom.dao;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -21,15 +16,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import pl.edu.pwr.wordnetloom.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.RelationType;
-import pl.edu.pwr.wordnetloom.model.SenseToSynset;
-import pl.edu.pwr.wordnetloom.model.Domain;
-import pl.edu.pwr.wordnetloom.model.Sense;
-import pl.edu.pwr.wordnetloom.model.Synset;
-import pl.edu.pwr.wordnetloom.model.SynsetAttribute;
-import pl.edu.pwr.wordnetloom.model.SynsetRelation;
-import pl.edu.pwr.wordnetloom.model.Word;
+import pl.edu.pwr.wordnetloom.model.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 @Stateless
 public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
@@ -41,7 +29,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 	@EJB private SynsetAttributeDaoLocal synsetAttributeDao;	
 	
 	@EJB private LexicalUnitDAOLocal lexicalUnitDAO;
-	
+
 	/**
 	 * powielenie synsetu
 	 * @param synset - synset do sklonowania
@@ -60,13 +48,17 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 		// skopiowanie jednostek		
 //		Collection<LexicalUnitDTO> units=dbFastGetUnits(synset);
 		int index=0;
+		Sense newUnit;
 		for (Sense unit : lexicalUnitDAO.dbFullGetUnits(synset, 0,lexicons)){
-			Sense newUnit = lexicalUnitDAO.dbClone(unit);
-			SenseToSynset newRel=new SenseToSynset();
-			newRel.setIdSynset(newSynset.getId());
-			newRel.setIdSense(newUnit.getId());
-			newRel.setSenseIndex(index++);
-			dao.persistObject(newRel);
+			newUnit = lexicalUnitDAO.dbClone(unit);
+//			SenseToSynset newRel=new SenseToSynset();
+			newUnit.setSynset(newSynset);
+			newUnit.setSenseIndex(index++);
+			dao.persistObject(newUnit);
+//			newRel.setIdSynset(newSynset.getId());
+//			newRel.setIdSense(newUnit.getId());
+//			newRel.setSenseIndex(index++);
+//			dao.persistObject(newRel);
 		}
 	}	
 	
@@ -105,7 +97,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 	public List<Sense> dbFastGetUnits(Synset synset, List<Long> lexicons) {
 		List<Sense> result = dao.getEM().createNamedQuery("Sense.findSenseBySynsetID", Sense.class)
 				.setParameter("idSynset", synset.getId())
-				.setParameter("lexicons", lexicons)
+				.setParameter("lexicon", lexicons)
 				.getResultList();
 		return result;
 	}	
@@ -118,7 +110,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 	public List<Sense> dbFastGetUnits(Long synsetId, List<Long> lexicons) {
 		return dao.getEM().createNamedQuery("Sense.findSenseBySynsetID", Sense.class)
 					.setParameter("idSynset", synsetId)
-					.setParameter("lexicons", lexicons)
+					.setParameter("lexicon", lexicons)
 					.getResultList();
 	}
 	
@@ -237,14 +229,16 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 			List<Sense> senses = entry.getValue();
 			int senseIndex=0;			
 			for (Sense sense : senses) {
-				SenseToSynset sts = new SenseToSynset();
-				sts.setSynset(synset);
-				sts.setSense(sense);
-				sts.setSenseIndex(senseIndex);
-				senseIndex++;
-				em.persist(sts);
+//				SenseToSynset sts = new SenseToSynset();
+//				sts.setSynset(synset);
+//				sts.setSense(sense);
+//				sts.setSenseIndex(senseIndex);
+//				senseIndex++;
+//				em.persist(sts);
+				sense.setSynset(synset);
+				sense.setSenseIndex(senseIndex++);
+				em.persist(sense);
 			}
-			
 		}
 	}
 
@@ -278,9 +272,10 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 		
 		CriteriaBuilder criteriaBuilder = getEM().getCriteriaBuilder();
 		CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-		Root<SenseToSynset> stsRoot = criteriaQuery.from(SenseToSynset.class);
-		Join<SenseToSynset, Sense> sense = stsRoot.join("sense",JoinType.LEFT);
-		Join<Sense, Word> word = sense.join("lemma", JoinType.LEFT);
+//		Root<SenseToSynset> stsRoot = criteriaQuery.from(SenseToSynset.class);
+//		Join<SenseToSynset, Sense> sense = stsRoot.join("sense",JoinType.LEFT);
+		Root<Sense> senseRoot  = criteriaQuery.from(Sense.class);
+		Join<Sense, Word> word = senseRoot.join("lemma", JoinType.LEFT);
 
 		List<Predicate> criteriaList = new ArrayList<Predicate>();
 
@@ -289,11 +284,11 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 		criteriaList.add(first_predicate);
 
 		if(domain !=null){
-			Predicate secend_predicate = criteriaBuilder.equal(sense.get("domain").get("id"), domain.getId());
+			Predicate secend_predicate = criteriaBuilder.equal(senseRoot.get("domain").get("id"), domain.getId());
 			criteriaList.add(secend_predicate);
 		}
 		if(posIndex>0){
-			Predicate third_predicate = criteriaBuilder.equal(sense.get("partOfSpeech").get("id"), posIndex);
+			Predicate third_predicate = criteriaBuilder.equal(senseRoot.get("partOfSpeech").get("id"), posIndex);
 			criteriaList.add(third_predicate);
 		}
 		if(relationType !=null){
@@ -302,7 +297,8 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 			subquery.select(relRoot.get("synsetFrom").<Long>get("id"));
 			subquery.where(criteriaBuilder.equal(relRoot.get("relation").get("id"), relationType.getId()));
 
-			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+//			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+			Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get("synset").get("id")).value(subquery);
 			criteriaList.add(subquery_predicate);
 
 		}
@@ -317,7 +313,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 			predicates.add(value);
 			subquery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
 
-			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+			Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get("idSynset")).value(subquery);
 			criteriaList.add(subquery_predicate);
 		}
 		if(!comment.isEmpty()){
@@ -331,8 +327,10 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 			predicates.add(value);
 			subquery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
 
-			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+//			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+			Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get("synset").get("id")).value(subquery);
 			criteriaList.add(subquery_predicate);
+
 		}
 		if(!artificial.isEmpty()){
 			Subquery<Long> subquery = criteriaQuery.subquery(Long.class);
@@ -345,10 +343,11 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 			predicates.add(value);
 			subquery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
 
-			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+//			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+			Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get("synset").get("id")).value(subquery);
 			criteriaList.add(subquery_predicate);
 		}
-		criteriaQuery.select(stsRoot.<Long>get("idSynset")).distinct(true);
+		criteriaQuery.select(senseRoot.get("idSynset")).distinct(true);
 		criteriaQuery.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[0])));
 
 		final TypedQuery<Long> query = getEM().createQuery(criteriaQuery);
@@ -378,9 +377,10 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 
 		CriteriaBuilder criteriaBuilder = getEM().getCriteriaBuilder();
 		CriteriaQuery<Synset>criteriaQuery = criteriaBuilder.createQuery(Synset.class);
-		Root<SenseToSynset> stsRoot = criteriaQuery.from(SenseToSynset.class);
-		Join<SenseToSynset, Sense> sense = stsRoot.join("sense",JoinType.LEFT);
-		Join<Sense, Word> word = sense.join("lemma", JoinType.LEFT);
+//		Root<SenseToSynset> stsRoot = criteriaQuery.from(SenseToSynset.class);
+//		Join<SenseToSynset, Sense> sense = stsRoot.join("sense",JoinType.LEFT);
+		Root<Sense> senseRoot = criteriaQuery.from(Sense.class);
+		Join<Sense, Word> word = senseRoot.join("lemma", JoinType.LEFT);
 
 		List<Predicate> criteriaList = new ArrayList<Predicate>();
 
@@ -389,11 +389,11 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 		criteriaList.add(first_predicate);
 
 		if(domain !=null){
-			Predicate secend_predicate = criteriaBuilder.equal(sense.get("domain").get("id"), domain.getId());
+			Predicate secend_predicate = criteriaBuilder.equal(senseRoot.get("domain").get("id"), domain.getId());
 			criteriaList.add(secend_predicate);
 		}
 		if(posIndex>0){
-			Predicate third_predicate = criteriaBuilder.equal(sense.get("partOfSpeech").get("id"), posIndex);
+			Predicate third_predicate = criteriaBuilder.equal(senseRoot.get("partOfSpeech").get("id"), posIndex);
 			criteriaList.add(third_predicate);
 		}
 		if(relationType !=null){
@@ -402,13 +402,14 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 			subquery.select(relRoot.get("synsetFrom").<Long>get("id"));
 			subquery.where(criteriaBuilder.equal(relRoot.get("relation").get("id"), relationType.getId()));
 
-			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+//			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+			Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get("synset").get("id")).value(subquery);
 			criteriaList.add(subquery_predicate);
 		}
-		Predicate last = criteriaBuilder.in(sense.get("lexicon").get("id")).value(lexicon);
+		Predicate last = criteriaBuilder.in(senseRoot.get("lexicon").get("id")).value(lexicon);
 		criteriaList.add(last);		
 		
-		criteriaQuery.select(stsRoot.<Synset>get("synset"));
+		criteriaQuery.select(senseRoot.get("synset"));
 		criteriaQuery.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[0])));
 
 		final TypedQuery<Synset> query = getEM().createQuery(criteriaQuery);
@@ -421,10 +422,12 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Boolean areSynsetsInSameLexicon(long synset1, long synset2){
-		List<Sense> sense1 = dao.getEM().createQuery("Select sts.sense from SenseToSynset sts where sts.idSynset = :syn1")
+//		List<Sense> sense1 = dao.getEM().createQuery("Select sts.sense from SenseToSynset sts where sts.idSynset = :syn1")
+		List<Sense> sense1 = dao.getEM().createQuery("SELECT s FROM Sense s WHERE s.synset.id = :syn1")
 				.setParameter("syn1", synset1)
 				.getResultList();
-		List<Sense> sense2 = dao.getEM().createQuery("Select sts.sense from SenseToSynset sts where sts.idSynset = :syn2")
+//		List<Sense> sense2 = dao.getEM().createQuery("Select sts.sense from SenseToSynset sts where sts.idSynset = :syn2")
+		List<Sense> sense2 = dao.getEM().createQuery("SELECT s FROM Sense s WHERE s.synset.id = :syn2")
 				.setParameter("syn2", synset2)
 				.getResultList();
 		return sense1.get(0).getLexicon().getId().equals(sense2.get(0).getLexicon().getId());
@@ -462,18 +465,28 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 		StringBuilder sb=new StringBuilder();
 		Map<String, Object> params = new HashMap<String, Object>();
 		
-		sb.append("SELECT s FROM Synset s"
-					+ " WHERE s IN ("
-						+ " SELECT DISTINCT( sts.synset ) FROM SenseToSynset sts"
-							+ " WHERE sts.sense.partOfSpeech = :pos ");
+//		sb.append("SELECT s FROM Synset s"
+//					+ " WHERE s IN ("
+//						+ " SELECT DISTINCT( sts.synset ) FROM SenseToSynset sts"
+//							+ " WHERE sts.sense.partOfSpeech = :pos ");
+//		params.put("pos", filterObject.getPartOfSpeech());
+//		if(null != filter && !"".equals(filter)){
+//			sb.append("AND sts.sense.lexicon.id IN(:lexicons) AND sts.sense.lemma.word LIKE :lemma OR sts.sense.lemma.word LIKE :lemma1 ");
+//			params.put("lemma", filter + "%");
+//			params.put("lemma1", "%" + filter + "%");
+//			params.put("lexicons", lexicons);
+//		}
+//		sb.append(" ORDER BY sts.sense.lemma.word) ");
+		sb.append("SELECT sy FROM Synset sy WHERE sy IN" +
+				"( SELECT DISTINCT s.synset FROM Sense s WHERE s.partOfSpeech = :pos");
 		params.put("pos", filterObject.getPartOfSpeech());
-		if(null != filter && !"".equals(filter)){
-			sb.append("AND sts.sense.lexicon.id IN(:lexicons) AND sts.sense.lemma.word LIKE :lemma OR sts.sense.lemma.word LIKE :lemma1 ");
-			params.put("lemma", filter + "%");
-			params.put("lemma1", "%" + filter + "%");
+		if(filter != null && !filter.isEmpty()){
+			sb.append(" AND s.lexicon.id IN (:lexicons) AND s.lemma.word LIKE :lemma OR s.lemma.word LIKE :lemmal");
 			params.put("lexicons", lexicons);
+			params.put("lemma", filter + "%");
+			params.put("lemmal", "%" + filter +"%");
 		}
-		sb.append(" ORDER BY sts.sense.lemma.word) ");
+		sb.append(" ORDER BY s.lemma.word");
 		
 		TypedQuery<Synset> q = dao.getEM().createQuery(sb.toString(), Synset.class);
 		
@@ -491,7 +504,8 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 	 */
 	@Override
 	public int dbDeleteEmpty() {
-		return dao.getEM().createQuery("DELETE FROM Synset s WHERE s.id NOT IN (SELECT DISTINCT sts.idSynset FROM SenseToSynset sts)")
+//		return dao.getEM().createQuery("DELETE FROM Synset s WHERE s.id NOT IN (SELECT DISTINCT sts.idSynset FROM SenseToSynset sts)")
+		return dao.getEM().createQuery("DELETE FROM Synset s WHERE s.id IS NULL")
 				.executeUpdate();
 	}
 
@@ -504,7 +518,8 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 	public List<Synset> dbFullGetSynsets(String filter) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		
-		String selectString = "SELECT s.senseToSynset.synset FROM Sense s";
+//		String selectString = "SELECT s.senseToSynset.synset FROM Sense s";
+		String selectString = "SELECT s.synset FROM Sense s";
 		if (filter!=null && !"".equals(filter)) {
 			selectString += " WHERE s.lemma.word LIKE :param1 OR s.lemma.word LIKE :param2 ";
 			params.put("param1", filter + "%");
@@ -530,18 +545,25 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 		Map<String, Object> params = new HashMap<String, Object>();
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT s.senseToSynset.synset FROM Sense s ");
-		
-		if (filter!=null && !"".equals(filter)) {
+//		sb.append("SELECT s.senseToSynset.synset FROM Sense s ");
+//
+//		if (filter!=null && !"".equals(filter)) {
+//			sb.append(" WHERE s.lemma.word LIKE :param1 OR s.lemma.word LIKE :param2 ");
+//			sb.append(" AND s.senseToSynset.idSynset IN (SELECT DISCTINCT sts.idSynset FROM SenseToSynset sts ORDER BY sts.idSynset) ");
+//			sb.append(" ORDER BY s.lemma.word");
+//			params.put("param1", filter + "%");
+//			params.put("param2", "%" + filter + "%");
+//		} else {
+//			sb.append(" WHERE s.senseToSynset.idSynset IN (SELECT DISTINCT sts.idSynset FROM SenseToSynset sts ORDER BY sts.idSynset) ");
+//		}
+		sb.append("SELECT s.synset FROM Sense s");
+		if(filter != null && !filter.isEmpty()){
 			sb.append(" WHERE s.lemma.word LIKE :param1 OR s.lemma.word LIKE :param2 ");
-			sb.append(" AND s.senseToSynset.idSynset IN (SELECT DISCTINCT sts.idSynset FROM SenseToSynset sts ORDER BY sts.idSynset) ");
-			sb.append(" ORDER BY s.lemma.word");
+			sb.append(" AND s.synset IS NOT NULL"); //TODO przyjrzeć się temu
 			params.put("param1", filter + "%");
 			params.put("param2", "%" + filter + "%");
-		} else {
-			sb.append(" WHERE s.senseToSynset.idSynset IN (SELECT DISTINCT sts.idSynset FROM SenseToSynset sts ORDER BY sts.idSynset) ");
 		}
-		
+		sb.append(" ORDER BY s.lemma.word");
 		TypedQuery<Synset> query = dao.getEM().createQuery(sb.toString(), Synset.class);
 		for(Map.Entry<String, Object> param : params.entrySet()){
 			query.setParameter(param.getKey(), param.getValue());
@@ -820,13 +842,13 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 		return unitsstr;
 	}
 	
-	@Override
-	public List<SenseToSynset> getSenseToSynsetBySynset(Synset synset){
-		return getEM().
-				createNamedQuery("SenseToSynset.findAllBySynsets", SenseToSynset.class)
-				.setParameter("ids", synset.getId())
-				.getResultList();
-	}
+//	@Override
+//	public List<SenseToSynset> getSenseToSynsetBySynset(Synset synset){
+//		return getEM().
+//				createNamedQuery("SenseToSynset.findAllBySynsets", SenseToSynset.class)
+//				.setParameter("ids", synset.getId())
+//				.getResultList();
+//	}
 	
 	@Override
 	public Long fastGetPOSID(Synset synset){
@@ -848,9 +870,10 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 
 		CriteriaBuilder criteriaBuilder = getEM().getCriteriaBuilder();
 		CriteriaQuery<Long>criteriaQuery = criteriaBuilder.createQuery(Long.class);
-		Root<SenseToSynset> stsRoot = criteriaQuery.from(SenseToSynset.class);
-		Join<SenseToSynset, Sense> sense = stsRoot.join("sense",JoinType.LEFT);
-		Join<Sense, Word> word = sense.join("lemma", JoinType.LEFT);
+//		Root<SenseToSynset> stsRoot = criteriaQuery.from(SenseToSynset.class);
+//		Join<SenseToSynset, Sense> sense = stsRoot.join("sense",JoinType.LEFT);
+		Root<Sense> senseRoot = criteriaQuery.from(Sense.class);
+		Join<Sense, Word> word = senseRoot.join("lemma", JoinType.LEFT);
 
 		List<Predicate> criteriaList = new ArrayList<Predicate>();
 
@@ -859,11 +882,11 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 		criteriaList.add(first_predicate);
 
 		if(domain !=null){
-			Predicate secend_predicate = criteriaBuilder.equal(sense.get("domain").get("id"), domain.getId());
+			Predicate secend_predicate = criteriaBuilder.equal(senseRoot.get("domain").get("id"), domain.getId());
 			criteriaList.add(secend_predicate);
 		}
 		if(pos !=null){
-			Predicate third_predicate = criteriaBuilder.equal(sense.get("partOfSpeech").get("ubyLmfType"), pos);
+			Predicate third_predicate = criteriaBuilder.equal(senseRoot.get("partOfSpeech").get("ubyLmfType"), pos);
 			criteriaList.add(third_predicate);
 		}
 		if(relationType !=null){
@@ -872,7 +895,8 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 			subquery.select(relRoot.get("synsetFrom").<Long>get("id"));
 			subquery.where(criteriaBuilder.equal(relRoot.get("relation").get("id"), relationType.getId()));
 
-			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+//			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+			Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get("synset").get("id")).value(subquery);
 			criteriaList.add(subquery_predicate);
 
 		}
@@ -887,7 +911,8 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 			predicates.add(value);
 			subquery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
 
-			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+//			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+			Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get("synset").get("id")).value(subquery);
 			criteriaList.add(subquery_predicate);
 		}
 		if(!comment.isEmpty()){
@@ -901,7 +926,8 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 			predicates.add(value);
 			subquery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
 
-			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+//			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+			Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get("synset").get("id")).value(subquery);
 			criteriaList.add(subquery_predicate);
 		}
 		if(!artificial.isEmpty()){
@@ -915,10 +941,12 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 			predicates.add(value);
 			subquery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
 
-			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+//			Predicate subquery_predicate = criteriaBuilder.in(stsRoot.get("idSynset")).value(subquery);
+			Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get("synset").get("id")).value(subquery);
 			criteriaList.add(subquery_predicate);
 		}
-		criteriaQuery.select(stsRoot.<Long>get("idSynset")).distinct(true);
+//		criteriaQuery.select(stsRoot.<Long>get("idSynset")).distinct(true);
+		criteriaQuery.select(senseRoot.get("synset").get("id")).distinct(true);
 		criteriaQuery.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[0])));
 
 		final TypedQuery<Long> query = getEM().createQuery(criteriaQuery);
@@ -932,5 +960,9 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
 			result.addAll(dbFastGetUnits(id,lexicons));
 		}
 		return result;
+	}
+
+	public Synset dbDuplicateSynset(Synset synset) {
+		throw new NotImplementedException();
 	}
 }

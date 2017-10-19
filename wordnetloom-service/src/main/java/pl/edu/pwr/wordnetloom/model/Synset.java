@@ -4,16 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "synset")
@@ -21,23 +12,33 @@ import javax.persistence.Table;
 	@NamedQuery(name = "Synset.findCountAll",
 		query = "SELECT COUNT(s) FROM Synset s"),
 	@NamedQuery(name = "Synset.findSynsetBySensID",
-		query = "SELECT s.synset FROM SenseToSynset s WHERE s.idSense = :senseID AND s.sense.lexicon.id IN (:lexicons)"),
+		query = "SELECT s.synset FROM Sense s WHERE s.id = :senseID AND s.lexicon.id IN (:lexicons)"),
+//		query = "SELECT s.synset FROM SenseToSynset s WHERE s.idSense = :senseID AND s.sense.lexicon.id IN (:lexicons)"),
+//			query = "SELECT s.synset FROM SenseToSynset s WHERE s.sense.id = :senseID AND s.sense.lexicon.id IN (:lexicons)"),
 	@NamedQuery(name = "Synset.findListSynsetByID",
 		query = "SELECT s FROM Synset s WHERE s.id IN ( :synsetsID )"),
 	@NamedQuery(name = "Synset.getAllIDs",
 		query = "SELECT s FROM Synset s"),
-	@NamedQuery(name = "Synset.dbGetUnit",
-		query = "SELECT s FROM Synset s JOIN s.senseToSynset AS sts LEFT JOIN sts.sense AS sen LEFT JOIN sen.senseAttributes AS sea LEFT JOIN s.synsetAttributes AS sa WHERE sen.lexicon.id IN( :lexicons) AND  s.id = :synsetID ORDER BY s.id, sts.senseIndex"),
-	@NamedQuery(name = "Synset.dbGetUnitsByIDs",
-		query = "SELECT s FROM Synset s JOIN s.senseToSynset AS sts LEFT JOIN sts.sense AS sen LEFT JOIN sen.senseAttributes AS sea LEFT JOIN s.synsetAttributes AS sa WHERE s.id IN ( :synsetsIDs ) ORDER BY s.id, sts.senseIndex"),
+//	@NamedQuery(name = "Synset.dbGetUnit",
+//		query = "SELECT s FROM Synset s JOIN s.senseToSynset AS sts LEFT JOIN sts.sense AS sen LEFT JOIN sen.senseAttributes AS sea LEFT JOIN s.synsetAttributes AS sa WHERE sen.lexicon.id IN( :lexicons) AND  s.id = :synsetID ORDER BY s.id, sts.senseIndex"),
+//	@NamedQuery(name = "Synset.dbGetUnitsByIDs",
+//		query = "SELECT s FROM Synset s JOIN s.senseToSynset AS sts LEFT JOIN sts.sense AS sen LEFT JOIN sen.senseAttributes AS sea LEFT JOIN s.synsetAttributes AS sa WHERE s.id IN ( :synsetsIDs ) ORDER BY s.id, sts.senseIndex"),
+		@NamedQuery(name = "Synset.dbGetUnit",
+				query = "SELECT s FROM Synset s JOIN s.senses AS sen LEFT JOIN sen.senseAttributes AS sea LEFT JOIN s.synsetAttributes AS sa WHERE sen.lexicon.id IN( :lexicons) AND  s.id = :synsetID ORDER BY s.id, sen.senseIndex"),
+		@NamedQuery(name = "Synset.dbGetUnitsByIDs",
+				query = "SELECT s FROM Synset s JOIN s.senses AS sen LEFT JOIN sen.senseAttributes AS sea LEFT JOIN s.synsetAttributes AS sa WHERE s.id IN ( :synsetsIDs ) ORDER BY s.id, sen.senseIndex"),
 	@NamedQuery(name = "Synset.dbGetSynsetRels",
 		query = "SELECT sr.synsetFrom FROM SynsetRelation sr WHERE sr.synsetFrom.id IN ( SELECT sr.synsetFrom.id FROM SynsetRelation sr WHERE sr.synsetFrom.id = :synsetID ) OR sr.synsetFrom.id IN ( SELECT sr.synsetTo.id FROM SynsetRelation sr WHERE sr.synsetTo.id = :synsetID )"),
 	@NamedQuery(name = "Synset.dbGetSynsetsRels",
 		query = "SELECT sr.synsetFrom FROM SynsetRelation sr WHERE sr.id IN ( SELECT sr.id FROM SynsetRelation sr WHERE sr.synsetFrom IN ( :synsetList ) ) OR sr.id IN ( SELECT sr.id FROM SynsetRelation sr WHERE sr.synsetTo IN ( :synsetList ) )"),
 	@NamedQuery(name = "Synset.dbGetSimilarityCount",
-		query = "SELECT COUNT( a.idSense ) FROM SenseToSynset a, SenseToSynset b WHERE a.idSynset = :idA AND b.idSynset = :idB AND a.idSense = b.idSense"),
+		query = "SELECT COUNT(sa.id) FROM Sense sa , Sense sb WHERE sa.synset.id =:idA AND sb.synset.id = :idB AND sa.id = sb.id"),
+//		query = "SELECT COUNT( a.idSense ) FROM SenseToSynset a, SenseToSynset b WHERE a.idSynset = :idA AND b.idSynset = :idB AND a.idSense = b.idSense"),
+//			query = "SELECT COUNT( a.sense.id ) FROM SenseToSynset a, SenseToSynset b WHERE a.synset.id = :idA AND b.synset.id = :idB AND a.sense.id = b.sense.id"),
 	@NamedQuery(name = "Synset.fastGetPOSID",
-		query = "SELECT s.sense.partOfSpeech.id FROM SenseToSynset s WHERE s.idSynset = :idSynset ORDER BY s.senseIndex"),
+		query = "SELECT s.partOfSpeech.id FROM Sense s WHERE s.synset.id = :idSynset ORDER BY s.senseIndex"),
+//		query = "SELECT s.sense.partOfSpeech.id FROM SenseToSynset s WHERE s.idSynset = :idSynset ORDER BY s.senseIndex"),
+//			query = "SELECT s.sense.partOfSpeech.id FROM SenseToSynset s WHERE s.synset.id = :idSynset ORDER BY s.senseIndex"),
 }) 
 public class Synset implements Serializable{
 
@@ -59,10 +60,13 @@ public class Synset implements Serializable{
 	@Column(name = "split")
 	private Integer split = new Integer(0);
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "synset")
-	private List<SenseToSynset> senseToSynset;
+//	@OneToMany(fetch = FetchType.LAZY, mappedBy = "synset", cascade = CascadeType.ALL)
+//	private List<SenseToSynset> senseToSynset;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="synset")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "synset")
+	private List<Sense> senses;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="synset", cascade = CascadeType.ALL)
 	private List<SynsetAttribute> synsetAttributes = new ArrayList<SynsetAttribute>();
 
 	public Long getId() {
@@ -81,12 +85,20 @@ public class Synset implements Serializable{
 		this.split = split;
 	}
 
-	public List<SenseToSynset> getSenseToSynset() {
-		return senseToSynset;
+//	public List<SenseToSynset> getSenseToSynset() {
+//		return senseToSynset;
+//	}
+//
+//	public void setSenseToSynset(List<SenseToSynset> senseToSynset) {
+//		this.senseToSynset = senseToSynset;
+//	}
+
+	public List<Sense> getSenses(){
+		return senses;
 	}
 
-	public void setSenseToSynset(List<SenseToSynset> senseToSynset) {
-		this.senseToSynset = senseToSynset;
+	public void setSenses(List<Sense> senses){
+		this.senses = senses;
 	}
 
 	public List<SynsetAttribute> getSynsetAttributes() {
@@ -115,7 +127,7 @@ public class Synset implements Serializable{
 	}
 
 	public static boolean isAbstract(String isAbstract){
-		return "1".equals(isAbstract) ? true : false ;
+		return "1".equals(isAbstract);
 	}
 
 	@Override

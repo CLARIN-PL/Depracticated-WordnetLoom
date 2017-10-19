@@ -12,7 +12,6 @@ import pl.edu.pwr.wordnetloom.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.model.Domain;
 import pl.edu.pwr.wordnetloom.model.RelationType;
 import pl.edu.pwr.wordnetloom.model.Sense;
-import pl.edu.pwr.wordnetloom.model.SenseToSynset;
 import pl.edu.pwr.wordnetloom.model.Synset;
 
 @Remote 
@@ -36,7 +35,7 @@ public interface SynsetServiceRemote extends DAORemote {
 	public void setSynsetAtrribute(Synset synset, String key, String value);
 	public int dbGetUnitsCount(Synset synset);
 	public Synset updateSynset(Synset synset);
-	public List<SenseToSynset> getSenseToSynsetBySynset(Synset synset);
+//	public List<SenseToSynset> getSenseToSynsetBySynset(Synset synset);
 	public Long fastGetPOSID(Synset synset);
 	List<Synset> dbFastGetSynsets(String filter, List<Long> lexicons);
 	List<Synset> dbFastGetSynsets(String filter, Domain domain,
@@ -66,4 +65,5 @@ public interface SynsetServiceRemote extends DAORemote {
 			pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos,
 			List<Long> lexicons);
 	Boolean areSynsetsInSameLexicon(long synset1, long synset2);
+	Synset dbDuplicateSynset(Synset synset);
 }

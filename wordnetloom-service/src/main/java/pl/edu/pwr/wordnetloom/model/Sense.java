@@ -6,20 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.inject.Named;
+import javax.persistence.*;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -40,13 +28,25 @@ import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
 	@NamedQuery(name = "Sense.findSenseByListID",
 		query = "SELECT s FROM Sense s join fetch s.domain join fetch s.lemma join fetch s.partOfSpeech WHERE s.id in (:ids)"),
 	@NamedQuery(name = "Sense.findSenseBySynsetID",
-		query = "select s.sense from SenseToSynset s where s.sense.lexicon.id IN( :lexicons ) and s.idSynset =:idSynset order by s.senseIndex"),
+		query = "SELECT s FROM Sense s WHERE s.lexicon.id IN (:lexicon) AND s.synset.id = :idSynset ORDER BY s.senseIndex"),
+//		query = "select s.sense from SenseToSynset s where s.sense.lexicon.id IN( :lexicons ) and s.idSynset =:idSynset order by s.senseIndex"),
+//			query = "select s.sense from SenseToSynset s where s.sense.lexicon.id IN( :lexicons ) and s.synset.id =:idSynset order by s.senseIndex"),
 	@NamedQuery(name = "Sense.CountSenseBySynsetID",
-		query = "select count(s.sense) from SenseToSynset s where s.idSynset =:idSynset"),
+		query = "SELECT COUNT(1) FROM Sense s WHERE s.synset.id = :idSynset"),
+//		query = "select count(s.sense) from SenseToSynset s where s.idSynset =:idSynset"),
+//			query = "select count(s.sense) from SenseToSynset s where s.synset.id =:idSynset"),
 	@NamedQuery(name = "Sense.dbGetNextVariant",
 		query = "SELECT MAX(s.senseNumber) FROM Sense AS s WHERE LOWER(s.lemma.word) = :word AND s.partOfSpeech.id = :pos"),
 	@NamedQuery(name = "Sense.findSensesBySynsetIDs",
-		query = "select s.sense from SenseToSynset s where s.idSynset in (:ids)")
+		query = "SELECT s FROM Sense s WHERE s.synset.id IN (:ids)"),
+//		query = "select s.sense from SenseToSynset s where s.idSynset in (:ids)")
+//			query = "select s.sense from SenseToSynset s where s.synset.id in (:ids)")
+		@NamedQuery(name="Sense.getUnitsAppearingInMoreThanOneSynset",
+		query = "SELECT s FROM Sense s GROUP BY s.id HAVING COUNT (s.synset.id) > 1"),
+		@NamedQuery(name = "Sense.countSenseBySense",
+		query = "SELECT COUNT(s) FROM Sense s WHERE s.synset.id = :id"),
+		@NamedQuery(name = "Sense.usedUnitsIDs",
+		query = "SELECT s.id FROM Sense s GROUP BY s.id")
 	})
 
 public class Sense implements Serializable, Comparable<Sense> {
@@ -77,34 +77,41 @@ public class Sense implements Serializable, Comparable<Sense> {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="domain", referencedColumnName="id", nullable = false)
 	private Domain domain;
 
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="lemma", referencedColumnName="id", nullable = false)
 	private Word lemma;
 
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="part_of_speech", referencedColumnName="id", nullable = false)
 	private PartOfSpeech partOfSpeech;
 
 	@Column(name="sense_number", nullable = false, columnDefinition="int default 1")
 	private Integer senseNumber;
 
-	@OneToOne(mappedBy="sense", fetch=FetchType.LAZY)
-	private SenseToSynset senseToSynset;
+//	@OneToOne(mappedBy="sense", fetch=FetchType.LAZY)
+//	private SenseToSynset senseToSynset;
 
 	@OneToMany(mappedBy="sense", fetch=FetchType.LAZY)
 	private List<SenseAttribute> senseAttributes = new ArrayList<SenseAttribute>();
 	
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name = "id_lexicon", referencedColumnName = "id", nullable = false)
 	private Lexicon lexicon;
 
-	@OneToMany(mappedBy="sense", fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="sense", fetch=FetchType.LAZY, cascade = CascadeType.ALL)
 	@NotFound(action =NotFoundAction.IGNORE)
 	private Set<YiddishSenseExtension> yiddishSenseExtension = new LinkedHashSet<YiddishSenseExtension>();
+
+	@Column(name = "sense_index")
+	private Integer senseIndex;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_synset", referencedColumnName = "id")
+	private Synset synset;
 	
 	@Transient
 	private ArrayList<Synset> synsets;
@@ -168,13 +175,13 @@ public class Sense implements Serializable, Comparable<Sense> {
 		this.senseNumber = senseNumber;
 	}
 
-	public SenseToSynset getSenseToSynset() {
-		return senseToSynset;
-	}
-
-	public void setSenseToSynset(SenseToSynset senseToSynset) {
-		this.senseToSynset = senseToSynset;
-	}
+//	public SenseToSynset getSenseToSynset() {
+//		return senseToSynset;
+//	}
+//
+//	public void setSenseToSynset(SenseToSynset senseToSynset) {
+//		this.senseToSynset = senseToSynset;
+//	}
 
 	public ArrayList<Synset> getSynsets() {
 		return synsets;
@@ -208,6 +215,22 @@ public class Sense implements Serializable, Comparable<Sense> {
 		this.yiddishSenseExtension = yiddishSenseExtension;
 	}
 
+	public Integer getSenseIndex(){
+		return this.senseIndex;
+	}
+
+	public void setSenseIndex(Integer senseIndex){
+		this.senseIndex = senseIndex;
+	}
+
+	public Synset getSynset(){
+		return this.synset;
+	}
+
+	public void setSynset(Synset synset){
+		this.synset = synset;
+	}
+
 	@Override
 	public String toString() {
 		StringBuffer b = new StringBuffer();
@@ -239,7 +262,7 @@ public class Sense implements Serializable, Comparable<Sense> {
 
 	@Override
 	public int hashCode(){
-		int hashCode = (id.hashCode());
+		int hashCode = (id !=null ? id.hashCode() : 0);
 		if(hashCode == 0)
 			return super.hashCode();
 		return hashCode;

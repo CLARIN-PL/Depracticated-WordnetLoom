@@ -16,10 +16,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import pl.edu.pwr.wordnetloom.model.ExtGraph;
-import pl.edu.pwr.wordnetloom.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.SenseToSynset;
-import pl.edu.pwr.wordnetloom.model.Synset;
+import pl.edu.pwr.wordnetloom.model.*;
 
 @Stateless
 public class ExtGraphDAOBean implements ExtGraphDAOLocal {
@@ -55,7 +52,8 @@ public class ExtGraphDAOBean implements ExtGraphDAOLocal {
 
 		Root<ExtGraph> root = criteriaQuery.from(ExtGraph.class);
 		Join<ExtGraph, Synset> synset = root.join("synset", JoinType.INNER);
-		Join<Synset, SenseToSynset> sts = synset.join("senseToSynset",JoinType.LEFT);
+//		Join<Synset, SenseToSynset> sts = synset.join("senseToSynset",JoinType.LEFT);
+		Join<Synset, Sense> senseJoin = synset.join("senses", JoinType.LEFT);
 		List<Predicate> criteriaList = new ArrayList<Predicate>();
 
 		Predicate firstCondition = criteriaBuilder.equal(root.get("word"), word);
@@ -64,7 +62,7 @@ public class ExtGraphDAOBean implements ExtGraphDAOLocal {
 		Predicate secondCondition = criteriaBuilder.equal(root.get("packageno"), pkg);
 		criteriaList.add(secondCondition);
 
-		Predicate thirdCondition = criteriaBuilder.equal(sts.get("senseIndex"), 0);
+		Predicate thirdCondition = criteriaBuilder.equal(senseJoin.get("senseIndex"), 0);
 		criteriaList.add(thirdCondition);
 		
 		criteriaQuery.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[0])));

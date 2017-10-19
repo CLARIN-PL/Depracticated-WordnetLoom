@@ -36,7 +36,6 @@ import pl.edu.pwr.wordnetloom.model.RelationTest;
 import pl.edu.pwr.wordnetloom.model.RelationType;
 import pl.edu.pwr.wordnetloom.model.Sense;
 import pl.edu.pwr.wordnetloom.model.SenseRelation;
-import pl.edu.pwr.wordnetloom.model.SenseToSynset;
 import pl.edu.pwr.wordnetloom.model.Synset;
 import pl.edu.pwr.wordnetloom.model.Word;
 import pl.edu.pwr.wordnetloom.systems.enums.WorkState;
@@ -856,9 +855,9 @@ public class LexicalDA {
 		return RemoteUtils.relationTypeRemote.getEagerRelationTypeByID(rt);
 	}
 
-	public static List<SenseToSynset> getSenseToSynsetBySynset(Synset synset) {
-		return RemoteUtils.synsetRemote.getSenseToSynsetBySynset(synset);
-
-	}
+//	public static List<SenseToSynset> getSenseToSynsetBySynset(Synset synset) {
+//		return RemoteUtils.synsetRemote.getSenseToSynsetBySynset(synset);
+//
+//	}
 
 }

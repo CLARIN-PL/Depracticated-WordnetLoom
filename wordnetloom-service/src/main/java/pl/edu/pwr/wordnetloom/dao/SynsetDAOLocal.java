@@ -9,7 +9,6 @@ import javax.ejb.Local;
 import pl.edu.pwr.wordnetloom.model.Domain;
 import pl.edu.pwr.wordnetloom.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.RelationType;
-import pl.edu.pwr.wordnetloom.model.SenseToSynset;
 import pl.edu.pwr.wordnetloom.model.Sense;
 import pl.edu.pwr.wordnetloom.model.Synset;
 
@@ -38,7 +37,7 @@ import pl.edu.pwr.wordnetloom.model.Synset;
 	 String getSynsetAtrribute(Synset synset, String nazwaPola);
 	 void setSynsetAtrribute(Synset synset, String key, String value);
 	 Synset updateSynset(Synset synset);
-	 List<SenseToSynset> getSenseToSynsetBySynset(Synset synset);
+//	 List<SenseToSynset> getSenseToSynsetBySynset(Synset synset);
 	 Long fastGetPOSID(Synset synset);
 	List<Synset> dbFastGetSynsets(String filter, List<Long> lexicons);
 	List<Synset> dbFastGetSynsets(String filter, Domain domain, RelationType relationType, int limitSize, List<Long> lexicons);
@@ -62,4 +61,5 @@ import pl.edu.pwr.wordnetloom.model.Synset;
 			pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos,
 			List<Long> lexicons);
 	Boolean areSynsetsInSameLexicon(long synset1, long synset2);
+	Synset dbDuplicateSynset(Synset synset);
 }

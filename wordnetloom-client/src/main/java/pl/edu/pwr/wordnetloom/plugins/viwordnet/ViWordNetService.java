@@ -560,7 +560,6 @@ public class ViWordNetService extends AbstractService
 				activeGraphView.loadSynset(empty);
 				workbench.setBusy(false);
 			}
-
 			return null;
 		}
 
