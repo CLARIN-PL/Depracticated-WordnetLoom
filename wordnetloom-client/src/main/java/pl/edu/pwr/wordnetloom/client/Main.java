@@ -2,9 +2,8 @@ package pl.edu.pwr.wordnetloom.client;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
+import javax.persistence.Tuple;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -14,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import pl.edu.pwr.wordnetloom.client.plugins.login.window.LoginWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
@@ -21,6 +21,10 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+import pl.edu.pwr.wordnetloom.common.dto.StringMapEntry;
+import pl.edu.pwr.wordnetloom.label.model.Label;
+import pl.edu.pwr.wordnetloom.label.service.LabelServiceRemote;
+import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
 
 public class Main {
 
@@ -29,7 +33,7 @@ public class Main {
     public static final String PROGRAM_VERSION = "2.0";
     public static final String PROGRAM_NAME = "WordnetLoom";
 
-    private static ResourceBundle resource;
+    private static Map<String, String> labelsMap = new HashMap<>();
 
     public static void main(String[] args) {
 
@@ -106,11 +110,20 @@ public class Main {
         } else {
             locale = new Locale(lang.getAbbreviation());
         }
-        resource = ResourceBundle.getBundle("lang", locale);
+        loadLabels(locale);
+    }
+
+    private static void loadLabels(Locale locale){
+        List<Object[]> labels = RemoteService.labelServiceRemote.findLabelsByLanguage(locale.getLanguage());
+        for(Object[] entry : labels){
+            labelsMap.put((String)entry[0], (String)entry[1]);
+        }
     }
 
     public static String getResouce(String key) {
-        return resource.getString(key);
+        if(labelsMap.containsKey(key)){
+            return labelsMap.get(key);
+        }
+        return "";
     }
-
 }

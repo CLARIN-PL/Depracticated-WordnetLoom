@@ -178,10 +178,11 @@ public class LoginWindow extends DialogWindow implements KeyListener {
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
         if (onSuccessThread != null) {
-            Main.initializLanguage(getSelectedLanguage());
+
             RemoteConnectionProvider
                     .getInstance()
                     .setUserSessionData(new UserSessionData(txtUsername.getText(), txtPassword.getText(), getSelectedLanguage().getAbbreviation()));
+            Main.initializLanguage(getSelectedLanguage());
             try {
                 User user = RemoteConnectionProvider.getInstance().getUser();
                 if (user != null) {
