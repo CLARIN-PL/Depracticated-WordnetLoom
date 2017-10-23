@@ -2,6 +2,8 @@
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 @import "../node_modules/font-awesome/css/font-awesome.min.css";
 
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
 .form-group{
   margin-bottom: .5rem;
 }
@@ -14,4 +16,16 @@
 }
 .main-content{
   padding-top: 15px;
+}
+
+
+html, body {
+  height: 100vh;
+  margin:0;
+  padding:0;
+  overflow: auto;
+}
+
+.mat-select-content{
+  z-index: 10000;
 }

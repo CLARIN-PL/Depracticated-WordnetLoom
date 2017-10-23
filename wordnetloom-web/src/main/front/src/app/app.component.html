@@ -1,13 +1,26 @@
-<!--The content below is only a placeholder and can be replaced.-->
 <ng2-slim-loading-bar [color]="'#000'"></ng2-slim-loading-bar>
 <app-header></app-header>
-<div class="container-fluid main-content">
-  <div class="row">
-    <div class="col-sm-4 col-lg-3">
-      <app-left-area></app-left-area>
-    </div>
-    <div class="col-sm-8 col-lg-9">
-      <app-right-area></app-right-area>
+
+<mat-sidenav-container class="app-container">
+  <mat-sidenav #sidebar>
+
+  </mat-sidenav>
+
+  <div class="sidenav-content">
+
+    <div class="container-fluid">
+      <div class="row main-row">
+        <div class="col-12 col-sm-3">
+          <mat-nav-list #sidebarList class="option-list">
+            <a mat-list-item [routerLink]="[item.id]" *ngFor="let item of sidebarContent"  matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}">
+              {{ item.lemma.length > 23 ? item.lemma.slice(0, 20) + '...' :  item.lemma}}
+            </a>
+          </mat-nav-list>
+        </div>
+        <div class="col-12 col-sm-9 offset-top">
+          <app-right-area></app-right-area>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+</mat-sidenav-container>

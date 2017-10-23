@@ -10,13 +10,6 @@ export class LeftAreaComponent implements OnInit {
 
   constructor() { }
 
-  searchOptions = [];
-
-  ngOnInit() {
-  }
-
-  onSearched(data) {
-    this.searchOptions = data.entries;
-  }
+  ngOnInit() { }
 
 }

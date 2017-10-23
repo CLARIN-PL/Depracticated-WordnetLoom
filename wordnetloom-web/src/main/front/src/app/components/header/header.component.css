@@ -1,0 +1,18 @@
+.advanced-search-panel{
+  z-index: 1000;
+  position: fixed;
+  width: 50%;
+  right: 10px;
+}
+
+.fixed-top{
+  z-index: 1000;
+}
+
+.lemma-search-form{
+  display: inherit;
+}
+
+.fill-remaining-space{
+  flex: 1 1 auto;
+}

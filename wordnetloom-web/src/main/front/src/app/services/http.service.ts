@@ -32,14 +32,14 @@ export class HttpService {
     return this.get('sense/' + id);
   }
 
-  getSearchOptions(form: String) {
+  getSearchOptions(form: String, page = 0, perPage= 50) {
     let searchStr = 'sense?';
     for (const key in form) {
       if (form[key] !== '') {
         searchStr += key + '=' + form[key] + '&';
       }
     }
-    return this.get(searchStr + 'per_page=1000');
+    return this.get(searchStr + 'per_page=' + perPage + '&page=' + page);
   }
 
   getGlobalOptions(searchedKey) {
