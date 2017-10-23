@@ -11,6 +11,7 @@
     <div class="container-fluid">
       <div class="row main-row">
         <div class="col-12 col-sm-3">
+          <h5 [hidden]="sidebarContent.length < 1">Found search items:</h5>
           <mat-nav-list #sidebarList class="option-list">
             <a mat-list-item [routerLink]="[item.id]" *ngFor="let item of sidebarContent"  matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}">
               {{ item.lemma.length > 23 ? item.lemma.slice(0, 20) + '...' :  item.lemma}}
