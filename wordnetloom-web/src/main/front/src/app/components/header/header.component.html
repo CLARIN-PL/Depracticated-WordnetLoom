@@ -7,10 +7,10 @@
 
 <mat-expansion-panel #panel [disabled]="true" class="advanced-search-panel">
   <mat-expansion-panel-header>
-    <form #lemmaSearch="ngForm" class="lemma-search-form" (ngSubmit)="simpleSearch(lemmaSearch.value)">
+    <form #lemmaSearch="ngForm" class="lemma-search-form fill-remaining-space" (ngSubmit)="simpleSearch(lemmaSearch.value)">
     <mat-panel-title>
       <mat-form-field [hidden]="isPanelOpened">
-        <input #lemmaInput matInput placeholder="lemma, fonetical form..." value="" name="lemma" ngModel>
+        <input  #lemmaInput matInput placeholder="lemma, fonetical form..." value="" name="lemma" ngModel>
       </mat-form-field>
 
     </mat-panel-title>
@@ -21,7 +21,7 @@
 
     </mat-panel-description>
     </form>
-    <span class="fill-remaining-space"></span>
+    <!--<span class="fill-remaining-space"></span>-->
     <button class="float-right" type="button" color="primary" mat-button (click)="panelToggle()">
       Show advanced options <i class="fa fa-chevron-down" aria-hidden="true"></i>
     </button>

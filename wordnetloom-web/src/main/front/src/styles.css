@@ -18,14 +18,6 @@
   padding-top: 15px;
 }
 
-
-html, body {
-  height: 100vh;
-  margin:0;
-  padding:0;
-  overflow: auto;
-}
-
 .mat-select-content{
   z-index: 10000;
 }
