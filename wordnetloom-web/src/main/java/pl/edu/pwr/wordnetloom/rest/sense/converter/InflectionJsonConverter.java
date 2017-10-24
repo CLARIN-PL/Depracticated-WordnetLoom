@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.rest.sense.resource;
+package pl.edu.pwr.wordnetloom.rest.sense.converter;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

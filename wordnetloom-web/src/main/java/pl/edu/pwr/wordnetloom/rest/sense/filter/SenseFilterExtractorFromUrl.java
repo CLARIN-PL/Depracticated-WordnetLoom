@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.rest.sense.resource;
+package pl.edu.pwr.wordnetloom.rest.sense.filter;
 
 import pl.edu.pwr.wordnetloom.common.resource.AbstractFilterExtractorFromUrl;
 import pl.edu.pwr.wordnetloom.dto.SenseFilter;

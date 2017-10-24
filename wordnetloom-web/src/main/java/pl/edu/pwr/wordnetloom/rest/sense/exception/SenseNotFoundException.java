@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.rest.sense.resource;
+package pl.edu.pwr.wordnetloom.rest.sense.exception;
 
 import javax.ejb.ApplicationException;
 

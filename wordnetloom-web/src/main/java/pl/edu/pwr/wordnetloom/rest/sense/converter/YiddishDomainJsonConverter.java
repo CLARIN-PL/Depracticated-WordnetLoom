@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.rest.sense.resource;
+package pl.edu.pwr.wordnetloom.rest.sense.converter;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -12,14 +12,14 @@ public class YiddishDomainJsonConverter implements EntityJsonConverter<YiddishDo
 
     @Override
     public YiddishDomain convertFrom(final String json) {
-    return null;
+        return null;
     }
 
     @Override
     public JsonElement convertToJsonElement(final YiddishDomain yd) {
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", yd.getId());
-        jsonObject.addProperty("domain", yd.getDomain() != null ? yd.getDomain().getName(): "");
+        jsonObject.addProperty("domain", yd.getDomain() != null ? yd.getDomain().getName() : "");
         jsonObject.addProperty("modifier", yd.getModifier() != null ? yd.getModifier().getName() : "");
         return jsonObject;
     }

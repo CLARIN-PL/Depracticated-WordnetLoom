@@ -1,11 +1,13 @@
 package pl.edu.pwr.wordnetloom.dao;
 
+import pl.edu.pwr.wordnetloom.dto.RelationDTO;
 import pl.edu.pwr.wordnetloom.model.RelationType;
 import pl.edu.pwr.wordnetloom.model.Sense;
 import pl.edu.pwr.wordnetloom.model.SenseRelation;
 
 import javax.ejb.Local;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Local
@@ -17,40 +19,45 @@ public interface LexicalRelationDAOLocal extends DAOLocal {
 
     void dbDeleteAll();
 
-    public SenseRelation dbGet(Long id);
+    SenseRelation dbGet(Long id);
 
-    public List<SenseRelation> dbGetSubRelations(Sense sense, RelationType relationType);
+    List<SenseRelation> dbGetSubRelations(Sense sense, RelationType relationType);
 
-    public List<SenseRelation> dbFastGetRelations(RelationType relationType);
+    Map<Long, Set<RelationDTO>> dbGetSubRelations(Long senseId);
 
-    public Set<Long> dbSelftRelations();
+    Map<Long, Set<RelationDTO>> dbGetUpperRelations(Long senseId);
 
-    public List<SenseRelation> dbGetUpperRelations(Sense sense, RelationType relationType);
+    List<SenseRelation> dbFastGetRelations(RelationType relationType);
 
-    public List<SenseRelation> dbGetFullRelations(Sense parent);
+    Set<Long> dbSelftRelations();
 
-    public List<SenseRelation> dbGetRelations(Sense parent, Sense child, RelationType relationType);
+    List<SenseRelation> dbGetUpperRelations(Sense sense, RelationType relationType);
 
-    public SenseRelation dbGetRelation(Sense parent, Sense child, RelationType relationType);
 
-    public boolean dbMakeRelation(Sense parent, Sense child, RelationType relation);
+    List<SenseRelation> dbGetFullRelations(Sense parent);
 
-    public void dbDeleteConnection(Sense sense);
+    List<SenseRelation> dbGetRelations(Sense parent, Sense child, RelationType relationType);
 
-    public List<SenseRelation> dbFullGetRelations();
+    SenseRelation dbGetRelation(Sense parent, Sense child, RelationType relationType);
 
-    public int dbGetRelationsCount();
+    boolean dbMakeRelation(Sense parent, Sense child, RelationType relation);
 
-    public int dbGetRelationUseCount(RelationType relation);
+    void dbDeleteConnection(Sense sense);
 
-    public void dbMove(RelationType oldRelation, RelationType newRelation);
+    List<SenseRelation> dbFullGetRelations();
 
-    public boolean dbRelationExists(Sense parent, Sense child, RelationType relationType);
+    int dbGetRelationsCount();
 
-    public List<RelationType> dbGetRelationTypesOfUnit(Sense sense);
+    int dbGetRelationUseCount(RelationType relation);
 
-    public int dbGetRelationCountOfUnit(Sense sense);
+    void dbMove(RelationType oldRelation, RelationType newRelation);
 
-    public int dbDeleteImproper();
+    boolean dbRelationExists(Sense parent, Sense child, RelationType relationType);
+
+    List<RelationType> dbGetRelationTypesOfUnit(Sense sense);
+
+    int dbGetRelationCountOfUnit(Sense sense);
+
+    int dbDeleteImproper();
 
 }

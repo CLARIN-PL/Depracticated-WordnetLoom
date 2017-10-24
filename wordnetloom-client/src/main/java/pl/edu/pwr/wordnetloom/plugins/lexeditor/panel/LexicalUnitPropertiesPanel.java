@@ -1,50 +1,39 @@
 package pl.edu.pwr.wordnetloom.plugins.lexeditor.panel;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
-import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
-
-import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
-import pl.edu.pwr.wordnetloom.systems.misc.CustomDescription;
-import pl.edu.pwr.wordnetloom.systems.ui.ComboBoxPlain;
-import pl.edu.pwr.wordnetloom.systems.ui.DomainComboBox;
-import pl.edu.pwr.wordnetloom.systems.ui.LexiconComboBox;
-import pl.edu.pwr.wordnetloom.utils.Labels;
 import pl.edu.pwr.wordnetloom.dto.RegisterTypes;
 import pl.edu.pwr.wordnetloom.model.Domain;
 import pl.edu.pwr.wordnetloom.model.Lexicon;
 import pl.edu.pwr.wordnetloom.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.Sense;
 import pl.edu.pwr.wordnetloom.model.yiddish.VariantType;
+import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
 import pl.edu.pwr.wordnetloom.plugins.lexeditor.LexicalIM;
 import pl.edu.pwr.wordnetloom.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.systems.managers.PosManager;
+import pl.edu.pwr.wordnetloom.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.systems.ui.PartOfSpeechComboBox;
-import pl.edu.pwr.wordnetloom.systems.ui.TextFieldPlain;
-import pl.edu.pwr.wordnetloom.systems.ui.TextPanePlain;
+import pl.edu.pwr.wordnetloom.systems.ui.*;
 import pl.edu.pwr.wordnetloom.utils.Common;
+import pl.edu.pwr.wordnetloom.utils.Labels;
 import pl.edu.pwr.wordnetloom.utils.Messages;
+
+import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 // !!! w przypadku chęci powrotu do stanu, w którym przycisk zapisu był dezaktywowany dopóki nie wprowadzono jakieś zmiany, należy usunąć komentarze
 // przede wszystkim
@@ -78,8 +67,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements CaretListener,
      * po usunięciu wariantu YiddishPropertiesPanel. Mapa przechowuje wartości związane tylko z wariantami tworzonymi w YiddishPropertiesPanel, ponieważ tylko one mogą
      * być usunięte.
      */
-    private Map<String, ActionListener> saveButtonListeners = new HashMap<String, ActionListener>();
-    ;
+    private Map<String, ActionListener> saveButtonListeners = new HashMap<>();
 
     public LexicalUnitPropertiesPanel(final JFrame frame) {
         setLayout(new BorderLayout(0, 0));
@@ -362,6 +350,8 @@ public class LexicalUnitPropertiesPanel extends JPanel implements CaretListener,
 
             definition.setText(formatValue(Common.getSenseAttribute(unit, Sense.DEFINITION)));
             comment.setText(formatValue(Common.getSenseAttribute(unit, Sense.COMMENT)));
+
+            reg = reg != null ? reg : RegisterTypes.BRAK_REJESTRU;
             register.setSelectedItem(reg.name(), reg);
 
             String use = Common.getSenseAttribute(unit, Sense.USE_CASES);

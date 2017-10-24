@@ -1,35 +1,43 @@
 package pl.edu.pwr.wordnetloom.model.yiddish.particle;
 
+import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
+import pl.edu.pwr.wordnetloom.model.yiddish.dictionary.InterfixDictionary;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import pl.edu.pwr.wordnetloom.model.yiddish.dictionary.InterfixDictionary;
-
 @Entity
-public class InterfixParticle extends Particle{
+public class InterfixParticle extends Particle {
 
-	@ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "interfix_id")
-	private InterfixDictionary interfix;
+    private InterfixDictionary interfix;
 
-	public InterfixParticle() {}
+    public InterfixParticle() {
+    }
 
-	public InterfixParticle(InterfixDictionary dic) {
-		this.interfix = dic;
-	}
+    public InterfixParticle(InterfixParticle p, YiddishSenseExtension ext) {
+        setExtension(ext);
+        setPosition(p.getPosition());
+        interfix = p.getInterfix();
+    }
 
-	public InterfixDictionary getInterfix() {
-		return interfix;
-	}
+    public InterfixParticle(InterfixDictionary dic) {
+        interfix = dic;
+    }
 
-	public void setInterfix(InterfixDictionary interfix) {
-		this.interfix = interfix;
-	}
+    public InterfixDictionary getInterfix() {
+        return interfix;
+    }
 
-	@Override
+    public void setInterfix(InterfixDictionary interfix) {
+        this.interfix = interfix;
+    }
+
+    @Override
     public String toString() {
-        return interfix.getName()+ " ( Interfix )";
+        return interfix.getName() + " ( Interfix )";
     }
 }
