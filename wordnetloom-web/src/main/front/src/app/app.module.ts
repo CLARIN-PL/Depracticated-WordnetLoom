@@ -13,6 +13,13 @@ import {SlimLoadingBarModule } from 'ng2-slim-loading-bar';
 import { SearchResultComponent } from './components/left-area/search-result/search-result.component';
 import {CurrentStateService} from './services/current-state.service';
 import {RouterModule, Routes} from '@angular/router';
+import {
+  MatButtonModule, MatCheckboxModule, MatExpansionModule, MatInputModule, MatListModule, MatSelectionList,
+  MatSelectModule,
+  MatSidenavModule, MatTooltipModule
+} from '@angular/material';
+import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {SidebarService} from './services/sidebar.service';
 
 const appRoutes: Routes = [
   {path: ':lemma_id', component: ResultComponent},
@@ -37,9 +44,18 @@ const appRoutes: Routes = [
     BrowserModule,
     FormsModule,
     HttpModule,
-    SlimLoadingBarModule.forRoot()
+    SlimLoadingBarModule.forRoot(),
+    MatButtonModule,
+    MatCheckboxModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatListModule,
+    MatExpansionModule,
+    MatTooltipModule,
+    BrowserAnimationsModule
   ],
-  providers: [HttpService, CurrentStateService],
+  providers: [HttpService, CurrentStateService, SidebarService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

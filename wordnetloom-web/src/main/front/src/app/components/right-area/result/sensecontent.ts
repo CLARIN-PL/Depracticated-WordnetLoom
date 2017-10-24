@@ -1,7 +1,3 @@
-/**
- * Created by wrauk on 18.10.17.
- */
-
 export class SenseContent {
   lemma: string;
   senseId: number;
@@ -13,7 +9,6 @@ export class SenseContent {
   areas: Array<Object> = [];
 
   constructor(json: Object, currentYiddishVariant=null) {
-    console.log(json['Sense number']);
     this.senseId = json['Id'];
     this.variant = json['Sense number'];
 
@@ -26,7 +21,7 @@ export class SenseContent {
       this.currentYiddish = json['Yiddish'][this.yiddishVariantId];
       this.lemma = this.currentYiddish['Latin spelling']
         + ' | ' + this.currentYiddish['Yiddish spelling'] + ' | ' +  this.currentYiddish['YIVO spelling'];
-      this.setYiddishFields(json);
+      this.setYiddishFields();
     } else {
       this.lemma = json['Lemma'];
     }
@@ -41,7 +36,7 @@ export class SenseContent {
     }
   }
 
-  private setYiddishFields(json): void {
+  private setYiddishFields(): void {
     const fieldNames = ['Yiddish variant', 'Dialectal', 'Grammatical gender', 'Meaning', 'Lexical Characteristic',
       'Style', 'Status', 'Age'];
 
@@ -67,7 +62,6 @@ export class SenseContent {
 
     // semantic fied
     fields.push({name: 'Semantic filed', values: this.currentYiddish['Semantic filed'].map(function(it){return it.domain + ' (' + it.modifier + ')' ;})});
-    console.log(this.currentYiddish['Semantic filed']);
 
     this.areas.push({name: 'Yiddish specific', fields: fields});
   }

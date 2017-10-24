@@ -133,6 +133,7 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 		yiddish.getSource().addAll(sourcePanel.getSource());
 		yiddish.setVariant(varianType.retriveWihtoutNullComboBoxItem());
 		yiddish.setDialectalDictionary(dialectal.retriveComboBoxItem());
+		yiddish.setParticels(particlesPanel.getParticles());
 
 		return yiddish;
 	}

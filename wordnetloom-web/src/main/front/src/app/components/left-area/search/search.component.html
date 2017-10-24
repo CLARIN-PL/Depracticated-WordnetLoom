@@ -1,24 +1,18 @@
+<div class="form-container">
 <form #f="ngForm" (ngSubmit)="onSubmit(f.value)">
-  <div class="form-group row">
-    <div class="col-12">
-      <div class="input-group">
-        <span class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></span>
-        <input class="form-control" type="text" placeholder="lemmat, zapis fonetyczny, odmiana..."
-          name="lemma" ngModel>
-      </div>
-    </div>
-  </div>
 
-  <div *ngFor="let searchFieldName of searchKeys" class="form-group row">
-    <div class="col-12">
-      <select class="form-control"
-              [name]="searchFieldName" ngModel>
-        <option value="" disabled selected>{{ searchFields[searchFieldName]['name'] }}</option>
-        <option value="">{{ searchFields[searchFieldName]['name'] }}</option>
-        <option *ngFor="let opt of searchFields[searchFieldName]['searchOptions']" [value]="opt.id"> {{opt.name}} </option>
-      </select>
-    </div>
-  </div>
+  <mat-form-field class="example-full-width">
+    <input matInput placeholder="lemmat, zapis fonetyczny, odmiana..." value="" name="lemma" ngModel>
+  </mat-form-field>
 
-  <button type="submit" class="btn btn-outline-success btn-block">Search</button>
+  <mat-form-field *ngFor="let searchFieldName of searchKeys">
+    <mat-select placeholder="{{searchFields[searchFieldName]['name'] }}"  [name]="searchFieldName" ngModel>
+      <mat-option [value]=""></mat-option>
+      <mat-option *ngFor="let opt of searchFields[searchFieldName]['searchOptions']" [value]="opt.id"> {{opt.name}} </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-button type="submit" mat-raised-button color="primary"><i class="fa fa-search" aria-hidden="true"></i> Search</button>
+
 </form>
+</div>

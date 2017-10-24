@@ -8,7 +8,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.Set;
+import java.util.*;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -201,21 +201,28 @@ public class ParticlesPanel extends JPanel {
 			}
 		});
 
-		btnRemove.addActionListener(new ActionListener() {
+		btnRemove.addActionListener(e -> {
+            if (list.getSelectedValue() != null) {
+                RemoteUtils.lexicalUnitRemote
+                        .removeParticle((Particle) listModel.getElementAt(list.getSelectedIndex()));
+                listModel.removeElementAt(list.getSelectedIndex());
+            }
+        });
+	}
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (list.getSelectedValue() != null) {
-					RemoteUtils.lexicalUnitRemote
-							.removeParticle((Particle) listModel.getElementAt(list.getSelectedIndex()));
-					listModel.removeElementAt(list.getSelectedIndex());
-				}
-			}
-		});
+	public  Set<Particle> getParticles(){
+		Set<Particle> particles = new HashSet<>();
+		for(int i=0; i<listModel.getSize(); i++){
+			particles.add((Particle)listModel.getElementAt(i));
+		}
+		return particles;
 	}
 
 	public void setParticles(Set<Particle> particels) {
-		for (Particle p : particels) {
+	    // wstawiamy do listy, aby móc je posortować. Elementy sortowane są ze względu na kolejność dodania
+		List<Particle> particlesList = new ArrayList<>(particels);
+		Collections.sort(particlesList, (o1, o2) -> o1.getId() > o2.getId() ? 1 : -1);
+		for (Particle p : particlesList) {
 			listModel.addElement(p);
 		}
 	}

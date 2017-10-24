@@ -1,0 +1,25 @@
+.main-row {
+  height: 100%;
+}
+
+.offset-top{
+  padding-top: 10px;
+}
+
+.main-content-container{
+  margin-top: 80px;
+  height: 100%;
+}
+
+.app-container{
+  padding-top: 70px;
+  height: 100%;
+}
+.sidebar-list{
+  padding-top: 65px;
+}
+
+.option-list{
+  overflow-y: scroll;
+  max-height: calc(100vh - 70px);
+}
