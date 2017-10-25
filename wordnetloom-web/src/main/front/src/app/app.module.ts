@@ -2,15 +2,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
-import { SearchComponent } from './components/left-area/search/search.component';
+import { SearchComponent } from './components/search-area/search/search.component';
 import { ResultComponent } from './components/right-area/result/result.component';
 import { RightAreaComponent } from './components/right-area/right-area.component';
-import { LeftAreaComponent } from './components/left-area/left-area.component';
+import { SearchAreaComponent } from './components/search-area/search-area.component';
 import { FormsModule } from '@angular/forms';
 import { HttpService } from './services/http.service';
 import { HttpModule } from '@angular/http';
 import {SlimLoadingBarModule } from 'ng2-slim-loading-bar';
-import { SearchResultComponent } from './components/left-area/search-result/search-result.component';
+import { SearchResultComponent } from './components/search-area/search-result/search-result.component';
 import {CurrentStateService} from './services/current-state.service';
 import {RouterModule, Routes} from '@angular/router';
 import {
@@ -20,6 +20,7 @@ import {
 } from '@angular/material';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {SidebarService} from './services/sidebar.service';
+import { ClickOutsideDirective } from './directives/click-outside.directive';
 
 const appRoutes: Routes = [
   {path: ':lemma_id', component: ResultComponent},
@@ -32,9 +33,10 @@ const appRoutes: Routes = [
     HeaderComponent,
     SearchComponent,
     ResultComponent,
-    LeftAreaComponent,
+    SearchAreaComponent,
     RightAreaComponent,
-    SearchResultComponent
+    SearchResultComponent,
+    ClickOutsideDirective
   ],
   imports: [
     RouterModule.forRoot(

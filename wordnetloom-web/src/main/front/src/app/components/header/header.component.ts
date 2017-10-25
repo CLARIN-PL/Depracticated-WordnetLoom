@@ -9,15 +9,13 @@ import {SidebarService} from "../../services/sidebar.service";
 })
 export class HeaderComponent implements OnInit {
   @ViewChild('panel') el;
+  @ViewChild('expandBtn') expandBtn;
+
   isPanelOpened = false;
   constructor(private http: HttpService, private sidebar: SidebarService) { }
 
   ngOnInit() {
-    // console.log(this.el.opened());
-    // console.log(this.el.opened.subscribe(() => {
-    //   this.isPanelOpened = !this.el.closed.closed;
-    //   console.log(this.isPanelOpened);
-    // }));
+    this.el.hideOnLeave = () => {};
   }
 
   panelToggle() {
@@ -29,5 +27,11 @@ export class HeaderComponent implements OnInit {
     this.sidebar.getAllOptions (form);
   }
 
-
+  hideOnLeave(clickedElement) {
+    const clickedInside = this.expandBtn._elementRef.nativeElement.contains(clickedElement);
+    if (!clickedInside) {
+      this.el.close();
+      this.isPanelOpened = this.el._expanded;
+    }
+  }
 }

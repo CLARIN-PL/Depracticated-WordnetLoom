@@ -1,8 +1,37 @@
 .advanced-search-panel{
   z-index: 1000;
   position: fixed;
-  width: 50%;
-  right: 10px;
+  width: 90%;
+  top: 50px;
+  right: 5px;
+}
+@media (min-width: 768px) {
+  .advanced-search-panel{
+    width: 50%;
+    top: 70px;
+    right: 15px;
+  }
+}
+
+@media (min-width: 992px) {
+  .advanced-search-panel{
+    width: 30%;
+    top: 70px;
+    right: 15px;
+  }
+}
+
+.advanced-search-panel .mat-expanded{
+  padding-top: 40px;
+}
+
+.advanced-search-form > .mat-input-wrapper.mat-form-field-wrapper > .mat-input-underline.mat-form-field-underline{
+  background-color: white;
+}
+
+.advanced-search-form input{
+  color: white;
+
 }
 
 .fixed-top{
@@ -10,7 +39,7 @@
 }
 
 .lemma-search-form{
-  display: inherit;
+  /*display: inherit;*/
 }
 
 .fill-remaining-space{
