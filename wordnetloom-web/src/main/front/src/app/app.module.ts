@@ -16,7 +16,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {
   MatButtonModule, MatCheckboxModule, MatExpansionModule, MatInputModule, MatListModule, MatSelectionList,
   MatSelectModule,
-  MatSidenavModule, MatTooltipModule
+  MatSidenavModule, MatTabsModule, MatTooltipModule
 } from '@angular/material';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {SidebarService} from './services/sidebar.service';
@@ -55,6 +55,7 @@ const appRoutes: Routes = [
     MatListModule,
     MatExpansionModule,
     MatTooltipModule,
+    MatTabsModule,
     BrowserAnimationsModule
   ],
   providers: [HttpService, CurrentStateService, SidebarService],

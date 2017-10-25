@@ -1,39 +1,44 @@
-<div *ngIf="content">
+<div *ngIf="content[0]">
 <div class="row">
   <div class="text-center col-12">
-    <div class="float-sm-right"><p>variant {{ content.variant }}</p></div>
-    <h3>{{ content.lemma }}</h3>
+    <!--<div class="float-sm-right"><p>variant {{ content.variant }}</p></div>-->
+    <h3>{{ content[0].lemma }}</h3>
+    <h4><span matTooltip="Part of speech">{{ content[0].partOfSpeech }}</span><span *ngIf="content[0].grammaticalGender" matTooltip="Grammatical gender">, {{ content[0].grammaticalGender }}</span>, <span matTooltip="Lexicon">{{ content[0].flag }}</span></h4>
   </div>
 </div>
 
-<div class="row">
-  <div class="card full-width small-margin">
-    <div class="card-body">
-      <div *ngFor="let field of content.fields" class="row">
-        <div class="col-4 col-xl-2"><b>{{ field.name }}:</b></div>
-        <div class="col-8 col-xl-10">
-          <p *ngFor="let value of field.values"> {{ value }} </p>
-          <hr>
+<!--<div class="row">-->
+  <!--<div class="card full-width small-margin">-->
+    <!--<div class="card-body">-->
+      <!--<div *ngFor="let field of content.fields" class="row">-->
+        <!--<div class="col-4 col-xl-2"><b>{{ field.name }}:</b></div>-->
+        <!--<div class="col-8 col-xl-10">-->
+          <!--<p *ngFor="let value of field.values"> {{ value }} </p>-->
+          <!--<hr>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</div>-->
+<mat-tab-group *ngIf="yiddishContentPresent" selectedIndex="1">
+  <mat-tab class="tab-title" label="Possible yiddish variants: " disabled></mat-tab>
+  <mat-tab *ngFor="let content of content" [label]="content.yiddishVariant">
+  <div *ngFor="let area of content.areas" class="row area-row">
+    <div class="card full-width small-margin">
+      <div class="card-body">
+
+        <div *ngFor="let field of area.fields" class="row">
+          <div class="col-4 col-xl-2"><b>{{ field.name }}:</b></div>
+          <div class="col-8 col-xl-10">
+            <p *ngFor="let value of field.values"> {{ value }} </p>
+            <hr>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+  </mat-tab>
+</mat-tab-group>
 
-<div *ngFor="let area of content.areas" class="row">
-  <div class="card full-width small-margin">
-    <div class="card-body">
-      <h4 class="card-title">{{ area.name }}</h4>
-      <!--<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>-->
-      <div *ngFor="let field of area.fields" class="row">
 
-        <div class="col-4 ml-md-auto col-xl-2"><b>{{ field.name }}:</b></div>
-        <div class="col-8 col-md-8 col-xl-9">
-          <p *ngFor="let value of field.values"> {{ value }} </p>
-          <hr>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 </div>

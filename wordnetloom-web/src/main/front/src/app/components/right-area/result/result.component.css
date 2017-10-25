@@ -1,0 +1,9 @@
+.area-row{
+  margin-right: 0;
+  margin-left: 0;
+}
+
+::ng-deep .mat-tab-label.mat-tab-disabled, .mat-tab-link.mat-tab-disabled {
+  color: initial;
+  font-weight: 700;
+}
