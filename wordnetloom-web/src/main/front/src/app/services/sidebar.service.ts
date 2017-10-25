@@ -23,6 +23,8 @@ export class SidebarService {
     this.list = [];
     let page = 0;
 
+
+    // todo- load more on scroll
     const partialResultCallback = function(){
       self.http.getSearchOptions(form, page, 50).subscribe(
         (response) => {

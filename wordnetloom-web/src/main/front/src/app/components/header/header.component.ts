@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {HttpService} from "../../services/http.service";
 import {SidebarService} from "../../services/sidebar.service";
 
@@ -8,6 +8,7 @@ import {SidebarService} from "../../services/sidebar.service";
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
+  @Input() showSearch = true;
   @ViewChild('panel') el;
   @ViewChild('expandBtn') expandBtn;
 

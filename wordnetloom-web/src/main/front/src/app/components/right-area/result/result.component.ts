@@ -1,16 +1,17 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnChanges, OnDestroy, OnInit} from '@angular/core';
 import {HttpService} from '../../../services/http.service';
 import {CurrentStateService} from '../../../services/current-state.service';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
 import {SenseContent} from './sensecontent';
+import {SidebarService} from "../../../services/sidebar.service";
 
 @Component({
   selector: 'app-result',
   templateUrl: './result.component.html',
   styleUrls: ['./result.component.css']
 })
-export class ResultComponent implements OnInit, OnDestroy {
+export class ResultComponent implements OnInit, OnDestroy, OnChanges {
   content: SenseContent[];
   subscription: Subscription = null;
 
@@ -19,8 +20,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   relations= [];
 
   constructor(private http: HttpService,
-              private currentState: CurrentStateService,
-              private cd: ChangeDetectorRef,
+              private sidebar: SidebarService,
               private route: ActivatedRoute
     ) { }
 
@@ -30,9 +30,20 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.lemmaId = +this.route.snapshot.paramMap.get('lemma_id');
 
     this.subscription = this.route.params.subscribe(params => {
+      const searchLemma = params['search_lemma'];
+      if (searchLemma) {
+        this.sidebar.getAllOptions({lemma: searchLemma});
+      }
+
       this.lemmaId = +params['lemma_id']; // (+) converts string 'id' to a number
-      this.updateCurrentLexicalUnit();
+      if (this.lemmaId) {
+        this.updateCurrentLexicalUnit();
+      }
     });
+  }
+
+  ngOnChanges() {
+    console.log(this.route.snapshot);
   }
 
 

@@ -27,8 +27,12 @@ import { AboutComponent } from './components/about/about.component';
 import { UnitComponent } from './components/unit/unit.component';
 
 const appRoutes: Routes = [
-  {path: ':lemma_id', component: ResultComponent},
-  {path: ':lemma_id/:variant_id', component: ResultComponent}
+  {path: '', component: HomeComponent},
+  {path: 'about', component: AboutComponent},
+  {path: 'detail', component: UnitComponent, children:[
+    { path: ':lemma_id', component: ResultComponent},
+    { path: 'search/:search_lemma', component: ResultComponent},
+  ]}
 ];
 
 @NgModule({

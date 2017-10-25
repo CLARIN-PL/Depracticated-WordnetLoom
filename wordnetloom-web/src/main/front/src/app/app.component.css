@@ -1,38 +1,10 @@
 .main-row {
-
   min-height: 99vh;
 }
-
-.offset-top{
-  padding-top: 10px;
-}
-
 .app-container{
   padding-top: 60px;
   height: 100%;
 }
-.sidebar-list{
-  padding-top: 65px;
-}
-
-.option-area{
-  background-color: rgba(165, 165, 165, 0.32);
-  box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.12);
-  padding-right: 0;
-  padding-left: 0;
-}
-.option-list{
-  overflow-y: auto;
-  max-height: calc(100vh - 70px);
-}
-
-.options-title{
-  box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.05);
-  text-align: center;
-  padding: 15px;
-  background-color: rgba(212, 212, 212, 0.47);
-}
-
-.option-list-item:nth-child(even){
-  /*background-color: rgba(212, 212, 212, 0.47);*/
+.offset-top{
+  padding-top: 10px;
 }

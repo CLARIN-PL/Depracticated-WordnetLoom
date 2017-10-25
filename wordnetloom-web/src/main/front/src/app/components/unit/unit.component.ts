@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {SidebarService} from "../../services/sidebar.service";
 
 @Component({
   selector: 'app-unit',
@@ -7,9 +8,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UnitComponent implements OnInit {
 
-  constructor() { }
+  @ViewChild('sidebar') sidebarRef;
+  sidebarObsv;
+  sidebarContent = [];
+
+  constructor(private sidebarService: SidebarService) {}
 
   ngOnInit() {
+    this.sidebarService.init(this.sidebarRef);
+    this.sidebarObsv = this.sidebarService.getListObservable()
+      .subscribe(data => {
+        console.log(data);
+        this.sidebarContent = data;
+      });
   }
 
 }

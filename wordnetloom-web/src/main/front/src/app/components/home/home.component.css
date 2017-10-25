@@ -1,0 +1,22 @@
+.welcome{
+  text-align: center;
+}
+
+.long-width-input{
+  min-width: 300px;
+}
+
+.main-row {
+  min-height: 99vh;
+}
+.app-container{
+  padding-top: 60px;
+  height: 100%;
+}
+.offset-top{
+  padding-top: 10px;
+}
+
+footer{
+  background-color: #cccccc;
+}
