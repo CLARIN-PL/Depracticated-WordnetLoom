@@ -1,27 +1,3 @@
 <ng2-slim-loading-bar [color]="'#000'"></ng2-slim-loading-bar>
-<app-header></app-header>
 
-<mat-sidenav-container class="app-container">
-  <mat-sidenav #sidebar>
-
-  </mat-sidenav>
-
-  <div class="sidenav-content">
-
-    <div class="container-fluid">
-      <div class="row main-row">
-        <div class="col-12 col-sm-3">
-          <h5 [hidden]="sidebarContent.length < 1">Found search items:</h5>
-          <mat-nav-list #sidebarList class="option-list">
-            <a mat-list-item [routerLink]="[item.id]" *ngFor="let item of sidebarContent"  matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}">
-              {{ item.lemma.length > 23 ? item.lemma.slice(0, 20) + '...' :  item.lemma}}
-            </a>
-          </mat-nav-list>
-        </div>
-        <div class="col-12 col-sm-9 offset-top">
-          <app-right-area></app-right-area>
-        </div>
-      </div>
-    </div>
-  </div>
-</mat-sidenav-container>
+<router-outlet></router-outlet>

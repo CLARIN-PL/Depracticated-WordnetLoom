@@ -1,0 +1,104 @@
+<app-header [showSearch]="false"></app-header>
+
+<div class="app-container">
+  <div class="row main-row">
+    <div class="col-12">
+
+
+
+      <div class="row">
+        <div class="col-12">
+          <div class="jumbotron jumbotron-fluid welcome">
+            <div class="container">
+              <h2 class="display-3">Welcome to Yiddish wordnet!</h2>
+              <p class="lead">Lorem ipsum dolor sit amet enim. Etiam ullamcorper. Suspendisse a pellentesque dui, non felis.</p>
+            </div>
+            <form #f="ngForm" (ngSubmit)="onSearch(f.value)">
+              <mat-form-field class="long-width-input">
+                <input matInput placeholder="Search for lemma, fonetic form, etc..." name="lemma" ngModel>
+              </mat-form-field>
+              <button type="submit" mat-raised-button color="primary">Search <i class="fa fa-search"></i></button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="row">
+        <div class="col-4">
+          <div class="card">
+            <img class="card-img-top" src="..." alt="Card image cap">
+            <div class="card-body">
+              <h4 class="card-title">Card title</h4>
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <a href="" class="btn btn-primary">Go somewhere</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card">
+            <img class="card-img-top" src="..." alt="Card image cap">
+            <div class="card-body">
+              <h4 class="card-title">Card title</h4>
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <a href="" class="btn btn-primary">Go somewhere</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card">
+            <img class="card-img-top" src="..." alt="Card image cap">
+            <div class="card-body">
+              <h4 class="card-title">Card title</h4>
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <a href="" class="btn btn-primary">Go somewhere</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <br>
+      <br>
+      <br>
+      <br>
+
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-6">
+            <h4>Lorem ipsum dolor sit amet</h4>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ut posuere arcu. Phasellus quis justo et metus blandit tempus a nec ex. Fusce sollicitudin consequat diam. Vestibulum ut dolor sit amet urna tempus ornare non eget mi. Integer quis odio eu purus viverra ornare. Morbi aliquet viverra dapibus. Integer mollis turpis risus, iaculis tempus metus fringilla et. Phasellus ut orci est. Ut dui dolor, interdum ac tincidunt sit amet, vulputate maximus lacus. Nunc semper consectetur quam, sit amet lobortis purus bibendum quis. Cras mattis augue sed mauris iaculis, ac mattis neque bibendum. Vestibulum dapibus pellentesque purus. Nullam non interdum augue. Mauris urna enim, gravida quis viverra quis, consectetur quis turpis.</p>
+          </div>
+          <div class="col-sm-6">
+            <h4>Lorem ipsum dolor sit amet</h4>
+            <p>Praesent vel feugiat elit, id placerat tellus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed semper gravida nulla non rutrum. Proin vehicula nec arcu et accumsan. Mauris eu venenatis odio, eu dignissim urna. Nulla non ornare ex. Aenean semper elit dictum quam luctus suscipit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer posuere purus justo, ut sodales mi placerat sed. Nunc maximus nulla ac consequat scelerisque.</p>
+          </div>
+        </div>
+      </div>
+
+      <br>
+      <br>
+      <br>
+      <br>
+
+      <footer class="container-fluid">
+        <div class="row">
+          <div class="container">
+            <div class="col-12">
+              <p>
+
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ut posuere arcu. Phasellus quis justo et metus blandit tempus a nec ex. Fusce sollicitudin consequat diam. Vestibulum ut dolor sit amet urna tempus ornare non eget mi. Integer quis odio eu purus viverra ornare. Morbi aliquet viverra dapibus. Integer mollis turpis risus, iaculis tempus metus fringilla et. Phasellus ut orci est. Ut dui dolor, interdum ac tincidunt sit amet, vulputate maximus lacus. Nunc semper consectetur quam, sit amet lobortis purus bibendum quis. Cras mattis augue sed mauris iaculis, ac mattis neque bibendum. Vestibulum dapibus pellentesque purus. Nullam non interdum augue. Mauris urna enim, gravida quis viverra quis, consectetur quis turpis.
+
+                Praesent vel feugiat elit, id placerat tellus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed semper gravida nulla non rutrum. Proin vehicula nec arcu et accumsan. Mauris eu venenatis odio, eu dignissim urna. Nulla non ornare ex. Aenean semper elit dictum quam luctus suscipit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer posuere purus justo, ut sodales mi placerat sed. Nunc maximus nulla ac consequat scelerisque.
+
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+
+    </div>
+  </div>
+</div>

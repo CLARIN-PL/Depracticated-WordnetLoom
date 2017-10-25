@@ -1,0 +1,40 @@
+.main-row {
+  min-height: 99vh;
+}
+
+.app-container{
+  height: 100%;
+  padding-top: 60px;
+}
+.sidebar-list{
+  padding-top: 65px;
+}
+
+.option-area{
+  background-color: rgba(165, 165, 165, 0.32);
+  box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.12);
+  padding-right: 0;
+  padding-left: 0;
+}
+.option-list{
+  overflow-y: auto;
+  max-height: calc(100vh - 70px);
+}
+
+.option-list .option-list-item.mat-list-item{
+  padding-left: 10px;
+}
+
+.options-title{
+  box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  padding: 15px;
+  background-color: rgba(212, 212, 212, 0.47);
+}
+
+.main-row {
+  min-height: 99vh;
+}
+.offset-top{
+  padding-top: 10px;
+}

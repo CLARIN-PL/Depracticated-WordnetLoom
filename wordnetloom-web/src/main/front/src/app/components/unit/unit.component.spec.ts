@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RightAreaComponent } from './right-area.component';
+import { UnitComponent } from './unit.component';
 
-describe('RightAreaComponent', () => {
-  let component: RightAreaComponent;
-  let fixture: ComponentFixture<RightAreaComponent>;
+describe('UnitComponent', () => {
+  let component: UnitComponent;
+  let fixture: ComponentFixture<UnitComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RightAreaComponent ]
+      declarations: [ UnitComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RightAreaComponent);
+    fixture = TestBed.createComponent(UnitComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

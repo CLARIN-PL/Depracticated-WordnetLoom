@@ -1,5 +1,6 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {SidebarService} from "./services/sidebar.service";
+import {Component, OnInit } from '@angular/core';
+import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+
 
 @Component({
   selector: 'app-root',
@@ -7,20 +8,34 @@ import {SidebarService} from "./services/sidebar.service";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  @ViewChild('sidebar') sidebarRef;
-  sidebarObsv;
-  sidebarContent = [];
+  showSearchInHeader = true;
 
-  constructor(private sidebarService: SidebarService) {}
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.sidebarService.init(this.sidebarRef);
-    this.sidebarObsv = this.sidebarService.getListObservable()
-      .subscribe(data => {
-        console.log(data);
-        this.sidebarContent = data;
-      });
+    // this.route.params.subscribe(params => {
+    //   console.log(params);
+    //
+    // });
+    // this.route.data
+    //   .subscribe((data) => {
+    //     console.log(data);
+    //   });
+
+    // this.route.paramMap
+    //   .switchMap((params: ParamMap) => {
+    //
+    //     console.log(params);
+    //   });
   }
+    // this.route.params.subscribe(params => {
+    //   console.log(params);
+    //   if (params['lemma_id']) {
+    //     this.showSearchInHeader = true;
+    //   } else {
+    //     this.showSearchInHeader = false;
+    //   }
+    // });
 
 }
 

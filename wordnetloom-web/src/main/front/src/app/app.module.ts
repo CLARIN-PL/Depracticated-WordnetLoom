@@ -14,17 +14,25 @@ import { SearchResultComponent } from './components/search-area/search-result/se
 import {CurrentStateService} from './services/current-state.service';
 import {RouterModule, Routes} from '@angular/router';
 import {
-  MatButtonModule, MatCheckboxModule, MatExpansionModule, MatInputModule, MatListModule, MatSelectionList,
+  MatButtonModule, MatCheckboxModule, MatChipsModule, MatExpansionModule, MatInputModule, MatListModule,
+  MatSelectionList,
   MatSelectModule,
-  MatSidenavModule, MatTooltipModule
+  MatSidenavModule, MatTabsModule, MatTooltipModule
 } from '@angular/material';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {SidebarService} from './services/sidebar.service';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
+import { HomeComponent } from './components/home/home.component';
+import { AboutComponent } from './components/about/about.component';
+import { UnitComponent } from './components/unit/unit.component';
 
 const appRoutes: Routes = [
-  {path: ':lemma_id', component: ResultComponent},
-  {path: ':lemma_id/:variant_id', component: ResultComponent}
+  {path: '', component: HomeComponent},
+  {path: 'about', component: AboutComponent},
+  {path: 'detail', component: UnitComponent, children:[
+    { path: ':lemma_id', component: ResultComponent},
+    { path: 'search/:search_lemma', component: ResultComponent},
+  ]}
 ];
 
 @NgModule({
@@ -36,7 +44,10 @@ const appRoutes: Routes = [
     SearchAreaComponent,
     RightAreaComponent,
     SearchResultComponent,
-    ClickOutsideDirective
+    ClickOutsideDirective,
+    HomeComponent,
+    AboutComponent,
+    UnitComponent
   ],
   imports: [
     RouterModule.forRoot(
@@ -55,6 +66,8 @@ const appRoutes: Routes = [
     MatListModule,
     MatExpansionModule,
     MatTooltipModule,
+    MatTabsModule,
+    MatChipsModule,
     BrowserAnimationsModule
   ],
   providers: [HttpService, CurrentStateService, SidebarService],

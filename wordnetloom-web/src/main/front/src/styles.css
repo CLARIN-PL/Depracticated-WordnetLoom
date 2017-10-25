@@ -21,3 +21,24 @@
 .mat-select-content{
   z-index: 10000;
 }
+
+/* You can add global styles to this file, and also import other style files */
+::-webkit-scrollbar-track
+{
+  border-radius: 2px;
+  background-color: #ddd;
+}
+
+::-webkit-scrollbar
+{
+  width: 4px;
+  height: 4px;
+  background-color: #ddd;
+}
+
+::-webkit-scrollbar-thumb
+{
+  border-radius: 4px;
+  background-color: #3f51b5;
+}
+
