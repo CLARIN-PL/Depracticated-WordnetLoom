@@ -60,26 +60,26 @@ public class LexicalRelationDAOBean extends DAOBean implements LexicalRelationDA
 
 
     @Override
-    public Map<Long, Set<RelationDTO>> dbGetSubRelations(Long senseId) {
-        List<RelationDTO> list = local.getEM().createQuery("SELECT NEW pl.edu.pwr.wordnetloom.dto.RelationDTO(s.senseTo.id, s.relation.id, CONCAT(s.senseTo.lemma.word, ' ', s.senseTo.senseNumber), s.senseTo.partOfSpeech.id) FROM SenseRelation s WHERE s.senseFrom.id  = :id", RelationDTO.class)
+    public Map<String, Set<RelationDTO>> dbGetSubRelations(Long senseId) {
+        List<RelationDTO> list = local.getEM().createQuery("SELECT NEW pl.edu.pwr.wordnetloom.dto.RelationDTO(s.senseTo.id, s.relation.name.text, CONCAT(s.senseTo.lemma.word, ' ', s.senseTo.senseNumber), s.senseTo.partOfSpeech.id) FROM SenseRelation s WHERE s.senseFrom.id  = :id", RelationDTO.class)
                 .setParameter("id", senseId)
                 .getResultList();
         return list.stream()
                 .collect(
                         Collectors.groupingBy(
-                                RelationDTO::getRelationTypeId,
+                                RelationDTO::getRelationName,
                                 Collectors.mapping(i -> i, Collectors.toSet())));
     }
 
     @Override
-    public Map<Long, Set<RelationDTO>> dbGetUpperRelations(Long senseId) {
-        List<RelationDTO> list = local.getEM().createQuery("SELECT NEW pl.edu.pwr.wordnetloom.dto.RelationDTO(s.senseFrom.id, s.relation.id,  CONCAT(s.senseFrom.lemma.word, ' ', s.senseFrom.senseNumber), s.senseFrom.partOfSpeech.id) FROM SenseRelation s WHERE s.senseTo.id  = :id", RelationDTO.class)
+    public Map<String, Set<RelationDTO>> dbGetUpperRelations(Long senseId) {
+        List<RelationDTO> list = local.getEM().createQuery("SELECT NEW pl.edu.pwr.wordnetloom.dto.RelationDTO(s.senseFrom.id, s.relation.name.text,  CONCAT(s.senseFrom.lemma.word, ' ', s.senseFrom.senseNumber), s.senseFrom.partOfSpeech.id) FROM SenseRelation s WHERE s.senseTo.id  = :id", RelationDTO.class)
                 .setParameter("id", senseId)
                 .getResultList();
         return list.stream()
                 .collect(
                         Collectors.groupingBy(
-                                RelationDTO::getRelationTypeId,
+                                RelationDTO::getRelationName,
                                 Collectors.mapping(i -> i, Collectors.toSet())));
     }
 

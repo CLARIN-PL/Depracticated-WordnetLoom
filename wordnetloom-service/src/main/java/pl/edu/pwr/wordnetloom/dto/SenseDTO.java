@@ -10,10 +10,10 @@ public class SenseDTO implements Serializable {
     private String lemma;
     private Long partOfSpeech;
 
-    private Map<Long, Set<RelationDTO>> incomming;
-    private Map<Long, Set<RelationDTO>> outgoing;
+    private Map<String, Set<RelationDTO>> incomming;
+    private Map<String, Set<RelationDTO>> outgoing;
 
-    public SenseDTO(Long id, String lemma, Long partOfSpeech, Map<Long, Set<RelationDTO>> incomming, Map<Long, Set<RelationDTO>> outgoing) {
+    public SenseDTO(Long id, String lemma, Long partOfSpeech, Map<String, Set<RelationDTO>> incomming, Map<String, Set<RelationDTO>> outgoing) {
         this.id = id;
         this.lemma = lemma;
         this.partOfSpeech = partOfSpeech;
@@ -33,11 +33,11 @@ public class SenseDTO implements Serializable {
         return partOfSpeech;
     }
 
-    public Map<Long, Set<RelationDTO>> getIncomming() {
+    public Map<String, Set<RelationDTO>> getIncomming() {
         return incomming;
     }
 
-    public Map<Long, Set<RelationDTO>> getOutgoing() {
+    public Map<String, Set<RelationDTO>> getOutgoing() {
         return outgoing;
     }
 }

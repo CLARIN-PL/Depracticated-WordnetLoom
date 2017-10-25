@@ -660,8 +660,8 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
     private SenseDTO buildSenselDTO(Long id) {
 
         Sense s = dbGet(id);
-        Map<Long, Set<RelationDTO>> incomming = lexicalRelationDAO.dbGetUpperRelations(id);
-        Map<Long, Set<RelationDTO>> outgoing = lexicalRelationDAO.dbGetSubRelations(id);
+        Map<String, Set<RelationDTO>> incomming = lexicalRelationDAO.dbGetUpperRelations(id);
+        Map<String, Set<RelationDTO>> outgoing = lexicalRelationDAO.dbGetSubRelations(id);
 
         String lemma = s.getLemma().getWord() + " " + s.getSenseNumber();
         return new SenseDTO(s.getId(), lemma, s.getPartOfSpeech().getId(), incomming, outgoing);

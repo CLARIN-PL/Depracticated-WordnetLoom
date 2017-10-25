@@ -26,7 +26,7 @@ public class RelationJsonConverter implements EntityJsonConverter<RelationDTO> {
         return jsonObject;
     }
 
-    public JsonElement convertToJsonElement(Map<Long, Set<RelationDTO>> entities) {
+    public JsonElement convertToJsonElement(Map<String, Set<RelationDTO>> entities) {
 
         final JsonArray jsonArray = new JsonArray();
 
@@ -37,7 +37,7 @@ public class RelationJsonConverter implements EntityJsonConverter<RelationDTO> {
             for (final RelationDTO entity : v) {
                 array.add(convertToJsonElement(entity));
             }
-            jsonObject.add(k.toString(), array);
+            jsonObject.add(k, array);
             jsonArray.add(jsonObject);
         });
 

@@ -23,9 +23,9 @@ public interface LexicalRelationDAOLocal extends DAOLocal {
 
     List<SenseRelation> dbGetSubRelations(Sense sense, RelationType relationType);
 
-    Map<Long, Set<RelationDTO>> dbGetSubRelations(Long senseId);
+    Map<String, Set<RelationDTO>> dbGetSubRelations(Long senseId);
 
-    Map<Long, Set<RelationDTO>> dbGetUpperRelations(Long senseId);
+    Map<String, Set<RelationDTO>> dbGetUpperRelations(Long senseId);
 
     List<SenseRelation> dbFastGetRelations(RelationType relationType);
 

@@ -1,227 +1,215 @@
 package pl.edu.pwr.wordnetloom.model;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "relation_type")
 @NamedQueries({
-	@NamedQuery(name = "RelationType.dbDelete",
-			query = "DELETE FROM RelationType rt WHERE rt.parent = :parent"),
-			@NamedQuery(name = "RelationType.dbGetChildren",
-			query = "SELECT rt FROM RelationType rt WHERE rt.parent = :parent  AND rt.lexicon.id IN (:lexicons) ORDER BY rt.position"),
-			@NamedQuery(name = "RelationType.dbDeleteAll",
-			query = "DELETE FROM RelationType rt"),
-			@NamedQuery(name = "RelationType.dbFullGetRelationTypes",
-			query = "SELECT rt FROM RelationType rt LEFT JOIN FETCH rt.displayText LEFT JOIN FETCH rt.name LEFT JOIN FETCH rt.description " +
-					"LEFT JOIN FETCH rt.shortDisplayText LEFT JOIN FETCH rt.parent LEFT JOIN FETCH rt.reverse WHERE rt.lexicon.id IN (:lexicons)"),
-			@NamedQuery(name = "RelationType.dbGetReverseByRelationTypeID",
-				query = "select rt.reverse FROM RelationType rt where rt.id = :ID"),
-			@NamedQuery(name = "RelationType.dbGetHighest",
-			query = "SELECT rt FROM RelationType rt WHERE rt.parent = NULL AND rt.lexicon.id IN (:lexicons) ORDER BY rt.position"),
-			@NamedQuery(name = "RelationType.dbGetHighestArgument",
-			query = "SELECT rt FROM RelationType rt WHERE rt.parent = NULL AND rt.argumentType.id = :argument AND rt.lexicon.id IN (:lexicons) ORDER BY rt.position"),
+        @NamedQuery(name = "RelationType.dbDelete",
+                query = "DELETE FROM RelationType rt WHERE rt.parent = :parent"),
+        @NamedQuery(name = "RelationType.dbGetChildren",
+                query = "SELECT rt FROM RelationType rt WHERE rt.parent = :parent  AND rt.lexicon.id IN (:lexicons) ORDER BY rt.position"),
+        @NamedQuery(name = "RelationType.dbGetChildrenFull",
+                query = "SELECT rt FROM RelationType rt JOIN FETCH rt.shortDisplayText WHERE rt.parent = :parent  AND rt.lexicon.id IN (:lexicons) ORDER BY rt.position"),
+        @NamedQuery(name = "RelationType.dbDeleteAll",
+                query = "DELETE FROM RelationType rt"),
+        @NamedQuery(name = "RelationType.dbFullGetRelationTypes",
+                query = "SELECT rt FROM RelationType rt LEFT JOIN FETCH rt.displayText LEFT JOIN FETCH rt.name LEFT JOIN FETCH rt.description " +
+                        "LEFT JOIN FETCH rt.shortDisplayText LEFT JOIN FETCH rt.parent LEFT JOIN FETCH rt.reverse WHERE rt.lexicon.id IN (:lexicons)"),
+        @NamedQuery(name = "RelationType.dbGetReverseByRelationTypeID",
+                query = "select rt.reverse FROM RelationType rt where rt.id = :ID"),
+        @NamedQuery(name = "RelationType.dbGetHighest",
+                query = "SELECT rt FROM RelationType rt WHERE rt.parent = NULL AND rt.lexicon.id IN (:lexicons) ORDER BY rt.position"),
+        @NamedQuery(name = "RelationType.dbGetHighestArgument",
+                query = "SELECT rt FROM RelationType rt WHERE rt.parent = NULL AND rt.argumentType.id = :argument AND rt.lexicon.id IN (:lexicons) ORDER BY rt.position"),
 })
-public class RelationType implements Serializable, Comparable<RelationType>{
+public class RelationType implements Serializable, Comparable<RelationType> {
 
-	private static final long serialVersionUID = -1464680230571457108L;
+    private static final long serialVersionUID = -1464680230571457108L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
-	@JoinColumn(name = "name", referencedColumnName = "id", nullable = false)
-	private Text name;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @JoinColumn(name = "name", referencedColumnName = "id", nullable = false)
+    private Text name;
 
-	@Column(name = "multilingual",  nullable = false, columnDefinition = "bit")
-	private boolean multilingual = false;
+    @Column(name = "multilingual", nullable = false, columnDefinition = "bit")
+    private boolean multilingual = false;
 
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "id_lexicon", referencedColumnName = "id", nullable = false)
-	private Lexicon lexicon;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_lexicon", referencedColumnName = "id", nullable = false)
+    private Lexicon lexicon;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-	@JoinColumn(name = "description", referencedColumnName = "id", nullable = true)
-	private Text description;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @JoinColumn(name = "description", referencedColumnName = "id", nullable = true)
+    private Text description;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-	@JoinColumn(name = "display_text", referencedColumnName = "id", nullable = false)
-	private Text displayText;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @JoinColumn(name = "display_text", referencedColumnName = "id", nullable = false)
+    private Text displayText;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-	@JoinColumn(name = "short_display_text", referencedColumnName = "id", nullable = false)
-	private Text shortDisplayText;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @JoinColumn(name = "short_display_text", referencedColumnName = "id", nullable = false)
+    private Text shortDisplayText;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "argument_type", referencedColumnName = "id", nullable = false)
-	private RelationArgument argumentType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "argument_type", referencedColumnName = "id", nullable = false)
+    private RelationArgument argumentType;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "parent", nullable = true)
-	private RelationType parent;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent", nullable = true)
+    private RelationType parent;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "reverse", nullable = true)
-	private RelationType reverse;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reverse", nullable = true)
+    private RelationType reverse;
 
-	@OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL)
-	private List<RelationTest> relationTests;
+    @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL)
+    private List<RelationTest> relationTests;
 
-	@Column(name = "auto_reverse", nullable = false, columnDefinition = "bit")
-	private boolean autoReverse;
+    @Column(name = "auto_reverse", nullable = false, columnDefinition = "bit")
+    private boolean autoReverse;
 
-	private int position = 0;
-	
-	public RelationType() {
-	}
+    private int position = 0;
 
-	public Long getId() {
-		return id;
-	}
+    public RelationType() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Text getName() {
-		return name;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setName(Text name) {
-		this.name = name;
-	}
+    public Text getName() {
+        return name;
+    }
 
-	public Text getDescription() {
-		return description;
-	}
+    public void setName(Text name) {
+        this.name = name;
+    }
 
-	public void setDescription(Text description) {
-		this.description = description;
-	}
+    public Text getDescription() {
+        return description;
+    }
 
-	public Text getDisplayText() {
-		return displayText;
-	}
+    public void setDescription(Text description) {
+        this.description = description;
+    }
 
-	public void setDisplayText(Text displayText) {
-		this.displayText = displayText;
-	}
+    public Text getDisplayText() {
+        return displayText;
+    }
 
-	public Text getShortDisplayText() {
-		return shortDisplayText;
-	}
+    public void setDisplayText(Text displayText) {
+        this.displayText = displayText;
+    }
 
-	public void setShortDisplayText(Text shortDisplayText) {
-		this.shortDisplayText = shortDisplayText;
-	}
+    public Text getShortDisplayText() {
+        return shortDisplayText;
+    }
 
-	public RelationType getParent() {
-		return parent;
-	}
+    public void setShortDisplayText(Text shortDisplayText) {
+        this.shortDisplayText = shortDisplayText;
+    }
 
-	public void setParent(RelationType parent) {
-		this.parent = parent;
-	}
+    public RelationType getParent() {
+        return parent;
+    }
 
-	public RelationType getReverse() {
-		return reverse;
-	}
+    public void setParent(RelationType parent) {
+        this.parent = parent;
+    }
 
-	public void setReverse(RelationType reverse) {
-		this.reverse = reverse;
-	}
+    public RelationType getReverse() {
+        return reverse;
+    }
 
-	public boolean isAutoReverse() {
-		return autoReverse;
-	}
+    public void setReverse(RelationType reverse) {
+        this.reverse = reverse;
+    }
 
-	public void setAutoReverse(boolean autoReverse) {
-		this.autoReverse = autoReverse;
-	}
+    public boolean isAutoReverse() {
+        return autoReverse;
+    }
 
-	public List<RelationTest> getRelationTests() {
-		return relationTests;
-	}
+    public void setAutoReverse(boolean autoReverse) {
+        this.autoReverse = autoReverse;
+    }
 
-	public void setRelationTests(List<RelationTest> relationTests) {
-		this.relationTests = relationTests;
-	}
+    public List<RelationTest> getRelationTests() {
+        return relationTests;
+    }
 
-	public RelationArgument getArgumentType() {
-		return argumentType;
-	}
+    public void setRelationTests(List<RelationTest> relationTests) {
+        this.relationTests = relationTests;
+    }
 
-	public void setArgumentType(RelationArgument argumentType) {
-		this.argumentType = argumentType;
-	}
+    public RelationArgument getArgumentType() {
+        return argumentType;
+    }
 
-	public Lexicon getLexicon() {
-		return lexicon;
-	}
+    public void setArgumentType(RelationArgument argumentType) {
+        this.argumentType = argumentType;
+    }
 
-	public void setLexicon(Lexicon lexicon) {
-		this.lexicon = lexicon;
-	}
+    public Lexicon getLexicon() {
+        return lexicon;
+    }
 
-	public int getPosition() {
-		return position;
-	}
+    public void setLexicon(Lexicon lexicon) {
+        this.lexicon = lexicon;
+    }
 
-	public void setPosition(int position) {
-		this.position = position;
-	}
+    public int getPosition() {
+        return position;
+    }
 
-	@Override
-	public boolean equals(Object o){
-		if (this == o) return true;
-		if (o == null || !(o instanceof RelationType))
-			return false;
-		RelationType e = (RelationType) o;
+    public void setPosition(int position) {
+        this.position = position;
+    }
 
-		if(id == null) return false;
-		return id.equals(e.getId());
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !(o instanceof RelationType))
+            return false;
+        RelationType e = (RelationType) o;
 
-	public boolean isMultilingual() {
-		return multilingual;
-	}
+        if (id == null) return false;
+        return id.equals(e.getId());
+    }
 
-	public void setMultilingual(boolean multilingual) {
-		this.multilingual = multilingual;
-	}
+    public boolean isMultilingual() {
+        return multilingual;
+    }
 
-	@Override
-	public int hashCode(){
-		int hashCode = (id.hashCode());
-		if(hashCode == 0)
-			return super.hashCode();
-		return hashCode;
-	}
+    public void setMultilingual(boolean multilingual) {
+        this.multilingual = multilingual;
+    }
 
-	@Override
-	public String toString() {
-		return this.name.getText();
-	}
+    @Override
+    public int hashCode() {
+        int hashCode = (id.hashCode());
+        if (hashCode == 0)
+            return super.hashCode();
+        return hashCode;
+    }
 
-	@Override
-	public int compareTo(RelationType o) {
-		int byName = name.getText().compareTo(o.getName().getText());
-		return byName;
-	}
+    @Override
+    public String toString() {
+        return name.getText();
+    }
+
+    @Override
+    public int compareTo(RelationType o) {
+        int byName = name.getText().compareTo(o.getName().getText());
+        return byName;
+    }
 }
