@@ -1,16 +1,23 @@
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#"><i class="fa fa-comment-o" aria-hidden="true"></i> Yiddish wordnet</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark">
+  <a class="navbar-brand" href="#">
+    <button class="nav-button logo" type="button" color="primary" mat-button>
+    <i class="fa fa-comment-o" aria-hidden="true"></i> Yiddish wordnet
+    </button>
+  </a>
+  <a routerLink="/home"><button class="nav-button" type="button" color="primary" mat-button>HOME</button></a>
+  <a routerLink="/home"><button class="nav-button" type="button" color="primary" mat-button>ABOUT</button></a>
+  <!--<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">-->
+    <!--<span class="navbar-toggler-icon"></span>-->
+  <!--</button>-->
   <span class="fill-remaining-space"></span>
-  <form #lemmaSearch="ngForm" class="advanced-search-form  mr-2 mr-lg-0" (ngSubmit)="simpleSearch(lemmaSearch.value)">
-    <mat-form-field floatPlaceholder="never" class="search-field" [hidden]="isPanelOpened">
-      <input  #lemmaInput matInput placeholder="lemma, fonetical form..." value="" name="lemma" ngModel>
+  <form #lemmaSearch="ngForm" [hidden]="isPanelOpened" class="advanced-search-form  mr-2 mr-lg-0" (ngSubmit)="simpleSearch(lemmaSearch.value)">
+    <i class="fa fa-search" aria-hidden="true"></i>
+    <mat-form-field floatPlaceholder="never" class="search-field" >
+      <input  #lemmaInput matInput placeholder="search for lemma, fonetical form..." value="" name="lemma" ngModel>
     </mat-form-field>
   </form>
   <form class="mr-2 mr-lg-0">
-    <button #expandBtn type="button"  mat-raised-button color="primary" mat-button (click)="panelToggle()">
+    <button #expandBtn class="nav-button" type="button" color="primary" mat-button (click)="panelToggle()">
       Show advanced options <i class="fa fa-chevron-down" aria-hidden="true"></i>
     </button>
   </form>

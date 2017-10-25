@@ -45,4 +45,11 @@ export class HttpService {
   getGlobalOptions(searchedKey) {
     return this.get(searchedKey);
   }
+
+  getSenseRelations(senseId) {
+    const incoming = this.get('sense/' + senseId + '/relations/incoming').map(res => res);
+    const outgoing = this.get('sense/' + senseId + '/relations/outgoing').map(res => res);
+
+    return Observable.forkJoin([incoming, outgoing]);
+  }
 }

@@ -16,6 +16,7 @@ export class ResultComponent implements OnInit, OnDestroy {
 
   lemmaId: number;
   yiddishContentPresent = false;
+  relations= [];
 
   constructor(private http: HttpService,
               private currentState: CurrentStateService,
@@ -48,6 +49,17 @@ export class ResultComponent implements OnInit, OnDestroy {
         this.content.push(new SenseContent(response));
       }
     });
+    this.http.getSenseRelations(this.lemmaId).subscribe(results => {
+      this.relations = results[0].concat(results[1]);
+
+      this.relations = this.relations.map(rel => {
+        const key = Object.keys(rel)[0]; // assuming only one key possible!
+        return {'key': key, items: rel[key]};
+      });
+
+      console.log(this.relations);
+    });
+    // this.http.getSenseRelations(this.lemmaId).subscribe();
   }
 
   ngOnDestroy() {
