@@ -21,7 +21,6 @@ public class RelationTypeJsonConverter implements EntityJsonConverter<RelationTy
         jsonObject.addProperty("id", rt.getId());
         jsonObject.addProperty("name", rt.getName().getText());
         jsonObject.addProperty("short", rt.getShortDisplayText().getText());
-        jsonObject.addProperty("display", rt.getDisplayText().getText());
         return jsonObject;
     }
 

@@ -94,7 +94,7 @@ public class SenseResource {
     @GET
     @Path("/{id}/relations/outgoing")
     public Response getSenseRelationsWhereIsParent(@PathParam("id") final Long id) {
-        Map<Long, Set<RelationDTO>> sr = relationLocal.dbGetSubRelations(id);
+        Map<String, Set<RelationDTO>> sr = relationLocal.dbGetSubRelations(id);
         final OperationResult result = OperationResult.success(senseRelationJsonConverter.convertToJsonElement(sr));
         Response.ResponseBuilder responseBuilder = Response.status(HttpCode.OK.getCode()).entity(OperationResultJsonWriter.toJson(result));
         return responseBuilder.build();
@@ -103,7 +103,7 @@ public class SenseResource {
     @GET
     @Path("/{id}/relations/incoming")
     public Response getSenseRelationsWhereIsChild(@PathParam("id") final Long id) {
-        Map<Long, Set<RelationDTO>> sr = relationLocal.dbGetUpperRelations(id);
+        Map<String, Set<RelationDTO>> sr = relationLocal.dbGetUpperRelations(id);
         final OperationResult result = OperationResult.success(senseRelationJsonConverter.convertToJsonElement(sr));
         Response.ResponseBuilder responseBuilder = Response.status(HttpCode.OK.getCode()).entity(OperationResultJsonWriter.toJson(result));
         return responseBuilder.build();
