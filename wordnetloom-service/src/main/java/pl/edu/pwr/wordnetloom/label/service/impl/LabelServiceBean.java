@@ -1,6 +1,5 @@
 package pl.edu.pwr.wordnetloom.label.service.impl;
 
-import pl.edu.pwr.wordnetloom.common.dto.StringMapEntry;
 import pl.edu.pwr.wordnetloom.label.exception.UnsupportedLanguageException;
 import pl.edu.pwr.wordnetloom.label.repository.LabelRepository;
 import pl.edu.pwr.wordnetloom.label.service.LabelServiceLocal;
@@ -15,7 +14,7 @@ import java.util.List;
 @Stateless
 @Remote(LabelServiceRemote.class)
 @Local(LabelServiceLocal.class)
-public class LabelServiceBean implements LabelServiceRemote{
+public class LabelServiceBean implements LabelServiceRemote {
 
     @Inject
     LabelRepository labelRepository;
@@ -23,21 +22,11 @@ public class LabelServiceBean implements LabelServiceRemote{
     @Override
     public List<Object[]> findLabelsByLanguage(String locale) {
         List<Object[]> labels = labelRepository.findAllLabels(locale);
-        if(labels.isEmpty()){
+        if (labels.isEmpty()) {
             throw new UnsupportedLanguageException(locale);
         }
         return labels;
     }
-
-
-
-
-
-
-
-
-
-
 
 
 }

@@ -1,12 +1,5 @@
 package pl.edu.pwr.wordnetloom.client;
 
-import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.*;
-import javax.persistence.Tuple;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import org.apache.log4j.Logger;
@@ -21,19 +14,19 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.common.dto.StringMapEntry;
-import pl.edu.pwr.wordnetloom.label.model.Label;
-import pl.edu.pwr.wordnetloom.label.service.LabelServiceRemote;
-import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
+
+import javax.swing.*;
+import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.*;
+
 
 public class Main {
 
-    private static final Logger LOGGER = Logger.getLogger(Main.class);
-
     public static final String PROGRAM_VERSION = "2.0";
     public static final String PROGRAM_NAME = "WordnetLoom";
-
-    private static Map<String, String> labelsMap = new HashMap<>();
+    private static final Logger LOGGER = Logger.getLogger(Main.class);
+    private static final Map<String, String> labelsMap = new HashMap<>();
 
     public static void main(String[] args) {
 
@@ -81,7 +74,7 @@ public class Main {
             private boolean first = true;
 
             @Override
-            public void uncaughtException(Thread t, final Throwable tt) {
+            public void uncaughtException(Thread t, Throwable tt) {
                 if (first) {
                     SwingUtilities.invokeLater(() -> {
                         JOptionPane.showMessageDialog(null,
@@ -113,15 +106,15 @@ public class Main {
         loadLabels(locale);
     }
 
-    private static void loadLabels(Locale locale){
+    private static void loadLabels(Locale locale) {
         List<Object[]> labels = RemoteService.labelServiceRemote.findLabelsByLanguage(locale.getLanguage());
-        for(Object[] entry : labels){
-            labelsMap.put((String)entry[0], (String)entry[1]);
+        for (Object[] entry : labels) {
+            labelsMap.put((String) entry[0], (String) entry[1]);
         }
     }
 
     public static String getResouce(String key) {
-        if(labelsMap.containsKey(key)){
+        if (labelsMap.containsKey(key)) {
             return labelsMap.get(key);
         }
         return "";
