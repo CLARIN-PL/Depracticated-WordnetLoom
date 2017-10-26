@@ -52,7 +52,9 @@ export class SidebarService {
         self.recordsLoaded = Math.min(self.recordsLoaded + self.batchSize, self.totalRecords);
 
         if (self.page === 0) { // first batch loaded
-          self.router.navigate(['detail', response['entries'][0]['id']]);
+          if (response['entries'].length > 0) {
+            self.router.navigate(['detail', response['entries'][0]['id']]);
+          }
         }
 
         self.page++;

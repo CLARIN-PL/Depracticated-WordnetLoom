@@ -11,7 +11,7 @@ import {SidebarService} from "../../../services/sidebar.service";
   templateUrl: './result.component.html',
   styleUrls: ['./result.component.css']
 })
-export class ResultComponent implements OnInit, OnDestroy, OnChanges {
+export class ResultComponent implements OnInit, OnDestroy {
   content: SenseContent[];
   subscription: Subscription = null;
 
@@ -32,6 +32,7 @@ export class ResultComponent implements OnInit, OnDestroy, OnChanges {
     this.subscription = this.route.params.subscribe(params => {
       const searchLemma = params['search_lemma'];
       if (searchLemma) {
+        // todo - fix when nothing found
         this.sidebar.getAllOptions({lemma: searchLemma});
       }
 
@@ -41,11 +42,6 @@ export class ResultComponent implements OnInit, OnDestroy, OnChanges {
       }
     });
   }
-
-  ngOnChanges() {
-    console.log(this.route.snapshot);
-  }
-
 
   private updateCurrentLexicalUnit() {
     this.content = [];
@@ -67,8 +63,6 @@ export class ResultComponent implements OnInit, OnDestroy, OnChanges {
         const key = Object.keys(rel)[0]; // assuming only one key possible!
         return {'key': key, items: rel[key]};
       });
-
-      console.log(this.relations);
     });
     // this.http.getSenseRelations(this.lemmaId).subscribe();
   }

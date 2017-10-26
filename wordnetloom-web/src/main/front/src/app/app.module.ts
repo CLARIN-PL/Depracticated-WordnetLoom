@@ -27,6 +27,7 @@ import { HomeComponent } from './components/home/home.component';
 import { AboutComponent } from './components/about/about.component';
 import { UnitComponent } from './components/unit/unit.component';
 import { ScrollBottomDirective } from './directives/scroll-bottom.directive';
+import { SenseVisualizationComponent } from './components/visualizations/sense-visualization/sense-visualization.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -50,7 +51,8 @@ const appRoutes: Routes = [
     HomeComponent,
     AboutComponent,
     UnitComponent,
-    ScrollBottomDirective
+    ScrollBottomDirective,
+    SenseVisualizationComponent
   ],
   imports: [
     RouterModule.forRoot(
