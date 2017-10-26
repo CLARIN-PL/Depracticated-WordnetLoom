@@ -20,6 +20,10 @@
   overflow-y: auto;
   max-height: calc(100vh - 70px);
 }
+.option-list a.active-link{
+  color: white;
+  background-color: rgba(46, 59, 137, 0.6);
+}
 
 .option-list .option-list-item.mat-list-item{
   padding-left: 10px;

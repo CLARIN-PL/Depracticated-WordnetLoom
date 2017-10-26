@@ -11,3 +11,35 @@
   color: initial;
   font-weight: 700;
 }
+
+.table tr:first-child td{
+  border-top: none;
+}
+
+.table tr td:first-child{
+  text-align: right;
+}
+
+
+@media (min-width: 992px) {
+  .table tr td:first-child{
+    width: 45%;
+  }
+}
+
+@media (min-width: 1250px) {
+  .table tr td:first-child{
+    width: 30%;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -15,6 +15,7 @@ import {CurrentStateService} from './services/current-state.service';
 import {RouterModule, Routes} from '@angular/router';
 import {
   MatButtonModule, MatCheckboxModule, MatChipsModule, MatExpansionModule, MatInputModule, MatListModule,
+  MatProgressSpinnerModule,
   MatSelectionList,
   MatSelectModule,
   MatSidenavModule, MatTabsModule, MatTooltipModule
@@ -25,6 +26,7 @@ import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { HomeComponent } from './components/home/home.component';
 import { AboutComponent } from './components/about/about.component';
 import { UnitComponent } from './components/unit/unit.component';
+import { ScrollBottomDirective } from './directives/scroll-bottom.directive';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -47,7 +49,8 @@ const appRoutes: Routes = [
     ClickOutsideDirective,
     HomeComponent,
     AboutComponent,
-    UnitComponent
+    UnitComponent,
+    ScrollBottomDirective
   ],
   imports: [
     RouterModule.forRoot(
@@ -68,6 +71,7 @@ const appRoutes: Routes = [
     MatTooltipModule,
     MatTabsModule,
     MatChipsModule,
+    MatProgressSpinnerModule,
     BrowserAnimationsModule
   ],
   providers: [HttpService, CurrentStateService, SidebarService],

@@ -20,7 +20,7 @@ export class SenseContent {
     this.grammaticalGender = null;
     this.flag = json['Lexicon'];
 
-    this.lemma = json['Lemma'] + ' ' + json['Domain'] + ' (' + this.variant + ')';
+    this.lemma = json['Lemma'] + ' ' + this.variant + ' (' + json['Domain'] + ')';
     if (json['Yiddish'].length > 0) {
       if (currentYiddishVariant && json['Yiddish'][currentYiddishVariant]) {
         this.yiddishVariantId = currentYiddishVariant;
@@ -28,7 +28,7 @@ export class SenseContent {
         this.yiddishVariantId = 0;
       }
       this.currentYiddish = json['Yiddish'][this.yiddishVariantId];
-      this.lemma = this.currentYiddish['Latin spelling'] +  ' ' + json['Domain'] + ' (' + this.variant + ')'
+      this.lemma = this.currentYiddish['Latin spelling'] +  ' ' + this.variant + ' (' + json['Domain'] + ')'
         + ' | ' + this.currentYiddish['Yiddish spelling'] + ' | ' +  this.currentYiddish['YIVO spelling'];
       this.grammaticalGender = this.currentYiddish['Grammatical gender'];
       this.yiddishVariant = this.currentYiddish['Yiddish variant'].replace(/_/g, ' ');

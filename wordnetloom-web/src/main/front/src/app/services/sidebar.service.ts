@@ -1,14 +1,22 @@
-import {Injectable, ViewChild} from '@angular/core';
+import {Injectable } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {HttpService} from "./http.service";
+import {HttpService} from './http.service';
+import {Router} from '@angular/router';
 
 @Injectable()
 export class SidebarService {
-  constructor(private http: HttpService) { }
+  constructor(private http: HttpService, private router: Router) { }
   nav = null;
   list = [];
   listObservable = new Subject<any[]>();
+  page = 0;
+  batchSize = 50;
+  form = null;
+  isLoading = false;
+  isLoadingObservable = new Subject<{loading: boolean, recordsStr: string}>();
+  totalRecords = null;
+  recordsLoaded = 0;
 
   init(navRef) {
     this.nav = navRef;
@@ -18,31 +26,58 @@ export class SidebarService {
     return this.listObservable.asObservable();
   }
 
-  getAllOptions (form) {
+  getListLoadinObservable (): Observable<{loading: boolean, recordsStr: string}> {
+    return this.isLoadingObservable.asObservable();
+  }
+
+  private getOptions() {
     const self = this;
-    this.list = [];
-    let page = 0;
+
+    if (self.isLoading) {
+      return;
+    }
+
+    if (self.totalRecords !== null && self.recordsLoaded >= self.totalRecords) {
+      return; // everything is already loaded
+    }
+
+    this.isLoading = true;
+    this.isLoadingObservable.next({loading: this.isLoading, recordsStr: '' + self.recordsLoaded + '/' + self.totalRecords});
 
 
-    // todo- load more on scroll
-    const partialResultCallback = function(){
-      self.http.getSearchOptions(form, page, 50).subscribe(
-        (response) => {
-          self.addSearchOptions(response);
-          page++;
-          if (response.entries.length > 0) {
-            partialResultCallback();
-          }
+    self.http.getSearchOptions(this.form, this.page, this.batchSize).subscribe(
+      (response) => {
+        self.addSearchOptions(response);
+        self.totalRecords = response['paging']['totalRecords'];
+        self.recordsLoaded = Math.min(self.recordsLoaded + self.batchSize, self.totalRecords);
+
+        if (self.page === 0) { // first batch loaded
+          self.router.navigate(['detail', response['entries'][0]['id']]);
         }
-      );
-    };
-    partialResultCallback();
+
+        self.page++;
+        self.isLoading = false;
+        self.isLoadingObservable.next({loading: this.isLoading, recordsStr: '' + self.recordsLoaded + '/' + self.totalRecords});
+      }
+    );
+  }
+
+  getAllOptions (form) {
+    this.list = [];
+    this.page = 0;
+    this.recordsLoaded = 0;
+    this.form = form;
+
+    this.getOptions();
+  }
+
+  loadMoreOptions() {
+    this.getOptions();
   }
 
   addSearchOptions (response) {
     this.list = this.list.concat(response.entries);
     this.listObservable.next(this.list);
-    // this.nav.open();
   }
 
 }

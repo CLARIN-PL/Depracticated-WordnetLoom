@@ -13,14 +13,22 @@
       <div *ngFor="let area of content.areas" class="col-lg-7 col-xl-8 area-row">
         <div class="card full-width small-margin">
           <div class="card-body">
+            <table class="table">
+              <tr *ngFor="let field of area.fields">
+                <td><b>{{ field.name }}:</b></td>
+                <td>
+                  <p *ngFor="let value of field.values"> {{ value }} </p>
+                </td>
+              </tr>
+            </table>
 
-            <div *ngFor="let field of area.fields" class="row">
-              <div class="col-4 col-xl-2"><b>{{ field.name }}:</b></div>
-              <div class="col-8 col-xl-10">
-                <p *ngFor="let value of field.values"> {{ value }} </p>
-                <hr>
-              </div>
-            </div>
+            <!--<div *ngFor="let field of area.fields" class="row">-->
+              <!--<div class="col-4 col-xl-2"><b>{{ field.name }}:</b></div>-->
+              <!--<div class="col-8 col-xl-10">-->
+                <!--<p *ngFor="let value of field.values"> {{ value }} </p>-->
+                <!--<hr>-->
+              <!--</div>-->
+            <!--</div>-->
           </div>
         </div>
       </div>
@@ -33,7 +41,7 @@
                 <div class="col-md-4 col-lg-5"><b>{{ relation.key }}:</b></div>
                 <div class="col-md-8 col-lg-7">
                   <span *ngFor="let member of relation.items; let isLast=last">
-                    <a [routerLink]="'/'+member['target']">{{ member['lemma']}}</a>{{isLast ? '' : ', '}}
+                    <a [routerLink]="'/detail/' + member['target']">{{ member['lemma']}}</a>{{isLast ? '' : ', '}}
                   </span>
                 </div>
               </div>
