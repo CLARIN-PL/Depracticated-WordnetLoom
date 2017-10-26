@@ -4,6 +4,8 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
+import jiconfont.icons.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.dto.RegisterTypes;
 import pl.edu.pwr.wordnetloom.model.Domain;
 import pl.edu.pwr.wordnetloom.model.Lexicon;
@@ -11,7 +13,6 @@ import pl.edu.pwr.wordnetloom.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.Sense;
 import pl.edu.pwr.wordnetloom.model.yiddish.VariantType;
 import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
-import pl.edu.pwr.wordnetloom.plugins.lexeditor.LexicalIM;
 import pl.edu.pwr.wordnetloom.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.systems.managers.DomainManager;
@@ -221,7 +222,9 @@ public class LexicalUnitPropertiesPanel extends JPanel implements CaretListener,
         examplesModel = new DefaultListModel();
         scrollPaneExamples.setViewportView(examplesList);
 
-        btnNewExample = new JButton(LexicalIM.getAdd());
+        Icon addIcon = IconFontSwing.buildIcon(FontAwesome.PLUS, 12);
+        btnNewExample = new JButton();
+        btnNewExample.setIcon(addIcon);
         btnNewExample.addActionListener(e -> {
 
             String exa = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
@@ -238,7 +241,9 @@ public class LexicalUnitPropertiesPanel extends JPanel implements CaretListener,
         mainPanel.add(lblExample, "2, 17, left, fill");
         mainPanel.add(btnNewExample, "12, 17, fill, fill");
 
-        btnEditExample = new JButton(LexicalIM.getEdit());
+        Icon editIcon = IconFontSwing.buildIcon(FontAwesome.PENCIL, 12);
+        btnEditExample = new JButton();
+        btnEditExample.setIcon(editIcon);
         btnEditExample.addActionListener(e -> {
             int idx = examplesList.getSelectedIndex();
             if (idx >= 0) {
@@ -253,7 +258,9 @@ public class LexicalUnitPropertiesPanel extends JPanel implements CaretListener,
         });
         mainPanel.add(btnEditExample, "12, 19, fill, fill");
 
-        btnRemoveExample = new JButton(LexicalIM.getDelete());
+        Icon removeIcon = IconFontSwing.buildIcon(FontAwesome.MINUS, 12);
+        btnRemoveExample = new JButton();
+        btnRemoveExample.setIcon(removeIcon);
         btnRemoveExample.addActionListener(e -> {
             int idx = examplesList.getSelectedIndex();
             if (idx >= 0) {
@@ -272,7 +279,10 @@ public class LexicalUnitPropertiesPanel extends JPanel implements CaretListener,
         mainPanel.add(link, "4, 25, 7, 1, fill, fill");
         link.setColumns(10);
 
-        btnGoToLink = new JButton(LexicalIM.getRight());
+        Icon goToIcon = IconFontSwing.buildIcon(FontAwesome.INTERNET_EXPLORER, 12);
+        btnGoToLink = new JButton();
+        btnGoToLink.setIcon(goToIcon);
+
         btnGoToLink.addActionListener(e -> {
             try {
                 URI uri = new URI(link.getText());
@@ -284,12 +294,21 @@ public class LexicalUnitPropertiesPanel extends JPanel implements CaretListener,
 
         JPanel buttons = new JPanel();
         buttons.setLayout(new FlowLayout());
-        btnCancel = new JButton(Labels.CANCEL);
-        buttons.add(btnCancel);
 
+        Icon cancelIcon = IconFontSwing.buildIcon(FontAwesome.TIMES_CIRCLE, 12);
+        btnCancel = new JButton(Labels.CANCEL);
+        btnCancel.setFont(new Font("Dialog", Font.BOLD, 12));
+        btnCancel.setIcon(cancelIcon);
+
+
+        Icon saveIcon = IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, 12);
         btnSave = new JButton(Labels.SAVE);
+        btnSave.setFont(new Font("Dialog", Font.BOLD, 12));
+        btnSave.setIcon(saveIcon);
 
         buttons.add(btnSave);
+        buttons.add(btnCancel);
+
         add(buttons, BorderLayout.SOUTH);
     }
 
