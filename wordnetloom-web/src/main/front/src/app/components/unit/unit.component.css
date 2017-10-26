@@ -17,8 +17,12 @@
   padding-left: 0;
 }
 .option-list{
+  height: calc(100vh - 70px);
   overflow-y: auto;
-  max-height: calc(100vh - 70px);
+}
+
+.option-list.no-content{
+  height: calc(100vh - 70px - 84px);
 }
 .option-list a.active-link{
   color: white;

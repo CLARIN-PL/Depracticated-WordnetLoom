@@ -12,10 +12,13 @@
   <span class="fill-remaining-space"></span>
 
     <form #lemmaSearch="ngForm" [hidden]="isPanelOpened || !showSearch" class="advanced-search-form  mr-2 mr-lg-0" (ngSubmit)="simpleSearch(lemmaSearch.value)">
-      <i class="fa fa-search" aria-hidden="true"></i>
+
       <mat-form-field floatPlaceholder="never" class="search-field" >
         <input  #lemmaInput matInput placeholder="search for lemma, fonetical form..." value="" name="lemma" ngModel>
       </mat-form-field>
+      <button class="nav-button" type="submit" color="primary"mat-raised-button>
+        <i class="fa fa-search" aria-hidden="true"></i> Search
+      </button>
     </form>
     <form [hidden]="!showSearch" class="mr-2 mr-lg-0">
       <button #expandBtn class="nav-button" type="button" color="primary" mat-button (click)="panelToggle()">
