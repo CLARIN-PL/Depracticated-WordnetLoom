@@ -17,25 +17,18 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes;
 
-import javax.swing.ImageIcon;
+import javax.swing.*;
 
 /**
  * klasa zarządzające ikonami
  *
  * @author Max
- *
  */
 public class RelationTypesIM {
 
-    private static ImageIcon newImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/add.gif"));
-    private static ImageIcon newSubImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/new.gif"));
-    private static ImageIcon deleteImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/delete.gif"));
-    private static ImageIcon editImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/edit.gif"));
-    private static ImageIcon openImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/openIcon.gif"));
-    private static ImageIcon closedImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/closedIcon.gif"));
-    private static ImageIcon leafImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/leafIcon.gif"));
-    private static ImageIcon upImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/upLU.gif"));
-    private static ImageIcon downImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/downLU.gif"));
+    private static final ImageIcon openImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/openIcon.gif"));
+    private static final ImageIcon closedImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/closedIcon.gif"));
+    private static final ImageIcon leafImage = new ImageIcon(RelationTypesIM.class.getClassLoader().getResource("icons/leafIcon.gif"));
 
     private RelationTypesIM() {
     }
@@ -50,48 +43,12 @@ public class RelationTypesIM {
     }
 
     /**
-     * ikona usuniecia
-     *
-     * @return ikona
-     */
-    public static ImageIcon getDeleteImage() {
-        return deleteImage;
-    }
-
-    /**
-     * ikona edycji
-     *
-     * @return ikona
-     */
-    public static ImageIcon getEditImage() {
-        return editImage;
-    }
-
-    /**
      * ikona liscia
      *
      * @return ikona
      */
     public static ImageIcon getLeafImage() {
         return leafImage;
-    }
-
-    /**
-     * ikona nowy
-     *
-     * @return ikona
-     */
-    public static ImageIcon getNewImage() {
-        return newImage;
-    }
-
-    /**
-     * ikona nowy podtyp
-     *
-     * @return ikona
-     */
-    public static ImageIcon getNewSubImage() {
-        return newSubImage;
     }
 
     /**
@@ -103,11 +60,5 @@ public class RelationTypesIM {
         return openImage;
     }
 
-    public static ImageIcon getMoveUpImage() {
-        return upImage;
-    }
 
-    public static ImageIcon getMoveDownImage() {
-        return downImage;
-    }
 }

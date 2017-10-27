@@ -1,22 +1,18 @@
 package pl.edu.pwr.wordnetloom.synset.repository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.domain.model.Domain;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import java.util.*;
 
 @Stateless
 public class SynsetRepository extends GenericRepository<Synset> {
@@ -24,7 +20,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
     @Inject
     EntityManager em;
 
-//    @NamedQuery(name = "Synset.findSynsetBySensID",
+    //    @NamedQuery(name = "Synset.findSynsetBySensID",
 //            query = "SELECT s.synset FROM SenseToSynset s WHERE s.idSense = :senseID AND s.sense.lexicon.id IN (:lexicons)"),
 //    @NamedQuery(name = "Synset.findListSynsetByID",
 //            query = "SELECT s FROM Synset s WHERE s.id IN ( :synsetsID )"),
@@ -104,11 +100,11 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return dbFastGetSynsets(filter, null, null, 0, lexicons);
     }
 
-    public List<Synset> dbFastGetSynsets(String filter, Domain domain, SynsetRelationType relationType, int limitSize, List<Long> lexicons) {
+    public List<Synset> dbFastGetSynsets(String filter, Domain domain, RelationType relationType, int limitSize, List<Long> lexicons) {
         return dbFastGetSynsets(filter, domain, relationType, limitSize, -1, lexicons);
     }
 
-    public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain, SynsetRelationType relationType, String definition, String comment, String artificial, int limitSize, long posIndex, List<Long> lexicons) {
+    public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain, RelationType relationType, String definition, String comment, String artificial, int limitSize, long posIndex, List<Long> lexicons) {
 
 //        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 //        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -199,7 +195,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return result;
     }
 
-    public List<Synset> dbFastGetSynsets(String filter, Domain domain, SynsetRelationType relationType, int limitSize, long posIndex, List<Long> lexicon) {
+    public List<Synset> dbFastGetSynsets(String filter, Domain domain, RelationType relationType, int limitSize, long posIndex, List<Long> lexicon) {
 
 //        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
 //        CriteriaQuery<Synset> criteriaQuery = criteriaBuilder.createQuery(Synset.class);
@@ -389,7 +385,8 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
             temp.append("(");
 
-            int index = 0, size = senses.size();
+            int index = 0;
+            int size = senses.size();
             int pos = split;
             if (pos > size) {
                 pos = size;
@@ -438,7 +435,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return false;
     }
 
-//    public String rebuildUnitsStr(Synset synset, List<Long> lexicons) {
+    //    public String rebuildUnitsStr(Synset synset, List<Long> lexicons) {
 //        // jest pusty synset
 //        String unitsstr = "";
 //        List<Sense> senses = synset.getSenses();
@@ -565,8 +562,8 @@ public class SynsetRepository extends GenericRepository<Synset> {
     }
 
     public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain,
-            SynsetRelationType relationType, String definition, String comment,
-            String artificial, int limitSize, List<Long> lexicons) {
+                                              RelationType relationType, String definition, String comment,
+                                              String artificial, int limitSize, List<Long> lexicons) {
 
 //        CriteriaBuilder criteriaBuilder = getEM().getCriteriaBuilder();
 //        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);

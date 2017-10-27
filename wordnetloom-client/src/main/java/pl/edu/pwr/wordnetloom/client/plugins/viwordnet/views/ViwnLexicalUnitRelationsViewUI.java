@@ -1,26 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.util.Collection;
-import java.util.Enumeration;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.SwingWorker;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import pl.edu.pwr.wordnetloom.client.systems.managers.IconsManager;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
@@ -29,11 +11,20 @@ import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import se.datadosen.component.RiverLayout;
 
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.Collection;
+import java.util.Enumeration;
+
 /**
  * [View User Interface] Displays a list of lexical relations for given unit.
  *
  * @author Michał Marcińczuk <michal.marcinczuk@pwr.wroc.pl>
- *
  */
 public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         SimpleListenerInterface, ActionListener, TreeSelectionListener {
@@ -44,8 +35,8 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
     JTree tree = null;
 
-    ButtonExt addRelation = null;
-    ButtonExt delRelation = null;
+    MButton addRelation = null;
+    MButton delRelation = null;
 
     Workbench workbench;
 
@@ -73,13 +64,16 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         root.add(root_from);
         root.add(root_to);
 
-        addRelation = new ButtonExt(IconsManager.getAdd(), this);
-        addRelation.setEnabled(true);
-        addRelation.setToolTipText(Hints.ADD_RELATION_UNITS);
+        addRelation = MButton.buildAddButton(this)
+                .withEnabled(true)
+                .withToolTip(Hints.ADD_RELATION_UNITS);
+
         installViewScopeShortCut(addRelation, 0, KeyEvent.VK_INSERT);
-        delRelation = new ButtonExt(IconsManager.getDelete(), this);
-        delRelation.setEnabled(false);
-        delRelation.setToolTipText(Hints.REMOVE_RELTAION_UNITS);
+
+        delRelation = MButton.buildDeleteButton(this)
+                .withEnabled(true)
+                .withToolTip(Hints.REMOVE_RELTAION_UNITS);
+
         installViewScopeShortCut(delRelation, 0, KeyEvent.VK_DELETE);
 
         content.add("hfill vfill", new JScrollPane(tree));
@@ -94,9 +88,8 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
     /**
      * @param object - lexical unit - root of the tree
-     *
      */
-    private void fillTree(final Object object) {
+    private void fillTree(Object object) {
 
         SwingWorker<String, Object> worker = new SwingWorker<String, Object>() {
 
@@ -179,7 +172,6 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
     /**
      * refresh tree with root unchanged
-     *
      */
     public void refresh() {
         fillTree(((DefaultMutableTreeNode) root.getRoot()).getUserObject());
@@ -189,10 +181,10 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
      * If expand is true, expands all nodes in the tree. Otherwise, collapses
      * all nodes in the tree.
      *
+     * @param expand
      * @author amusial
      * @author unknown, source from
      * http://www.exampledepot.com/egs/javax.swing.tree/ExpandAll.html
-     * @param expand
      */
     public void expandAll(boolean expand) {
         TreeNode root = (TreeNode) tree.getModel().getRoot();
@@ -204,7 +196,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         // Traverse children
         TreeNode node = (TreeNode) parent.getLastPathComponent();
         if (node.getChildCount() >= 0) {
-            for (Enumeration<?> e = node.children(); e.hasMoreElements();) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements(); ) {
                 TreeNode n = (TreeNode) e.nextElement();
                 TreePath path = parent.pathByAddingChild(n);
                 expandAll(tree, path, expand);
@@ -221,7 +213,6 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
     /**
      * @author amusial <b>ViwnLexicalUnitRelationRenderer</b> class providing
      * non ordinary rendering of tree nodes
-     *
      */
     private class ViwnLexicalUnitRelationRenderer extends
             DefaultTreeCellRenderer {
@@ -233,7 +224,6 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
         /**
          * default constructor
-         *
          */
         public ViwnLexicalUnitRelationRenderer() {
             super();
@@ -241,8 +231,8 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
         @Override
         public java.awt.Component getTreeCellRendererComponent(JTree tree,
-                Object value, boolean sel, boolean expanded, boolean leaf,
-                int row, boolean hasFocus) {
+                                                               Object value, boolean sel, boolean expanded, boolean leaf,
+                                                               int row, boolean hasFocus) {
 
             // use ordinary renderer
             super.getTreeCellRendererComponent(tree, value, sel, expanded,
@@ -256,15 +246,14 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                 // check row == 0 is enough, but we got dmtn so why don't use
                 // it...
                 if (dmtn.isRoot()) {
-                    this.setIcon(this.openIcon);
+                    setIcon(openIcon);
                 } else /* else, because, root shouldn't be relation */ if (dmtn.getUserObject() instanceof SenseRelation) {
 //                    this.setText((RelationTypes.get(((SenseRelation) dmtn
 //                            .getUserObject()).getRelationType().getId())).name());
                 } else if (dmtn.getUserObject() instanceof Pair<?, ?>) {
-                    @SuppressWarnings("unchecked")
                     Pair<Sense, SenseRelation> pair = (Pair<Sense, SenseRelation>) dmtn
                             .getUserObject();
-                    this.setText(pair.getA().toString());
+                    setText(pair.getA().toString());
                 }
             }
 
@@ -274,8 +263,8 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
     /**
      * @author amusial ActionListener interface implementation
-     *
      */
+    @Override
     public void actionPerformed(ActionEvent ae) {
         // add relation
 //        if (ae.getSource() == addRelation) {

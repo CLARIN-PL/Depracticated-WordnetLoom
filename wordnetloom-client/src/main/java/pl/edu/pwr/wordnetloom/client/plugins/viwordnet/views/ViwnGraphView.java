@@ -1,27 +1,18 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.TreeSet;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.GraphChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeSynset;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode.Direction;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeCand;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeCandExtension;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeRoot;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeWord;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
 import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractView;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraph;
 import pl.edu.pwr.wordnetloom.extgraph.model.ExtGraphExtension;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+
+import java.util.*;
 
 /**
  * [View] VisualizesactiveGraphView a graph.
@@ -87,7 +78,7 @@ public class ViwnGraphView extends AbstractView {
                 synsetGroup.add(synsetInGroup);
 
                 synsetToNode
-                        .get(synsetInGroup).getRelation(Direction.BOTTOM).stream().filter((relDown) -> (synsets.contains(relDown.getChild()))).map((relDown) -> {
+                        .get(synsetInGroup).getRelation(NodeDirection.BOTTOM).stream().filter((relDown) -> (synsets.contains(relDown.getChild()))).map((relDown) -> {
                     synsetGroupQueue.add(relDown.getChild());
                     return relDown;
                 }).forEachOrdered((relDown) -> {
@@ -95,7 +86,7 @@ public class ViwnGraphView extends AbstractView {
                 });
 
                 synsetToNode.get(synsetInGroup)
-                        .getRelation(Direction.TOP)
+                        .getRelation(NodeDirection.TOP)
                         .stream()
                         .filter((relUp) -> (synsets.contains(relUp.getChild()))).map((relUp) -> {
                     synsetGroupQueue.add(relUp.getChild());
@@ -156,16 +147,16 @@ public class ViwnGraphView extends AbstractView {
 
     private boolean setupSpawner(ViwnNodeSynset to_set, TreeSet<ViwnNodeSynset> nodes) {
         for (ViwnNodeSynset node : nodes) {
-            for (ViwnEdgeSynset e : node.getRelation(Direction.BOTTOM)) {
+            for (ViwnEdgeSynset e : node.getRelation(NodeDirection.BOTTOM)) {
                 if (e.getChild().equals(to_set.getId())) {
-                    to_set.setSpawner(node, Direction.BOTTOM);
+                    to_set.setSpawner(node, NodeDirection.BOTTOM);
                     return true;
                 }
             }
 
-            for (ViwnEdgeSynset e : node.getRelation(Direction.TOP)) {
+            for (ViwnEdgeSynset e : node.getRelation(NodeDirection.TOP)) {
                 if (e.getChild().equals(to_set.getId())) {
-                    to_set.setSpawner(node, Direction.TOP);
+                    to_set.setSpawner(node, NodeDirection.TOP);
                     return true;
                 }
             }
@@ -180,7 +171,7 @@ public class ViwnGraphView extends AbstractView {
             ArrayList<ViwnNodeSynset> freeSyns) {
 
         for (int i = 0; i < groups.size(); ++i) {
-            roots.get(i).setSpawner(root, Direction.BOTTOM);
+            roots.get(i).setSpawner(root, NodeDirection.BOTTOM);
             TreeSet<ViwnNodeSynset> setuped = new TreeSet<>();
             setuped.add(roots.get(i));
             ArrayDeque<ViwnNodeSynset> to_setup = new ArrayDeque<>(groups.get(i));
@@ -209,11 +200,11 @@ public class ViwnGraphView extends AbstractView {
      * LoadCandidate żeby nie zmieniać typu zwracanego przez tamtą metodę (W
      * Quadruple moga byc tylko 4 wartosci)
      *
-     * @author lburdka
      * @param word
      * @param packageNo
      * @param pos
      * @return ArrayList<ViwnNodeCandExtension>
+     * @author lburdka
      */
     // FIXME: za dużo ustawiania rzeczy jakie zostały już pobrane, usunąć, wywalić niepotrzebne merge etc.
     public ArrayList<ViwnNodeCandExtension> loadExtensions(String word, int packageNo, PartOfSpeech pos) {
@@ -392,7 +383,6 @@ public class ViwnGraphView extends AbstractView {
 
     /**
      * make getUI public
-     *
      */
     @Override
     public ViwnGraphViewUI getUI() {

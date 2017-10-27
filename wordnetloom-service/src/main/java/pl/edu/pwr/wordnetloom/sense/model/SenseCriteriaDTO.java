@@ -1,10 +1,11 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
-import java.io.Serializable;
-import java.util.List;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+
+import java.io.Serializable;
+import java.util.List;
 
 public class SenseCriteriaDTO implements Serializable {
 
@@ -12,7 +13,7 @@ public class SenseCriteriaDTO implements Serializable {
     private PartOfSpeech partOfSpeech;
     private Domain domain;
     private String lemma;
-    private SenseRelationType relationType;
+    private RelationType relationType;
     private List<Long> lexicons;
     private Integer variant;
     private String comment;
@@ -59,11 +60,11 @@ public class SenseCriteriaDTO implements Serializable {
         this.lemma = lemma;
     }
 
-    public SenseRelationType getRelationType() {
+    public RelationType getRelationType() {
         return relationType;
     }
 
-    public void setRelationType(SenseRelationType relationType) {
+    public void setRelationType(RelationType relationType) {
         this.relationType = relationType;
     }
 

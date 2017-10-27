@@ -1,16 +1,10 @@
 package pl.edu.pwr.wordnetloom.senserelation.model;
 
-import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "sense_relation")
@@ -24,7 +18,7 @@ public class SenseRelation implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "relation_type_id", referencedColumnName = "id", nullable = false)
-    private SenseRelationType relationType;
+    private RelationType relationType;
 
     @OneToOne
     @JoinColumn(name = "parent_sense_id", referencedColumnName = "id", nullable = false)
@@ -38,7 +32,7 @@ public class SenseRelation implements Serializable {
         super();
     }
 
-    public SenseRelation(SenseRelationType relationType, Sense parent, Sense child) {
+    public SenseRelation(RelationType relationType, Sense parent, Sense child) {
         this.relationType = relationType;
         this.parent = parent;
         this.child = child;
@@ -52,11 +46,11 @@ public class SenseRelation implements Serializable {
         this.id = id;
     }
 
-    public SenseRelationType getRelationType() {
+    public RelationType getRelationType() {
         return relationType;
     }
 
-    public void setRelationType(SenseRelationType relationType) {
+    public void setRelationType(RelationType relationType) {
         this.relationType = relationType;
     }
 

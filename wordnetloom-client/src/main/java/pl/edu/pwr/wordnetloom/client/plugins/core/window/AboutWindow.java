@@ -1,17 +1,15 @@
 package pl.edu.pwr.wordnetloom.client.plugins.core.window;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelPlain;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class AboutWindow extends DialogWindow implements ActionListener {
 
@@ -22,17 +20,17 @@ public class AboutWindow extends DialogWindow implements ActionListener {
     private static final String TEXT_AUTHORS_4 = "Radosław Ramocki, Michał Stanek";
     private static final String TEXT_AUTHORS_5 = "Tomasz Naskręt";
 
-    private AboutWindow(final Workbench workbench) {
+    private AboutWindow(Workbench workbench) {
         super(workbench.getFrame(), Labels.ABOUT_APP, 360, 470);
         initializeComponents(workbench);
     }
 
-    private void initializeComponents(final Workbench workbench){
-        this.setLocationRelativeTo(workbench.getFrame());
-        this.setResizable(false);
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    private void initializeComponents(Workbench workbench) {
+        setLocationRelativeTo(workbench.getFrame());
+        setResizable(false);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        Container content = this.getContentPane();
+        Container content = getContentPane();
         content.setBackground(new Color(238, 238, 238));
         content.add("center", new JLabel(new ImageIcon(getClass().getClassLoader().getResource("icons/logo.gif")), JLabel.CENTER));
         content.add("br left", new LabelPlain(Labels.ABOUT_DESCRIPTION));
@@ -48,10 +46,10 @@ public class AboutWindow extends DialogWindow implements ActionListener {
         content.add("br", new JLabel(" "));
         content.add("br center", new JLabel(TEXT_COPYRIGHT));
         content.add("br", new JLabel(Labels.ALL_RIGHTS_RESERVED));
-        content.add("p", new ButtonExt(Labels.OK, this, KeyEvent.VK_O));
+        content.add("p", MButton.buildOkButton(this));
         pack();
     }
-    
+
     public static void showModal(Workbench workbench) {
         AboutWindow frame = new AboutWindow(workbench);
         frame.setVisible(true);

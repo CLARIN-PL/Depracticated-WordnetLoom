@@ -7,42 +7,13 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import edu.uci.ics.jung.graph.util.Context;
-import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
-import edu.uci.ics.jung.visualization.Layer;
-import edu.uci.ics.jung.visualization.RenderContext;
-import edu.uci.ics.jung.visualization.VisualizationImageServer;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.*;
 import edu.uci.ics.jung.visualization.control.LayoutScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.control.ViewScalingControl;
 import edu.uci.ics.jung.visualization.decorators.ConstantDirectionalEdgeValueTransformer;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Paint;
-import java.awt.RenderingHints;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import javax.imageio.ImageIO;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.collections15.Transformer;
 import org.apache.log4j.Logger;
@@ -52,18 +23,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.GraphChangeList
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.VertexSelectionChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.ViwnGraphMouseListener;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeCand;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeSet;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeSynset;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode.Direction;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeCand;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeCandExtension;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeRoot;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSet;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeWord;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.control.ViwnGraphViewModalGraphMouse;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.ViwnEdgeStrokeTransformer;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.ViwnVertexToolTipTransformer;
@@ -74,9 +34,22 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.V
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import se.datadosen.component.RiverLayout;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.*;
+import java.util.List;
 
 /**
  * @author boombel
@@ -179,7 +152,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     /**
      * @param content JPanel from workbench
      * @author amusial
-     *
      */
     @Override
     protected void initialize(JPanel content) {
@@ -190,7 +162,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         JPanel graph;
 
         try {
-            graph = this.getSampleGraphViewer();
+            graph = getSampleGraphViewer();
             content.add(graph, "hfill vfill");
         } catch (IOException ex) {
             LOGGER.error("IO exception", ex);
@@ -245,8 +217,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         rc.setEdgeStrokeTransformer(new ViwnEdgeStrokeTransformer());
 
-        this.graphMouseListener = new ViwnGraphMouseListener(this);
-        vv.addGraphMouseListener(this.graphMouseListener);
+        graphMouseListener = new ViwnGraphMouseListener(this);
+        vv.addGraphMouseListener(graphMouseListener);
 
         Transformer<ViwnEdge, String> stringer = (ViwnEdge rel) -> rel.toString();
         rc.setEdgeLabelTransformer(stringer);
@@ -259,7 +231,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         vv.setGraphMouse(gm);
 
-        final GraphZoomScrollPane panel = new GraphZoomScrollPane(vv);
+        GraphZoomScrollPane panel = new GraphZoomScrollPane(vv);
         panel.add(vv);
 
         ((ShapePickSupport<ViwnNode, ViwnEdge>) rc.getPickSupport())
@@ -285,10 +257,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     /**
-     *
      * @param synset
      */
-    public void refreshView(final Synset synset) {
+    public void refreshView(Synset synset) {
         // Clear the graph.
         clear();
 
@@ -298,7 +269,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         vv.getRenderContext().setVertexFillPaintTransformer(
                 new ViwnVertexFillColor(vv.getPickedVertexState(), rootNode));
 
-        final ViwnNodeSynset synsetNode = (ViwnNodeSynset) rootNode;
+        ViwnNodeSynset synsetNode = (ViwnNodeSynset) rootNode;
 
         if (!forest.containsVertex(rootNode)) {
             forest.addVertex(rootNode);
@@ -308,26 +279,26 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             n.setSpawner(null, null);
             return n;
         }).filter((n) -> (n instanceof ViwnNodeSynset)).forEachOrdered((n) -> {
-            for (Direction rclass : Direction.values()) {
+            for (NodeDirection rclass : NodeDirection.values()) {
                 ViwnNodeSynset nn = (ViwnNodeSynset) n;
                 nn.setState(rclass, ViwnNodeSynset.State.NOT_EXPANDED);
             }
         });
 
-        for (Direction rel_class : Direction.values()) {
+        for (NodeDirection rel_class : NodeDirection.values()) {
             if (rootNode instanceof ViwnNodeSynset) {
                 ((ViwnNodeSynset) rootNode).setState(rel_class,
                         ViwnNodeSynset.State.EXPANDED);
             }
         }
 
-        for (Direction dir : Direction.values()) {
+        for (NodeDirection dir : NodeDirection.values()) {
             showRelationGUI(synsetNode, dir);
         }
 
         recreateLayout();
         center();
-        this.vv.setVisible(true);
+        vv.setVisible(true);
         releaseDataSetCache();
     }
 
@@ -336,13 +307,13 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * @param groups
      * @param roots
      * @param freeSyns
-     * @author boombel
      * @param extensions
+     * @author boombel
      */
     public void loadCandidate(ViwnNodeWord root,
-            ArrayList<TreeSet<ViwnNodeSynset>> groups,
-            ArrayList<ViwnNodeCand> roots, ArrayList<ViwnNodeSynset> freeSyns,
-            ArrayList<ViwnNodeCandExtension> extensions) {
+                              ArrayList<TreeSet<ViwnNodeSynset>> groups,
+                              ArrayList<ViwnNodeCand> roots, ArrayList<ViwnNodeSynset> freeSyns,
+                              ArrayList<ViwnNodeCandExtension> extensions) {
         clear();
 
         rootNode = root;
@@ -354,7 +325,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             for (ViwnNodeCandExtension node : extensions) {
                 roots.remove(node);
                 if (node.getSpawner() == null) {
-                    node.setSpawner(root, Direction.BOTTOM);
+                    node.setSpawner(root, NodeDirection.BOTTOM);
                     ViwnEdgeCand e = new ViwnEdgeCand(node.getRelName());
                     indexes.add(node.getId());
                     e.setHidden(false);
@@ -369,7 +340,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
 
         freeSyns.stream().filter((node) -> (node.getSpawner() == null)).map((node) -> {
-            node.setSpawner(root, Direction.BOTTOM);
+            node.setSpawner(root, NodeDirection.BOTTOM);
             return node;
         }).map((node) -> {
             ViwnEdgeCand e = new ViwnEdgeCand();
@@ -416,7 +387,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                 mult_all_sorted.put(r.getLabel(), r);
             });
 
-            @SuppressWarnings("unchecked")
             // legacy
             Iterator<ViwnNodeSynset> it = mult_all_sorted.values().iterator();
 
@@ -435,7 +405,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                 }
             }
 
-            for (Direction dir : Direction.values()) {
+            for (NodeDirection dir : NodeDirection.values()) {
                 ViwnNodeSet set = key.getSynsetSet(dir);
 
                 if (set.getSynsets().size() < MIN_SYNSETS_IN_GROUP) {
@@ -500,7 +470,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         graphChanged();
         /*
-		 * this event above (graphChanged) should be fired only when graph
+         * this event above (graphChanged) should be fired only when graph
 		 * changes, and not in here where layout is recreated, it should be
 		 * fired when new nodes shows or some nodes hides...
          */
@@ -510,7 +480,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * place selected node in the center of the screen
      *
      * @author amusial
-     *
      */
     public void center() {
         ViwnNode central;
@@ -543,7 +512,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * scale graph to fill full visualization viewer space
      *
      * @author amusial
-     *
      */
     protected void fillVV() {
         // scale
@@ -551,8 +519,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         if (vv.getRenderContext().getMultiLayerTransformer()
                 .getTransformer(Layer.LAYOUT).getScaleX() > 1D) {
             (new LayoutScalingControl()).scale(vv, (1f / (float) vv
-                    .getRenderContext().getMultiLayerTransformer()
-                    .getTransformer(Layer.LAYOUT).getScaleX()),
+                            .getRenderContext().getMultiLayerTransformer()
+                            .getTransformer(Layer.LAYOUT).getScaleX()),
                     new Point2D.Double());
         }
         // get view bounds
@@ -564,7 +532,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         Dimension ld = vv.getGraphLayout().getSize();
         // finally scale it if view bounds are different than graph layer bounds
         if (vd.equals(ld) == false) {
-            float heightRatio = (float) (vd.getWidth() / ld.getWidth()), widthRatio = (float) (vd
+            float heightRatio = (float) (vd.getWidth() / ld.getWidth());
+            float widthRatio = (float) (vd
                     .getHeight() / ld.getHeight());
 
             scaler.scale(vv, (heightRatio < widthRatio ? heightRatio
@@ -576,7 +545,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * @param node
      * @param rel
      */
-    public void checkState(ViwnNodeSynset node, ViwnNode.Direction rel) {
+    public void checkState(ViwnNodeSynset node, NodeDirection rel) {
         node.setState(rel, ViwnNodeSynset.State.NOT_EXPANDED);
         boolean all_ok = true;
 
@@ -605,14 +574,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * @param node
      * @param dir
      */
-    public void checkStateAllInRel(ViwnNodeSynset node, Direction dir) {
+    public void checkStateAllInRel(ViwnNodeSynset node, NodeDirection dir) {
         for (ViwnEdgeSynset e : node.getRelation(dir)) {
             ViwnNodeSynset test = cache.get(e.getParent());
             if (test != null && test.equals(node)) {
                 test = cache.get(e.getChild());
             }
             if (test != null) {
-                checkState(test, dir.getOposite());
+                checkState(test, dir.getOpposite());
             }
         }
     }
@@ -659,7 +628,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     private ViwnEdgeSynset findRelation(ViwnNodeSynset s1, ViwnNodeSynset s2,
-            Direction rel) {
+                                        NodeDirection rel) {
         for (ViwnEdgeSynset s : s1.getRelation(rel)) {
             if ((cache.get(s.getChild()) != null && cache.get(s.getChild())
                     .equals(s2))
@@ -689,7 +658,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
     private Collection<ViwnNodeSynset> addMissingRelations(ViwnNodeSynset synset) {
         ArrayList<ViwnNodeSynset> changed = new ArrayList<>();
-        for (Direction dir : Direction.values()) {
+        for (NodeDirection dir : NodeDirection.values()) {
             for (ViwnEdgeSynset e : synset.getRelation(dir)) {
                 ViwnNodeSynset inner = null;
                 if (!forest.containsEdge(e)) {
@@ -701,7 +670,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                     if (forest.containsVertex(inner)) {
                         addEdge(e, e.getParent(), e.getChild());
 
-                        for (Direction in_dir : Direction.values()) {
+                        for (NodeDirection in_dir : NodeDirection.values()) {
                             if (inner.getSynsetSet(in_dir).contains(synset)) {
                                 inner.getSynsetSet(in_dir).remove(synset);
                             }
@@ -720,7 +689,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     private void addEdgeSynsSet(ViwnNodeRoot syns, ViwnNodeSet set,
-            Direction dir) {
+                                NodeDirection dir) {
         ViwnEdgeSet e = new ViwnEdgeSet();
         switch (dir) {
             case TOP:
@@ -764,13 +733,13 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             Iterator<ViwnNodeSynset> iter = changed.iterator();
             while (iter.hasNext()) {
                 ViwnNodeSynset node = iter.next();
-                for (Direction rclass : Direction.values()) {
+                for (NodeDirection rclass : NodeDirection.values()) {
                     checkState(node, rclass);
                 }
             }
         }
 
-        for (Direction dir : Direction.values()) {
+        for (NodeDirection dir : NodeDirection.values()) {
             checkState(synset, dir);
         }
     }
@@ -797,7 +766,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      */
     public ViwnNodeSet addSynsetToSet(ViwnNodeSynset synset) {
 
-        for (Direction dir : Direction.values()) {
+        for (NodeDirection dir : NodeDirection.values()) {
             hideRelation(synset, dir);
         }
         forest.removeVertex(synset);
@@ -823,8 +792,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * @param synsetNode
      * @param hide_dir
      */
-    public void hideRelation(ViwnNodeSynset synsetNode, Direction hide_dir) {
-        synchronized (this.forest) {
+    public void hideRelation(ViwnNodeSynset synsetNode, NodeDirection hide_dir) {
+        synchronized (forest) {
             boolean semi = false;
             boolean changed = false;
             for (ViwnEdgeSynset r : synsetNode.getRelation(hide_dir)) {
@@ -836,7 +805,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                 if (rem != null && forest.containsVertex(rem)) {
                     if (rem.getSpawner() != null
                             && rem.getSpawner().equals(synsetNode)) {
-                        for (Direction rel : Direction.values()) {
+                        for (NodeDirection rel : NodeDirection.values()) {
                             hideRelation(rem, rel);
                         }
                         forest.removeEdge(r);
@@ -862,22 +831,22 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     private void checkAllStates() {
         for (ViwnNode node : forest.getVertices()) {
             if (node instanceof ViwnNodeSynset) {
-                for (Direction d : Direction.values()) {
+                for (NodeDirection d : NodeDirection.values()) {
                     checkState((ViwnNodeSynset) node, d);
                 }
             }
         }
     }
 
-    public void showRelation(final ViwnNodeSynset synsetNode,
-            final Direction[] dirs) {
+    public void showRelation(ViwnNodeSynset synsetNode,
+                             NodeDirection[] dirs) {
 
         SwingUtilities.invokeLater(() -> {
             workbench.setBusy(true);
         });
 
         setSelectedNode(synsetNode);
-        for (Direction dir : dirs) {
+        for (NodeDirection dir : dirs) {
             showRelationGUI(synsetNode, dir);
         }
 
@@ -892,10 +861,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
     /**
      * @param synsetNode node which relations will be shown
-     * @param dir relation class which will be shown
+     * @param dir        relation class which will be shown
      */
-    @SuppressWarnings("unchecked")
-    private void showRelationGUI(ViwnNodeSynset synsetNode, Direction dir) {
+    private void showRelationGUI(ViwnNodeSynset synsetNode, NodeDirection dir) {
         Collection<ViwnEdgeSynset> to_show_edges = new ArrayList<>();
 
         TreeMap<String, ArrayList<ViwnEdgeSynset>> all_sorted = new TreeMap<>(
@@ -975,7 +943,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             addMissingRelations((ViwnNodeSynset) node);
         });
 
-        this.vv.setVisible(true);
+        vv.setVisible(true);
         checkAllStates();
     }
 
@@ -984,14 +952,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      */
     public void clear() {
         // Lock the graph object
-        synchronized (this.forest) {
+        synchronized (forest) {
 
             new ArrayList<>(forest.getEdges()).forEach((o) -> {
-                this.forest.removeEdge(o);
+                forest.removeEdge(o);
             });
 
             new ArrayList<>(forest.getVertices()).forEach((o) -> {
-                this.forest.removeVertex(o);
+                forest.removeVertex(o);
             });
         }
     }
@@ -1011,9 +979,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         return new_synset;
     }
 
-    private Direction findCommonRelationDir(ViwnNodeSynset parent,
-            ViwnNodeSynset child) {
-        for (Direction dir : Direction.values()) {
+    private NodeDirection findCommonRelationDir(ViwnNodeSynset parent,
+                                                ViwnNodeSynset child) {
+        for (NodeDirection dir : NodeDirection.values()) {
             for (ViwnEdgeSynset e : parent.getRelation(dir)) {
                 if (e.getChild().equals(child.getSynset().getId())
                         || e.getParent().equals(child.getSynset().getId())) {
@@ -1033,14 +1001,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
     }
 
-    public void relationAdded(final ViwnNodeSynset from, final ViwnNodeSynset to) {
+    public void relationAdded(ViwnNodeSynset from, ViwnNodeSynset to) {
 
         ViwnNodeSynset first = new ViwnNodeSynset(from.getSynset(), this);
         ViwnNodeSynset second = new ViwnNodeSynset(to.getSynset(), this);
 
         if (!forest.containsVertex(first)) {
 
-            Direction cdir = findCommonRelationDir(second, first);
+            NodeDirection cdir = findCommonRelationDir(second, first);
             if (cdir != null) {
                 first.setSpawner(second, cdir);
                 forest.addVertex(first);
@@ -1048,7 +1016,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             checkMissing();
             recreateLayoutWithFix(null, null);
         } else if (!forest.containsVertex(second)) {
-            Direction cdir = findCommonRelationDir(first, second);
+            NodeDirection cdir = findCommonRelationDir(first, second);
             if (cdir != null) {
                 second.setSpawner(first, cdir);
                 forest.addVertex(second);
@@ -1067,14 +1035,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         });
 
         nodes.stream().filter((node) -> (node instanceof ViwnNodeSynset)).forEachOrdered((node) -> {
-            for (Direction d : Direction.values()) {
+            for (NodeDirection d : NodeDirection.values()) {
                 checkState((ViwnNodeSynset) node, d);
             }
         });
     }
 
     private ViwnEdge getFirstOnPath(Graph<ViwnNode, ViwnEdge> g, ViwnNode v1,
-            ViwnNode v2) {
+                                    ViwnNode v2) {
         DijkstraShortestPath<ViwnNode, ViwnEdge> dsp = new DijkstraShortestPath<>(g);
 
         List<ViwnEdge> list = dsp.getPath(v1, v2);
@@ -1096,11 +1064,11 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             LOGGER.fatal("node of edge not in cache");
         }
 
-        Direction d = findCommonRelationDir(second, node);
+        NodeDirection d = findCommonRelationDir(second, node);
         if (d == null) {
             d = findCommonRelationDir(node, second);
             if (d != null) {
-                d = d.getOposite();
+                d = d.getOpposite();
             }
         }
 
@@ -1129,7 +1097,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             return;
         }
 
-        for (Direction dir : Direction.values()) {
+        for (NodeDirection dir : NodeDirection.values()) {
             forest.removeVertex(syns.getSynsetSet(dir));
             for (ViwnEdge ve : syns.getRelation(dir)) {
                 ViwnEdgeSynset ves = (ViwnEdgeSynset) ve;
@@ -1212,16 +1180,16 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                         if (e != null) {
                             center = node;
                             if (e instanceof ViwnEdgeCand) {
-                                node.setSpawner(rootNode, Direction.BOTTOM);
+                                node.setSpawner(rootNode, NodeDirection.BOTTOM);
                             } else {
                                 setSpawnerByEdge(node, (ViwnEdgeSynset) e);
                             }
                         } else if (node instanceof ViwnNodeCand) {
-                            node.setSpawner(rootNode, Direction.BOTTOM);
+                            node.setSpawner(rootNode, NodeDirection.BOTTOM);
                             forest.addEdge(new ViwnEdgeCand(), rootNode, node);
                             center = node;
                         } else {
-                            for (Direction dir : Direction.values()) {
+                            for (NodeDirection dir : NodeDirection.values()) {
                                 hideRelation(node, dir);
                             }
                             forest.removeVertex(node);
@@ -1243,13 +1211,13 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     /**
      * Invoke the change of the synset selection.
      *
-     * @author amusial
      * @param synset
+     * @author amusial
      */
     @Override
     public void vertexSelectionChange(ViwnNode synset) {
-        if (this.selectedNode != synset) {
-            this.selectedNode = synset;
+        if (selectedNode != synset) {
+            selectedNode = synset;
         }
 
         // TODO: check me : if we are in make relation mode
@@ -1274,7 +1242,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * Invoke graph change events.
      *
      * @author amusial
-     *
      */
     public void graphChanged() {
         graphChangeListeners.forEach((gcl) -> {
@@ -1286,36 +1253,34 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * selected node setter
      *
      * @param selected_node actually clicked
-     *
      */
     public void setSelectedNode(ViwnNode selected_node) {
-        this.selectedNode = selected_node;
+        selectedNode = selected_node;
     }
 
     /**
      * @return visualization viewer
      */
     public VisualizationViewer<ViwnNode, ViwnEdge> getVisualizationViewer() {
-        return this.vv;
+        return vv;
     }
 
     /**
      * @return graph
      */
     public Graph<ViwnNode, ViwnEdge> getGraph() {
-        return this.forest;
+        return forest;
     }
 
     /**
      * @return layout
      */
     public Layout<ViwnNode, ViwnEdge> getLayout() {
-        return this.layout;
+        return layout;
     }
 
     /**
      * @return rootNode
-     *
      */
     public ViwnNode getRootNode() {
         return rootNode;
@@ -1330,19 +1295,17 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
     /**
      * @return workbench
-     *
      */
     public Workbench getWorkbench() {
-        return this.workbench;
+        return workbench;
     }
 
     /**
      * @param cursor new value of <code>VisualizationViewer</code> cursor
      * @author amusial
-     *
      */
     public void setCursor(Cursor cursor) {
-        this.vv.setCursor(cursor);
+        vv.setCursor(cursor);
     }
 
     /**
@@ -1351,13 +1314,12 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * @param v1 node in first point of transformation vector
      * @param v2 node in second point of transformation vector
      * @author amusial
-     *
      */
     public void recreateLayoutWithFix(ViwnNode v1, ViwnNode v2) {
         /* remember location of group node */
         Point2D p1 = (Point2D) layout.transform(v1).clone();
         /* recreate layout */
-        this.layout.mapNodes2Points(rootNode);
+        layout.mapNodes2Points(rootNode);
         Point2D p2 = (Point2D) layout.transform(v2).clone();
         /* transform layout */
         vv.getRenderContext().getMultiLayerTransformer()
@@ -1431,7 +1393,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     public CriteriaDTO getCriteria() {
-        return this.criteria;
+        return criteria;
     }
 
     public void setCriteria(CriteriaDTO criteria) {

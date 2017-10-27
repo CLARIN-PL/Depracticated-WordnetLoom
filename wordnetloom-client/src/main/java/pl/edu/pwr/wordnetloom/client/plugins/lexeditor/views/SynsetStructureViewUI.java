@@ -1,27 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import pl.edu.pwr.wordnetloom.client.systems.managers.IconsManager;
+import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
@@ -38,9 +17,9 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.Tools;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -48,6 +27,17 @@ import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import se.datadosen.component.RiverLayout;
+
+import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * klasa opisujacy wyglada okienka z strukutrą synsetu
@@ -87,7 +77,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     private JTextField synsetID;
     private JLabel synsetOwner;
     private JLabel isAbstract;
-    private ButtonExt buttonUp, buttonDown, buttonAdd, buttonDelete,
+    private MButton buttonUp, buttonDown, buttonAdd, buttonDelete,
             buttonRelations, buttonSwitchToLexicalPerspective, buttonToNew;
     private Collection<Sense> lastUnits = null;
     private TextAreaPlain commentValue = null;
@@ -107,13 +97,13 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
      * konstruktor
      *
      * @param showRelations - czy pokazać przycisk z relacjami
-     * @param showSwitch - czy pokazać przycisk do przelaczania sie do jednostek
+     * @param showSwitch    - czy pokazać przycisk do przelaczania sie do jednostek
      * @param bottomButtons - czy przyciski maja byc na dole (true) czy z boku
-     * (false)
+     *                      (false)
      * @param graphUI
      */
     public SynsetStructureViewUI(boolean showRelations, boolean showSwitch,
-            boolean bottomButtons, ViwnGraphViewUI graphUI) {
+                                 boolean bottomButtons, ViwnGraphViewUI graphUI) {
         this.showRelations = showRelations;
         this.showSwitch = showSwitch;
         this.bottomButtons = bottomButtons;
@@ -159,43 +149,55 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         isAbstract = new JLabel();
 
         // dodanie przyciskow
-        buttonUp = new ButtonExt(IconsManager.getUp(), this);
-        buttonUp.setEnabled(false);
-        buttonUp.setToolTipText(Hints.MOVE_UNIT_UP);
+        buttonUp = MButton.buildUpButton()
+                .withToolTip(Hints.MOVE_UNIT_UP)
+                .withEnabled(false)
+                .withActionListener(this);
+
         installViewScopeShortCut(buttonUp, KeyEvent.CTRL_MASK, KeyEvent.VK_UP);
 
-        buttonDown = new ButtonExt(IconsManager.getDown(), this);
-        buttonDown.setEnabled(false);
-        buttonDown.setToolTipText(Hints.MOVE_UNIT_DOWN);
+        buttonDown = MButton.buildDownButton()
+                .withToolTip(Hints.MOVE_UNIT_DOWN)
+                .withEnabled(false)
+                .withActionListener(this);
+
         installViewScopeShortCut(buttonDown, KeyEvent.CTRL_MASK,
                 KeyEvent.VK_DOWN);
 
-        buttonAdd = new ButtonExt(IconsManager.getAdd(), this);
-        buttonAdd.setToolTipText(Hints.ADD_UNITS);
-        buttonAdd.setEnabled(false);
+        buttonAdd = MButton.buildAddButton()
+                .withEnabled(false)
+                .withToolTip(Hints.ADD_UNITS)
+                .withActionListener(this);
+
         installViewScopeShortCut(buttonAdd, 0, KeyEvent.VK_INSERT);
 
-        buttonDelete = new ButtonExt(IconsManager.getDelete(), this);
-        buttonDelete.setEnabled(false);
-        buttonDelete.setToolTipText(Hints.DETACH_UNIT_FORM_SYNSET);
+        buttonDelete = MButton.buildDeleteButton()
+                .withToolTip(Hints.DETACH_UNIT_FORM_SYNSET)
+                .withEnabled(false)
+                .withActionListener(this);
+
         installViewScopeShortCut(buttonDelete, 0, KeyEvent.VK_DELETE);
 
-        buttonToNew = new ButtonExt(IconsManager.getToNew(), this);
-        buttonToNew.setToolTipText(Hints.CREATE_SYNSET_AND_MOVE_SELECTED_UNITS);
-        buttonToNew.setEnabled(false);
+        buttonToNew = new MButton(this)
+                .withIcon(FontAwesome.SIGN_IN)
+                .withEnabled(false)
+                .withToolTip(Hints.CREATE_SYNSET_AND_MOVE_SELECTED_UNITS);
+
         installViewScopeShortCut(buttonToNew, 0, KeyEvent.VK_N);
 
-        buttonRelations = new ButtonExt(IconsManager.getRelations(), this);
-        buttonRelations.setEnabled(false);
-        buttonRelations.setToolTipText(Hints.ADD_RELATION);
+        buttonRelations = new MButton(this)
+                .withIcon(FontAwesome.REFRESH)
+                .withToolTip(Hints.ADD_RELATION)
+                .withEnabled(false);
+
         installViewScopeShortCut(buttonRelations, KeyEvent.CTRL_MASK,
                 KeyEvent.VK_R);
 
-        buttonSwitchToLexicalPerspective = new ButtonExt(IconsManager.getSwitch(),
-                this);
-        buttonSwitchToLexicalPerspective.setEnabled(false);
-        buttonSwitchToLexicalPerspective
-                .setToolTipText(Hints.SWITCH_TO_UNIT_PERSPECTIVE);
+        buttonSwitchToLexicalPerspective = new MButton(this)
+                .withEnabled(false)
+                .withToolTip(Hints.SWITCH_TO_UNIT_PERSPECTIVE)
+                .withIcon(FontAwesome.EXCHANGE);
+
         installViewScopeShortCut(buttonSwitchToLexicalPerspective,
                 KeyEvent.CTRL_MASK, KeyEvent.VK_L);
 
@@ -569,7 +571,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         Collection<Sense> selectedUnits = lastUnits;
         if (selectedUnits == null && unitsList != null
                 && !unitsList.isSelectionEmpty()) {
-            selectedUnits = new ArrayList<Sense>();
+            selectedUnits = new ArrayList<>();
             int[] values = unitsList.getSelectedIndices();
             for (int i : values) {
                 selectedUnits.add(listModel.getObjectAt(i));
@@ -641,16 +643,16 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 && idx != listModel.getSplitPosition()) {
             Sense unit = listModel.getObjectAt(idx);
 
-            LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(this.graphUI);
-            lui.init(this.workbench);
-            final DialogWindow dia = new DialogWindow(this.workbench.getFrame(), Labels.UNIT_PROPERTIES, 585, 520);
+            LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(graphUI);
+            lui.init(workbench);
+            DialogWindow dia = new DialogWindow(workbench.getFrame(), Labels.UNIT_PROPERTIES, 585, 520);
             JPanel pan = new JPanel();
             lui.initialize(pan);
             lui.refreshData(unit);
             lui.closeWindow((ActionEvent e1) -> {
                 dia.dispose();
             });
-            dia.setLocationRelativeTo(this.workbench.getFrame());
+            dia.setLocationRelativeTo(workbench.getFrame());
             dia.setContentPane(pan);
             dia.pack();
             dia.setVisible(true);

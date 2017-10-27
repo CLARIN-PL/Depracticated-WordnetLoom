@@ -1,7 +1,16 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window;
 
-import java.awt.Color;
-import java.awt.Component;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeSynset;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+import se.datadosen.component.RiverLayout;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -9,19 +18,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeSynset;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
-import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
-import se.datadosen.component.RiverLayout;
 
 public class DeleteRelationWindow extends DialogWindow implements ActionListener {
 
@@ -33,8 +29,8 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
 
     private JLabel question;
     private JComboBox relations;
-    private ButtonExt delete;
-    private ButtonExt cancel;
+    private MButton delete;
+    private MButton cancel;
 
     private HashMap<Integer, ViwnEdgeSynset> toRemove;
     private Collection<ViwnEdge> removed;
@@ -51,14 +47,14 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
 
     /**
      * @param baseFrame dialog base frame?
-     * @param title dialog title
-     * @param width dialog width
-     * @param height dialog height
-     * @param edges edges collection representing collection of relations from
-     * which one or more should be removed
+     * @param title     dialog title
+     * @param width     dialog width
+     * @param height    dialog height
+     * @param edges     edges collection representing collection of relations from
+     *                  which one or more should be removed
      */
     protected DeleteRelationWindow(JFrame baseFrame, String title, int width,
-            int height, Collection<ViwnEdgeSynset> edges) {
+                                   int height, Collection<ViwnEdgeSynset> edges) {
         super(baseFrame, title, width, height);
         initialize(edges);
     }
@@ -67,8 +63,7 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
      * method add components to this dialog box
      *
      * @param edges collection of edges being representation of relations to
-     * delete
-     *
+     *              delete
      */
     private void initialize(Collection<ViwnEdgeSynset> edges) {
 
@@ -79,23 +74,28 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
         }
         removed = new HashSet<>();
 
-        this.setResizable(false);
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setResizable(false);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        this.setLayout(new RiverLayout());
+        setLayout(new RiverLayout());
 
         question = new JLabel(Labels.REMOVE_RELATION);
-        this.add("hfill", question);
+        add("hfill", question);
 
         relations = new JComboBox(toRemove.keySet().toArray(new Integer[]{}));
         relations.setRenderer(new DeletionCellRenderer());
 
-        this.add("br hfill vfill", relations);
+        add("br hfill vfill", relations);
 
-        delete = new ButtonExt(Labels.DELETE_SELECTED, this, KeyEvent.VK_U);
-        this.add("br center", delete);
-        cancel = new ButtonExt(Labels.CANCEL, this, KeyEvent.VK_W);
-        this.add(cancel);
+        delete = MButton.buildDeleteButton()
+                .withActionListener(this)
+                .withMnemonic(KeyEvent.VK_U)
+                .withCaption(Labels.DELETE_SELECTED);
+
+        add("br center", delete);
+
+        cancel = MButton.buildCancelButton(this);
+        add(cancel);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
 //            }
 
             /* if below is ugly, but those methods have to be invoked
-				 * in that order, better copy some code than repeat
+                 * in that order, better copy some code than repeat
 				 * if(autoreverse) three times */
 //            if (autoreverse) {
 //                // remember that this relation has been removed
@@ -147,11 +147,11 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
 //                DialogBox.showInformation(Messages.SUCCESS_SELECTED_RELATION_DELETED);
 //            }
             if (toRemove.isEmpty()) {
-                this.setVisible(false);
+                setVisible(false);
             }
 
         } else if (e.getSource() == cancel) {
-            this.setVisible(false);
+            setVisible(false);
         }
     }
 
@@ -159,7 +159,7 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
 
         private static final long serialVersionUID = -4423464499504059166L;
 
-        private HashMap<Long, String> synsetCache = new HashMap<>();
+        private final HashMap<Long, String> synsetCache = new HashMap<>();
 
         public DeletionCellRenderer() {
             super();
@@ -193,8 +193,8 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
 
         @Override
         public Component getListCellRendererComponent(JList list,
-                Object value, int index, boolean isSelected,
-                boolean cellHasFocus) {
+                                                      Object value, int index, boolean isSelected,
+                                                      boolean cellHasFocus) {
 
             if (value instanceof Integer) {
                 ViwnEdgeSynset ves = toRemove.get((Integer) value);
@@ -250,7 +250,7 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
      * @return collection of removed edges
      */
     public static Collection<ViwnEdge> showDeleteSynsetDialog(JFrame baseFrame, String title, int width,
-            int height, Collection<ViwnEdgeSynset> edges) {
+                                                              int height, Collection<ViwnEdgeSynset> edges) {
         DeleteRelationWindow drf = new DeleteRelationWindow(baseFrame, title, width, height, edges);
         drf.setVisible(true);
         return drf.removed;

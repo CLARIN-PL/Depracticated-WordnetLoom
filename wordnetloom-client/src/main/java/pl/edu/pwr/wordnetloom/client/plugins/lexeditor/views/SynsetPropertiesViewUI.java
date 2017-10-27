@@ -1,20 +1,11 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
@@ -23,6 +14,12 @@ import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import se.datadosen.component.RiverLayout;
+
+import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * klasa opisujacy wyglada okienka z wlasciwoscami synsetu
@@ -33,7 +30,12 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
     private TextAreaPlain definitionValue;
     private TextAreaPlain commentValue;
-    private ButtonExt buttonSave;
+
+    private final MButton buttonSave = MButton.buildSaveButton()
+            .withToolTip(Hints.SAVE_CHANGES_IN_SYNSET)
+            .withEnabled(false)
+            .withActionListener(this);
+
     private JCheckBox abstractValue;
 
     private Synset lastSynset = null;
@@ -56,10 +58,6 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         commentValue = new TextAreaPlain(Labels.VALUE_UNKNOWN);
         commentValue.addCaretListener(this);
         commentValue.setRows(3);
-
-        buttonSave = new ButtonExt(Labels.SAVE, this);
-        buttonSave.setEnabled(false);
-        buttonSave.setToolTipText(Hints.SAVE_CHANGES_IN_SYNSET);
 
         abstractValue = new JCheckBox(Labels.ARTIFICIAL);
         abstractValue.setSelected(false);

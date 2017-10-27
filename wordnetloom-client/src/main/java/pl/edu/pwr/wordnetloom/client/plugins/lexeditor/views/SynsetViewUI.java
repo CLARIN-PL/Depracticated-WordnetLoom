@@ -1,22 +1,5 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SynsetCriteria;
@@ -24,20 +7,40 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SynsetViewUI extends AbstractViewUI implements ActionListener, ListSelectionListener, KeyListener {
 
     private SynsetCriteria criteria;
-    private ButtonExt btnSearch, btnReset;
+
+    private final MButton btnSearch = MButton.buildSearchButton()
+            .withActionListener(this)
+            .withMnemonic(KeyEvent.VK_K);
+
+    private final MButton btnReset = MButton.buildCancelButton()
+            .withCaption(Labels.CLEAR)
+            .withActionListener(this)
+            .withMnemonic(KeyEvent.VK_C);
+
     private ToolTipList synsetList;
     private JLabel infoLabel;
     private final GenericListModel<Sense> senseListModel = new GenericListModel<>(true);
@@ -48,7 +51,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         initilizeComponents();
         content.setLayout(new RiverLayout());
 
-        final int scrollHeight = 220;
+        int scrollHeight = 220;
         JScrollPane scroll = new JScrollPane(criteria);
         scroll.setMaximumSize(new Dimension(0, scrollHeight));
         scroll.setMinimumSize(new Dimension(0, scrollHeight));
@@ -67,9 +70,8 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         criteria = new SynsetCriteria();
         criteria.getDomainComboBox().addActionListener(this);
         criteria.getPartsOfSpeachComboBox().addActionListener(this);
-        btnSearch = new ButtonExt(Labels.SEARCH_NO_COLON, this, KeyEvent.VK_K);
-        btnReset = new ButtonExt(Labels.CLEAR, this, KeyEvent.VK_C);
         synsetList = createSynsetList(senseListModel);
+
         infoLabel = new JLabel();
         infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "0"));
     }
@@ -87,14 +89,14 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
 
     public void refreshData() {
 
-        final int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
-        final String oldFilter = criteria.getSearchTextField().getText();
-        final Domain oldDomain = (Domain) criteria.getDomainComboBox().retriveComboBoxItem();
-        final SynsetRelationType oldRelation = (SynsetRelationType) criteria.getSynsetRelationTypeComboBox().retriveComboBoxItem();
-        final String definition = criteria.getDefinition().getText();
-        final String comment = criteria.getComment().getText();
-        final String artificial = criteria.getIsArtificial();
-        final List<Long> lexicons = new ArrayList<>();
+        int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
+        String oldFilter = criteria.getSearchTextField().getText();
+        Domain oldDomain = criteria.getDomainComboBox().retriveComboBoxItem();
+        RelationType oldRelation = criteria.getSynsetRelationTypeComboBox().retriveComboBoxItem();
+        String definition = criteria.getDefinition().getText();
+        String comment = criteria.getComment().getText();
+        String artificial = criteria.getIsArtificial();
+        List<Long> lexicons = new ArrayList<>();
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
@@ -149,7 +151,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
             return;
         }
 
-        final int returnValue = synsetList.getSelectedIndex();
+        int returnValue = synsetList.getSelectedIndex();
         Sense unit = senseListModel.getObjectAt(returnValue);
         synsetList.setEnabled(false);
         listeners.notifyAllListeners(synsetList.getSelectedIndices().length == 1 ? unit : null);

@@ -1,25 +1,23 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
 
     private static final long serialVersionUID = 1L;
 
-    // tablica dostepnych czesci mowy
     private static final PartOfSpeech[] posesTab = PartOfSpeechManager.getInstance().getAll().toArray(new PartOfSpeech[]{});
-    private final ButtonExt buttonOk, buttonCancel;
+    private final MButton buttonOk, buttonCancel;
     private final JCheckBox checkPoses[] = new JCheckBox[posesTab.length];
     private Collection<PartOfSpeech> poses;
 
@@ -30,30 +28,31 @@ public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
      */
     private PartOfSpeechWindow(JFrame owner) {
         super(owner, Labels.PARTS_OF_SPEECH, 190, 430);
-        this.setResizable(false);
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setResizable(false);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        buttonOk = new ButtonExt(Labels.OK, this, KeyEvent.VK_O);
-        buttonOk.setEnabled(true);
-        buttonCancel = new ButtonExt(Labels.CANCEL, this, KeyEvent.VK_A);
-        buttonCancel.setEnabled(true);
+        buttonOk = MButton.buildOkButton()
+                .withEnabled(true);
+
+        buttonCancel = MButton.buildCancelButton(this)
+                .withEnabled(true);
 
         // utworzenie checkboxow
         for (int i = 0; i < checkPoses.length; i++) {
             checkPoses[i] = new JCheckBox(posesTab[i].toString());
             checkPoses[i].setSelected(false);
-            this.add("br", checkPoses[i]);
+            add("br", checkPoses[i]);
         }
 
         // dodanie do zawartości okna
-        this.add("br center", buttonOk);
-        this.add("", buttonCancel);
+        add("br center", buttonOk);
+        add("", buttonCancel);
     }
 
     /**
      * wyświetlenie okienka
      *
-     * @param owner - srodowisko
+     * @param owner    - srodowisko
      * @param oldPoses - aktualne czesci mowy
      * @return czesci mowy
      */

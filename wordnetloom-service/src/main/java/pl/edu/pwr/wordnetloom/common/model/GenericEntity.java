@@ -14,6 +14,7 @@ public abstract class GenericEntity implements Serializable, Cloneable {
 
     @Version
     private int version;
+
     @Column(name = "entity_status")
     @Enumerated(EnumType.STRING)
     private EntityStatus entityStatus = EntityStatus.ACTIVE;

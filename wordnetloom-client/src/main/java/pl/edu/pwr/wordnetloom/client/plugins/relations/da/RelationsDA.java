@@ -1,22 +1,19 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relations.da;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.swing.JFrame;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.NodeDrawer;
 import pl.edu.pwr.wordnetloom.client.systems.progress.AbstractProgressThread;
 import pl.edu.pwr.wordnetloom.client.systems.progress.ProgressFrame;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+
+import javax.swing.*;
+import java.util.*;
 
 /**
  * klasa pośrednicząca w wymianie danych
@@ -34,15 +31,15 @@ public class RelationsDA {
     /**
      * odczytane listy synsetow spelnijacych filtr
      *
-     * @param filterText - filtr nazw
-     * @param domainStr - domena do filtrowania
+     * @param filterText   - filtr nazw
+     * @param domainStr    - domena do filtrowania
      * @param relationType - typ relacji jakie muszą byc zdefiniowane dla
-     * wynikowych synsetow
-     * @param limitSize - maksymalna liczba zwroconych elementów
+     *                     wynikowych synsetow
+     * @param limitSize    - maksymalna liczba zwroconych elementów
      * @param lexicon
      * @return kolekcja z danymi
      */
-    static public Collection<Synset> getSynsets(String filterText, String domainStr, SynsetRelationType relationType, int limitSize, List<Long> lexicon) {
+    static public Collection<Synset> getSynsets(String filterText, String domainStr, RelationType relationType, int limitSize, List<Long> lexicon) {
         return RelationsDA.getSynsets(filterText, domainStr, relationType, limitSize, limitSize, lexicon);
     }
 
@@ -50,18 +47,18 @@ public class RelationsDA {
      * odczytane listy synsetow spelnijacych filtr, dodane filtrowanie po części
      * mowy
      *
-     * @param filterText - filtr nazw
-     * @param status - status do filtrowania (dochodzi do tego 0- wszystko)
-     * @param domainStr - domena do filtrowania
+     * @param filterText   - filtr nazw
+     * @param status       - status do filtrowania (dochodzi do tego 0- wszystko)
+     * @param domainStr    - domena do filtrowania
      * @param relationType - typ relacji jakie muszą byc zdefiniowane dla
-     * wynikowych synsetow
-     * @param limitSize - maksymalna liczba zwroconych elementów
-     * @param posIndex - indeks części mowy (-1 wszystkie, 0 nieznany, itd.
-     * zgodnie z enum Pos)
+     *                     wynikowych synsetow
+     * @param limitSize    - maksymalna liczba zwroconych elementów
+     * @param posIndex     - indeks części mowy (-1 wszystkie, 0 nieznany, itd.
+     *                     zgodnie z enum Pos)
      * @param lexicons
      * @return kolekcja z danymi
      */
-    static public Collection<Synset> getSynsets(String filterText, String domainStr, SynsetRelationType relationType, int limitSize, int posIndex, List<Long> lexicons) {
+    static public Collection<Synset> getSynsets(String filterText, String domainStr, RelationType relationType, int limitSize, int posIndex, List<Long> lexicons) {
         Domain domain = null;
         if (domainStr != null) {
             domain = DomainManager.getInstance().decode(domainStr);
@@ -74,15 +71,15 @@ public class RelationsDA {
     /**
      * przeniesienie jednostek do istniejacego synsetu
      *
-     * @param mainSynset - glowny synset
+     * @param mainSynset    - glowny synset
      * @param selectedUnits - zaznaczone jednostki
-     * @param descSynset - docelowy synset
+     * @param descSynset    - docelowy synset
      */
     public static void moveUnitsToExistenSynset(Synset mainSynset, Collection<Sense> selectedUnits, Synset descSynset) {
 
         for (Sense unit : selectedUnits) {
-           // RemoteUtils.unitAndSynsetRemote.dbDeleteConnection(unit, mainSynset);
-           // RemoteUtils.unitAndSynsetRemote.dbAddConnection(unit, descSynset, false);
+            // RemoteUtils.unitAndSynsetRemote.dbDeleteConnection(unit, mainSynset);
+            // RemoteUtils.unitAndSynsetRemote.dbAddConnection(unit, descSynset, false);
         }
     }
 
@@ -99,11 +96,11 @@ public class RelationsDA {
      * sprawdzenie czy podana relacja już istnieje
      *
      * @param parent - element nadrzedny
-     * @param child - element podrzedny
-     * @param rel - typ relacji
+     * @param child  - element podrzedny
+     * @param rel    - typ relacji
      * @return TRUE jesli relacja istnieje
      */
-    public static boolean checkIfRelationExists(Synset parent, Synset child, SynsetRelationType rel) {
+    public static boolean checkIfRelationExists(Synset parent, Synset child, RelationType rel) {
         return false; //RemoteUtils.synsetRelationRemote.dbRelationExists(parent, child, rel);
     }
 
@@ -111,10 +108,10 @@ public class RelationsDA {
      * utworzenie relacji
      *
      * @param parent - element nadrzedny
-     * @param child - element podrzedny
-     * @param rel - typ relacji
+     * @param child  - element podrzedny
+     * @param rel    - typ relacji
      */
-    public static void makeRelation(Synset parent, Synset child, SynsetRelationType rel) {
+    public static void makeRelation(Synset parent, Synset child, RelationType rel) {
         if (parent == null || child == null || parent.getId() == -1 || child.getId() == -1) {
             return;
         }
@@ -150,7 +147,7 @@ public class RelationsDA {
     /**
      * odczytanie czesci mowy synsetu
      *
-     * @param synset - synset
+     * @param synset   - synset
      * @param lexicons
      * @return czesc mowy
      */
@@ -161,7 +158,7 @@ public class RelationsDA {
     /**
      * odczytanie jednostek synsetu
      *
-     * @param synset - sysnet
+     * @param synset   - sysnet
      * @param lexicons
      * @return jednostki synsetu
      */
@@ -172,9 +169,9 @@ public class RelationsDA {
     /**
      * odczytanie jednostek synsetu
      *
-     * @param synset - synset
+     * @param synset       - synset
      * @param ignoredUnits - lista jednostke ktore maja zostac zignorowane przy
-     * oczycie
+     *                     oczycie
      * @param lexicons
      * @return jednostki synsetu
      */
@@ -203,10 +200,10 @@ public class RelationsDA {
      * @param rel - relacja
      * @return relacja odwrotna
      */
-    public static SynsetRelationType getReverseRelation(SynsetRelationType rel) {
+    public static RelationType getReverseRelation(RelationType rel) {
 //        SynsetRelationType reverse = RemoteUtils.relationTypeRemote.dbGetReverseByRelationType(rel);
 //        return RemoteUtils.relationTypeRemote.dbGet(reverse.getId());
-    return null;
+        return null;
     }
 
     /**
@@ -215,7 +212,7 @@ public class RelationsDA {
      * @param rel - relacja dla ktorej ma zostac odczytany opis
      * @return pelna nazwa relacji
      */
-    public static String getRelationName(SynsetRelationType rel) {
+    public static String getRelationName(RelationType rel) {
         if (rel != null) {
             if (rel.getParent() != null) { // ma rodzica
 //                SynsetRelationType parent = RemoteUtils.relationTypeRemote.dbGet(rel.getParent().getId());
@@ -237,8 +234,8 @@ public class RelationsDA {
      * @param synset - synset
      * @return lista typow relacji
      */
-    public static Collection<SynsetRelationType> getRelationsTypes(Synset synset) {
-        Collection<SynsetRelationType> relations = null;
+    public static Collection<RelationType> getRelationsTypes(Synset synset) {
+        Collection<RelationType> relations = null;
         if (synset != null) {
             //relations = RemoteUtils.synsetRelationRemote.dbGetRelationTypesOfSynset(synset);
         } else {
@@ -271,7 +268,7 @@ public class RelationsDA {
      * @param relations
      * @param usedSynsetsID
      * @param synsetsDescriptions
-     * @param progress - okno z informacja o postepie
+     * @param progress             - okno z informacja o postepie
      * @param refreshProgressDepth
      * @return drzewo relacji synsetow
      */
@@ -279,7 +276,7 @@ public class RelationsDA {
         if (synsetId == null) {
             return new NodeDrawer("---");
         }
-        final String desc = synsetsDescriptions.get(synsetId);
+        String desc = synsetsDescriptions.get(synsetId);
         if (desc == null) {
             return new NodeDrawer("---");
         }
@@ -306,7 +303,7 @@ public class RelationsDA {
 
     /**
      * zbudowanie drzewa relacji synsetow
-     *
+     * <p>
      * Funkcja zmodyfikowana w celu redukcji pobieranych rekordów synset
      * description. Pobierane są tylko potrzebne ID, zamiast całej listy.
      *
@@ -316,7 +313,7 @@ public class RelationsDA {
      * @param lexicons
      * @return drzewo relacji synsetow
      */
-    public static NodeDrawer buildRelationsTree(JFrame parent, final Synset synset, final SynsetRelationType relationType, final List<Long> lexicons) {
+    public static NodeDrawer buildRelationsTree(JFrame parent, Synset synset, RelationType relationType, List<Long> lexicons) {
         AbstractProgressThread progress = new AbstractProgressThread(parent, RELATION_TREE_BUILDING, null, true) {
             @Override
             protected void mainProcess() {
@@ -324,7 +321,7 @@ public class RelationsDA {
                 progress.setProgressParams(0, 100, RELATION_TREE_DATA_READING);
 
                 // odczytanie relacji aby miec w buforze
-              //  Collection<SynsetRelation> relations = RemoteUtils.synsetRelationRemote.dbFastGetRelations(relationType);
+                //  Collection<SynsetRelation> relations = RemoteUtils.synsetRelationRemote.dbFastGetRelations(relationType);
 
                 // przerobienie kolekcji na hashmape
                 HashMap<Long, ArrayList<Long>> map = new HashMap<>();
@@ -339,11 +336,11 @@ public class RelationsDA {
 
                 // generate synsets IDx
                 ArrayList<Long> idx = new ArrayList<>();
-               // buildRelationsTreeIdx(synset != null ? synset.getId() : null, relations, new ArrayList<>(), idx);
+                // buildRelationsTreeIdx(synset != null ? synset.getId() : null, relations, new ArrayList<>(), idx);
 
                 //Map<Long, String> synsetsDescriptions = RemoteUtils.synsetRemote.dbGetSynsetsDescriptionIdx(idx, lexicons);
 
-               // this.tag = buildRelationsTree(synset != null ? synset.getId() : null, relations, new ArrayList<>(), synsetsDescriptions, progress, 2);
+                // this.tag = buildRelationsTree(synset != null ? synset.getId() : null, relations, new ArrayList<>(), synsetsDescriptions, progress, 2);
             }
         };
         if (progress.getTag() != null) {

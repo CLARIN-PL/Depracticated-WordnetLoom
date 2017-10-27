@@ -1,15 +1,16 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.text.ParseException;
-import javax.swing.JMenu;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window.RelationsEditorWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.text.ParseException;
 
 public class RelationTypesService extends AbstractService implements ActionListener {
 

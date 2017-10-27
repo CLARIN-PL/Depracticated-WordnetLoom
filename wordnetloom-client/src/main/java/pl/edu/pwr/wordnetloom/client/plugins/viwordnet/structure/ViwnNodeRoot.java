@@ -17,17 +17,19 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
+
 abstract public class ViwnNodeRoot extends ViwnNode {
 
     private final ViwnNodeSet[] sets_;
 
-    public ViwnNodeSet getSynsetSet(Direction dir) {
+    public ViwnNodeSet getSynsetSet(NodeDirection dir) {
         return sets_[dir.ordinal()];
     }
 
     public ViwnNodeRoot() {
         sets_ = new ViwnNodeSet[]{
-            new ViwnNodeSet(), new ViwnNodeSet(),
-            new ViwnNodeSet(), new ViwnNodeSet()};
+                new ViwnNodeSet(), new ViwnNodeSet(),
+                new ViwnNodeSet(), new ViwnNodeSet()};
     }
 }

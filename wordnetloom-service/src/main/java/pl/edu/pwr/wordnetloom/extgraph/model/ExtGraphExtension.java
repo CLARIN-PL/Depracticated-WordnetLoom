@@ -1,19 +1,12 @@
 package pl.edu.pwr.wordnetloom.extgraph.model;
 
-import java.awt.Color;
-import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import pl.edu.pwr.wordnetloom.common.model.CustomColor;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
+
+import javax.persistence.*;
+import java.awt.*;
+import java.io.Serializable;
 
 @Entity
 @IdClass(ExtGraphPK.class)
@@ -30,7 +23,7 @@ public class ExtGraphExtension implements Serializable {
     @Id
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "REL_ID", referencedColumnName = "id")
-    private SynsetRelationType relationType;
+    private RelationType relationType;
 
     @Id
     @ManyToOne(fetch = FetchType.EAGER)
@@ -85,11 +78,11 @@ public class ExtGraphExtension implements Serializable {
         this.extGraph = extGraph;
     }
 
-    public SynsetRelationType getRelationType() {
+    public RelationType getRelationType() {
         return relationType;
     }
 
-    public void setRelationType(SynsetRelationType relationType) {
+    public void setRelationType(RelationType relationType) {
         this.relationType = relationType;
     }
 

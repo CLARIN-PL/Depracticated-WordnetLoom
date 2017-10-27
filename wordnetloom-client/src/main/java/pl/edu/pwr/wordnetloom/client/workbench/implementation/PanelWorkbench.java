@@ -1,16 +1,24 @@
 package pl.edu.pwr.wordnetloom.client.workbench.implementation;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import jiconfont.icons.FontAwesome;
+import jiconfont.swing.IconFontSwing;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
+import pl.edu.pwr.wordnetloom.client.systems.managers.ConfigurationManager;
+import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
+import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
+import pl.edu.pwr.wordnetloom.client.systems.ui.BusyGlassPane;
+import pl.edu.pwr.wordnetloom.client.systems.ui.IconFrame;
+import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.*;
+import pl.edu.pwr.wordnetloom.user.model.User;
+import se.datadosen.component.RiverLayout;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,34 +28,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import pl.edu.pwr.wordnetloom.client.systems.managers.IconsManager;
-import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
-import pl.edu.pwr.wordnetloom.client.systems.managers.ConfigurationManager;
-import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
-import pl.edu.pwr.wordnetloom.client.systems.ui.BusyGlassPane;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconFrame;
-import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
-import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Perspective;
-import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Plugin;
-import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Service;
-import pl.edu.pwr.wordnetloom.client.workbench.interfaces.View;
-import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.user.model.User;
-import se.datadosen.component.RiverLayout;
 
 /**
  * panele dla środwiska
@@ -97,7 +77,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
      * @param title - tytuł dla okna
      */
     public PanelWorkbench(String title) {
-        this.version = title;
+        version = title;
 
         // załadowanie konfiguracji
         config = new ConfigurationManager(WORKBENCH_CONFIG_FILE);
@@ -117,7 +97,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
         // instalacja pluginow
         Collection<Plugin> plugins = loadPlugins(PLUGIN_CONFIG_FILE);
         for (Plugin plugin : plugins) {
-            final Workbench workbench = this;
+            Workbench workbench = this;
 
             class Tmp implements Runnable {
 
@@ -158,7 +138,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
      * utworzenie intefejsu
      */
     private void createFrame() {
-        final PanelWorkbench panel = this;
+        PanelWorkbench panel = this;
 
         Runnable run = () -> {
             globalShortCuts = new ArrayList<>();
@@ -197,7 +177,9 @@ public final class PanelWorkbench implements WindowListener, Workbench {
             statusBar = new JLabel("");
 
             user = new JLabel("");
-            user.setIcon(IconsManager.getUser());
+            Icon icon = IconFontSwing.buildIcon(FontAwesome.USER, 12);
+            user.setIcon(icon);
+
             statusPanel = new JPanel();
             statusPanel.setBorder(BorderFactory.createEtchedBorder());
             statusPanel.setLayout(new RiverLayout());
@@ -223,11 +205,11 @@ public final class PanelWorkbench implements WindowListener, Workbench {
     }
 
     public void addGlobalShortCut(ShortCut shortCut) {
-        this.globalShortCuts.add(shortCut);
+        globalShortCuts.add(shortCut);
     }
 
     @Override
-    public void setVisible(final boolean isVisible) {
+    public void setVisible(boolean isVisible) {
         Runnable run = () -> {
             if (isVisible == false) {
                 windowClosing(null); // wywoalnie zamykania
@@ -282,9 +264,9 @@ public final class PanelWorkbench implements WindowListener, Workbench {
                         perspective, workbench);
                 perspectiveItem
                         .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1
-                                + menuPerspective.getItemCount(),
+                                        + menuPerspective.getItemCount(),
                                 InputEvent.CTRL_DOWN_MASK
-                                | InputEvent.SHIFT_DOWN_MASK));
+                                        | InputEvent.SHIFT_DOWN_MASK));
 
                 // dodanie nowej pozycji do menu
                 menuPerspective.add(perspectiveItem); // dodanie perspektywy do menu
@@ -311,7 +293,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
 
                 // dodanie przycisku do istniejącego toolbara
                 toolBar.add(perspectiveButton);
-                final int count = perspectives.size();
+                int count = perspectives.size();
                 toolBar.setVisible(count > 1 && count < 5);
 
             }
@@ -329,7 +311,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
     }
 
     @Override
-    public void choosePerspective(final String perspectiveName) {
+    public void choosePerspective(String perspectiveName) {
 
         Runnable run = () -> {
             // odczytanie perspektywy o podanej nazwie
@@ -518,7 +500,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
 
     @Override
     public String getVersion() {
-        return this.version;
+        return version;
     }
 
     @Override
@@ -599,7 +581,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
     }
 
     @Override
-    public void setBusy(final boolean busy) {
+    public void setBusy(boolean busy) {
         if (BUSY_LOCK.compareAndSet(false, true)) {
             try {
                 SwingUtilities.invokeLater(() -> {

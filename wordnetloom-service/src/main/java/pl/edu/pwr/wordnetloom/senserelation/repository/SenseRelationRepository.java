@@ -1,20 +1,16 @@
 package pl.edu.pwr.wordnetloom.senserelation.repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
-import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
+import java.util.*;
 
 @Stateless
 public class SenseRelationRepository extends GenericRepository<SenseRelation> {
@@ -22,7 +18,7 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
     @Inject
     EntityManager em;
 
-    public void delete(SenseRelationType relation) {
+    public void delete(RelationType relation) {
         getEntityManager().createQuery("DELETE FROM SenseRelation s WHERE s.relationType = :relation", SenseRelation.class)
                 .setParameter("relation", relation)
                 .executeUpdate();
@@ -33,7 +29,7 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
                 .executeUpdate();
     }
 
-    public List<SenseRelation> findSubRelations(Sense sense, SenseRelationType relationType) {
+    public List<SenseRelation> findSubRelations(Sense sense, RelationType relationType) {
         if (relationType == null) {
             return getEntityManager().createQuery("SELECT s FROM SenseRelation s WHERE s.parent = :parent", SenseRelation.class)
                     .setParameter("parent", sense)
@@ -45,7 +41,7 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
                 .getResultList();
     }
 
-    public List<SenseRelation> findRelationByRelationType(SenseRelationType relationType) {
+    public List<SenseRelation> findRelationByRelationType(RelationType relationType) {
         if (relationType == null) {
             return findAll("id");
         }
@@ -59,9 +55,9 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
                 .getResultList());
     }
 
-    public List<SenseRelation> findUpperRelations(Sense sense, SenseRelationType relationType) {
+    public List<SenseRelation> findUpperRelations(Sense sense, RelationType relationType) {
         if (relationType == null) {
-            return getEntityManager().createNamedQuery("SELECT s FROM SenseRelation s WHERE s.child = :child", SenseRelation.class)
+            return getEntityManager().createQuery("SELECT s FROM SenseRelation s WHERE s.child = :child", SenseRelation.class)
                     .setParameter("child", sense)
                     .getResultList();
         }
@@ -71,7 +67,7 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
                 .getResultList();
     }
 
-    public List<SenseRelation> findRelations(Sense parent, Sense child, SenseRelationType relationType) {
+    public List<SenseRelation> findRelations(Sense parent, Sense child, RelationType relationType) {
         if (relationType == null) {
             return getEntityManager().createQuery("FROM SenseRelation s WHERE s.child = :child AND s.parent = :parent", SenseRelation.class)
                     .setParameter("parent", parent)
@@ -85,14 +81,14 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
                 .getResultList();
     }
 
-    public SenseRelation findRelation(Sense parent, Sense child, SenseRelationType relationType) {
+    public SenseRelation findRelation(Sense parent, Sense child, RelationType relationType) {
         if (relationType == null) {
             return getEntityManager().createQuery("FROM SenseRelation s WHERE s.child = :child AND s.parent = :parent", SenseRelation.class)
                     .setParameter("parent", parent)
                     .setParameter("child", child)
                     .getSingleResult();
         } else {
-            return getEntityManager().createNamedQuery("SELECT s FROM SenseRelation s WHERE s.child = :child AND s.parent = :parent AND s.relationType = :relation", SenseRelation.class)
+            return getEntityManager().createQuery("SELECT s FROM SenseRelation s WHERE s.child = :child AND s.parent = :parent AND s.relationType = :relation", SenseRelation.class)
                     .setParameter("parent", parent)
                     .setParameter("child", child)
                     .setParameter("relation", relationType)
@@ -100,7 +96,7 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
         }
     }
 
-    public boolean makeRelation(Sense parent, Sense child, SenseRelationType relation) {
+    public boolean makeRelation(Sense parent, Sense child, RelationType relation) {
         SenseRelation rel = new SenseRelation(relation, parent, child);
         persist(rel);
         return true;
@@ -117,25 +113,25 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
                 .getSingleResult();
     }
 
-    public Long findRelationUseCount(SenseRelationType relation) {
+    public Long findRelationUseCount(RelationType relation) {
         return getEntityManager().createQuery("SELECT COUNT(s) FROM SenseRelation s WHERE s.relationType = :relation", Long.class)
                 .setParameter("relation", relation)
                 .getSingleResult();
     }
 
-    public void move(SenseRelationType oldRelation, SenseRelationType newRelation) {
+    public void move(RelationType oldRelation, RelationType newRelation) {
         Query query = getEntityManager().createQuery("UPDATE SenseRelation s SET s.relationType = :newRelation WHERE s.relationType = :oldRelation");
         query.setParameter("oldRelation", oldRelation)
                 .setParameter("newRelation", newRelation)
                 .executeUpdate();
     }
 
-    public boolean relationExists(Sense parent, Sense child, SenseRelationType relationType) {
+    public boolean relationExists(Sense parent, Sense child, RelationType relationType) {
         return findRelations(parent, child, relationType).size() > 0;
     }
 
-    public List<SenseRelationType> findRelationTypesBySense(Sense sense) {
-        return getEntityManager().createQuery("SELECT r FROM SenseRelationType r, SenseRelation s WHERE s.parent = :sense AND r.id = s.relationType.id", SenseRelationType.class)
+    public List<RelationType> findRelationTypesBySense(Sense sense) {
+        return getEntityManager().createQuery("SELECT r FROM RelationType r, SenseRelation s WHERE s.parent = :sense AND r.id = s.relationType.id", RelationType.class)
                 .setParameter("sense", sense)
                 .getResultList();
     }
@@ -147,14 +143,14 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
     }
 
     public int deleteImproper() {
-        List<Sense> senses = getEntityManager().createNamedQuery("SELECT s FROM Sense s", Sense.class)
+        List<Sense> senses = getEntityManager().createQuery("SELECT s FROM Sense s", Sense.class)
                 .getResultList();
         return getEntityManager().createQuery("DELETE FROM SenseRelation s WHERE s.parent NOT IN ( :senses ) OR s.child NOT IN ( :senses )", SenseRelation.class)
                 .setParameter("senses", senses)
                 .executeUpdate();
     }
 
-    public List<SenseRelation> findRelations(Sense unit, SenseRelationType relationType, boolean asParent, boolean hideAutoReverse) {
+    public List<SenseRelation> findRelations(Sense unit, RelationType relationType, boolean asParent, boolean hideAutoReverse) {
 
         if (null == unit) {
             return new ArrayList<>();

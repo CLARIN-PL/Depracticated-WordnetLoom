@@ -1,10 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.Shape;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
+
+import java.awt.*;
 import java.awt.geom.Area;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode.Direction;
 
 public class SynsetNodeShape {
 
@@ -34,16 +33,16 @@ public class SynsetNodeShape {
                 new int[]{top, top + height + 10, 0}, 3));
 
         buttons[1] = new Area(new Polygon(new int[]{left + width,
-            left + width, left + width - 10}, new int[]{top,
-            top + height, 0}, 3));
+                left + width, left + width - 10}, new int[]{top,
+                top + height, 0}, 3));
 
         buttons[2] = new Area(new Polygon(new int[]{-10, 10, 0}, new int[]{
-            top + height, top + height, 5}, 3));
+                top + height, top + height, 5}, 3));
 
         buttons[3] = new Area(new Polygon(new int[]{-10, 10, 0}, new int[]{
-            top, top, -5}, 3));
+                top, top, -5}, 3));
 
-        for (Direction dir : Direction.values()) {
+        for (NodeDirection dir : NodeDirection.values()) {
             Area tmp = new Area(buttons[dir.ordinal()]);
             tmp.intersect(new Area(shape));
             buttons[dir.ordinal()] = tmp;

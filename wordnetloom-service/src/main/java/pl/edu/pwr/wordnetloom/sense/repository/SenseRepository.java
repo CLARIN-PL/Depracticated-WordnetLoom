@@ -1,34 +1,27 @@
 package pl.edu.pwr.wordnetloom.sense.repository;
 
-import java.text.Collator;
-import java.text.ParseException;
-import java.text.RuleBasedCollator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.domain.model.Domain;
-import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
-import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
-import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
-import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import java.text.Collator;
+import java.text.ParseException;
+import java.text.RuleBasedCollator;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Stateless
 public class SenseRepository extends GenericRepository<Sense> {
@@ -69,8 +62,8 @@ public class SenseRepository extends GenericRepository<Sense> {
         return null;
     }
 
-    private List<Sense> getSenses(String filter, PartOfSpeech pos, Domain domain, SenseRelationType relationType,
-            String register, String comment, String example, int limitSize, List<Long> lexicons) {
+    private List<Sense> getSenses(String filter, PartOfSpeech pos, Domain domain, RelationType relationType,
+                                  String register, String comment, String example, int limitSize, List<Long> lexicons) {
 
         String wordQuery = "";
         String senseQuery = "SELECT s FROM Sense s JOIN FETCH s.domain JOIN FETCH s.lemma JOIN FETCH s.partOfSpeech WHERE ";
@@ -97,7 +90,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         collator.setStrength(Collator.PRIMARY);
         collator.setDecomposition(Collator.NO_DECOMPOSITION);
 
-        final Collator myFavouriteCollator = collator;
+        Collator myFavouriteCollator = collator;
 
         Comparator<Sense> senseComparator = (Sense a, Sense b) -> {
 
@@ -314,7 +307,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         return senses;
     }
 
-    public List<Sense> filterSenseByLexicon(final List<Sense> senses, final List<Long> lexicons) {
+    public List<Sense> filterSenseByLexicon(List<Sense> senses, List<Long> lexicons) {
         List<Sense> result = new ArrayList<>();
         senses.stream().filter((sense) -> (lexicons.contains(sense.getLexicon().getId()))).forEach((sense) -> {
             result.add(sense);

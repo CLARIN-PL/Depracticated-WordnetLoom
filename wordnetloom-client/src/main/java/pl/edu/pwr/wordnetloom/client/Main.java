@@ -36,6 +36,7 @@ public class Main {
         } catch (IOException ex) {
             LOGGER.error("No log4 properties file", ex);
         }
+
         PropertyConfigurator.configure(props);
 
         Thread.setDefaultUncaughtExceptionHandler((Thread t, Throwable e) -> {
@@ -113,7 +114,7 @@ public class Main {
         }
     }
 
-    public static String getResouce(String key) {
+    public static String getResource(String key) {
         if (labelsMap.containsKey(key)) {
             return labelsMap.get(key);
         }
