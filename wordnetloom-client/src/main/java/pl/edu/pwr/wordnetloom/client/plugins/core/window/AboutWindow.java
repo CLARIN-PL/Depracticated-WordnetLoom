@@ -18,7 +18,7 @@ public class AboutWindow extends DialogWindow implements ActionListener {
     private static final String TEXT_AUTHORS_2 = "Paweł Koczan, Michał Marcińczuk,";
     private static final String TEXT_AUTHORS_3 = "Adam Musiał, Maciej Piasecki,";
     private static final String TEXT_AUTHORS_4 = "Radosław Ramocki, Michał Stanek";
-    private static final String TEXT_AUTHORS_5 = "Tomasz Naskręt";
+    private static final String TEXT_AUTHORS_5 = "Tomasz Naskręt, Roman Dyszlewski";
 
     private AboutWindow(Workbench workbench) {
         super(workbench.getFrame(), Labels.ABOUT_APP, 360, 470);
