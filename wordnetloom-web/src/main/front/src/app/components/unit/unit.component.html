@@ -8,11 +8,13 @@
         <div class="col-12 col-sm-3 col-lg-2 option-area">
           <div [hidden]="sidebarContent.length < 1" class="options-title">
             <h5>Options:</h5>
-            <i>loaded: {{ recordsInfo }}</i>
+            <span [hidden]="sideBarListLoading">
+              <i>loaded: {{ recordsInfo }}</i>
+            </span>
           </div>
           <mat-nav-list #sidebarList class="option-list" [ngClass]="(sidebarContent.length < 1)?'':'no-content'" (appScrollBottom)="optionListScrollBottom($event)">
             <a mat-list-item class="option-list-item" [routerLink]="[item.id]"  routerLinkActive="active-link" *ngFor="let item of sidebarContent"  matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}">
-              {{ item.lemma.length > 23 ? item.lemma.slice(0, 20) + '...' :  item.lemma}}
+              {{ item.lemma}}
             </a>
             <a [hidden]="!sideBarListLoading" mat-list-item class="option-list-item loading-option-list">
               <mat-spinner diameter="30" strokeWidth="3"></mat-spinner>

@@ -31,6 +31,9 @@
 
 .option-list .option-list-item.mat-list-item{
   padding-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  /*box-shadow: inset -14px 0px 8px -4px rgb(220, 220, 220);*/
 }
 
 .options-title{

@@ -32,7 +32,6 @@ export class SidebarService {
 
   private getOptions() {
     const self = this;
-
     if (self.isLoading) {
       return;
     }
@@ -54,6 +53,9 @@ export class SidebarService {
         if (self.page === 0) { // first batch loaded
           if (response['entries'].length > 0) {
             self.router.navigate(['detail', response['entries'][0]['id']]);
+          } else {
+            self.router.navigate(['detail', 'not_found']);
+            self.addSearchOptions({entries: [{id: 'nothing_found', lemma: 'nothing found'}]});
           }
         }
 
@@ -68,6 +70,7 @@ export class SidebarService {
     this.list = [];
     this.page = 0;
     this.recordsLoaded = 0;
+    this.totalRecords = null; // resetting total records cnt
     this.form = form;
 
     this.getOptions();
@@ -79,6 +82,7 @@ export class SidebarService {
 
   addSearchOptions (response) {
     this.list = this.list.concat(response.entries);
+    console.log(this.list);
     this.listObservable.next(this.list);
   }
 
