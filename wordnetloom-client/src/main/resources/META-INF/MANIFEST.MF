@@ -1,0 +1,3 @@
+Permissions: all-permissions
+Codebase: http://localhost:8080/wordnetloom/
+Application-Name: WordnetLoom Application

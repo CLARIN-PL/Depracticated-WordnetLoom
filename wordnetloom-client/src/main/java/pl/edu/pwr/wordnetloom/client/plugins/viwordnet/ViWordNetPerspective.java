@@ -1,18 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.MouseGraphClickListener;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.TabChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphView;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.CloseableTabbedPaneListener;
 import pl.edu.pwr.wordnetloom.client.systems.ui.CloseableTabbedPane;
@@ -21,6 +12,11 @@ import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractPerspective;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ShortCut;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.View;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+
+import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * A perspective for wordnet visualization.
@@ -63,7 +59,6 @@ public class ViWordNetPerspective extends AbstractPerspective implements
     /**
      * init method fired by workbench when it installs perspective should create
      * and add splitters
-     *
      */
     @Override
     public void init() {
@@ -84,7 +79,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
 
         // events connected with tabs
         ((CloseableTabbedPane) graphView).addCloseableTabbedPaneListener(this);
-        graphView.addChangeListener(new TabChangeListener());
+        graphView.addChangeListener(new TabChangeListener(service));
 
         // Create central and bottom views
         SplitPaneExt splitRightBottomHorizontal = new SplitPaneExt(
@@ -117,9 +112,9 @@ public class ViWordNetPerspective extends AbstractPerspective implements
         splitSearch.setStartDividerLocation(200);
         splitSearch.setResizeWeight(0.0f);
 
-        this.addSplitter(splitSearch);
-        this.addSplitter(splitMainVertical);
-        this.addSplitter(splitRightHorizontal);
+        addSplitter(splitSearch);
+        addSplitter(splitMainVertical);
+        addSplitter(splitRightHorizontal);
     }
 
     @Override
@@ -146,11 +141,11 @@ public class ViWordNetPerspective extends AbstractPerspective implements
                     if (service != null) {
                         graphView.addTab(view.getTitle(), view.getPanel());
                         ((ViwnGraphView) view).getUI().getVisualizationViewer()
-                                .addMouseListener(new MouseGraphClickListener());
+                                .addMouseListener(new MouseGraphClickListener(service));
                     } else {
                         graphView.addTab(view.getTitle(), view.getPanel());
                         ((ViwnGraphView) view).getUI().getVisualizationViewer()
-                                .addMouseListener(new MouseGraphClickListener());
+                                .addMouseListener(new MouseGraphClickListener(service));
                         // TODO: check the line below, why shortcuts does not work?
                         shortCuts.add(new ShortCut(graphView, view.getPanel(),
                                 KeyEvent.CTRL_MASK, KeyEvent.VK_1 - 1
@@ -187,86 +182,19 @@ public class ViWordNetPerspective extends AbstractPerspective implements
      * @param s Service connected with this perspective in this plugin
      */
     public void setService(ViWordNetService s) {
-        this.service = s;
+        service = s;
     }
 
     /**
      * set tab title and tooltip
      *
      * @param title
-     *
      */
     public void setTabTitle(String title) {
         graphView.setTitleAt(graphView.getSelectedIndex(), title);
         graphView.setToolTipTextAt(graphView.getSelectedIndex(), title);
     }
 
-    /**
-     * Class handling tab change event
-     *
-     */
-    private class TabChangeListener implements ChangeListener {
-
-        @Override
-        public void stateChanged(ChangeEvent ce) {
-            try {
-                JTabbedPane pane = (JTabbedPane) ce.getSource();
-                JPanel sel = (JPanel) pane.getSelectedComponent();
-                if (service != null) {
-                    service.setActiveGraphView(sel);
-                }
-            } catch (ClassCastException cce) {
-                /*
-				 * when add tab is opened, after closing last tab there will be
-				 * label not JPanel returned by getSelectedComponent open new
-				 * empty ViwnGraphView then
-                 */
-                service.addGraphView();
-            }
-        }
-    }
-
-    /**
-     * <b>MouseGraphClickListener</b> class provide satellite view
-     * (<i>ViWordNetService.satelliteView</i>) refresh after clicking at graph
-     * view (<i>ViwnGraphViewUI.vv</i>) after any changes in structure of
-     * <code>ViwnGraphViewUI</code> this could stop working properly, because of
-     * many class castings and strong depending on ui hierarchy<br>
-     * </br> Only mouseClicked event is implemented, event mouseEntered was
-     * tried, but with clicks work is much more comfortable.
-     *
-     */
-    private class MouseGraphClickListener implements MouseListener {
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-            if (service != null) {
-                try {
-                    JPanel jp = (JPanel) ((JPanel) ((JPanel) e.getSource()).getParent()).getParent();
-                    ViwnGraphView vgv = service.getGraphView(jp);
-                    service.setSatteliteOwner(vgv);
-                } catch (ClassCastException cce) {
-                    System.out.println(cce.getMessage());
-                }
-            }
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-        }
-    }
 
     @Override
     public boolean closeTab(int tabIndexToClose) {
@@ -277,7 +205,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
             }
         } catch (ClassCastException cce) {
             /*
-			 * when add tab is opened, after closing last tab there will be
+             * when add tab is opened, after closing last tab there will be
 			 * label not JPanel returned by getSelectedComponent open new empty
 			 * ViwnGraphView then
              */
@@ -300,7 +228,6 @@ public class ViWordNetPerspective extends AbstractPerspective implements
     /**
      * main view property, listen for moves of divider between graph views and
      * single second graph view
-     *
      */
     @Override
     public void propertyChange(PropertyChangeEvent e) {

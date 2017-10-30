@@ -86,7 +86,7 @@ public class Main {
                     first = false;
                 }
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(13000);
                 } catch (InterruptedException e) {
                 }
                 System.exit(1);

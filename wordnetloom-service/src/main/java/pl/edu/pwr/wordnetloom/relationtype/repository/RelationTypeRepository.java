@@ -22,15 +22,6 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
     @Inject
     SenseRelationRepository senseRelationRepository;
 
-    public boolean isReverse(RelationType[] relations, RelationType test) {
-        for (RelationType relation : relations) {
-            if (relation.getAutoReverse() && relation.getReverse().getId().equals(test.getId())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean isReverse(Collection<RelationType> relations, RelationType test) {
         if (relations.stream().anyMatch((relation) -> (relation.getAutoReverse() && Objects.equals(relation.getReverse().getId(), test.getId())))) {
             return true;

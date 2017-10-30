@@ -1,12 +1,5 @@
 package pl.edu.pwr.wordnetloom.client.workbench.abstracts;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import javax.swing.JTabbedPane;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.systems.ui.SplitPaneExt;
@@ -14,6 +7,14 @@ import pl.edu.pwr.wordnetloom.client.workbench.implementation.ShortCut;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Perspective;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.View;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+
+import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Abstrakcyjna klasa perspektywy, ułatwiająca implementację gdyż zawiera w
@@ -24,8 +25,8 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 abstract public class AbstractPerspective implements Perspective, MouseListener {
 
     private static final String PANEL_NAME = "%s (Ctrl %s)";
-    private String perspectiveName = null;      // nazwa perspektywy
-    private int indexOfNextView = 0;            // indeks dla kolenego instalowanego indeksu
+    private String perspectiveName = null;
+    private int indexOfNextView = 0;
 
     private final List<SplitPaneExt> splitters = new ArrayList<>();
     private final List<JTabbedPane> panes = new ArrayList<>();
@@ -77,23 +78,23 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
     /**
      * Konstruktor perspektywy
      *
-     * @param name - nazwa perspektywy
+     * @param name      - nazwa perspektywy
      * @param workbench - workbench dla perspektywy
      */
     public AbstractPerspective(String name, Workbench workbench) {
         super();
-        this.perspectiveName = name;
+        perspectiveName = name;
         this.workbench = workbench;
     }
 
     @Override
     public String getName() {
-        return this.perspectiveName;
+        return perspectiveName;
     }
 
     @Override
     public void init() {
-        this.getContent(); // zbudowanie iu perspektywy
+        getContent();
     }
 
     @Override
@@ -138,7 +139,7 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
      */
     protected void installPane(View view, JTabbedPane pane) {
         if (pane != null) {
-            pane.addTab(String.format(PANEL_NAME, view.getTitle(), new Integer(indexOfNextView + 1)), view.getPanel());
+            pane.addTab(String.format(PANEL_NAME, view.getTitle(), indexOfNextView + 1), view.getPanel());
             shortCuts.add(new ShortCut(pane, view.getRootComponent(), MODIFIERS, KEY_CODE + indexOfNextView));
             indexOfNextView++;
         }
@@ -149,9 +150,7 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
     public void resetViews() {
         synchronized (splitters) {
             for (int i = 0; i < 2; i++) {
-                splitters.forEach((splitter) -> {
-                    splitter.resetDividerLocation();
-                });
+                splitters.forEach(SplitPaneExt::resetDividerLocation);
             }
         }
     }
