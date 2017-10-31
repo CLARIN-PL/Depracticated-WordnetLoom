@@ -1,26 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import pl.edu.pwr.wordnetloom.client.systems.managers.IconsManager;
+import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
@@ -32,17 +12,26 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButtonPanel;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * klasa opisujacy wyglada okienka z jedn. leksykalnymi
@@ -58,7 +47,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     private SenseCriteria criteria;
     private ToolTipList unitsList;
     private JLabel infoLabel;
-    private ButtonExt btnSearch, btnReset, btnNew, btnDelete, btnNewWithSyns, btnAddToSyns;
+
+    private MButton btnSearch, btnReset, btnNew, btnDelete, btnNewWithSyns, btnAddToSyns;
 
     private final boolean quietMode = false;
 
@@ -73,8 +63,12 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         criteria.getDomainComboBox().addActionListener(this);
         criteria.getPartsOfSpeachComboBox().addActionListener(this);
 
-        btnSearch = new ButtonExt(Labels.SEARCH_NO_COLON, this, KeyEvent.VK_K);
-        btnReset = new ButtonExt(Labels.CLEAR, this, KeyEvent.VK_C);
+        btnSearch = MButton.buildSearchButton()
+                .withActionListener(this);
+
+        btnReset = MButton.buildClearButton()
+                .withActionListener(this);
+
         unitsList = new ToolTipList(workbench, listModel, ToolTipGenerator.getGenerator());
         unitsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         unitsList.getSelectionModel().addListSelectionListener(this);
@@ -82,30 +76,33 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         infoLabel = new JLabel();
         infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "0"));
 
-        btnNewWithSyns = new ButtonExt(IconsManager.getNew(), this);
-        btnNewWithSyns.setToolTipText(Hints.CREATE_NEW_UNIT_AND_SYNSET);
+        btnNewWithSyns = new MButton(this)
+                .withIcon(FontAwesome.PLUS_SQUARE)
+                .withToolTip(Hints.CREATE_NEW_UNIT_AND_SYNSET);
 
-        btnNew = new ButtonExt(IconsManager.getNew2(), this);
-        btnNew.setToolTipText(Hints.CREATE_NEW_UNIT);
+
+        btnNew = new MButton(this)
+                .withIcon(FontAwesome.PLUS)
+                .withToolTip(Hints.CREATE_NEW_UNIT);
+
         installViewScopeShortCut(btnNew, 0, KeyEvent.VK_INSERT);
 
-        btnDelete = new ButtonExt(IconsManager.getDelete(), this);
-        btnDelete.setEnabled(false);
-        btnDelete.setToolTipText(Hints.REMOVE_UNIT);
+        btnDelete = MButton.buildDeleteButton()
+                .withActionListener(this)
+                .withEnabled(false)
+                .withToolTip(Hints.REMOVE_UNIT);
+
         installViewScopeShortCut(btnDelete, 0, KeyEvent.VK_DELETE);
 
-        btnAddToSyns = new ButtonExt(IconsManager.getNew(), this);
-        btnAddToSyns.setEnabled(false);
-        btnAddToSyns.setToolTipText(Hints.ADD_TO_NEW_SYNSET);
+        btnAddToSyns = new MButton(this)
+                .withIcon(FontAwesome.SIGN_IN)
+                .withToolTip(Hints.ADD_TO_NEW_SYNSET)
+                .withEnabled(false);
 
-        JPanel buttons = new JPanel();
-        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-        buttons.add(btnNewWithSyns);
-        buttons.add(btnNew);
-        buttons.add(btnDelete);
-        buttons.add(btnAddToSyns);
+        JPanel buttons = new MButtonPanel(btnNewWithSyns, btnNew, btnDelete, btnAddToSyns)
+                .withHorizontalLayout();
 
-        final int scrollHeight = 220;
+        int scrollHeight = 220;
         JScrollPane scroll = new JScrollPane(criteria);
         scroll.setMaximumSize(new Dimension(0, scrollHeight));
         scroll.setMinimumSize(new Dimension(0, scrollHeight));
@@ -141,7 +138,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             return;
         }
 
-        final int returnValue = unitsList.getSelectedIndex();
+        int returnValue = unitsList.getSelectedIndex();
         Sense unit = listModel.getObjectAt(returnValue);
         boolean superMode = workbench.getParam(SUPER_MODE) != null
                 && workbench.getParam(SUPER_MODE).equals(SUPER_MODE_VALUE);
@@ -169,15 +166,15 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
      */
     public void refreshData() {
 
-        final int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
-        final String oldFilter = criteria.getSearchTextField().getText();
-        final Domain oldDomain = (Domain) criteria.getDomainComboBox().retriveComboBoxItem();
-        final SenseRelationType oldRelation = (SenseRelationType) criteria.getSenseRelationTypeComboBox().retriveComboBoxItem();
-        final String register = criteria.getRegisterComboBox().getSelectedIndex() == 0 ? null : criteria.getRegisterComboBox().getSelectedItem().toString();
-        final String comment = criteria.getComment().getText();
-        final String example = criteria.getExample().getText();
+        int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
+        String oldFilter = criteria.getSearchTextField().getText();
+        Domain oldDomain = criteria.getDomainComboBox().retriveComboBoxItem();
+        RelationType oldRelation = criteria.getSenseRelationTypeComboBox().retriveComboBoxItem();
+        String register = criteria.getRegisterComboBox().getSelectedIndex() == 0 ? null : criteria.getRegisterComboBox().getSelectedItem().toString();
+        String comment = criteria.getComment().getText();
+        String example = criteria.getExample().getText();
 
-        final List<Long> lexicons = new ArrayList<>();
+        List<Long> lexicons = new ArrayList<>();
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
@@ -246,7 +243,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         } else if (event.getSource() == btnReset) {
             criteria.resetFields();
         } else if (event.getSource() == btnDelete) {
-            int returnValues[] = unitsList.getSelectedIndices();
+            int[] returnValues = unitsList.getSelectedIndices();
             if (returnValues == null || returnValues.length == 0) {
                 return;
             }
@@ -380,7 +377,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     }
 
     public void setSelectedUnit(Sense unit) {
-        this.lastSelectedValue = unit;
+        lastSelectedValue = unit;
     }
 
     @Override
@@ -394,7 +391,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
      * @return zaznaczona jednostka lub NULL
      */
     public Sense getSelectedUnit() {
-        final int returnValue = unitsList.getSelectedIndex();
+        int returnValue = unitsList.getSelectedIndex();
         return listModel.getObjectAt(returnValue);
     }
 

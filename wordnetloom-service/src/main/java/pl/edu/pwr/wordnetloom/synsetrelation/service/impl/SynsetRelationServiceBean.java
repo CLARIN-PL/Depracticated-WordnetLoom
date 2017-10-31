@@ -1,16 +1,17 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.service.impl;
 
-import java.util.List;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository;
 import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceLocal;
 import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceRemote;
+
+import javax.ejb.Local;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.util.List;
 
 @Stateless
 @Local(SynsetRelationServiceLocal.class)
@@ -21,7 +22,7 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     private SynsetRelationRepository synsetRelationRepository;
 
     @Override
-    public boolean makeRelation(Synset parent, Synset child, SynsetRelationType rel) {
+    public boolean makeRelation(Synset parent, Synset child, RelationType rel) {
         SynsetRelation s = new SynsetRelation();
         s.setRelationType(rel);
         s.setParent(parent);
@@ -31,12 +32,12 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     }
 
     @Override
-    public boolean delete(Synset parent, Synset child, SynsetRelationType relationType) {
+    public boolean delete(Synset parent, Synset child, RelationType relationType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void delete(SynsetRelationType relationType) {
+    public void delete(RelationType relationType) {
 //        SynsetRelationType relation = rel.getRelationType();
 //
 //        if (relation.getAutoReverse()) {
@@ -58,12 +59,12 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     }
 
     @Override
-    public List<SynsetRelation> findSubRelations(Synset synset, SynsetRelationType relationType) {
+    public List<SynsetRelation> findSubRelations(Synset synset, RelationType relationType) {
         return synsetRelationRepository.findSubRelations(synset, relationType);
     }
 
     @Override
-    public List<SynsetRelation> findUpperRelations(Synset synset, SynsetRelationType relationType) {
+    public List<SynsetRelation> findUpperRelations(Synset synset, RelationType relationType) {
         return synsetRelationRepository.findUpperRelations(synset, relationType);
     }
 
@@ -78,22 +79,22 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     }
 
     @Override
-    public Long findRelationTypeUseCount(SynsetRelationType relation) {
+    public Long findRelationTypeUseCount(RelationType relation) {
         return synsetRelationRepository.findRelationTypeUseCount(relation);
     }
 
     @Override
-    public void move(SynsetRelationType oldRelation, SynsetRelationType newRelation) {
+    public void move(RelationType oldRelation, RelationType newRelation) {
         synsetRelationRepository.move(oldRelation, newRelation);
     }
 
     @Override
-    public boolean checkRelationExists(Synset parent, Synset child, SynsetRelationType relation) {
+    public boolean checkRelationExists(Synset parent, Synset child, RelationType relation) {
         return synsetRelationRepository.checkRelationExists(parent, child, relation);
     }
 
     @Override
-    public List<SynsetRelationType> findtRelationTypesBySynset(Synset synset) {
+    public List<RelationType> findtRelationTypesBySynset(Synset synset) {
         return synsetRelationRepository.findtRelationTypesBySynset(synset);
     }
 
@@ -103,12 +104,12 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     }
 
     @Override
-    public List<SynsetRelation> findRelations(Synset parent, Synset child, SynsetRelationType relation) {
+    public List<SynsetRelation> findRelations(Synset parent, Synset child, RelationType relation) {
         return synsetRelationRepository.findRelations(parent, child, relation);
     }
 
     @Override
-    public SynsetRelation findRelation(Synset parent, Synset child, SynsetRelationType relation) {
+    public SynsetRelation findRelation(Synset parent, Synset child, RelationType relation) {
         return synsetRelationRepository.findRelation(parent, child, relation);
     }
 

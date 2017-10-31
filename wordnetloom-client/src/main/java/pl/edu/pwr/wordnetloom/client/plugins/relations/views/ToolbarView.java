@@ -17,12 +17,13 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.relations.views;
 
-import java.util.Collection;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractView;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+
+import java.util.Collection;
 
 /**
  * pasek narzedzi
@@ -35,22 +36,22 @@ public class ToolbarView extends AbstractView {
      * kontruktor dla klasy
      *
      * @param workbench - wskaznik dla workbencha
-     * @param title - etykieta dla okienka
+     * @param title     - etykieta dla okienka
      */
     public ToolbarView(Workbench workbench, String title) {
-        super(workbench, title, new ToolbarViewUI());
+        super(workbench, title, null); //new ToolbarViewUI()
     }
 
     /**
      * odswieżenie przyciksów
      *
-     * @param mainSynset - głowny synset
+     * @param mainSynset    - głowny synset
      * @param selectedUnits - wybrane jednostki w głównym synsecie
-     * @param descSynset - docelowy synset
+     * @param descSynset    - docelowy synset
      */
     public void refreshButtons(Synset mainSynset, Collection<Sense> selectedUnits, Synset descSynset) {
-        ToolbarViewUI view = (ToolbarViewUI) getUI();
-        view.refreshButtons(mainSynset, selectedUnits, descSynset);
+        //  ToolbarViewUI view = (ToolbarViewUI) getUI();
+        // view.refreshButtons(mainSynset, selectedUnits, descSynset);
     }
 
     /**
@@ -60,7 +61,7 @@ public class ToolbarView extends AbstractView {
      * @param newListener - sluchacz
      */
     public void addRefreshUnitsInSynsetListener(SimpleListenerInterface newListener) {
-        ((ToolbarViewUI) getUI()).addRefreshUnitsInSynsetListener(newListener);
+        //((ToolbarViewUI) getUI()).addRefreshUnitsInSynsetListener(newListener);
     }
 
     /**
@@ -69,7 +70,7 @@ public class ToolbarView extends AbstractView {
      * @param newListener - sluchacz
      */
     public void addShowSynsetListener(SimpleListenerInterface newListener) {
-        ((ToolbarViewUI) getUI()).addShowSynsetListener(newListener);
+        //   ((ToolbarViewUI) getUI()).addShowSynsetListener(newListener);
     }
 
     /**
@@ -78,7 +79,7 @@ public class ToolbarView extends AbstractView {
      * @param newListener - sluchacz
      */
     public void addRefreshRelationListener(SimpleListenerInterface newListener) {
-        ((ToolbarViewUI) getUI()).addRefreshRelationListener(newListener);
+        //   ((ToolbarViewUI) getUI()).addRefreshRelationListener(newListener);
     }
 
     /**
@@ -87,7 +88,7 @@ public class ToolbarView extends AbstractView {
      * @param newListener - sluchacz
      */
     public void addSynsetChangedListener(SimpleListenerInterface newListener) {
-        ((ToolbarViewUI) getUI()).addSynsetChangedListener(newListener);
+        //  ((ToolbarViewUI) getUI()).addSynsetChangedListener(newListener);
     }
 
 }

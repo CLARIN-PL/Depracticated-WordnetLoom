@@ -24,7 +24,7 @@
         <jar href="wordnetloom-client.jar"/>
         <j2se version="1.8+"
               href="http://java.sun.com/products/autodl/j2se"/>
-        <property name="wordnetloom.server.host" value="127.0.0.1"/>
+        <property name="wordnetloom.server.host" value="localhost"/>
         <property name="wordnetloom.server.port" value="8080"/>
     </resources>
     <application-desc main-class="pl.edu.pwr.wordnetloom.client.Main"/>

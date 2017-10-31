@@ -1,26 +1,26 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
-import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 public class LexicalDA {
 
     private LexicalDA() {
     }
 
-    static public List<Sense> getLexicalUnits(String filterText, Domain domain, PartOfSpeech pos, SenseRelationType relationType, String register, String comment, String example, int limitSize, List<Long> lexicons) {
+    static public List<Sense> getLexicalUnits(String filterText, Domain domain, PartOfSpeech pos, RelationType relationType, String register, String comment, String example, int limitSize, List<Long> lexicons) {
         if (filterText == null) {
             filterText = "";
         }
@@ -41,10 +41,9 @@ public class LexicalDA {
      * @param pos
      * @param lexicons
      * @return list of lexical units
-     *
      */
-    static public List<Sense> getSenseBySynsets(String filter, Domain domain, SynsetRelationType relationType,
-            String definition, String comment, String artificial, int limitSize, PartOfSpeech pos, List<Long> lexicons) {
+    static public List<Sense> getSenseBySynsets(String filter, Domain domain, RelationType relationType,
+                                                String definition, String comment, String artificial, int limitSize, PartOfSpeech pos, List<Long> lexicons) {
         if (filter == null) {
             filter = "";
         }
@@ -55,7 +54,7 @@ public class LexicalDA {
      * odczytane listy lexemow spelnijacych filtr
      *
      * @param filterText - filtr nazw
-     * @param pos - filtr czesci mowy
+     * @param pos        - filtr czesci mowy
      * @param lexicons
      * @return kolekcja z danymi
      */
@@ -67,9 +66,9 @@ public class LexicalDA {
      * zmiana kolejnosci jednostek w sysnecie z uwzglednieniem polozenia punktu
      * waznosci
      *
-     * @param synset - sysnet w ktorym mamy wymieniac kolejnosc
-     * @param firstUnit - pierwsza jednostka
-     * @param secondUnit - druga jednostka
+     * @param synset         - sysnet w ktorym mamy wymieniac kolejnosc
+     * @param firstUnit      - pierwsza jednostka
+     * @param secondUnit     - druga jednostka
      * @param firstUnitIndex - indeks pierwszej jednostki
      * @param splitLineIndex - indeks linii podzialu
      * @return Synset
@@ -94,12 +93,12 @@ public class LexicalDA {
      * uktualnienie jednostki
      *
      * @param lexicalUnit - jednostka leksykalna
-     * @param lemma - lemat
-     * @param domain - domena
-     * @param pos - czesc mowy
-     * @param tagCount - tagcount
-     * @param status - status
-     * @param comment - komentarz
+     * @param lemma       - lemat
+     * @param domain      - domena
+     * @param pos         - czesc mowy
+     * @param tagCount    - tagcount
+     * @param status      - status
+     * @param comment     - komentarz
      * @return true jesli mozna bylo ustawic, false jesli sa bledne relacji
      */
     public static boolean updateUnit(Sense lexicalUnit, String lemma, Domain domain, PartOfSpeech pos, int tagCount, String comment) {
@@ -121,14 +120,14 @@ public class LexicalDA {
      * uktualnienie jednostki
      *
      * @param lexicalUnit - jednostka leksykalna
-     * @param lemma - lemat
+     * @param lemma       - lemat
      * @param lexicon
-     * @param variant - numer porządkowy jednostki dla danego lematu
-     * @param domain - domena
-     * @param pos - czesc mowy
-     * @param tagCount - tagcount
-     * @param status - status
-     * @param comment - komentarz
+     * @param variant     - numer porządkowy jednostki dla danego lematu
+     * @param domain      - domena
+     * @param pos         - czesc mowy
+     * @param tagCount    - tagcount
+     * @param status      - status
+     * @param comment     - komentarz
      * @param register
      * @param useCase
      * @param link
@@ -177,7 +176,7 @@ public class LexicalDA {
      * uktualnienie jednostki
      *
      * @param lexicalUnit - jednostka leksykalna
-     * @param status - status
+     * @param status      - status
      * @return true jesli mozna bylo ustawic, false jesli sa bledne relacji
      */
     public static boolean updateUnit(Sense lexicalUnit) {
@@ -190,9 +189,9 @@ public class LexicalDA {
     /**
      * uaktualnienie synsetu
      *
-     * @param synset - synset
+     * @param synset     - synset
      * @param definition - definicja
-     * @param comment - komentarz
+     * @param comment    - komentarz
      * @param isAbstract - abstrakcyjnosc synsetu
      * @return true jesli mozna bylo ustawic, false jesli sa bledne relacji
      */
@@ -234,7 +233,7 @@ public class LexicalDA {
      * ustawienie poprawnosci relacji
      *
      * @param relation - relacja
-     * @param valid - poprawnosc
+     * @param valid    - poprawnosc
      */
     public static void setValid(SenseRelation relation, boolean valid) {
         // zapisanie stanu relacji
@@ -250,7 +249,7 @@ public class LexicalDA {
     /**
      * usuniecie podanych jednostek z synsetu
      *
-     * @param units - jednostki do usuniecia
+     * @param units  - jednostki do usuniecia
      * @param synset - synset
      * @return Synset
      */
@@ -269,10 +268,10 @@ public class LexicalDA {
     /**
      * usuniecie podanych jednostek z synsetu
      *
-     * @param units - jednostki do usuniecia
-     * @param synset - synset
+     * @param units       - jednostki do usuniecia
+     * @param synset      - synset
      * @param updateOwner - czy uaktualnić właściciela synsetu na aktualnie
-     * zalogowanego użytkownika
+     *                    zalogowanego użytkownika
      */
     public static void deleteConnections(Collection<Sense> units, Synset synset, boolean updateOwner) {
         for (Sense unitDTO : units) {
@@ -287,7 +286,7 @@ public class LexicalDA {
      * Usuniecie podanej jednostki z synsetu. Automatycznie uaktualnie
      * właściciela synsetu na aktualnie zalogowanego użytkownika.
      *
-     * @param unit - jednostka do usuniecia
+     * @param unit   - jednostka do usuniecia
      * @param synset - synset
      */
     public static void deleteConnection(Sense unit, Synset synset) {
@@ -299,10 +298,10 @@ public class LexicalDA {
     /**
      * usuniecie podanej jednostki z synsetu
      *
-     * @param unit - jednostka do usuniecia
-     * @param synset - synset
+     * @param unit        - jednostka do usuniecia
+     * @param synset      - synset
      * @param updateOwner - czy uaktualnić właściciela synsetu na aktualnie
-     * zalogowanego użytkownika
+     *                    zalogowanego użytkownika
      */
     public static void deleteConnection(Sense unit, Synset synset, boolean updateOwner) {
         Collection<Sense> units = new ArrayList<>();
@@ -314,7 +313,7 @@ public class LexicalDA {
      * Dodanie jednostki do synsetu. Automatycznie uaktualnia właściciela
      * synsetu na aktualnie zalogowanego użytkownika
      *
-     * @param unit - jednostka
+     * @param unit   - jednostka
      * @param synset - synset
      * @return Synset
      */
@@ -327,10 +326,10 @@ public class LexicalDA {
      * Dodanie jednostki do synsetu. Automatycznie uaktualnia właściciela
      * synsetu na aktualnie zalogowanego użytkownika
      *
-     * @param unit - jednostka
-     * @param synset - synset
+     * @param unit        - jednostka
+     * @param synset      - synset
      * @param updateOwner - czy uaktualnić właściciela synsetu na aktualnie
-     * zalogowanego użytkownika
+     *                    zalogowanego użytkownika
      */
     public static void addConnection(Sense unit, Synset synset, boolean updateOwner) {
         // RemoteUtils.unitAndSynsetRemote.dbAddConnection(unit, synset, true);
@@ -380,10 +379,10 @@ public class LexicalDA {
      * użytkownik.
      *
      * @param parent - element nadrzedny
-     * @param child - element podrzedny
-     * @param rel - typ relacji
+     * @param child  - element podrzedny
+     * @param rel    - typ relacji
      */
-    public static void makeRelation(Sense parent, Sense child, SenseRelationType rel) {
+    public static void makeRelation(Sense parent, Sense child, RelationType rel) {
         //RemoteUtils.lexicalRelationRemote.dbMakeRelation(parent, child, rel);
     }
 
@@ -391,11 +390,11 @@ public class LexicalDA {
      * Utworzenie relacji, które właścicielem będzie dany użytkownik.
      *
      * @param parent - element nadrzedny
-     * @param child - element podrzedny
-     * @param rel - typ relacji
-     * @param owner - użytkownik relacji
+     * @param child  - element podrzedny
+     * @param rel    - typ relacji
+     * @param owner  - użytkownik relacji
      */
-    public static void makeRelation(Sense parent, Sense child, SenseRelationType rel, String owner) {
+    public static void makeRelation(Sense parent, Sense child, RelationType rel, String owner) {
         //  RemoteUtils.lexicalRelationRemote.dbMakeRelation(parent, child, rel);
     }
 
@@ -403,10 +402,10 @@ public class LexicalDA {
      * pobranie relacji najwyzszego typu
      *
      * @param type - typ relacji (czy leksylane czy synsetow)
-     * @param pos - czesc mowy
+     * @param pos  - czesc mowy
      * @return lista relacji
      */
-    public static Collection<SenseRelationType> getHighestRelations(PartOfSpeech pos) {
+    public static Collection<RelationType> getHighestRelations(PartOfSpeech pos) {
         return new ArrayList(); //RemoteUtils.relationTypeRemote.dbGetHighest(type, pos, LexiconManager.getInstance().getLexicons());
     }
 
@@ -416,7 +415,7 @@ public class LexicalDA {
      * @param rel - relacja
      * @return dzieci relacji
      */
-    public static Collection<SenseRelationType> getChildren(SenseRelationType rel) {
+    public static Collection<RelationType> getChildren(RelationType rel) {
         return new ArrayList(); //RemoteUtils.relationTypeRemote.dbGetChildren(rel, LexiconManager.getInstance().getLexicons());
     }
 
@@ -434,7 +433,7 @@ public class LexicalDA {
     /**
      * odczytanie czesci mowy synsetu
      *
-     * @param synset - synset
+     * @param synset   - synset
      * @param lexicons
      * @return czesc mowy
      */
@@ -445,7 +444,7 @@ public class LexicalDA {
     /**
      * odczytanie jednostek synsetu
      *
-     * @param synset - sysnet
+     * @param synset   - sysnet
      * @param lexicons
      * @return jednostki synsetu
      */
@@ -466,7 +465,7 @@ public class LexicalDA {
     /**
      * odczytanie synsetow podanego lematu
      *
-     * @param lemma - lemat
+     * @param lemma    - lemat
      * @param lexicons
      * @return lista synsetow
      */
@@ -506,8 +505,8 @@ public class LexicalDA {
     /**
      * wyciaganie danych o wyrazach do wstawienia
      *
-     * @param text - tekst oryginalny
-     * @param code - kod do znalezienia, np <a:
+     * @param text    - tekst oryginalny
+     * @param code    - kod do znalezienia, np <a:
      * @param replace - kod do zmianany <a>
      * @return pierwszy elementy o informacja o formie wyrazu do znalezienia, a
      * drugi element to poprawiony tekst
@@ -557,13 +556,13 @@ public class LexicalDA {
     /**
      * odczytanie wlasciwych testow
      *
-     * @param rel - relacja
+     * @param rel        - relacja
      * @param parentUnit - elementy nadrzedny
-     * @param childUnit - element podrzedny
-     * @param pos - czesc mowy
+     * @param childUnit  - element podrzedny
+     * @param pos        - czesc mowy
      * @return lista dostepnych testow
      */
-    public static List<String> getTests(SenseRelationType rel, String parentUnit, String childUnit, PartOfSpeech pos) {
+    public static List<String> getTests(RelationType rel, String parentUnit, String childUnit, PartOfSpeech pos) {
 
         List<String> result = new ArrayList<>();
 //        List<RelationTest> tests = RemoteUtils.testRemote.getRelationTestsFor(rel);
@@ -621,7 +620,7 @@ public class LexicalDA {
      * @param rel - relacja
      * @return relacja odwrotna
      */
-    public static SenseRelationType getReverseRelation(SenseRelationType rel) {
+    public static RelationType getReverseRelation(RelationType rel) {
         return null; //RemoteUtils.relationTypeRemote.dbGet(rel.getReverse().getId());
     }
 
@@ -631,7 +630,7 @@ public class LexicalDA {
      * @param rel - relacja dla ktorej ma zostac odczytany opis
      * @return pelna nazwa relacji
      */
-    public static String getRelationName(SenseRelationType rel) {
+    public static String getRelationName(RelationType rel) {
         if (rel != null) {
             if (rel.getParent() != null) { // ma rodzica
 //                IRelationType parent = RelationTypeManager.get(rel.getId()).getRelationType().getParent();
@@ -697,11 +696,11 @@ public class LexicalDA {
      * sprawdzenie czy podana relacja już istnieje
      *
      * @param parent - element nadrzedny
-     * @param child - element podrzedny
-     * @param rel - typ relacji
+     * @param child  - element podrzedny
+     * @param rel    - typ relacji
      * @return TRUE jesli relacja istnieje
      */
-    public static boolean checkIfRelationExists(Sense parent, Sense child, SenseRelationType rel) {
+    public static boolean checkIfRelationExists(Sense parent, Sense child, RelationType rel) {
         return true;//RemoteUtils.lexicalRelationRemote.dbRelationExists(parent, child, rel);
     }
 
@@ -740,8 +739,8 @@ public class LexicalDA {
     /**
      * Zwraca wolny numer wariantu dla danego lematu
      *
-     * @param lemma -- lemat jednostki
-     * @param pos -- część mowy
+     * @param lemma    -- lemat jednostki
+     * @param pos      -- część mowy
      * @param lexicons -- leksykon
      * @return numer wolnego wariantu
      */
@@ -760,7 +759,7 @@ public class LexicalDA {
         return maxVariant + 1;
     }
 
-    public static SenseRelationType getEagerRelationTypeByID(SenseRelationType rt) {
+    public static RelationType getEagerRelationTypeByID(RelationType rt) {
         return null;
         //RemoteUtils.relationTypeRemote.getEagerRelationTypeByID(rt);
     }

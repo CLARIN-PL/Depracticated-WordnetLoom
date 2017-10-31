@@ -1,17 +1,18 @@
 package pl.edu.pwr.wordnetloom.senserelation.service.impl;
 
-import java.util.List;
-import java.util.Set;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 import pl.edu.pwr.wordnetloom.senserelation.service.SenseRelationServiceLocal;
 import pl.edu.pwr.wordnetloom.senserelation.service.SenseRelationServiceRemote;
+
+import javax.ejb.Local;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Set;
 
 @Stateless
 @Remote(SenseRelationServiceRemote.class)
@@ -27,7 +28,7 @@ public class SenseRelationServiceBean implements SenseRelationServiceLocal {
     }
 
     @Override
-    public void delete(SenseRelationType relation) {
+    public void delete(RelationType relation) {
         senseRelationRepository.delete(relation);
     }
 
@@ -42,12 +43,12 @@ public class SenseRelationServiceBean implements SenseRelationServiceLocal {
     }
 
     @Override
-    public List<SenseRelation> findSubRelations(Sense sense, SenseRelationType relationType) {
+    public List<SenseRelation> findSubRelations(Sense sense, RelationType relationType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<SenseRelation> findRelations(SenseRelationType relationType) {
+    public List<SenseRelation> findRelations(RelationType relationType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -57,7 +58,7 @@ public class SenseRelationServiceBean implements SenseRelationServiceLocal {
     }
 
     @Override
-    public List<SenseRelation> findUpperRelations(Sense sense, SenseRelationType relationType) {
+    public List<SenseRelation> findUpperRelations(Sense sense, RelationType relationType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -67,17 +68,17 @@ public class SenseRelationServiceBean implements SenseRelationServiceLocal {
     }
 
     @Override
-    public List<SenseRelation> findRelations(Sense parent, Sense child, SenseRelationType relationType) {
+    public List<SenseRelation> findRelations(Sense parent, Sense child, RelationType relationType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public SenseRelation findRelation(Sense parent, Sense child, SenseRelationType relationType) {
+    public SenseRelation findRelation(Sense parent, Sense child, RelationType relationType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean makeRelation(Sense parent, Sense child, SenseRelationType relation) {
+    public boolean makeRelation(Sense parent, Sense child, RelationType relation) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -97,22 +98,22 @@ public class SenseRelationServiceBean implements SenseRelationServiceLocal {
     }
 
     @Override
-    public Long findRelationUseCount(SenseRelationType relation) {
+    public Long findRelationUseCount(RelationType relation) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void move(SenseRelationType oldRelation, SenseRelationType newRelation) {
+    public void move(RelationType oldRelation, RelationType newRelation) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean relationExists(Sense parent, Sense child, SenseRelationType relationType) {
+    public boolean relationExists(Sense parent, Sense child, RelationType relationType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<SenseRelationType> findSenseRelationTypesBySense(Sense sense) {
+    public List<RelationType> findSenseRelationTypesBySense(Sense sense) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -127,7 +128,7 @@ public class SenseRelationServiceBean implements SenseRelationServiceLocal {
     }
 
     @Override
-    public List<SenseRelation> findRelations(Sense unit, SenseRelationType templateType, Boolean asParent, boolean hideAutoReverse) {
+    public List<SenseRelation> findRelations(Sense unit, RelationType templateType, Boolean asParent, boolean hideAutoReverse) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

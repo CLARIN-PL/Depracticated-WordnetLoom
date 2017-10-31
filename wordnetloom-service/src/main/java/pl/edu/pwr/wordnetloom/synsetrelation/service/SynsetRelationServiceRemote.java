@@ -1,41 +1,42 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.service;
 
-import java.util.List;
-import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
+import java.util.List;
+
 public interface SynsetRelationServiceRemote {
 
-    boolean makeRelation(Synset parent, Synset child, SynsetRelationType rel);
+    boolean makeRelation(Synset parent, Synset child, RelationType rel);
 
-    boolean delete(Synset parent, Synset child, SynsetRelationType relationType);
+    boolean delete(Synset parent, Synset child, RelationType relationType);
 
-    void delete(SynsetRelationType relationType);
+    void delete(RelationType relationType);
 
     void deleteAll();
 
-    List<SynsetRelation> findSubRelations(Synset synset, SynsetRelationType relationType);
+    List<SynsetRelation> findSubRelations(Synset synset, RelationType relationType);
 
-    List<SynsetRelation> findUpperRelations(Synset synset, SynsetRelationType relationType);
+    List<SynsetRelation> findUpperRelations(Synset synset, RelationType relationType);
 
     void deleteConnection(Synset synset);
 
     Long findAllRelationsCount();
 
-    Long findRelationTypeUseCount(SynsetRelationType relation);
+    Long findRelationTypeUseCount(RelationType relation);
 
-    void move(SynsetRelationType oldRelation, SynsetRelationType newRelation);
+    void move(RelationType oldRelation, RelationType newRelation);
 
-    boolean checkRelationExists(Synset parent, Synset child, SynsetRelationType relation);
+    boolean checkRelationExists(Synset parent, Synset child, RelationType relation);
 
-    List<SynsetRelationType> findtRelationTypesBySynset(Synset synset);
+    List<RelationType> findtRelationTypesBySynset(Synset synset);
 
     int deleteImproper();
 
-    List<SynsetRelation> findRelations(Synset parent, Synset child, SynsetRelationType relation);
+    List<SynsetRelation> findRelations(Synset parent, Synset child, RelationType relation);
 
-    SynsetRelation findRelation(Synset parent, Synset child, SynsetRelationType relation);
+    SynsetRelation findRelation(Synset parent, Synset child, RelationType relation);
 
     Long findRelationCountBySynset(Synset synset);
 

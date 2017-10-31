@@ -1,17 +1,10 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.model;
 
-import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
-import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "synset_relation")
@@ -25,7 +18,7 @@ public class SynsetRelation implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "synset_relation_type_id", referencedColumnName = "id", nullable = false)
-    private SynsetRelationType relationType;
+    private RelationType relationType;
 
     @OneToOne
     @JoinColumn(name = "parent_synset_id", referencedColumnName = "id", nullable = false)
@@ -62,11 +55,11 @@ public class SynsetRelation implements Serializable {
         this.child = child;
     }
 
-    public SynsetRelationType getRelationType() {
+    public RelationType getRelationType() {
         return relationType;
     }
 
-    public void setRelationType(SynsetRelationType relationType) {
+    public void setRelationType(RelationType relationType) {
         this.relationType = relationType;
     }
 

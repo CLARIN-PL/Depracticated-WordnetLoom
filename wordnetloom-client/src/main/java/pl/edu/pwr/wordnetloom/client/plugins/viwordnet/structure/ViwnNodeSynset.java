@@ -1,25 +1,19 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Shape;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Area;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
-@SuppressWarnings("unchecked")
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Area;
+import java.util.*;
+import java.util.List;
+
 public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeSynset> {
 
     public enum State {
@@ -40,8 +34,8 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     protected static SynsetNodeShape geom = new SynsetNodeShape();
 
     public static Set<RelationTypeManager>[] relTypes = new Set[]{
-        new HashSet<>(), new HashSet<>(),
-        new HashSet<>(), new HashSet<>()};
+            new HashSet<>(), new HashSet<>(),
+            new HashSet<>(), new HashSet<>()};
 
     private final Set<ViwnEdgeSynset> edges_to_this_ = new HashSet<>();
     private final Set<ViwnEdgeSynset> edges_from_this_ = new HashSet<>();
@@ -56,11 +50,11 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     private PartOfSpeech pos = null;
 
     private final ArrayList<ViwnEdgeSynset>[] relations = new ArrayList[]{
-        new ArrayList<>(), new ArrayList<>(),
-        new ArrayList<>(), new ArrayList<>()};
+            new ArrayList<>(), new ArrayList<>(),
+            new ArrayList<>(), new ArrayList<>()};
 
     protected State[] states = new State[]{State.NOT_EXPANDED,
-        State.NOT_EXPANDED, State.NOT_EXPANDED, State.NOT_EXPANDED};
+            State.NOT_EXPANDED, State.NOT_EXPANDED, State.NOT_EXPANDED};
 
     @Override
     public int compareTo(ViwnNodeSynset o) {
@@ -78,7 +72,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     public static void reproduceCache(HashMap<Long, ViwnNodeSynset> cache) {
         for (Long l : cache.keySet()) {
             ViwnNodeSynset s = cache.get(l);
-            for (Direction d : Direction.values()) {
+            for (NodeDirection d : NodeDirection.values()) {
                 s.states[d.ordinal()] = State.NOT_EXPANDED;
                 s.relations[d.ordinal()].clear();
             }
@@ -95,7 +89,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         return geom.shape;
     }
 
-    public Shape getButtonArea(Direction dir) {
+    public Shape getButtonArea(NodeDirection dir) {
         return geom.buttons[dir.ordinal()];
     }
 
@@ -125,7 +119,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     public void removeRelation(ViwnEdgeSynset e) {
         ArrayList<Iterator<ViwnEdgeSynset>> iters = new ArrayList<>();
 
-        for (Direction dir : Direction.values()) {
+        for (NodeDirection dir : NodeDirection.values()) {
             iters.add(relations[dir.ordinal()].iterator());
         }
         iters.add(edges_from_this_.iterator());
@@ -146,7 +140,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         Set<ViwnEdgeSynset> rels = new HashSet<>(edges_from_this_);
         Set<ViwnEdgeSynset> to = new HashSet<>(edges_to_this_);
 
-        for (Direction dir : Direction.values()) {
+        for (NodeDirection dir : NodeDirection.values()) {
             relations[dir.ordinal()].clear();
         }
 
@@ -154,7 +148,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         while (it.hasNext()) {
             ViwnEdgeSynset e = it.next();
 
-            for (Direction dir : Direction.values()) {
+            for (NodeDirection dir : NodeDirection.values()) {
 
                 if (relTypes[dir.ordinal()].contains(e.getRelationType())) {
                     relations[dir.ordinal()].add(e);
@@ -178,7 +172,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
             if (skip(e)) {
                 continue;
             }
-            for (Direction dir : Direction.values()) {
+            for (NodeDirection dir : NodeDirection.values()) {
                 if (e.getRelationType() != null) {
                     if (relTypes[dir.ordinal()].contains(RelationTypeManager.get(e
                             .getRelationType().rev_id()))) {
@@ -188,7 +182,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
                         relations[dir.ordinal()].add(e);
                         to.remove(e);
                         it = to.iterator();
-                    } else if (relTypes[dir.getOposite().ordinal()].contains(e
+                    } else if (relTypes[dir.getOpposite().ordinal()].contains(e
                             .getRelationType())) {
                         if (skip(e)) {
                             continue;
@@ -247,6 +241,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         // adding relations to appropiate groups
         construct();
     }
+
     private final ViwnGraphViewUI ui;
 
     public ViwnNodeSynset(Synset synset, ViwnGraphViewUI ui) {
@@ -257,7 +252,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         setup();
     }
 
-    private boolean hadCheckedPOS = false;
+    private final boolean hadCheckedPOS = false;
 
     /**
      * Get synset part of speech.
@@ -304,7 +299,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
      * @return Synset --- synset object.
      */
     public Synset getSynset() {
-        return this.synset;
+        return synset;
     }
 
     @Override
@@ -312,7 +307,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         Point p = absToVertexRel(me.getPoint(), this,
                 ui.getVisualizationViewer());
 
-        for (Direction rel : Direction.values()) {
+        for (NodeDirection rel : NodeDirection.values()) {
             Collection<ViwnEdgeSynset> edges = getRelation(rel);
             if (edges.size() > 0) {
                 Area ar = new Area(getButtonArea(rel));
@@ -325,11 +320,11 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
                             ui.recreateLayout();
                             break;
                         case SEMI_EXPANDED:
-                            ui.showRelation(this, new Direction[]{rel});
+                            ui.showRelation(this, new NodeDirection[]{rel});
                             ui.recreateLayout();
                             break;
                         case NOT_EXPANDED:
-                            ui.showRelation(this, new Direction[]{rel});
+                            ui.showRelation(this, new NodeDirection[]{rel});
                             ui.recreateLayout();
                             break;
                     }
@@ -385,15 +380,15 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
      * @param dir
      * @return relations of specified class
      */
-    public Collection<ViwnEdgeSynset> getRelation(Direction dir) {
+    public Collection<ViwnEdgeSynset> getRelation(NodeDirection dir) {
         return relations[dir.ordinal()];
     }
 
-    public void setState(Direction dir, State state_new) {
+    public void setState(NodeDirection dir, State state_new) {
         states[dir.ordinal()] = state_new;
     }
 
-    public State getState(Direction dir) {
+    public State getState(NodeDirection dir) {
         return states[dir.ordinal()];
     }
 
@@ -426,7 +421,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     @Override
     public int hashCode() {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + ((synset == null) ? 0 : synset.hashCode());
         return result;

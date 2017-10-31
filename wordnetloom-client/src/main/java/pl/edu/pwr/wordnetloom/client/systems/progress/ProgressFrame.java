@@ -1,19 +1,16 @@
 package pl.edu.pwr.wordnetloom.client.systems.progress;
 
-import java.awt.Dimension;
-import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JProgressBar;
-import pl.edu.pwr.wordnetloom.client.systems.misc.ActionWrapper;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import se.datadosen.component.RiverLayout;
+
+import javax.swing.*;
+import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * okienko z paskiem postepu
@@ -23,26 +20,26 @@ import se.datadosen.component.RiverLayout;
 public class ProgressFrame extends DialogWindow {
 
     private static final long serialVersionUID = 1L;
-    private JProgressBar progressBar;
-    private JProgressBar globalProgress;
-    private JLabel infoLabel;
-    private JLabel globalLabel;
+    private final JProgressBar progressBar;
+    private final JProgressBar globalProgress;
+    private final JLabel infoLabel;
+    private final JLabel globalLabel;
     private JButton cancelButton;
     private boolean canceled = false;
 
     /**
      * konstruktor
      *
-     * @param baseFrame - okno bazowe na ktorym ma byc pasek postepu
-     * @param title - tytul okna
+     * @param baseFrame        - okno bazowe na ktorym ma byc pasek postepu
+     * @param title            - tytul okna
      * @param showCancelButton - TRUE pokazuje dodatkowy przycisk do
-     * zatrzymywania
+     *                         zatrzymywania
      */
     public ProgressFrame(JFrame baseFrame, String title, boolean showCancelButton) {
         super(baseFrame, title, 300, showCancelButton ? 155 : 125);
-        this.setLayout(new RiverLayout());
-        this.setResizable(false);
-        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setLayout(new RiverLayout());
+        setResizable(false);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         //this.setAlwaysOnTop(true);
 
         globalLabel = new JLabel(Labels.GLOBAL_PROGRESS);
@@ -53,19 +50,23 @@ public class ProgressFrame extends DialogWindow {
         globalProgress = new JProgressBar();
         globalProgress.setPreferredSize(new Dimension(0, 20));
         globalProgress.setMinimum(0);
-        cancelButton = new ButtonExt(Labels.CANCEL, new ActionWrapper(this, "cancelButton_OnClick"), 'a');
 
-        this.add("", infoLabel);
-        this.add("br hfill", progressBar);
-        this.add("br", globalLabel);
-        this.add("br hfill vfill", globalProgress);
+        cancelButton = MButton.buildCancelButton(l -> {
+            canceled = true;
+            cancelButton.setEnabled(false);
+        });
+
+        add("", infoLabel);
+        add("br hfill", progressBar);
+        add("br", globalLabel);
+        add("br hfill vfill", globalProgress);
         if (showCancelButton) {
-            this.add("br center", cancelButton);
+            add("br center", cancelButton);
         }
     }
 
     public ProgressFrame(JFrame baseFrame, String title, boolean showCancelButton,
-            boolean noModal) {
+                         boolean noModal) {
         this(baseFrame, title, showCancelButton);
         super.setModal(!noModal);
     }
@@ -93,10 +94,10 @@ public class ProgressFrame extends DialogWindow {
      * ustawienie parametrow postepu
      *
      * @param value - wartosc aktualna
-     * @param max - maksymalna wartosc
-     * @param info - opis akcji
+     * @param max   - maksymalna wartosc
+     * @param info  - opis akcji
      */
-    public void setProgressParams(final int value, final int max, final String info) {
+    public void setProgressParams(int value, int max, String info) {
 
         try {
             GUIUtils.delegateToEDT(() -> {
@@ -114,9 +115,9 @@ public class ProgressFrame extends DialogWindow {
      * ustawienie parametrow globalnego postepu
      *
      * @param value - wartosc aktualna
-     * @param max - maksymalna wartosc
+     * @param max   - maksymalna wartosc
      */
-    public void setGlobalProgressParams(final int value, final int max) {
+    public void setGlobalProgressParams(int value, int max) {
 
         try {
             GUIUtils.delegateToEDT(() -> {
@@ -134,7 +135,7 @@ public class ProgressFrame extends DialogWindow {
      *
      * @param value - nowa wartosc
      */
-    public void setProgressValue(final int value) {
+    public void setProgressValue(int value) {
 
         try {
             GUIUtils.delegateToEDT(() -> {
@@ -146,7 +147,7 @@ public class ProgressFrame extends DialogWindow {
 
     }
 
-    public void setGlobalProgressValue(final int value) {
+    public void setGlobalProgressValue(int value) {
 
         try {
             GUIUtils.delegateToEDT(() -> {
@@ -173,11 +174,6 @@ public class ProgressFrame extends DialogWindow {
 
     }
 
-    public void cancelButton_OnClick() {
-        canceled = true;
-        cancelButton.setEnabled(false);
-    }
-
     public boolean isCanceled() {
         return canceled;
     }
@@ -196,6 +192,6 @@ public class ProgressFrame extends DialogWindow {
     }
 
     public void setText(String text) {
-        this.infoLabel.setText(text);
+        infoLabel.setText(text);
     }
 }

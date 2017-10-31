@@ -18,57 +18,20 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import java.awt.Point;
-import java.awt.Shape;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
+
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 
-/**
- *
- * Graph node.
- *
- * @author Michał Marcińczuk <michal.marcinczuk@pwr.wroc.pl>
- *
- */
 abstract public class ViwnNode {
 
-    public enum Direction {
-        LEFT("LEFT"),
-        RIGHT("RIGHT"),
-        BOTTOM("BOTTOM"),
-        TOP("TOP");
 
-        private final String str;
+    private NodeDirection spawn_Node_direction = null;
 
-        Direction(String name) {
-            str = name;
-        }
-
-        public String getAsString() {
-            return str;
-        }
-
-        public Direction getOposite() {
-            switch (this) {
-                case BOTTOM:
-                    return TOP;
-                case TOP:
-                    return BOTTOM;
-                case LEFT:
-                    return RIGHT;
-                case RIGHT:
-                    return LEFT;
-                default:
-                    return null;
-            }
-        }
-    }
-
-    private Direction spawn_direction = null;
-
-    public Direction getSpawnDir() {
-        return spawn_direction;
+    public NodeDirection getSpawnDir() {
+        return spawn_Node_direction;
     }
 
     private ViwnNode spawner = null;
@@ -77,8 +40,8 @@ abstract public class ViwnNode {
         return spawner;
     }
 
-    public void setSpawner(ViwnNode spawner, Direction spawn_direction) {
-        this.spawn_direction = spawn_direction;
+    public void setSpawner(ViwnNode spawner, NodeDirection spawn_Node_direction) {
+        this.spawn_Node_direction = spawn_Node_direction;
         this.spawner = spawner;
     }
 
@@ -107,26 +70,13 @@ abstract public class ViwnNode {
 
     private boolean marked = false;
 
-    /**
-     * @return marked
-     *
-     */
     public boolean isMarked() {
         return marked;
     }
 
-    /**
-     * set marked property
-     *
-     * @param state set marked to
-     *
-     */
     public void setMarked(boolean state) {
-        this.marked = state;
+        marked = state;
     }
 
-    /**
-     * @return text for label
-     */
     abstract public String getLabel();
 }

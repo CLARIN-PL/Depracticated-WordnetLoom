@@ -1,9 +1,11 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.models;
 
-import pl.edu.pwr.wordnetloom.relationtype.model.IRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import java.util.List;
 
 public class RelationTreeModel extends DefaultTreeModel {
@@ -11,16 +13,15 @@ public class RelationTreeModel extends DefaultTreeModel {
 
 //    private List<RelationTypeNode> relationTypeNodes;
 
-    public RelationTreeModel(){
+    public RelationTreeModel() {
         super(new RelationTypeNode(null));
 //        relationTypeNodes = new ArrayList<>();
     }
 
-    public void setRelationTypeNodes(List<IRelationType> relationTypes)
-    {
-        RelationTypeNode rootNode = ((RelationTypeNode)root);
+    public void setRelationTypeNodes(List<RelationType> relationTypes) {
+        RelationTypeNode rootNode = ((RelationTypeNode) root);
         rootNode.removeAllChildren();
-        for(IRelationType relationType : relationTypes){
+        for (RelationType relationType : relationTypes) {
             rootNode.addChild(new RelationTypeNode(relationType));
         }
 //        ((RelationTypeNode)root).setChildren(relationTypeNodes);
@@ -37,58 +38,58 @@ public class RelationTreeModel extends DefaultTreeModel {
 //        relationTypeNodes.add(node);
 //    }
 
-    /** Usuwa węzeł z korzenia */
+    /**
+     * Usuwa węzeł z korzenia
+     */
 //    public void removeNode(RelationTypeNode node){
 //        relationTypeNodes.remove(node);
 //    }
-
-    public void swapNode(RelationTypeNode node, int currentPosition){
+    public void swapNode(RelationTypeNode node, int currentPosition) {
         RelationTypeNode parent = node.getParent();
         int nodeIndex = parent.getIndex(node);
         parent.swapChildren(nodeIndex, currentPosition);
     }
 
-    public void addNode(IRelationType relationType){
-        ((RelationTypeNode)root).addChild(new RelationTypeNode(relationType));
+    public void addNode(RelationType relationType) {
+        ((RelationTypeNode) root).addChild(new RelationTypeNode(relationType));
     }
 
     //TODO mozna zmienic nazwę
-    public void moveNodeUp(RelationTypeNode node)
-    {
+    public void moveNodeUp(RelationTypeNode node) {
         RelationTypeNode parent = node.getParent();
-        if(parent != null){
+        if (parent != null) {
             int nodeIndex = parent.getIndex(node);
-            if(nodeIndex != 0){
-                parent.swapChildren(nodeIndex, nodeIndex-1);
+            if (nodeIndex != 0) {
+                parent.swapChildren(nodeIndex, nodeIndex - 1);
             }
         }
     }
 
-    public void moveNodeDown(RelationTypeNode node){
+    public void moveNodeDown(RelationTypeNode node) {
         RelationTypeNode parent = node.getParent();
-        if(parent != null){
+        if (parent != null) {
             int nodeIndex = parent.getIndex(node);
-            if(nodeIndex != parent.getChildCount()-1){
-                parent.swapChildren(nodeIndex, nodeIndex+1);
+            if (nodeIndex != parent.getChildCount() - 1) {
+                parent.swapChildren(nodeIndex, nodeIndex + 1);
             }
         }
     }
 
-    public void addChildren(int parentIndex, List<IRelationType> children){
-        assert parentIndex >= 0 && parentIndex < root.getChildCount() -1;
+    public void addChildren(int parentIndex, List<RelationType> children) {
+        assert parentIndex >= 0 && parentIndex < root.getChildCount() - 1;
         //relationTypeNodes.get(parentIndex).setChildren(children);
 //        List<RelationTypeNode> childNodes = new ArrayList<>();
 //        for(IRelationType type : children){
 //            childNodes.add(new RelationTypeNode(type));
 //        }
 //        relationTypeNodes.get(parentIndex).setChildren(childNodes);
-        RelationTypeNode parent = (RelationTypeNode)root.getChildAt(parentIndex);
-        for(IRelationType child : children){
+        RelationTypeNode parent = (RelationTypeNode) root.getChildAt(parentIndex);
+        for (RelationType child : children) {
             parent.addChild(new RelationTypeNode(child));
         }
     }
 
-    public void addChild(RelationTypeNode parent, IRelationType child) {
+    public void addChild(RelationTypeNode parent, RelationType child) {
         RelationTypeNode childNode = new RelationTypeNode(child);
         parent.addChild(childNode);
     }
@@ -109,28 +110,30 @@ public class RelationTreeModel extends DefaultTreeModel {
         parent.removeChild(child);
     }
 
-    public void removeChild(RelationTypeNode child){
-        if(child.getParent() != null){
+    public void removeChild(RelationTypeNode child) {
+        if (child.getParent() != null) {
             child.getParent().removeChild(child);
         }
     }
 
-    /** Usuwa wszystkie węzły z wyjątkiem korzenia */
-    public void clear(){
+    /**
+     * Usuwa wszystkie węzły z wyjątkiem korzenia
+     */
+    public void clear() {
         RelationTypeNode treeNode;
-        RelationTypeNode rootNode = (RelationTypeNode)root;
-        for(int node = 0; node < root.getChildCount(); node++){
+        RelationTypeNode rootNode = (RelationTypeNode) root;
+        for (int node = 0; node < root.getChildCount(); node++) {
             rootNode.getChildAt(node).removeAllChildren();
             rootNode.removeChild(node);
         }
     }
 
-    public TreePath getPathToNode(RelationTypeNode relationTypeNode){
+    public TreePath getPathToNode(RelationTypeNode relationTypeNode) {
         Object[] objects = new Object[relationTypeNode.getLevel() + 1];
-        objects[0] = (TreeNode)root;
+        objects[0] = (TreeNode) root;
         RelationTypeNode node = relationTypeNode;
         int counter = node.getLevel();
-        while (counter >= 1){
+        while (counter >= 1) {
             objects[counter] = node;
             node = node.getParent();
             counter--;
@@ -141,12 +144,12 @@ public class RelationTreeModel extends DefaultTreeModel {
     @Override
     public RelationTypeNode getRoot() {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        return (RelationTypeNode)root;
+        return (RelationTypeNode) root;
     }
 
     @Override
     public RelationTypeNode getChild(Object parent, int index) {
-        return ((RelationTypeNode)parent).getChildAt(index);
+        return ((RelationTypeNode) parent).getChildAt(index);
     }
 
 //    private List<RelationTypeNode> getChildren(Object parent)
@@ -156,13 +159,13 @@ public class RelationTreeModel extends DefaultTreeModel {
 
     @Override
     public int getChildCount(Object parent) {
-        return ((RelationTypeNode)parent).getChildCount();
+        return ((RelationTypeNode) parent).getChildCount();
     }
 
     @Override
     public boolean isLeaf(Object node) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        return ((RelationTypeNode)node).isLeaf();
+        return ((RelationTypeNode) node).isLeaf();
     }
 
     @Override
@@ -173,7 +176,7 @@ public class RelationTreeModel extends DefaultTreeModel {
     @Override
     public int getIndexOfChild(Object parent, Object child) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        return ((RelationTypeNode)parent).getIndex((RelationTypeNode)child);
+        return ((RelationTypeNode) parent).getIndex((RelationTypeNode) child);
     }
 
     @Override
@@ -187,9 +190,8 @@ public class RelationTreeModel extends DefaultTreeModel {
     public void removeTreeModelListener(TreeModelListener l) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         super.addTreeModelListener(l);
-        listenerList.remove(TreeModelListener.class,l);
+        listenerList.remove(TreeModelListener.class, l);
     }
-
 
 
 //    private class RelationTypeNode {

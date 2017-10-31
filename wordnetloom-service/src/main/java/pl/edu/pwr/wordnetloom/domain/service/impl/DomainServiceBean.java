@@ -1,11 +1,5 @@
 package pl.edu.pwr.wordnetloom.domain.service.impl;
 
-import java.util.List;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.validation.Validator;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.domain.exception.DomainNotFoundException;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
@@ -14,6 +8,13 @@ import pl.edu.pwr.wordnetloom.domain.service.DomainServiceLocal;
 import pl.edu.pwr.wordnetloom.domain.service.DomainServiceRemote;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+
+import javax.ejb.Local;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.validation.Validator;
+import java.util.List;
 
 @Stateless
 @Local(DomainServiceLocal.class)
@@ -28,11 +29,11 @@ public class DomainServiceBean implements DomainServiceLocal {
 
     @Override
     public Domain findById(Long id) {
-        final Domain domanin = domainRepository.findById(id);
-        if (domanin == null) {
+        Domain domain = domainRepository.findById(id);
+        if (domain == null) {
             throw new DomainNotFoundException();
         }
-        return domanin;
+        return domain;
     }
 
     @Override
@@ -53,7 +54,7 @@ public class DomainServiceBean implements DomainServiceLocal {
 
     @Override
     public List<Domain> findAllWithFullNames() {
-        return  domainRepository.findAllWithFullNames();
+        return domainRepository.findAllWithFullNames();
     }
 
 }

@@ -1,22 +1,14 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.ComboBoxModel;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
@@ -24,11 +16,17 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import se.datadosen.component.RiverLayout;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MakeNewRelationWindow extends RelationTypeFrame {
 
     private static final long serialVersionUID = 5479457915334417348L;
 
-    protected ButtonExt buttonSwitch;
+    protected MButton buttonSwitch;
     protected JPanel jp;
     protected List<Long> lexicons;
     protected ViwnNode from[], to[];
@@ -108,12 +106,18 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         childItem.addActionListener(this);
 
         // buttons
-        buttonChoose = new ButtonExt(Labels.SELECT, this, KeyEvent.VK_W);
-        buttonChoose.addKeyListener(this);
-        buttonCancel = new ButtonExt(Labels.CANCEL, this, KeyEvent.VK_A);
-        buttonCancel.addKeyListener(this);
-        buttonSwitch = new ButtonExt(Labels.SWITCH, this, KeyEvent.VK_Z);
-        buttonSwitch.addKeyListener(this);
+        buttonChoose = MButton.buildSelectButton()
+                .withKeyListener(this)
+                .withActionListener(this);
+
+        buttonCancel = MButton.buildCancelButton()
+                .withKeyListener(this)
+                .withActionListener(this);
+
+        buttonSwitch = new MButton(this)
+                .withIcon(FontAwesome.EXCHANGE)
+                .withMnemonic(KeyEvent.VK_Z)
+                .withKeyListener(this);
 
         relationSubType.addActionListener(this);
         relationType.addActionListener(this);
@@ -127,15 +131,15 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         }
 
         // build interfaceTEST_LABEL
-        this.add("",
+        add("",
                 new LabelExt(Labels.RELATION_TYPE_COLON, 't', relationType));
-        this.add("tab hfill", relationType);
-        this.add("br", new LabelExt(Labels.RELATION_SUBTYPE_COLON, 'y',
+        add("tab hfill", relationType);
+        add("br", new LabelExt(Labels.RELATION_SUBTYPE_COLON, 'y',
                 relationType));
-        this.add("tab hfill", relationSubType);
-        this.add("br", new LabelExt(Labels.RELATION_DESC_COLON, '\0',
+        add("tab hfill", relationSubType);
+        add("br", new LabelExt(Labels.RELATION_DESC_COLON, '\0',
                 description));
-        this.add("br hfill", new JScrollPane(description));
+        add("br hfill", new JScrollPane(description));
 
         jp = new JPanel();
         jp.setLayout(new RiverLayout());
@@ -144,13 +148,13 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         jp.add("br", new LabelExt(Labels.TARGET_SYNSET_COLON, 'd', childItem));
         jp.add("tab hfill", childItem);
 
-        this.add("br hfill", jp);
-        this.add("", buttonSwitch);
+        add("br hfill", jp);
+        add("", buttonSwitch);
 
-        this.add("br", new LabelExt(Labels.TESTS_COLON, '\0', testsLit));
-        this.add("br hfill vfill", new JScrollPane(testsLit));
-        this.add("br center", this.buttonChoose);
-        this.add("", this.buttonCancel);
+        add("br", new LabelExt(Labels.TESTS_COLON, '\0', testsLit));
+        add("br hfill vfill", new JScrollPane(testsLit));
+        add("br center", buttonChoose);
+        add("", buttonCancel);
     }
 
     @Override
@@ -158,10 +162,10 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
 
         if (event.getSource() == buttonChoose) {
             chosenType = getSelectedRelation();
-            this.setVisible(false);
+            setVisible(false);
 
         } else if (event.getSource() == buttonCancel) {
-            this.setVisible(false);
+            setVisible(false);
 
         } else if (event.getSource() == buttonSwitch) {
             // switch elements
@@ -236,15 +240,16 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
 
     /**
      * @param workbench <code>Workbench</code> to get JFrame
-     * @param from <code>ViwnNode</code> parent for relation
-     * @param to <code>ViwnNode</code> child for relation
+     * @param from      <code>ViwnNode</code> parent for relation
+     * @param to        <code>ViwnNode</code> child for relation
      * @return true when relation was added successfully
      */
     public static boolean showMakeSynsetRelationModal(Workbench workbench,
-            ViwnNode from, ViwnNode to) {
+                                                      ViwnNode from, ViwnNode to) {
         ViwnNode[] from1 = new ViwnNode[]{from};
         ViwnNode[] to1 = new ViwnNode[]{to};
-        ViwnNodeSynset sf = (ViwnNodeSynset) from1[0], st = (ViwnNodeSynset) to1[0];
+        ViwnNodeSynset sf = (ViwnNodeSynset) from1[0];
+        ViwnNodeSynset st = (ViwnNodeSynset) to1[0];
         // check if parent and child are different synsets
         if (sf.getId().equals(st.getId())) {
             DialogBox

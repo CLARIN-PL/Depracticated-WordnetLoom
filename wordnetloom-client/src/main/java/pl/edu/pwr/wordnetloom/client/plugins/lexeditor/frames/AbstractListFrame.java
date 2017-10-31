@@ -17,38 +17,29 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import javax.swing.BoxLayout;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * okno wyswietlajace liste elementow
  *
- * @author Max
  * @param <T> typ przechowywanego obiektu
  * @param <G> typ obiektu sluzacego jako filtr
+ * @author Max
  */
 abstract public class AbstractListFrame<T, G> extends
         DialogWindow implements ActionListener, ListSelectionListener,
@@ -61,10 +52,10 @@ abstract public class AbstractListFrame<T, G> extends
 
     protected JTextField filterEdit;
     private final JList itemsList;
-    private final ButtonExt buttonChoose;
-    private final ButtonExt buttonSearch;
-    private final ButtonExt buttonCancel;
-    private final ButtonExt buttonNew;
+    private final MButton buttonChoose;
+    private final MButton buttonSearch;
+    private final MButton buttonCancel;
+    private final MButton buttonNew;
 
     // model z danymi
     protected GenericListModel<T> listModel = null;
@@ -77,55 +68,55 @@ abstract public class AbstractListFrame<T, G> extends
     /**
      * konstruktor
      *
-     * @param workbench - środwisko
-     * @param title - tytuł okienka
+     * @param workbench      - środwisko
+     * @param title          - tytuł okienka
      * @param itemsLabelText - tytuł listy z elementami
-     * @param x - polozenie okna X
-     * @param y - polozenie okna Y
-     * @param useButtonNew - czy wyswietlic przycisk nowy
+     * @param x              - polozenie okna X
+     * @param y              - polozenie okna Y
+     * @param useButtonNew   - czy wyswietlic przycisk nowy
      */
     protected AbstractListFrame(Workbench workbench, String title,
-            String itemsLabelText, int x, int y, boolean useButtonNew) {
+                                String itemsLabelText, int x, int y, boolean useButtonNew) {
         super(workbench.getFrame(), title, x - WIDTH / 2, y, WIDTH, HEIGHT);
         this.workbench = workbench;
-        this.listModel = new GenericListModel<T>();
-        this.setResizable(true);
+        listModel = new GenericListModel<>();
+        setResizable(true);
         //this.setAlwaysOnTop(true);
-        this.setDefaultCloseOperation(HIDE_ON_CLOSE);
-        this.addKeyListener(this);
+        setDefaultCloseOperation(HIDE_ON_CLOSE);
+        addKeyListener(this);
 
         // utworzenie elementow UI
-        this.filterEdit = new JTextField(STANDARD_VALUE_FILTER);
-        this.filterEdit.addKeyListener(this);
+        filterEdit = new JTextField(STANDARD_VALUE_FILTER);
+        filterEdit.addKeyListener(this);
 
-        this.buttonSearch = new ButtonExt(Labels.SEARCH_NO_COLON, this,
-                KeyEvent.VK_S);
-        this.buttonSearch.addKeyListener(this);
+        buttonSearch = MButton.buildSearchButton(this)
+                .withKeyListener(this);
 
-        this.itemsList = new ToolTipList(workbench, this.listModel,
+        itemsList = new ToolTipList(workbench, listModel,
                 ToolTipGenerator.getGenerator());
 
         // this.itemsList=new JList(this.listModel);
-        this.itemsList.addListSelectionListener(this);
-        this.itemsList
+        itemsList.addListSelectionListener(this);
+        itemsList
                 .setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        this.itemsList.addKeyListener(this);
-        this.itemsList.addMouseListener(this);
+        itemsList.addKeyListener(this);
+        itemsList.addMouseListener(this);
 
-        this.buttonChoose = new ButtonExt(Labels.SELECT, this,
-                KeyEvent.VK_W);
-        this.buttonChoose.setEnabled(false);
-        this.buttonChoose.addKeyListener(this);
+        buttonChoose = MButton.buildSelectButton(this)
+                .withEnabled(false)
+                .withKeyListener(this);
 
-        this.buttonCancel = new ButtonExt(Labels.CANCEL, this,
-                KeyEvent.VK_A);
-        this.buttonCancel.setEnabled(true);
-        this.buttonCancel.addKeyListener(this);
+        buttonCancel = MButton.buildCancelButton(this)
+                .withEnabled(true)
+                .withKeyListener(this);
 
-        this.buttonNew = new ButtonExt(Labels.NEW, this, KeyEvent.VK_N);
-        this.buttonNew.setEnabled(true);
-        this.buttonNew.setToolTipText(Hints.CREATE_NEW_UNIT);
-        this.buttonNew.addKeyListener(this);
+        buttonNew = MButton.buildAddButton()
+                .withCaption(Labels.NEW)
+                .withToolTip(Hints.CREATE_NEW_UNIT)
+                .withKeyListener(this)
+                .withActionListener(this)
+                .withMnemonic(KeyEvent.VK_N)
+                .withEnabled(true);
 
         // panel dolny z przyciskami
         JPanel buttonsPanel = new JPanel();
@@ -136,13 +127,13 @@ abstract public class AbstractListFrame<T, G> extends
             buttonsPanel.add(buttonNew);
         }
 
-        this.add("", new LabelExt(Labels.SEARCH_COLON, 'w', filterEdit));
-        this.add("br hfill", filterEdit);
-        this.add("", buttonSearch);
-        this.addExtraControlsInSearchBox();
-        this.add("br left", new LabelExt(itemsLabelText, 'y', itemsList));
-        this.add("br hfill vfill", new JScrollPane(itemsList));
-        this.add("br center", buttonsPanel);
+        add("", new LabelExt(Labels.SEARCH_COLON, 'w', filterEdit));
+        add("br hfill", filterEdit);
+        add("", buttonSearch);
+        addExtraControlsInSearchBox();
+        add("br left", new LabelExt(itemsLabelText, 'y', itemsList));
+        add("br hfill vfill", new JScrollPane(itemsList));
+        add("br center", buttonsPanel);
     }
 
     protected void addExtraControlsInSearchBox() {
@@ -152,12 +143,12 @@ abstract public class AbstractListFrame<T, G> extends
     /**
      * wypelnienie kolekcji odpowiednimi danymi
      *
-     * @param filter - filtr nazw
+     * @param filter       - filtr nazw
      * @param filterObject - obiekt wzgledem ktorego nastepuje filtrowanie
      * @return wypełniona kolekcja danych
      */
     abstract protected Collection<T> fillCollection(String filter,
-            G filterObject);
+                                                    G filterObject);
 
     /**
      * uruchomienie dodanie nowego elemtu
@@ -181,16 +172,16 @@ abstract public class AbstractListFrame<T, G> extends
      * odświeżenie danych w modelu
      */
     protected void refreshListModel() {
-        Collection<T> collection = fillCollection(this.filterEdit.getText(),
-                this.filterObject); // wypelnienie kolekcji danymi
-        this.listModel.setCollection(collection); // ustawienie kolekji jako
+        Collection<T> collection = fillCollection(filterEdit.getText(),
+                filterObject); // wypelnienie kolekcji danymi
+        listModel.setCollection(collection); // ustawienie kolekji jako
         // danych dla modelu
-        if (this.itemsList != null) {
-            this.itemsList.clearSelection();
+        if (itemsList != null) {
+            itemsList.clearSelection();
             if (listModel.getSize() > 0) {
-                this.itemsList.setSelectedIndex(0);
-                this.itemsList.ensureIndexIsVisible(0);
-                this.itemsList.grabFocus();
+                itemsList.setSelectedIndex(0);
+                itemsList.ensureIndexIsVisible(0);
+                itemsList.grabFocus();
             }
         }
     }
@@ -204,12 +195,12 @@ abstract public class AbstractListFrame<T, G> extends
             refreshListModel(); // uruchomienie szukania
         } else if (event.getSource() == buttonCancel) {
             setVisible(false); // uruchomienie szukania
-            this.listModel.setCollection(null);
+            listModel.setCollection(null);
         } else if (event.getSource() == buttonNew) {
             invokeNew(); // uruchomienie szukania
         } else if (event.getSource() == buttonChoose) {
             // odczytanie listy zaznaczonych pozycji
-            int indexs[] = itemsList.getSelectedIndices();
+            int[] indexs = itemsList.getSelectedIndices();
             if (indexs == null || indexs.length == 0) {
                 return;
             }
@@ -217,12 +208,12 @@ abstract public class AbstractListFrame<T, G> extends
             selectedElements = new ArrayList<>();
 
             for (int selectedIndex : indexs) {
-                T elem = this.listModel.getObjectAt(selectedIndex);
+                T elem = listModel.getObjectAt(selectedIndex);
                 selectedElements.add(elem);
             }
 
-            if (this.verifySelectedElements()) {
-                this.listModel.setCollection(null);
+            if (verifySelectedElements()) {
+                listModel.setCollection(null);
                 setVisible(false);
             } else {
                 selectedElements = null;
@@ -244,8 +235,8 @@ abstract public class AbstractListFrame<T, G> extends
         if (event != null && event.getValueIsAdjusting()) {
             return;
         }
-        int index = this.itemsList.getSelectedIndex();
-        this.buttonChoose.setEnabled(index != -1);
+        int index = itemsList.getSelectedIndex();
+        buttonChoose.setEnabled(index != -1);
     }
 
     @Override
@@ -271,14 +262,14 @@ abstract public class AbstractListFrame<T, G> extends
      * ustawienie trybu zaznaczania
      *
      * @param multiSelect - TRUE mozna zazaczyc wiele elementow, FALSE tylko
-     * jeden
+     *                    jeden
      */
     protected void setMultSelect(boolean multiSelect) {
         if (multiSelect) {
-            this.itemsList
+            itemsList
                     .setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         } else {
-            this.itemsList
+            itemsList
                     .setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         }
     }

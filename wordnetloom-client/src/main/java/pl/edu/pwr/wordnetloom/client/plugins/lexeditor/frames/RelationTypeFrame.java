@@ -1,72 +1,65 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
+import pl.edu.pwr.wordnetloom.client.systems.ui.*;
+import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
-import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
-import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 public class RelationTypeFrame extends DialogWindow implements ActionListener, KeyListener {
 
     protected static final long serialVersionUID = 1L;
 
-    // elementu interfejsu uzytkownika
     protected ComboBoxPlain relationType;
     protected ComboBoxPlain relationSubType;
-    protected ButtonExt buttonChoose, buttonCancel;
+    protected MButton buttonChoose, buttonCancel;
     protected TextAreaPlain description;
     protected JList testsLit;
     protected static ComboBoxPlain parentItem;
     protected ComboBoxPlain middleItem;
     protected static ComboBoxPlain childItem;
-    protected SynsetRelationType fixedRelationType;
-
-    protected SynsetRelationType chosenType = null;
-    protected ArrayList<SynsetRelationType> mainRelations = null;
-    protected Collection<SynsetRelationType> subRelations = null;
+    protected RelationType fixedRelationType;
+    protected RelationType chosenType = null;
+    protected ArrayList<RelationType> mainRelations = null;
+    protected Collection<RelationType> subRelations = null;
     protected static PartOfSpeech pos;
 
     /**
      * konstruktor
      *
-     * @param frame - srodowisko
-     * @param type - typ relacji
-     * @param pos - czesc mowy
+     * @param frame             - srodowisko
+     * @param type              - typ relacji
+     * @param pos               - czesc mowy
      * @param fixedRelationType - typ relacji ustawiony na sztywno
-     * @param parentUnits - jednostki podzedne
-     * @param middleUnits - jednostki pośrednie
-     * @param childUnits - jednostki nadrzedne
+     * @param parentUnits       - jednostki podzedne
+     * @param middleUnits       - jednostki pośrednie
+     * @param childUnits        - jednostki nadrzedne
      */
     private RelationTypeFrame(JFrame frame,
-            String type,
-            PartOfSpeech pos,
-            SynsetRelationType fixedRelationType,
-            SynsetRelationType suggestedRelationType,
-            Sense suggestedUnit,
-            Collection<Sense> parentUnits,
-            Collection<Sense> middleUnits,
-            Collection<Sense> childUnits) {
+                              String type,
+                              PartOfSpeech pos,
+                              RelationType fixedRelationType,
+                              RelationType suggestedRelationType,
+                              Sense suggestedUnit,
+                              Collection<Sense> parentUnits,
+                              Collection<Sense> middleUnits,
+                              Collection<Sense> childUnits) {
         super(frame, Labels.RELATION_PARAMS, 650, 500);
         RelationTypeFrame.pos = pos;
         this.fixedRelationType = fixedRelationType;
 
-        this.setResizable(false);
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setResizable(false);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         //this.setAlwaysOnTop(true);
 
         // element nadrzedny
@@ -129,10 +122,13 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
 //        }
 
         // przycisk wybierz
-        buttonChoose = new ButtonExt(Labels.SELECT, this, KeyEvent.VK_W);
-        buttonChoose.addKeyListener(this);
-        buttonCancel = new ButtonExt(Labels.CANCEL, this, KeyEvent.VK_A);
-        buttonCancel.addKeyListener(this);
+        buttonChoose = MButton.buildSelectButton()
+                .withKeyListener(this);
+
+        buttonCancel = MButton.buildCancelButton()
+                .withMnemonic(KeyEvent.VK_A)
+                .withActionListener(this)
+                .withKeyListener(this);
 
         relationSubType.addActionListener(this);
         relationType.addActionListener(this);
@@ -164,63 +160,62 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         childItem.addActionListener(this);
 
         // dodanie elemetow UI do okna
-        this.add("", new LabelExt(Labels.RELATION_TYPE_COLON, 't', relationType));
-        this.add("tab hfill", relationType);
-        this.add("br", new LabelExt(Labels.RELATION_SUBTYPE_COLON, 'y', relationType));
-        this.add("tab hfill", relationSubType);
-        this.add("br", new LabelExt(Labels.RELATION_DESC_COLON, '\0', description));
-        this.add("br hfill", new JScrollPane(description));
+        add("", new LabelExt(Labels.RELATION_TYPE_COLON, 't', relationType));
+        add("tab hfill", relationType);
+        add("br", new LabelExt(Labels.RELATION_SUBTYPE_COLON, 'y', relationType));
+        add("tab hfill", relationSubType);
+        add("br", new LabelExt(Labels.RELATION_DESC_COLON, '\0', description));
+        add("br hfill", new JScrollPane(description));
 
-        this.add("br", new LabelExt(Labels.SOURCE_UNIT_COLON, 'r', parentItem));
-        this.add("tab hfill", parentItem);
+        add("br", new LabelExt(Labels.SOURCE_UNIT_COLON, 'r', parentItem));
+        add("tab hfill", parentItem);
 
         if (middleItem.isEnabled()) {
-            this.add("br", new LabelExt(Labels.INTERMEDIATE_UNIT_COLON, 'p', parentItem));
-            this.add("tab hfill", middleItem);
+            add("br", new LabelExt(Labels.INTERMEDIATE_UNIT_COLON, 'p', parentItem));
+            add("tab hfill", middleItem);
         }
-        this.add("br", new LabelExt(Labels.TARGET_UNIT_COLON, 'd', childItem));
-        this.add("tab hfill", childItem);
-        this.add("br", new LabelExt(Labels.TESTS_COLON, '\0', testsLit));
-        this.add("br hfill vfill", new JScrollPane(testsLit));
-        this.add("br center", this.buttonChoose);
-        this.add("", this.buttonCancel);
+        add("br", new LabelExt(Labels.TARGET_UNIT_COLON, 'd', childItem));
+        add("tab hfill", childItem);
+        add("br", new LabelExt(Labels.TESTS_COLON, '\0', testsLit));
+        add("br hfill vfill", new JScrollPane(testsLit));
+        add("br center", buttonChoose);
+        add("", buttonCancel);
     }
 
     /**
-     * @author amusial Constructor for derived classes
-     * @param frame parent component
-     * @param type relation type
-     * @param pos part of speech
+     * @param frame             parent component
+     * @param type              relation type
+     * @param pos               part of speech
      * @param fixedRelationType fixed relation type
-     *
+     * @author amusial Constructor for derived classes
      */
     protected RelationTypeFrame(JFrame frame,
-            String type,
-            PartOfSpeech pos,
-            SynsetRelationType fixedRelationType) {
+                                String type,
+                                PartOfSpeech pos,
+                                RelationType fixedRelationType) {
         super(frame, Labels.RELATION_PARAMS, 650, 500);
         RelationTypeFrame.pos = pos;
         this.fixedRelationType = fixedRelationType;
 
-        this.setResizable(false);
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setResizable(false);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     /**
      * wyswietlenie okienka dialogowego
      *
-     * @param workbench - srodowisko
-     * @param type - typ relacji
-     * @param pos - czesc mowy dla ktorej ma byc brana relacja
+     * @param workbench   - srodowisko
+     * @param type        - typ relacji
+     * @param pos         - czesc mowy dla ktorej ma byc brana relacja
      * @param parentUnits - jednostki nadrzedne
-     * @param childUnits - jednostki podrzedne
+     * @param childUnits  - jednostki podrzedne
      * @return typ relacji albo null
      */
-    public static SynsetRelationType showModal(Workbench workbench,
-            String type,
-            PartOfSpeech pos,
-            Collection<Sense> parentUnits,
-            Collection<Sense> childUnits) {
+    public static RelationType showModal(Workbench workbench,
+                                         String type,
+                                         PartOfSpeech pos,
+                                         Collection<Sense> parentUnits,
+                                         Collection<Sense> childUnits) {
         return showModal(workbench.getFrame(), type, pos, null, null, null, parentUnits, null, childUnits);
     }
 
@@ -234,13 +229,13 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      * @param childUnits
      * @return typ relacji albo null
      */
-    public static SynsetRelationType showModal(Workbench workbench,
-            String type,
-            PartOfSpeech pos,
-            SynsetRelationType fixedRelationType,
-            Collection<Sense> parentUnits,
-            Collection<Sense> middleUnits,
-            Collection<Sense> childUnits) {
+    public static RelationType showModal(Workbench workbench,
+                                         String type,
+                                         PartOfSpeech pos,
+                                         RelationType fixedRelationType,
+                                         Collection<Sense> parentUnits,
+                                         Collection<Sense> middleUnits,
+                                         Collection<Sense> childUnits) {
         return showModal(workbench.getFrame(), type, pos, fixedRelationType, null, null, parentUnits, middleUnits, childUnits);
     }
 
@@ -259,26 +254,26 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
     /**
      * wyswietlenie okienka dialogowego
      *
-     * @param frame - srodowisko
-     * @param type - typ relacji
-     * @param pos - czesc mowy dla ktorej ma byc brana relacja
-     * @param relationType - typ relacji jesli jest ustawiona na sztywno
+     * @param frame                 - srodowisko
+     * @param type                  - typ relacji
+     * @param pos                   - czesc mowy dla ktorej ma byc brana relacja
+     * @param relationType          - typ relacji jesli jest ustawiona na sztywno
      * @param suggestedRelationType - typ sugerowanej relacji, o ile istnieje
      * @param suggestedUnit
-     * @param parentUnits - jednostki nadrzedne
-     * @param middleUnits - jednostki posrednie
-     * @param childUnits - jednostki podrzedne
+     * @param parentUnits           - jednostki nadrzedne
+     * @param middleUnits           - jednostki posrednie
+     * @param childUnits            - jednostki podrzedne
      * @return typ relacji albo null
      */
-    public static SynsetRelationType showModal(JFrame frame,
-            String type,
-            PartOfSpeech pos,
-            SynsetRelationType relationType,
-            SynsetRelationType suggestedRelationType,
-            Sense suggestedUnit,
-            Collection<Sense> parentUnits,
-            Collection<Sense> middleUnits,
-            Collection<Sense> childUnits) {
+    public static RelationType showModal(JFrame frame,
+                                         String type,
+                                         PartOfSpeech pos,
+                                         RelationType relationType,
+                                         RelationType suggestedRelationType,
+                                         Sense suggestedUnit,
+                                         Collection<Sense> parentUnits,
+                                         Collection<Sense> middleUnits,
+                                         Collection<Sense> childUnits) {
         RelationTypeFrame framew = new RelationTypeFrame(frame, type, pos, relationType, suggestedRelationType, suggestedUnit, parentUnits, middleUnits, childUnits);
         framew.setVisible(true);
         return framew.chosenType;
@@ -299,11 +294,11 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      *
      * @return zaznaczona relacja
      */
-    protected SynsetRelationType getSelectedRelation() {
+    protected RelationType getSelectedRelation() {
         if (subRelations != null && subRelations.size() > 0) {
             // jest pod typ
             int index = relationSubType.getSelectedIndex();
-            for (SynsetRelationType type : subRelations) {
+            for (RelationType type : subRelations) {
                 if (index-- == 0) {
                     return type;
                 }
@@ -311,7 +306,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         } else {
             // brak podtypu
             int index = relationType.getSelectedIndex();
-            for (SynsetRelationType type : mainRelations) {
+            for (RelationType type : mainRelations) {
                 if (index-- == 0) {
                     return type;
                 }
@@ -325,7 +320,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      *
      * @param type - typ relacji
      */
-    protected void loadTests(SynsetRelationType type) {
+    protected void loadTests(RelationType type) {
         if (middleItem.getItemCount() == 0) {
             int a = parentItem.getSelectedIndex();
             int b = childItem.getSelectedIndex();

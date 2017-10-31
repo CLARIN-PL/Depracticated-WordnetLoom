@@ -1,43 +1,16 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SpinnerListModel;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import jiconfont.icons.FontAwesome;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import pl.edu.pwr.wordnetloom.client.plugins.candidates.tasks.RebuildGraphsTask;
-import pl.edu.pwr.wordnetloom.client.plugins.relations.RelationsIM;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -45,6 +18,19 @@ import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import se.datadosen.component.RiverLayout;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CandidatesViewUI extends AbstractViewUI
         implements ListSelectionListener, ActionListener, ChangeListener {
@@ -67,8 +53,8 @@ public class CandidatesViewUI extends AbstractViewUI
     private JTextField filterEdit;
     private JSpinner pckgSpinner;
     private ComboBoxPlain posCombo;
-    private ButtonExt buttonSearch, buttonShow;
-    private ButtonExt buttonAdd;
+    private MButton buttonSearch, buttonShow;
+    private MButton buttonAdd;
     private JButton buttonRecalc;
     private JLabel infoLabel;
     private JLabel infoPackages;
@@ -113,9 +99,9 @@ public class CandidatesViewUI extends AbstractViewUI
         pckgSpinner.addChangeListener(this);
         ((JSpinner.DefaultEditor) pckgSpinner.getEditor()).
                 getTextField().addKeyListener(
-                        new KeyAdapter() {
+                new KeyAdapter() {
                     @Override
-                    public void keyReleased(final KeyEvent e) {
+                    public void keyReleased(KeyEvent e) {
                         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                             ActionEvent ae = new ActionEvent(pckgSpinner, 0, "click");
                             actionPerformed(ae);
@@ -123,15 +109,18 @@ public class CandidatesViewUI extends AbstractViewUI
                     }
                 });
 
-        buttonShow = new ButtonExt(RelationsIM.getToNew(), this, KeyEvent.VK_W);
-        buttonShow.setToolTipText(Hints.SHOWS_CONTENT_OF_SELECTED_PACKAGE_IN_LIST);
+        buttonShow = new MButton(this)
+                .withIcon(FontAwesome.SIGN_IN)
+                .withToolTip(Hints.SHOWS_CONTENT_OF_SELECTED_PACKAGE_IN_LIST)
+                .withMnemonic(KeyEvent.VK_W);
 
-        buttonAdd = new ButtonExt(RelationsIM.getAdd(), this);
-        buttonAdd.setToolTipText(Hints.ADDS_CONTENT_OF_SELECTED_PACKAGE_TO_LIST);
+        buttonAdd = MButton.buildAddButton()
+                .withToolTip(Hints.ADDS_CONTENT_OF_SELECTED_PACKAGE_TO_LIST)
+                .withActionListener(this);
 
-        buttonRecalc = new JButton(Labels.RECOUNT);
-        buttonRecalc.setToolTipText(Hints.RECALCULATES_GRAPHS_FOR_SELECTED_PACKAGE);
-        buttonRecalc.addActionListener(this);
+        buttonRecalc = new MButton(this)
+                .withToolTip(Hints.RECALCULATES_GRAPHS_FOR_SELECTED_PACKAGE)
+                .withCaption(Labels.RECOUNT);
 
         infoPackages = new JLabel("(0)");
 
@@ -149,7 +138,8 @@ public class CandidatesViewUI extends AbstractViewUI
         filterEdit = new TextFieldPlain("");
         filterEdit.addActionListener(this);
 
-        buttonSearch = new ButtonExt(Labels.SEARCH_NO_COLON, this, KeyEvent.VK_K);
+        buttonSearch = MButton.buildSearchButton(this);
+
         candsModel = new DefaultListModel();
         candsList = new JList(candsModel);
         candsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -258,6 +248,7 @@ public class CandidatesViewUI extends AbstractViewUI
         ArrayList<Integer> packages = new ArrayList<Integer>() {
             private static final long serialVersionUID = 1L;
 
+            @Override
             public int indexOf(Object o) {
                 if (o instanceof String) {
                     try {

@@ -1,28 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
 import edu.uci.ics.jung.graph.Graph;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.KeyboardFocusManager;
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeSet;
-import javax.swing.JMenu;
-import javax.swing.JPanel;
-import javax.swing.SwingWorker;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitsView;
@@ -31,46 +9,43 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetStructureView
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetView;
 import pl.edu.pwr.wordnetloom.client.plugins.relations.da.RelationsDA;
 import pl.edu.pwr.wordnetloom.client.plugins.relations.views.ToolbarViewUI;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.LockerChangeListener;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.*;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerViewUI.LockerElementRenderer;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexRenderer;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.DeleteRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewLexicalRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewRelationWindow;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.LockerChangeListener;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeSynset;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode.Direction;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeAlphabeticComparator;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeCand;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeCandExtension;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeWord;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.CandidatesView;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnExampleKPWrView;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnExamplesView;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphView;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLexicalUnitRelationsView;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerView;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerViewUI.LockerElementRenderer;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnSatelliteGraphView;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexRenderer;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+import java.util.List;
 
 /**
  * [Service] Installs views used by the Viwn perspective.
@@ -111,12 +86,12 @@ public class ViWordNetService extends AbstractService implements
     private final Map<String, PartOfSpeech> posMap = new HashMap<>();
 
     /**
-     * @param workbench <code>Workbench</code> of this
+     * @param workbench       <code>Workbench</code> of this
      * @param perspectiveName perspective name
-     * @param perspective <code>ViWordNetPerspective</code> of this
+     * @param perspective     <code>ViWordNetPerspective</code> of this
      */
     public ViWordNetService(Workbench workbench, String perspectiveName,
-            ViWordNetPerspective perspective) {
+                            ViWordNetPerspective perspective) {
         super(workbench);
         this.perspectiveName = perspectiveName;
         this.perspective = perspective;
@@ -161,49 +136,49 @@ public class ViWordNetService extends AbstractService implements
     @Override
     public void installViews() {
         ViwnGraphViewUI graphUI = new ViwnGraphViewUI();
-        this.activeGraphView = new ViwnGraphView(this.workbench,
+        activeGraphView = new ViwnGraphView(workbench,
                 Labels.VISUALIZATION, graphUI);
-        this.activeGraphView.addSynsetSelectionChangeListener(this);
-        this.workbench.installView(activeGraphView,
-                ViWordNetPerspective.SPLIT_MAIN_VIEW, this.perspectiveName);
-        this.graphViews.add(activeGraphView);
+        activeGraphView.addSynsetSelectionChangeListener(this);
+        workbench.installView(activeGraphView,
+                ViWordNetPerspective.SPLIT_MAIN_VIEW, perspectiveName);
+        graphViews.add(activeGraphView);
 
-        this.luView = new LexicalUnitsView(this.workbench, Labels.UNITS);
-        this.luView.addUnitChangeListener(this);
-        this.workbench.installView(luView, ViWordNetPerspective.SPLIT_LEFT_VIEW, this.perspectiveName);
+        luView = new LexicalUnitsView(workbench, Labels.UNITS);
+        luView.addUnitChangeListener(this);
+        workbench.installView(luView, ViWordNetPerspective.SPLIT_LEFT_VIEW, perspectiveName);
 
-        this.synsetView = new SynsetView(workbench, Labels.SYNSETS);
-        this.synsetView.addUnitChangeListener(this);
-        this.workbench.installView(synsetView, ViWordNetPerspective.SPLIT_LEFT_VIEW, this.perspectiveName);
+        synsetView = new SynsetView(workbench, Labels.SYNSETS);
+        synsetView.addUnitChangeListener(this);
+        workbench.installView(synsetView, ViWordNetPerspective.SPLIT_LEFT_VIEW, perspectiveName);
 
-        this.candView = new CandidatesView(workbench, Labels.CANDIDATES);
-        this.candView.addCandidateChangeListener(new SimpleListenerWrapper(this, "candidateSelection"));
-        this.workbench.installView(candView, ViWordNetPerspective.SPLIT_LEFT_VIEW, this.perspectiveName);
+        candView = new CandidatesView(workbench, Labels.CANDIDATES);
+        candView.addCandidateChangeListener(new SimpleListenerWrapper(this, "candidateSelection"));
+        workbench.installView(candView, ViWordNetPerspective.SPLIT_LEFT_VIEW, perspectiveName);
 
-        this.satelliteGraphView = new ViwnSatelliteGraphView(this.workbench, Labels.PREVIEW, graphUI);
-        this.workbench.installView(satelliteGraphView, ViWordNetPerspective.SPLIT_RIGHT_TOP_VIEW, this.perspectiveName);
-        this.activeGraphView.addGraphChangeListener(satelliteGraphView);
+        satelliteGraphView = new ViwnSatelliteGraphView(workbench, Labels.PREVIEW, graphUI);
+        workbench.installView(satelliteGraphView, ViWordNetPerspective.SPLIT_RIGHT_TOP_VIEW, perspectiveName);
+        activeGraphView.addGraphChangeListener(satelliteGraphView);
 
-        this.examplesView = new ViwnExamplesView(this.workbench, Labels.EXAMPLES);
-        this.kpwrExamples = new ViwnExampleKPWrView(this.workbench, Labels.KPWR, graphUI);
-        this.workbench.installView(examplesView, ViWordNetPerspective.SPILT_LOCKER_VIEW, this.perspectiveName);
-        this.workbench.installView(kpwrExamples, ViWordNetPerspective.SPILT_LOCKER_VIEW, this.perspectiveName);
+        examplesView = new ViwnExamplesView(workbench, Labels.EXAMPLES);
+        kpwrExamples = new ViwnExampleKPWrView(workbench, Labels.KPWR, graphUI);
+        workbench.installView(examplesView, ViWordNetPerspective.SPILT_LOCKER_VIEW, perspectiveName);
+        workbench.installView(kpwrExamples, ViWordNetPerspective.SPILT_LOCKER_VIEW, perspectiveName);
 
-        this.lockerView = new ViwnLockerView(this.workbench, Labels.CLIPBOARD);
-        this.lockerView.addSynsetSelectionChangeListener(this);
-        this.lockerView.addLockerChangeListener(this);
-        this.workbench.installView(lockerView, ViWordNetPerspective.SPILT_LOCKER_VIEW, this.perspectiveName);
+        lockerView = new ViwnLockerView(workbench, Labels.CLIPBOARD);
+        lockerView.addSynsetSelectionChangeListener(this);
+        lockerView.addLockerChangeListener(this);
+        workbench.installView(lockerView, ViWordNetPerspective.SPILT_LOCKER_VIEW, perspectiveName);
 
-        this.synsetStructureView = new SynsetStructureView(this.workbench, Labels.SYNSET, false, false, false, 1, graphUI);
-        this.synsetStructureView.addUnitChangeListener(new SimpleListenerWrapper(this, "synsetUnitSelection"));
-        this.workbench.installView(synsetStructureView, ViWordNetPerspective.SPLIT_RIGHT_CENTRAL_VIEW, this.perspectiveName);
+        synsetStructureView = new SynsetStructureView(workbench, Labels.SYNSET, false, false, false, 1, graphUI);
+        synsetStructureView.addUnitChangeListener(new SimpleListenerWrapper(this, "synsetUnitSelection"));
+        workbench.installView(synsetStructureView, ViWordNetPerspective.SPLIT_RIGHT_CENTRAL_VIEW, perspectiveName);
 
-        this.synsetPropertiesView = new SynsetPropertiesView(workbench, Labels.PROPERTIES, 1, graphUI);
-        this.synsetPropertiesView.addChangeListener(synsetStructureView);
-        this.workbench.installView(synsetPropertiesView, ViWordNetPerspective.SPLIT_RIGHT_CENTRAL_VIEW, this.perspectiveName);
+        synsetPropertiesView = new SynsetPropertiesView(workbench, Labels.PROPERTIES, 1, graphUI);
+        synsetPropertiesView.addChangeListener(synsetStructureView);
+        workbench.installView(synsetPropertiesView, ViWordNetPerspective.SPLIT_RIGHT_CENTRAL_VIEW, perspectiveName);
 
-        this.unitsRelationsView = new ViwnLexicalUnitRelationsView(this.workbench, Labels.UNIT_RELATIONS);
-        this.workbench.installView(unitsRelationsView, ViWordNetPerspective.SPLIT_RIGHT_BOTTOM_VIEW, this.perspectiveName);
+        unitsRelationsView = new ViwnLexicalUnitRelationsView(workbench, Labels.UNIT_RELATIONS);
+        workbench.installView(unitsRelationsView, ViWordNetPerspective.SPLIT_RIGHT_BOTTOM_VIEW, perspectiveName);
 
         setActiveGraphView(graphUI.getContent());
     }
@@ -348,8 +323,8 @@ public class ViWordNetService extends AbstractService implements
         }
 
         ArrayList[] arrayLists = new ArrayList[]{
-            new ArrayList<>(), new ArrayList<>(),
-            new ArrayList<>(), new ArrayList<>()};
+                new ArrayList<>(), new ArrayList<>(),
+                new ArrayList<>(), new ArrayList<>()};
 
         ArrayList<RelationTypeManager>[] relTypes = arrayLists;
 
@@ -361,7 +336,7 @@ public class ViWordNetService extends AbstractService implements
 
             conf.load(istrem);
 
-            for (Direction dir : Direction.values()) {
+            for (NodeDirection dir : NodeDirection.values()) {
                 String val = conf.getProperty(dir.getAsString());
                 if (val != null) {
                     String[] rels = val.split(",");
@@ -386,7 +361,7 @@ public class ViWordNetService extends AbstractService implements
                     Logger.getLogger(ViWordNetPlugin.class).log(
                             Level.WARN,
                             "relations in direction " + dir.name()
-                            + " are not defined");
+                                    + " are not defined");
                 }
             }
 
@@ -407,7 +382,7 @@ public class ViWordNetService extends AbstractService implements
 
         ArrayList<RelationTypeManager> order = new ArrayList<>();
 
-        for (Direction dir : Direction.values()) {
+        for (NodeDirection dir : NodeDirection.values()) {
             ViwnNodeSynset.relTypes[dir.ordinal()].addAll(relTypes[dir.ordinal()]);
             order.addAll(relTypes[dir.ordinal()]);
         }
@@ -438,8 +413,8 @@ public class ViWordNetService extends AbstractService implements
         if (node != null && node instanceof ViwnNodeSynset) {
             ViwnNodeSynset synset = (ViwnNodeSynset) node;
 
-            this.synsetStructureView.doAction(synset.getSynset(), 1);
-            this.synsetPropertiesView.doAction(synset.getSynset(), 1);
+            synsetStructureView.doAction(synset.getSynset(), 1);
+            synsetPropertiesView.doAction(synset.getSynset(), 1);
         }
     }
 
@@ -459,7 +434,7 @@ public class ViWordNetService extends AbstractService implements
 
         public LoadGraphTask(Sense unit, int tag) {
             this.unit = unit;
-            this.my_tag = tag;
+            my_tag = tag;
         }
 
         @Override
@@ -500,7 +475,7 @@ public class ViWordNetService extends AbstractService implements
 
         public LoadSynsetTask(Synset rootSynset, Sense unit, Integer tag) {
             this.unit = unit;
-            this.my_tag = tag;
+            my_tag = tag;
             this.rootSynset = rootSynset;
         }
 
@@ -531,7 +506,7 @@ public class ViWordNetService extends AbstractService implements
     public void synsetUnitSelection(Object object, Integer tag) {
         if (object instanceof Sense) {
             Sense unit = (Sense) object;
-            this.unitsRelationsView.loadLexicalUnit(unit);
+            unitsRelationsView.loadLexicalUnit(unit);
         }
     }
 
@@ -539,9 +514,9 @@ public class ViWordNetService extends AbstractService implements
      * this method is invoked when candidate word has been selected
      *
      * @param pair - Pair<String, Pos> of selected word and its part of speach
-     * @param tag - package number
+     * @param tag  - package number
      */
-    public void candidateSelection(final Object pair, final Integer tag) {
+    public void candidateSelection(Object pair, Integer tag) {
         // PUNKT WEJŚCIA
         // A-słowo, B-część mowy, Tag-numer paczki
         objectForReload = pair;
@@ -558,8 +533,8 @@ public class ViWordNetService extends AbstractService implements
         final Pair<String, PartOfSpeech> p;
         final Integer tag;
 
-        public CandidateTask(final Object pair, final Integer tag) {
-            this.p = (Pair<String, PartOfSpeech>) pair;
+        public CandidateTask(Object pair, Integer tag) {
+            p = (Pair<String, PartOfSpeech>) pair;
             this.tag = tag;
         }
 
@@ -599,7 +574,6 @@ public class ViWordNetService extends AbstractService implements
      *
      * @param vn
      * @param ler
-     *
      */
     public void addToLocker(Object vn, LockerElementRenderer ler) {
         lockerView.addToLocker(vn, ler);
@@ -607,7 +581,6 @@ public class ViWordNetService extends AbstractService implements
 
     /**
      * <code>LockerChangeListener</code> interface implementation
-     *
      */
     // TODO: do not show message here, after return from here do something
     @Override
@@ -624,12 +597,12 @@ public class ViWordNetService extends AbstractService implements
             if (DialogBox.showYesNo("Nie znaleziono źródłowej wizualizacji synsetu, otworzyć nową?") == DialogBox.YES) {
                 addGraphView();
                 // reload active graph view
-                this.activeGraphView.loadSynset(((ViwnNodeSynset) vn).getSynset());
+                activeGraphView.loadSynset(((ViwnNodeSynset) vn).getSynset());
                 // change tab title and tool tip
                 ((ViWordNetPerspective) workbench.getActivePerspective())
                         .setTabTitle(activeGraphView.getUI().getRootNode().getLabel());
 
-                return this.activeGraphView.getUI().getRootNode();
+                return activeGraphView.getUI().getRootNode();
             }
         }
         return vn;
@@ -643,13 +616,13 @@ public class ViWordNetService extends AbstractService implements
         if (graphViews.size() < GRAPH_VIEWS_LIMIT) {
             ViwnGraphViewUI graphUI = new ViwnGraphViewUI();
             graphUI.setOpenedFromTabIndex(perspective.leftView.getSelectedIndex());
-            this.activeGraphView = new ViwnGraphView(this.workbench, Labels.VISUALIZATION, graphUI);
-            this.activeGraphView.addSynsetSelectionChangeListener(this);
+            activeGraphView = new ViwnGraphView(workbench, Labels.VISUALIZATION, graphUI);
+            activeGraphView.addSynsetSelectionChangeListener(this);
             if (isMakeRelationModeOn()) {
                 graphUI.setCursor(MAKE_RELATION_CURSOR);
             }
-            this.workbench.installView(activeGraphView, 1, this.perspectiveName);
-            this.graphViews.add(activeGraphView);
+            workbench.installView(activeGraphView, 1, perspectiveName);
+            graphViews.add(activeGraphView);
 
             setActiveGraphView(graphUI.getContent());
         }
@@ -659,7 +632,6 @@ public class ViWordNetService extends AbstractService implements
      * Close <code>ViwnGraphView</code> producing JPanel given as an argument
      *
      * @param jp JPanel of <code>ViwnGraphView</code> which is closing
-     *
      */
     public void closeGraphView(JPanel jp) {
         for (ViwnGraphView vgv : graphViews) {
@@ -681,7 +653,7 @@ public class ViWordNetService extends AbstractService implements
         for (ViwnGraphView vgv : graphViews) {
             if (vgv.getPanel().equals(jp)) {
                 // set active in service
-                this.activeGraphView = vgv;
+                activeGraphView = vgv;
                 luView.setCriteria(activeGraphView.getUI().getCriteria());
                 // refresh satellite view
                 setSatteliteOwner(activeGraphView);
@@ -697,7 +669,7 @@ public class ViWordNetService extends AbstractService implements
                 ViwnNode root = vgv.getUI().getRootNode();
                 if (root instanceof ViwnNodeWord) {
                     ViwnNodeWord word = (ViwnNodeWord) root;
-                    this.examplesView.load_examples(word.getLabel());
+                    examplesView.load_examples(word.getLabel());
                 }
 
                 return true;
@@ -710,7 +682,6 @@ public class ViWordNetService extends AbstractService implements
      * set satellite view parent/owner and refresh satellite view
      *
      * @param vgv <code>ViwnGraphView</code> new satelliteView owner
-     *
      */
     public void setSatteliteOwner(ViwnGraphView vgv) {
         // refresh satellite view
@@ -724,8 +695,7 @@ public class ViWordNetService extends AbstractService implements
      * Set this.perspective
      *
      * @param perspective <code>ViWoedNetPerspective</code> connected with this
-     * service
-     *
+     *                    service
      */
     public void setPerspective(ViWordNetPerspective perspective) {
         this.perspective = perspective;
@@ -733,7 +703,6 @@ public class ViWordNetService extends AbstractService implements
 
     /**
      * @return <code>ViwnGraphView</code> currently set as active
-     *
      */
     public ViwnGraphView getActiveGraphView() {
         return activeGraphView;
@@ -757,7 +726,6 @@ public class ViWordNetService extends AbstractService implements
 
     /**
      * @return number of graph views
-     *
      */
     public int graphViewsCount() {
         return graphViews.size();
@@ -768,7 +736,6 @@ public class ViWordNetService extends AbstractService implements
     /**
      * in make relation mode user can make new relation value should be changed
      * only by using of setMakeRelationMode(boolean) method
-     *
      */
     private boolean makeRelationMode = false;
 
@@ -795,7 +762,6 @@ public class ViWordNetService extends AbstractService implements
 
     /**
      * @return true if we are making relation, false otherwise
-     *
      */
     public boolean isMakeRelationModeOn() {
         return makeRelationMode;
@@ -803,7 +769,6 @@ public class ViWordNetService extends AbstractService implements
 
     /**
      * change value of makeRelationOn to !makeRelationOn
-     *
      */
     public void switchMakeRelationMode() {
         setMakeRelationMode(!makeRelationMode);
@@ -811,7 +776,6 @@ public class ViWordNetService extends AbstractService implements
 
     /**
      * @return true if we are merging synsets, false otherwise
-     *
      */
     public boolean isMergeSynsetsModeOn() {
         return mergeSynsetsMode;
@@ -819,7 +783,6 @@ public class ViWordNetService extends AbstractService implements
 
     /**
      * change value of mergeSynsetsMode to !mergeSynsetsMode
-     *
      */
     public void switchMergeSynsetsMode() {
         setMergeSynsetsMode(!mergeSynsetsMode);
@@ -827,8 +790,7 @@ public class ViWordNetService extends AbstractService implements
 
     /**
      * @param first an object which could be connected with a relation it turns
-     * on make relation mode
-     *
+     *              on make relation mode
      */
     public void setFirstMakeRelation(Object first) {
         this.first = first;
@@ -844,7 +806,6 @@ public class ViWordNetService extends AbstractService implements
 
     /**
      * @param set true - switch to make relation mode, false - normal mode
-     *
      */
     private void setMakeRelationMode(boolean set) {
         // set new value
@@ -866,7 +827,6 @@ public class ViWordNetService extends AbstractService implements
 
     /**
      * @param set true - switch to synsets merge mode, false - normal mode
-     *
      */
     private void setMergeSynsetsMode(boolean set) {
         // set new value
@@ -899,7 +859,7 @@ public class ViWordNetService extends AbstractService implements
         }
     }
 
-//    private boolean evaluateProposedConnection(Sense newUnit, IRelationType relationType, ViwnNodeSynset synset, ViwnNodeWord word) {
+    //    private boolean evaluateProposedConnection(Sense newUnit, IRelationType relationType, ViwnNodeSynset synset, ViwnNodeWord word) {
 //
 //        Synset assignedSynset = null;
 //        Long distance[] = new Long[]{new Long(1)};
@@ -1098,7 +1058,7 @@ public class ViWordNetService extends AbstractService implements
                     gv.getUI().removeSynset(src);
                     gv.getUI().updateSynset(dst);
                 }
-                ViWordNetService s = (ViWordNetService) this.workbench
+                ViWordNetService s = (ViWordNetService) workbench
                         .getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
                 src.getSynset().setId((long) -1);
                 s.lockerView.refreshData();
@@ -1110,8 +1070,7 @@ public class ViWordNetService extends AbstractService implements
 
     /**
      * @param second object to make relation with first turns off make relation
-     * mode after it
-     *
+     *               mode after it
      */
     public void makeRelation(Object second) {
         // make relation between synsets
@@ -1179,13 +1138,11 @@ public class ViWordNetService extends AbstractService implements
 
     /**
      * @param relations collection of edges of relations to remove
-     *
      */
     public void removeRelation(
-            @SuppressWarnings("rawtypes") Collection relations) {
+            Collection relations) {
         if (relations != null && !relations.isEmpty()) {
             if (relations.iterator().next() instanceof ViwnEdgeSynset) {
-                @SuppressWarnings("unchecked")
                 Collection<ViwnEdge> c = DeleteRelationWindow
                         .showDeleteSynsetDialog(workbench.getFrame(), relations);
                 for (ViwnGraphView vgv : graphViews) {
@@ -1231,10 +1188,10 @@ public class ViWordNetService extends AbstractService implements
     }
 
     public SynsetView getSynsetView() {
-        return this.synsetView;
+        return synsetView;
     }
 
     public LexicalUnitsView getLexicalUnitsView() {
-        return this.luView;
+        return luView;
     }
 }

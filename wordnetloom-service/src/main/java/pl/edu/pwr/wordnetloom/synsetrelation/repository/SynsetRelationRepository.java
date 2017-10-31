@@ -3,20 +3,17 @@ package pl.edu.pwr.wordnetloom.synsetrelation.repository;
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
-import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+import java.util.*;
+import java.util.Map.Entry;
 
 @Stateless
 public class SynsetRelationRepository extends GenericRepository<SynsetRelation> {
@@ -24,7 +21,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
     @Inject
     EntityManager em;
 
-    public boolean delete(Synset parent, Synset child, SynsetRelationType relationType) {
+    public boolean delete(Synset parent, Synset child, RelationType relationType) {
         Query query = getEntityManager().createQuery("DELETE FROM SynsetRelation s WHERE s.parent.id = :parent AND s.child.id = :child AND s.relationType.id = :relationType", SynsetRelation.class);
         query.setParameter("synsetFrom", parent.getId())
                 .setParameter("synsetTo", child.getId())
@@ -33,7 +30,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return query.executeUpdate() > 0;
     }
 
-    public void delete(SynsetRelationType relationType) {
+    public void delete(RelationType relationType) {
         getEntityManager().createQuery("DELETE FROM SynsetRelation s WHERE s.relationType.id = :relationType", SynsetRelation.class)
                 .setParameter("relationType", relationType.getId())
                 .executeUpdate();
@@ -44,7 +41,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 .executeUpdate();
     }
 
-    public List<SynsetRelation> findSubRelations(Synset synset, SynsetRelationType relationType) {
+    public List<SynsetRelation> findSubRelations(Synset synset, RelationType relationType) {
         if (relationType == null) {
             return getEntityManager().createQuery("SELECT s FROM SynsetRelation s WHERE s.parent = :parent", SynsetRelation.class)
                     .setParameter("parent", synset)
@@ -56,9 +53,9 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 .getResultList();
     }
 
-    public List<SynsetRelation> findUpperRelations(Synset synset, SynsetRelationType relationType) {
+    public List<SynsetRelation> findUpperRelations(Synset synset, RelationType relationType) {
         if (relationType == null) {
-            return getEntityManager().createNamedQuery("SELECT s FROM SynsetRelation s WHERE s.child = :child", SynsetRelation.class)
+            return getEntityManager().createQuery("SELECT s FROM SynsetRelation s WHERE s.child = :child", SynsetRelation.class)
                     .setParameter("child", synset)
                     .getResultList();
         }
@@ -79,24 +76,24 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 .getSingleResult();
     }
 
-    public Long findRelationTypeUseCount(SynsetRelationType relation) {
+    public Long findRelationTypeUseCount(RelationType relation) {
         return getEntityManager().createQuery("SELECT COUNT(sr) FROM SynsetRelation sr WHERE sr.relationType.id = :relation ", Long.class)
                 .setParameter("relation", relation.getId()).getSingleResult();
     }
 
-    public void move(SynsetRelationType oldRelation, SynsetRelationType newRelation) {
+    public void move(RelationType oldRelation, RelationType newRelation) {
         Query query = getEntityManager().createQuery("UPDATE SynsetRelation s SET s.relationType= :newRelation WHERE s.relationType = :oldRelation");
         query.setParameter("oldRelation", oldRelation)
                 .setParameter("newRelation", newRelation)
                 .executeUpdate();
     }
 
-    public boolean checkRelationExists(Synset parent, Synset child, SynsetRelationType relation) {
+    public boolean checkRelationExists(Synset parent, Synset child, RelationType relation) {
         return findRelations(parent, child, relation).size() > 0;
     }
 
-    public List<SynsetRelationType> findtRelationTypesBySynset(Synset synset) {
-        return getEntityManager().createQuery("SELECT sr.relationType FROM SynsetRelation sr WHERE sr.parent.id = :id OR sr.child.id = :id", SynsetRelationType.class)
+    public List<RelationType> findtRelationTypesBySynset(Synset synset) {
+        return getEntityManager().createQuery("SELECT sr.relationType FROM SynsetRelation sr WHERE sr.parent.id = :id OR sr.child.id = :id", RelationType.class)
                 .setParameter("id", synset.getId())
                 .getResultList();
     }
@@ -109,7 +106,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 .executeUpdate();
     }
 
-    public List<SynsetRelation> findRelations(Synset parent, Synset child, SynsetRelationType relation) {
+    public List<SynsetRelation> findRelations(Synset parent, Synset child, RelationType relation) {
         return getEntityManager().createQuery("SELECT sr FROM SynsetRelation sr WHERE sr.parent.id = :parent AND sr.child = : child AND sr.relationType.id = :relation", SynsetRelation.class)
                 .setParameter("parent", parent.getId())
                 .setParameter("child", child.getId())
@@ -117,7 +114,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 .getResultList();
     }
 
-    public SynsetRelation findRelation(Synset parent, Synset child, SynsetRelationType relation) {
+    public SynsetRelation findRelation(Synset parent, Synset child, RelationType relation) {
         List<SynsetRelation> relations = findRelations(parent, child, relation);
         if (relations.isEmpty() || relations.get(0) == null) {
             return null;
@@ -135,7 +132,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
      * Returns a path to the top synset in relation graph.
      *
      * @param synset start synset
-     * @param rtype relation type
+     * @param rtype  relation type
      * @return path to the top synset
      */
     // TODO: refactoring is needed
@@ -222,13 +219,13 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
     }
 
     public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset) {
-        return getEntityManager().createNamedQuery("FROM SynsetRelation sr WHERE sr.child.id = :id", SynsetRelation.class)
+        return getEntityManager().createQuery("FROM SynsetRelation sr WHERE sr.child.id = :id", SynsetRelation.class)
                 .setParameter("id", synset.getId())
                 .getResultList();
     }
 
     public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset) {
-        return getEntityManager().createNamedQuery("FROM SynsetRelation sr WHERE sr.parent.id = :id", SynsetRelation.class)
+        return getEntityManager().createQuery("FROM SynsetRelation sr WHERE sr.parent.id = :id", SynsetRelation.class)
                 .setParameter("id", synset.getId())
                 .getResultList();
     }

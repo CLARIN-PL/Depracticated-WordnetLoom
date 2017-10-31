@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.client.systems.enums;
 import java.util.HashMap;
 import java.util.Map;
 
+//TODO Przerobic jako słownik z lokalizacją
 public enum RegisterTypes {
     BRAK_REJESTRU("brak rejestru"),
     OG("og."),

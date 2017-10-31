@@ -1,21 +1,23 @@
 package pl.edu.pwr.wordnetloom.client.systems.managers;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class DomainManager {
 
     private static volatile DomainManager instance;
 
-    private List<Domain> cache;
+    private final List<Domain> cache;
 
     private DomainManager() {
-         List<Domain> list = RemoteService.domainServiceRemote.findAllWithFullNames();
-         cache = Collections.unmodifiableList(Collections.synchronizedList(list));
+        List<Domain> list = RemoteService.domainServiceRemote.findAllWithFullNames();
+        cache = Collections.unmodifiableList(Collections.synchronizedList(list));
     }
 
     public static DomainManager getInstance() {
@@ -59,7 +61,7 @@ public class DomainManager {
     public List<Domain> sortDomains(List<Domain> doaminsToSort) {
         List<Domain> toReturn = Arrays.asList(doaminsToSort.toArray(new Domain[]{}));
         String lang = RemoteConnectionProvider.getInstance().getLanguage();
-        Collections.sort(toReturn, (Domain a, Domain b) -> a.getName(lang).compareTo(b.getName(lang)));
+        toReturn.sort(Comparator.comparing(a -> a.getName(lang)));
         return toReturn;
     }
 
@@ -75,7 +77,7 @@ public class DomainManager {
         if (s == null || s.equals("default")) {
             toReturn = cache.get(0);
         }
-        
+
         String lang = RemoteConnectionProvider.getInstance().getLanguage();
         for (int i = 0; i < cache.size() && toReturn == null; i++) {
             if (cache.get(i).getName(lang).equals(s)) {

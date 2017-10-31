@@ -7,11 +7,17 @@ import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 import edu.uci.ics.jung.visualization.picking.PickedState;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerViewUI;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.utils.Labels;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -20,29 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import javax.swing.AbstractAction;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeSynset;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeAlphabeticComparator;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSet;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeWord;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerViewUI;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ButtonExt;
-import pl.edu.pwr.wordnetloom.client.utils.Labels;
 
 public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMousePlugin {
 
@@ -90,24 +73,23 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void handlePopup(MouseEvent e) {
 
-        final VisualizationViewer<ViwnNode, ViwnEdge> vv
+        VisualizationViewer<ViwnNode, ViwnEdge> vv
                 = (VisualizationViewer<ViwnNode, ViwnEdge>) e.getSource();
-        final Layout<ViwnNode, ViwnEdge> layout = vv.getGraphLayout();
-        final Graph<ViwnNode, ViwnEdge> graph = layout.getGraph();
-        final Point2D p = e.getPoint();
-        final Point2D ivp = p;
+        Layout<ViwnNode, ViwnEdge> layout = vv.getGraphLayout();
+        Graph<ViwnNode, ViwnEdge> graph = layout.getGraph();
+        Point2D p = e.getPoint();
+        Point2D ivp = p;
         GraphElementAccessor<ViwnNode, ViwnEdge> pickSupport = vv.getPickSupport();
         boolean list_focus = false;
         synset_list_ = null;
 
         // exit make relation mode
-        final ViWordNetService s
+        ViWordNetService s
                 = ((ViWordNetService) vgvui.getWorkbench().getService(
-                        "pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService"));
+                "pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService"));
         if (s.isMakeRelationModeOn()) {
             s.switchMakeRelationMode();
             return;
@@ -122,16 +104,16 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
             popup.removeAll();
 
-            final ViwnNode vertex = pickSupport.getVertex(layout, ivp.getX(), ivp.getY());
-            final ViwnEdge edge = pickSupport.getEdge(layout, ivp.getX(), ivp.getY());
-            final PickedState<ViwnNode> pickedVertexState = vv.getPickedVertexState();
-            @SuppressWarnings("unused")
-            final PickedState<ViwnEdge> pickedEdgeState = vv.getPickedEdgeState();
+            ViwnNode vertex = pickSupport.getVertex(layout, ivp.getX(), ivp.getY());
+            ViwnEdge edge = pickSupport.getEdge(layout, ivp.getX(), ivp.getY());
+            PickedState<ViwnNode> pickedVertexState = vv.getPickedVertexState();
+            PickedState<ViwnEdge> pickedEdgeState = vv.getPickedEdgeState();
 
             if (vertex != null && vertex instanceof ViwnNodeWord) {
                 popup.add(new AbstractAction(Labels.CREATE_RELATION_WITH) {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         s.setFirstMakeRelation(vertex);
                     }
@@ -149,6 +131,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                          */
                         private static final long serialVersionUID = -5157166133351047723L;
 
+                        @Override
                         public void actionPerformed(ActionEvent e) {
                             pickedVertexState.pick(vertex, true);
                             vertex.setMarked(true);
@@ -162,6 +145,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                          */
                         private static final long serialVersionUID = -5157166132341047723L;
 
+                        @Override
                         public void actionPerformed(ActionEvent e) {
                             pickedVertexState.pick(vertex, true);
                             vertex.setMarked(false);
@@ -172,6 +156,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 popup.add(new AbstractAction(Labels.PATH_TO_HIPERONIM) {
                     private static final long serialVersionUID = 0L;
 
+                    @Override
                     public void actionPerformed(ActionEvent e) {
 //                        Synset synset = ((ViwnNodeSynset) vertex).getSynset();
 //                        List<Synset> path
@@ -189,6 +174,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                      */
                     private static final long serialVersionUID = -1354196137333218291L;
 
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         ViWordNetService s = (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
                         s.addToLocker(vertex, ViwnLockerViewUI.getInstance().new ViwnNodeRenderer());
@@ -201,6 +187,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                      */
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         ViWordNetService s = (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
                         s.addGraphView();
@@ -219,6 +206,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         Iterator<ViwnNode> pick_itr = pickedVertexState.getPicked().iterator();
                         ViwnNode set = vertex; // need to remember last synset from set or set
@@ -247,6 +235,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                      */
                     private static final long serialVersionUID = 1892743918624978L;
 
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         ViWordNetService s = (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
                         s.setFirstMakeRelation(vertex);
@@ -256,6 +245,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 popup.add(new AbstractAction(Labels.SYNSET_MERGE_WITH) {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         ViWordNetService s = (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
                         s.setFirstMergeSynsets(vertex);
@@ -304,7 +294,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 ViwnNodeSet set = (ViwnNodeSet) vertex;
                 DefaultListModel model = new DefaultListModel();
 
-                ArrayList<ViwnNodeSynset> col = new ArrayList<ViwnNodeSynset>(set.getSynsets());
+                ArrayList<ViwnNodeSynset> col = new ArrayList<>(set.getSynsets());
                 Collections.sort(col, new ViwnNodeAlphabeticComparator());
                 for (ViwnNodeSynset syns : col) {
                     model.addElement(syns);
@@ -313,21 +303,50 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 list_focus = true;
                 synset_list_ = new JList(model);
                 synset_list_.setSelectedIndex(0);
+
                 JScrollPane scroll_pane = new JScrollPane();
                 scroll_pane.setPreferredSize(new Dimension(250, 200));
                 scroll_pane.getViewport().setView(synset_list_);
                 JPanel panel = new JPanel(new BorderLayout());
-                JButton but_expand = new ButtonExt(Labels.EXPAND, null, KeyEvent.VK_R);
-                JButton but_cancel = new ButtonExt(Labels.CANCEL, null, KeyEvent.VK_A);
-                JButton but_all = new ButtonExt(Labels.VALUE_ALL, null, KeyEvent.VK_W);
+
+                JButton but_expand = new MButton()
+                        .withActionListener(l -> addSynsets(vertex))
+                        .withCaption(Labels.EXPAND)
+                        .withMnemonic(KeyEvent.VK_R);
+
+                JButton but_cancel = MButton.buildCancelButton()
+                        .withActionListener(l -> popup.setVisible(false));
+
+                JButton but_all = new MButton()
+                        .withCaption(Labels.VALUE_ALL)
+                        .withMnemonic(KeyEvent.VK_W)
+                        .withActionListener(l -> {
+
+                            popup.setVisible(false);
+                            DefaultListModel list = (DefaultListModel) synset_list_.getModel();
+                            if (list.size() > 0) {
+                                vgvui.deselectAll();
+                            }
+                            for (int i = 0; i < list.size(); i++) {
+                                ViwnNodeSynset obj = (ViwnNodeSynset) list.get(i);
+                                vgvui.addSynsetFromSet(obj);
+                            }
+                            if (list.size() > 0) {
+                            /* recreate view with fixing location */
+                                vgvui.recreateLayoutWithFix(vertex, (ViwnNode) list.get(list.size() - 1));
+                            }
+                        });
 
                 synset_list_.addKeyListener(new KeyListener() {
+                    @Override
                     public void keyTyped(KeyEvent e) {
                     }
 
+                    @Override
                     public void keyReleased(KeyEvent e) {
                     }
 
+                    @Override
                     public void keyPressed(KeyEvent e) {
                         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                             addSynsets(vertex);
@@ -335,37 +354,8 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                     }
                 });
 
-                but_expand.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        addSynsets(vertex);
-                    }
-                });
-
-                but_all.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        popup.setVisible(false);
-                        DefaultListModel list = (DefaultListModel) synset_list_.getModel();
-                        if (list.size() > 0) {
-                            vgvui.deselectAll();
-                        }
-                        for (int i = 0; i < list.size(); i++) {
-                            ViwnNodeSynset obj = (ViwnNodeSynset) list.get(i);
-                            vgvui.addSynsetFromSet(obj);
-                        }
-                        if (list.size() > 0) {
-                            /* recreate view with fixing location */
-                            vgvui.recreateLayoutWithFix(vertex, (ViwnNode) list.get(list.size() - 1));
-                        }
-                    }
-                });
-
-                but_cancel.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        popup.setVisible(false);
-                    }
-                });
-
                 panel.add(scroll_pane, BorderLayout.PAGE_START);
+
                 JPanel inner_panel = new JPanel(new FlowLayout());
                 inner_panel.add(but_expand);
                 inner_panel.add(but_cancel);
@@ -383,6 +373,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                      */
                     private static final long serialVersionUID = 5625564155297832427L;
 
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         ViwnNode vn = graph.getDest(edge);
                         vgvui.setSelectedNode(vn);
@@ -396,6 +387,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                         private static final long serialVersionUID = -9382109827346L;
 
+                        @Override
                         public void actionPerformed(ActionEvent e) {
                             ViWordNetService s = (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
                             Pair<ViwnNode> c = vgvui.getGraph().getEndpoints(edge);
@@ -411,10 +403,11 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 if (node != null) {
                     String label = node.getLabel();
 
-                    final String filename = label.split(" ")[0] + ".png";
+                    String filename = label.split(" ")[0] + ".png";
                     popup.add(new AbstractAction(Labels.SAVE_GRAPH_TO_FILE_COLON + filename) {
                         private static final long serialVersionUID = 1L;
 
+                        @Override
                         public void actionPerformed(ActionEvent e) {
                             s.getActiveGraphView().getUI().saveToFile(filename);
                         }

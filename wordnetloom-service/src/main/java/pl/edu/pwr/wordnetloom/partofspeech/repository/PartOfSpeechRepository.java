@@ -1,13 +1,14 @@
 package pl.edu.pwr.wordnetloom.partofspeech.repository;
 
-import java.util.List;
+import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import java.util.List;
 
 @Stateless
 public class PartOfSpeechRepository extends GenericRepository<PartOfSpeech> {
@@ -33,9 +34,8 @@ public class PartOfSpeechRepository extends GenericRepository<PartOfSpeech> {
     }
 
     public List<PartOfSpeech> findAllWithName() {
-        Query query = em.createQuery("FROM PartOfSpeech pos JOIN FETCH pos.nameStrings");
+        Query query = em.createQuery("SELECT pos FROM PartOfSpeech pos JOIN FETCH pos.nameStrings");
         return query
                 .getResultList();
     }
-;
 }

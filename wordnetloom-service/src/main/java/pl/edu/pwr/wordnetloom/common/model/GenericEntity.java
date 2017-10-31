@@ -1,14 +1,7 @@
 package pl.edu.pwr.wordnetloom.common.model;
 
+import javax.persistence.*;
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
 
 
 @MappedSuperclass
@@ -22,30 +15,28 @@ public abstract class GenericEntity implements Serializable, Cloneable {
     @Version
     private int version;
 
-    public boolean isPersistent() {
-        return id != null;
-    }
-
     @Column(name = "entity_status")
     @Enumerated(EnumType.STRING)
     private EntityStatus entityStatus = EntityStatus.ACTIVE;
 
+    public boolean isPersistent() {
+        return id != null;
+    }
+
     public void markAsRemoved() {
-         entityStatus = EntityStatus.DELETED;
+        entityStatus = EntityStatus.DELETED;
     }
 
     public boolean isRemoved() {
-        return  entityStatus == EntityStatus.DELETED;
+        return entityStatus == EntityStatus.DELETED;
     }
 
     public EntityStatus getEntityStatus() {
-        return  entityStatus;
+        return entityStatus;
     }
 
     public enum EntityStatus {
-
         ACTIVE,
-        DELETED;
-
-    }    
+        DELETED
+    }
 }

@@ -1,8 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
+
 import java.util.ArrayList;
 import java.util.Comparator;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 
 public class ViwnNodeAlphabeticComparator implements Comparator<ViwnNode> {
 
@@ -13,7 +14,7 @@ public class ViwnNodeAlphabeticComparator implements Comparator<ViwnNode> {
     public ViwnNodeAlphabeticComparator() {
         if (order == null) {
             rel_order = new ArrayList<>();
-
+//TODO: refactor without hardcoded names
 //            rel_order.add(RelationTypeManager.getByName("hiperonimia"));
 //            rel_order.add(RelationTypeManager.getByName("hiponimia"));
 //            rel_order.add(RelationTypeManager.getByName("mieszkaniec"));
@@ -73,7 +74,7 @@ public class ViwnNodeAlphabeticComparator implements Comparator<ViwnNode> {
         if (idx1 == idx2) {
             return arg0.getLabel().compareTo(arg1.getLabel());
         } else {
-            return new Integer(idx1).compareTo(idx2);
+            return Integer.compare(idx1, idx2);
         }
     }
 

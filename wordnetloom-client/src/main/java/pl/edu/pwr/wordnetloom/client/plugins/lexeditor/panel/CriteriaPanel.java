@@ -1,30 +1,23 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.util.List;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
-import pl.edu.pwr.wordnetloom.client.systems.ui.DomainComboBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LexiconComboBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.PartOfSpeechComboBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
+import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relationtype.model.SenseRelationType;
-import pl.edu.pwr.wordnetloom.relationtype.model.SynsetRelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import se.datadosen.component.RiverLayout;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.util.List;
 
 public abstract class CriteriaPanel extends JPanel {
 
@@ -37,12 +30,12 @@ public abstract class CriteriaPanel extends JPanel {
     private LexiconComboBox lexiconComboBox;
     private DomainComboBox domainComboBox;
     private PartOfSpeechComboBox partsOfSpeachComboBox;
-    private ComboBoxPlain<SynsetRelationType> synsetRelationsComboBox;
-    private ComboBoxPlain<SenseRelationType> senseRelationsComboBox;
+    private ComboBoxPlain<RelationType> synsetRelationsComboBox;
+    private ComboBoxPlain<RelationType> senseRelationsComboBox;
     private JCheckBox limitResultCheckBox;
 
     public CriteriaPanel(int scrollHeight) {
-        this.SCROLL_PANE_HEIGHT = scrollHeight;
+        SCROLL_PANE_HEIGHT = scrollHeight;
         initialize();
     }
 
@@ -139,15 +132,15 @@ public abstract class CriteriaPanel extends JPanel {
         add("br hfill", searchTextField);
     }
 
-    private ComboBoxPlain<SynsetRelationType> createSynsetRelationsComboBox() {
-        ComboBoxPlain<SynsetRelationType> combo = new ComboBoxPlain<>();
+    private ComboBoxPlain<RelationType> createSynsetRelationsComboBox() {
+        ComboBoxPlain<RelationType> combo = new ComboBoxPlain<>();
         combo.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
         combo.setPreferredSize(new Dimension(150, 20));
         return combo;
     }
 
-    private ComboBoxPlain<SenseRelationType> createSenseRelationsComboBox() {
-        ComboBoxPlain<SenseRelationType> combo = new ComboBoxPlain<>();
+    private ComboBoxPlain<RelationType> createSenseRelationsComboBox() {
+        ComboBoxPlain<RelationType> combo = new ComboBoxPlain<>();
         combo.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
         combo.setPreferredSize(new Dimension(150, 20));
         return combo;
@@ -178,22 +171,22 @@ public abstract class CriteriaPanel extends JPanel {
 
     public void refreshSenseRelations() {
         RelationTypeManager.refresh();
-        List<SenseRelationType> relations = RemoteService.senseRelationTypeRemote.findLeafs(LexiconManager.getInstance().getLexicons());
+        List<RelationType> relations = RemoteService.relationTypeRemote.findLeafs(LexiconManager.getInstance().getLexicons());
         int selected = senseRelationsComboBox.getSelectedIndex();
 
         senseRelationsComboBox.removeAllItems();
         senseRelationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
 
         if (lexiconComboBox.retriveComboBoxItem() != null) {
-            for (SenseRelationType relation : relations) {
+            for (RelationType relation : relations) {
                 if (relation.getLexicons().contains(lexiconComboBox.retriveComboBoxItem())) {
-                    SenseRelationType currentRelation = relation;//RelationTypeManager.get(relation.getId()).getRelationType(), RelationTypeManager.getFullNameFor(currentRelation.getId();
+                    RelationType currentRelation = relation;//RelationTypeManager.get(relation.getId()).getRelationType(), RelationTypeManager.getFullNameFor(currentRelation.getId();
                     senseRelationsComboBox.addItem(new CustomDescription<>(relation.getName(RemoteConnectionProvider.getInstance().getLanguage()), currentRelation));
                 }
             }
         } else {
-            for (SenseRelationType relation : relations) {
-                SenseRelationType currentRelation = relation; //RelationTypeManager.get(relation.getId()).getRelationType();
+            for (RelationType relation : relations) {
+                RelationType currentRelation = relation; //RelationTypeManager.get(relation.getId()).getRelationType();
                 senseRelationsComboBox.addItem(new CustomDescription<>(relation.getName(RemoteConnectionProvider.getInstance().getLanguage()), currentRelation));
             }
         }
@@ -220,11 +213,11 @@ public abstract class CriteriaPanel extends JPanel {
         return domainComboBox;
     }
 
-    public ComboBoxPlain<SynsetRelationType> getSynsetRelationTypeComboBox() {
+    public ComboBoxPlain<RelationType> getSynsetRelationTypeComboBox() {
         return synsetRelationsComboBox;
     }
 
-    public ComboBoxPlain<SenseRelationType> getSenseRelationTypeComboBox() {
+    public ComboBoxPlain<RelationType> getSenseRelationTypeComboBox() {
         return senseRelationsComboBox;
     }
 

@@ -24,13 +24,13 @@ import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import edu.uci.ics.jung.visualization.transform.shape.GraphicsDecorator;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Stroke;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset.State;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
@@ -38,17 +38,6 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeSynset;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode.Direction;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeCand;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSet;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset.State;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeWord;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
 
@@ -62,7 +51,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
 
     @Override
     public void paintVertex(RenderContext<ViwnNode, ViwnEdge> rc,
-            Layout<ViwnNode, ViwnEdge> layout, ViwnNode v) {
+                            Layout<ViwnNode, ViwnEdge> layout, ViwnNode v) {
         Graph<ViwnNode, ViwnEdge> graph = layout.getGraph();
         if (rc.getVertexIncludePredicate().evaluate(Context.<Graph<ViwnNode, ViwnEdge>, ViwnNode>getInstance(graph, v))) {
             paintVertex(rc, v, layout);
@@ -150,10 +139,10 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
 
         delegate.paintVertex(rc, layout, node);
 
-        for (Direction rclass : Direction.values()) {
+        for (NodeDirection rclass : NodeDirection.values()) {
             boolean horiz = true;
-            if (rclass == Direction.LEFT
-                    || rclass == Direction.RIGHT) {
+            if (rclass == NodeDirection.LEFT
+                    || rclass == NodeDirection.RIGHT) {
                 horiz = false;
             }
 
@@ -237,7 +226,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
     }
 
     private void renderLexiconMarker(ViwnNodeSynset node, Point2D.Float pos,
-            GraphicsDecorator g) {
+                                     GraphicsDecorator g) {
 
         Shape lexicon = new Area(new RoundRectangle2D.Float(pos.x - 40, pos.y - 17, 23, 10, 12.5f, 5));
         g.setColor(ViwnNodeSynset.PosBgColors.get(node.getPos()));
