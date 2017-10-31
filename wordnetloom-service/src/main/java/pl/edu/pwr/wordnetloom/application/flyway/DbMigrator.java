@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.application.flyway;
 
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -37,5 +38,12 @@ public class DbMigrator {
             log.log(Level.INFO, "Migrate task: {0} : {1} from file: {2}", new Object[]{i.getVersion(), i.getDescription(), i.getScript()});
         }
         flyway.migrate();
+
+        try {
+            SenseAttributeParser parser = new SenseAttributeParser();
+            parser.run(dataSource.getConnection());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
