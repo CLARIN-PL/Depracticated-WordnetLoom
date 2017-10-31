@@ -1,27 +1,16 @@
 package pl.edu.pwr.wordnetloom.extgraph.model;
 
-import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "extgraph")
-public class ExtGraph implements Serializable {
+public class ExtGraph extends GenericEntity {
 
     private static final long serialVersionUID = 3152263756676683954L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column(name = "word")
     private String word;
@@ -45,14 +34,6 @@ public class ExtGraph implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pos", referencedColumnName = "id", nullable = true)
     private PartOfSpeech pos;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getWord() {
         return word;

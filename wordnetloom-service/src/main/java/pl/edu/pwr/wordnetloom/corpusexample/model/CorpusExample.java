@@ -1,37 +1,23 @@
 package pl.edu.pwr.wordnetloom.corpusexample.model;
 
-import java.io.Serializable;
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "corpus_example")
-public class CorpusExample implements Serializable {
+public class CorpusExample extends GenericEntity {
 
     private static final long serialVersionUID = -86878893575269138L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Lob
     @Column
     private String text;
 
     private String word;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getText() {
         return text;

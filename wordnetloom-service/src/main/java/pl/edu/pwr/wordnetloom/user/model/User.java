@@ -1,24 +1,18 @@
 package pl.edu.pwr.wordnetloom.user.model;
 
-import java.io.Serializable;
+import org.hibernate.validator.constraints.Email;
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import org.hibernate.validator.constraints.Email;
 
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class User extends GenericEntity {
 
     @NotNull
     @Size(min = 3)
@@ -32,10 +26,10 @@ public class User implements Serializable {
     private String email;
 
     @NotNull
-
     @Size(min = 8, max = 64)
     private String password;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -48,14 +42,6 @@ public class User implements Serializable {
         this.email = email;
         this.password = password;
         this.role = role;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getFirstname() {

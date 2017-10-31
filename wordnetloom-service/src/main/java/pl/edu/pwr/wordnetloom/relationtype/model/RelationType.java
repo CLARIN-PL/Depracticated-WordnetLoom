@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.relationtype.model;
 
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.common.model.Localised;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -7,26 +8,24 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtest.model.RelationTest;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "relation_type")
-public class RelationType implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class RelationType extends GenericEntity {
 
     @OneToMany
     @JoinTable(
-            name = "synset_relation_type_allowed_lexicons",
-            joinColumns = @JoinColumn(name = "synset_relation_type_id"),
+            name = "relation_type_allowed_lexicons",
+            joinColumns = @JoinColumn(name = "relation_type_id"),
             inverseJoinColumns = @JoinColumn(name = "lexicon_id")
     )
+    @Size(min = 1)
     private Set<Lexicon> lexicons;
 
     @OneToMany
@@ -35,21 +34,24 @@ public class RelationType implements Serializable {
             joinColumns = @JoinColumn(name = "relation_type_id"),
             inverseJoinColumns = @JoinColumn(name = "part_of_speech_id")
     )
+    @Size(min = 1)
     private Set<PartOfSpeech> partsOfSpeech;
 
+    @Valid
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "name_id")
     private final Localised nameStrings = new Localised();
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "description_id")
     private final Localised descriptionStrings = new Localised();
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "display_text_id")
     private final Localised displayStrings = new Localised();
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @Valid
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "short_display_text_id")
     private final Localised shortDisplayStrings = new Localised();
 
@@ -63,30 +65,39 @@ public class RelationType implements Serializable {
 
     @Basic
     @Column(name = "auto_reverse", columnDefinition = "bit default 0")
-    private Boolean autoReverse;
+    private Boolean autoReverse = false;
 
     @Basic
     @Column(name = "multilingual", columnDefinition = "bit default 0")
     private final Boolean multilingual = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_relation_type_id", nullable = true)
     private RelationType parent;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reverse_relation_type_id", nullable = true)
     private RelationType reverse;
 
+    @NotNull
     @Column(name = "node_position")
     @Enumerated(EnumType.STRING)
-    private NodeDirection nodePosition;
+    private NodeDirection nodePosition = NodeDirection.IGNORE;
 
-    private String color;
+    @Column
+    private String color = "#ffffff";
 
+    public RelationType() {
+    }
 
-    public enum RelationArgument {
-        SYNSET_RELATION,
-        SENSE_RELATION
+    public RelationType(String locale, String name, String shortDisp, Set<Lexicon> lexicons,
+                        Set<PartOfSpeech> partsOfSpeech,
+                        RelationArgument relationArgument) {
+        this.lexicons = lexicons;
+        this.partsOfSpeech = partsOfSpeech;
+        this.relationArgument = relationArgument;
+        setName(locale, name);
+        setShortDisplayText(locale, shortDisp);
     }
 
     public String getName(String locale) {
@@ -119,14 +130,6 @@ public class RelationType implements Serializable {
 
     public void setShortDisplayText(String locale, String shortDisplay) {
         shortDisplayStrings.addString(locale, shortDisplay);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Set<Lexicon> getLexicons() {
@@ -200,4 +203,5 @@ public class RelationType implements Serializable {
     public void setNodePosition(NodeDirection nodePosition) {
         this.nodePosition = nodePosition;
     }
+
 }

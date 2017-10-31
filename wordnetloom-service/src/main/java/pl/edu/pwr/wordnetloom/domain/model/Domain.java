@@ -1,65 +1,47 @@
 package pl.edu.pwr.wordnetloom.domain.model;
 
-import java.io.Serializable;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.common.model.Localised;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "domain")
-public class Domain implements Serializable {
+public class Domain extends GenericEntity {
 
     private static final long serialVersionUID = -9015379547562677206L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "name_id")
-    private Localised nameStrings = new Localised();
+    private final Localised nameStrings = new Localised();
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "description_id")
-    private Localised descriptionStrings = new Localised();
+    private final Localised descriptionStrings = new Localised();
 
     public Domain() {
         super();
     }
 
     public Domain(String locale, String name, String description) {
-        this.nameStrings.addString(locale, name);
-        this.descriptionStrings.addString(locale, description);
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        nameStrings.addString(locale, name);
+        descriptionStrings.addString(locale, description);
     }
 
     public String getName(String locale) {
-        return this.nameStrings.getString(locale);
+        return nameStrings.getString(locale);
     }
 
     public void setName(String locale, String name) {
-        this.nameStrings.addString(locale, name);
+        nameStrings.addString(locale, name);
     }
 
     public String getDescription(String locale) {
-        return this.descriptionStrings.getString(locale);
+        return descriptionStrings.getString(locale);
     }
 
     public void setDescription(String locale, String description) {
-        this.descriptionStrings.addString(locale, description);
+        descriptionStrings.addString(locale, description);
     }
 
 }

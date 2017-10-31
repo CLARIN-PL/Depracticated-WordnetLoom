@@ -1,5 +1,8 @@
 package pl.edu.pwr.wordnetloom.relationtype.service.impl;
 
+import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
+import pl.edu.pwr.wordnetloom.relationtype.exception.RelationTypeNotFoundException;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.relationtype.repository.RelationTypeRepository;
 import pl.edu.pwr.wordnetloom.relationtype.service.RelationTypeServiceLocal;
@@ -9,6 +12,7 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.validation.Validator;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,16 +22,19 @@ import java.util.List;
 public class RelationTypeServiceBean implements RelationTypeServiceLocal {
 
     @Inject
-    private RelationTypeRepository relationTypeRepository;
+    RelationTypeRepository relationTypeRepository;
+
+    @Inject
+    Validator validator;
+
 
     @Override
     public RelationType findById(Long id) {
-        return relationTypeRepository.findById(id);
-    }
-
-    @Override
-    public boolean isReverseRelation(RelationType[] relations, RelationType test) {
-        return relationTypeRepository.isReverse(relations, test);
+        RelationType rel = relationTypeRepository.findById(id);
+        if (rel == null) {
+            throw new RelationTypeNotFoundException();
+        }
+        return rel;
     }
 
     @Override
@@ -37,47 +44,48 @@ public class RelationTypeServiceBean implements RelationTypeServiceLocal {
 
     @Override
     public void deleteAll(RelationType type) {
+
         relationTypeRepository.deleteRelationWithChilds(type);
     }
 
     @Override
-    public Long findReverseId(RelationType relationType) {
-        return relationTypeRepository.findReverseId(relationType);
+    public Long findReverseId(Long relationTypeId) {
+        return relationTypeRepository.findReverseId(relationTypeId);
     }
 
     @Override
-    public RelationType findFullRelationType(RelationType rt) {
-        return relationTypeRepository.findFullByRelationType(rt);
+    public RelationType findFullRelationType(Long relationTypeId) {
+        RelationType rel = relationTypeRepository.findFullByRelationType(relationTypeId);
+        if (rel == null) {
+            throw new RelationTypeNotFoundException();
+        }
+        return rel;
     }
 
     @Override
-    public RelationType findReverseByRelationType(RelationType relationType) {
-        return relationTypeRepository.findReverseByRelationType(relationType);
+    public RelationType findReverseByRelationType(Long relationTypeId) {
+        return relationTypeRepository.findReverseByRelationType(relationTypeId);
     }
 
     @Override
     public RelationType save(RelationType rel) {
+        ValidationUtils.validateEntityFields(validator, rel);
         return relationTypeRepository.persist(rel);
     }
 
     @Override
-    public List<RelationType> findtHighest(List<Long> lexicons) {
-        return relationTypeRepository.findHighestLeafs(lexicons);
+    public List<RelationType> findHighest(RelationArgument arg) {
+        return relationTypeRepository.findHighestLeafs(arg);
     }
 
     @Override
-    public List<RelationType> findLeafs(List<Long> lexicons) {
-        return relationTypeRepository.findLeafs(lexicons);
+    public List<RelationType> findLeafs(RelationArgument arg) {
+        return relationTypeRepository.findLeafs(arg);
     }
 
     @Override
-    public List<RelationType> findFullRelationTypes(List<Long> lexicons) {
-        return relationTypeRepository.findFullRelationTypes(lexicons);
-    }
-
-    @Override
-    public List<RelationType> findChildren(RelationType relation, List<Long> lexicons) {
-        return relationTypeRepository.findChildren(relation);
+    public List<RelationType> findChildren(Long relationTypeId) {
+        return relationTypeRepository.findChildren(relationTypeId);
     }
 
     @Override

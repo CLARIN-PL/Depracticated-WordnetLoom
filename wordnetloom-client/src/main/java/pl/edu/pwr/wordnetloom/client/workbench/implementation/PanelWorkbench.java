@@ -525,7 +525,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
 
     @Override
     public Perspective getActivePerspective() {
-        return perspectives.get(getParam(ACTIVE_PERSPECTIVE_NAME));
+        return perspectives.get("Wordnet Visualization");
     }
 
     /**

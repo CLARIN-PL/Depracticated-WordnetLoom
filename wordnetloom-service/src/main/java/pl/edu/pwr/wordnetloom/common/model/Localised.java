@@ -1,37 +1,26 @@
 package pl.edu.pwr.wordnetloom.common.model;
 
-import java.io.Serializable;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "localised")
-public class Localised implements Serializable {
+public class Localised extends GenericEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @NotNull
-    @CollectionTable(name = "localised_strings", joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"))
+    @CollectionTable(name = "localised_strings",
+            joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"))
     private Map<String, String> strings = new HashMap<>();
 
     public Localised() {
     }
 
     public Localised(Map<String, String> map) {
-        this.strings = map;
+        strings = map;
     }
 
     public void addString(String locale, String text) {

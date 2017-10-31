@@ -1,30 +1,29 @@
 package pl.edu.pwr.wordnetloom.senserelation.model;
 
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "sense_relation")
-public class SenseRelation implements Serializable {
+public class SenseRelation extends GenericEntity {
 
     private static final long serialVersionUID = -9013001788054096196L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "relation_type_id", referencedColumnName = "id", nullable = false)
     private RelationType relationType;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "parent_sense_id", referencedColumnName = "id", nullable = false)
     private Sense parent;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "child_sense_id", referencedColumnName = "id", nullable = false)
     private Sense child;
 
@@ -36,14 +35,6 @@ public class SenseRelation implements Serializable {
         this.relationType = relationType;
         this.parent = parent;
         this.child = child;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public RelationType getRelationType() {

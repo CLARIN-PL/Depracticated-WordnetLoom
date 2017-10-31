@@ -1,40 +1,28 @@
 package pl.edu.pwr.wordnetloom.synset.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+
+import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "synset")
-public class Synset implements Serializable {
+public class Synset extends GenericEntity {
 
     private static final long serialVersionUID = 800201223603990725L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column(name = "split")
     private Integer split = 0;
 
-    @OneToMany(mappedBy = "synset")
+    @OneToMany(mappedBy = "synset", fetch = FetchType.LAZY)
     @OrderBy("synsetPosition")
     private List<Sense> senses = new ArrayList<>();
 
@@ -48,13 +36,11 @@ public class Synset implements Serializable {
     @JoinColumn(name = "lexicon_id", referencedColumnName = "id", nullable = false)
     private Lexicon lexicon;
 
-    public Long getId() {
-        return id;
-    }
+    @OneToMany(mappedBy = "child", fetch = FetchType.LAZY)
+    private final Set<SynsetRelation> incomingRelations = new HashSet<>();
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    private final Set<SynsetRelation> outgoingRelations = new HashSet<>();
 
     public Integer getSplit() {
         return split;
@@ -88,4 +74,11 @@ public class Synset implements Serializable {
         this.lexicon = lexicon;
     }
 
+    public Set<SynsetRelation> getIncomingRelations() {
+        return incomingRelations;
+    }
+
+    public Set<SynsetRelation> getOutgoingRelations() {
+        return outgoingRelations;
+    }
 }

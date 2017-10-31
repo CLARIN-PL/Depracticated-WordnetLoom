@@ -1,21 +1,17 @@
 package pl.edu.pwr.wordnetloom.relationtest.model;
 
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "relation_tests")
-public class RelationTest implements Serializable {
+public class RelationTest extends GenericEntity {
 
     private static final long serialVersionUID = 2710746394598283537L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Lob
     private String test;
@@ -35,14 +31,6 @@ public class RelationTest implements Serializable {
     @ManyToOne
     @JoinColumn(name = "relation_type_id", nullable = false)
     private RelationType relationType;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getTest() {
         return test;

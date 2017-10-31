@@ -1,19 +1,17 @@
 package pl.edu.pwr.wordnetloom.sense.repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.criteria.Predicate;
 import pl.edu.pwr.wordnetloom.common.repository.Specification;
-import pl.edu.pwr.wordnetloom.domain.model.Domain;
-import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.List;
+
 public class SenseSpecification {
 
-    public static Specification<Sense> filter(final SenseCriteriaDTO dto) {
+    public static Specification<Sense> filter(SenseCriteriaDTO dto) {
 
         return (root, query, cb) -> {
 
@@ -27,12 +25,12 @@ public class SenseSpecification {
                 criteria.add(byVarinat(dto.getVariant()).toPredicate(root, query, cb));
             }
 
-            if (dto.getPartOfSpeech() != null) {
-                criteria.add(byPartOfSpeech(dto.getPartOfSpeech()).toPredicate(root, query, cb));
+            if (dto.getPartOfSpeechId() != null) {
+                criteria.add(byPartOfSpeech(dto.getPartOfSpeechId()).toPredicate(root, query, cb));
             }
 
-            if (dto.getDomain() != null) {
-                criteria.add(byDomain(dto.getDomain()).toPredicate(root, query, cb));
+            if (dto.getDomainId() != null) {
+                criteria.add(byDomain(dto.getDomainId()).toPredicate(root, query, cb));
             }
 
             if (dto.getSynsetId() != null) {
@@ -47,12 +45,12 @@ public class SenseSpecification {
         };
     }
 
-    public static Specification<Sense> byPartOfSpeech(PartOfSpeech pos) {
-        return (root, query, cb) -> cb.equal(root.get("partOfSpeech"), pos);
+    public static Specification<Sense> byPartOfSpeech(Long posId) {
+        return (root, query, cb) -> cb.equal(root.get("partOfSpeech").get("id"), posId);
     }
 
-    public static Specification<Sense> byDomain(Domain pos) {
-        return (root, query, cb) -> cb.equal(root.get("domain"), pos);
+    public static Specification<Sense> byDomain(Long domainId) {
+        return (root, query, cb) -> cb.equal(root.get("domain").get("id"), domainId);
     }
 
     public static Specification<Sense> byWord(Word word) {
@@ -83,8 +81,8 @@ public class SenseSpecification {
         return (root, query, cb) -> cb.equal(root.get("variant"), variant);
     }
 
-    public static Specification<Sense> byLexicon(Lexicon lexicon) {
-        return (root, query, cb) -> cb.equal(root.get("lexicon"), lexicon);
+    public static Specification<Sense> byLexicon(Long lexiconId) {
+        return (root, query, cb) -> cb.equal(root.get("lexicon").get("id"), lexiconId);
     }
 
     public static Specification<Sense> byLexiconId(Long id) {

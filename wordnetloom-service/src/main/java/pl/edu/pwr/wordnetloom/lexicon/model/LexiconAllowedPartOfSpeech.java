@@ -1,28 +1,17 @@
 package pl.edu.pwr.wordnetloom.lexicon.model;
 
-import java.io.Serializable;
-import java.util.Set;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
+import javax.persistence.*;
+import java.util.Set;
+
 @Entity
 @Table(name = "lexicon_allowed_part_of_speech")
-public class LexiconAllowedPartOfSpeech implements Serializable {
+public class LexiconAllowedPartOfSpeech extends GenericEntity {
 
     private static final long serialVersionUID = -1256292370070216845L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "lexicon_id", referencedColumnName = "id")
@@ -39,14 +28,6 @@ public class LexiconAllowedPartOfSpeech implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "domain_id")
     )
     private Set<Domain> domain;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Lexicon getLexicon() {
         return lexicon;

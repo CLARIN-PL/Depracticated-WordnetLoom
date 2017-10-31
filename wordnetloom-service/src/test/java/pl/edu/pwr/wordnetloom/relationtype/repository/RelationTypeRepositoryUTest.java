@@ -4,9 +4,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import pl.edu.pwr.wordnetloom.commontests.utils.TestBaseRepository;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -41,25 +41,50 @@ public class RelationTypeRepositoryUTest extends TestBaseRepository {
     }
 
     @Test
-    public void findRelationHigestLeafs() {
+    public void findSenseRelationHigestLeafs() {
 
         createAntonimia();
         createAspektowosc();
         createRola();
-        List<RelationType> top = repository.findHighestLeafs(new ArrayList());
+        createHolonimia();
+
+        List<RelationType> top = repository.findHighestLeafs(RelationArgument.SENSE_RELATION);
 
         assertThat(top.size(), equalTo(3));
     }
 
     @Test
-    public void findRelationChildLeafs() {
+    public void findSynsetRelationHigestLeafs() {
+
+        createRola();
+        createHolonimia();
+
+        List<RelationType> top = repository.findHighestLeafs(RelationArgument.SYNSET_RELATION);
+
+        assertThat(top.size(), equalTo(1));
+    }
+
+    @Test
+    public void findSenseRelationChildLeafs() {
 
         createAntonimia();
         createAspektowosc();
         createRola();
-        List<RelationType> child = repository.findLeafs(new ArrayList());
+        createHolonimia();
+
+        List<RelationType> child = repository.findLeafs(RelationArgument.SENSE_RELATION);
 
         assertThat(child.size(), equalTo(5));
+    }
+
+    @Test
+    public void findSynsetRelationChildLeafs() {
+
+        createAntonimia();
+        createHolonimia();
+        List<RelationType> child = repository.findLeafs(RelationArgument.SYNSET_RELATION);
+
+        assertThat(child.size(), equalTo(2));
     }
 
     @Test
@@ -67,13 +92,13 @@ public class RelationTypeRepositoryUTest extends TestBaseRepository {
 
         createAspektowosc();
 
-        List<RelationType> child = repository.findLeafs(new ArrayList());
+        List<RelationType> child = repository.findLeafs(RelationArgument.SENSE_RELATION);
         assertThat(child.size(), equalTo(2));
 
         RelationType ndk_dk = child.stream()
                 .filter(r -> r.getName("pl").equals(aspektowosc_czysta_NDK_DK().getName("pl")))
                 .findFirst().get();
-        RelationType reverse = repository.findReverseByRelationType(ndk_dk);
+        RelationType reverse = repository.findReverseByRelationType(ndk_dk.getId());
 
         assertThat(reverse.getName("pl"), is(equalTo(aspektowosc_czysta_DK_NDK().getName("pl"))));
     }
@@ -82,10 +107,10 @@ public class RelationTypeRepositoryUTest extends TestBaseRepository {
     public void shouldDeleteRelationTypeWithChildren() {
 
         createAspektowosc();
-        List<RelationType> top = repository.findHighestLeafs(new ArrayList());
+        List<RelationType> top = repository.findHighestLeafs(RelationArgument.SENSE_RELATION);
         assertThat(top.size(), equalTo(1));
 
-        List<RelationType> child = repository.findLeafs(new ArrayList());
+        List<RelationType> child = repository.findLeafs(RelationArgument.SENSE_RELATION);
         assertThat(child.size(), equalTo(2));
 
         RelationType toRemove = top.stream().findFirst().get();
@@ -101,10 +126,11 @@ public class RelationTypeRepositoryUTest extends TestBaseRepository {
 
     @Test
     public void findFullByRelationType() {
+
         createAntonimia();
 
         RelationType ant = repository.findById(1l);
-        RelationType expect = repository.findFullByRelationType(ant);
+        RelationType expect = repository.findFullByRelationType(ant.getId());
 
         assertThat(ant.getId(), equalTo(expect.getId()));
         assertThat(ant.getName("pl"), is(equalTo(antonimia().getName("pl"))));
@@ -124,6 +150,56 @@ public class RelationTypeRepositoryUTest extends TestBaseRepository {
             return repository.update(anto);
         });
         return anto;
+    }
+
+    private void createHiperonimiaWithHiponimia() {
+
+        RelationType hipero = dbCommandExecutor.executeCommand(() -> {
+            return repository.persist(hiperonimia());
+        });
+
+        RelationType hipo = dbCommandExecutor.executeCommand(() -> {
+            return repository.persist(hiponimia());
+        });
+
+        hipero.setAutoReverse(true);
+        hipero.setReverse(hipo);
+
+        hipo.setAutoReverse(true);
+        hipo.setReverse(hipero);
+
+        dbCommandExecutor.executeCommand(() -> {
+            return repository.update(hipero);
+        });
+
+        dbCommandExecutor.executeCommand(() -> {
+            return repository.update(hipo);
+        });
+    }
+
+    private void createHolonimia() {
+        RelationType holo = dbCommandExecutor.executeCommand(() -> {
+            return repository.persist(holonimia());
+        });
+
+        RelationType msc = dbCommandExecutor.executeCommand(() -> {
+            return repository.persist(holonimia_miejsce());
+        });
+
+        RelationType porc = dbCommandExecutor.executeCommand(() -> {
+            return repository.persist(holonimia_porcja());
+        });
+
+        msc.setParent(holo);
+        porc.setParent(holo);
+
+        dbCommandExecutor.executeCommand(() -> {
+            return repository.update(msc);
+        });
+
+        dbCommandExecutor.executeCommand(() -> {
+            return repository.update(porc);
+        });
     }
 
     private void createRola() {

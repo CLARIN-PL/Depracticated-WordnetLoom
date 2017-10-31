@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.relationtype.service;
 
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
 import java.util.Collection;
@@ -9,27 +10,23 @@ public interface RelationTypeServiceRemote {
 
     RelationType findById(Long id);
 
-    Long findReverseId(RelationType relationType);
+    Long findReverseId(Long relationTypeId);
 
-    RelationType findFullRelationType(RelationType rt);
+    RelationType findFullRelationType(Long relationTypeId);
 
-    RelationType findReverseByRelationType(RelationType relationType);
+    RelationType findReverseByRelationType(Long relationTypeId);
 
     RelationType save(RelationType rel);
 
-    List<RelationType> findtHighest(List<Long> lexicons);
+    List<RelationType> findHighest(RelationArgument argument);
 
-    List<RelationType> findLeafs(List<Long> lexicons);
+    List<RelationType> findLeafs(RelationArgument argument);
 
-    List<RelationType> findFullRelationTypes(List<Long> lexicons);
-
-    List<RelationType> findChildren(RelationType relation, List<Long> lexicons);
+    List<RelationType> findChildren(Long relationTypeId);
 
     void delete(RelationType relation);
 
     void deleteAll(RelationType type);
-
-    boolean isReverseRelation(RelationType[] relations, RelationType test);
 
     boolean isReverseRelation(Collection<RelationType> relations, RelationType test);
 }

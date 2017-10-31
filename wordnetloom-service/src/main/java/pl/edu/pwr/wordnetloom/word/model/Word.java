@@ -1,23 +1,17 @@
 package pl.edu.pwr.wordnetloom.word.model;
 
-import java.io.Serializable;
-import java.util.Objects;
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
+
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "word")
-public class Word implements Serializable {
+public class Word extends GenericEntity {
 
     private static final long serialVersionUID = -1256292370070216845L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @NotNull
     private String word;
@@ -26,15 +20,7 @@ public class Word implements Serializable {
     }
 
     public Word(String lemma) {
-        this.word = lemma;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        word = lemma;
     }
 
     public String getWord() {
@@ -47,14 +33,14 @@ public class Word implements Serializable {
 
     @Override
     public String toString() {
-        return this.word;
+        return word;
     }
 
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 37 * hash + Objects.hashCode(this.id);
-        hash = 37 * hash + Objects.hashCode(this.word);
+        hash = 37 * hash + Objects.hashCode(id);
+        hash = 37 * hash + Objects.hashCode(word);
         return hash;
     }
 
@@ -69,11 +55,8 @@ public class Word implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Word other = (Word) obj;
-        if (!Objects.equals(this.word, other.word)) {
-            return false;
-        }
-        return Objects.equals(this.id, other.id);
+        Word other = (Word) obj;
+        return Objects.equals(word, other.word) && Objects.equals(id, other.id);
     }
 
 }
