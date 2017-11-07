@@ -33,9 +33,11 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     protected static SynsetNodeShape geom = new SynsetNodeShape();
 
-    public static Set<RelationTypeManager>[] relTypes = new Set[]{
-            new HashSet<>(), new HashSet<>(),
-            new HashSet<>(), new HashSet<>()};
+//    public static Set<RelationTypeManager>[] relTypes = new Set[]{
+//            new HashSet<>(), new HashSet<>(),
+//            new HashSet<>(), new HashSet<>()};
+
+    public static Set<RelationTypeManager>[] relTypes = new Set[4];
 
     private final Set<ViwnEdgeSynset> edges_to_this_ = new HashSet<>();
     private final Set<ViwnEdgeSynset> edges_from_this_ = new HashSet<>();

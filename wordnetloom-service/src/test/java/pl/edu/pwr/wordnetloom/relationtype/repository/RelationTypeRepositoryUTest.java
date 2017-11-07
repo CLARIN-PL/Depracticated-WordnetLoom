@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.relationtype.repository;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import pl.edu.pwr.wordnetloom.commontests.utils.TestBaseRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
@@ -15,7 +16,7 @@ import static org.junit.Assert.assertThat;
 import static pl.edu.pwr.wordnetloom.commontests.lexicon.LexiconForTestsRepository.allLexicons;
 import static pl.edu.pwr.wordnetloom.commontests.partofspeech.PartOfSpeechForTestsRepository.allPartOfSpeechs;
 import static pl.edu.pwr.wordnetloom.commontests.relationtype.RelationTypeForTestsRepository.*;
-
+@Ignore
 public class RelationTypeRepositoryUTest extends TestBaseRepository {
 
     private RelationTypeRepository relationTypeRepository;

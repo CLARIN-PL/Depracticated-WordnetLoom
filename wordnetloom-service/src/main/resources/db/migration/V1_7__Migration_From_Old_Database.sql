@@ -144,7 +144,7 @@ CASE WHEN
 CASE WHEN PARENT_ID IS NOT NULL THEN (SELECT objecttype FROM wordnet_work.relationtype WHERE ID = R.PARENT_ID) ELSE objecttype END = 0
 THEN 'SYNSET_RELATION' ELSE 'SENSE_RELATION' END AS relation_argument,
 (SELECT id FROM wordnet.localised_strings WHERE strings = R.shortcut LIMIT 1) AS short,
-`order`
+'IGNORE'
 FROM wordnet_work.relationtype R
 WHERE objecttype != 2
 ORDER BY id;
@@ -230,7 +230,7 @@ WHILE(LOCATE(',', @registers) > 0) DO
     VALUES ();
     SET @last_insert_id = LAST_INSERT_ID();
     INSERT INTO wordnet.localised_strings(id, strings, strings_KEY)
-    VALUES (@last_insert_id, @value, 'pl');
+    VALUES (@last_insert_id, @value, 'pl'), (@last_insert_id, @value, 'en');
     INSERT INTo wordnet.register_types(name_id)
     VALUES(@last_insert_id);
     SET @registers = SUBSTRING(@registers, LOCATE(',', @registers) +1);
