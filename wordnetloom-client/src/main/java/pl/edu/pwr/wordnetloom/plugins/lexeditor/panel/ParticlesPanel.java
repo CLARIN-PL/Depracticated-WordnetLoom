@@ -219,12 +219,7 @@ public class ParticlesPanel extends JPanel {
 	}
 
 	public void setParticles(Set<Particle> particels) {
-	    // wstawiamy do listy, aby móc je posortować. Elementy sortowane są ze względu na kolejność dodania
-		List<Particle> particlesList = new ArrayList<>(particels);
-		Collections.sort(particlesList, (o1, o2) -> o1.getId() > o2.getId() ? 1 : -1);
-		for (Particle p : particlesList) {
-			listModel.addElement(p);
-		}
+		particels.forEach(listModel::addElement);
 	}
 
 	public JButton getBtnNewButton() {

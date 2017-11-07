@@ -38,25 +38,11 @@ public class Sense implements Serializable, Comparable<Sense> {
 
     private static final long serialVersionUID = 800201228216890725L;
 
-    public static final String SOURCE = "source";
     public static final String DEFINITION = "definition";
     public static final String COMMENT = "comment";
-    public static final String PROJECT = "project";
     public static final String REGISTER = "register";
     public static final String LINK = "link";
     public static final String USE_CASES = "use_cases";
-
-    public static final String A1_MARKEDNESS = "a1_markedness";
-    public static final String A1_EMOTIONS = "a1_emotions";
-    public static final String A1_EMOTIONS_VALUES = "a1_emotions_values";
-    public static final String A1_EMOTIONAL_MARKEDNESS = "a1_emotional_markedness";
-    public static final String A1_EXAMPLES = "a1_examples";
-
-    public static final String A2_MARKEDNESS = "a2_markedness";
-    public static final String A2_EMOTIONS = "a2_emotions";
-    public static final String A2_EMOTIONS_VALUES = "a2_emotions_values";
-    public static final String A2_EMOTIONAL_MARKEDNESS = "a2_emotional_markedness";
-    public static final String A2_EXAMPLES = "a2_examples";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

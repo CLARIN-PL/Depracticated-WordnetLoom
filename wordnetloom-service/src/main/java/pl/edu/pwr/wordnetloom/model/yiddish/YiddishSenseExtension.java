@@ -99,6 +99,7 @@ public class YiddishSenseExtension implements Serializable {
     private String context;
 
     @OneToMany(mappedBy = "extension", fetch = FetchType.EAGER)
+    @OrderBy("id")
     private Set<Particle> particels = new LinkedHashSet<>();
 
     public YiddishSenseExtension() {

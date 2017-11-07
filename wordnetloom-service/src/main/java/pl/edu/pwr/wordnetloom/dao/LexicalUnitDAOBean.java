@@ -216,9 +216,12 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
     @Override
     public List<Sense> findBySynsetWithYiddish(Synset synset) {
-        return dao.getEM().createQuery("select s.sense from SenseToSynset s JOIN FETCH s.sense.yiddishSenseExtension where s.idSynset = :idSynset order by s.senseIndex", Sense.class)
+
+        List<Sense> s = dao.getEM().createQuery("select s.sense from SenseToSynset s where s.idSynset = :idSynset order by s.senseIndex", Sense.class)
                 .setParameter("idSynset", synset.getId())
                 .getResultList();
+
+        return s;
     }
 
     @Override
@@ -445,7 +448,7 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
     @Override
     public List<Sense> getSensesForLemmaID(long id, long lexicon) {
-        Query query = getEM().createQuery("SELECT s FROM Sense s WHERE s.lemma.id = :id AND s.lexicon.id = :lexicon)");
+        Query query = getEM().createQuery("SELECT s FROM Sense s WHERE s.lemma.id = :id AND s.lexicon.id = :lexicon");
         query.setParameter("id", id);
         query.setParameter("lexicon", lexicon);
         return query.getResultList();

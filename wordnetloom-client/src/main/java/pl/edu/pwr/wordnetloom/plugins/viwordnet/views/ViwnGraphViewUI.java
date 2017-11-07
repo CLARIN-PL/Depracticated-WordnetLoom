@@ -237,25 +237,19 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
 
 		RenderContext<ViwnNode, ViwnEdge> rc = vv.getRenderContext();
 
-		rc.setVertexShapeTransformer(new Transformer<ViwnNode, Shape>() {
-			public Shape transform(ViwnNode v) {
-				return v.getShape();
-			}
-		});
+		rc.setVertexShapeTransformer(v -> v.getShape());
 
 		rc.setVertexFillPaintTransformer(new ViwnVertexFillColor(vv.getPickedVertexState(), rootNode));
 
 		rc.setEdgeLabelClosenessTransformer(new ConstantDirectionalEdgeValueTransformer<ViwnNode, ViwnEdge>(0.5, 0.5));
 
-		rc.setEdgeIncludePredicate(new Predicate<Context<Graph<ViwnNode, ViwnEdge>, ViwnEdge>>() {
-			public boolean evaluate(Context<Graph<ViwnNode, ViwnEdge>, ViwnEdge> context) {
-				if (context.element instanceof ViwnEdgeCand) {
-					ViwnEdgeCand cand = (ViwnEdgeCand) context.element;
-					return !cand.isHidden();
-				}
-				return true;
-			}
-		});
+		rc.setEdgeIncludePredicate(context -> {
+            if (context.element instanceof ViwnEdgeCand) {
+                ViwnEdgeCand cand = (ViwnEdgeCand) context.element;
+                return !cand.isHidden();
+            }
+            return true;
+        });
 
 		Transformer<ViwnEdge, Paint> edgeDrawColor = new Transformer<ViwnEdge, Paint>() {
 			public Paint transform(ViwnEdge e) {
@@ -271,18 +265,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
 		this.graphMouseListener = new ViwnGraphMouseListener(this);
 		vv.addGraphMouseListener(this.graphMouseListener);
 
-		Transformer<ViwnEdge, String> stringer = new Transformer<ViwnEdge, String>() {
-			public String transform(ViwnEdge rel) {
-				return rel.toString();
-			}
-		};
+		Transformer<ViwnEdge, String> stringer = ViwnEdge::toString;
 		rc.setEdgeLabelTransformer(stringer);
-		rc.setEdgeShapeTransformer(new EdgeShape.Line<ViwnNode, ViwnEdge>());
+		rc.setEdgeShapeTransformer(new EdgeShape.Line<>());
 
 		ViwnGraphViewModalGraphMouse gm = new ViwnGraphViewModalGraphMouse(this);
 		vv.addKeyListener(gm.getModeKeyListener());
 
-		vv.getRenderer().setEdgeLabelRenderer(new AstrideLabelRenderer<ViwnNode, ViwnEdge>());
+		vv.getRenderer().setEdgeLabelRenderer(new AstrideLabelRenderer<>());
 
 		vv.setGraphMouse(gm);
 
@@ -402,14 +392,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
 		HashMap<ViwnNodeRoot, ArrayList<ViwnNodeSynset>> map = new HashMap<ViwnNodeRoot, ArrayList<ViwnNodeSynset>>();
 
 		for (ViwnNodeSynset r : roots) {
-			map.put(r, new ArrayList<ViwnNodeSynset>());
+			map.put(r, new ArrayList<>());
 		}
 
 		for (int i = 0; i < groups.size(); ++i) {
 			for (ViwnNodeSynset s : groups.get(i)) {
 				ArrayList<ViwnNodeSynset> list = map.get((ViwnNodeRoot) s.getSpawner());
 				if (list == null) {
-					list = new ArrayList<ViwnNodeSynset>();
+					list = new ArrayList<>();
 					list.add(s);
 					map.put((ViwnNodeRoot) s.getSpawner(), list);
 				} else

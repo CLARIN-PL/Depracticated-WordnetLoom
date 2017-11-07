@@ -41,7 +41,9 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
         setSynsetAtrribute(newSynset, Synset.DEFINITION, getSynsetAtrribute(newSynset, Synset.DEFINITION));
 
         int index = 0;
-        for (Sense unit : lexicalUnitDAO.findBySynsetWithYiddish(synset)) {
+        List<Sense> units = lexicalUnitDAO.findBySynsetWithYiddish(synset);
+
+        for (Sense unit : units) {
             Sense newUnit = lexicalUnitDAO.dbClone(unit);
             SenseToSynset newRel = new SenseToSynset();
             newRel.setIdSynset(newSynset.getId());
@@ -49,6 +51,7 @@ public class SynsetDAOBean extends DAOBean implements SynsetDAOLocal {
             newRel.setSenseIndex(index++);
             dao.persistObject(newRel);
         }
+
     }
 
     /**
