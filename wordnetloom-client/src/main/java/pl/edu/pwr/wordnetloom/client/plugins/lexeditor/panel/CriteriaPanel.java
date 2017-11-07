@@ -2,7 +2,6 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
@@ -10,6 +9,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import se.datadosen.component.RiverLayout;
 
@@ -171,7 +171,7 @@ public abstract class CriteriaPanel extends JPanel {
 
     public void refreshSenseRelations() {
         RelationTypeManager.refresh();
-        List<RelationType> relations = RemoteService.relationTypeRemote.findLeafs(LexiconManager.getInstance().getLexicons());
+        List<RelationType> relations = RemoteService.relationTypeRemote.findLeafs(RelationArgument.SENSE_RELATION);
         int selected = senseRelationsComboBox.getSelectedIndex();
 
         senseRelationsComboBox.removeAllItems();

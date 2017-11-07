@@ -1,34 +1,24 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
-import java.io.Serializable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
+import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "sense")
-public class Sense implements Serializable {
+public class Sense extends GenericEntity {
 
     private static final long serialVersionUID = 800201228216890725L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "domain_id", referencedColumnName = "id", nullable = false)
@@ -65,29 +55,27 @@ public class Sense implements Serializable {
     @JoinColumn(name = "lexicon_id", referencedColumnName = "id", nullable = false)
     private Lexicon lexicon;
 
+    @OneToMany(mappedBy = "child", fetch = FetchType.LAZY)
+    private final Set<SenseRelation> incomingRelations = new HashSet<>();
+
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    private final Set<SenseRelation> outgoingRelations = new HashSet<>();
+
     public Sense() {
         super();
     }
 
     public Sense(Sense sense) {
-        this.domain = sense.domain;
-        this.word = sense.word;
-        this.partOfSpeech = sense.partOfSpeech;
-        this.variant = sense.variant;
-        this.lexicon = sense.lexicon;
-        this.senseAttributes = new SenseAttributes(sense.senseAttributes);
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        domain = sense.domain;
+        word = sense.word;
+        partOfSpeech = sense.partOfSpeech;
+        variant = sense.variant;
+        lexicon = sense.lexicon;
+        senseAttributes = new SenseAttributes(sense.senseAttributes);
     }
 
     public Domain getDomain() {
-        return this.domain;
+        return domain;
     }
 
     public void setDomain(Domain domain) {
@@ -95,7 +83,7 @@ public class Sense implements Serializable {
     }
 
     public PartOfSpeech getPartOfSpeech() {
-        return this.partOfSpeech;
+        return partOfSpeech;
     }
 
     public void setPartOfSpeech(PartOfSpeech partOfSpeech) {
@@ -147,7 +135,15 @@ public class Sense implements Serializable {
     }
 
     public void setSynsetPosition(Integer synsetPposition) {
-        this.synsetPosition = synsetPposition;
+        synsetPosition = synsetPposition;
+    }
+
+    public Set<SenseRelation> getIncomingRelations() {
+        return incomingRelations;
+    }
+
+    public Set<SenseRelation> getOutgoingRelations() {
+        return outgoingRelations;
     }
 
     @Override

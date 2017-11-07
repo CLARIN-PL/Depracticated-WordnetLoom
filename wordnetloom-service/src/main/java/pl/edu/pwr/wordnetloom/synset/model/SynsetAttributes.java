@@ -1,32 +1,16 @@
 package pl.edu.pwr.wordnetloom.synset.model;
 
-import java.io.Serializable;
-import java.util.List;
-import javax.persistence.Basic;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.user.model.User;
+
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "synset_attributes")
-public class SynsetAttributes implements Serializable {
+public class SynsetAttributes extends GenericEntity {
 
     private static final long serialVersionUID = -3305787239727633359L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     private String definition;
 
@@ -63,14 +47,6 @@ public class SynsetAttributes implements Serializable {
         this.isAbstract = isAbstract;
         this.owner = owner;
         this.princetonId = princetonId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getDefinition() {

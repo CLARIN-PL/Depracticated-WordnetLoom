@@ -1,8 +1,8 @@
 package pl.edu.pwr.wordnetloom.relationtype.repository;
 
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
-import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -19,14 +19,8 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
     @Inject
     EntityManager em;
 
-    @Inject
-    SenseRelationRepository senseRelationRepository;
-
     public boolean isReverse(Collection<RelationType> relations, RelationType test) {
-        if (relations.stream().anyMatch((relation) -> (relation.getAutoReverse() && Objects.equals(relation.getReverse().getId(), test.getId())))) {
-            return true;
-        }
-        return false;
+        return relations.stream().anyMatch((relation) -> (relation.getAutoReverse() && Objects.equals(relation.getReverse().getId(), test.getId())));
     }
 
     public void deleteRelationWithChilds(RelationType relation) {
@@ -34,9 +28,9 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         delete(relation);
     }
 
-    public List<RelationType> findChildren(RelationType relation) {
+    public List<RelationType> findChildren(Long relationTypeId) {
         return getEntityManager().createQuery("SELECT rt FROM RelationType rt WHERE rt.parent.id = :parent", RelationType.class)
-                .setParameter("parent", relation.getId())
+                .setParameter("parent", relationTypeId)
                 .getResultList();
     }
 
@@ -46,7 +40,7 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
                 .executeUpdate();
     }
 
-    public List<RelationType> findHighestLeafs(List<Long> lexicons) {
+    public List<RelationType> findHighestLeafs(RelationArgument arg) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<RelationType> q = cb.createQuery(RelationType.class);
@@ -56,18 +50,19 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.isNull(parent));
+        predicates.add(cb.equal(root.get("relationArgument"), arg));
 
         q.where(predicates.toArray(new Predicate[predicates.size()]));
 
         return em.createQuery(q).getResultList();
     }
 
-    public List<RelationType> findLeafs(List<Long> lexicons) {
-        List<RelationType> highs = findHighestLeafs(lexicons);
+    public List<RelationType> findLeafs(RelationArgument arg) {
+        List<RelationType> highs = findHighestLeafs(arg);
         List<RelationType> toReturn = new ArrayList<>();
 
-        highs.stream().forEach((relationType) -> {
-            List<RelationType> children = findChildren(relationType);
+        highs.forEach((relationType) -> {
+            List<RelationType> children = findChildren(relationType.getId());
 
             if (children == null || children.isEmpty()) {
                 toReturn.add(relationType);
@@ -78,52 +73,36 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         return toReturn;
     }
 
-    public List<RelationType> findFullRelationTypes(List<Long> lexicons) {
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT rt FROM RelationType rt ")
-                .append("left join fetch rt.nameStrings ")
-                .append("left join fetch rt.description ")
-                .append("left join fetch rt.displayText ")
-                .append("left join fetch rt.shortDisplayText ")
-                .append("left join fetch rt.parent ")
-                .append("left join fetch rt.reverse ")
-                .append("rt.lexicons.id IN (:lexicons)");
-
-        return getEntityManager().createQuery(query.toString(), RelationType.class)
-                .setParameter("lexicons", lexicons)
-                .getResultList();
-    }
-
-    public RelationType findReverseByRelationType(RelationType relationType) {
+    public RelationType findReverseByRelationType(Long relationTypeId) {
         return getEntityManager().createQuery("SELECT rt.reverse FROM RelationType rt where rt.id = :id", RelationType.class)
-                .setParameter("id", relationType.getId())
+                .setParameter("id", relationTypeId)
                 .getSingleResult();
     }
 
-    public Long findReverseId(RelationType relationType) {
-        RelationType r = findById(relationType.getId()).getReverse();
+    public Long findReverseId(Long relationTypeId) {
+        RelationType r = findById(relationTypeId).getReverse();
         if (r == null) {
             return null;
         }
         return r.getId();
     }
 
-    //TODO refaktor
-    public RelationType findFullByRelationType(RelationType rt) {
+    public RelationType findFullByRelationType(Long relationTypeId) {
 
-        StringBuilder query = new StringBuilder();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery q = cb.createQuery(RelationType.class);
+        Root o = q.from(RelationType.class);
+        o.fetch("descriptionStrings", JoinType.INNER);
+        o.fetch("displayStrings", JoinType.INNER);
+        o.fetch("shortDisplayStrings", JoinType.INNER);
+        o.fetch("parent", JoinType.LEFT);
+        o.fetch("reverse", JoinType.LEFT);
+        q.select(o);
+        q.where(cb.equal(o.get("id"), relationTypeId));
 
-        query.append("select rt from RelationType rt ")
-                .append("left join fetch rt.nameStrings ")
-                .append("left join fetch rt.descriptionStrings ")
-                .append("left join fetch rt.displayStrings ")
-                .append("left join fetch rt.shortDisplayStrings ")
-                .append("left join fetch rt.parent ")
-                .append("left join fetch rt.reverse ")
-                .append("where rt.id = :id");
-
-        return getEntityManager().createQuery(query.toString(), RelationType.class)
-                .setParameter("id", rt.getId()).getSingleResult();
+        return (RelationType) getEntityManager()
+                .createQuery(q)
+                .getSingleResult();
     }
 
     @Override

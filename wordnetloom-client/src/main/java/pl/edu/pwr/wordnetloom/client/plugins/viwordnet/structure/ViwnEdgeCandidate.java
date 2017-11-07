@@ -17,19 +17,19 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
-import java.awt.Color;
+import java.awt.*;
 
-public class ViwnEdgeCand extends ViwnEdge {
+public class ViwnEdgeCandidate extends ViwnEdge {
 
     private boolean hidden;
     private String relationName;
     private final Color color = Color.getHSBColor(245 / 360.0f, 0.38f, 1.0f);
 
-    public ViwnEdgeCand(String relationName) {
+    public ViwnEdgeCandidate(String relationName) {
         this.relationName = relationName;
     }
 
-    public ViwnEdgeCand() {
+    public ViwnEdgeCandidate() {
 
     }
 

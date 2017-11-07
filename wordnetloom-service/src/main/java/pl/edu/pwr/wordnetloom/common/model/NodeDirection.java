@@ -1,7 +1,7 @@
 package pl.edu.pwr.wordnetloom.common.model;
 
 public enum NodeDirection {
-
+    IGNORE("IGNORE"),
     LEFT("LEFT"),
     RIGHT("RIGHT"),
     BOTTOM("BOTTOM"),
@@ -27,6 +27,8 @@ public enum NodeDirection {
                 return RIGHT;
             case RIGHT:
                 return LEFT;
+            case IGNORE:
+                return IGNORE;
             default:
                 return null;
         }

@@ -25,7 +25,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
-abstract public class ViwnNode {
+public abstract class ViwnNode {
 
 
     private NodeDirection spawn_Node_direction = null;
@@ -50,9 +50,9 @@ abstract public class ViwnNode {
      *
      * @return shape
      */
-    abstract public Shape getShape();
+    public abstract Shape getShape();
 
-    abstract public void mouseClick(MouseEvent me, ViwnGraphViewUI ui);
+    public abstract void mouseClick(MouseEvent me, ViwnGraphViewUI ui);
 
     /**
      * Transform an absolute screen point to relative vertex point.
@@ -78,5 +78,5 @@ abstract public class ViwnNode {
         marked = state;
     }
 
-    abstract public String getLabel();
+    public abstract String getLabel();
 }

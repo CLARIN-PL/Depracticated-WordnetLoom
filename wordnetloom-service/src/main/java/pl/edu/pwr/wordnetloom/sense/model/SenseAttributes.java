@@ -1,33 +1,17 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
-import java.io.Serializable;
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
+import pl.edu.pwr.wordnetloom.user.model.User;
+
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import pl.edu.pwr.wordnetloom.user.model.User;
 
 @Entity
 @Table(name = "sense_attributes")
-public class SenseAttributes implements Serializable {
+public class SenseAttributes extends GenericEntity {
 
     private static final long serialVersionUID = -6738496417082820449L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Lob
     private String definition;
@@ -66,21 +50,13 @@ public class SenseAttributes implements Serializable {
     }
 
     public SenseAttributes(SenseAttributes sa) {
-        this.definition = sa.definition;
-        this.comment = sa.comment;
-        this.register = sa.register;
-        this.link = sa.link;
-        this.owner = sa.owner;
-        this.examples = new ArrayList<>();
-        sa.getExamples().forEach(this.examples::add);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        definition = sa.definition;
+        comment = sa.comment;
+        register = sa.register;
+        link = sa.link;
+        owner = sa.owner;
+        examples = new ArrayList<>();
+        sa.getExamples().forEach(examples::add);
     }
 
     public String getDefinition() {

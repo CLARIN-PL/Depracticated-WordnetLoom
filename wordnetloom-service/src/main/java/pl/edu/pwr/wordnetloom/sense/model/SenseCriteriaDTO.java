@@ -1,19 +1,15 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
-import pl.edu.pwr.wordnetloom.domain.model.Domain;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
-
 import java.io.Serializable;
 import java.util.List;
 
 public class SenseCriteriaDTO implements Serializable {
 
     private Long senseId;
-    private PartOfSpeech partOfSpeech;
-    private Domain domain;
+    private Long partOfSpeechId;
+    private Long domainId;
     private String lemma;
-    private RelationType relationType;
+    private Long relationTypeId;
     private List<Long> lexicons;
     private Integer variant;
     private String comment;
@@ -21,9 +17,9 @@ public class SenseCriteriaDTO implements Serializable {
     private String register;
     private Long synsetId;
 
-    public SenseCriteriaDTO(PartOfSpeech partOfSpeech, Domain domain, String lemma, List<Long> lexicons) {
-        this.partOfSpeech = partOfSpeech;
-        this.domain = domain;
+    public SenseCriteriaDTO(Long partOfSpeechId, Long domainId, String lemma, List<Long> lexicons) {
+        this.partOfSpeechId = partOfSpeechId;
+        this.domainId = domainId;
         this.lemma = lemma;
         this.lexicons = lexicons;
     }
@@ -36,20 +32,20 @@ public class SenseCriteriaDTO implements Serializable {
         this.senseId = senseId;
     }
 
-    public PartOfSpeech getPartOfSpeech() {
-        return partOfSpeech;
+    public Long getPartOfSpeechId() {
+        return partOfSpeechId;
     }
 
-    public void setPartOfSpeech(PartOfSpeech partOfSpeech) {
-        this.partOfSpeech = partOfSpeech;
+    public void setPartOfSpeechId(Long partOfSpeechId) {
+        this.partOfSpeechId = partOfSpeechId;
     }
 
-    public Domain getDomain() {
-        return domain;
+    public Long getDomainId() {
+        return domainId;
     }
 
-    public void setDomain(Domain domain) {
-        this.domain = domain;
+    public void setDomainId(Long domainId) {
+        this.domainId = domainId;
     }
 
     public String getLemma() {
@@ -60,12 +56,12 @@ public class SenseCriteriaDTO implements Serializable {
         this.lemma = lemma;
     }
 
-    public RelationType getRelationType() {
-        return relationType;
+    public Long getRelationTypeId() {
+        return relationTypeId;
     }
 
-    public void setRelationType(RelationType relationType) {
-        this.relationType = relationType;
+    public void setRelationTypeId(Long relationTypeId) {
+        this.relationTypeId = relationTypeId;
     }
 
     public List<Long> getLexicons() {
@@ -74,6 +70,14 @@ public class SenseCriteriaDTO implements Serializable {
 
     public void setLexicons(List<Long> lexicons) {
         this.lexicons = lexicons;
+    }
+
+    public Integer getVariant() {
+        return variant;
+    }
+
+    public void setVariant(Integer variant) {
+        this.variant = variant;
     }
 
     public String getComment() {
@@ -107,13 +111,4 @@ public class SenseCriteriaDTO implements Serializable {
     public void setSynsetId(Long synsetId) {
         this.synsetId = synsetId;
     }
-
-    public Integer getVariant() {
-        return variant;
-    }
-
-    public void setVariant(Integer variant) {
-        this.variant = variant;
-    }
-
 }

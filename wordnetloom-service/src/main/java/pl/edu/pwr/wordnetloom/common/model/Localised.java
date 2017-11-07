@@ -1,37 +1,23 @@
 package pl.edu.pwr.wordnetloom.common.model;
 
-import java.io.Serializable;
+import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "localised")
-public class Localised implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Localised extends GenericEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @NotNull
-    @CollectionTable(name = "localised_strings", joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"))
+    @CollectionTable(name = "localised_strings",
+            joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"))
     private Map<String, String> strings = new HashMap<>();
 
     public Localised() {
     }
 
     public Localised(Map<String, String> map) {
-        this.strings = map;
+        strings = map;
     }
 
     public void addString(String locale, String text) {
@@ -40,6 +26,13 @@ public class Localised implements Serializable {
 
     public String getString(String locale) {
         String returnValue = strings.get(locale);
-        return (returnValue != null ? returnValue : null);
+        return returnValue;
+    }
+
+    public Boolean isValid() {
+        if (strings.keySet().contains(null) || strings.values().contains(null)) {
+            return false;
+        }
+        return true;
     }
 }
