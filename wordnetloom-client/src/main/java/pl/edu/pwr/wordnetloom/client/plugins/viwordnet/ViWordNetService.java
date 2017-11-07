@@ -322,9 +322,8 @@ public class ViWordNetService extends AbstractService implements
             System.err.println(e.toString());
         }
 
-        ArrayList[] arrayLists = new ArrayList[]{
-                new ArrayList<>(), new ArrayList<>(),
-                new ArrayList<>(), new ArrayList<>()};
+        ArrayList[] arrayLists = new ArrayList[5];
+        Arrays.fill(arrayLists, new ArrayList<>());
 
         ArrayList<RelationTypeManager>[] relTypes = arrayLists;
 

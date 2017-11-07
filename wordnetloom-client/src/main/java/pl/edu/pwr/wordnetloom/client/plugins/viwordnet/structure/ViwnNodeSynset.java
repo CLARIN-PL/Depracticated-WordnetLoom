@@ -20,7 +20,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         EXPANDED, SEMI_EXPANDED, NOT_EXPANDED
     }
 
-    public static HashMap<PartOfSpeech, Color> PosBgColors = new HashMap<>();
+    public static HashMap<PartOfSpeech, Color> PosBgColors;
 
     public final static Color vertexBackgroundColorVerbStroke = new Color(239, 224, 52);
     public final static Color vertexBackgroundColorNounStroke = new Color(27, 221, 27);
@@ -31,13 +31,22 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     public final static Color vertexBackgroundColorRoot = new Color(255, 178, 178);
     public final static Color vertexBackgroundColorMarked = new Color(255, 195, 195);
 
-    protected static SynsetNodeShape geom = new SynsetNodeShape();
+    static{
+        PosBgColors = new HashMap<>();
+        geom = new SynsetNodeShape();
+        relTypes = initializeRelTypes();
+    }
 
-//    public static Set<RelationTypeManager>[] relTypes = new Set[]{
-//            new HashSet<>(), new HashSet<>(),
-//            new HashSet<>(), new HashSet<>()};
+    private static Set<RelationTypeManager>[] initializeRelTypes()
+    {
+        Set<RelationTypeManager>[] tempRelTypes = new Set[NodeDirection.values().length];
+        Arrays.fill(tempRelTypes, new HashSet<>());
+        return tempRelTypes;
+    }
 
-    public static Set<RelationTypeManager>[] relTypes = new Set[4];
+    protected static SynsetNodeShape geom;
+
+    public static Set<RelationTypeManager>[] relTypes;
 
     private final Set<ViwnEdgeSynset> edges_to_this_ = new HashSet<>();
     private final Set<ViwnEdgeSynset> edges_from_this_ = new HashSet<>();

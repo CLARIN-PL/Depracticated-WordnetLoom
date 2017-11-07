@@ -43,9 +43,11 @@ public class SynsetNodeShape {
                 top, top, -5}, 3));
 
         for (NodeDirection dir : NodeDirection.values()) {
-            Area tmp = new Area(buttons[dir.ordinal()]);
-            tmp.intersect(new Area(shape));
-            buttons[dir.ordinal()] = tmp;
+            if(dir.ordinal() !=  0){ // jeżeli IGNORE nic nie dodajemy
+                Area tmp = new Area(buttons[dir.ordinal()-1]);
+                tmp.intersect(new Area(shape));
+                buttons[dir.ordinal()-1] = tmp;
+            }
         }
     }
 }
