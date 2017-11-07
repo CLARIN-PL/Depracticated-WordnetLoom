@@ -29,7 +29,7 @@ public interface RelationTypeServiceRemote {
 
     void deleteAll(RelationType type);
 
-    boolean isReverseRelation(RelationType[] relations, RelationType test);
+//    boolean isReverseRelation(RelationType[] relations, RelationType test);
 
     boolean isReverseRelation(Collection<RelationType> relations, RelationType test);
 }

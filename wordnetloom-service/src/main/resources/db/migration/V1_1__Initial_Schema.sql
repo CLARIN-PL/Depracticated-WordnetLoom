@@ -100,7 +100,7 @@ CREATE TABLE sense_attributes (
 );
 
 CREATE TABLE sense_examples (
-  sense_attributes_id BIGINT NOT NULL,
+  sense_id BIGINT NOT NULL,
   example             TEXT
 );
 
@@ -186,8 +186,8 @@ CREATE TABLE word_form (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE relation_type_allowed_lexicons
-  ADD CONSTRAINT UK_7p9ttfi403pkoiua29qff7vwi UNIQUE (lexicon_id);
+#ALTER TABLE relation_type_allowed_lexicons
+  #ADD CONSTRAINT UK_7p9ttfi403pkoiua29qff7vwi UNIQUE (lexicon_id);
 
 ALTER TABLE dictionaries
   ADD CONSTRAINT FKflyxm5y0r293f9s1sv4q7weix
@@ -271,8 +271,8 @@ REFERENCES sense (id);
 
 ALTER TABLE sense_examples
   ADD CONSTRAINT FK8vf5o4pb6dmm3jmy1npt7snxe
-FOREIGN KEY (sense_attributes_id)
-REFERENCES sense_attributes (sense_id);
+FOREIGN KEY (sense_id)
+REFERENCES sense (id);
 
 ALTER TABLE sense_relation
   ADD CONSTRAINT FKk682ashm51g6a7u4unytrt1ic

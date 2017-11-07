@@ -25,10 +25,10 @@ public class RelationTypeServiceBean implements RelationTypeServiceLocal {
         return relationTypeRepository.findById(id);
     }
 
-    @Override
+    /*@Override
     public boolean isReverseRelation(RelationType[] relations, RelationType test) {
         return relationTypeRepository.isReverse(relations, test);
-    }
+    }*/
 
     @Override
     public boolean isReverseRelation(Collection<RelationType> relations, RelationType test) {

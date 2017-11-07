@@ -42,5 +42,4 @@ public class Localised implements Serializable {
         String returnValue = strings.get(locale);
         return (returnValue != null ? returnValue : null);
     }
-
 }

@@ -13,6 +13,7 @@ import javax.ejb.TransactionManagementType;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 @Singleton
 @Startup
@@ -38,12 +39,5 @@ public class DbMigrator {
             log.log(Level.INFO, "Migrate task: {0} : {1} from file: {2}", new Object[]{i.getVersion(), i.getDescription(), i.getScript()});
         }
         flyway.migrate();
-
-        try {
-            SenseAttributeParser parser = new SenseAttributeParser();
-            parser.run(dataSource.getConnection());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }
