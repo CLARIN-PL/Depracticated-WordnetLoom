@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "relation_type")
@@ -25,8 +24,9 @@ public class RelationType extends GenericEntity {
             joinColumns = @JoinColumn(name = "relation_type_id"),
             inverseJoinColumns = @JoinColumn(name = "lexicon_id")
     )
+    @NotNull
     @Size(min = 1)
-    private Set<Lexicon> lexicons;
+    private List<Lexicon> lexicons = new ArrayList<>();
 
     @OneToMany
     @JoinTable(
@@ -34,8 +34,9 @@ public class RelationType extends GenericEntity {
             joinColumns = @JoinColumn(name = "relation_type_id"),
             inverseJoinColumns = @JoinColumn(name = "part_of_speech_id")
     )
+    @NotNull
     @Size(min = 1)
-    private Set<PartOfSpeech> partsOfSpeech;
+    private List<PartOfSpeech> partsOfSpeech = new ArrayList<>();
 
     @Valid
     @ManyToOne(cascade = CascadeType.ALL)
@@ -56,7 +57,7 @@ public class RelationType extends GenericEntity {
     private final Localised shortDisplayStrings = new Localised();
 
     @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private final List<RelationTest> relationTests = new ArrayList<>();
+    private List<RelationTest> relationTests = new ArrayList<>();
 
     @NotNull
     @Column(name = "relation_argument")
@@ -69,7 +70,7 @@ public class RelationType extends GenericEntity {
 
     @Basic
     @Column(name = "multilingual", columnDefinition = "bit default 0")
-    private final Boolean multilingual = false;
+    private Boolean multilingual = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_relation_type_id", nullable = true)
@@ -90,14 +91,31 @@ public class RelationType extends GenericEntity {
     public RelationType() {
     }
 
-    public RelationType(String locale, String name, String shortDisp, Set<Lexicon> lexicons,
-                        Set<PartOfSpeech> partsOfSpeech,
+    public RelationType(String locale, String name, String shortDisp, List<Lexicon> lexicons,
+                        List<PartOfSpeech> partsOfSpeech,
                         RelationArgument relationArgument) {
+
         this.lexicons = lexicons;
         this.partsOfSpeech = partsOfSpeech;
         this.relationArgument = relationArgument;
         setName(locale, name);
         setShortDisplayText(locale, shortDisp);
+    }
+
+    public boolean addLexicon(Lexicon lexicon) {
+        if (!getLexicons().contains(lexicon)) {
+            getLexicons().add(lexicon);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addPartOfSpeech(PartOfSpeech pos) {
+        if (!getPartsOfSpeech().contains(pos)) {
+            getPartsOfSpeech().add(pos);
+            return true;
+        }
+        return false;
     }
 
     public String getName(String locale) {
@@ -132,28 +150,12 @@ public class RelationType extends GenericEntity {
         shortDisplayStrings.addString(locale, shortDisplay);
     }
 
-    public Set<Lexicon> getLexicons() {
-        return lexicons;
-    }
-
-    public void setLexicons(Set<Lexicon> lexicons) {
-        this.lexicons = lexicons;
-    }
-
     public String getColor() {
         return color;
     }
 
     public void setColor(String color) {
         this.color = color;
-    }
-
-    public Set<PartOfSpeech> getPartsOfSpeech() {
-        return partsOfSpeech;
-    }
-
-    public void setPartsOfSpeech(Set<PartOfSpeech> partsOfSpeech) {
-        this.partsOfSpeech = partsOfSpeech;
     }
 
     public List<RelationTest> getRelationTests() {
@@ -202,6 +204,26 @@ public class RelationType extends GenericEntity {
 
     public void setNodePosition(NodeDirection nodePosition) {
         this.nodePosition = nodePosition;
+    }
+
+    public List<Lexicon> getLexicons() {
+        return lexicons;
+    }
+
+    public void setLexicons(List<Lexicon> lexicons) {
+        this.lexicons = lexicons;
+    }
+
+    public List<PartOfSpeech> getPartsOfSpeech() {
+        return partsOfSpeech;
+    }
+
+    public void setPartsOfSpeech(List<PartOfSpeech> partsOfSpeech) {
+        this.partsOfSpeech = partsOfSpeech;
+    }
+
+    public void setMultilingual(Boolean multilingual) {
+        this.multilingual = multilingual;
     }
 
 }

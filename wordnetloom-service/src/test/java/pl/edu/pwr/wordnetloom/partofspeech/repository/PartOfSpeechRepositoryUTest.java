@@ -1,14 +1,17 @@
 package pl.edu.pwr.wordnetloom.partofspeech.repository;
 
-import java.util.List;
-import static org.hamcrest.CoreMatchers.*;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import static pl.edu.pwr.wordnetloom.commontests.partofspeech.PartOfSpeechForTestsRepository.*;
 import pl.edu.pwr.wordnetloom.commontests.utils.TestBaseRepository;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
+import static pl.edu.pwr.wordnetloom.commontests.partofspeech.PartOfSpeechForTestsRepository.noun;
+import static pl.edu.pwr.wordnetloom.commontests.partofspeech.PartOfSpeechForTestsRepository.verb;
 
 public class PartOfSpeechRepositoryUTest extends TestBaseRepository {
 
@@ -18,8 +21,7 @@ public class PartOfSpeechRepositoryUTest extends TestBaseRepository {
     public void initTestCase() {
         initializeTestDB();
 
-        posRepository = new PartOfSpeechRepository();
-        posRepository.em = em;
+        posRepository = new PartOfSpeechRepository(em);
     }
 
     @After
@@ -29,13 +31,13 @@ public class PartOfSpeechRepositoryUTest extends TestBaseRepository {
 
     @Test
     public void savePartOfSpeechAndFindIt() {
-        final Long posAddedId = dbCommandExecutor.executeCommand(() -> {
+        Long posAddedId = dbCommandExecutor.executeCommand(() -> {
             return posRepository.persist(verb()).getId();
         });
 
         assertThat(posAddedId, is(notNullValue()));
 
-        final PartOfSpeech pos = posRepository.findById(posAddedId);
+        PartOfSpeech pos = posRepository.findById(posAddedId);
         assertThat(pos, is(notNullValue()));
         assertThat(pos.getName("EN"), is(equalTo(verb().getName("EN"))));
         assertThat(pos.getName("PL"), is(equalTo(verb().getName("PL"))));
@@ -44,25 +46,25 @@ public class PartOfSpeechRepositoryUTest extends TestBaseRepository {
     @Test
     public void shouldFindLexiconByIdList() {
 
-        final Long posAddedId1 = dbCommandExecutor.executeCommand(() -> {
+        Long posAddedId1 = dbCommandExecutor.executeCommand(() -> {
             return posRepository.persist(verb()).getId();
         });
 
-        final Long posAddedId2 = dbCommandExecutor.executeCommand(() -> {
+        Long posAddedId2 = dbCommandExecutor.executeCommand(() -> {
             return posRepository.persist(noun()).getId();
         });
 
         assertThat(posAddedId1, is(notNullValue()));
         assertThat(posAddedId2, is(notNullValue()));
 
-        final List<PartOfSpeech> list = posRepository.findAll("id");
+        List<PartOfSpeech> list = posRepository.findAll("id");
 
         assertThat(list.size(), equalTo(2));
     }
 
     @Test
     public void findLexiconByIdNotFound() {
-        final PartOfSpeech p = posRepository.findById(999L);
+        PartOfSpeech p = posRepository.findById(999L);
         assertThat(p, is(nullValue()));
     }
 }

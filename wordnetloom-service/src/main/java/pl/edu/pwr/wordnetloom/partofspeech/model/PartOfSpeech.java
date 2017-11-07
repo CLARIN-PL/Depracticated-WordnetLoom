@@ -4,7 +4,6 @@ import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.common.model.Localised;
 
 import javax.persistence.*;
-import javax.validation.Valid;
 
 @Entity
 @Table(name = "part_of_speech")
@@ -14,7 +13,6 @@ public class PartOfSpeech extends GenericEntity {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "name_id")
-    @Valid
     private final Localised nameStrings = new Localised();
 
     private String color;

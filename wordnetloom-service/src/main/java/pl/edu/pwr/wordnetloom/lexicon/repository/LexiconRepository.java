@@ -1,18 +1,23 @@
 package pl.edu.pwr.wordnetloom.lexicon.repository;
 
-import java.util.List;
+import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import java.util.List;
 
 @Stateless
 public class LexiconRepository extends GenericRepository<Lexicon> {
 
+    private final EntityManager em;
+
     @Inject
-    EntityManager em;
+    public LexiconRepository(EntityManager em) {
+        this.em = em;
+    }
 
     @Override
     protected Class<Lexicon> getPersistentClass() {
@@ -30,10 +35,10 @@ public class LexiconRepository extends GenericRepository<Lexicon> {
                 .setParameter("ids", lexiconsIds)
                 .getResultList();
     }
-    
+
     public List<Long> findAllLexiconIds() {
         return em.createQuery("SELECT l.id FROM Lexicon l").getResultList();
     }
-    
-    
+
+
 }

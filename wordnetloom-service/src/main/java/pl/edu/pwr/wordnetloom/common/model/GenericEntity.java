@@ -1,6 +1,9 @@
 package pl.edu.pwr.wordnetloom.common.model;
 
-import javax.persistence.*;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 
 
@@ -9,7 +12,6 @@ public abstract class GenericEntity implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(unique = true, nullable = false)
     protected Long id;
 
     public Long getId() {

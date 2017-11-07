@@ -28,30 +28,22 @@ import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.PickableEdgePaintTransformer;
 import edu.uci.ics.jung.visualization.decorators.PickableVertexPaintTransformer;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.geom.Point2D;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeCand;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeCandidate;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.RootNodeLabeller;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.ViwnSatelliteEdgeTransformer;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.ViwnSatelliteNodeSizeTransformer;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.ViwnSatelliteNodeStrokeTransformer;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.ViwnSatelliteNodeToolTip;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexFillColor;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import se.datadosen.component.RiverLayout;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.geom.Point2D;
+
 /**
  * @author amusial
- *
  */
 public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
 
@@ -77,7 +69,6 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
 
     /**
      * after that constructor ui is not ready
-     *
      */
     protected ViwnSatelliteGraphViewUI() {
         /**/
@@ -85,13 +76,12 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
 
     /**
      * @param vgvui ViwnGraphViewUI
-     *
      */
     public void set(ViwnGraphViewUI vgvui) {
 
-        this.graphUI = vgvui;
+        graphUI = vgvui;
 
-        this.vv = graphUI.getVisualizationViewer();
+        vv = graphUI.getVisualizationViewer();
 
         satellite = new SatelliteVisualizationViewer<>(vv,
                 new Dimension(WIDTH, HEIGHT));
@@ -129,7 +119,7 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
 
     /**
      * refresh satellite view
-     *
+     * <p>
      * TODO: do it better than recreating satellite, probably wont fix TODO:
      * graph should be centered in the view, centered at the center of the view
      * not at the root or selected node, probably done, need testing TODO: graph
@@ -152,8 +142,8 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
                 Layer.LAYOUT).getScaleX() > 1D) {
             (new LayoutScalingControl()).scale(satellite,
                     (1f / (float) satellite.getRenderContext()
-                    .getMultiLayerTransformer().getTransformer(
-                            Layer.LAYOUT).getScaleX()),
+                            .getMultiLayerTransformer().getTransformer(
+                                    Layer.LAYOUT).getScaleX()),
                     new Point2D.Double());
         }
         // get view bounds
@@ -183,7 +173,7 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
         // - q.getX(), lvc.getY() - q.getY());
         satellite.getRenderContext().getMultiLayerTransformer().getTransformer(
                 Layer.LAYOUT).translate(lvc.getX() - q.getX(),
-                        lvc.getY() - q.getY());
+                lvc.getY() - q.getY());
 
         // Create and add a panel for graph visualization.
         rootPanel.add(getSatelliteGraphViewer(), "hfill vfill");
@@ -194,7 +184,6 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
 
     /**
      * refresh satellite
-     *
      */
     private void refreshSatellite() {
 
@@ -235,8 +224,8 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
                 new ViwnSatelliteEdgeTransformer());
 
         satellite.getRenderContext().setEdgeIncludePredicate((Context<Graph<ViwnNode, ViwnEdge>, ViwnEdge> context) -> {
-            if (context.element instanceof ViwnEdgeCand) {
-                ViwnEdgeCand cand = (ViwnEdgeCand) context.element;
+            if (context.element instanceof ViwnEdgeCandidate) {
+                ViwnEdgeCandidate cand = (ViwnEdgeCandidate) context.element;
                 return !cand.isHidden();
             }
             return true;
@@ -255,7 +244,7 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
                         .inverseTransform(vv.getCenter());
                 vv.getRenderContext().getMultiLayerTransformer().getTransformer(
                         Layer.LAYOUT).translate(lvc.getX() - q.getX(),
-                                lvc.getY() - q.getY());
+                        lvc.getY() - q.getY());
             }
 
             @Override

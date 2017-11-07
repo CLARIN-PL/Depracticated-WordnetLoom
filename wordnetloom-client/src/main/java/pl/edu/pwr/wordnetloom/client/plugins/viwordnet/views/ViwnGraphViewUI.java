@@ -203,8 +203,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                 0.5, 0.5));
 
         rc.setEdgeIncludePredicate((Context<Graph<ViwnNode, ViwnEdge>, ViwnEdge> context) -> {
-            if (context.element instanceof ViwnEdgeCand) {
-                ViwnEdgeCand cand = (ViwnEdgeCand) context.element;
+            if (context.element instanceof ViwnEdgeCandidate) {
+                ViwnEdgeCandidate cand = (ViwnEdgeCandidate) context.element;
                 return !cand.isHidden();
             }
             return true;
@@ -326,7 +326,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                 roots.remove(node);
                 if (node.getSpawner() == null) {
                     node.setSpawner(root, NodeDirection.BOTTOM);
-                    ViwnEdgeCand e = new ViwnEdgeCand(node.getRelName());
+                    ViwnEdgeCandidate e = new ViwnEdgeCandidate(node.getRelName());
                     indexes.add(node.getId());
                     e.setHidden(false);
                     if (node.getExtGraphExtension().getBase()) {
@@ -343,7 +343,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             node.setSpawner(root, NodeDirection.BOTTOM);
             return node;
         }).map((node) -> {
-            ViwnEdgeCand e = new ViwnEdgeCand();
+            ViwnEdgeCandidate e = new ViwnEdgeCandidate();
             e.setHidden(true);
             forest.addEdge(e, rootNode, node);
             return node;
@@ -424,7 +424,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                 forest.addVertex(s);
                 if (key instanceof ViwnNodeWord) {
                     ViwnNodeCand c = (ViwnNodeCand) s;
-                    ViwnEdgeCand ec = new ViwnEdgeCand();
+                    ViwnEdgeCandidate ec = new ViwnEdgeCandidate();
                     if (c.isEvaluated()
                             || s.getLabel().equals("! S.y.n.s.e.t p.u.s.t.y !")
                             || indexes.contains(s.getId())) {
@@ -439,7 +439,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                 return s;
             }).filter((s) -> (key instanceof ViwnNodeWord)).forEachOrdered((s) -> {
                 ViwnNodeCand c = (ViwnNodeCand) s;
-                ViwnEdgeCand ec = new ViwnEdgeCand();
+                ViwnEdgeCandidate ec = new ViwnEdgeCandidate();
                 if (c.isEvaluated()) {
                     ec.setHidden(true);
                 }
@@ -1085,7 +1085,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             new_g.addVertex(n);
         });
 
-        forest.getEdges().stream().filter((e) -> (e instanceof ViwnEdgeSynset || e instanceof ViwnEdgeCand)).forEachOrdered((e) -> {
+        forest.getEdges().stream().filter((e) -> (e instanceof ViwnEdgeSynset || e instanceof ViwnEdgeCandidate)).forEachOrdered((e) -> {
             new_g.addEdge(e, forest.getEndpoints(e));
         });
         return new_g;
@@ -1179,14 +1179,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                         ViwnEdge e = getFirstOnPath(undirect(forest), node, rootNode);
                         if (e != null) {
                             center = node;
-                            if (e instanceof ViwnEdgeCand) {
+                            if (e instanceof ViwnEdgeCandidate) {
                                 node.setSpawner(rootNode, NodeDirection.BOTTOM);
                             } else {
                                 setSpawnerByEdge(node, (ViwnEdgeSynset) e);
                             }
                         } else if (node instanceof ViwnNodeCand) {
                             node.setSpawner(rootNode, NodeDirection.BOTTOM);
-                            forest.addEdge(new ViwnEdgeCand(), rootNode, node);
+                            forest.addEdge(new ViwnEdgeCandidate(), rootNode, node);
                             center = node;
                         } else {
                             for (NodeDirection dir : NodeDirection.values()) {
@@ -1349,8 +1349,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                 0.5, 0.5));
 
         rc.setEdgeIncludePredicate((Context<Graph<ViwnNode, ViwnEdge>, ViwnEdge> context) -> {
-            if (context.element instanceof ViwnEdgeCand) {
-                ViwnEdgeCand cand = (ViwnEdgeCand) context.element;
+            if (context.element instanceof ViwnEdgeCandidate) {
+                ViwnEdgeCandidate cand = (ViwnEdgeCandidate) context.element;
                 return !cand.isHidden();
             }
             return true;

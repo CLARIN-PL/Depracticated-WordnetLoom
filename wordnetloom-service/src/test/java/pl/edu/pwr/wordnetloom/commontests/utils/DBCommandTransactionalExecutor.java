@@ -1,27 +1,30 @@
 package pl.edu.pwr.wordnetloom.commontests.utils;
 
-import javax.persistence.EntityManager;
 import org.junit.Ignore;
+
+import javax.persistence.EntityManager;
 
 @Ignore
 public class DBCommandTransactionalExecutor {
 
     private EntityManager em;
 
-    public DBCommandTransactionalExecutor(final EntityManager em) {
+    public DBCommandTransactionalExecutor(EntityManager em) {
         this.em = em;
     }
 
-    public <T> T executeCommand(final DBCommand<T> dbCommand) {
+    public <T> T executeCommand(DBCommand<T> dbCommand) {
         try {
             em.getTransaction().begin();
-            final T toReturn = dbCommand.execute();
+            T toReturn = dbCommand.execute();
             em.getTransaction().commit();
             em.clear();
             return toReturn;
-        } catch (final Exception e) {
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             e.printStackTrace();
-            em.getTransaction().rollback();
             throw new IllegalStateException(e);
         }
     }

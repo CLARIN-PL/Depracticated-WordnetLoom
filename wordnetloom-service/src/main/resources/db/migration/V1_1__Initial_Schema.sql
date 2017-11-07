@@ -334,6 +334,11 @@ ALTER TABLE relation_type_allowed_parts_of_speech
 FOREIGN KEY (part_of_speech_id)
 REFERENCES part_of_speech (id);
 
+ALTER TABLE relation_type_allowed_parts_of_speech
+  ADD CONSTRAINT FK5ynuaw5d0qyhywfxj0u8vxuylzxc
+FOREIGN KEY (relation_type_id)
+REFERENCES relation_type (id);
+
 ALTER TABLE synset
   ADD CONSTRAINT FKfxflmrbnq64hax2r7gs1gbeuj
 FOREIGN KEY (lexicon_id)
