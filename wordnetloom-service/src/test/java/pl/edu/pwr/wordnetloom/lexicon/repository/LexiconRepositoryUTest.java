@@ -21,7 +21,8 @@ public class LexiconRepositoryUTest extends TestBaseRepository {
     public void initTestCase() {
         initializeTestDB();
 
-        lexiconRepository = new LexiconRepository(em);
+        lexiconRepository = new LexiconRepository();
+        lexiconRepository.em = em;
     }
 
     @After

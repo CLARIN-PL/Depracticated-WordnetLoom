@@ -16,9 +16,10 @@ public class V1_9__SetRelationTypeAllowedPartsOfSpeech implements JdbcMigration 
     }
 
     private List<RelationType> getRelationType(Connection connection) throws SQLException {
-        final String SELECT_QUERY = "SELECT id, \n" +
-                "CASE WHEN PARENT_ID IS NULL THEN posstr ELSE (SELECT posstr FROM wordnet_work.relationtype WHERE id = R.PARENT_ID) END\n" +
-                "posstr FROM wordnet_work.relationtype R";
+        // IN w zapytaniu ma pozbyć się typów relacji, które nie były przerzucone ze startej bazy
+        final String SELECT_QUERY = "SELECT id, CASE WHEN PARENT_ID IS NULL THEN posstr ELSE (SELECT posstr FROM wordnet_work.relationtype WHERE id = R.PARENT_ID) END\n" +
+                "posstr FROM wordnet_work.relationtype R WHERE id IN (SELECT id FROM wordnet.relation_type)\n" +
+                "ORDER BY id";
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(SELECT_QUERY);
         List<RelationType> relationTypes = new ArrayList<>();
@@ -75,14 +76,11 @@ public class V1_9__SetRelationTypeAllowedPartsOfSpeech implements JdbcMigration 
         final String INSERT_QUERY = "INSERT INTO wordnet.relation_type_allowed_parts_of_speech (relation_type_id, part_of_speech_id) " +
                 "VALUES (?,?)";
         PreparedStatement statement = connection.prepareStatement(INSERT_QUERY);
-//        connection.setAutoCommit(false);
         for (AllowedPartOfSpeech partOfSpeech : allowedPartsOfSpeech) {
             statement.setLong(1, partOfSpeech.getRelationTypeId());
             statement.setLong(2, partOfSpeech.getPartOfSpeechId());
             statement.executeUpdate();
         }
-//        connection.commit();
-//        connection.setAutoCommit(true);
     }
 
     private class RelationType {

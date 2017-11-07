@@ -21,7 +21,8 @@ public class PartOfSpeechRepositoryUTest extends TestBaseRepository {
     public void initTestCase() {
         initializeTestDB();
 
-        posRepository = new PartOfSpeechRepository(em);
+        posRepository = new PartOfSpeechRepository();
+        posRepository.em = em;
     }
 
     @After

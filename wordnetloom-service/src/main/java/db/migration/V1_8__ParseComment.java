@@ -36,7 +36,7 @@ public class V1_8__ParseComment implements JdbcMigration{
         if(connection == null){
             return;
         }
-        //TODO zrobić zapisywanie atrybutów
+
         final String UPDATE_QUERY = "UPDATE "+ ATTRIBUTE_TABLE +
                 " SET comment = ?, " +
                 "definition = ?," +
@@ -50,7 +50,6 @@ public class V1_8__ParseComment implements JdbcMigration{
         PreparedStatement updateStatement = connection.prepareStatement(UPDATE_QUERY);
         PreparedStatement deleteStatement = connection.prepareStatement(DELETE_QUERY);
         PreparedStatement insertExampleStatement = connection.prepareStatement(INSERT_EXAMPLE_QUERY);
-//        connection.setAutoCommit(false);
         for (Attribute attribute : attributes) {
             // sprawdzamy, czy atrybut posiada jakiekolwiek informacje. Jeżeli nie, usuwamy go
             if(attribute.getComment() == null && attribute.getDefinition() == null && attribute.getLink() == null && attribute.getRegister() == null){
@@ -78,8 +77,6 @@ public class V1_8__ParseComment implements JdbcMigration{
                 insertExampleStatement.executeUpdate();
             }
         }
-//        connection.commit();
-//        connection.setAutoCommit(true);
     }
 
     private void serveNormalMarker(String marker, String comment, int currentIndex, Attribute attributeRef, int startMarker, StringBuilder commentBuilderRef) throws SQLException {

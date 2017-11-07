@@ -13,12 +13,8 @@ import java.util.List;
 @Stateless
 public class PartOfSpeechRepository extends GenericRepository<PartOfSpeech> {
 
-    private final EntityManager em;
-
     @Inject
-    public PartOfSpeechRepository(EntityManager em) {
-        this.em = em;
-    }
+    EntityManager em;
 
     @Override
     protected Class<PartOfSpeech> getPersistentClass() {

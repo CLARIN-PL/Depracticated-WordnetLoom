@@ -335,7 +335,7 @@ FOREIGN KEY (part_of_speech_id)
 REFERENCES part_of_speech (id);
 
 ALTER TABLE relation_type_allowed_parts_of_speech
-  ADD CONSTRAINT FK5ynuaw5d0qyhywfxj0u8vxuylzxc
+  ADD CONSTRAINT FK5ynuaw5d0qyhywfxj0u8vxuylzxd
 FOREIGN KEY (relation_type_id)
 REFERENCES relation_type (id);
 

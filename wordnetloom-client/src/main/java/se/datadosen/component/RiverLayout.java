@@ -26,7 +26,7 @@ import java.util.Vector;
  * List of constraints:<ul>
  * <li>br - Add a line break
  * <li>p - Add a paragraph break
- * <li>tab - Add a tab stop (handy for constructing forms with labels followed by fields)
+ * <li>tab - Add a tab stop (handy for constructing forms with label followed by fields)
  * <li>hfill - Extend component horizontally
  * <li>vfill - Extent component vertically (currently only one allowed)
  * <li>left - Align following components to the left (default)

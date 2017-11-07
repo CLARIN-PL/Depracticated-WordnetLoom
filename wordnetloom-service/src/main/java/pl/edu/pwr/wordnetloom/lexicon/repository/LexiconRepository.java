@@ -12,12 +12,8 @@ import java.util.List;
 @Stateless
 public class LexiconRepository extends GenericRepository<Lexicon> {
 
-    private final EntityManager em;
-
     @Inject
-    public LexiconRepository(EntityManager em) {
-        this.em = em;
-    }
+    EntityManager em;
 
     @Override
     protected Class<Lexicon> getPersistentClass() {
