@@ -94,22 +94,21 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void handlePopup(MouseEvent e) {
 
-        final VisualizationViewer<ViwnNode, ViwnEdge> vv =
+        VisualizationViewer<ViwnNode, ViwnEdge> vv =
                 (VisualizationViewer<ViwnNode, ViwnEdge>) e.getSource();
-        final Layout<ViwnNode, ViwnEdge> layout = vv.getGraphLayout();
-        final Graph<ViwnNode, ViwnEdge> graph = layout.getGraph();
-        final Point2D p = e.getPoint();
-        final Point2D ivp = p;
+        Layout<ViwnNode, ViwnEdge> layout = vv.getGraphLayout();
+        Graph<ViwnNode, ViwnEdge> graph = layout.getGraph();
+        Point2D p = e.getPoint();
+        Point2D ivp = p;
         GraphElementAccessor<ViwnNode, ViwnEdge> pickSupport = vv.getPickSupport();
         boolean list_focus = false;
         synset_list_ = null;
 
         // exit make relation mode
-        final ViWordNetService s =
+        ViWordNetService s =
                 ((ViWordNetService) vgvui.getWorkbench().getService(
                         "pl.edu.pwr.wordnetloom.plugins.viwordnet.ViWordNetService"));
 //						"ViWordNetService"));
@@ -128,10 +127,10 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
             popup.removeAll();
 
-            final ViwnNode vertex = pickSupport.getVertex(layout, ivp.getX(), ivp.getY());
-            final ViwnEdge edge = pickSupport.getEdge(layout, ivp.getX(), ivp.getY());
-            final PickedState<ViwnNode> pickedVertexState = vv.getPickedVertexState();
-            @SuppressWarnings("unused") final PickedState<ViwnEdge> pickedEdgeState = vv.getPickedEdgeState();
+            ViwnNode vertex = pickSupport.getVertex(layout, ivp.getX(), ivp.getY());
+            ViwnEdge edge = pickSupport.getEdge(layout, ivp.getX(), ivp.getY());
+            PickedState<ViwnNode> pickedVertexState = vv.getPickedVertexState();
+            PickedState<ViwnEdge> pickedEdgeState = vv.getPickedEdgeState();
 
             if (vertex != null && vertex instanceof ViwnNodeWord) {
                 popup.add(new AbstractAction(Labels.CREATE_RELATION_WITH) {
@@ -295,7 +294,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 // show lexical units of synset
                 JMenuItem lexicalUnits = new JMenu(Labels.UNIT_CREATE_RELATION_WITH);
 
-                for (final Sense lu : RemoteUtils.synsetRemote.dbFastGetUnits(((ViwnNodeSynset) vertex).getSynset(), LexiconManager.getInstance().getLexicons())) {
+                for (Sense lu : RemoteUtils.synsetRemote.dbFastGetUnits(((ViwnNodeSynset) vertex).getSynset(), LexiconManager.getInstance().getLexicons())) {
                     lexicalUnits.add(new JMenuItem(new AbstractAction(lu.toString()) {
                         /***/
                         private static final long serialVersionUID = 65468435418L;
@@ -310,7 +309,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                 // add lexical unit to locker
                 lexicalUnits = new JMenu(Labels.UNIT_ADD_TO_CLIPBOARD);
-                for (final Sense lu : RemoteUtils.synsetRemote.dbFastGetUnits(((ViwnNodeSynset) vertex).getSynset(), LexiconManager.getInstance().getLexicons())) {
+                for (Sense lu : RemoteUtils.synsetRemote.dbFastGetUnits(((ViwnNodeSynset) vertex).getSynset(), LexiconManager.getInstance().getLexicons())) {
                     lexicalUnits.add(new JMenuItem(new AbstractAction(lu.toString()) {
                         /***/
                         private static final long serialVersionUID = 712639812536152L;
@@ -323,8 +322,8 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 }
                 popup.add(lexicalUnits);
 
-            } else if (vertex != null && vertex instanceof ViwnNodeSet) {
-                ViwnNodeSet set = (ViwnNodeSet) vertex;
+            } else if (vertex != null && vertex instanceof ViwnNodeSynsetSet) {
+                ViwnNodeSynsetSet set = (ViwnNodeSynsetSet) vertex;
                 DefaultListModel model = new DefaultListModel();
 
                 ArrayList<ViwnNodeSynset> col = new ArrayList<>(set.getSynsets());
@@ -430,7 +429,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 if (node != null) {
                     String label = node.getLabel();
 
-                    final String filename = label.split(" ")[0] + ".png";
+                    String filename = label.split(" ")[0] + ".png";
                     popup.add(new AbstractAction(Labels.SAVE_GRAPH_TO_FILE_COLON + filename) {
                         private static final long serialVersionUID = 1L;
 

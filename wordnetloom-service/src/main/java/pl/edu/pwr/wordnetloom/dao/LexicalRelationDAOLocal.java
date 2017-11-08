@@ -33,7 +33,6 @@ public interface LexicalRelationDAOLocal extends DAOLocal {
 
     List<SenseRelation> dbGetUpperRelations(Sense sense, RelationType relationType);
 
-
     List<SenseRelation> dbGetFullRelations(Sense parent);
 
     List<SenseRelation> dbGetRelations(Sense parent, Sense child, RelationType relationType);
@@ -60,4 +59,9 @@ public interface LexicalRelationDAOLocal extends DAOLocal {
 
     int dbDeleteImproper();
 
+    List<SenseRelation> getRelatedRelations(Sense sense, List<Long> lexicons);
+
+    List<SenseRelation> getRelationsSenseTo(Sense sense);
+
+    List<SenseRelation> getRelatedRelations(Set<Long> senseIDs);
 }

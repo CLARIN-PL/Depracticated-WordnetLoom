@@ -37,5 +37,5 @@ public class Hints {
 	
 	public static final String REMOVE_RELTAION_UNITS = Main.getResouce("hint.remove.relation.between.units");
 	public static final String ADD_RELATION_UNITS = Main.getResouce("hint.add.relation.between.units");
-
+    public static final String  SHOW_SENS_VISUALIZATION = Main.getResouce("hint.show.sense.visualization");
 }

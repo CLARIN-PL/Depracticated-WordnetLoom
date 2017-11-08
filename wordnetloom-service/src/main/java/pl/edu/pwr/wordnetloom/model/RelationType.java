@@ -61,11 +61,11 @@ public class RelationType implements Serializable, Comparable<RelationType> {
     private RelationArgument argumentType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent", nullable = true)
+    @JoinColumn(name = "parent")
     private RelationType parent;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reverse", nullable = true)
+    @JoinColumn(name = "reverse")
     private RelationType reverse;
 
     @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL)

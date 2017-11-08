@@ -19,15 +19,25 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 package pl.edu.pwr.wordnetloom.plugins.viwordnet.structure;
 
 abstract public class ViwnNodeRoot extends ViwnNode {
-	private ViwnNodeSet [] sets_;
-	
-	public ViwnNodeSet getSynsetSet(Direction dir) {
-		return sets_[dir.ordinal()];
-	}
-	
-	public ViwnNodeRoot() {
-		sets_ = new ViwnNodeSet[]{
-				new ViwnNodeSet(), new ViwnNodeSet(),
-				new ViwnNodeSet(),new ViwnNodeSet()};
-	}
+
+    private ViwnNodeSynsetSet[] synsetSets;
+    private ViwnNodeSenseSet[] sensesSets;
+
+    public ViwnNodeSynsetSet getSynsetSet(Direction dir) {
+        return synsetSets[dir.ordinal()];
+    }
+
+    public ViwnNodeSenseSet getSenseSet(Direction dir) {
+        return sensesSets[dir.ordinal()];
+    }
+
+    public ViwnNodeRoot() {
+        synsetSets = new ViwnNodeSynsetSet[]{
+                new ViwnNodeSynsetSet(), new ViwnNodeSynsetSet(),
+                new ViwnNodeSynsetSet(), new ViwnNodeSynsetSet()};
+
+        sensesSets = new ViwnNodeSenseSet[]{
+                new ViwnNodeSenseSet(), new ViwnNodeSenseSet(),
+                new ViwnNodeSenseSet(), new ViwnNodeSenseSet()};
+    }
 }

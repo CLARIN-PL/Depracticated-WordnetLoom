@@ -7,7 +7,7 @@ import java.util.List;
 import pl.edu.pwr.wordnetloom.model.Synset;
 import pl.edu.pwr.wordnetloom.model.SynsetRelation;
 
-public class DataEntry implements Serializable {
+public class SynsetDataEntry implements Serializable {
 
 	private static final long serialVersionUID = 5708346930324155121L;
 
@@ -18,7 +18,7 @@ public class DataEntry implements Serializable {
 	private Long posID;
 	private String lexicon;
 	
-	public DataEntry(){
+	public SynsetDataEntry(){
 		relsFrom = new ArrayList<>();
 		relsTo = new ArrayList<>();
 	}

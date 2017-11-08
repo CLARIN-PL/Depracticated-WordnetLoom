@@ -18,618 +18,587 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 
 package pl.edu.pwr.wordnetloom.plugins.viwordnet.visualization.layout;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
-import org.apache.commons.collections15.Transformer;
-import org.apache.commons.collections15.map.LazyMap;
-
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
+import org.apache.commons.collections15.Transformer;
+import org.apache.commons.collections15.map.LazyMap;
 import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnEdge;
 import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnNodeAlphabeticComparator;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.*;
+
 public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
 
-	/**
-	 * total size of layout
-	 */
-	protected Dimension size = new Dimension(100, 100);
+    /**
+     * total size of layout
+     */
+    protected Dimension size = new Dimension(100, 100);
 
-	/**
-	 * graph to draw
-	 */
-	protected Graph<ViwnNode, ViwnEdge> graph;
+    /**
+     * graph to draw
+     */
+    protected Graph<ViwnNode, ViwnEdge> graph;
 
-	/**
-	 * nodes and its locations
-	 */
-	protected Map<ViwnNode, Point2D> locations = LazyMap.decorate(new HashMap<ViwnNode, Point2D>(),
-			new Transformer<ViwnNode, Point2D>() {
-				public Point2D transform(ViwnNode arg0) {
-					return new Point2D.Double();
-				}
-			});
+    /**
+     * nodes and its locations
+     */
+    protected Map<ViwnNode, Point2D> locations = LazyMap.decorate(new HashMap<>(),
+            new Transformer<ViwnNode, Point2D>() {
+                public Point2D transform(ViwnNode arg0) {
+                    return new Point2D.Double();
+                }
+            });
 
-	protected transient Set<ViwnNode> alreadyDone = new HashSet<ViwnNode>();
+    protected transient Set<ViwnNode> alreadyDone = new HashSet<>();
 
-	/**
-	 * default distance from node to node at x axis
-	 */
-	protected final static int DEFAULT_DISTX = 110;
+    /**
+     * default distance from node to node at x axis
+     */
+    protected final static int DEFAULT_DISTX = 110;
 
-	/**
-	 * default distance from node to node at y axis
-	 */
-	protected final static int DEFAULT_DISTY = 35;
+    /**
+     * default distance from node to node at y axis
+     */
+    protected final static int DEFAULT_DISTY = 35;
 
-	protected int distX = DEFAULT_DISTX;
-	protected int distY = DEFAULT_DISTY;
+    protected int distX = DEFAULT_DISTX;
+    protected int distY = DEFAULT_DISTY;
 
-	/**
-	 * Creates an instance for the specified graph with default X and Y
-	 * distances.
-	 * 
-	 * @param g
-	 *            graph to draw
-	 */
-	public ViwnLayout2(Graph<ViwnNode, ViwnEdge> g) {
-		this(g, DEFAULT_DISTX, DEFAULT_DISTY);
-	}
+    /**
+     * Creates an instance for the specified graph with default X and Y
+     * distances.
+     *
+     * @param g graph to draw
+     */
+    public ViwnLayout2(Graph<ViwnNode, ViwnEdge> g) {
+        this(g, DEFAULT_DISTX, DEFAULT_DISTY);
+    }
 
-	/**
-	 * Creates an instance for the specified graph, X distance, and Y distance.
-	 * 
-	 * @param g
-	 * @param distx
-	 * @param disty
-	 */
-	public ViwnLayout2(Graph<ViwnNode, ViwnEdge> g, int distx, int disty) {
-		if (g == null)
-			throw new IllegalArgumentException("Graph must be non-null");
-		if (distx < 1 || disty < 1)
-			throw new IllegalArgumentException("X and Y distances must each be positive");
-		this.graph = g;
-		this.distX = distx;
-		this.distY = disty;
-	}
+    /**
+     * Creates an instance for the specified graph, X distance, and Y distance.
+     *
+     * @param g
+     * @param distx
+     * @param disty
+     */
+    public ViwnLayout2(Graph<ViwnNode, ViwnEdge> g, int distx, int disty) {
+        if (g == null)
+            throw new IllegalArgumentException("Graph must be non-null");
+        if (distx < 1 || disty < 1)
+            throw new IllegalArgumentException("X and Y distances must each be positive");
+        graph = g;
+        distX = distx;
+        distY = disty;
+    }
 
-	public Graph<ViwnNode, ViwnEdge> getGraph() {
-		return graph;
-	}
+    public Graph<ViwnNode, ViwnEdge> getGraph() {
+        return graph;
+    }
 
-	public Dimension getSize() {
-		return size;
-	}
+    public Dimension getSize() {
+        return size;
+    }
 
-	public void initialize() {
-	}
+    public void initialize() {
+    }
 
-	/**
-	 * allow to drag 'n' drop all nodes
-	 */
-	public boolean isLocked(ViwnNode v) {
-		return false;
-	}
+    /**
+     * allow to drag 'n' drop all nodes
+     */
+    public boolean isLocked(ViwnNode v) {
+        return false;
+    }
 
-	/**
-	 * at the moment this feature is not implemented in this graph layout
-	 */
-	public void lock(ViwnNode v, boolean state) {
-	}
+    /**
+     * at the moment this feature is not implemented in this graph layout
+     */
+    public void lock(ViwnNode v, boolean state) {
+    }
 
-	// TODO Check
-	public void reset() {
-		this.alreadyDone.clear();
-		ViwnNode center = findRoot();
-		if (center != null)
-			mapNodes2Points(center, null, null);
-	}
+    // TODO Check
+    public void reset() {
+        alreadyDone.clear();
+        ViwnNode center = findRoot();
+        if (center != null)
+            mapNodes2Points(center, null, null);
+    }
 
-	/**
-	 * method tries to find root node of the graph
-	 * 
-	 * @return root node of graph or null if cannot find it
-	 */
-	private ViwnNode findRoot() {
-		for (ViwnNode n : graph.getVertices()) {
-			if (n.getSpawner() == null) {
-				return n;
-			}
-		}
-		return null;
-	}
+    /**
+     * method tries to find root node of the graph
+     *
+     * @return root node of graph or null if cannot find it
+     */
+    private ViwnNode findRoot() {
+        for (ViwnNode n : graph.getVertices()) {
+            if (n.getSpawner() == null) {
+                return n;
+            }
+        }
+        return null;
+    }
 
-	public void setGraph(Graph<ViwnNode, ViwnEdge> graph) {
-		this.graph = graph;
-	}
+    public void setGraph(Graph<ViwnNode, ViwnEdge> graph) {
+        this.graph = graph;
+    }
 
-	public void setInitializer(Transformer<ViwnNode, Point2D> initializer) {
-		for (ViwnNode n : graph.getVertices()) {
-			setLocation(n, initializer.transform(n));
-			alreadyDone.add(n);
-		}
-	}
+    public void setInitializer(Transformer<ViwnNode, Point2D> initializer) {
+        for (ViwnNode n : graph.getVertices()) {
+            setLocation(n, initializer.transform(n));
+            alreadyDone.add(n);
+        }
+    }
 
-	public void setLocation(ViwnNode v, Point2D location) {
-		locations.get(v).setLocation(location);
-	}
+    public void setLocation(ViwnNode v, Point2D location) {
+        locations.get(v).setLocation(location);
+    }
 
-	public void setSize(Dimension d) {
-		this.size = d;
-	}
+    public void setSize(Dimension d) {
+        size = d;
+    }
 
-	/**
-	 * @return location of the node
-	 */
-	public Point2D transform(ViwnNode arg0) {
-		return locations.get(arg0);
-	}
+    /**
+     * @return location of the node
+     */
+    public Point2D transform(ViwnNode arg0) {
+        return locations.get(arg0);
+    }
 
-	/**
-	 * @return center of layout area
-	 */
-	public Point2D getCenter() {
-		return new Point2D.Double(size.getWidth() / 2, size.getHeight() / 2);
-	}
+    /**
+     * @return center of layout area
+     */
+    public Point2D getCenter() {
+        return new Point2D.Double(size.getWidth() / 2, size.getHeight() / 2);
+    }
 
-	/**
-	 * set graph nodes locations
-	 * 
-	 * @param center
-	 *            main, central node
-	 */
-	public void mapNodes2Points(ViwnNode center) {
-		mapNodes2Points(center, null, null);
-	}
+    /**
+     * set graph nodes locations
+     *
+     * @param center main, central node
+     */
+    public void mapNodes2Points(ViwnNode center) {
+        mapNodes2Points(center, null, null);
+    }
 
 	/*
-	 * to allow user permanently change node placing: 1. when node(s) is taken
+     * to allow user permanently change node placing: 1. when node(s) is taken
 	 * from set of nodes - refresh layout 2. when relation was added - refresh
 	 * layout after expanding a node - place only expanded and its children
 	 * after reducing a node?
 	 */
-	/**
-	 * set graph nodes locations
-	 * 
-	 * TODO: bug fix #1 cycles in graph causes stack overflow, wont fix
-	 * 
-	 * @param center
-	 *            main, central node
-	 * @param loc
-	 *            location in which central node should stay, null for root node
-	 * @param placed
-	 *            nodes mapped in previous method calls
-	 * @return mapped in current call
-	 */
-	public Set<ViwnNode> mapNodes2Points(ViwnNode center, Point2D loc, Set<ViwnNode> placed) {
 
-		boolean root = false;
+    /**
+     * set graph nodes locations
+     * <p>
+     * TODO: bug fix #1 cycles in graph causes stack overflow, wont fix
+     *
+     * @param center main, central node
+     * @param loc    location in which central node should stay, null for root node
+     * @param placed nodes mapped in previous method calls
+     * @return mapped in current call
+     */
+    public Set<ViwnNode> mapNodes2Points(ViwnNode center, Point2D loc, Set<ViwnNode> placed) {
 
-		if (loc == null) {
-			loc = new Point2D.Double(size.getHeight() / 2, size.getWidth() / 2);
-			root = true;
-		}
-		if (placed == null) {
-			placed = new HashSet<ViwnNode>();
-		}
+        boolean root = false;
 
-		// nodes mapped in actual method call
-		Set<ViwnNode> actual = new HashSet<ViwnNode>();
+        if (loc == null) {
+            loc = new Point2D.Double(size.getHeight() / 2, size.getWidth() / 2);
+            root = true;
+        }
+        if (placed == null) {
+            placed = new HashSet<>();
+        }
 
-		// map all nodes
-		if (!placed.contains(center)) {
+        // nodes mapped in actual method call
+        Set<ViwnNode> actual = new HashSet<>();
 
-			// place it in the center
-			setLocation(center, loc);
-			// mark as mapped
-			actual.add(center);
+        // map all nodes
+        if (!placed.contains(center)) {
 
-			// now, time to place its neighbors
+            // place it in the center
+            setLocation(center, loc);
+            // mark as mapped
+            actual.add(center);
 
-			// Divide neighbors according to relation type, and future place
-			// in graph
-			Set<ViwnNode> sbottom = new HashSet<ViwnNode>();
-			Set<ViwnNode> stop = new HashSet<ViwnNode>();
-			Set<ViwnNode> sright = new HashSet<ViwnNode>();
-			Set<ViwnNode> sleft = new HashSet<ViwnNode>();
+            // now, time to place its neighbors
 
-			Collection<ViwnEdge> edges = graph.getIncidentEdges(center);
+            // Divide neighbors according to relation type, and future place
+            // in graph
+            Set<ViwnNode> sbottom = new HashSet<>();
+            Set<ViwnNode> stop = new HashSet<>();
+            Set<ViwnNode> sright = new HashSet<>();
+            Set<ViwnNode> sleft = new HashSet<>();
 
-			for (ViwnEdge edge : edges) {
-				ViwnNode opposite = graph.getOpposite(center, edge);
+            Collection<ViwnEdge> edges = graph.getIncidentEdges(center);
 
-				if (center.equals(opposite.getSpawner()) && (opposite.getSpawnDir() != null)) {
-					switch (opposite.getSpawnDir()) {
-					case BOTTOM:
-						sbottom.add(opposite);
-						break;
-					case TOP:
-						stop.add(opposite);
-						break;
-					case RIGHT:
-						sright.add(opposite);
-						break;
-					case LEFT:
-						sleft.add(opposite);
-						break;
-					}
-				}
-			}
+            for (ViwnEdge edge : edges) {
+                ViwnNode opposite = graph.getOpposite(center, edge);
 
-			// sort children alphabetically
-			Vector<ViwnNode> bottom = new Vector<ViwnNode>(sbottom);
-			Vector<ViwnNode> top = new Vector<ViwnNode>(stop);
-			Vector<ViwnNode> right = new Vector<ViwnNode>(sright);
-			Vector<ViwnNode> left = new Vector<ViwnNode>(sleft);
-			Collections.sort(bottom, new ViwnNodeAlphabeticComparator());
-			Collections.sort(top, new ViwnNodeAlphabeticComparator());
-			Collections.sort(right, new ViwnNodeAlphabeticComparator());
-			Collections.sort(left, new ViwnNodeAlphabeticComparator());
+                if (center.equals(opposite.getSpawner()) && (opposite.getSpawnDir() != null)) {
+                    switch (opposite.getSpawnDir()) {
+                        case BOTTOM:
+                            sbottom.add(opposite);
+                            break;
+                        case TOP:
+                            stop.add(opposite);
+                            break;
+                        case RIGHT:
+                            sright.add(opposite);
+                            break;
+                        case LEFT:
+                            sleft.add(opposite);
+                            break;
+                    }
+                }
+            }
 
-			// place a node here ;-)
-			Point p = new Point();
-			double ile;
-			int i = 0;
+            // sort children alphabetically
+            Vector<ViwnNode> bottom = new Vector<>(sbottom);
+            Vector<ViwnNode> top = new Vector<>(stop);
+            Vector<ViwnNode> right = new Vector<>(sright);
+            Vector<ViwnNode> left = new Vector<>(sleft);
+            bottom.sort(new ViwnNodeAlphabeticComparator());
+            top.sort(new ViwnNodeAlphabeticComparator());
+            right.sort(new ViwnNodeAlphabeticComparator());
+            left.sort(new ViwnNodeAlphabeticComparator());
 
-			// place lower
-			if(bottom.size() > 0)
-			{
-				p.x = (int) loc.getX() - ((bottom.size() - 1) * distX) / 2 + distX / 11;
-				p.y = (int) loc.getY() + (distY * bottom.size()) / 2;
-				ile = bottom.size();
+            // place a node here ;-)
+            Point p = new Point();
+            double ile;
+            int i = 0;
 
-				for (ViwnNode vn : bottom) {
-					// place it
-					setLocation(vn, new Point2D.Double(p.x,
-							p.y + Math.sqrt(ile) * distY * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile))));
-					// mark as mapped
-					actual.add(vn);
+            // place lower
+            if (bottom.size() > 0) {
+                p.x = (int) loc.getX() - ((bottom.size() - 1) * distX) / 2 + distX / 11;
+                p.y = (int) loc.getY() + (distY * bottom.size()) / 2;
+                ile = bottom.size();
 
-					p.x += distX;
-					++i;
-				}
-			}
+                for (ViwnNode vn : bottom) {
+                    // place it
+                    setLocation(vn, new Point2D.Double(p.x,
+                            p.y + Math.sqrt(ile) * distY * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile))));
+                    // mark as mapped
+                    actual.add(vn);
 
-			// place upper
-			if(top.size() > 0)
-			{
-				p.x = (int) loc.getX() - ((top.size() - 1) * distX) / 2 + distX / 11;
-				p.y = (int) loc.getY() - (distY * top.size()) / 2;
-				ile = top.size();
-				i = 0;
+                    p.x += distX;
+                    ++i;
+                }
+            }
 
-				for (ViwnNode vn : top) {
-					// place it
-					setLocation(vn, new Point2D.Double(p.x,
-							p.y - Math.sqrt(ile) * distY * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile))));
-					// mark as mapped
-					actual.add(vn);
+            // place upper
+            if (top.size() > 0) {
+                p.x = (int) loc.getX() - ((top.size() - 1) * distX) / 2 + distX / 11;
+                p.y = (int) loc.getY() - (distY * top.size()) / 2;
+                ile = top.size();
+                i = 0;
 
-					p.x += distX;
-					++i;
-				}
-			}
-			double updownmax = Math.max((double) Math.max(bottom.size(), top.size()), 1);
-			// place right
-			if(right.size()>0)
-			{
-				if (updownmax < right.size()) {
-					p.x = (int) loc.getX() + distX + (int) ((updownmax - 1) * distX) / 2;
-				} else {
-					p.x = (int) loc.getX() + distX + ((right.size() - 1) * distX) / 2;
-				}
-				p.y = (int) loc.getY() - ((right.size() - 1) * distY) / 2 + distY / 3;
-				ile = right.size();
-				i = 0;
-				for (ViwnNode vn : right) {
-					// place it
-					setLocation(vn, new Point2D.Double(
-							(p.x + Math.sqrt(ile) * distY * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile))), p.y));
-					// mark as mapped
-					actual.add(vn);
+                for (ViwnNode vn : top) {
+                    // place it
+                    setLocation(vn, new Point2D.Double(p.x,
+                            p.y - Math.sqrt(ile) * distY * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile))));
+                    // mark as mapped
+                    actual.add(vn);
 
-					p.y += distY;
-					++i;
-				}
-			}
+                    p.x += distX;
+                    ++i;
+                }
+            }
+            double updownmax = Math.max((double) Math.max(bottom.size(), top.size()), 1);
+            // place right
+            if (right.size() > 0) {
+                if (updownmax < right.size()) {
+                    p.x = (int) loc.getX() + distX + (int) ((updownmax - 1) * distX) / 2;
+                } else {
+                    p.x = (int) loc.getX() + distX + ((right.size() - 1) * distX) / 2;
+                }
+                p.y = (int) loc.getY() - ((right.size() - 1) * distY) / 2 + distY / 3;
+                ile = right.size();
+                i = 0;
+                for (ViwnNode vn : right) {
+                    // place it
+                    setLocation(vn, new Point2D.Double(
+                            (p.x + Math.sqrt(ile) * distY * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile))), p.y));
+                    // mark as mapped
+                    actual.add(vn);
 
-			// place left
-			if(left.size()>0)
-			{
-				if (updownmax < left.size()) {
-					p.x = (int) loc.getX() - distX - (int) ((updownmax - 1) * distX) / 2;
-				} else {
-					p.x = (int) loc.getX() - distX - ((left.size() - 1) * distX) / 2;
-				}
-				p.y = (int) loc.getY() - ((left.size() - 1) * distY) / 2 + distY / 3;
-				ile = left.size();
-				i = 0;
+                    p.y += distY;
+                    ++i;
+                }
+            }
 
-				for (ViwnNode vn : left) {
-					// place it
-					setLocation(vn, new Point2D.Double(
-							p.x - Math.sqrt(ile) * distY * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile)), p.y));
-					// mark as mapped
-					actual.add(vn);
+            // place left
+            if (left.size() > 0) {
+                if (updownmax < left.size()) {
+                    p.x = (int) loc.getX() - distX - (int) ((updownmax - 1) * distX) / 2;
+                } else {
+                    p.x = (int) loc.getX() - distX - ((left.size() - 1) * distX) / 2;
+                }
+                p.y = (int) loc.getY() - ((left.size() - 1) * distY) / 2 + distY / 3;
+                ile = left.size();
+                i = 0;
 
-					p.y += distY;
-					++i;
-				}
-			}
-			
-			// =========================== lower level
-			for (ViwnNode vn : bottom) {
-					Set<ViwnNode> children = mapNodes2Points(vn, locations.get(vn), placed);
+                for (ViwnNode vn : left) {
+                    // place it
+                    setLocation(vn, new Point2D.Double(
+                            p.x - Math.sqrt(ile) * distY * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile)), p.y));
+                    // mark as mapped
+                    actual.add(vn);
 
-					correctSubGraphMapping(center, vn, actual, children);
-					actual.addAll(children);
-			}
-			for (ViwnNode vn : top) {
-					Set<ViwnNode> children = mapNodes2Points(vn, locations.get(vn), placed);
-					correctSubGraphMapping(center, vn, actual, children);
+                    p.y += distY;
+                    ++i;
+                }
+            }
 
-					actual.addAll(children);
-			}
-			for (ViwnNode vn : right) {
-					Set<ViwnNode> children = mapNodes2Points(vn, locations.get(vn), placed);
+            // =========================== lower level
+            for (ViwnNode vn : bottom) {
+                Set<ViwnNode> children = mapNodes2Points(vn, locations.get(vn), placed);
 
-					correctSubGraphMapping(center, vn, actual, children);
-					actual.addAll(children);
-			}
-			for (ViwnNode vn : left) {
-					Set<ViwnNode> children = mapNodes2Points(vn, locations.get(vn), placed);
+                correctSubGraphMapping(center, vn, actual, children);
+                actual.addAll(children);
+            }
+            for (ViwnNode vn : top) {
+                Set<ViwnNode> children = mapNodes2Points(vn, locations.get(vn), placed);
+                correctSubGraphMapping(center, vn, actual, children);
 
-					correctSubGraphMapping(center, vn, actual, children);
-					actual.addAll(children);
-			}
+                actual.addAll(children);
+            }
+            for (ViwnNode vn : right) {
+                Set<ViwnNode> children = mapNodes2Points(vn, locations.get(vn), placed);
 
-		}
-		if (root) {
-			alreadyDone.clear();
-			alreadyDone.addAll(graph.getVertices());
+                correctSubGraphMapping(center, vn, actual, children);
+                actual.addAll(children);
+            }
+            for (ViwnNode vn : left) {
+                Set<ViwnNode> children = mapNodes2Points(vn, locations.get(vn), placed);
 
-			// correct vertices locations and set size
-			correctGraph(alreadyDone, center);
-		}
+                correctSubGraphMapping(center, vn, actual, children);
+                actual.addAll(children);
+            }
 
-		return actual;
-	}
+        }
+        if (root) {
+            alreadyDone.clear();
+            alreadyDone.addAll(graph.getVertices());
 
-	/**
-	 * @param col
-	 *            collection of nodes which location should be corrected
-	 * @param dx
-	 *            x axis correction
-	 * @param dy
-	 *            y axis correction
-	 */
-	protected void correctNode2PointMapping(Collection<ViwnNode> col, int dx, int dy) {
-		for (ViwnNode vn : col) {
-			Point2D current = locations.get(vn);
-			setLocation(vn, new Point2D.Double(current.getX() + dx, current.getY() + dy));
-		}
-	}
+            // correct vertices locations and set size
+            correctGraph(alreadyDone, center);
+        }
 
-	/**
-	 * @param parent
-	 *            parent of central node of collection to correct
-	 * @param center
-	 *            central node of set to correct
-	 * @param upper
-	 *            parent node neighbors
-	 * @param lower
-	 *            central node neighbors, nodes to correct
-	 **/
-	protected void correctSubGraphMapping(ViwnNode parent, ViwnNode center, Collection<ViwnNode> upper,
-			Collection<ViwnNode> lower) {
-		// calculate direction vector from parent to center
-		Point2D par = locations.get(parent);
-		Point2D cen = locations.get(center);
-		Point2D dir = new Point2D.Double((cen.getX() - par.getX()), (cen.getY() - par.getY()));
+        return actual;
+    }
 
-		double dist = dir.distance(0, 0);
-		dir.setLocation(dir.getX() / dist, dir.getY() / dist);
+    /**
+     * @param col collection of nodes which location should be corrected
+     * @param dx  x axis correction
+     * @param dy  y axis correction
+     */
+    protected void correctNode2PointMapping(Collection<ViwnNode> col, int dx, int dy) {
+        for (ViwnNode vn : col) {
+            Point2D current = locations.get(vn);
+            setLocation(vn, new Point2D.Double(current.getX() + dx, current.getY() + dy));
+        }
+    }
 
-		boolean end = false;
-		int[] dim;
+    /**
+     * @param parent parent of central node of collection to correct
+     * @param center central node of set to correct
+     * @param upper  parent node neighbors
+     * @param lower  central node neighbors, nodes to correct
+     **/
+    protected void correctSubGraphMapping(ViwnNode parent, ViwnNode center, Collection<ViwnNode> upper,
+                                          Collection<ViwnNode> lower) {
+        // calculate direction vector from parent to center
+        Point2D par = locations.get(parent);
+        Point2D cen = locations.get(center);
+        Point2D dir = new Point2D.Double((cen.getX() - par.getX()), (cen.getY() - par.getY()));
 
-		Set<ViwnNode> ad = new HashSet<ViwnNode>(upper);
-		ad.removeAll(lower);
+        double dist = dir.distance(0, 0);
+        dir.setLocation(dir.getX() / dist, dir.getY() / dist);
 
-		// calculate boundaries of subgraph
-		dim = findMappedGraphBoundaries(center, lower);
-		// check for conflicts
-		end = !isAnyInsideBounds(ad, dim);
+        boolean end = false;
+        int[] dim;
 
-		while (!end) {
-			// move subgraph
-			correctNode2PointMapping(lower, (int) (100 * dir.getX()), (int) (100 * dir.getY()));
-			// calculate boundaries of subgraph
-			dim = findMappedGraphBoundaries(center, lower);
-			// check for conflicts
-			end = !isAnyInsideBounds(ad, dim);
-		}
+        Set<ViwnNode> ad = new HashSet<>(upper);
+        ad.removeAll(lower);
 
-	}
+        // calculate boundaries of subgraph
+        dim = findMappedGraphBoundaries(center, lower);
+        // check for conflicts
+        end = !isAnyInsideBounds(ad, dim);
 
-	/**
-	 * @param center
-	 *            center of subgraph to get
-	 * @return subgraph from node center
-	 */
-	@SuppressWarnings("unused")
-	private Set<ViwnNode> getSubGraphOf(ViwnNode center) {
-		Set<ViwnNode> ret = new HashSet<ViwnNode>();
-		ret.add(center);
+        while (!end) {
+            // move subgraph
+            correctNode2PointMapping(lower, (int) (100 * dir.getX()), (int) (100 * dir.getY()));
+            // calculate boundaries of subgraph
+            dim = findMappedGraphBoundaries(center, lower);
+            // check for conflicts
+            end = !isAnyInsideBounds(ad, dim);
+        }
 
-		for (ViwnEdge edge : graph.getIncidentEdges(center)) {
-			ViwnNode opposite = graph.getOpposite(center, edge);
-			if (center.equals(opposite.getSpawner()) && (opposite.getSpawnDir() != null))
-				ret.addAll(getSubGraphOf(opposite));
-		}
+    }
 
-		return ret;
-	}
+    /**
+     * @param center center of subgraph to get
+     * @return subgraph from node center
+     */
+    private Set<ViwnNode> getSubGraphOf(ViwnNode center) {
+        Set<ViwnNode> ret = new HashSet<>();
+        ret.add(center);
 
-	/**
-	 * @param col
-	 *            collection of vertices to check
-	 * @param bounds
-	 *            bounds in which vertices should not be
-	 * @return true if at least one node from col is inside bounds
-	 */
-	protected boolean isAnyInsideBounds(Collection<ViwnNode> col, int[] bounds) {
-		for (ViwnNode vn : col) {
-			if (bounds[0] < locations.get(vn).getX() && bounds[1] > locations.get(vn).getX()
-					&& bounds[2] < locations.get(vn).getY() && bounds[3] > locations.get(vn).getY())
-				return true;
-		}
-		return false;
-	}
+        for (ViwnEdge edge : graph.getIncidentEdges(center)) {
+            ViwnNode opposite = graph.getOpposite(center, edge);
+            if (center.equals(opposite.getSpawner()) && (opposite.getSpawnDir() != null))
+                ret.addAll(getSubGraphOf(opposite));
+        }
 
-	/**
-	 * @param col
-	 *            collection of graph nodes
-	 * @return graph dimension
-	 */
-	protected Dimension calcSetSize(Collection<ViwnNode> col) {
-		if (col.size() > 0) {
-			int minx, maxx, miny, maxy;
-			ViwnNode n = col.iterator().next();
-			minx = maxx = (int) locations.get(n).getX();
-			miny = maxy = (int) locations.get(n).getY();
+        return ret;
+    }
 
-			for (ViwnNode vn : col) {
-				Point2D p = locations.get(vn);
-				if (p.getX() > maxx)
-					maxx = (int) p.getX();
-				else if (p.getX() < minx)
-					minx = (int) p.getX();
-				if (p.getY() > maxy)
-					maxy = (int) p.getY();
-				else if (p.getY() < miny)
-					miny = (int) p.getY();
-			}
+    /**
+     * @param col    collection of vertices to check
+     * @param bounds bounds in which vertices should not be
+     * @return true if at least one node from col is inside bounds
+     */
+    protected boolean isAnyInsideBounds(Collection<ViwnNode> col, int[] bounds) {
+        for (ViwnNode vn : col) {
+            if (bounds[0] < locations.get(vn).getX() && bounds[1] > locations.get(vn).getX()
+                    && bounds[2] < locations.get(vn).getY() && bounds[3] > locations.get(vn).getY())
+                return true;
+        }
+        return false;
+    }
 
-			return (new Dimension((maxx - minx), (maxy - miny)));
-		} else
-			return new Dimension();
-	}
+    /**
+     * @param col collection of graph nodes
+     * @return graph dimension
+     */
+    protected Dimension calcSetSize(Collection<ViwnNode> col) {
+        if (col.size() > 0) {
+            int minx, maxx, miny, maxy;
+            ViwnNode n = col.iterator().next();
+            minx = maxx = (int) locations.get(n).getX();
+            miny = maxy = (int) locations.get(n).getY();
 
-	/**
-	 * @param central
-	 *            central node
-	 * @param col
-	 *            collection of already mapped vertices
-	 * @return table of 4 integers minx, maxx, miny, maxy
-	 */
-	protected int[] findMappedGraphBoundaries(ViwnNode central, Collection<ViwnNode> col) {
+            for (ViwnNode vn : col) {
+                Point2D p = locations.get(vn);
+                if (p.getX() > maxx)
+                    maxx = (int) p.getX();
+                else if (p.getX() < minx)
+                    minx = (int) p.getX();
+                if (p.getY() > maxy)
+                    maxy = (int) p.getY();
+                else if (p.getY() < miny)
+                    miny = (int) p.getY();
+            }
 
-		// boundary coordinates
-		int minx, maxx, miny, maxy;
+            return (new Dimension((maxx - minx), (maxy - miny)));
+        } else
+            return new Dimension();
+    }
 
-		// random node to initialize boundary coordinates
-		minx = maxx = (int) locations.get(central).getX();
-		miny = maxy = (int) locations.get(central).getY();
+    /**
+     * @param central central node
+     * @param col     collection of already mapped vertices
+     * @return table of 4 integers minx, maxx, miny, maxy
+     */
+    protected int[] findMappedGraphBoundaries(ViwnNode central, Collection<ViwnNode> col) {
 
-		// for all nodes already placed, check their locations
-		for (ViwnNode vn : col) {
-			Point2D p = locations.get(vn);
-			if (p.getX() > maxx)
-				maxx = (int) p.getX();
-			else if (p.getX() < minx)
-				minx = (int) p.getX();
-			if (p.getY() > maxy)
-				maxy = (int) p.getY();
-			else if (p.getY() < miny)
-				miny = (int) p.getY();
-		}
+        // boundary coordinates
+        int minx, maxx, miny, maxy;
 
-		return new int[] { minx - distX, maxx + distX, miny - distY, maxy + distY };
-	}
+        // random node to initialize boundary coordinates
+        minx = maxx = (int) locations.get(central).getX();
+        miny = maxy = (int) locations.get(central).getY();
 
-	/*
-	 * place all vertices in positive coordinates set size value to contain full
-	 * graph in it
-	 * 
-	 * @param toCorrect collection of nodes which position should be corrected
-	 * 
-	 * @param anode node from graph
-	 */
-	protected void correctGraph(Collection<ViwnNode> toCorrect, ViwnNode anode) {
+        // for all nodes already placed, check their locations
+        for (ViwnNode vn : col) {
+            Point2D p = locations.get(vn);
+            if (p.getX() > maxx)
+                maxx = (int) p.getX();
+            else if (p.getX() < minx)
+                minx = (int) p.getX();
+            if (p.getY() > maxy)
+                maxy = (int) p.getY();
+            else if (p.getY() < miny)
+                miny = (int) p.getY();
+        }
 
-		// boundary coordinates
-		int minx, maxx, miny, maxy;
+        return new int[]{minx - distX, maxx + distX, miny - distY, maxy + distY};
+    }
 
-		// initialize boundary coordinates
-		minx = maxx = (int) locations.get(anode).getX();
-		miny = maxy = (int) locations.get(anode).getY();
+    /*
+     * place all vertices in positive coordinates set size value to contain full
+     * graph in it
+     *
+     * @param toCorrect collection of nodes which position should be corrected
+     *
+     * @param anode node from graph
+     */
+    protected void correctGraph(Collection<ViwnNode> toCorrect, ViwnNode anode) {
 
-		// for all nodes already place, check their locations
-		for (ViwnNode vn : toCorrect) {
-			Point2D p = locations.get(vn);
-			if (p.getX() > maxx)
-				maxx = (int) p.getX();
-			else if (p.getX() < minx)
-				minx = (int) p.getX();
-			if (p.getY() > maxy)
-				maxy = (int) p.getY();
-			else if (p.getY() < miny)
-				miny = (int) p.getY();
-		}
+        // boundary coordinates
+        int minx, maxx, miny, maxy;
 
-		// replace nodes
-		correctNode2PointMapping(toCorrect, -minx + distX, -miny + distY);
+        // initialize boundary coordinates
+        minx = maxx = (int) locations.get(anode).getX();
+        miny = maxy = (int) locations.get(anode).getY();
 
-		// set graph size
-		size = new Dimension((maxx - minx) + 2 * distX, (maxy - miny) + 2 * distY);
-	}
+        // for all nodes already place, check their locations
+        for (ViwnNode vn : toCorrect) {
+            Point2D p = locations.get(vn);
+            if (p.getX() > maxx)
+                maxx = (int) p.getX();
+            else if (p.getX() < minx)
+                minx = (int) p.getX();
+            if (p.getY() > maxy)
+                maxy = (int) p.getY();
+            else if (p.getY() < miny)
+                miny = (int) p.getY();
+        }
 
-	/**
-	 * place all vertices in positive coordinates set size value to contain full
-	 * graph in it
-	 * 
-	 * @param toCorrect
-	 *            collection of nodes which position should be corrected
-	 */
-	protected void correctGraph(Collection<ViwnNode> toCorrect) {
+        // replace nodes
+        correctNode2PointMapping(toCorrect, -minx + distX, -miny + distY);
 
-		// boundary coordinates
-		int minx, maxx, miny, maxy;
+        // set graph size
+        size = new Dimension((maxx - minx) + 2 * distX, (maxy - miny) + 2 * distY);
+    }
 
-		// initialize boundary coordinates
-		minx = maxx = size.width / 2;
-		miny = maxy = size.height / 2;
+    /**
+     * place all vertices in positive coordinates set size value to contain full
+     * graph in it
+     *
+     * @param toCorrect collection of nodes which position should be corrected
+     */
+    protected void correctGraph(Collection<ViwnNode> toCorrect) {
 
-		// for all nodes already place, check their locations
-		for (ViwnNode vn : toCorrect) {
-			Point2D p = locations.get(vn);
-			if (p.getX() > maxx)
-				maxx = (int) p.getX();
-			else if (p.getX() < minx)
-				minx = (int) p.getX();
-			if (p.getY() > maxy)
-				maxy = (int) p.getY();
-			else if (p.getY() < miny)
-				miny = (int) p.getY();
-		}
+        // boundary coordinates
+        int minx, maxx, miny, maxy;
 
-		// replace nodes
-		correctNode2PointMapping(toCorrect, -minx + distX, -miny + distY);
+        // initialize boundary coordinates
+        minx = maxx = size.width / 2;
+        miny = maxy = size.height / 2;
 
-		// set graph size
-		size = new Dimension((maxx - minx) + 2 * distX, (maxy - miny) + 2 * distY);
+        // for all nodes already place, check their locations
+        for (ViwnNode vn : toCorrect) {
+            Point2D p = locations.get(vn);
+            if (p.getX() > maxx)
+                maxx = (int) p.getX();
+            else if (p.getX() < minx)
+                minx = (int) p.getX();
+            if (p.getY() > maxy)
+                maxy = (int) p.getY();
+            else if (p.getY() < miny)
+                miny = (int) p.getY();
+        }
 
-	}
+        // replace nodes
+        correctNode2PointMapping(toCorrect, -minx + distX, -miny + distY);
+
+        // set graph size
+        size = new Dimension((maxx - minx) + 2 * distX, (maxy - miny) + 2 * distY);
+
+    }
 
 }
