@@ -364,17 +364,16 @@ public class ViWordNetService extends AbstractService
         ViwnEdgeSynset.relsColors = rel_colors;
     }
 
-    // TODO: poprawić proporties
-    // TODO: optymalizacja
-    private void loadRelationsSides() {
+    //TODO: Move side displaying to db
+    private void loadSynsetRelationsSides() {
         InputStreamReader istrem = null;
         try {
-            InputStream file = new FileInputStream("config/disp_relations.cfg");
+            InputStream file = new FileInputStream("config/display_synset_relations.cfg");
             istrem = new InputStreamReader(file, "UTF8");
 
         } catch (FileNotFoundException e) {
             Logger.getLogger(ViWordNetPlugin.class).log(Level.WARN,
-                    "relations config file: config/disp_relations.cfg not found");
+                    "relations config file: config/display_synset_relations.cfg not found");
         } catch (UnsupportedEncodingException e) {
             System.err.println(e.toString());
         }
@@ -440,15 +439,77 @@ public class ViWordNetService extends AbstractService
         ViwnNodeAlphabeticComparator.order = order;
     }
 
-    /**
-     * (non-Javadoc)
-     *
-     * @see Service#onStart()
-     */
+    //TODO: Move side displaying to db
+    private void loadSenseRelationsSides() {
+        InputStreamReader istrem = null;
+        try {
+            InputStream file = new FileInputStream("config/display_lexical_relations.cfg");
+            istrem = new InputStreamReader(file, "UTF8");
+
+        } catch (FileNotFoundException e) {
+            Logger.getLogger(ViWordNetPlugin.class).log(Level.WARN,
+                    "relations config file: config/display_lexical_relations.cfg not found");
+        } catch (UnsupportedEncodingException e) {
+            System.err.println(e.toString());
+        }
+
+        ArrayList[] arrayLists = new ArrayList[]{new ArrayList<RelationTypes>(), new ArrayList<RelationTypes>(),
+                new ArrayList<RelationTypes>(), new ArrayList<RelationTypes>()};
+        ArrayList<RelationTypes>[] relTypes = arrayLists;
+
+        Properties conf = new Properties();
+        try {
+            if (istrem == null)
+                throw new IOException();
+
+            conf.load(istrem);
+
+            for (Direction dir : Direction.values()) {
+                String val = conf.getProperty(dir.getAsString());
+                if (val != null) {
+                    String[] rels = val.split(",");
+                    for (String s : rels) {
+                        RelationTypes rt = RelationTypes.getByName(s);
+                        if (rt != null) {
+                            Collection<RelationTypes> children = rt.getChildren();
+                            if (children != null)
+                                for (RelationTypes r : children) {
+                                    relTypes[dir.ordinal()].add(r);
+                                }
+                            else {
+                                relTypes[dir.ordinal()].add(rt);
+                            }
+                        } else {
+                            Logger.getLogger(ViWordNetPlugin.class).log(Level.WARN, s + " is not a relation");
+                        }
+                    }
+                } else {
+                    Logger.getLogger(ViWordNetPlugin.class).log(Level.WARN,
+                            "relations in direction " + dir.name() + " are not defined");
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("DEFAULT RELATION TYPES");
+        }
+
+        ArrayList<RelationTypes> order = new ArrayList<>();
+
+        for (Direction dir : Direction.values()) {
+            ViwnNodeSense.relTypes[dir.ordinal()].addAll(relTypes[dir.ordinal()]);
+            order.addAll(relTypes[dir.ordinal()]);
+        }
+
+        ViwnNodeAlphabeticComparator.order = order;
+    }
+
+
     public void onStart() {
 
         new Thread(() -> {
-            loadRelationsSides();
+            loadSynsetRelationsSides();
+            loadSenseRelationsSides();
             loadRelsColors();
             loadPosBackgroundColors();
             loadPosFrameColors();

@@ -35,9 +35,6 @@ import java.util.*;
 import java.util.List;
 
 public class ViwnNodeSense extends ViwnNodeRoot implements Comparable<ViwnNodeSense> {
-    public enum State {
-        EXPANDED, SEMI_EXPANDED, NOT_EXPANDED
-    }
 
     public static HashMap<PartOfSpeech, Color> PosBgColors = new HashMap<>();
 

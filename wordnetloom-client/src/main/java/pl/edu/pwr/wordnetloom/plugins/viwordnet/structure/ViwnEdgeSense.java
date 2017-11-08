@@ -152,19 +152,17 @@ public class ViwnEdgeSense extends ViwnEdge {
     }
 
     @Override
-    public int hashCode() {
-        if (relation == null)
-            throw new IllegalStateException();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ViwnEdgeSense)) return false;
 
-        return relation.hashCode();
+        ViwnEdgeSense that = (ViwnEdgeSense) o;
+
+        return relation != null ? relation.equals(that.relation) : that.relation == null;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || !(o instanceof ViwnEdgeSense))
-            return false;
-        if (relation == null)
-            throw new IllegalStateException();
-        return relation.equals(((ViwnEdgeSense) o).relation);
+    public int hashCode() {
+        return relation != null ? relation.hashCode() : 0;
     }
 }

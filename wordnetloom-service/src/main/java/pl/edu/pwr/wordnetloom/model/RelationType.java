@@ -175,17 +175,6 @@ public class RelationType implements Serializable, Comparable<RelationType> {
         this.position = position;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || !(o instanceof RelationType))
-            return false;
-        RelationType e = (RelationType) o;
-
-        if (id == null) return false;
-        return id.equals(e.getId());
-    }
-
     public boolean isMultilingual() {
         return multilingual;
     }
@@ -195,11 +184,21 @@ public class RelationType implements Serializable, Comparable<RelationType> {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RelationType)) return false;
+
+        RelationType that = (RelationType) o;
+
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        return lexicon != null ? lexicon.equals(that.lexicon) : that.lexicon == null;
+    }
+
+    @Override
     public int hashCode() {
-        int hashCode = (id.hashCode());
-        if (hashCode == 0)
-            return super.hashCode();
-        return hashCode;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (lexicon != null ? lexicon.hashCode() : 0);
+        return result;
     }
 
     @Override

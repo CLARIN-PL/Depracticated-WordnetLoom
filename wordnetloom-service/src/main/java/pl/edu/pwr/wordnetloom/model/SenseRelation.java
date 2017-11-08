@@ -130,23 +130,19 @@ public class SenseRelation implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || !(o instanceof SenseRelation))
-            return false;
-        SenseRelation e = (SenseRelation) o;
+        if (this == o) return true;
+        if (!(o instanceof SenseRelation)) return false;
 
-        if (id == null)
-            return false;
-        return id.equals(e.getId());
+        SenseRelation that = (SenseRelation) o;
+
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        return relation != null ? relation.equals(that.relation) : that.relation == null;
     }
 
     @Override
     public int hashCode() {
-        int hashCode = (id.hashCode());
-        if (hashCode == 0)
-            return super.hashCode();
-        return hashCode;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (relation != null ? relation.hashCode() : 0);
+        return result;
     }
-
 }

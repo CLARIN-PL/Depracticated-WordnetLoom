@@ -56,7 +56,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
         }
     }
 
-    private void drawVertexArea(ViwnNodeSynset.State state, Shape shape, boolean horiz, GraphicsDecorator g) {
+    private void drawVertexArea(State state, Shape shape, boolean horiz, GraphicsDecorator g) {
         switch (state) {
             case NOT_EXPANDED:
                 g.setColor(Color.blue);
@@ -145,7 +145,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
 
                 boolean hide = false;
 
-                if (node.getState(rclass) == ViwnNodeSynset.State.EXPANDED) {
+                if (node.getState(rclass) == State.EXPANDED) {
                     hide = true;
                     Iterator<ViwnEdgeSynset> itr = node.getRelation(rclass).iterator();
                     while (hide && itr.hasNext()) {
@@ -213,31 +213,132 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
                 pos.y + 0.25f * metrics.getHeight());
 
         if (LexiconManager.getInstance().getLexiconMarker())
-            renderLexiconMarker(node, pos, g);
+            renderLexiconMarker(node.getPos(), node.getLexiconLabel(), pos, g);
 
         g.setFont(old_font);
     }
 
-    private void renderLexiconMarker(ViwnNodeSynset node, Point2D.Float pos,
+    private void renderSense(
+            RenderContext<ViwnNode, ViwnEdge> rc,
+            Point2D p,
+            ViwnNodeSense node,
+            Layout<ViwnNode, ViwnEdge> layout) {
+        Point2D.Float pos = new Point2D.Float((float) p.getX(), (float) p.getY());
+
+        Shape shape = rc.getVertexShapeTransformer().transform(node);
+        GraphicsDecorator g = rc.getGraphicsContext();
+
+        if (PosFrameColors.containsKey(node.getPos())) {
+            drawFrame(g, shape, PosFrameColors.get(node.getPos()), pos);
+        } else if (node.getFrame()) {
+            drawFrame(g, shape, new Color(50, 132, 255), pos);
+        }
+
+        delegate.paintVertex(rc, layout, node);
+
+        for (ViwnNode.Direction rclass : ViwnNode.Direction.values()) {
+            boolean horiz = true;
+            if (rclass == ViwnNode.Direction.LEFT ||
+                    rclass == ViwnNode.Direction.RIGHT)
+                horiz = false;
+
+            if (node.getRelation(rclass).size() > 0) {
+
+                boolean hide = false;
+
+                if (node.getState(rclass) == State.EXPANDED) {
+                    hide = true;
+                    Iterator<ViwnEdgeSense> itr = node.getRelation(rclass).iterator();
+                    while (hide && itr.hasNext()) {
+                        ViwnEdgeSense e = itr.next();
+                        if (layout.getGraph().containsEdge(e)) {
+                            Collection<ViwnNode> inc = layout.getGraph().getIncidentVertices(e);
+                            for (ViwnNode s : inc) {
+                                ViwnNodeSense ss = (ViwnNodeSense) s;
+                                if (ss.getSpawner() == node) {
+                                    hide = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!hide) {
+                    Area area = new Area(node.getButtonArea(rclass));
+                    area.transform(AffineTransform.getTranslateInstance(pos.x, pos.y));
+                    drawVertexArea(node.getState(rclass), area, horiz, g);
+                }
+            }
+        }
+
+        String text = node.getLabel();
+
+        Font old_font = g.getFont();
+        Font font = old_font;
+
+        FontMetrics metrics = g.getFontMetrics(font);
+        int width = metrics.stringWidth(text);
+
+        while (width > shape.getBounds().width - 20 &&
+                font.getSize() >= 10) {
+            float s = font.getSize();
+            font = font.deriveFont(s - 1);
+            metrics = g.getFontMetrics(font);
+            width = metrics.stringWidth(text);
+        }
+
+        if (width > shape.getBounds().width - 20) {
+            text = text.split(" \\(.*\\)")[0];
+            width = metrics.stringWidth(text);
+        }
+
+        if (width > shape.getBounds().width - 20) {
+            text = text.split(" [0-9]")[0];
+            width = metrics.stringWidth(text);
+        }
+
+        boolean shorten = false;
+        while (width > shape.getBounds().width - 20) {
+            text = text.substring(0, text.length() - 1);
+            width = metrics.stringWidth(text + "...");
+            shorten = true;
+        }
+
+        if (shorten)
+            text += "...";
+
+        g.setFont(font);
+        g.setColor(Color.black);
+        g.drawString(text, pos.x - width / 2,
+                pos.y + 0.25f * metrics.getHeight());
+
+        if (LexiconManager.getInstance().getLexiconMarker())
+            renderLexiconMarker(node.getPos(), node.getLexiconLabel(), pos, g);
+
+        g.setFont(old_font);
+    }
+
+    private void renderLexiconMarker(PartOfSpeech speech, String label, Point2D.Float pos,
                                      GraphicsDecorator g) {
 
         Shape lexicon = new Area(new RoundRectangle2D.Float(pos.x - 40, pos.y - 17, 23, 10, 12.5f, 5));
-        g.setColor(ViwnNodeSynset.PosBgColors.get(node.getPos()));
+        g.setColor(ViwnNodeSynset.PosBgColors.get(speech));
         g.fillRoundRect(Math.round(pos.x - 40), Math.round(pos.y - 17), 23, 10, 12, 5);
         g.setColor(Color.black);
         g.draw(lexicon);
         Font smallFont = new Font("Tahoma", Font.BOLD, 6);
         g.setFont(smallFont);
-        g.drawString(node.getLexiconLabel(), pos.x - 38, pos.y - 10);
+        g.drawString(label, pos.x - 38, pos.y - 10);
 
     }
 
     private void renderSet(
             RenderContext<ViwnNode, ViwnEdge> rc,
             Point2D p,
-            ViwnNodeSynsetSet node) {
+            int numberOfElements) {
         GraphicsDecorator g = rc.getGraphicsContext();
-        String text = "" + node.getSynsets().size();
+        String text = "" + numberOfElements;
 
         Font f = new Font("Sansserif", Font.BOLD, 14);
         Font old_font = g.getFont();
@@ -291,9 +392,14 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
 
         if (v instanceof ViwnNodeSynsetSet) {
             delegate.paintVertex(rc, layout, v);
-            renderSet(rc, p, (ViwnNodeSynsetSet) v);
+            renderSet(rc, p, ((ViwnNodeSynsetSet) v).getSynsets().size());
+        } else if (v instanceof ViwnNodeSenseSet) {
+            delegate.paintVertex(rc, layout, v);
+            renderSet(rc, p, ((ViwnNodeSenseSet) v).getSenses().size());
         } else if (v instanceof ViwnNodeSynset) {
             renderSynset(rc, p, (ViwnNodeSynset) v, layout);
+        } else if (v instanceof ViwnNodeSense) {
+            renderSense(rc, p, (ViwnNodeSense) v, layout);
         } else if (v instanceof ViwnNodeWord) {
             delegate.paintVertex(rc, layout, v);
             renderWord(rc, p, (ViwnNodeWord) v);

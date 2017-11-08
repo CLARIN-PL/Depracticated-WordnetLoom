@@ -20,14 +20,14 @@ package pl.edu.pwr.wordnetloom.plugins.viwordnet.listeners;
 
 /**
  * Defines an object listening for changes in graph
- * 
+ *
  * @author amusial
  */
 public interface GraphChangeListener {
 
-	/**
-	 * action made when changes in graph occurs
-	 */
-	public void graphChanged();
-	
+    /**
+     * action made when changes in graph occurs
+     */
+    void graphChanged();
+
 }

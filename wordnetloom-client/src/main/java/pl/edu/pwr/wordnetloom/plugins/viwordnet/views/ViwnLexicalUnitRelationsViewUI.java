@@ -30,7 +30,6 @@ import pl.edu.pwr.wordnetloom.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.plugins.lexeditor.frames.UnitsListFrame;
 import pl.edu.pwr.wordnetloom.plugins.viwordnet.ViWordNetPerspective;
 import pl.edu.pwr.wordnetloom.plugins.viwordnet.ViWordNetService;
-import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.systems.common.ValueContainer;
 import pl.edu.pwr.wordnetloom.systems.enums.RelationTypes;
@@ -113,7 +112,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI
         delRelation.setToolTipText(Hints.REMOVE_RELTAION_UNITS);
         installViewScopeShortCut(delRelation, 0, KeyEvent.VK_DELETE);
 
-        Icon visIcon = IconFontSwing.buildIcon(FontAwesome.MAGIC, 12);
+        Icon visIcon = IconFontSwing.buildIcon(FontAwesome.EYE, 12);
         visualizeRelations = new ButtonExt(this);
         visualizeRelations.setIcon(visIcon);
         visualizeRelations.setEnabled(true);
@@ -138,7 +137,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI
     /**
      * @param object - lexical unit - root of the tree
      */
-    private void fillTree(final Object object) {
+    private void fillTree(Object object) {
 
         SwingWorker<String, Object> worker = new SwingWorker<String, Object>() {
 
@@ -293,7 +292,6 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI
                         setText(
                                 (RelationTypes.get(((SenseRelation) dmtn.getUserObject()).getRelation().getId())).name());
                     } else if (dmtn.getUserObject() instanceof Pair<?, ?>) {
-                        @SuppressWarnings("unchecked")
                         Pair<Sense, SenseRelation> pair = (Pair<Sense, SenseRelation>) dmtn.getUserObject();
                         setText(pair.getA().toString());
                     }
@@ -381,7 +379,6 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI
 
             // delete relation
         } else if (ae.getSource() == delRelation) {
-            @SuppressWarnings("unchecked")
             SenseRelation relation = ((Pair<Sense, SenseRelation>) ((DefaultMutableTreeNode) ((DefaultMutableTreeNode) tree
                     .getLastSelectedPathComponent())).getUserObject()).getB();
 
@@ -409,14 +406,14 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI
                 }
                 refresh();
             }
-        } else if (ae.getSource() == visualizeRelations){
+        } else if (ae.getSource() == visualizeRelations) {
             ViWordNetService s = (ViWordNetService) workbench.getService("pl.edu.pwr.wordnetloom.plugins.viwordnet.ViWordNetService");
             s.addGraphView();
             Sense sense = (Sense) root.getUserObject();
             s.getActiveGraphView().loadSense(sense);
             ViWordNetPerspective p =
                     (ViWordNetPerspective) workbench.getActivePerspective();
-            p.setTabTitle("LUV "+sense.toString());
+            p.setTabTitle("LUV " + sense.toString());
         }
 
     }

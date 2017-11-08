@@ -113,7 +113,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
     final int MAX_SYNSETS_SHOWN = 4;
     final int MIN_SYNSETS_IN_GROUP = 2;
 
-    /* Transient synsetCache for graph biulding */
+    /* Transient cache for graph biulding */
     private HashMap<Long, SynsetDataEntry> synsetEntrySets = new HashMap<>();
     private HashMap<Long, SenseDataEntry> senseEntrySets = new HashMap<>();
 
@@ -126,11 +126,11 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
     }
 
     public SynsetDataEntry getEntrySetForSynset(Long id) {
-        return synsetEntrySets.get(id); // if there is no synsetCache returns null
+        return synsetEntrySets.get(id);
     }
 
     public SenseDataEntry getEntrySetForSense(Long id) {
-        return senseEntrySets.get(id); // if there is no synsetCache returns null
+        return senseEntrySets.get(id);
     }
 
     public void addSynsetToCash(Long synsetId, ViwnNodeSynset node) {
@@ -327,14 +327,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
             if (n instanceof ViwnNodeSynset) {
                 for (Direction rclass : Direction.values()) {
                     ViwnNodeSynset nn = (ViwnNodeSynset) n;
-                    nn.setState(rclass, ViwnNodeSynset.State.NOT_EXPANDED);
+                    nn.setState(rclass, State.NOT_EXPANDED);
                 }
             }
         }
 
         for (Direction rel_class : Direction.values()) {
             if (rootNode instanceof ViwnNodeSynset)
-                ((ViwnNodeSynset) rootNode).setState(rel_class, ViwnNodeSynset.State.EXPANDED);
+                ((ViwnNodeSynset) rootNode).setState(rel_class, State.EXPANDED);
         }
 
         for (Direction dir : Direction.values()) {
@@ -359,22 +359,23 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
 
         ViwnNodeSense senseNode = (ViwnNodeSense) rootNode;
 
-        if (!forest.containsVertex(rootNode))
+        if (!forest.containsVertex(rootNode)) {
             forest.addVertex(rootNode);
+        }
 
         for (ViwnNode n : senseCache.values()) {
             n.setSpawner(null, null);
             if (n instanceof ViwnNodeSense) {
                 for (Direction rclass : Direction.values()) {
                     ViwnNodeSense nn = (ViwnNodeSense) n;
-                    nn.setState(rclass, ViwnNodeSense.State.NOT_EXPANDED);
+                    nn.setState(rclass, State.NOT_EXPANDED);
                 }
             }
         }
 
         for (Direction rel_class : Direction.values()) {
             if (rootNode instanceof ViwnNodeSense)
-                ((ViwnNodeSense) rootNode).setState(rel_class, ViwnNodeSense.State.EXPANDED);
+                ((ViwnNodeSense) rootNode).setState(rel_class, State.EXPANDED);
         }
 
         for (Direction dir : Direction.values()) {
@@ -382,7 +383,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
         }
 
         recreateLayout();
-
         center();
         vv.setVisible(true);
 
@@ -610,7 +610,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
      * @param rel
      */
     public void checkState(ViwnNodeSynset node, ViwnNode.Direction rel) {
-        node.setState(rel, ViwnNodeSynset.State.NOT_EXPANDED);
+        node.setState(rel, State.NOT_EXPANDED);
         boolean all_ok = true;
 
         for (ViwnEdgeSynset e : node.getRelation(rel)) {
@@ -619,14 +619,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
                 other = synsetCache.get(e.getChild());
 
             if (forest.getEdges().contains(e)) {
-                node.setState(rel, ViwnNodeSynset.State.SEMI_EXPANDED);
+                node.setState(rel, State.SEMI_EXPANDED);
             } else if (!node.getSynsetSet(rel).getSynsets().contains(other))
                 all_ok = false;
         }
 
         if (all_ok)
             if (forest.containsVertex(node.getSynsetSet(rel)) || node.getSynsetSet(rel).getSynsets().isEmpty())
-                node.setState(rel, ViwnNodeSynset.State.EXPANDED);
+                node.setState(rel, State.EXPANDED);
     }
 
     /**
@@ -877,9 +877,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
                 }
             }
             if (semi && changed)
-                synsetNode.setState(hide_dir, ViwnNodeSynset.State.SEMI_EXPANDED);
+                synsetNode.setState(hide_dir, State.SEMI_EXPANDED);
             else if (changed)
-                synsetNode.setState(hide_dir, ViwnNodeSynset.State.NOT_EXPANDED);
+                synsetNode.setState(hide_dir, State.NOT_EXPANDED);
             synsetNode.getSynsetSet(hide_dir).removeAll();
             forest.removeVertex(synsetNode.getSynsetSet(hide_dir));
             checkAllStates();
@@ -909,9 +909,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
                 }
             }
             if (semi && changed)
-                senseNode.setState(hide_dir, ViwnNodeSense.State.SEMI_EXPANDED);
+                senseNode.setState(hide_dir, State.SEMI_EXPANDED);
             else if (changed)
-                senseNode.setState(hide_dir, ViwnNodeSense.State.NOT_EXPANDED);
+                senseNode.setState(hide_dir, State.NOT_EXPANDED);
             senseNode.getSynsetSet(hide_dir).removeAll();
             forest.removeVertex(senseNode.getSynsetSet(hide_dir));
             checkAllStates();
@@ -948,27 +948,19 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
 
     public void showRelation(ViwnNodeSense senseNode, Direction[] dirs) {
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                workbench.setBusy(true);
-            }
-        });
+        SwingUtilities.invokeLater(() -> workbench.setBusy(true));
 
         setSelectedNode(senseNode);
         for (Direction dir : dirs) {
             showRelationGUI(senseNode, dir);
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                recreateLayoutWithFix(senseNode, senseNode);
-                recreateLayout();
-                vv.repaint();
+        SwingUtilities.invokeLater(() -> {
+            recreateLayoutWithFix(senseNode, senseNode);
+            recreateLayout();
+            vv.repaint();
 
-                workbench.setBusy(false);
-            }
+            workbench.setBusy(false);
         });
     }
 
@@ -980,11 +972,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
         Collection<ViwnEdgeSynset> to_show_edges = new ArrayList<>();
 
         TreeMap<String, ArrayList<ViwnEdgeSynset>> all_sorted = new TreeMap<>(
-                new Comparator<String>() {
-                    public int compare(String o1, String o2) {
-                        return o2.compareTo(o1);
-                    }
-                });
+                Comparator.reverseOrder());
 
         MultiValueMap mult_all_sorted = MultiValueMap.decorate(all_sorted);
 
@@ -1050,7 +1038,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
             }
         }
 
-        synsetNode.setState(dir, ViwnNodeSynset.State.EXPANDED);
+        synsetNode.setState(dir, State.EXPANDED);
 
         List<ViwnNode> nodes = new ArrayList<>(forest.getVertices());
         for (ViwnNode node : nodes) {
@@ -1066,7 +1054,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
         Collection<ViwnEdgeSense> to_show_edges = new ArrayList<>();
 
         TreeMap<String, ArrayList<ViwnEdgeSense>> all_sorted = new TreeMap<>(
-                (o1, o2) -> o2.compareTo(o1));
+                Comparator.reverseOrder());
 
         MultiValueMap mult_all_sorted = MultiValueMap.decorate(all_sorted);
 
@@ -1079,13 +1067,13 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
             }
         }
 
-        Iterator<ViwnEdgeSense> it = mult_all_sorted.values().iterator();
+        Iterator it = mult_all_sorted.values().iterator();
 
         int to_add = all_sorted.size() - MAX_SYNSETS_SHOWN;
         if (to_add >= MIN_SYNSETS_IN_GROUP) {
             ViwnNodeSenseSet set = senseNode.getSenseSet(dir);
             while (to_add > 0 && it.hasNext()) {
-                ViwnEdgeSense e = it.next();
+                ViwnEdgeSense e = (ViwnEdgeSense) it.next();
 
                 ViwnNodeSense node = loadSenseNode(e.getSenseFrom());
                 if (node.equals(senseNode)) {
@@ -1111,7 +1099,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
         }
 
         while (it.hasNext()) {
-            to_show_edges.add(it.next());
+            to_show_edges.add((ViwnEdgeSense) it.next());
         }
 
         for (ViwnEdgeSense rel : to_show_edges) {
@@ -1132,7 +1120,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
             }
         }
 
-        senseNode.setState(dir, ViwnNodeSense.State.EXPANDED);
+        senseNode.setState(dir, State.EXPANDED);
 
         List<ViwnNode> nodes = new ArrayList<>(forest.getVertices());
         for (ViwnNode node : nodes) {
