@@ -18,18 +18,16 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 
 package pl.edu.pwr.wordnetloom.plugins.viwordnet.structure;
 
-import java.awt.Color;
+import java.awt.*;
 
-/**
- * @author amusial
- * @author boombel
- */
-abstract public class ViwnEdge {
-	@Override
-	abstract public String toString();
-	
-	/**
-	 * @return edge color
-	 * */
-	abstract public Color getColor();
+
+public abstract class ViwnEdge {
+
+    @Override
+    public abstract String toString();
+
+    /**
+     * @return edge color
+     */
+    public abstract Color getColor();
 }

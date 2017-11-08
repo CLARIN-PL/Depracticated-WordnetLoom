@@ -1,8 +1,10 @@
 package pl.edu.pwr.wordnetloom.service;
 
 import pl.edu.pwr.wordnetloom.dao.DAOBean;
+import pl.edu.pwr.wordnetloom.dao.LexicalRelationDAOLocal;
 import pl.edu.pwr.wordnetloom.dao.LexicalUnitDAOLocal;
 import pl.edu.pwr.wordnetloom.dto.CriteriaDTO;
+import pl.edu.pwr.wordnetloom.dto.SenseDataEntry;
 import pl.edu.pwr.wordnetloom.model.*;
 import pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
@@ -10,6 +12,7 @@ import pl.edu.pwr.wordnetloom.model.yiddish.particle.Particle;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +21,9 @@ public class LexicalUnitServiceBean extends DAOBean implements LexicalUnitServic
 
     @EJB
     private LexicalUnitDAOLocal local;
+
+    @EJB
+    private LexicalRelationDAOLocal relations;
 
     public LexicalUnitServiceBean() {
     }
@@ -370,7 +376,7 @@ public class LexicalUnitServiceBean extends DAOBean implements LexicalUnitServic
     }
 
     @Override
-    public int dbGetUnitCountByDomain(final String domain) {
+    public int dbGetUnitCountByDomain(String domain) {
         return local.dbGetUnitCountByDomain(domain);
     }
 
@@ -380,4 +386,38 @@ public class LexicalUnitServiceBean extends DAOBean implements LexicalUnitServic
     }
 
 
+    @Override
+    public HashMap<Long, SenseDataEntry> prepareCacheForRootNode(Sense sense, List<Long> lexicons) {
+
+        HashMap<Long, SenseDataEntry> map = new HashMap<>();
+
+        // step 1 - synset relations from and to root synset (synset)
+        List<SenseRelation> rels = relations.getRelatedRelations(sense, lexicons);
+
+        SenseDataEntry rootEntry = new SenseDataEntry();
+        rootEntry.setSense(sense);
+
+        // map holding first level lexical units
+        HashMap<Long, Sense> senses = new HashMap<>();
+
+        // step 1.5 - setting associations
+        for (SenseRelation s : rels) {
+            if (s.getSenseFrom().getId().equals(sense.getId())) {
+                rootEntry.getRelsFrom().add(s);
+            } else {
+                rootEntry.getRelsTo().add(s);
+            }
+
+            senses.put(s.getSenseFrom().getId(), s.getSenseFrom());
+            senses.put(s.getSenseTo().getId(), s.getSenseTo());
+        }
+        senses.remove(sense.getId());
+
+        if (!senses.isEmpty()) {
+            // rels = relations.getRelatedRelations(senses.keySet());
+            map.put(rootEntry.getSense().getId(), rootEntry);
+            senses.put(rootEntry.getSense().getId(), rootEntry.getSense());
+        }
+        return map;
+    }
 }

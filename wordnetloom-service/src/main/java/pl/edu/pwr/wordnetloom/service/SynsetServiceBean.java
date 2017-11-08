@@ -1,485 +1,491 @@
 package pl.edu.pwr.wordnetloom.service;
 
+import pl.edu.pwr.wordnetloom.dao.DAOBean;
+import pl.edu.pwr.wordnetloom.dao.DAOLocal;
+import pl.edu.pwr.wordnetloom.dao.SynsetDAOLocal;
+import pl.edu.pwr.wordnetloom.dao.SynsetRelationDAOLocal;
+import pl.edu.pwr.wordnetloom.dto.CountInfo;
+import pl.edu.pwr.wordnetloom.dto.SynsetDataEntry;
+import pl.edu.pwr.wordnetloom.dto.SynsetInfo;
+import pl.edu.pwr.wordnetloom.model.*;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-
-import pl.edu.pwr.wordnetloom.dao.DAOLocal;
-import pl.edu.pwr.wordnetloom.dao.SynsetDAOLocal;
-import pl.edu.pwr.wordnetloom.dto.CountInfo;
-import pl.edu.pwr.wordnetloom.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.dto.SynsetInfo;
-import pl.edu.pwr.wordnetloom.model.Domain;
-import pl.edu.pwr.wordnetloom.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.model.RelationType;
-import pl.edu.pwr.wordnetloom.model.SenseToSynset;
-import pl.edu.pwr.wordnetloom.dao.DAOBean;
-import pl.edu.pwr.wordnetloom.dao.SynsetRelationDAOLocal;
-import pl.edu.pwr.wordnetloom.model.Sense;
-import pl.edu.pwr.wordnetloom.model.Synset;
-import pl.edu.pwr.wordnetloom.model.SynsetRelation;
-
 @Stateless
 public class SynsetServiceBean extends DAOBean implements SynsetServiceRemote {
 
-	public SynsetServiceBean() {}
+    public SynsetServiceBean() {
+    }
 
-	@EJB private SynsetDAOLocal local;
-	@EJB private SynsetRelationDAOLocal relations;
-	@EJB private DAOLocal dao;
+    @EJB
+    private SynsetDAOLocal local;
 
-	/**
-	 * powielenie synsetu
-	 * @param synset - synset do sklonowania
-	 * @param owner - nowy wlasciciel
-	 */
-	@Override
-	public void dbClone(Synset synset, List<Long> lexicons) {
-		local.dbClone(synset,lexicons);
-	}
+    @EJB
+    private SynsetRelationDAOLocal relations;
 
-	/**
-	 * usuniecie obiektu
-	 * @param synset - synset do usuniecia
-	 * @return TRUE jesli sie udalo
-	 */
-	@Override
-	public boolean dbDelete(Synset synset) {
-		return local.dbDelete(synset);
-	}
+    @EJB
+    private DAOLocal dao;
 
-	/**
-	 * odczytanie jednostek leksykalnych podanego synsetu
-	 * @param synset - synset dla ktorego maja zostac pobrane jednostki
-	 * @return lista jednostek
-	 */
-	@Override
-	public List<Sense> dbFastGetUnits(Synset synset, List<Long> lexicons) {
-		return local.dbFastGetUnits(synset, lexicons);
-	}
+    /**
+     * powielenie synsetu
+     *
+     * @param synset - synset do sklonowania
+     * @param owner  - nowy wlasciciel
+     */
+    @Override
+    public void dbClone(Synset synset, List<Long> lexicons) {
+        local.dbClone(synset, lexicons);
+    }
 
-	/**
-	 * odczytanie jednostek leksykalnych podanych synsetów
-	 * @param synset - synset dla którego mają zostać pobrane jednostki
-	 */
-	@Override
-	public Synset dbGetUnit(Synset synset,List<Long> lexicons) {
-		return local.dbGetUnit(synset,lexicons);
-	}
+    /**
+     * usuniecie obiektu
+     *
+     * @param synset - synset do usuniecia
+     * @return TRUE jesli sie udalo
+     */
+    @Override
+    public boolean dbDelete(Synset synset) {
+        return local.dbDelete(synset);
+    }
 
-	/**
-	 * odczytanie jednostek leksykalnych podanych synsetów
-	 * @param synset - synsety dla których mają zostać pobrane jednostki
-	 */
-	@Override
-	public List<Synset> dbGetUnits(List<Synset> synsets) {
-		return local.dbGetUnits(synsets);
-	}
+    /**
+     * odczytanie jednostek leksykalnych podanego synsetu
+     *
+     * @param synset - synset dla ktorego maja zostac pobrane jednostki
+     * @return lista jednostek
+     */
+    @Override
+    public List<Sense> dbFastGetUnits(Synset synset, List<Long> lexicons) {
+        return local.dbFastGetUnits(synset, lexicons);
+    }
 
-	/**
-	 * odczytanie ilosc jednostek leksykalnych zwiazanych z danycm synsetem
-	 * @param synset - synset dla ktorego ma zostac pobrana ilosc jednostek
-	 * @return liczba jednostek
-	 */
-	@Override
-	public int dbGetUnitsCount(Synset synset) {
-		return local.dbGetUnitsCount(synset);
-	}
+    /**
+     * odczytanie jednostek leksykalnych podanych synsetów
+     *
+     * @param synset - synset dla którego mają zostać pobrane jednostki
+     */
+    @Override
+    public Synset dbGetUnit(Synset synset, List<Long> lexicons) {
+        return local.dbGetUnit(synset, lexicons);
+    }
 
-	/**
-	 * odbudowa opisu synsetu
-	 * @param synset - synset
-	 */
-	@Override
-	public String dbRebuildUnitsStr(Synset synset, List<Long> lexicons) {
-		return local.dbRebuildUnitsStr(synset, lexicons);
-	}
+    /**
+     * odczytanie jednostek leksykalnych podanych synsetów
+     *
+     * @param synset - synsety dla których mają zostać pobrane jednostki
+     */
+    @Override
+    public List<Synset> dbGetUnits(List<Synset> synsets) {
+        return local.dbGetUnits(synsets);
+    }
 
-	/**
-	 * odczytanie czesci mowy synsetu
-	 * @param synset - synset
-	 * @return czesc mowy albo NULL gdy nie zdefiniowana
-	 */
-	@Override
-	public PartOfSpeech dbGetPos(Synset synset, List<Long> lexicons) {
-		return local.dbGetPos(synset,lexicons);
-	}
+    /**
+     * odczytanie ilosc jednostek leksykalnych zwiazanych z danycm synsetem
+     *
+     * @param synset - synset dla ktorego ma zostac pobrana ilosc jednostek
+     * @return liczba jednostek
+     */
+    @Override
+    public int dbGetUnitsCount(Synset synset) {
+        return local.dbGetUnitsCount(synset);
+    }
 
-	/**
-	 * odczytanie domeny synsetu
-	 * @param synset - synset
-	 * @return domena albo NULL gdy nie zdefiniowana
-	 */
-	@Override
-	public Domain dbGetDomain(Synset synset, List<Long> lexicons) {
-		return local.dbGetDomain(synset,lexicons);
-	}
+    /**
+     * odbudowa opisu synsetu
+     *
+     * @param synset - synset
+     */
+    @Override
+    public String dbRebuildUnitsStr(Synset synset, List<Long> lexicons) {
+        return local.dbRebuildUnitsStr(synset, lexicons);
+    }
 
-	/**
-	 * zapisanie polaczen jednostek z synsetami w bazie danych
-	 * @param synsets - lista synsetow, ktorych jednostki maja zostac dodane
-	 * do polaczen
-	 */
-	//	ZMIANA SYGNATURY METODY: Z KOLEKCJI SYNSETOW NA MAPE 
-	@Override
-	public void dbSaveConnections(HashMap<Synset, List<Sense>> map){
-		local.dbSaveConnections(map);
-	}
+    /**
+     * odczytanie czesci mowy synsetu
+     *
+     * @param synset - synset
+     * @return czesc mowy albo NULL gdy nie zdefiniowana
+     */
+    @Override
+    public PartOfSpeech dbGetPos(Synset synset, List<Long> lexicons) {
+        return local.dbGetPos(synset, lexicons);
+    }
 
-	/**
-	 * odczytanie sysnetow
-	 * @param filter - filtr dla przechowywanych jednostek
-	 * @return lista synsetow (bez detali)
-	 */
-	@Override
-	public List<Synset> dbFastGetSynsets(String filter,  List<Long> lexicons) {
-		return local.dbFastGetSynsets(filter,lexicons);
-	}
+    /**
+     * odczytanie domeny synsetu
+     *
+     * @param synset - synset
+     * @return domena albo NULL gdy nie zdefiniowana
+     */
+    @Override
+    public Domain dbGetDomain(Synset synset, List<Long> lexicons) {
+        return local.dbGetDomain(synset, lexicons);
+    }
 
-	/**
-	 * odczytanie sysnetow
-	 * @param filter - filtr dla przechowywanych jednostek
-	 * @param workStates - akceptowalne statusy lub NULL akceptuje wszystkie
-	 * @param domain - akceptowalna domena lub NULL aby akceptować wszystko
-	 * @param relationType - typ relacji jakie musza byc zdefiniowane dla synsetow wynikowych
-	 * @param limitSize - maksymalna liczba zwroconych elementów
-	 * @param realSize - obiekt w którym zapisywana jest prawdziwa wielkość kolekcji
-	 * @return lista synsetow (bez detali)
-	 */
-	@Override
-	public List<Synset> dbFastGetSynsets(String filter, Domain domain, RelationType relationType, int limitSize, List<Long> lexicons) {
-		return local.dbFastGetSynsets(filter, domain, relationType, limitSize, lexicons);
-	}
-	/**
-	 * odczytanie sysnetow z filtrowaniem po części mowy
-	 * @param filter - filtr dla przechowywanych jednostek
-	 * @param workStates - akceptowalne statusy lub NULL akceptuje wszystkie
-	 * @param domain - akceptowalna domena lub NULL aby akceptować wszystko
-	 * @param relationType - typ relacji jakie musza byc zdefiniowane dla synsetow wynikowych
-	 * @param limitSize - maksymalna liczba zwroconych elementów
-	 * @param realSize - obiekt w którym zapisywana jest prawdziwa wielkość kolekcji
-	 * @param posIndex - indeks części mowy (-1 wszystkie, 0 nieznany, itd. zgodnie z enum Pos)
-	 * @return lista synsetow (bez detali)
-	 */
-	@Override
-	public List<Synset> dbFastGetSynsets(String filter, Domain domain, RelationType relationType,int limitSize, long posIndex, List<Long> lexicons) {
-		return local.dbFastGetSynsets(filter, domain,relationType, limitSize, lexicons);
-	}
-	@Override
-	public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain, RelationType relationType,String definition, String comment, String artificial,int limitSize, long posIndex, List<Long> lexicons) {
-		return local.dbFastGetSenseBySynset(filter, domain,relationType,definition, comment, artificial, limitSize, posIndex,lexicons);
-	}
-	@Override
-	public List<Sense> dbFastGetSenseBySynsetUbyPose(String filter, Domain domain, RelationType relationType, String definition, String comment, String artificial, int limitSize, pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos, List<Long> lexicons){
-		return local.dbFastGetSenseBySynset(filter, domain,relationType,definition, comment, artificial, limitSize, pos,lexicons);
-	}
-	/**
-	 * Pobiera kolekcje synsetów o id zadanych w parametrze
-	 * @param synset_ids tablica indeksów synsetów, które mają zostać pobrane
-	 * @return kolekcje synsetów o zadanych id | null jeśli nie podano poprawnej tablicy
-	 * @author lburdka
-	 */
-	@Override
-	public List<Synset> dbFullGet(Long[] synset_ids) {
-		return local.dbFullGet(synset_ids);
-	}
+    /**
+     * zapisanie polaczen jednostek z synsetami w bazie danych
+     *
+     * @param synsets - lista synsetow, ktorych jednostki maja zostac dodane
+     *                do polaczen
+     */
+    //	ZMIANA SYGNATURY METODY: Z KOLEKCJI SYNSETOW NA MAPE
+    @Override
+    public void dbSaveConnections(HashMap<Synset, List<Sense>> map) {
+        local.dbSaveConnections(map);
+    }
 
-	/**
-	 * odczytanie sysnetow
-	 * @param filter - filtr dla przechowywanych jednostek
-	 * @param filterObject - filtr obietkowy, musi miec taki sam POS
-	 * @return lista synsetow (bez detali)
-	 */
-	@Override
-	public List<Synset> dbFastGetSynsets(String filter,Sense filterObject, List<Long> lexicons) {
-		return local.dbFastGetSynsets(filter, filterObject, lexicons);
-	}
+    /**
+     * odczytanie sysnetow
+     *
+     * @param filter - filtr dla przechowywanych jednostek
+     * @return lista synsetow (bez detali)
+     */
+    @Override
+    public List<Synset> dbFastGetSynsets(String filter, List<Long> lexicons) {
+        return local.dbFastGetSynsets(filter, lexicons);
+    }
 
-	/**
-	 * usuniecie pustych synsetow
-	 * @return liczba usunietych wierszy
-	 *
-	 */
-	@Override
-	public int dbDeleteEmpty() {
-		return local.dbDeleteEmpty();
-	}
+    /**
+     * odczytanie sysnetow
+     *
+     * @param filter       - filtr dla przechowywanych jednostek
+     * @param workStates   - akceptowalne statusy lub NULL akceptuje wszystkie
+     * @param domain       - akceptowalna domena lub NULL aby akceptować wszystko
+     * @param relationType - typ relacji jakie musza byc zdefiniowane dla synsetow wynikowych
+     * @param limitSize    - maksymalna liczba zwroconych elementów
+     * @param realSize     - obiekt w którym zapisywana jest prawdziwa wielkość kolekcji
+     * @return lista synsetow (bez detali)
+     */
+    @Override
+    public List<Synset> dbFastGetSynsets(String filter, Domain domain, RelationType relationType, int limitSize, List<Long> lexicons) {
+        return local.dbFastGetSynsets(filter, domain, relationType, limitSize, lexicons);
+    }
 
-	/**
-	 * odczytanie sysnetow
-	 * @param filter - filtr dla przechowywanych jednostek
-	 * @return lista synsetow (z detalimi)
-	 */
-	@Override
-	public List<Synset> dbFullGetSynsets(String filter) {
-		return local.dbFullGetSynsets(filter);
-	}
+    /**
+     * odczytanie sysnetow z filtrowaniem po części mowy
+     *
+     * @param filter       - filtr dla przechowywanych jednostek
+     * @param workStates   - akceptowalne statusy lub NULL akceptuje wszystkie
+     * @param domain       - akceptowalna domena lub NULL aby akceptować wszystko
+     * @param relationType - typ relacji jakie musza byc zdefiniowane dla synsetow wynikowych
+     * @param limitSize    - maksymalna liczba zwroconych elementów
+     * @param realSize     - obiekt w którym zapisywana jest prawdziwa wielkość kolekcji
+     * @param posIndex     - indeks części mowy (-1 wszystkie, 0 nieznany, itd. zgodnie z enum Pos)
+     * @return lista synsetow (bez detali)
+     */
+    @Override
+    public List<Synset> dbFastGetSynsets(String filter, Domain domain, RelationType relationType, int limitSize, long posIndex, List<Long> lexicons) {
+        return local.dbFastGetSynsets(filter, domain, relationType, limitSize, lexicons);
+    }
 
-	/**
-	 * odczytanie sysnetow
-	 * @param filter - filtr dla przechowywanych jednostek
-	 * @return lista synsetow (z detalimi)
-	 */
-	@Override
-	public List<Synset> dbGetNotEmptySynsets(String filter) {
-		return local.dbGetNotEmptySynsets(filter);
-	}
+    @Override
+    public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain, RelationType relationType, String definition, String comment, String artificial, int limitSize, long posIndex, List<Long> lexicons) {
+        return local.dbFastGetSenseBySynset(filter, domain, relationType, definition, comment, artificial, limitSize, posIndex, lexicons);
+    }
 
-	/**
-	 * odczytanie synsetow zwiazanych z podana jednostka leksykalna
-	 * @param unit - jednostka leksykalna
-	 * @return lista synsetow
-	 */
-	@Override
-	public List<Synset> dbFastGetSynsets(Sense unit,List<Long> lexicons) {
-		return local.dbFastGetSynsets(unit, lexicons);
-	}
+    @Override
+    public List<Sense> dbFastGetSenseBySynsetUbyPose(String filter, Domain domain, RelationType relationType, String definition, String comment, String artificial, int limitSize, pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech pos, List<Long> lexicons) {
+        return local.dbFastGetSenseBySynset(filter, domain, relationType, definition, comment, artificial, limitSize, pos, lexicons);
+    }
 
-	/**
-	 * odczytanie liczby synsetow zwiazanych z podana jednostka leksykalna
-	 * @param unit - jednostka leksykalna
-	 * @return liczba synsetow
-	 */
-	@Override
-	public int dbGetSynsetsCount(Sense unit) {
-		return local.dbGetSynsetsCount(unit);
-	}
+    /**
+     * Pobiera kolekcje synsetów o id zadanych w parametrze
+     *
+     * @param synset_ids tablica indeksów synsetów, które mają zostać pobrane
+     * @return kolekcje synsetów o zadanych id | null jeśli nie podano poprawnej tablicy
+     * @author lburdka
+     */
+    @Override
+    public List<Synset> dbFullGet(Long[] synset_ids) {
+        return local.dbFullGet(synset_ids);
+    }
 
-	/**
-	 * pobranie synsetu o podanym ID
-	 * @param id - id synsetu
-	 * @return synset albo NULL
-	 */
-	@Override
-	public Synset dbGet(Long id) {
-		return local.dbGet(id);
-	}
+    /**
+     * odczytanie sysnetow
+     *
+     * @param filter       - filtr dla przechowywanych jednostek
+     * @param filterObject - filtr obietkowy, musi miec taki sam POS
+     * @return lista synsetow (bez detali)
+     */
+    @Override
+    public List<Synset> dbFastGetSynsets(String filter, Sense filterObject, List<Long> lexicons) {
+        return local.dbFastGetSynsets(filter, filterObject, lexicons);
+    }
 
-	@Override
-	public Synset dbGetSynsetRels(Synset synset) {
-		return local.dbGetSynsetRels(synset);
-	}
+    /**
+     * usuniecie pustych synsetow
+     *
+     * @return liczba usunietych wierszy
+     */
+    @Override
+    public int dbDeleteEmpty() {
+        return local.dbDeleteEmpty();
+    }
 
-	@Override
-	public List<Synset> dbGetSynsetsRels(List<Synset> synsets) {
-		return local.dbGetSynsetsRels(synsets);
-	}
+    /**
+     * odczytanie sysnetow
+     *
+     * @param filter - filtr dla przechowywanych jednostek
+     * @return lista synsetow (z detalimi)
+     */
+    @Override
+    public List<Synset> dbFullGetSynsets(String filter) {
+        return local.dbFullGetSynsets(filter);
+    }
 
-	/**
-	 * @param ind collection of synsets indices
-	 * @return collection of synset objects
-	 */
-	@Override
-	public List<Synset> dbGetSynsetsUnitsRels(Collection<Long> ind) {
-		return local.dbGetSynsetsUnitsRels(ind);
-	}
+    /**
+     * odczytanie sysnetow
+     *
+     * @param filter - filtr dla przechowywanych jednostek
+     * @return lista synsetow (z detalimi)
+     */
+    @Override
+    public List<Synset> dbGetNotEmptySynsets(String filter) {
+        return local.dbGetNotEmptySynsets(filter);
+    }
 
-	/**
-	 * odczytanie liczby synsetow w bazie
-	 * @return liczba synsetow
-	 */
-	@Override
-	public int dbGetSynsetsCount() {
-		return local.dbGetSynsetsCount();
-	}
+    /**
+     * odczytanie synsetow zwiazanych z podana jednostka leksykalna
+     *
+     * @param unit - jednostka leksykalna
+     * @return lista synsetow
+     */
+    @Override
+    public List<Synset> dbFastGetSynsets(Sense unit, List<Long> lexicons) {
+        return local.dbFastGetSynsets(unit, lexicons);
+    }
 
-	/**
-	 * odczytanie liczby identycznych jednostek w synsetach
-	 * @param a - synset A
-	 * @param b - synset B
-	 * @return liczba identycznych jednostek
-	 */
-	@Override
-	public int dbGetSimilarityCount(Synset a,Synset b) {
-		return local.dbGetSimilarityCount(a, b);
-	}
+    /**
+     * odczytanie liczby synsetow zwiazanych z podana jednostka leksykalna
+     *
+     * @param unit - jednostka leksykalna
+     * @return liczba synsetow
+     */
+    @Override
+    public int dbGetSynsetsCount(Sense unit) {
+        return local.dbGetSynsetsCount(unit);
+    }
 
-	//	/**
-	//	 * odczytanie uzytkownikow wystepujacych w synsetach
-	//	 * @return uzytkownicy wystepujacy w synsetach
-	//	 */
-	//	public List<String> dbGetUsers() {
-	//		return local.dbGetUsers();
-	//	}
-	//
-	//	/**
-	//	 * odczytanie uzytkownikow wystepujacych w synsetach
-	//	 * @param domain - zaweza sprawdzenie do synsetow, ktore naleza do okreslonej dziedziny
-	//	 * @return uzytkownicy wystepujacy w synsetach
-	//	 */
-	//	public List<String> dbGetUsers(Domain domain) {
-	//		return local.dbGetUsers(domain);
-	//	}
-	//
-	//	/**
-	//	 * odczytanie statusow dla konkretnego uzytkownika i domeny
-	//	 * @param owner - uzytkownik
-	//	 * @param domain - domena
-	//	 * @return liczba synsetow blednych, poprawnych i niesprawdzonych
-	//	 */
-	//	public int[] dbGetUserStats(String owner,Domain domain) {
-	//		return local.dbGetUserStats(owner, domain);
-	//	}
+    /**
+     * pobranie synsetu o podanym ID
+     *
+     * @param id - id synsetu
+     * @return synset albo NULL
+     */
+    @Override
+    public Synset dbGet(Long id) {
+        return local.dbGet(id);
+    }
 
-	//	/**
-	//	 * Odczytanie opisow synsetow
-	//	 * @return mapa opisow synsetow
-	//	 */
-	//	public Map<Long,String> dbGetSynsetsDescription() {
-	//		return local.dbGetSynsetsDescription();
-	//	}
+    @Override
+    public Synset dbGetSynsetRels(Synset synset) {
+        return local.dbGetSynsetRels(synset);
+    }
 
-	//	/**
-	//	 * Odczytywanie opisów synsetów o danym ID
-	//	 * @param idx - lista ID sysnetów
-	//	 * @return mapa opisow synsetow
-	//	 */
-	@Override
-	public Map<Long,String> dbGetSynsetsDescriptionIdx(List<Long> idx, List<Long> lexicons) {
-		return local.dbGetSynsetsDescriptionIdx(idx, lexicons);
-	}
-	@Override
-	public String getSynsetAtrribute(Synset synset, String nazwaPola){
-		return local.getSynsetAtrribute(synset, nazwaPola);
-	}
+    @Override
+    public List<Synset> dbGetSynsetsRels(List<Synset> synsets) {
+        return local.dbGetSynsetsRels(synsets);
+    }
 
-	@Override
-	public void setSynsetAtrribute(Synset synset, String key, String value){
-		local.setSynsetAtrribute(synset, key, value);
-	}
+    /**
+     * @param ind collection of synsets indices
+     * @return collection of synset objects
+     */
+    @Override
+    public List<Synset> dbGetSynsetsUnitsRels(Collection<Long> ind) {
+        return local.dbGetSynsetsUnitsRels(ind);
+    }
 
-	@Override
-	public Synset updateSynset(Synset synset){
-		return local.updateSynset(synset);
-	}
+    /**
+     * odczytanie liczby synsetow w bazie
+     *
+     * @return liczba synsetow
+     */
+    @Override
+    public int dbGetSynsetsCount() {
+        return local.dbGetSynsetsCount();
+    }
 
-	@Override
-	public Synset fetchSynsetForSense(Sense sense,List<Long> lexicons){
-		List<Synset> synsets = local.dbFastGetSynsets(sense, lexicons);
-		if(synsets == null || synsets.isEmpty() || synsets.get(0) == null)
-			return null;
-		return synsets.get(0);
-	}
+    /**
+     * odczytanie liczby identycznych jednostek w synsetach
+     *
+     * @param a - synset A
+     * @param b - synset B
+     * @return liczba identycznych jednostek
+     */
+    @Override
+    public int dbGetSimilarityCount(Synset a, Synset b) {
+        return local.dbGetSimilarityCount(a, b);
+    }
 
-	@Override
-	public List<SenseToSynset> getSenseToSynsetBySynset(Synset synset){
-		return local.getSenseToSynsetBySynset(synset);
-	}
+    //	/**
+    //	 * odczytanie uzytkownikow wystepujacych w synsetach
+    //	 * @return uzytkownicy wystepujacy w synsetach
+    //	 */
+    //	public List<String> dbGetUsers() {
+    //		return local.dbGetUsers();
+    //	}
+    //
+    //	/**
+    //	 * odczytanie uzytkownikow wystepujacych w synsetach
+    //	 * @param domain - zaweza sprawdzenie do synsetow, ktore naleza do okreslonej dziedziny
+    //	 * @return uzytkownicy wystepujacy w synsetach
+    //	 */
+    //	public List<String> dbGetUsers(Domain domain) {
+    //		return local.dbGetUsers(domain);
+    //	}
+    //
+    //	/**
+    //	 * odczytanie statusow dla konkretnego uzytkownika i domeny
+    //	 * @param owner - uzytkownik
+    //	 * @param domain - domena
+    //	 * @return liczba synsetow blednych, poprawnych i niesprawdzonych
+    //	 */
+    //	public int[] dbGetUserStats(String owner,Domain domain) {
+    //		return local.dbGetUserStats(owner, domain);
+    //	}
 
-	@Override
-	public Long fastGetPOSID(Synset synset) {
-		return local.fastGetPOSID(synset);
-	}
+    //	/**
+    //	 * Odczytanie opisow synsetow
+    //	 * @return mapa opisow synsetow
+    //	 */
+    //	public Map<Long,String> dbGetSynsetsDescription() {
+    //		return local.dbGetSynsetsDescription();
+    //	}
 
-	@Override
-	public HashMap<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons){
-		HashMap<Long, DataEntry> map = new HashMap<Long, DataEntry>();
+    //	/**
+    //	 * Odczytywanie opisów synsetów o danym ID
+    //	 * @param idx - lista ID sysnetów
+    //	 * @return mapa opisow synsetow
+    //	 */
+    @Override
+    public Map<Long, String> dbGetSynsetsDescriptionIdx(List<Long> idx, List<Long> lexicons) {
+        return local.dbGetSynsetsDescriptionIdx(idx, lexicons);
+    }
 
-		long start  = System.currentTimeMillis();
-		// step 1 - synset relations from and to root synset (synset)
-		List<SynsetRelation> rels = relations.getRelatedRelations(synset,lexicons); // fetch
-		DataEntry rootEntry = new DataEntry();
-		rootEntry.setSynset(synset);
+    @Override
+    public String getSynsetAtrribute(Synset synset, String nazwaPola) {
+        return local.getSynsetAtrribute(synset, nazwaPola);
+    }
 
-		HashMap<Long, Synset> synsets = new HashMap<Long, Synset>(); // wszystkie synsety do wyświetlenia (z relacji 1wszego stopnia)
+    @Override
+    public void setSynsetAtrribute(Synset synset, String key, String value) {
+        local.setSynsetAtrribute(synset, key, value);
+    }
 
-		// step 1.5 - setting associations
-		for(SynsetRelation s : rels){
-			if(s.getSynsetFrom().getId().equals(synset.getId())){
-				rootEntry.getRelsFrom().add(s);
-			} else {
-				rootEntry.getRelsTo().add(s);
-			}
+    @Override
+    public Synset updateSynset(Synset synset) {
+        return local.updateSynset(synset);
+    }
 
-			synsets.put(s.getSynsetFrom().getId(), s.getSynsetFrom());
-			synsets.put(s.getSynsetTo().getId(), s.getSynsetTo());
-		}
+    @Override
+    public Synset fetchSynsetForSense(Sense sense, List<Long> lexicons) {
+        List<Synset> synsets = local.dbFastGetSynsets(sense, lexicons);
+        if (synsets == null || synsets.isEmpty() || synsets.get(0) == null)
+            return null;
+        return synsets.get(0);
+    }
 
-		synsets.remove(synset.getId());
+    @Override
+    public List<SenseToSynset> getSenseToSynsetBySynset(Synset synset) {
+        return local.getSenseToSynsetBySynset(synset);
+    }
 
-		// step 2 - synset relations from and to related synsets
-		if(!synsets.isEmpty()){ // otherwise Unexpected end of Subtree exception
-			rels = relations.getRelatedRelations(synsets.keySet());
-			
-//			for(SynsetRelation r : rels){ // iterowanie po wszystkich relacjach 2giego stopnia
-//				Long from = r.getSynsetFrom().getId();
-//				Long to = r.getSynsetTo().getId();
-//				
-//				DataEntry e1 = map.get(from);
-//				if(e1==null){
-//					e1 = new DataEntry();
-//					e1.setSynset(r.getSynsetFrom());
-//					map.put(from, e1);
-//				}
-//				e1.getRelsFrom().add(r);
-//				
-//				e1 = map.get(to);
-//				if(e1==null){
-//					e1 = new DataEntry();
-//					e1.setSynset(r.getSynsetTo());
-//					map.put(to, e1);
-//				}
-//				e1.getRelsTo().add(r);
-//			}
+    @Override
+    public Long fastGetPOSID(Synset synset) {
+        return local.fastGetPOSID(synset);
+    }
 
-			map.put(rootEntry.getSynset().getId(), rootEntry);
-			synsets.put(rootEntry.getSynset().getId(), rootEntry.getSynset());
-			
-			List<SynsetInfo> infos = dao.getEM().
-					createQuery("SELECT NEW pl.edu.pwr.wordnetloom.dto.SynsetInfo(sy.id, se.partOfSpeech.id, name.text, lemma.word, syt.value.text, se.senseNumber, lexId.text) FROM Synset sy JOIN sy.senseToSynset AS sts JOIN sts.sense AS se JOIN se.domain AS dom JOIN dom.name AS name JOIN sy.synsetAttributes AS syt JOIN se.lemma as lemma JOIN se.lexicon as lex JOIN lex.lexiconIdentifier as lexId WHERE sts.senseIndex = 0 AND syt.type.typeName.text = :abstractName AND sy.id IN (:ids)", SynsetInfo.class)
-					.setParameter("abstractName", Synset.ISABSTRACT)
-					.setParameter("ids", 	lexicons)
-					.getResultList();
-			
-			List<CountInfo> counts = dao.getEM()
-					.createQuery("SELECT NEW pl.edu.pwr.wordnetloom.dto.CountInfo(sy.id, count(se)) FROM Synset AS sy JOIN sy.senseToSynset AS sts JOIN sts.sense AS se WHERE sy.id IN (:ids) GROUP BY sy.id", CountInfo.class)
-					.setParameter("ids", lexicons)
-					.getResultList();
-			
-			HashMap<Long, CountInfo> counter = new HashMap<Long, CountInfo>();
-			for(CountInfo c : counts)
-				counter.put(c.getSynsetID(), c);
-			
-			for(SynsetInfo sysInf : infos){
-				DataEntry e = map.get(sysInf.getSynsetID());
-				StringBuilder sb = new StringBuilder();
-				if("1".equals(sysInf.getIsAbstract()))
-						sb.append("S ");
-				sb.append(sysInf.getWord());
-				sb.append(" ");
-				sb.append(sysInf.getSenseNumber());
-				sb.append(" (");
-				sb.append(sysInf.getDomain());
-				sb.append(")");
-				
-				CountInfo c = counter.get(sysInf.getSynsetID());
-				if(c != null && c.getCount() != null && c.getCount().intValue() > 1)
-					sb.append(" ...");
-				
-				e.setLabel(sb.toString());
-				e.setLexicon(sysInf.getLexicon());
-				e.setPosID(sysInf.getPosID());
-			}
-		}
-		
-		// step 4 - finish
-		long end  = System.currentTimeMillis();
-		System.out.println("Time: " + Long.toString(end - start));
-		return map;
-	}
+    @Override
+    public HashMap<Long, SynsetDataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons) {
+        HashMap<Long, SynsetDataEntry> map = new HashMap<>();
 
-	@Override
-	public List<Sense> dbGetUnits(Long synsetId, List<Long> lexicons) {
-		return local.dbFastGetUnits(synsetId,lexicons);
-	}
+        long start = System.currentTimeMillis();
+        // step 1 - synset relations from and to root synset (synset)
+        List<SynsetRelation> rels = relations.getRelatedRelations(synset, lexicons); // fetch
+        SynsetDataEntry rootEntry = new SynsetDataEntry();
+        rootEntry.setSynset(synset);
 
-	@Override
-	public Boolean areSynsetsInSameLexicon(long synset1, long synset2) {
-		return local.areSynsetsInSameLexicon(synset1, synset2);
-	}
+        HashMap<Long, Synset> synsets = new HashMap<>(); // wszystkie synsety do wyświetlenia (z relacji 1wszego stopnia)
+
+        // step 1.5 - setting associations
+        for (SynsetRelation s : rels) {
+            if (s.getSynsetFrom().getId().equals(synset.getId())) {
+                rootEntry.getRelsFrom().add(s);
+            } else {
+                rootEntry.getRelsTo().add(s);
+            }
+
+            synsets.put(s.getSynsetFrom().getId(), s.getSynsetFrom());
+            synsets.put(s.getSynsetTo().getId(), s.getSynsetTo());
+        }
+
+        synsets.remove(synset.getId());
+
+        // step 2 - synset relations from and to related synsets
+        if (!synsets.isEmpty()) { // otherwise Unexpected end of Subtree exception
+            rels = relations.getRelatedRelations(synsets.keySet());
+
+            map.put(rootEntry.getSynset().getId(), rootEntry);
+            synsets.put(rootEntry.getSynset().getId(), rootEntry.getSynset());
+
+            List<SynsetInfo> infos = dao.getEM().
+                    createQuery("SELECT NEW pl.edu.pwr.wordnetloom.dto.SynsetInfo(sy.id, se.partOfSpeech.id, name.text, lemma.word, syt.value.text, se.senseNumber, lexId.text) FROM Synset sy JOIN sy.senseToSynset AS sts JOIN sts.sense AS se JOIN se.domain AS dom JOIN dom.name AS name JOIN sy.synsetAttributes AS syt JOIN se.lemma as lemma JOIN se.lexicon as lex JOIN lex.lexiconIdentifier as lexId WHERE sts.senseIndex = 0 AND syt.type.typeName.text = :abstractName AND sy.id IN (:ids)", SynsetInfo.class)
+                    .setParameter("abstractName", Synset.ISABSTRACT)
+                    .setParameter("ids", lexicons)
+                    .getResultList();
+
+            List<CountInfo> counts = dao.getEM()
+                    .createQuery("SELECT NEW pl.edu.pwr.wordnetloom.dto.CountInfo(sy.id, count(se)) FROM Synset AS sy JOIN sy.senseToSynset AS sts JOIN sts.sense AS se WHERE sy.id IN (:ids) GROUP BY sy.id", CountInfo.class)
+                    .setParameter("ids", lexicons)
+                    .getResultList();
+
+            HashMap<Long, CountInfo> counter = new HashMap<>();
+            for (CountInfo c : counts)
+                counter.put(c.getSynsetID(), c);
+
+            for (SynsetInfo sysInf : infos) {
+                SynsetDataEntry e = map.get(sysInf.getSynsetID());
+                StringBuilder sb = new StringBuilder();
+                if ("1".equals(sysInf.getIsAbstract()))
+                    sb.append("S ");
+                sb.append(sysInf.getWord());
+                sb.append(" ");
+                sb.append(sysInf.getSenseNumber());
+                sb.append(" (");
+                sb.append(sysInf.getDomain());
+                sb.append(")");
+
+                CountInfo c = counter.get(sysInf.getSynsetID());
+                if (c != null && c.getCount() != null && c.getCount().intValue() > 1)
+                    sb.append(" ...");
+
+                e.setLabel(sb.toString());
+                e.setLexicon(sysInf.getLexicon());
+                e.setPosID(sysInf.getPosID());
+            }
+        }
+
+        // step 4 - finish
+        long end = System.currentTimeMillis();
+        System.out.println("Time: " + Long.toString(end - start));
+        return map;
+    }
+
+
+    @Override
+    public List<Sense> dbGetUnits(Long synsetId, List<Long> lexicons) {
+        return local.dbFastGetUnits(synsetId, lexicons);
+    }
+
+    @Override
+    public Boolean areSynsetsInSameLexicon(long synset1, long synset2) {
+        return local.areSynsetsInSameLexicon(synset1, synset2);
+    }
 
 }

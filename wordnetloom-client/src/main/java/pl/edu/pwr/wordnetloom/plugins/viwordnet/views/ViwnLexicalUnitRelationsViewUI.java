@@ -28,6 +28,9 @@ import pl.edu.pwr.wordnetloom.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.plugins.lexeditor.frames.AbstractListFrame;
 import pl.edu.pwr.wordnetloom.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.plugins.lexeditor.frames.UnitsListFrame;
+import pl.edu.pwr.wordnetloom.plugins.viwordnet.ViWordNetPerspective;
+import pl.edu.pwr.wordnetloom.plugins.viwordnet.ViWordNetService;
+import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.systems.common.ValueContainer;
 import pl.edu.pwr.wordnetloom.systems.enums.RelationTypes;
@@ -67,6 +70,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI
 
     ButtonExt addRelation = null;
     ButtonExt delRelation = null;
+    ButtonExt visualizeRelations = null;
 
     Workbench workbench;
 
@@ -109,8 +113,16 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI
         delRelation.setToolTipText(Hints.REMOVE_RELTAION_UNITS);
         installViewScopeShortCut(delRelation, 0, KeyEvent.VK_DELETE);
 
+        Icon visIcon = IconFontSwing.buildIcon(FontAwesome.MAGIC, 12);
+        visualizeRelations = new ButtonExt(this);
+        visualizeRelations.setIcon(visIcon);
+        visualizeRelations.setEnabled(true);
+        visualizeRelations.setToolTipText(Hints.SHOW_SENS_VISUALIZATION);
+        installViewScopeShortCut(visualizeRelations, 0, KeyEvent.VK_HOME);
+
         content.add("hfill vfill", new JScrollPane(tree));
-        content.add("br center", addRelation);
+        content.add("br center", visualizeRelations);
+        content.add(addRelation);
         content.add(delRelation);
     }
 
@@ -397,7 +409,16 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI
                 }
                 refresh();
             }
+        } else if (ae.getSource() == visualizeRelations){
+            ViWordNetService s = (ViWordNetService) workbench.getService("pl.edu.pwr.wordnetloom.plugins.viwordnet.ViWordNetService");
+            s.addGraphView();
+            Sense sense = (Sense) root.getUserObject();
+            s.getActiveGraphView().loadSense(sense);
+            ViWordNetPerspective p =
+                    (ViWordNetPerspective) workbench.getActivePerspective();
+            p.setTabTitle("LUV "+sense.toString());
         }
+
     }
 
     /**

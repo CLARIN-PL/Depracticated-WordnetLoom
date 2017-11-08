@@ -8,6 +8,7 @@ import pl.edu.pwr.wordnetloom.model.SenseRelation;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -235,4 +236,32 @@ public class LexicalRelationDAOBean extends DAOBean implements LexicalRelationDA
                 .executeUpdate();
     }
 
+    @Override
+    public List<SenseRelation> getRelatedRelations(Sense sense, List<Long> lexicons) {
+        TypedQuery<SenseRelation> query = getEM().createQuery("Select sr FROM SenseRelation sr WHERE sr.relation.lexicon.id IN(:lexicons) AND (sr.senseFrom.id =:id OR sr.senseTo.id = :id)", SenseRelation.class);
+        List<SenseRelation> related = query
+                .setParameter("id", sense.getId())
+                .setParameter("lexicons", lexicons)
+                .getResultList();
+        if (related == null)
+            return new ArrayList<>();
+        return related;
+    }
+
+    @Override
+    public List<SenseRelation> getRelationsSenseTo(Sense sense) {
+        TypedQuery<SenseRelation> query = getEM().createQuery("Select r FROM SenseRelation r where r.senseFrom.id =:id", SenseRelation.class);
+        return query.setParameter("id", sense.getId()).getResultList();
+    }
+
+    @Override
+    public List<SenseRelation> getRelatedRelations(Set<Long> senseIDs) {
+        TypedQuery<SenseRelation> query = getEM().createQuery("Select sr FROM SenseRelation sr WHERE sr.senseFrom.id IN (:ids) OR sr.senseTo.id IN (:ids)", SenseRelation.class);
+        List<SenseRelation> related = query
+                .setParameter("ids", senseIDs)
+                .getResultList();
+        if (related == null)
+            return new ArrayList<>();
+        return related;
+    }
 }

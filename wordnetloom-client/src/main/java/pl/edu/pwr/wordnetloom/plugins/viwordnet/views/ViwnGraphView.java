@@ -18,424 +18,418 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 
 package pl.edu.pwr.wordnetloom.plugins.viwordnet.views;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeSet;
-
-import pl.edu.pwr.wordnetloom.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.dto.SenseDataEntry;
+import pl.edu.pwr.wordnetloom.model.*;
 import pl.edu.pwr.wordnetloom.plugins.viwordnet.listeners.GraphChangeListener;
 import pl.edu.pwr.wordnetloom.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
 import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.*;
 import pl.edu.pwr.wordnetloom.systems.common.Quadruple;
+import pl.edu.pwr.wordnetloom.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.utils.RemoteUtils;
 import pl.edu.pwr.wordnetloom.workbench.abstracts.AbstractView;
 import pl.edu.pwr.wordnetloom.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.model.ExtGraph;
-import pl.edu.pwr.wordnetloom.model.ExtGraphExtension;
-import pl.edu.pwr.wordnetloom.model.Synset;
-import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnEdgeSynset;
-import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnNodeCand;
-import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnNodeCandExtension;
-import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnNodeRoot;
-import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnNodeSynset;
-import pl.edu.pwr.wordnetloom.plugins.viwordnet.structure.ViwnNodeWord;
-import pl.edu.pwr.wordnetloom.systems.managers.LexiconManager;
+
+import java.util.*;
 
 /**
  * [View]
  * VisualizesactiveGraphView a graph.
- * 
- * @author Michał Marcińczuk <michal.marcinczuk@pwr.wroc.pl>
  *
+ * @author Michał Marcińczuk <michal.marcinczuk@pwr.wroc.pl>
  */
 public class ViwnGraphView extends AbstractView {
 
-	public enum Mode {
-		SYNSET,
-		CANDS
-	}
+    public enum Mode {
+        SYNSET,
+        CANDS,
+        SENSE
+    }
 
-	private Mode mode;
+    private Mode mode;
 
-	/**
-	 * @param workbench
-	 * @param title
-	 */
-	public ViwnGraphView(Workbench workbench, String title) {
-		this(workbench, title, new ViwnGraphViewUI());
-	}
+    /**
+     * @param workbench
+     * @param title
+     */
+    public ViwnGraphView(Workbench workbench, String title) {
+        this(workbench, title, new ViwnGraphViewUI());
+    }
 
-	/**
-	 * @param workbench
-	 * @param title title of this view
-	 * @param graphUI ui of this view
-	 */
-	public ViwnGraphView(Workbench workbench, String title, ViwnGraphViewUI graphUI) {
-		super(workbench, title, graphUI);
-	}
+    /**
+     * @param workbench
+     * @param title     title of this view
+     * @param graphUI   ui of this view
+     */
+    public ViwnGraphView(Workbench workbench, String title, ViwnGraphViewUI graphUI) {
+        super(workbench, title, graphUI);
+    }
 
-	/**
-	 * @param listener
-	 */
-	public void addSynsetSelectionChangeListener(SynsetSelectionChangeListener listener){
-		getUI().synsetSelectionChangeListeners.add(listener);
-	}
+    /**
+     * @param listener
+     */
+    public void addSynsetSelectionChangeListener(SynsetSelectionChangeListener listener) {
+        getUI().synsetSelectionChangeListeners.add(listener);
+    }
 
-	/**
-	 * @param listener
-	 */
-	public void removeSynsetSelectionChangeListener(SynsetSelectionChangeListener listener){
-		getUI().synsetSelectionChangeListeners.remove(listener);
-	}
+    /**
+     * @param listener
+     */
+    public void removeSynsetSelectionChangeListener(SynsetSelectionChangeListener listener) {
+        getUI().synsetSelectionChangeListeners.remove(listener);
+    }
 
-	public Mode getMode() {
-		return mode;
-	}
+    public Mode getMode() {
+        return mode;
+    }
 
-	/**
-	 * @param synset
-	 */
-	public void loadSynset(Synset synset) {
-		mode = Mode.SYNSET;
-		getUI().refreshView(synset);
-	}
+    /**
+     * @param synset
+     */
+    public void loadSynset(Synset synset) {
+        mode = Mode.SYNSET;
+        getUI().refreshView(synset);
+    }
 
-	private ArrayList<TreeSet<ViwnNodeSynset>> createSubgraphs(ArrayList<ViwnNodeSynset> exp) {
-		HashMap<Long, ViwnNodeSynset> synsetToNode = new HashMap<Long, ViwnNodeSynset>();
-		TreeSet<Long> synsets = new TreeSet<Long>();
+    public void loadSense(Sense sense) {
+        mode = Mode.SENSE;
 
-		for (ViwnNodeSynset node : exp) {
-			synsetToNode.put(node.getId(), node);
-			synsets.add(node.getId());
-		}
+        getUI().releaseDataSetCache();
+        HashMap<Long, SenseDataEntry> entries = RemoteUtils.lexicalUnitRemote.prepareCacheForRootNode(sense,
+                LexiconManager.getInstance().getLexicons());
 
-		ArrayList<TreeSet<ViwnNodeSynset>> groups = new ArrayList<TreeSet<ViwnNodeSynset>>();
+        if (entries != null) {
+            getUI().setSenseEntrySets(entries);
+        }
+        getUI().refreshView(sense);
+    }
 
-		while (synsets.size() > 0) {
-			Long synsetId = synsets.iterator().next();
-			synsets.remove(synsetId);
+    private ArrayList<TreeSet<ViwnNodeSynset>> createSubgraphs(ArrayList<ViwnNodeSynset> exp) {
+        HashMap<Long, ViwnNodeSynset> synsetToNode = new HashMap<>();
+        TreeSet<Long> synsets = new TreeSet<>();
 
-			TreeSet<Long> synsetGroup = new TreeSet<Long>();
-			TreeSet<Long> synsetGroupQueue = new TreeSet<Long>();
-			synsetGroupQueue.add(synsetId);
-			
-			while (synsetGroupQueue.size() > 0) {
-				Long synsetInGroup = synsetGroupQueue.iterator().next();
-				synsetGroupQueue.remove(synsetInGroup);
-				synsetGroup.add(synsetInGroup);
-				
-				for (ViwnEdgeSynset relDown : synsetToNode
-						.get(synsetInGroup).getRelation(ViwnNode.Direction.BOTTOM))
-				{
-					if (synsets.contains(relDown.getChild())) {
-						synsetGroupQueue.add(relDown.getChild());
-						synsets.remove(relDown.getChild());
-					}
-				}
+        for (ViwnNodeSynset node : exp) {
+            synsetToNode.put(node.getId(), node);
+            synsets.add(node.getId());
+        }
 
-				for (ViwnEdgeSynset relUp : synsetToNode.get(synsetInGroup)
-						.getRelation(ViwnNode.Direction.TOP))
-				{
-					if (synsets.contains(relUp.getChild())) {
-						synsetGroupQueue.add(relUp.getChild());
-						synsets.remove(relUp.getChild());
-					}
-				}
-			}
-			
-			TreeSet<ViwnNodeSynset> candGroup = new TreeSet<ViwnNodeSynset>();
-			for (Long id : synsetGroup) {
-				candGroup.add(synsetToNode.get(id));
-			}
-			groups.add(candGroup);
-		}
-		return groups;
-	}
-	
-	private ArrayList<ViwnNodeCand> createNodeRoots(ArrayList<TreeSet<ViwnNodeSynset>> groups, String word) {
-		ArrayList<ViwnNodeCand> roots = new ArrayList<ViwnNodeCand>();
-		
-		for (TreeSet<ViwnNodeSynset> group : groups) {
-			if (group.size() == 0) {
-				roots.add(null);
-				continue;
-			}
+        ArrayList<TreeSet<ViwnNodeSynset>> groups = new ArrayList<>();
 
-			// find node with maximum score and any node containg selected word
-			boolean containsWord = false;
-			ViwnNodeCand max = null;
-			for (ViwnNodeSynset n : group) {
-				if (n instanceof ViwnNodeCand) {
-					ViwnNodeCand node = (ViwnNodeCand)n;
-					if (max == null ||
-						node.getExt().getScore1() > max.getExt().getScore1() ||
-						(node.getExt().getScore1() == max.getExt().getScore1() && 
-						 node.getExt().getScore2() > max.getExt().getScore2()) )
-					{
-						max = node;
-					}
-					
-					if (node.isAdded())
-						containsWord = true;
-				}
-			}
+        while (synsets.size() > 0) {
+            Long synsetId = synsets.iterator().next();
+            synsets.remove(synsetId);
 
-			if (max != null) {
-				max.setCenter();
-				roots.add(max);
-				
-				if (max.isAdded() || containsWord)
-					max.setEvaluated();
-			}
-		}
-		return roots;
-	}
-	
-	private boolean setupSpawner(ViwnNodeSynset to_set, TreeSet<ViwnNodeSynset> nodes) {
-		for(ViwnNodeSynset node : nodes) {
-			for (ViwnEdgeSynset e : node.getRelation(ViwnNode.Direction.BOTTOM)) {
-				if (e.getChild().equals(to_set.getId())) {
-					to_set.setSpawner(node, ViwnNode.Direction.BOTTOM);
-					return true;
-				}
-			}
+            TreeSet<Long> synsetGroup = new TreeSet<>();
+            TreeSet<Long> synsetGroupQueue = new TreeSet<>();
+            synsetGroupQueue.add(synsetId);
 
-			for (ViwnEdgeSynset e : node.getRelation(ViwnNode.Direction.TOP)) {
-				if (e.getChild().equals(to_set.getId())) {
-					to_set.setSpawner(node, ViwnNode.Direction.TOP);
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+            while (synsetGroupQueue.size() > 0) {
+                Long synsetInGroup = synsetGroupQueue.iterator().next();
+                synsetGroupQueue.remove(synsetInGroup);
+                synsetGroup.add(synsetInGroup);
 
-	private void setupNodes(
-			ArrayList<TreeSet<ViwnNodeSynset>> groups,
-			ArrayList<ViwnNodeCand> roots,
-			ViwnNodeRoot root,
-			ArrayList<ViwnNodeSynset> freeSyns)
-	{
+                for (ViwnEdgeSynset relDown : synsetToNode
+                        .get(synsetInGroup).getRelation(ViwnNode.Direction.BOTTOM)) {
+                    if (synsets.contains(relDown.getChild())) {
+                        synsetGroupQueue.add(relDown.getChild());
+                        synsets.remove(relDown.getChild());
+                    }
+                }
 
-		for (int i=0; i<groups.size(); ++i) {
-			roots.get(i).setSpawner(root, ViwnNode.Direction.BOTTOM);
-			TreeSet<ViwnNodeSynset> setuped = new TreeSet<ViwnNodeSynset>();
-			setuped.add(roots.get(i));
-			ArrayDeque<ViwnNodeSynset> to_setup = new ArrayDeque<ViwnNodeSynset>(groups.get(i));
+                for (ViwnEdgeSynset relUp : synsetToNode.get(synsetInGroup)
+                        .getRelation(ViwnNode.Direction.TOP)) {
+                    if (synsets.contains(relUp.getChild())) {
+                        synsetGroupQueue.add(relUp.getChild());
+                        synsets.remove(relUp.getChild());
+                    }
+                }
+            }
 
-			int count = 0;
-			while (!to_setup.isEmpty() && count != to_setup.size()) {
-				ViwnNodeSynset node = to_setup.pop();
-				if (node != roots.get(i)) {
-					if (setupSpawner(node, setuped)) {
-						setuped.add(node);
-						count = 0;
-					} else {
-						to_setup.add(node);
-						count++;
-					}
-				}
-			}
-			if (count == to_setup.size() && count != 0) {
-				System.out.println("nodes left unset");
-			}
-		}
-	}
+            TreeSet<ViwnNodeSynset> candGroup = new TreeSet<>();
+            for (Long id : synsetGroup) {
+                candGroup.add(synsetToNode.get(id));
+            }
+            groups.add(candGroup);
+        }
+        return groups;
+    }
 
-	/**
-	 * Pobiera listę rozszerzeń dla danego słowa. Metoda wydzielona z LoadCandidate
-	 * żeby nie zmieniać typu zwracanego przez tamtą metodę (W Quadruple moga byc tylko 4 wartosci)
-	 * @author lburdka
-	 * @param word 
-	 * @param packageNo 
-	 * @param pos 
-	 * @return ArrayList<ViwnNodeCandExtension>
-	 */
-	// FIXME: za dużo ustawiania rzeczy jakie zostały już pobrane, usunąć, wywalić niepotrzebne merge etc.
-	public ArrayList<ViwnNodeCandExtension> loadExtensions(String word, int packageNo, PartOfSpeech pos){
-		//SELECT i JOIN potrzebnych struktur
-		List<ExtGraphExtension> extensions=(ArrayList<ExtGraphExtension>) RemoteUtils.extGraphExtensionRemote.dbFullGet(word, packageNo);
-		extensions = RemoteUtils.extGraphExtensionRemote.dbGetRelation(extensions);
-		Long[] ids= new Long[extensions.size()];
-		for(int i=0;i<ids.length;i++){
-			ids[i]=extensions.get(i).getExtGraph().getId();
-			extensions.get(i).setRelationType(extensions.get(i).getRelationType());
-			RemoteUtils.extGraphExtensionRemote.mergeObject(extensions.get(i));
-		}
-		ArrayList<ExtGraph> graphs = null;
-		if(ids.length>0){
-			graphs=(ArrayList<ExtGraph>) RemoteUtils.extGraphRemote.dbFullGet(ids);
-		}
+    private ArrayList<ViwnNodeCand> createNodeRoots(ArrayList<TreeSet<ViwnNodeSynset>> groups, String word) {
+        ArrayList<ViwnNodeCand> roots = new ArrayList<>();
 
-		if(graphs!=null){
-			
-			HashMap<Long,ExtGraphExtension> graphExts=new HashMap<Long,ExtGraphExtension>();
-			
-			for(ExtGraphExtension ege:extensions){
-				for(ExtGraph eg:graphs){
-					if(ege.getExtGraph().getId().equals(eg.getId())){
-						graphExts.put(eg.getId(), ege);
-					}
-				}
-			}
-			
-			ids=new Long[graphs.size()];
-			for(int i=0;i<ids.length;i++){
-				ids[i]=graphs.get(i).getSynset().getId();
-			}
-			List<Synset> synsets = RemoteUtils.synsetRemote.dbFullGet(ids);
-	
-			//Stworzenie odpowiednich węzłów na podstawie pobranych informacji
-			if(synsets!=null&&synsets.size()>0){
-				
-				HashMap<Long,ExtGraph> synGraphs=new HashMap<Long,ExtGraph>();
-				
-				for(ExtGraph eg:graphs){
-					for(Synset ss:synsets){
-						if(eg.getSynset().getId().equals(ss.getId())){
-							synGraphs.put(ss.getId(), eg);
-						}
-					}
-				}
-				
-				//Uzupełnienie synsetów
-				//synsets = RemoteUtils.synsetRemote.dbGetUnits(synsets);
-			//	synsets = RemoteUtils.synsetRemote.dbGetSynsetsRels(synsets);
-				
-				//Uzupełnienie jednostek w rozszerzeniach
-				for(Synset syn : synsets){
-					ExtGraphExtension exge = graphExts.get(synGraphs.get(syn.getId()).getId());
-					// TODO: check me
-					//graphExts.get(synGraphs.get(syn.getId()).getId()).setLexicalUnit(syn);
-					RemoteUtils.extGraphExtensionRemote.mergeObject(exge);
-				}
+        for (TreeSet<ViwnNodeSynset> group : groups) {
+            if (group.size() == 0) {
+                roots.add(null);
+                continue;
+            }
 
-				ArrayList<ViwnNodeCandExtension> result=new ArrayList<ViwnNodeCandExtension>();
+            // find node with maximum score and any node containg selected word
+            boolean containsWord = false;
+            ViwnNodeCand max = null;
+            for (ViwnNodeSynset n : group) {
+                if (n instanceof ViwnNodeCand) {
+                    ViwnNodeCand node = (ViwnNodeCand) n;
+                    if (max == null ||
+                            node.getExt().getScore1() > max.getExt().getScore1() ||
+                            (node.getExt().getScore1() == max.getExt().getScore1() &&
+                                    node.getExt().getScore2() > max.getExt().getScore2())) {
+                        max = node;
+                    }
 
-				for(Synset s:synsets){
-					ViwnNodeCandExtension ext = new ViwnNodeCandExtension(s,graphExts.get(synGraphs.get(s.getId()).getId()), getUI());
-					ext.setRelName(graphExts.get(synGraphs.get(s.getId()).
-							getId()).
-							getRelationType().
-							getName().getText());
-					ext.setColor(graphExts.get(synGraphs.get(s.getId()).getId()).getColor());
+                    if (node.isAdded())
+                        containsWord = true;
+                }
+            }
 
-					result.add(ext);
-				}
-				return result;
-			}else
-				return null;
-		}else
-			return null;
-	}
+            if (max != null) {
+                max.setCenter();
+                roots.add(max);
 
-	public Quadruple<ViwnNodeWord, ArrayList<TreeSet<ViwnNodeSynset>>,ArrayList<ViwnNodeCand>,
-                ArrayList<ViwnNodeSynset>> loadCandidate(String word, int packageNo, PartOfSpeech pos) {
+                if (max.isAdded() || containsWord)
+                    max.setEvaluated();
+            }
+        }
+        return roots;
+    }
 
-		getUI().getCache().clear();
+    private boolean setupSpawner(ViwnNodeSynset to_set, TreeSet<ViwnNodeSynset> nodes) {
+        for (ViwnNodeSynset node : nodes) {
+            for (ViwnEdgeSynset e : node.getRelation(ViwnNode.Direction.BOTTOM)) {
+                if (e.getChild().equals(to_set.getId())) {
+                    to_set.setSpawner(node, ViwnNode.Direction.BOTTOM);
+                    return true;
+                }
+            }
 
-		Collection<ExtGraph> cands = RemoteUtils.extGraphRemote.dbFullGet(word, packageNo);
-		mode = Mode.CANDS;
-		List<Synset> synsets = new ArrayList<Synset>();
-		for (ExtGraph ext : cands) {
-			synsets.add(ext.getSynset());
-		}
+            for (ViwnEdgeSynset e : node.getRelation(ViwnNode.Direction.TOP)) {
+                if (e.getChild().equals(to_set.getId())) {
+                    to_set.setSpawner(node, ViwnNode.Direction.TOP);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-		TreeSet<Long> synsetsWithWord = new TreeSet<Long>();
-		List<Synset> synsetsWithWordCol = new ArrayList<Synset>();
-		synsetsWithWordCol = RemoteUtils.synsetRemote.dbFastGetSynsets(word,LexiconManager.getInstance().getLexicons());
+    private void setupNodes(
+            ArrayList<TreeSet<ViwnNodeSynset>> groups,
+            ArrayList<ViwnNodeCand> roots,
+            ViwnNodeRoot root,
+            ArrayList<ViwnNodeSynset> freeSyns) {
 
-		for (Synset synset : synsetsWithWordCol)
-			synsetsWithWord.add(synset.getId());
+        for (int i = 0; i < groups.size(); ++i) {
+            roots.get(i).setSpawner(root, ViwnNode.Direction.BOTTOM);
+            TreeSet<ViwnNodeSynset> setuped = new TreeSet<>();
+            setuped.add(roots.get(i));
+            ArrayDeque<ViwnNodeSynset> to_setup = new ArrayDeque<>(groups.get(i));
 
-		ExtGraph extMaxRwf = null;
-		int nodesAddedCount = 0;
+            int count = 0;
+            while (!to_setup.isEmpty() && count != to_setup.size()) {
+                ViwnNodeSynset node = to_setup.pop();
+                if (node != roots.get(i)) {
+                    if (setupSpawner(node, setuped)) {
+                        setuped.add(node);
+                        count = 0;
+                    } else {
+                        to_setup.add(node);
+                        count++;
+                    }
+                }
+            }
+            if (count == to_setup.size() && count != 0) {
+                System.out.println("nodes left unset");
+            }
+        }
+    }
 
-		ArrayList<ViwnNodeSynset> viwnCands = new ArrayList<ViwnNodeSynset>();
-		ArrayList<ViwnNodeSynset> freeSyns = new ArrayList<ViwnNodeSynset>();
+    /**
+     * Pobiera listę rozszerzeń dla danego słowa. Metoda wydzielona z LoadCandidate
+     * żeby nie zmieniać typu zwracanego przez tamtą metodę (W Quadruple moga byc tylko 4 wartosci)
+     *
+     * @param word
+     * @param packageNo
+     * @param pos
+     * @return ArrayList<ViwnNodeCandExtension>
+     * @author lburdka
+     */
+    // FIXME: za dużo ustawiania rzeczy jakie zostały już pobrane, usunąć, wywalić niepotrzebne merge etc.
+    public ArrayList<ViwnNodeCandExtension> loadExtensions(String word, int packageNo, PartOfSpeech pos) {
+        //SELECT i JOIN potrzebnych struktur
+        List<ExtGraphExtension> extensions = (ArrayList<ExtGraphExtension>) RemoteUtils.extGraphExtensionRemote.dbFullGet(word, packageNo);
+        extensions = RemoteUtils.extGraphExtensionRemote.dbGetRelation(extensions);
+        Long[] ids = new Long[extensions.size()];
+        for (int i = 0; i < ids.length; i++) {
+            ids[i] = extensions.get(i).getExtGraph().getId();
+            extensions.get(i).setRelationType(extensions.get(i).getRelationType());
+            RemoteUtils.extGraphExtensionRemote.mergeObject(extensions.get(i));
+        }
+        ArrayList<ExtGraph> graphs = null;
+        if (ids.length > 0) {
+            graphs = (ArrayList<ExtGraph>) RemoteUtils.extGraphRemote.dbFullGet(ids);
+        }
 
-		if (cands.size() > 0) {
-			for (ExtGraph ext : cands) {
-				Synset synset = ext.getSynset();
-				// remember item with the highest rwf
-				if (extMaxRwf == null
-						|| ext.getScore2() > extMaxRwf.getScore2())
-					extMaxRwf = ext;
+        if (graphs != null) {
 
-				ViwnNodeCand node = null;
+            HashMap<Long, ExtGraphExtension> graphExts = new HashMap<>();
 
-				if (synsetsWithWord.contains(ext.getSynset().getId())) {
-					node = new ViwnNodeCand(synset, ext, true, getUI());
-					synsetsWithWord.remove(ext.getSynset().getId());
-				} else {
-					node = new ViwnNodeCand(synset, ext, false,getUI());
-				}
-				
-				viwnCands.add(node);
-				getUI().getCache().put(synset.getId(), node);
-				nodesAddedCount++;
-			}
-			
-			// add max RWF if any nodes were added
-			if (nodesAddedCount == 0 && extMaxRwf != null) {
-				Synset synset = extMaxRwf.getSynset();
+            for (ExtGraphExtension ege : extensions) {
+                for (ExtGraph eg : graphs) {
+                    if (ege.getExtGraph().getId().equals(eg.getId())) {
+                        graphExts.put(eg.getId(), ege);
+                    }
+                }
+            }
 
-				ViwnNodeCand node = null;
+            ids = new Long[graphs.size()];
+            for (int i = 0; i < ids.length; i++) {
+                ids[i] = graphs.get(i).getSynset().getId();
+            }
+            List<Synset> synsets = RemoteUtils.synsetRemote.dbFullGet(ids);
 
-				if (synsetsWithWord.contains(extMaxRwf.getSynset().getId())) {
-					node = new ViwnNodeCand(synset, extMaxRwf, true, getUI());
-					synsetsWithWord.remove(extMaxRwf.getSynset().getId());
-				} else {
-					node = new ViwnNodeCand(synset, extMaxRwf, false, getUI());
-				}
-				
-				viwnCands.add(node);
-				getUI().getCache().put(synset.getId(), node);
-			}
-			
-			// add other synsets which contain selected word
-			for (Synset synset : synsetsWithWordCol) {
-				ViwnNodeSynset node = new ViwnNodeSynset(synset,getUI());
-				node.setFrame(true);
-				getUI().getCache().put(synset.getId(), node);
-				freeSyns.add(node);
-			}
-		}
+            //Stworzenie odpowiednich węzłów na podstawie pobranych informacji
+            if (synsets != null && synsets.size() > 0) {
 
-		ViwnNodeWord nodeWord = new ViwnNodeWord(word, packageNo, pos);
+                HashMap<Long, ExtGraph> synGraphs = new HashMap<>();
 
-		ArrayList<TreeSet<ViwnNodeSynset>> groups = createSubgraphs(viwnCands);
-		ArrayList<ViwnNodeCand> roots = createNodeRoots(groups, word);
-		setupNodes(groups, roots, nodeWord, freeSyns);
+                for (ExtGraph eg : graphs) {
+                    for (Synset ss : synsets) {
+                        if (eg.getSynset().getId().equals(ss.getId())) {
+                            synGraphs.put(ss.getId(), eg);
+                        }
+                    }
+                }
 
-		return new Quadruple<ViwnNodeWord,
-					ArrayList<TreeSet<ViwnNodeSynset>>,
-					ArrayList<ViwnNodeCand>,
-					ArrayList<ViwnNodeSynset>>
-			(nodeWord, groups, roots, freeSyns);
-	}
+                //Uzupełnienie synsetów
+                //synsets = RemoteUtils.synsetRemote.dbGetUnits(synsets);
+                //	synsets = RemoteUtils.synsetRemote.dbGetSynsetsRels(synsets);
 
-	/**
-	 * @param gcl GraphChangeListener to add
-	 */		
-	public void addGraphChangeListener(GraphChangeListener gcl) {
-		getUI().graphChangeListeners.add(gcl);
-	}
-	
-	/**
-	 * @param gcl GraphChangeListener to remove
-	 */
-	public void removeGraphChangeListener(GraphChangeListener gcl) {
-		getUI().graphChangeListeners.remove(gcl);
-	}
+                //Uzupełnienie jednostek w rozszerzeniach
+                for (Synset syn : synsets) {
+                    ExtGraphExtension exge = graphExts.get(synGraphs.get(syn.getId()).getId());
+                    // TODO: check me
+                    //graphExts.get(synGraphs.get(syn.getId()).getId()).setLexicalUnit(syn);
+                    RemoteUtils.extGraphExtensionRemote.mergeObject(exge);
+                }
 
-	/**
-	 * make getUI public
-	 * */
-	public ViwnGraphViewUI getUI() {
-		return (ViwnGraphViewUI) super.getUI();
-	}
+                ArrayList<ViwnNodeCandExtension> result = new ArrayList<>();
+
+                for (Synset s : synsets) {
+                    ViwnNodeCandExtension ext = new ViwnNodeCandExtension(s, graphExts.get(synGraphs.get(s.getId()).getId()), getUI());
+                    ext.setRelName(graphExts.get(synGraphs.get(s.getId()).
+                            getId()).
+                            getRelationType().
+                            getName().getText());
+                    ext.setColor(graphExts.get(synGraphs.get(s.getId()).getId()).getColor());
+
+                    result.add(ext);
+                }
+                return result;
+            } else
+                return null;
+        } else
+            return null;
+    }
+
+    public Quadruple<ViwnNodeWord, ArrayList<TreeSet<ViwnNodeSynset>>, ArrayList<ViwnNodeCand>,
+            ArrayList<ViwnNodeSynset>> loadCandidate(String word, int packageNo, PartOfSpeech pos) {
+
+        getUI().getSynsetCache().clear();
+
+        Collection<ExtGraph> cands = RemoteUtils.extGraphRemote.dbFullGet(word, packageNo);
+        mode = Mode.CANDS;
+        List<Synset> synsets = new ArrayList<>();
+        for (ExtGraph ext : cands) {
+            synsets.add(ext.getSynset());
+        }
+
+        TreeSet<Long> synsetsWithWord = new TreeSet<>();
+        List<Synset> synsetsWithWordCol = new ArrayList<>();
+        synsetsWithWordCol = RemoteUtils.synsetRemote.dbFastGetSynsets(word, LexiconManager.getInstance().getLexicons());
+
+        for (Synset synset : synsetsWithWordCol)
+            synsetsWithWord.add(synset.getId());
+
+        ExtGraph extMaxRwf = null;
+        int nodesAddedCount = 0;
+
+        ArrayList<ViwnNodeSynset> viwnCands = new ArrayList<>();
+        ArrayList<ViwnNodeSynset> freeSyns = new ArrayList<>();
+
+        if (cands.size() > 0) {
+            for (ExtGraph ext : cands) {
+                Synset synset = ext.getSynset();
+                // remember item with the highest rwf
+                if (extMaxRwf == null
+                        || ext.getScore2() > extMaxRwf.getScore2())
+                    extMaxRwf = ext;
+
+                ViwnNodeCand node = null;
+
+                if (synsetsWithWord.contains(ext.getSynset().getId())) {
+                    node = new ViwnNodeCand(synset, ext, true, getUI());
+                    synsetsWithWord.remove(ext.getSynset().getId());
+                } else {
+                    node = new ViwnNodeCand(synset, ext, false, getUI());
+                }
+
+                viwnCands.add(node);
+                getUI().getSynsetCache().put(synset.getId(), node);
+                nodesAddedCount++;
+            }
+
+            // add max RWF if any nodes were added
+            if (nodesAddedCount == 0 && extMaxRwf != null) {
+                Synset synset = extMaxRwf.getSynset();
+
+                ViwnNodeCand node = null;
+
+                if (synsetsWithWord.contains(extMaxRwf.getSynset().getId())) {
+                    node = new ViwnNodeCand(synset, extMaxRwf, true, getUI());
+                    synsetsWithWord.remove(extMaxRwf.getSynset().getId());
+                } else {
+                    node = new ViwnNodeCand(synset, extMaxRwf, false, getUI());
+                }
+
+                viwnCands.add(node);
+                getUI().getSynsetCache().put(synset.getId(), node);
+            }
+
+            // add other synsets which contain selected word
+            for (Synset synset : synsetsWithWordCol) {
+                ViwnNodeSynset node = new ViwnNodeSynset(synset, getUI());
+                node.setFrame(true);
+                getUI().getSynsetCache().put(synset.getId(), node);
+                freeSyns.add(node);
+            }
+        }
+
+        ViwnNodeWord nodeWord = new ViwnNodeWord(word, packageNo, pos);
+
+        ArrayList<TreeSet<ViwnNodeSynset>> groups = createSubgraphs(viwnCands);
+        ArrayList<ViwnNodeCand> roots = createNodeRoots(groups, word);
+        setupNodes(groups, roots, nodeWord, freeSyns);
+
+        return new Quadruple<>
+                (nodeWord, groups, roots, freeSyns);
+    }
+
+    /**
+     * @param gcl GraphChangeListener to add
+     */
+    public void addGraphChangeListener(GraphChangeListener gcl) {
+        getUI().graphChangeListeners.add(gcl);
+    }
+
+    /**
+     * @param gcl GraphChangeListener to remove
+     */
+    public void removeGraphChangeListener(GraphChangeListener gcl) {
+        getUI().graphChangeListeners.remove(gcl);
+    }
+
+    /**
+     * make getUI public
+     */
+    public ViwnGraphViewUI getUI() {
+        return (ViwnGraphViewUI) super.getUI();
+    }
 }
