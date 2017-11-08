@@ -33,7 +33,7 @@ export class UnitComponent implements OnInit, OnDestroy {
     }, 20);
   }
 
-  optionListScrollBottom() {
+  optionListScrollBottom(event) {
     this.sidebarService.loadMoreOptions();
   }
 

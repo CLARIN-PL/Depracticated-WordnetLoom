@@ -13,7 +13,12 @@
             </span>
           </div>
           <mat-nav-list #sidebarList class="option-list" [ngClass]="(sidebarContent.length < 1)?'':'no-content'" (appScrollBottom)="optionListScrollBottom($event)">
-            <a mat-list-item class="option-list-item" [routerLink]="[item.id]"  routerLinkActive="active-link" *ngFor="let item of sidebarContent"  matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}">
+            <a mat-list-item
+               class="option-list-item"
+               [routerLink]="[item.id]"
+               routerLinkActive="active-link"
+               *ngFor="let item of sidebarContent"
+               matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}">
               {{ item.lemma}}
             </a>
             <a [hidden]="!sideBarListLoading" mat-list-item class="option-list-item loading-option-list">
