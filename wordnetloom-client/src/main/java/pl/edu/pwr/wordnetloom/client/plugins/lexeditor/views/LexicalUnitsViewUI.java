@@ -118,7 +118,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         content.add("br left", infoLabel);
 
         content.add("br center", buttons);
-
     }
 
     /**
@@ -152,9 +151,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         unitsList.setEnabled(true);
         unitsList.grabFocus();
 
-        SwingUtilities.invokeLater(() -> {
-            unitsList.grabFocus();
-        });
+        SwingUtilities.invokeLater(() -> unitsList.grabFocus());
     }
 
     public void refreshLexiocn() {
@@ -216,6 +213,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                             unitsList.grabFocus();
                             unitsList.setSelectedIndex(0);
                             unitsList.ensureIndexIsVisible(0);
+                            workbench.setBusy(false);
                         }
                         infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "" + listModel.getSize()));
                     });

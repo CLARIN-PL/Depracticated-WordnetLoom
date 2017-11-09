@@ -31,19 +31,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     public final static Color vertexBackgroundColorRoot = new Color(255, 178, 178);
     public final static Color vertexBackgroundColorMarked = new Color(255, 195, 195);
 
-    static{
-        PosBgColors = new HashMap<>();
-        geom = new SynsetNodeShape();
-        relTypes = initializeRelTypes();
-    }
-
-    private static Set<RelationTypeManager>[] initializeRelTypes()
-    {
-        Set<RelationTypeManager>[] tempRelTypes = new Set[NodeDirection.values().length];
-        Arrays.fill(tempRelTypes, new HashSet<>());
-        return tempRelTypes;
-    }
-
     protected static SynsetNodeShape geom;
 
     public static Set<RelationTypeManager>[] relTypes;
@@ -60,12 +47,37 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     private String ret = null;
     private PartOfSpeech pos = null;
 
-    private final ArrayList<ViwnEdgeSynset>[] relations = new ArrayList[]{
-            new ArrayList<>(), new ArrayList<>(),
-            new ArrayList<>(), new ArrayList<>()};
+    private final ArrayList<ViwnEdgeSynset>[] relations;
+
+    private final ViwnGraphViewUI ui;
+
+    private final boolean hadCheckedPOS = false;
 
     protected State[] states = new State[]{State.NOT_EXPANDED,
             State.NOT_EXPANDED, State.NOT_EXPANDED, State.NOT_EXPANDED};
+
+    public ViwnNodeSynset(Synset synset, ViwnGraphViewUI ui) {
+        this.synset = synset;
+        this.ui = ui;
+        this.ui.addSynsetToCash(synset.getId(), this);
+        this.relations = new ArrayList[NodeDirection.values().length];
+        Arrays.fill(relations, new ArrayList<>());
+
+        units = null; //RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
+        setup();
+    }
+
+    static{
+        PosBgColors = new HashMap<>();
+        geom = new SynsetNodeShape();
+        relTypes = initializeRelTypes();
+    }
+
+    private static Set<RelationTypeManager>[] initializeRelTypes() {
+        Set<RelationTypeManager>[] tempRelTypes = new Set[NodeDirection.values().length];
+        Arrays.fill(tempRelTypes, new HashSet<>());
+        return tempRelTypes;
+    }
 
     @Override
     public int compareTo(ViwnNodeSynset o) {
@@ -185,23 +197,24 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
             }
             for (NodeDirection dir : NodeDirection.values()) {
                 if (e.getRelationType() != null) {
-                    if (relTypes[dir.ordinal()].contains(RelationTypeManager.get(e
-                            .getRelationType().rev_id()))) {
-                        if (skip(e)) {
-                            continue;
-                        }
-                        relations[dir.ordinal()].add(e);
-                        to.remove(e);
-                        it = to.iterator();
-                    } else if (relTypes[dir.getOpposite().ordinal()].contains(e
-                            .getRelationType())) {
-                        if (skip(e)) {
-                            continue;
-                        }
-                        relations[dir.ordinal()].add(e);
-                        to.remove(e);
-                        it = to.iterator();
-                    }
+                    // TODO odkomentować i przerobić tak, aby działało
+//                    if (relTypes[dir.ordinal()].contains(RelationTypeManager.get(e
+//                            .getRelationType().rev_id()))) {
+//                        if (skip(e)) {
+//                            continue;
+//                        }
+//                        relations[dir.ordinal()].add(e);
+//                        to.remove(e);
+//                        it = to.iterator();
+//                    } else if (relTypes[dir.getOpposite().ordinal()].contains(e
+//                            .getRelationType())) {
+//                        if (skip(e)) {
+//                            continue;
+//                        }
+//                        relations[dir.ordinal()].add(e);
+//                        to.remove(e);
+//                        it = to.iterator();
+//                    }
                 }
             }
         }
@@ -252,18 +265,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         // adding relations to appropiate groups
         construct();
     }
-
-    private final ViwnGraphViewUI ui;
-
-    public ViwnNodeSynset(Synset synset, ViwnGraphViewUI ui) {
-        this.synset = synset;
-        this.ui = ui;
-        this.ui.addSynsetToCash(synset.getId(), this);
-        units = null; //RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
-        setup();
-    }
-
-    private final boolean hadCheckedPOS = false;
 
     /**
      * Get synset part of speech.

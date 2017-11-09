@@ -24,6 +24,7 @@ public class RelationType extends GenericEntity {
             joinColumns = @JoinColumn(name = "relation_type_id"),
             inverseJoinColumns = @JoinColumn(name = "lexicon_id")
     )
+
     @NotNull
     @Size(min = 1)
     private List<Lexicon> lexicons = new ArrayList<>();
@@ -75,6 +76,11 @@ public class RelationType extends GenericEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_relation_type_id", nullable = true)
     private RelationType parent;
+
+    //TODO zobaczyc, czy jest to dobrze zrobione
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_relation_type_id")
+    private List<RelationType> children;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reverse_relation_type_id", nullable = true)
@@ -224,6 +230,12 @@ public class RelationType extends GenericEntity {
 
     public void setMultilingual(Boolean multilingual) {
         this.multilingual = multilingual;
+    }
+
+    public List<RelationType> getChildren() {return children;}
+
+    public void setChildren(List<RelationType> children){
+        this.children = children;
     }
 
 }

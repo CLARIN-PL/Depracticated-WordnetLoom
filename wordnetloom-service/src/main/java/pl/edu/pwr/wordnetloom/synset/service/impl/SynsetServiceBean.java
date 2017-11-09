@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.synset.service.impl;
 
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.repository.SynsetRepository;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceLocal;
@@ -11,6 +12,7 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +38,11 @@ public class SynsetServiceBean implements SynsetServiceLocal {
         return true;
     }
 
+    @Override
+    public Synset findSynsetBySense(Sense sense, List<Long> lexicons) {
+        return synsetRepository.findSynsetBySense(sense, lexicons);
+    }
+
     public void delete(RelationType relation, List<Long> lexicons) {
         //Removes relation with subrelations
 //        Collection<SynsetRelationType> children = findChildren(relation);
@@ -46,7 +53,10 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 //        delete(relation);
     }
 
+    @Override
     public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons) {
+        synsetRepository.prepareCacheForRootNode(synset, lexicons);
+
 //        Map<Long, DataEntry> map = new HashMap<>();
 //
 //        long start = System.currentTimeMillis();

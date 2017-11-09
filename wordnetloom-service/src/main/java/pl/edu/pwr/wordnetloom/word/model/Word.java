@@ -58,5 +58,4 @@ public class Word extends GenericEntity {
         Word other = (Word) obj;
         return Objects.equals(word, other.word) && Objects.equals(id, other.id);
     }
-
 }

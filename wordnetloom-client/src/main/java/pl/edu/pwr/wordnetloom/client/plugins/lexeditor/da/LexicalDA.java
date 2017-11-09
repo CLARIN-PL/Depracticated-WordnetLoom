@@ -1,11 +1,13 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da;
 
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
@@ -24,7 +26,17 @@ public class LexicalDA {
         if (filterText == null) {
             filterText = "";
         }
-        return null;
+//        return null;
+        Long domainId = null;
+        Long posId = null;
+        if(domain != null){
+            domainId = domain.getId();
+        }
+        if(pos != null){
+            posId = pos.getId();
+        }
+        SenseCriteriaDTO criteria = new SenseCriteriaDTO(posId, domainId, filterText, lexicons);
+        return RemoteService.senseRemote.findByCriteria(criteria);
         //RemoteUtils.lexicalUnitRemote.dbFastGetUnits(filterText, pos, domain, relationType, register, comment, example, limitSize, lexicons);
     }
 
@@ -638,7 +650,7 @@ public class LexicalDA {
 //                    return RelationTypeManager.get(parent.getId()).name() + " / " + RelationTypeManager.get(rel.getId()).name();
 //                }
             }
-            return RelationTypeManager.getFullNameFor(rel.getId());
+            return RelationTypeManager.getInstance().getFullNameFor(rel.getId());
         }
         return null;
     }

@@ -29,7 +29,7 @@ public class SynsetAttributes extends GenericEntity {
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
 
-    @Column(name = "princenton_id")
+    @Column(name = "princeton_id")
     private String princetonId;
 
     @OneToOne(fetch = FetchType.LAZY)

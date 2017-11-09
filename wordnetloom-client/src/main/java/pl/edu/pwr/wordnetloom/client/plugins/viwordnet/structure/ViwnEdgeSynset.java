@@ -3,6 +3,8 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 import java.awt.Color;
 import java.util.HashMap;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
@@ -30,10 +32,14 @@ public class ViwnEdgeSynset extends ViwnEdge {
      * @return return true if this edge is equal to the reversed edge
      */
     public boolean equalsReverse(ViwnEdgeSynset edge) {
-        Long rev_id = edge.getRelationType().rev_id();
-        return getRelation().equals(rev_id)
-                && getChild().equals(edge.getParent())
-                && getParent().equals(edge.getChild());
+        if(edge.getRelationType().getReverse()==null){ // nie ma relacji odwrotnej
+            return false;
+        } else {
+            Long revId = edge.getRelationType().getReverse().getId();
+            return getRelation().equals(revId)
+                    && getChild().equals(edge.getParent())
+                    && getParent().equals(edge.getChild());
+        }
     }
 
     /**
@@ -87,12 +93,13 @@ public class ViwnEdgeSynset extends ViwnEdge {
         return srel_dto_.getChild();
     }
 
-    public RelationTypeManager getRelationType() {
-        RelationTypeManager rt = RelationTypeManager.get(srel_dto_.getRelationType().getId());
-        if (rt == null) {
+    public RelationType getRelationType() {
+        //TODO zobaczyć, czy typ relacji jest wstawiony poprawnie
+        RelationType relationType = RelationTypeManager.getInstance().get(srel_dto_.getRelationType().getId(), RelationArgument.SYNSET_RELATION);
+        if(relationType == null){
             throw new RuntimeException("relation type doesn't exist");
         }
-        return rt;
+        return relationType;
     }
 
     @Override
@@ -115,7 +122,7 @@ public class ViwnEdgeSynset extends ViwnEdge {
     }
 
     public ViwnEdgeSynset createDummyReverse() {
-        if (RelationTypeManager.get(srel_dto_.getRelationType().getId()).rev_id() == null) {
+        if (RelationTypeManager.getInstance().get(srel_dto_.getRelationType().getId(), RelationArgument.SYNSET_RELATION).getReverse() == null) {
             return null;
         }
 

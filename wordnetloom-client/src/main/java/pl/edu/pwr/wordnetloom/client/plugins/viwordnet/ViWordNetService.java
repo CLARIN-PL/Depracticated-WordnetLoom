@@ -19,6 +19,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.DeleteRelationWind
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewLexicalRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewRelationWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
@@ -31,6 +32,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -440,6 +442,17 @@ public class ViWordNetService extends AbstractService implements
         public Void doInBackground() {
 
             workbench.setBusy(true);
+            final Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getLexicons());
+            getActiveGraphView().getUI().releaseDataSetCache();
+            if(rootSynset != null){
+                Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getLexicons());
+            } else {
+                getActiveGraphView().getUI().clear();
+                Synset empty = new Synset();
+                empty.setId(new Long(0));
+                activeGraphView.loadSynset(empty);
+                workbench.setBusy(false);
+            }
             // final Synset rootSynset = RemoteUtils.synsetRemote.fetchSynsetForSense(unit, LexiconManager.getInstance().getLexicons());
 //            if (rootSynset != null) {
 //                getActiveGraphView().getUI().releaseDataSetCache();

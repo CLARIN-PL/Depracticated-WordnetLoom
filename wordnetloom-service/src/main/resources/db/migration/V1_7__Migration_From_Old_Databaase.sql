@@ -246,3 +246,21 @@ DROP PROCEDURE insert_register_types;
 # dodanie kolumny proper_name, do atrybutów jednostek
 ALTER TABLE wordnet.sense_attributes
 ADD COLUMN proper_name BIT DEFAULT 0 NOT NULL;
+
+# wstawienie relacji jednostek i synsetów
+# wstawianie relacji jednostek. Sprawdzamy parent oraz child, ponieważ w bazie przechowywane sa relacje do nieistniejących jednostek
+# chyba będzie do poprawy. Za pomocą tego wstawiane sa tylko te relacje tych typów, które zostały wcześniej
+# dodane do nowej tabeli. Być moze bedzie trzeba to zrobić inaczej
+INSERT INTO wordnet.sense_relation(child_sense_id, parent_sense_id, relation_type_id)
+SELECT CHILD_ID, PARENT_ID, REL_ID
+FROM wordnet_work.lexicalrelation
+WHERE REL_ID IN (SELECT id FROM wordnet.relation_type)
+AND PARENT_ID IN (SELECT id FROM wordnet_work.lexicalunit)
+AND CHILD_ID IN (SELECT id FROM wordnet_work.lexicalunit);
+
+# wstawianie relacji synsetów
+INSERT INTO wordnet.synset_relation(child_synset_id, parent_synset_id, synset_relation_type_id)
+SELECT CHILD_ID, PARENT_ID, REL_ID
+FROM wordnet_work.synsetrelation
+WHERE PARENT_ID IN (SELECT id FROM wordnet.synset)
+AND CHILD_ID IN (SELECT id FROM wordnet.synset);

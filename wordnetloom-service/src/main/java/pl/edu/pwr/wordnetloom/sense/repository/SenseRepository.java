@@ -9,12 +9,17 @@ import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.word.model.Word;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Root;
 import java.text.Collator;
 import java.text.ParseException;
 import java.text.RuleBasedCollator;
@@ -59,7 +64,15 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     public List<Sense> findByCriteria(SenseCriteriaDTO dto) {
-        return null;
+        //TODO dokończyć - dodać pozostałe warunki
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Sense> query = criteriaBuilder.createQuery(Sense.class);
+        Root<Sense> senseRoot = query.from(Sense.class);
+        Join<Sense, Word> wordJoin = senseRoot.join("word");
+        query.select(senseRoot);
+        query.where(criteriaBuilder.like(wordJoin.get("word"), dto.getLemma()));
+        List<Sense> result = em.createQuery(query).getResultList();
+        return result;
     }
 
     private List<Sense> getSenses(String filter, PartOfSpeech pos, Domain domain, RelationType relationType,

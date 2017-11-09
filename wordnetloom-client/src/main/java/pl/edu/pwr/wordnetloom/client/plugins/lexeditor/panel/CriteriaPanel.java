@@ -170,7 +170,7 @@ public abstract class CriteriaPanel extends JPanel {
     }
 
     public void refreshSenseRelations() {
-        RelationTypeManager.refresh();
+        RelationTypeManager.getInstance().refresh();
         List<RelationType> relations = RemoteService.relationTypeRemote.findLeafs(RelationArgument.SENSE_RELATION);
         int selected = senseRelationsComboBox.getSelectedIndex();
 

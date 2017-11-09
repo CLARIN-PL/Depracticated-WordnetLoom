@@ -25,7 +25,7 @@ public class Sense extends GenericEntity {
     private Domain domain;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "word_id", referencedColumnName = "id", nullable = false)
     private Word word;
 
@@ -171,4 +171,11 @@ public class Sense extends GenericEntity {
         return hashCode;
     }
 
+    @Override
+    public String toString(){
+        if(word != null){
+            return word.getWord();
+        }
+        return "";
+    }
 }

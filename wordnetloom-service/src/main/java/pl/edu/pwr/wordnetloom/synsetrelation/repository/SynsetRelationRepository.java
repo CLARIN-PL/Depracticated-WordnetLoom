@@ -230,6 +230,16 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 .getResultList();
     }
 
+    /** Metoda pobierająca relację synsetów, gdzie podany synset jest albo rodzicem, albo dzieckiem
+     * @param synset synset dla którego zostaną znalezione relacje
+     * @return wszystkie relację podanego synsetu
+     */
+    public List<SynsetRelation> findRelations(Synset synset){
+        return getEntityManager().createQuery("FROM SynsetRelation WHERE sr.parent.id =:id OR sr.child.id =:id", SynsetRelation.class)
+                .setParameter("id", synset.getId())
+                .getResultList();
+    }
+
     @Override
     protected Class<SynsetRelation> getPersistentClass() {
         return SynsetRelation.class;

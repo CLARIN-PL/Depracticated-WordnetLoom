@@ -127,8 +127,7 @@ public class GenericListModel<T> implements ListModel {
 	 * @see javax.swing.ListModel#getElementAt(int)
      */
     public String getElementAt(int index) {
-        T element = getObjectAt(index);
-        return "";
+        return ((ArrayList<T>)itemsCollection).get(index).toString();
 //        if (synsetMode) {
 //            Long id = ((Sense) element).getSenseToSynset().getIdSynset();
 //            return element == null ? Labels.NO_VALUE

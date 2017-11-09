@@ -5,6 +5,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
@@ -137,11 +138,11 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         if (mainRelations.size() > 0) {
             //Ustawienie na sugestię, jeśli istnieje
             if (suggestedRelationType != null) {
-                if (suggestedRelationType.getParent() == null) {
-                    relationType.setSelectedItem(RelationTypeManager.getFullNameFor(suggestedRelationType.getId()));
+                if (suggestedRelationType.getParent() == null) { //TODO
+                    relationType.setSelectedItem(RelationTypeManager.getInstance().getFullNameFor(suggestedRelationType.getId(), RelationArgument.SENSE_RELATION));
                 } else {
-                    relationType.setSelectedItem(RelationTypeManager.getFullNameFor(suggestedRelationType.getParent().getId()));
-                    relationSubType.setSelectedItem(RelationTypeManager.getFullNameFor(suggestedRelationType.getId()));
+                    relationType.setSelectedItem(RelationTypeManager.getInstance().getFullNameFor(suggestedRelationType.getParent().getId(), RelationArgument.SENSE_RELATION));
+                    relationSubType.setSelectedItem(RelationTypeManager.getInstance().getFullNameFor(suggestedRelationType.getId(), RelationArgument.SENSE_RELATION));
                 }
             } else {
                 relationType.setSelectedIndex(0);
