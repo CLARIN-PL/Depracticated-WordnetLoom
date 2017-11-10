@@ -86,22 +86,24 @@ CREATE TABLE sense (
   COMMENT 'Part of speech Id',
   synset_id         BIGINT COMMENT 'Synset Id',
   word_id           BIGINT        NOT NULL,
+  status            INT           NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE sense_attributes (
-  sense_id   BIGINT NOT NULL,
-  comment    TEXT,
-  definition TEXT,
-  link       VARCHAR(255),
-  register   VARCHAR(255),
-  user_id    BIGINT,
+  sense_id      BIGINT NOT NULL,
+  comment       TEXT,
+  definition    TEXT,
+  link          VARCHAR(255),
+  register      VARCHAR(255),
+  user_id       BIGINT,
+  error_comment TEXT,
   PRIMARY KEY (sense_id)
 );
 
 CREATE TABLE sense_examples (
   sense_id BIGINT NOT NULL,
-  example             TEXT
+  example  TEXT
 );
 
 CREATE TABLE sense_relation (
@@ -146,16 +148,18 @@ CREATE TABLE synset (
   id         BIGINT NOT NULL AUTO_INCREMENT,
   split      INTEGER COMMENT 'Position of line spliting synset head',
   lexicon_id BIGINT NOT NULL,
+  status     INT    NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE synset_attributes (
-  synset_id    BIGINT NOT NULL,
-  comment      TEXT,
-  definition   TEXT,
-  abstract     BOOLEAN COMMENT 'is synset abstract',
-  princeton_id VARCHAR(255) COMMENT 'External original Princeton Id',
-  owner_id     BIGINT COMMENT 'Synset owner',
+  synset_id     BIGINT NOT NULL,
+  comment       TEXT,
+  definition    TEXT,
+  abstract      BOOLEAN COMMENT 'is synset abstract',
+  princeton_id  VARCHAR(255) COMMENT 'External original Princeton Id',
+  owner_id      BIGINT COMMENT 'Synset owner',
+  error_comment TEXT,
   PRIMARY KEY (synset_id)
 );
 
@@ -187,7 +191,7 @@ CREATE TABLE word_form (
 );
 
 #ALTER TABLE relation_type_allowed_lexicons
-  #ADD CONSTRAINT UK_7p9ttfi403pkoiua29qff7vwi UNIQUE (lexicon_id);
+#ADD CONSTRAINT UK_7p9ttfi403pkoiua29qff7vwi UNIQUE (lexicon_id);
 
 ALTER TABLE dictionaries
   ADD CONSTRAINT FKflyxm5y0r293f9s1sv4q7weix
