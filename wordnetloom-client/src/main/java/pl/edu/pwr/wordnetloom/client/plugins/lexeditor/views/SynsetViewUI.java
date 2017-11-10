@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
+import com.alee.laf.panel.WebPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SynsetCriteria;
@@ -47,7 +48,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     private Sense lastSelectedValue;
 
     @Override
-    protected void initialize(JPanel content) {
+    protected void initialize(WebPanel content) {
         initilizeComponents();
         content.setLayout(new RiverLayout());
 

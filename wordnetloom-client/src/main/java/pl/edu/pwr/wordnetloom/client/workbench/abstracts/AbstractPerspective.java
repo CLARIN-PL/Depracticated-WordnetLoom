@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.workbench.abstracts;
 
+import com.alee.laf.tabbedpane.WebTabbedPane;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.systems.ui.SplitPaneExt;
@@ -29,7 +30,7 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
     private int indexOfNextView = 0;
 
     private final List<SplitPaneExt> splitters = new ArrayList<>();
-    private final List<JTabbedPane> panes = new ArrayList<>();
+    private final List<WebTabbedPane> panes = new ArrayList<>();
 
     // konfiguracja perspektywy
     protected Workbench workbench = null;
@@ -41,8 +42,8 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
     static final protected int MODIFIERS = KeyEvent.CTRL_DOWN_MASK;
     static final protected int KEY_CODE = KeyEvent.VK_1;
 
-    protected JTabbedPane createPane() {
-        JTabbedPane pane = new JTabbedPane();
+    protected WebTabbedPane createPane() {
+        WebTabbedPane pane = new WebTabbedPane();
         pane.addMouseListener(this);
         synchronized (panes) {
             panes.add(pane);

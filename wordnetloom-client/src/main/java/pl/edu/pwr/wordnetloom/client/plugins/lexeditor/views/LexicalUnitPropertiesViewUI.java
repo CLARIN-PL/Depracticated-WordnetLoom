@@ -1,9 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
+import com.alee.laf.panel.WebPanel;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
@@ -21,6 +18,10 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  * klasa opisujacy wyglada okienka z własciwoścami danej jednostki leksykalnej
  *
@@ -30,7 +31,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI {
 
     private LexicalUnitPropertiesPanel editPanel;
 
-    private JPanel content;
+    private WebPanel content;
     private final ViwnGraphViewUI graphUI;
 
     public LexicalUnitPropertiesViewUI(ViwnGraphViewUI graphUI) {
@@ -38,7 +39,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI {
     }
 
     @Override
-    public void initialize(final JPanel content) {
+    public void initialize(final WebPanel content) {
         this.content = content;
         this.content.setLayout(new RiverLayout());
         editPanel = new LexicalUnitPropertiesPanel(graphUI.getWorkbench().getFrame());

@@ -1,9 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-import javax.swing.JFrame;
+import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
@@ -20,6 +17,10 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.word.model.Word;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * okienko do wprowadzania parametrow dla nowych jednostek
@@ -41,11 +42,11 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
      *
      * @param workbench - srodowisko
      */
-    private NewLexicalUnitFrame(Workbench workbench, JFrame frame) {
+    private NewLexicalUnitFrame(Workbench workbench, WebFrame frame) {
         super(frame, Labels.UNIT_PARAMS, 625, 500);
-        this.setResizable(true);
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        this.setLocationRelativeTo(frame);
+        setResizable(true);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(frame);
         editPanel = new LexicalUnitPropertiesPanel(frame);
         editPanel.getBtnSave().addActionListener(this);
         editPanel.getBtnCancel().addActionListener(this);
@@ -115,12 +116,12 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
      * @param workbench - srodowisko
      * @param frame
      * @param word
-     * @param newPos - pos dla jednostki, null gdy mozna go wybrac
+     * @param newPos    - pos dla jednostki, null gdy mozna go wybrac
      * @param domain
      * @return nowa jednostka lub null gdy anulowano
      */
-    static public Sense showModal(Workbench workbench, JFrame frame,
-            String word, PartOfSpeech newPos, Domain domain) {
+    static public Sense showModal(Workbench workbench, WebFrame frame,
+                                  String word, PartOfSpeech newPos, Domain domain) {
 
         NewLexicalUnitFrame modalFrame = new NewLexicalUnitFrame(workbench, frame);
         modalFrame.editPanel.refreshData();
@@ -168,8 +169,8 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
 
             if (validateSelections()) {
                 if (checkUnitExists(testLemma, units)) {
-                    this.wasAddClicked = true;
-                    this.setVisible(false);
+                    wasAddClicked = true;
+                    setVisible(false);
                 }
             }
 
@@ -177,7 +178,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
             lastPickPos = editPanel.getPartOfSpeech().retriveComboBoxItem();
 
         } else if (event.getSource() == editPanel.getBtnCancel()) {
-            this.setVisible(false);
+            setVisible(false);
         }
     }
 

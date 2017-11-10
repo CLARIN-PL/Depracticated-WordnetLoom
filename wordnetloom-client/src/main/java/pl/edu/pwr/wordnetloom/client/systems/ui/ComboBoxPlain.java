@@ -17,21 +17,19 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import java.awt.Color;
-import java.awt.Font;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+import com.alee.laf.combobox.WebComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * nakladka na jcombobox wylaczajaca pogrubiona czcionke
  *
- * @author Max
  * @param <T> stored item type
- *
+ * @author Max
  */
-public class ComboBoxPlain<T> extends JComboBox {
+public class ComboBoxPlain<T> extends WebComboBox {
 
     private static final long serialVersionUID = 1L;
     private static Font newFont = new JLabel().getFont().deriveFont(Font.PLAIN);
@@ -51,7 +49,6 @@ public class ComboBoxPlain<T> extends JComboBox {
 
     /**
      * konstruktor
-     *
      */
     public ComboBoxPlain() {
         super();
@@ -60,7 +57,7 @@ public class ComboBoxPlain<T> extends JComboBox {
     }
 
     /*
-	 *  (non-Javadoc)
+     *  (non-Javadoc)
 	 * @see javax.swing.JComboBox#setSelectedIndex(int)
      */
     @Override
@@ -72,7 +69,7 @@ public class ComboBoxPlain<T> extends JComboBox {
     }
 
     /*
-	 *  (non-Javadoc)
+     *  (non-Javadoc)
 	 * @see javax.swing.JComboBox#setSelectedItem(java.lang.Object)
      */
     @Override
@@ -92,7 +89,6 @@ public class ComboBoxPlain<T> extends JComboBox {
 
     public T retriveComboBoxItem() {
         if (getSelectedIndex() > 0) {
-            @SuppressWarnings("unchecked")
             CustomDescription<T> item = (CustomDescription<T>) getItemAt(getSelectedIndex());
             return item.getObject();
         }

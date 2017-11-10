@@ -17,12 +17,13 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.workbench.abstracts;
 
-import java.util.Collection;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
+import com.alee.laf.panel.WebPanel;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ShortCut;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.View;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+
+import javax.swing.*;
+import java.util.Collection;
 
 /**
  * abstraktycjny widok
@@ -40,13 +41,12 @@ public abstract class AbstractView implements View {
      * Konstruktor powodujący utworzenie widoku
      *
      * @param workbench - workbench
-     * @param title - tytul
-     * @param viewUI - interfejs
-     *
+     * @param title     - tytul
+     * @param viewUI    - interfejs
      */
     protected AbstractView(Workbench workbench, String title, AbstractViewUI viewUI) {
         super();
-        this.wasViewInitialized = false;
+        wasViewInitialized = false;
         this.viewUI = viewUI;
         this.workbench = workbench;
         this.title = title;
@@ -76,7 +76,7 @@ public abstract class AbstractView implements View {
     }
 
     @Override
-    public JPanel getPanel() {
+    public WebPanel getPanel() {
         return getUI().getContent();
     }
 

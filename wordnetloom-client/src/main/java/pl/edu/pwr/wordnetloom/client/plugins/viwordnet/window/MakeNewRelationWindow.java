@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window;
 
+import com.alee.laf.rootpane.WebFrame;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
@@ -31,7 +32,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
     protected List<Long> lexicons;
     protected ViwnNode from[], to[];
 
-    protected MakeNewRelationWindow(JFrame frame, PartOfSpeech pos, ViwnNode[] from, ViwnNode[] to, Workbench workbench) {
+    protected MakeNewRelationWindow(WebFrame frame, PartOfSpeech pos, ViwnNode[] from, ViwnNode[] to, Workbench workbench) {
         super(frame, "", pos, null);
 
         this.from = from;

@@ -17,21 +17,18 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
+import com.alee.laf.text.WebTextArea;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyListener;
-import javax.swing.JLabel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 /**
  * nakladka na jtextfield wylaczajaca pogrubiona czcionke
  *
  * @author Max
- *
  */
-public class TextAreaPlain extends JTextArea {
+public class TextAreaPlain extends WebTextArea {
 
     private static final long serialVersionUID = -2441734577355869232L;
     private static Font newFont = new JLabel().getFont().deriveFont(Font.PLAIN);
@@ -57,10 +54,10 @@ public class TextAreaPlain extends JTextArea {
     /**
      * konstruktor
      *
-     * @param text - tekst
+     * @param text        - tekst
      * @param keyListener - sluchacz klawiszy
-     * @param width - szerokosc kontrolki
-     * @param height - wysokosc kontrolki
+     * @param width       - szerokosc kontrolki
+     * @param height      - wysokosc kontrolki
      */
     public TextAreaPlain(String text, KeyListener keyListener, int width, int height) {
         this(text);

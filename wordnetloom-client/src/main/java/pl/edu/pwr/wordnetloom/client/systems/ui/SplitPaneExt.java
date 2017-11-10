@@ -17,16 +17,16 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import java.awt.Component;
-import javax.swing.JSplitPane;
+import com.alee.laf.splitpane.WebSplitPane;
+
+import java.awt.*;
 
 /**
  * rozbudowany splitter
  *
  * @author Max
- *
  */
-public class SplitPaneExt extends JSplitPane {
+public class SplitPaneExt extends WebSplitPane {
 
     private static final long serialVersionUID = 1L;
     private int startDividerLocation = 0;
@@ -35,13 +35,13 @@ public class SplitPaneExt extends JSplitPane {
      * konstruktor
      *
      * @param splitType - typ spliitera
-     * @param first - pierwszy komponent
-     * @param second - drugi komponent
+     * @param first     - pierwszy komponent
+     * @param second    - drugi komponent
      */
     public SplitPaneExt(int splitType, Component first, Component second) {
         super(splitType, true, first, second);
-        this.setOneTouchExpandable(true);
-        this.setDividerSize(10);
+        setOneTouchExpandable(true);
+        setDividerSize(10);
     }
 
     /**
@@ -50,16 +50,15 @@ public class SplitPaneExt extends JSplitPane {
      * @param location - polozenie
      */
     public void setStartDividerLocation(int location) {
-        this.setDividerLocation(location);
-        this.startDividerLocation = location;
+        setDividerLocation(location);
+        startDividerLocation = location;
     }
 
     /**
      * ustawienie poczatkowego polozenia suwaka
-     *
      */
     public void resetDividerLocation() {
-        this.setDividerLocation(startDividerLocation);
+        setDividerLocation(startDividerLocation);
     }
 
     /**

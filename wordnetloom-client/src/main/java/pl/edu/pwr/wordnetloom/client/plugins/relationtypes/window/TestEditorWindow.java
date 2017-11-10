@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
+import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
@@ -30,7 +31,7 @@ public class TestEditorWindow extends DialogWindow implements ActionListener {
 
     private final RelationTest currentRelationTest;
 
-    private TestEditorWindow(JFrame owner, RelationTest test) {
+    private TestEditorWindow(WebFrame owner, RelationTest test) {
         super(owner, Labels.EDIT_TEST, 650, 130);
         currentRelationTest = test;
 
@@ -108,7 +109,7 @@ public class TestEditorWindow extends DialogWindow implements ActionListener {
 //        return new Pair<>(frame.lastText, frame.lastAPos);
 //    }
 
-    public static RelationTest showModal(JFrame owner, RelationTest test) {
+    public static RelationTest showModal(WebFrame owner, RelationTest test) {
         RelationTest editedTest = test;
         if (editedTest == null) {
             editedTest = new RelationTest();

@@ -1,60 +1,35 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.rootpane.WebFrame;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 import com.jgoodies.forms.util.LayoutStyle;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.ItemEvent;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.ExecutionException;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.SwingConstants;
-import javax.swing.SwingWorker;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import pl.edu.pwr.wordnetloom.client.systems.managers.IconsManager;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.IconsManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
-import pl.edu.pwr.wordnetloom.client.systems.ui.DomainComboBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LexiconComboBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.PartOfSpeechComboBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextPanePlain;
+import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+
+import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.concurrent.ExecutionException;
 
 public class LexicalUnitPropertiesPanel extends JPanel implements
         CaretListener, ActionListener {
@@ -83,51 +58,51 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     private JScrollPane definitionScrollPane;
     private TextPanePlain definition;
 
-    public LexicalUnitPropertiesPanel(final JFrame frame) {
+    public LexicalUnitPropertiesPanel(final WebFrame frame) {
         setLayout(new BorderLayout(0, 0));
-        JPanel mainPanel = new JPanel();
+        WebPanel mainPanel = new WebPanel();
         mainPanel.setLayout(new FormLayout(new ColumnSpec[]{
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-            ColumnSpec.decode("max(57dlu;min)"),
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-            ColumnSpec.decode("max(48dlu;min)"),
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-            ColumnSpec.decode("max(49dlu;min)"),
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-            ColumnSpec.decode("max(28dlu;min):grow"),
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-            ColumnSpec.decode("max(17dlu;min)"),
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-            ColumnSpec.decode("max(44dlu;default)"),
-            ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-            ColumnSpec.decode("max(5dlu;default):grow"),},
+                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+                ColumnSpec.decode("max(57dlu;min)"),
+                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+                ColumnSpec.decode("max(48dlu;min)"),
+                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+                ColumnSpec.decode("max(49dlu;min)"),
+                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+                ColumnSpec.decode("max(28dlu;min):grow"),
+                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+                ColumnSpec.decode("max(17dlu;min)"),
+                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+                ColumnSpec.decode("max(44dlu;default)"),
+                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
+                ColumnSpec.decode("max(5dlu;default):grow"),},
                 new RowSpec[]{
-                    RowSpec.decode("1dlu"),
-                    RowSpec.decode("6dlu"),
-                    RowSpec.decode("fill:max(14dlu;default)"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                    RowSpec.decode("fill:max(14dlu;default)"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                    RowSpec.decode("fill:default"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                    RowSpec.decode("fill:default"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                    RowSpec.decode("fill:max(14dlu;default)"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                    RowSpec.decode("max(36dlu;default):grow"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                    RowSpec.decode("fill:max(40dlu;pref):grow"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                    RowSpec.decode("max(14dlu;default)"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                    RowSpec.decode("max(14dlu;default)"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                    RowSpec.decode("max(14dlu;default)"),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                    new RowSpec(Sizes.DEFAULT),
-                    RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                    RowSpec.decode("fill:max(14dlu;default)"),
-                    RowSpec.decode("max(10dlu;default):grow"),}));
+                        RowSpec.decode("1dlu"),
+                        RowSpec.decode("6dlu"),
+                        RowSpec.decode("fill:max(14dlu;default)"),
+                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                        RowSpec.decode("fill:max(14dlu;default)"),
+                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                        RowSpec.decode("fill:default"),
+                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                        RowSpec.decode("fill:default"),
+                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                        RowSpec.decode("fill:max(14dlu;default)"),
+                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                        RowSpec.decode("max(36dlu;default):grow"),
+                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                        RowSpec.decode("fill:max(40dlu;pref):grow"),
+                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                        RowSpec.decode("max(14dlu;default)"),
+                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                        RowSpec.decode("max(14dlu;default)"),
+                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                        RowSpec.decode("max(14dlu;default)"),
+                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                        new RowSpec(Sizes.DEFAULT),
+                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
+                        RowSpec.decode("fill:max(14dlu;default)"),
+                        RowSpec.decode("max(10dlu;default):grow"),}));
 
         JLabel lblLemma = new JLabel(Labels.LEMMA_COLON);
         lblLemma.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -362,8 +337,8 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
 
         domain.setSelectedItem(domainToSet == null ? null
                 : new CustomDescription<>(DomainComboBox
-                        .nameWithoutPrefix(unit.getDomain().toString()), unit
-                        .getDomain()));
+                .nameWithoutPrefix(unit.getDomain().toString()), unit
+                .getDomain()));
 
 //        definition.setText(formatValue(unit != null ? Common.getSenseAttribute(
 //                unit, Sense.DEFINITION) : null));
@@ -529,8 +504,8 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
 
         @Override
         public Component getListCellRendererComponent(final JList list,
-                final Object value, final int index, final boolean isSelected,
-                final boolean hasFocus) {
+                                                      final Object value, final int index, final boolean isSelected,
+                                                      final boolean hasFocus) {
 
             textArea.setText((String) value);
             if (isSelected) {

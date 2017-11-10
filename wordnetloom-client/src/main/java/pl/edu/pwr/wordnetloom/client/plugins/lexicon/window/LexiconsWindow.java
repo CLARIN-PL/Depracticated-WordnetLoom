@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexicon.window;
 
+import com.alee.laf.rootpane.WebFrame;
 import org.apache.commons.collections15.map.HashedMap;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
@@ -29,7 +30,7 @@ public class LexiconsWindow extends DialogWindow implements ActionListener {
 
     private JCheckBox[] arrayOfLexiconCheckBoxes;
 
-    public LexiconsWindow(JFrame owner, List<Long> lexiconsFromConfig) {
+    public LexiconsWindow(WebFrame owner, List<Long> lexiconsFromConfig) {
         super(owner, Labels.LEXICON);
         initInfoLabel(Labels.CHOOSE_LEXICON_TO_WORK);
         initAndLoadCheckBoxes(lexiconsFromConfig);

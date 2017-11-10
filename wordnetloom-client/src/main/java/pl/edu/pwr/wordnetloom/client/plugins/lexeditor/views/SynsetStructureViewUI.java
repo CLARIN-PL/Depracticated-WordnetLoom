@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
+import com.alee.laf.panel.WebPanel;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
@@ -120,7 +121,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     }
 
     @Override
-    protected void initialize(JPanel content) {
+    protected void initialize(WebPanel content) {
         // ustawienie layoutu
         content.setLayout(new RiverLayout());
 
@@ -646,7 +647,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(graphUI);
             lui.init(workbench);
             DialogWindow dia = new DialogWindow(workbench.getFrame(), Labels.UNIT_PROPERTIES, 585, 520);
-            JPanel pan = new JPanel();
+            WebPanel pan = new WebPanel();
             lui.initialize(pan);
             lui.refreshData(unit);
             lui.closeWindow((ActionEvent e1) -> {

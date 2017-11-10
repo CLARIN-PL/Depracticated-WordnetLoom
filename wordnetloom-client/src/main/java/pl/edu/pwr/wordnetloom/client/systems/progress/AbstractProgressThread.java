@@ -1,16 +1,16 @@
 package pl.edu.pwr.wordnetloom.client.systems.progress;
 
-import java.lang.reflect.InvocationTargetException;
-import javax.swing.JFrame;
+import com.alee.laf.rootpane.WebFrame;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * abstrakcyjan klasa do obslugi watku z paskiem postepu
  *
  * @author Max
- *
  */
 abstract public class AbstractProgressThread implements Runnable {
 
@@ -23,30 +23,30 @@ abstract public class AbstractProgressThread implements Runnable {
      * konstruktor
      *
      * @param baseFrame - okno bazowe na którym ma być wyświetlony pasek postępu
-     * @param title - nazwa okienka
-     * @param tag - obiekt z dodatkowymi parametrami
+     * @param title     - nazwa okienka
+     * @param tag       - obiekt z dodatkowymi parametrami
      */
-    public AbstractProgressThread(JFrame baseFrame, String title, Object tag) {
+    public AbstractProgressThread(WebFrame baseFrame, String title, Object tag) {
         this(baseFrame, title, tag, false);
     }
 
-    public AbstractProgressThread(JFrame baseFrame, String title, Object tag,
-            boolean showCancelButton) {
+    public AbstractProgressThread(WebFrame baseFrame, String title, Object tag,
+                                  boolean showCancelButton) {
         this(baseFrame, title, tag, showCancelButton, false, true);
     }
 
     /**
      * konstruktor
      *
-     * @param baseFrame - okno bazowe na którym ma być wyświetlony pasek postępu
-     * @param title - nazwa okienka
-     * @param tag - obiekt z dodatkowymi parametrami
+     * @param baseFrame        - okno bazowe na którym ma być wyświetlony pasek postępu
+     * @param title            - nazwa okienka
+     * @param tag              - obiekt z dodatkowymi parametrami
      * @param showCancelButton - true jesli przycisk anluj ma zostac wyswietlony
-     * @param noModal - true jeśli okno ma nie być modalne
-     * @param start - true jeśli wątek ma zostac uruchimiony automatycznie
+     * @param noModal          - true jeśli okno ma nie być modalne
+     * @param start            - true jeśli wątek ma zostac uruchimiony automatycznie
      */
-    public AbstractProgressThread(final JFrame baseFrame, final String title, final Object tag,
-            final boolean showCancelButton, final boolean noModal, boolean start) {
+    public AbstractProgressThread(final WebFrame baseFrame, final String title, final Object tag,
+                                  final boolean showCancelButton, final boolean noModal, boolean start) {
 
         Runnable run = () -> {
             progress = new ProgressFrame(baseFrame, title, showCancelButton, noModal);

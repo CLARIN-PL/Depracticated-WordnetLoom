@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.systems.progress;
 
+import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
@@ -35,7 +36,7 @@ public class ProgressFrame extends DialogWindow {
      * @param showCancelButton - TRUE pokazuje dodatkowy przycisk do
      *                         zatrzymywania
      */
-    public ProgressFrame(JFrame baseFrame, String title, boolean showCancelButton) {
+    public ProgressFrame(WebFrame baseFrame, String title, boolean showCancelButton) {
         super(baseFrame, title, 300, showCancelButton ? 155 : 125);
         setLayout(new RiverLayout());
         setResizable(false);
@@ -65,7 +66,7 @@ public class ProgressFrame extends DialogWindow {
         }
     }
 
-    public ProgressFrame(JFrame baseFrame, String title, boolean showCancelButton,
+    public ProgressFrame(WebFrame baseFrame, String title, boolean showCancelButton,
                          boolean noModal) {
         this(baseFrame, title, showCancelButton);
         super.setModal(!noModal);

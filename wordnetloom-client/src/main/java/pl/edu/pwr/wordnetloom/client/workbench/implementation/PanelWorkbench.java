@@ -1,5 +1,12 @@
 package pl.edu.pwr.wordnetloom.client.workbench.implementation;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.menu.WebMenu;
+import com.alee.laf.menu.WebMenuItem;
+import com.alee.laf.menu.WebRadioButtonMenuItem;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.rootpane.WebFrame;
+import com.alee.laf.toolbar.WebToolBar;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import org.apache.log4j.Level;
@@ -57,12 +64,12 @@ public final class PanelWorkbench implements WindowListener, Workbench {
 
     protected ArrayList<ShortCut> globalShortCuts;
 
-    protected JFrame frame = null;
-    private JToolBar toolBar;
-    private JPanel mainPane;
-    protected JLabel statusBar;
-    private JLabel user;
-    protected JPanel statusPanel;
+    protected WebFrame frame = null;
+    private WebToolBar toolBar;
+    private WebPanel mainPane;
+    protected WebLabel statusBar;
+    private WebLabel user;
+    protected WebPanel statusPanel;
     private MenuHolder menuHolder;
     private static BusyGlassPane busyPanel;
 
@@ -156,7 +163,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
             frame.setJMenuBar(menuHolder.getMenuBar());
 
             // ustawienie toolbara
-            toolBar = new JToolBar(TOOLBAR_TITLE);
+            toolBar = new WebToolBar(TOOLBAR_TITLE);
             toolBar.setFloatable(false);
             toolBar.setRollover(false);
             toolBar.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
@@ -174,20 +181,20 @@ public final class PanelWorkbench implements WindowListener, Workbench {
             });
 
             // ustawienie statusu
-            statusBar = new JLabel("");
+            statusBar = new WebLabel("");
 
-            user = new JLabel("");
+            user = new WebLabel("");
             Icon icon = IconFontSwing.buildIcon(FontAwesome.USER, 12);
             user.setIcon(icon);
 
-            statusPanel = new JPanel();
+            statusPanel = new WebPanel();
             statusPanel.setBorder(BorderFactory.createEtchedBorder());
             statusPanel.setLayout(new RiverLayout());
             statusPanel.add(statusBar, "hfill left");
             statusPanel.add(user, "right");
 
             // ustawienie glownego panelu
-            mainPane = new JPanel();
+            mainPane = new WebPanel();
             mainPane.setLayout(new BorderLayout());
             mainPane.add(toolBar, BorderLayout.NORTH);
             mainPane.add(new JPanel(), BorderLayout.CENTER);
@@ -255,12 +262,12 @@ public final class PanelWorkbench implements WindowListener, Workbench {
                 perspective.init();
 
                 // odczytanie menu
-                JMenu menuPerspective = getMenu(PERSPECTIVE_MENU);
+                WebMenu menuPerspective = getMenu(PERSPECTIVE_MENU);
                 if (menuPerspective == null) {
                     return; // brak menu, core nie odpalony
                 }
                 // nowa pozycja w menu
-                JMenuItem perspectiveItem = new PerspectiveRadioMenuItem(
+                WebRadioButtonMenuItem perspectiveItem = new PerspectiveRadioMenuItem(
                         perspective, workbench);
                 perspectiveItem
                         .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1
@@ -415,7 +422,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
     }
 
     @Override
-    public JFrame getFrame() {
+    public WebFrame getFrame() {
         return frame;
     }
 
@@ -444,22 +451,22 @@ public final class PanelWorkbench implements WindowListener, Workbench {
     }
 
     @Override
-    public JMenu getMenu(String itemName) {
+    public WebMenu getMenu(String itemName) {
         return menuHolder.getMenu(itemName);
     }
 
     @Override
-    public void installMenu(JMenu item) {
+    public void installMenu(WebMenu item) {
         menuHolder.install(item);
     }
 
     @Override
-    public void installMenu(JMenu item, int index) {
+    public void installMenu(WebMenu item, int index) {
         menuHolder.install(item, index);
     }
 
     @Override
-    public void installMenu(String topMenu, String subMenu, JMenuItem item) {
+    public void installMenu(String topMenu, String subMenu, WebMenuItem item) {
         JMenu top = menuHolder.getMenu(topMenu);
         if (top == null) {
             top = new JMenu(topMenu);

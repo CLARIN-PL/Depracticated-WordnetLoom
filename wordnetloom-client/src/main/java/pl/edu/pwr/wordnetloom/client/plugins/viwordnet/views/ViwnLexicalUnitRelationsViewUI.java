@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
+import com.alee.laf.panel.WebPanel;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
@@ -51,7 +52,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
     }
 
     @Override
-    protected void initialize(JPanel content) {
+    protected void initialize(WebPanel content) {
         content.setLayout(new RiverLayout());
 
         root = new DefaultMutableTreeNode("");

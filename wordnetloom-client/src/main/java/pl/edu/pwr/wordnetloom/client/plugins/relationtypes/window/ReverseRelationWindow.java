@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
+import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.RelationTypesIM;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
@@ -39,7 +40,7 @@ public class ReverseRelationWindow extends DialogWindow implements ActionListene
      *
      * @param owner - srodowisko
      */
-    private ReverseRelationWindow(JFrame owner) {
+    private ReverseRelationWindow(WebFrame owner) {
         super(owner, Labels.REVERSE_RELATION, 400, 450);
         setResizable(false);
         //this.setAlwaysOnTop(true);
@@ -109,7 +110,7 @@ public class ReverseRelationWindow extends DialogWindow implements ActionListene
      * @param autoReverse - czy relacja odwrotna ma byc automatycznie tworzona
      * @return nowo wybrana relacja odwrotna
      */
-    static public Pair<RelationType, Boolean> showModal(JFrame owner, RelationType lastReverse, Boolean autoReverse) {
+    static public Pair<RelationType, Boolean> showModal(WebFrame owner, RelationType lastReverse, Boolean autoReverse) {
         ReverseRelationWindow frame = new ReverseRelationWindow(owner);
         frame.lastReverse = lastReverse;
         frame.autoReverse.setSelected(autoReverse);

@@ -17,14 +17,13 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
-import java.lang.reflect.InvocationTargetException;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
+import com.alee.laf.panel.WebPanel;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import se.datadosen.component.RiverLayout;
+
+import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
 
 public class ViwnExamplesViewUI extends AbstractViewUI {
 
@@ -37,7 +36,7 @@ public class ViwnExamplesViewUI extends AbstractViewUI {
     }
 
     @Override
-    protected void initialize(JPanel content) {
+    protected void initialize(WebPanel content) {
         getContent().setLayout(new RiverLayout());
         ta = new JTextPane();
         ta.setContentType("text/html");

@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
+import com.alee.laf.button.WebButton;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -10,7 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 
-public class MButton extends JButton implements KeyListener {
+public class MButton extends WebButton implements KeyListener {
 
     private static final long serialVersionUID = 1L;
 

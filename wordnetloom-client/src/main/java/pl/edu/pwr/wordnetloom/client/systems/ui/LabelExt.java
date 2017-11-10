@@ -17,14 +17,9 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import java.awt.Component;
-import javax.swing.JLabel;
+import javax.swing.*;
+import java.awt.*;
 
-/**
- * nadklada na jlabel z rozbudowanymi kontruktorami
- *
- * @author Max
- */
 public class LabelExt extends JLabel {
 
     private static final long serialVersionUID = 1L;
@@ -32,7 +27,7 @@ public class LabelExt extends JLabel {
     /**
      * konstruktor
      *
-     * @param caption - etykieta
+     * @param caption           - etykieta
      * @param displayedMnemonic - znaczek do pokreslenia
      */
     public LabelExt(String caption, char displayedMnemonic) {
@@ -43,9 +38,9 @@ public class LabelExt extends JLabel {
     /**
      * konstruktor
      *
-     * @param caption - etykieta
+     * @param caption           - etykieta
      * @param displayedMnemonic - znaczek do pokreslenia
-     * @param labelFor - jest to etykieta dla
+     * @param labelFor          - jest to etykieta dla
      */
     public LabelExt(String caption, char displayedMnemonic, Component labelFor) {
         super(caption);

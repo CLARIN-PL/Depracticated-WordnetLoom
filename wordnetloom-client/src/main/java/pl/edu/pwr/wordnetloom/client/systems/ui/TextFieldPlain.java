@@ -17,22 +17,20 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
+import com.alee.laf.text.WebTextField;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyListener;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 
 /**
  * nakladka na jtextfield wylaczajaca pogrubiona czcionke
  *
  * @author Max
- *
  */
-public class TextFieldPlain extends JTextField {
+public class TextFieldPlain extends WebTextField {
 
     private static final long serialVersionUID = -2441734577355869232L;
     private static Font newFont = new JLabel().getFont().deriveFont(Font.PLAIN);
@@ -48,7 +46,7 @@ public class TextFieldPlain extends JTextField {
     }
 
     public TextFieldPlain(String text, KeyListener keyListener, int width,
-            int height) {
+                          int height) {
         this(text);
 
         addKeyListener(keyListener);
@@ -97,7 +95,7 @@ public class TextFieldPlain extends JTextField {
      * kliknięcie w kontrolke zazancza cały tekst
      */
     private void setFocusHandler() {
-        this.addFocusListener(new FocusListener() {
+        addFocusListener(new FocusListener() {
 
             @Override
             public void focusLost(FocusEvent e) {

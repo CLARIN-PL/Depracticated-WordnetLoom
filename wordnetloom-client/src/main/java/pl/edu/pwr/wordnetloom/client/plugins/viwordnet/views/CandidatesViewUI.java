@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
+import com.alee.laf.panel.WebPanel;
 import jiconfont.icons.FontAwesome;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import pl.edu.pwr.wordnetloom.client.plugins.candidates.tasks.RebuildGraphsTask;
@@ -63,7 +64,7 @@ public class CandidatesViewUI extends AbstractViewUI
     JPanel content;
 
     @Override
-    protected void initialize(JPanel content) {
+    protected void initialize(WebPanel content) {
         this.content = content;
 
         lazyPanel = new JPanel() {

@@ -1,11 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.core;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
+import com.alee.laf.menu.WebCheckBoxMenuItem;
+import com.alee.laf.menu.WebMenu;
 import pl.edu.pwr.wordnetloom.client.plugins.core.window.AboutWindow;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
@@ -14,15 +10,20 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
+import javax.swing.*;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
 /**
  * klasa dostarczająca podsawową usługę - menu
- *
  */
 public class CoreService extends AbstractService implements MenuListener {
 
     private static final String SHOW_TOOLTIPS_PARAM = "ShowTooltips";
-    private JMenu settings;
-    private JCheckBoxMenuItem showTooltips;
+    private WebMenu settings;
+    private WebCheckBoxMenuItem showTooltips;
 
     public CoreService(Workbench workbench) {
         super(workbench);
@@ -34,14 +35,14 @@ public class CoreService extends AbstractService implements MenuListener {
     public void installMenuItems() {
         final Workbench w = super.workbench;
 
-        JMenu file = new JMenu(Labels.FILE);
+        WebMenu file = new WebMenu(Labels.FILE);
         file.setMnemonic(KeyEvent.VK_P);
 
         file.add(new MenuItemExt(Labels.EXIT, KeyEvent.VK_W, (ActionEvent arg0) -> {
             System.exit(0);
         }));
 
-        JMenu help = new JMenu(Labels.HELP);
+        WebMenu help = new WebMenu(Labels.HELP);
         help.setMnemonic(KeyEvent.VK_C);
 
         help.add(new MenuItemExt(Labels.ABOUT_APP, KeyEvent.VK_O, (ActionEvent e) -> {
@@ -49,7 +50,7 @@ public class CoreService extends AbstractService implements MenuListener {
         }));
 
         // wyswietlanie tooltipow
-        showTooltips = new JCheckBoxMenuItem(Labels.SHOW_TOOLTIPS);
+        showTooltips = new WebCheckBoxMenuItem(Labels.SHOW_TOOLTIPS);
         showTooltips.setMnemonic(KeyEvent.VK_D);
 
         showTooltips.addActionListener((ActionEvent e) -> {
@@ -60,7 +61,7 @@ public class CoreService extends AbstractService implements MenuListener {
 
         });
 
-        settings = new JMenu(Labels.SETTINGS);
+        settings = new WebMenu(Labels.SETTINGS);
         settings.setMnemonic(KeyEvent.VK_S);
 
         // standardowe ustawienia okna

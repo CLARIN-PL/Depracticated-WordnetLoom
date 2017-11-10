@@ -17,7 +17,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.workbench.implementation;
 
-import javax.swing.JRadioButtonMenuItem;
+import com.alee.laf.menu.WebRadioButtonMenuItem;
 import pl.edu.pwr.wordnetloom.client.systems.misc.ActionWrapper;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Perspective;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -29,7 +29,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
  *
  * @author Max
  */
-public class PerspectiveRadioMenuItem extends JRadioButtonMenuItem {
+public class PerspectiveRadioMenuItem extends WebRadioButtonMenuItem {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,18 +41,17 @@ public class PerspectiveRadioMenuItem extends JRadioButtonMenuItem {
      * powoduje przełączenie perspektywy
      *
      * @param perspective - perspektywa z którą związany jest element menu
-     * @param workbench - środowisko w którym działa
+     * @param workbench   - środowisko w którym działa
      */
     PerspectiveRadioMenuItem(final Perspective perspective, final Workbench workbench) {
-        this.perspectiveName = perspective.getName();
+        perspectiveName = perspective.getName();
         this.workbench = workbench;
-        this.addActionListener(new ActionWrapper(this, "menu_onClick"));
-        this.setText(perspectiveName);
+        addActionListener(new ActionWrapper(this, "menu_onClick"));
+        setText(perspectiveName);
     }
 
     /**
      * Akcja wywoływana w momencie kliknięcia w element menu
-     *
      */
     public void menu_onClick() {
         // sprawdzenie czy perspektywa nie jest już aktywna

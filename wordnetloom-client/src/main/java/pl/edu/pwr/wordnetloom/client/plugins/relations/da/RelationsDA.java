@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relations.da;
 
+import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.NodeDrawer;
@@ -12,7 +13,6 @@ import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
-import javax.swing.*;
 import java.util.*;
 
 /**
@@ -48,7 +48,6 @@ public class RelationsDA {
      * mowy
      *
      * @param filterText   - filtr nazw
-     * @param status       - status do filtrowania (dochodzi do tego 0- wszystko)
      * @param domainStr    - domena do filtrowania
      * @param relationType - typ relacji jakie muszą byc zdefiniowane dla
      *                     wynikowych synsetow
@@ -313,7 +312,7 @@ public class RelationsDA {
      * @param lexicons
      * @return drzewo relacji synsetow
      */
-    public static NodeDrawer buildRelationsTree(JFrame parent, Synset synset, RelationType relationType, List<Long> lexicons) {
+    public static NodeDrawer buildRelationsTree(WebFrame parent, Synset synset, RelationType relationType, List<Long> lexicons) {
         AbstractProgressThread progress = new AbstractProgressThread(parent, RELATION_TREE_BUILDING, null, true) {
             @Override
             protected void mainProcess() {

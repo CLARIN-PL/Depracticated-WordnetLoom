@@ -1,5 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
+import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.text.WebTextField;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
@@ -18,20 +21,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.util.List;
 
-public abstract class CriteriaPanel extends JPanel {
+public abstract class CriteriaPanel extends WebPanel {
 
     private static final long serialVersionUID = 4649824763750406980L;
     public static final String STANDARD_VALUE_FILTER = "";
     private int SCROLL_PANE_HEIGHT = 400;
     public static final int MAX_ITEMS_COUNT = 500;
 
-    private JTextField searchTextField;
+    private WebTextField searchTextField;
     private LexiconComboBox lexiconComboBox;
     private DomainComboBox domainComboBox;
     private PartOfSpeechComboBox partsOfSpeachComboBox;
     private ComboBoxPlain<RelationType> synsetRelationsComboBox;
     private ComboBoxPlain<RelationType> senseRelationsComboBox;
-    private JCheckBox limitResultCheckBox;
+    private WebCheckBox limitResultCheckBox;
 
     public CriteriaPanel(int scrollHeight) {
         SCROLL_PANE_HEIGHT = scrollHeight;
@@ -145,8 +148,8 @@ public abstract class CriteriaPanel extends JPanel {
         return combo;
     }
 
-    private JCheckBox createLimitResultSearch() {
-        JCheckBox limitResult = new JCheckBox(String.format(Labels.LIMIT_TO, "" + MAX_ITEMS_COUNT));
+    private WebCheckBox createLimitResultSearch() {
+        WebCheckBox limitResult = new WebCheckBox(String.format(Labels.LIMIT_TO, "" + MAX_ITEMS_COUNT));
         limitResult.setSelected(true);
         return limitResult;
     }

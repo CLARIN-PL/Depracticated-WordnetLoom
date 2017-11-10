@@ -17,6 +17,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
+import com.alee.laf.panel.WebPanel;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Context;
 import edu.uci.ics.jung.visualization.Layer;
@@ -101,7 +102,7 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
     }
 
     @Override
-    protected void initialize(JPanel content) {
+    protected void initialize(WebPanel content) {
         rootPanel = content;
         content.setLayout(new RiverLayout());
 
