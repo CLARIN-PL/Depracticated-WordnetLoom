@@ -1,9 +1,10 @@
 package pl.edu.pwr.wordnetloom.domain.model;
 
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
-import pl.edu.pwr.wordnetloom.common.model.Localised;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "domain")
@@ -11,37 +12,25 @@ public class Domain extends GenericEntity {
 
     private static final long serialVersionUID = -9015379547562677206L;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "name_id")
-    private final Localised nameStrings = new Localised();
+    @Column(name = "name_id")
+    private Long name;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "description_id")
-    private final Localised descriptionStrings = new Localised();
+    @Column(name = "description_id")
+    private Long description;
 
-    public Domain() {
-        super();
+    public Long getName() {
+        return name;
     }
 
-    public Domain(String locale, String name, String description) {
-        nameStrings.addString(locale, name);
-        descriptionStrings.addString(locale, description);
+    public void setName(Long name) {
+        this.name = name;
     }
 
-    public String getName(String locale) {
-        return nameStrings.getString(locale);
+    public Long getDescription() {
+        return description;
     }
 
-    public void setName(String locale, String name) {
-        nameStrings.addString(locale, name);
+    public void setDescription(Long description) {
+        this.description = description;
     }
-
-    public String getDescription(String locale) {
-        return descriptionStrings.getString(locale);
-    }
-
-    public void setDescription(String locale, String description) {
-        descriptionStrings.addString(locale, description);
-    }
-
 }

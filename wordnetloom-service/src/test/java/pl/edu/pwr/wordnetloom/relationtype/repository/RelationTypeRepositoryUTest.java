@@ -16,6 +16,7 @@ import static org.junit.Assert.assertThat;
 import static pl.edu.pwr.wordnetloom.commontests.lexicon.LexiconForTestsRepository.allLexicons;
 import static pl.edu.pwr.wordnetloom.commontests.partofspeech.PartOfSpeechForTestsRepository.allPartOfSpeechs;
 import static pl.edu.pwr.wordnetloom.commontests.relationtype.RelationTypeForTestsRepository.*;
+
 @Ignore
 public class RelationTypeRepositoryUTest extends TestBaseRepository {
 
@@ -101,11 +102,11 @@ public class RelationTypeRepositoryUTest extends TestBaseRepository {
         assertThat(child.size(), equalTo(2));
 
         RelationType ndk_dk = child.stream()
-                .filter(r -> r.getName("pl").equals(aspektowosc_czysta_NDK_DK().getName("pl")))
+                .filter(r -> r.getName().equals(aspektowosc_czysta_NDK_DK().getName()))
                 .findFirst().get();
         RelationType reverse = relationTypeRepository.findReverseByRelationType(ndk_dk.getId());
 
-        assertThat(reverse.getName("pl"), is(equalTo(aspektowosc_czysta_DK_NDK().getName("pl"))));
+        assertThat(reverse.getName(), is(equalTo(aspektowosc_czysta_DK_NDK().getName())));
     }
 
     @Test
@@ -138,10 +139,10 @@ public class RelationTypeRepositoryUTest extends TestBaseRepository {
         RelationType expect = relationTypeRepository.findFullByRelationType(ant.getId());
 
         assertThat(ant.getId(), equalTo(expect.getId()));
-        assertThat(ant.getName("pl"), is(equalTo(antonimia().getName("pl"))));
-        assertThat(ant.getDescription("pl"), is(equalTo(antonimia().getDescription("pl"))));
-        assertThat(ant.getDisplayText("pl"), is(equalTo(antonimia().getDisplayText("pl"))));
-        assertThat(ant.getShortDisplayText("pl"), is(equalTo(antonimia().getShortDisplayText("pl"))));
+        assertThat(ant.getName(), is(equalTo(antonimia().getName())));
+        assertThat(ant.getDescription(), is(equalTo(antonimia().getDescription())));
+        assertThat(ant.getDisplayText(), is(equalTo(antonimia().getDisplayText())));
+        assertThat(ant.getShortDisplayText(), is(equalTo(antonimia().getShortDisplayText())));
     }
 
     private RelationType createAntonimia() {

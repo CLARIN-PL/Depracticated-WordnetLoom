@@ -24,6 +24,9 @@ public class Lexicon extends GenericEntity {
     @Column(name = "language_name")
     private String languageName;
 
+    @Column(name = "lexicon_version")
+    private String lexiconVersion;
+
     public Lexicon() {
     }
 
@@ -55,6 +58,14 @@ public class Lexicon extends GenericEntity {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    public String getLexiconVersion() {
+        return lexiconVersion;
+    }
+
+    public void setLexiconVersion(String lexiconVersion) {
+        this.lexiconVersion = lexiconVersion;
     }
 
     @Override

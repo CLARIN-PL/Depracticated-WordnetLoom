@@ -40,8 +40,8 @@ public class PartOfSpeechRepositoryUTest extends TestBaseRepository {
 
         PartOfSpeech pos = posRepository.findById(posAddedId);
         assertThat(pos, is(notNullValue()));
-        assertThat(pos.getName("EN"), is(equalTo(verb().getName("EN"))));
-        assertThat(pos.getName("PL"), is(equalTo(verb().getName("PL"))));
+        assertThat(pos.getName(), is(equalTo(verb().getName())));
+        assertThat(pos.getName(), is(equalTo(verb().getName())));
     }
 
     @Test

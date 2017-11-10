@@ -18,7 +18,10 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import javax.swing.*;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
 
 
 public class Main {
@@ -108,10 +111,7 @@ public class Main {
     }
 
     private static void loadLabels(Locale locale) {
-        List<Object[]> labels = RemoteService.labelServiceRemote.findLabelsByLanguage(locale.getLanguage());
-        for (Object[] entry : labels) {
-            labelsMap.put((String) entry[0], (String) entry[1]);
-        }
+        labelsMap.putAll(RemoteService.localisedStringServiceRemote.findLabelsByLanguage(locale.getLanguage()));
     }
 
     public static String getResource(String key) {

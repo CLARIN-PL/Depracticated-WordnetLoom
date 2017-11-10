@@ -23,6 +23,9 @@ public class SenseAttributes extends GenericEntity {
 
     private String link;
 
+    @Column(name = "error_comment")
+    private String errorComment;
+
     @ElementCollection
     @CollectionTable(name = "sense_examples", joinColumns = @JoinColumn(name = "sense_attributes_id"))
     @Column(name = "example")

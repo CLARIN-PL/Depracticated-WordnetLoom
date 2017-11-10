@@ -16,6 +16,9 @@ public class SynsetAttributes extends GenericEntity {
 
     private String comment;
 
+    @Column(name = "error_comment")
+    private String errorComment;
+
     @ElementCollection
     @CollectionTable(name = "synset_examples", joinColumns = @JoinColumn(name = "synset_attributes_id"))
     @Column(name = "example")

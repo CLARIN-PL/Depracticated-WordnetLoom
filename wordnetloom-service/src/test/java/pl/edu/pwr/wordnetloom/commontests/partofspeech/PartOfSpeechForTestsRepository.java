@@ -10,30 +10,30 @@ import java.util.List;
 public class PartOfSpeechForTestsRepository {
 
     public static PartOfSpeech verb() {
-        PartOfSpeech p = new PartOfSpeech("EN", "verb");
-        p.setName("PL", "czasownik");
-        p.setColor("verb");
+        PartOfSpeech p = new PartOfSpeech();
+        p.setName(1l);
+        p.setColor("#001100");
         return p;
     }
 
     public static PartOfSpeech adverb() {
-        PartOfSpeech p = new PartOfSpeech("EN", "adverb");
-        p.setName("PL", "przysłówek");
-        p.setColor("adverb");
+        PartOfSpeech p = new PartOfSpeech();
+        p.setName(2l);
+        p.setColor("#002200");
         return p;
     }
 
     public static PartOfSpeech adjective() {
-        PartOfSpeech p = new PartOfSpeech("EN", "adjective");
-        p.setName("PL", "przymiotnik");
-        p.setColor("adjective");
+        PartOfSpeech p = new PartOfSpeech();
+        p.setName(3l);
+        p.setColor("#003300");
         return p;
     }
 
     public static PartOfSpeech noun() {
-        PartOfSpeech p = new PartOfSpeech("EN", "noun");
-        p.setName("PL", "rzeczownik");
-        p.setColor("noun");
+        PartOfSpeech p = new PartOfSpeech();
+        p.setName(4l);
+        p.setColor("#004400");
         return p;
     }
 

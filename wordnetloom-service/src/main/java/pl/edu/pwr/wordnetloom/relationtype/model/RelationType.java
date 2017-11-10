@@ -1,14 +1,12 @@
 package pl.edu.pwr.wordnetloom.relationtype.model;
 
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
-import pl.edu.pwr.wordnetloom.common.model.Localised;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtest.model.RelationTest;
 
 import javax.persistence.*;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
@@ -39,23 +37,19 @@ public class RelationType extends GenericEntity {
     @Size(min = 1)
     private List<PartOfSpeech> partsOfSpeech = new ArrayList<>();
 
-    @Valid
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "name_id")
-    private final Localised nameStrings = new Localised();
+    @NotNull
+    @Column(name = "name_id")
+    private Long name;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "description_id")
-    private final Localised descriptionStrings = new Localised();
+    @Column(name = "description_id")
+    private Long description;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "display_text_id")
-    private final Localised displayStrings = new Localised();
+    @Column(name = "display_text_id")
+    private Long displayText;
 
-    @Valid
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "short_display_text_id")
-    private final Localised shortDisplayStrings = new Localised();
+    @NotNull
+    @Column(name = "short_display_text_id")
+    private Long shortDisplayText;
 
     @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RelationTest> relationTests = new ArrayList<>();
@@ -74,16 +68,11 @@ public class RelationType extends GenericEntity {
     private Boolean multilingual = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_relation_type_id", nullable = true)
+    @JoinColumn(name = "parent_relation_type_id")
     private RelationType parent;
 
-    //TODO zobaczyc, czy jest to dobrze zrobione
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_relation_type_id")
-    private List<RelationType> children;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reverse_relation_type_id", nullable = true)
+    @JoinColumn(name = "reverse_relation_type_id")
     private RelationType reverse;
 
     @NotNull
@@ -95,17 +84,6 @@ public class RelationType extends GenericEntity {
     private String color = "#ffffff";
 
     public RelationType() {
-    }
-
-    public RelationType(String locale, String name, String shortDisp, List<Lexicon> lexicons,
-                        List<PartOfSpeech> partsOfSpeech,
-                        RelationArgument relationArgument) {
-
-        this.lexicons = lexicons;
-        this.partsOfSpeech = partsOfSpeech;
-        this.relationArgument = relationArgument;
-        setName(locale, name);
-        setShortDisplayText(locale, shortDisp);
     }
 
     public boolean addLexicon(Lexicon lexicon) {
@@ -124,36 +102,48 @@ public class RelationType extends GenericEntity {
         return false;
     }
 
-    public String getName(String locale) {
-        return nameStrings.getString(locale);
+    public boolean addRelationTest(RelationTest test) {
+        if (!getRelationTests().contains(test)) {
+            getRelationTests().add(test);
+            return true;
+        }
+        return false;
     }
 
-    public void setName(String locale, String name) {
-        nameStrings.addString(locale, name);
+    public Long getName() {
+        return name;
     }
 
-    public String getDescription(String locale) {
-        return descriptionStrings.getString(locale);
+    public void setName(Long name) {
+        this.name = name;
     }
 
-    public void setDescription(String locale, String description) {
-        descriptionStrings.addString(locale, description);
+    public Long getDescription() {
+        return description;
     }
 
-    public String getDisplayText(String locale) {
-        return displayStrings.getString(locale);
+    public void setDescription(Long description) {
+        this.description = description;
     }
 
-    public void setDisplayText(String locale, String display) {
-        displayStrings.addString(locale, display);
+    public Long getDisplayText() {
+        return displayText;
     }
 
-    public String getShortDisplayText(String locale) {
-        return shortDisplayStrings.getString(locale);
+    public void setDisplayText(Long displayText) {
+        this.displayText = displayText;
     }
 
-    public void setShortDisplayText(String locale, String shortDisplay) {
-        shortDisplayStrings.addString(locale, shortDisplay);
+    public Long getShortDisplayText() {
+        return shortDisplayText;
+    }
+
+    public void setShortDisplayText(Long shortDisplayText) {
+        this.shortDisplayText = shortDisplayText;
+    }
+
+    public void setRelationTests(List<RelationTest> relationTests) {
+        this.relationTests = relationTests;
     }
 
     public String getColor() {
@@ -230,12 +220,6 @@ public class RelationType extends GenericEntity {
 
     public void setMultilingual(Boolean multilingual) {
         this.multilingual = multilingual;
-    }
-
-    public List<RelationType> getChildren() {return children;}
-
-    public void setChildren(List<RelationType> children){
-        this.children = children;
     }
 
 }
