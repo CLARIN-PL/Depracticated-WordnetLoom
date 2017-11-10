@@ -18,7 +18,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.V
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.DeleteRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewLexicalRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewRelationWindow;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
@@ -99,7 +98,7 @@ public class ViWordNetService extends AbstractService implements
         this.perspective = perspective;
 
         PartOfSpeechManager.getInstance().getAll().stream().forEach((pos) -> {
-            posMap.put(pos.getName(RemoteConnectionProvider.getInstance().getLanguage()), pos);
+            // posMap.put(pos.getName(RemoteConnectionProvider.getInstance().getLanguage()), pos);
         });
     }
 
@@ -442,12 +441,12 @@ public class ViWordNetService extends AbstractService implements
         public Void doInBackground() {
 
             workbench.setBusy(true);
-            final Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getLexicons());
+            Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getLexicons());
             getActiveGraphView().getUI().releaseDataSetCache();
-            if(rootSynset != null){
+            if (rootSynset != null) {
                 Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getLexicons());
-                if(entries != null){
-                    getActiveGraphView().getUI().setEntrySets((HashMap<Long, DataEntry>)entries);
+                if (entries != null) {
+                    getActiveGraphView().getUI().setEntrySets((HashMap<Long, DataEntry>) entries);
                 }
             } else {
                 getActiveGraphView().getUI().clear();

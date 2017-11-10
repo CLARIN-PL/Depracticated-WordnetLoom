@@ -15,117 +15,118 @@ public class RelationTypeManager {
 
     private static RelationTypeManager instance;
 
-    private RelationTypeManager(){
+    private RelationTypeManager() {
         senseRelationTypesMap = new HashMap<>();
         synsetRelationTypesMap = new HashMap<>();
     }
 
-    public static RelationTypeManager getInstance(){
-        if(instance == null){
+    public static RelationTypeManager getInstance() {
+        if (instance == null) {
             instance = new RelationTypeManager();
         }
         return instance;
     }
 
-    private void loadRelationTypes(){
+    private void loadRelationTypes() {
         senseRelationTypesMap.clear();
         synsetRelationTypesMap.clear();
 
         //TODO zastanowić sie, czy nie lepiej zrobić jednego zapytania, które pobierze wszystie typy relacji
         List<RelationType> senseRelationTypesList = RemoteService.relationTypeRemote.findHighest(RelationArgument.SENSE_RELATION);
-        for(RelationType type : senseRelationTypesList){
-            type.setChildren(RemoteService.relationTypeRemote.findChildren(type.getId()));
+        for (RelationType type : senseRelationTypesList) {
+            // type.setChildren(RemoteService.relationTypeRemote.findChildren(type.getId()));
             senseRelationTypesMap.put(type.getId(), type);
         }
 
         List<RelationType> synsetRelationTypesList = RemoteService.relationTypeRemote.findHighest(RelationArgument.SYNSET_RELATION);
-        for(RelationType type : synsetRelationTypesList){
-            type.setChildren(RemoteService.relationTypeRemote.findChildren(type.getId()));
+        for (RelationType type : synsetRelationTypesList) {
+            //  type.setChildren(RemoteService.relationTypeRemote.findChildren(type.getId()));
             synsetRelationTypesMap.put(type.getId(), type);
         }
     }
 
-    public RelationType get(Long id, RelationArgument relationArgument){
-        if(relationArgument == RelationArgument.SENSE_RELATION){
+    public RelationType get(Long id, RelationArgument relationArgument) {
+        if (relationArgument == RelationArgument.SENSE_RELATION) {
             return senseRelationTypesMap.get(id);
         } else {
             return synsetRelationTypesMap.get(id);
         }
     }
 
-    public RelationType get(Long id){
+    public RelationType get(Long id) {
         RelationType result;
-        for(RelationArgument argument : RelationArgument.values()){
+        for (RelationArgument argument : RelationArgument.values()) {
             result = get(id, argument);
-            if(result != null){
+            if (result != null) {
                 return result;
             }
         }
         return null;
     }
 
-    public List<RelationType> getChildren(Long parentId, RelationArgument relationArgument){
-        if(relationArgument == RelationArgument.SENSE_RELATION){
-            return senseRelationTypesMap.get(parentId).getChildren();
+    public List<RelationType> getChildren(Long parentId, RelationArgument relationArgument) {
+        if (relationArgument == RelationArgument.SENSE_RELATION) {
+            // return senseRelationTypesMap.get(parentId).getChildren();
         } else {
-            return synsetRelationTypesMap.get(parentId).getChildren();
+            // return synsetRelationTypesMap.get(parentId).getChildren();
         }
+        return null;
     }
 
-    public List<RelationType> getChildren(Long parentId){
+    public List<RelationType> getChildren(Long parentId) {
         List<RelationType> result;
-        for(RelationArgument argument : RelationArgument.values()) {
+        for (RelationArgument argument : RelationArgument.values()) {
             result = getChildren(parentId, argument);
-            if(result != null){
+            if (result != null) {
                 return result;
             }
         }
         return null;
     }
 
-    public String getFullNameFor(Long id, RelationArgument relationArgument){
+    public String getFullNameFor(Long id, RelationArgument relationArgument) {
         StringBuilder nameBuilder = new StringBuilder();
         RelationType relationType = get(id, relationArgument);
         String locale = RemoteConnectionProvider.getInstance().getLanguage();
-        if(relationType.getParent() != null) {
-            nameBuilder.append(relationType.getParent().getName(locale)).append(":");
+        if (relationType.getParent() != null) {
+            //nameBuilder.append(relationType.getParent().getName().append(":");
         }
-        nameBuilder.append(relationType.getName(locale));
+        nameBuilder.append(relationType.getName());
         return nameBuilder.toString();
     }
 
-    public String getFullNameFor(Long id){
+    public String getFullNameFor(Long id) {
         String result;
-        for(RelationArgument argument : RelationArgument.values()) {
+        for (RelationArgument argument : RelationArgument.values()) {
             result = getFullNameFor(id, argument);
-            if(!result.isEmpty()){
+            if (!result.isEmpty()) {
                 return result;
             }
         }
         return null;
     }
 
-    public RelationType getByName(String name, RelationArgument relationArgument){
+    public RelationType getByName(String name, RelationArgument relationArgument) {
         HashMap<Long, RelationType> currentMap;
-        if(relationArgument == RelationArgument.SENSE_RELATION){
+        if (relationArgument == RelationArgument.SENSE_RELATION) {
             currentMap = senseRelationTypesMap;
         } else {
             currentMap = synsetRelationTypesMap;
         }
         String locale = RemoteConnectionProvider.getInstance().getLanguage();
-        for(RelationType type : currentMap.values()){
-            if(type.getName(locale).equals(name)){
+        for (RelationType type : currentMap.values()) {
+/*            if(type.getName(locale).equals(name)){
                 return type;
-            }
+            }*/
         }
         return null;
     }
 
     public RelationType getByName(String name) {
         RelationType result;
-        for(RelationArgument argument : RelationArgument.values()){
+        for (RelationArgument argument : RelationArgument.values()) {
             result = getByName(name, argument);
-            if(result != null){
+            if (result != null) {
                 return result;
             }
         }
@@ -133,6 +134,6 @@ public class RelationTypeManager {
     }
 
     //TODO usupełnić, sprawdzić co tam metoda ma robić
-    public void refresh(){
+    public void refresh() {
     }
 }

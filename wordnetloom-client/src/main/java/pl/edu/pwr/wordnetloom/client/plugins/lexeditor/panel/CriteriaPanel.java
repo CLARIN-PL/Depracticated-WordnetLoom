@@ -1,6 +1,5 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
@@ -181,13 +180,13 @@ public abstract class CriteriaPanel extends JPanel {
             for (RelationType relation : relations) {
                 if (relation.getLexicons().contains(lexiconComboBox.retriveComboBoxItem())) {
                     RelationType currentRelation = relation;//RelationTypeManager.get(relation.getId()).getRelationType(), RelationTypeManager.getFullNameFor(currentRelation.getId();
-                    senseRelationsComboBox.addItem(new CustomDescription<>(relation.getName(RemoteConnectionProvider.getInstance().getLanguage()), currentRelation));
+                    //senseRelationsComboBox.addItem(new CustomDescription<>(relation.getName(RemoteConnectionProvider.getInstance().getLanguage()), currentRelation));
                 }
             }
         } else {
             for (RelationType relation : relations) {
                 RelationType currentRelation = relation; //RelationTypeManager.get(relation.getId()).getRelationType();
-                senseRelationsComboBox.addItem(new CustomDescription<>(relation.getName(RemoteConnectionProvider.getInstance().getLanguage()), currentRelation));
+                // senseRelationsComboBox.addItem(new CustomDescription<>(relation.getName(RemoteConnectionProvider.getInstance().getLanguage()), currentRelation));
             }
         }
 

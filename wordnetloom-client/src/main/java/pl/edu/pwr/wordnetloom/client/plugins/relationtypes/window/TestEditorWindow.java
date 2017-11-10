@@ -154,7 +154,7 @@ class PartOfSpeechCellRenderer implements ListCellRenderer {
 
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        defaultRenderer.setText(((PartOfSpeech) value).getName(locale));
+        //  defaultRenderer.setText(((PartOfSpeech) value).getName(locale));
         return defaultRenderer;
     }
 }

@@ -146,7 +146,7 @@ public class RelationTypeNode implements TreeNode {
     public String toString() {
         if (value != null) {
             String locale = RemoteConnectionProvider.getInstance().getLanguage();
-            return value.getName(locale);
+            return "";// value.getName(locale);
         }
         return "";
     }

@@ -1,11 +1,5 @@
 package pl.edu.pwr.wordnetloom.partofspeech.service.impl;
 
-import java.util.List;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.validation.Validator;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.exception.PartOfSpeechNotFoundException;
@@ -13,6 +7,13 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.partofspeech.repository.PartOfSpeechRepository;
 import pl.edu.pwr.wordnetloom.partofspeech.service.PartOfSpeechServiceLocal;
 import pl.edu.pwr.wordnetloom.partofspeech.service.PartOfSpeechServiceRemote;
+
+import javax.ejb.Local;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.validation.Validator;
+import java.util.List;
 
 @Stateless
 @Remote(PartOfSpeechServiceRemote.class)
@@ -48,11 +49,6 @@ public class PartOfSpeechServiceBean implements PartOfSpeechServiceLocal {
     public PartOfSpeech add(final PartOfSpeech pos) {
         ValidationUtils.validateEntityFields(validator, pos);
         return partOfSpeechRepository.persist(pos);
-    }
-
-    @Override
-    public List<PartOfSpeech> findAllWithName() {
-        return partOfSpeechRepository.findAllWithName();
     }
 
 }

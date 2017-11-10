@@ -2,12 +2,11 @@ package db.migration;
 
 import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class V1_8__ParseComment implements JdbcMigration{
+public class V1_8__ParseComment implements JdbcMigration {
 
     private final String ATTRIBUTE_TABLE = "wordnet.sense_attributes";
 
@@ -25,19 +24,19 @@ public class V1_8__ParseComment implements JdbcMigration{
     public void migrate(Connection connection) throws Exception {
         this.connection = connection;
         List<Attribute> attributes = getAttributesList();
-        if(attributes == null){
+        if (attributes == null) {
             return;
         }
         List<Attribute> parsedAttribute = parse(attributes);
         saveAttributes(parsedAttribute);
     }
 
-    public void saveAttributes(final List<Attribute> attributes) throws SQLException {
-        if(connection == null){
+    public void saveAttributes(List<Attribute> attributes) throws SQLException {
+        if (connection == null) {
             return;
         }
 
-        final String UPDATE_QUERY = "UPDATE "+ ATTRIBUTE_TABLE +
+        String UPDATE_QUERY = "UPDATE " + ATTRIBUTE_TABLE +
                 " SET comment = ?, " +
                 "definition = ?," +
                 "link = ?," +
@@ -45,14 +44,14 @@ public class V1_8__ParseComment implements JdbcMigration{
                 "proper_name=? " +
                 "WHERE sense_id = ?";
 
-        final String DELETE_QUERY = "DELETE FROM " + ATTRIBUTE_TABLE + " WHERE sense_id = ?";
-        final String INSERT_EXAMPLE_QUERY = "INSERT INTO wordnet.sense_examples (sense_id, type, example) VALUES(?, ?, ?)";
+        String DELETE_QUERY = "DELETE FROM " + ATTRIBUTE_TABLE + " WHERE sense_id = ?";
+        String INSERT_EXAMPLE_QUERY = "INSERT INTO wordnet.sense_examples (sense_id, type, example) VALUES(?, ?, ?)";
         PreparedStatement updateStatement = connection.prepareStatement(UPDATE_QUERY);
         PreparedStatement deleteStatement = connection.prepareStatement(DELETE_QUERY);
         PreparedStatement insertExampleStatement = connection.prepareStatement(INSERT_EXAMPLE_QUERY);
         for (Attribute attribute : attributes) {
             // sprawdzamy, czy atrybut posiada jakiekolwiek informacje. Jeżeli nie, usuwamy go
-            if(attribute.getComment() == null && attribute.getDefinition() == null && attribute.getLink() == null && attribute.getRegister() == null){
+            if (attribute.getComment() == null && attribute.getDefinition() == null && attribute.getLink() == null && attribute.getRegister() == null) {
                 deleteStatement.setLong(1, attribute.getId());
                 deleteStatement.executeUpdate();
 
@@ -60,7 +59,7 @@ public class V1_8__ParseComment implements JdbcMigration{
                 updateStatement.setString(1, attribute.getComment());
                 updateStatement.setString(2, attribute.getDefinition());
                 updateStatement.setString(3, attribute.getLink());
-                if(attribute.getRegister() != null){
+                if (attribute.getRegister() != null) {
                     updateStatement.setLong(4, attribute.getRegister());
                 } else {
                     updateStatement.setNull(4, Types.INTEGER);
@@ -70,7 +69,7 @@ public class V1_8__ParseComment implements JdbcMigration{
                 updateStatement.executeUpdate();
             }
 
-            for(Example example : attribute.getExamples()){
+            for (Example example : attribute.getExamples()) {
                 insertExampleStatement.setLong(1, attribute.getId());
                 insertExampleStatement.setString(2, example.getType());
                 insertExampleStatement.setString(3, example.getContent());
@@ -109,8 +108,7 @@ public class V1_8__ParseComment implements JdbcMigration{
         }
     }
 
-    private void serveExampleMarker(String marker, String comment, Attribute attributeRef)
-    {
+    private void serveExampleMarker(String marker, String comment, Attribute attributeRef) {
         String value;
         value = getExample(comment, currentPosition);
         if (!value.isEmpty() && !value.equals(" ")) {
@@ -118,16 +116,14 @@ public class V1_8__ParseComment implements JdbcMigration{
         }
     }
 
-    private void serveLinkMarker(String marker,String comment, Attribute attributeRef)
-    {
+    private void serveLinkMarker(String marker, String comment, Attribute attributeRef) {
         String value;
         secondIndex = getIndex("}", comment, currentPosition);
         if (secondIndex > currentPosition) { // obsługa sytuacji niezamkniętego nawiasu na końcu lini
             value = comment.substring(currentPosition, secondIndex).replaceAll("^\\s+", ""); // usunięcie spacji z lewej strony
-            if(!value.isEmpty() && !value.equals(" ")){
+            if (!value.isEmpty() && !value.equals(" ")) {
                 // sprawdzamy, czy wartość rzeczywiście jest linkiem. Jeżeli nie jest prawdopodobnie jest to przykład
-                if(value.startsWith("http") || value.startsWith("www") || value.startsWith("pl"))
-                {
+                if (value.startsWith("http") || value.startsWith("www") || value.startsWith("pl")) {
                     attributeRef.setLink(value);
                     secondIndex++;
                 } else {
@@ -139,14 +135,13 @@ public class V1_8__ParseComment implements JdbcMigration{
         }
     }
 
-    private void serveUnknownMarker(String comment,int currentIndex, int startMarker, StringBuilder commentBuilderRef)
-    {
+    private void serveUnknownMarker(String comment, int currentIndex, int startMarker, StringBuilder commentBuilderRef) {
         String value = getUnknown(comment, currentIndex, startMarker);
         commentBuilderRef.append(value).append(" ");
     }
 
     private List<Attribute> parse(List<Attribute> attributes) throws SQLException {
-        if(connection == null){
+        if (connection == null) {
             return null;
         }
         StringBuilder stringBuilder = new StringBuilder();
@@ -156,7 +151,7 @@ public class V1_8__ParseComment implements JdbcMigration{
         String comment;
         for (Attribute attribute : attributes) {
             comment = attribute.getComment().replace("\n", " "); // usuwanie znaku nowej lini
-            if(comment == null){
+            if (comment == null) {
                 continue;
             }
             // resetowanie liczników
@@ -164,13 +159,13 @@ public class V1_8__ParseComment implements JdbcMigration{
             currentPosition = 0;
             secondIndex = 0;
             while ((currentPosition = getNext(comment, currentPosition)) != -1) {
-                if(startMarker == 0 && currentPosition != 0){ // sprawdzamy czy nie ma nic przed pierwszym znacznikiem
+                if (startMarker == 0 && currentPosition != 0) { // sprawdzamy czy nie ma nic przed pierwszym znacznikiem
                     stringBuilder.append(comment.substring(0, currentPosition)).append(" ");
                 }
                 markerType = getMarkerType(comment, currentPosition);
                 marker = getMarker(currentPosition + 1, comment);
                 if (marker == null) {
-                    serveUnknownMarker(comment,currentPosition, startMarker, stringBuilder);
+                    serveUnknownMarker(comment, currentPosition, startMarker, stringBuilder);
                     secondIndex++;
                 } else
                     switch (markerType) {
@@ -181,7 +176,7 @@ public class V1_8__ParseComment implements JdbcMigration{
                             serveExampleMarker(marker, comment, attribute);
                             break;
                         case LINK_MARKER:
-                            serveLinkMarker(marker ,comment, attribute);
+                            serveLinkMarker(marker, comment, attribute);
                             break;
                         case UNKNOWN_MARKER:
                             serveUnknownMarker(comment, currentPosition, startMarker, stringBuilder);
@@ -212,8 +207,7 @@ public class V1_8__ParseComment implements JdbcMigration{
         return attributes;
     }
 
-    private String getUnknown(String comment, int startIndex, int startMarkerIndex)
-    {
+    private String getUnknown(String comment, int startIndex, int startMarkerIndex) {
         secondIndex = getNext(comment, startIndex);
         if (secondIndex == -1) {
             secondIndex = comment.length();
@@ -221,8 +215,7 @@ public class V1_8__ParseComment implements JdbcMigration{
         return comment.substring(startMarkerIndex, secondIndex);
     }
 
-    private String getRegister(String comment, int startIndex)
-    {
+    private String getRegister(String comment, int startIndex) {
         secondIndex = getNext(comment, startIndex);
         if (secondIndex == -1) {
             secondIndex = comment.length();
@@ -232,8 +225,7 @@ public class V1_8__ParseComment implements JdbcMigration{
         return register;
     }
 
-    private String getDefinition(String comment, int startIndex)
-    {
+    private String getDefinition(String comment, int startIndex) {
         secondIndex = getNext(comment, startIndex);
         if (secondIndex == -1) {
             secondIndex = comment.length();
@@ -299,7 +291,7 @@ public class V1_8__ParseComment implements JdbcMigration{
     }
 
     private String getMarker(int startIndex, String comment) {
-        final char[] delimiters = {':', ';', ' ', '>'};
+        char[] delimiters = {':', ';', ' ', '>'};
         int index = startIndex;
         StringBuilder markerBuilder = new StringBuilder();
         char currentChar;
@@ -322,8 +314,8 @@ public class V1_8__ParseComment implements JdbcMigration{
         return null;
     }
 
-    private Long getRegisterID(final String registerName, Connection connection) throws SQLException {
-        final String GET_ID_QUERY = "SELECT R.id FROM wordnet.register_types R LEFT JOIN wordnet.localised_strings S ON R.name_id = S.id WHERE S.value = ?";
+    private Long getRegisterID(String registerName, Connection connection) throws SQLException {
+        String GET_ID_QUERY = "SELECT R.id FROM wordnet.register_types R LEFT JOIN wordnet.application_localised_string S ON R.name_id = S.id WHERE S.value = ?";
         PreparedStatement statement = connection.prepareStatement(GET_ID_QUERY);
         statement.setString(1, registerName);
         ResultSet resultSet = statement.executeQuery();
@@ -334,12 +326,12 @@ public class V1_8__ParseComment implements JdbcMigration{
     }
 
     private List<Attribute> getAttributesList() throws SQLException {
-        if(connection == null){
+        if (connection == null) {
             return null;
         }
-        final int ID = 1;
-        final int COMMENT = 2;
-        final String query = "SELECT sense_id, comment FROM " + ATTRIBUTE_TABLE;
+        int ID = 1;
+        int COMMENT = 2;
+        String query = "SELECT sense_id, comment FROM " + ATTRIBUTE_TABLE;
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query);
         List<Attribute> resultAttributes = new ArrayList<>();
@@ -404,7 +396,7 @@ class Attribute {
     }
 
     public void setDefinition(String definition) {
-        if(!definition.isEmpty() && !definition.replaceAll("\\s+", "").equals(".")){
+        if (!definition.isEmpty() && !definition.replaceAll("\\s+", "").equals(".")) {
             this.definition = definition;
         }
     }
@@ -414,17 +406,17 @@ class Attribute {
     }
 
     public void setRegister(Long register) {
-        if(register != -1){
+        if (register != -1) {
             this.register = register;
         }
     }
 
     void addExample(Example example) {
-        this.examples.add(example);
+        examples.add(example);
     }
 
     void setProperName(boolean isProperName) {
-        this.properName = isProperName;
+        properName = isProperName;
     }
 }
 
