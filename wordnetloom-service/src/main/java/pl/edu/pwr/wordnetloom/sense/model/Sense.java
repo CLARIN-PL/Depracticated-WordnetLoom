@@ -29,9 +29,9 @@ public class Sense extends GenericEntity {
     @JoinColumn(name = "word_id", referencedColumnName = "id", nullable = false)
     private Word word;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "part_of_speech_id", referencedColumnName = "id", nullable = false)
-    @NotNull
     private PartOfSpeech partOfSpeech;
 
     @NotNull
@@ -45,9 +45,9 @@ public class Sense extends GenericEntity {
     @Column(name = "synset_position", columnDefinition = "int default 0")
     private Integer synsetPosition = 0;
 
-    @OneToOne(mappedBy = "sense", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Valid
     @NotNull
+    @OneToOne(mappedBy = "sense", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private SenseAttributes senseAttributes;
 
     @NotNull
@@ -60,6 +60,8 @@ public class Sense extends GenericEntity {
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private final Set<SenseRelation> outgoingRelations = new HashSet<>();
+
+    private Integer status = 0;
 
     public Sense() {
         super();
@@ -146,6 +148,14 @@ public class Sense extends GenericEntity {
         return outgoingRelations;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -172,8 +182,8 @@ public class Sense extends GenericEntity {
     }
 
     @Override
-    public String toString(){
-        if(word != null){
+    public String toString() {
+        if (word != null) {
             return word.getWord();
         }
         return "";

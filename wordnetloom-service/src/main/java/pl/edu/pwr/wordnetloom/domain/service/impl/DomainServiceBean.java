@@ -6,8 +6,6 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.domain.repository.DomainRepository;
 import pl.edu.pwr.wordnetloom.domain.service.DomainServiceLocal;
 import pl.edu.pwr.wordnetloom.domain.service.DomainServiceRemote;
-import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -37,8 +35,8 @@ public class DomainServiceBean implements DomainServiceLocal {
     }
 
     @Override
-    public List<Domain> findAllByLexiconAndPartOfSpeech(Lexicon lexicon, PartOfSpeech pos) {
-        return domainRepository.findByLexiconAndPartOfSpeech(lexicon, pos);
+    public List<Domain> findAllByLexiconAndPartOfSpeech(Long lexiconId, Long partOfSpeechId) {
+        return domainRepository.findByLexiconAndPartOfSpeech(lexiconId, partOfSpeechId);
     }
 
     @Override
@@ -52,9 +50,5 @@ public class DomainServiceBean implements DomainServiceLocal {
         return domainRepository.persist(domain);
     }
 
-    @Override
-    public List<Domain> findAllWithFullNames() {
-        return domainRepository.findAllWithFullNames();
-    }
 
 }

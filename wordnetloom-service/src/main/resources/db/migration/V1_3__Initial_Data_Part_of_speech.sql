@@ -1,19 +1,15 @@
- insert into localised(id)  values (1);
- insert into part_of_speech(id, name_id) values (1, 1);
- insert into localised_strings(id, strings_KEY, strings) values(1, 'pl', 'czasownik');
- insert into localised_strings(id, strings_KEY, strings) values(1, 'en', 'verb');
+INSERT INTO part_of_speech (id, name_id) VALUES (1, 1);
+INSERT INTO application_localised_string (id, language, value) VALUES (1, 'pl', 'czasownik');
+INSERT INTO application_localised_string (id, language, value) VALUES (1, 'en', 'verb');
 
- insert into localised(id)  values (2);
- insert into part_of_speech(id, name_id) values (2, 2);
- insert into localised_strings(id, strings_KEY, strings) values(2, 'pl', 'rzeczownik');
- insert into localised_strings(id, strings_KEY, strings) values(2, 'en', 'noun');
+INSERT INTO part_of_speech (id, name_id) VALUES (2, 2);
+INSERT INTO application_localised_string (id, language, value) VALUES (2, 'pl', 'rzeczownik');
+INSERT INTO application_localised_string (id, language, value) VALUES (2, 'en', 'noun');
 
- insert into localised(id)  values (3);
- insert into part_of_speech(id, name_id) values (3, 3);
- insert into localised_strings(id, strings_KEY, strings) values(3, 'pl', 'przysłówek');
- insert into localised_strings(id, strings_KEY, strings) values(3, 'en', 'adverb');
+INSERT INTO part_of_speech (id, name_id) VALUES (3, 3);
+INSERT INTO application_localised_string (id, language, value) VALUES (3, 'pl', 'przysłówek');
+INSERT INTO application_localised_string (id, language, value) VALUES (3, 'en', 'adverb');
 
- insert into localised(id)  values (4);
- insert into part_of_speech(id, name_id) values (4, 4);
- insert into localised_strings(id, strings_KEY, strings) values(4, 'pl', 'przymiotnik');
- insert into localised_strings(id, strings_KEY, strings) values(4, 'en', 'adjective');
+INSERT INTO part_of_speech (id, name_id) VALUES (4, 4);
+INSERT INTO application_localised_string (id, language, value) VALUES (4, 'pl', 'przymiotnik');
+INSERT INTO application_localised_string (id, language, value) VALUES (4, 'en', 'adjective');

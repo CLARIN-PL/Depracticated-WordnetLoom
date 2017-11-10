@@ -4,8 +4,8 @@ import pl.edu.pwr.wordnetloom.corpusexample.service.CorpusExampleServiceRemote;
 import pl.edu.pwr.wordnetloom.domain.service.DomainServiceRemote;
 import pl.edu.pwr.wordnetloom.extgraph.service.ExtGraphExtensionServiceRemote;
 import pl.edu.pwr.wordnetloom.extgraph.service.ExtGraphServiceRemote;
-import pl.edu.pwr.wordnetloom.label.service.LabelServiceRemote;
 import pl.edu.pwr.wordnetloom.lexicon.service.LexiconServiceRemote;
+import pl.edu.pwr.wordnetloom.localisation.service.LocalisedStringServiceRemote;
 import pl.edu.pwr.wordnetloom.partofspeech.service.PartOfSpeechServiceRemote;
 import pl.edu.pwr.wordnetloom.relationtest.service.RelationTestServiceRemote;
 import pl.edu.pwr.wordnetloom.relationtype.service.RelationTypeServiceRemote;
@@ -32,7 +32,7 @@ public final class RemoteService {
     public static PartOfSpeechServiceRemote partOfSpeechServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(PartOfSpeechServiceRemote.class);
     public static CorpusExampleServiceRemote corpusExampleServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(CorpusExampleServiceRemote.class);
     public static UserServiceRemote userServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(UserServiceRemote.class);
-    public static LabelServiceRemote labelServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(LabelServiceRemote.class);
+    public static LocalisedStringServiceRemote localisedStringServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(LocalisedStringServiceRemote.class);
 
     private RemoteService() {
     }

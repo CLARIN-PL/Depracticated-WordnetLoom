@@ -1,9 +1,11 @@
 package pl.edu.pwr.wordnetloom.partofspeech.model;
 
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
-import pl.edu.pwr.wordnetloom.common.model.Localised;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "part_of_speech")
@@ -11,26 +13,18 @@ public class PartOfSpeech extends GenericEntity {
 
     private static final long serialVersionUID = 6240656223603990725L;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "name_id")
-    private final Localised nameStrings = new Localised();
+    @NotNull
+    @Column(name = "name_id")
+    private Long name;
 
     private String color;
 
-    public PartOfSpeech() {
-        super();
+    public Long getName() {
+        return name;
     }
 
-    public PartOfSpeech(String locale, String name) {
-        nameStrings.addString(locale, name);
-    }
-
-    public String getName(String locale) {
-        return nameStrings.getString(locale);
-    }
-
-    public void setName(String locale, String name) {
-        nameStrings.addString(locale, name);
+    public void setName(Long name) {
+        this.name = name;
     }
 
     public String getColor() {

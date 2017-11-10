@@ -9,8 +9,6 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceLocal;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository;
 
 import javax.ejb.Stateless;
@@ -19,7 +17,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Stateless
@@ -409,7 +406,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
                 temp.append(lexicalUnit.toString());
                 if (index == 0) {
                     temp.append(" [");
-                    temp.append(lexicalUnit.getDomain().getName(locale));
+                    temp.append(lexicalUnit.getDomain().getName());
                     temp.append("]");
                 }
                 index++;
@@ -668,19 +665,19 @@ public class SynsetRepository extends GenericRepository<Synset> {
         DataEntry rootEntry = new DataEntry();
         rootEntry.setRelsFrom(synsetRelationRepository.findRelationsWhereSynsetIsParent(synset));
         rootEntry.setRelsTo(synsetRelationRepository.findRelationsWhereSynsetIsChild(synset));
-        if(!rootEntry.getRelsFrom().isEmpty() || !rootEntry.getRelsFrom().isEmpty()){
+        if (!rootEntry.getRelsFrom().isEmpty() || !rootEntry.getRelsFrom().isEmpty()) {
 //            List<SynsetRelation> relations = synsetRelationRepository.findRelations(synset);
 //            map.put(rootEntry.getSynset().getId(), rootEntry);
 
-            List<SynsetInfo> infos  = em.createQuery(
+            List<SynsetInfo> infos = em.createQuery(
                     "SELECT NEW pl.edu.pwr.wordnetloom.model.dto.SynsetInfo(sy.id, se.partOfSpeech.id, name.text, lemma.word, syt.value.text, se.senseNumber, lexId.text) " +
-                        "FROM Sense AS se JOIN se.synset AS sy  " +
-                        "JOIN se.domain AS dom " +
-                        "JOIN dom.nameStrings AS name " +
-                        "JOIN sy.synsetAttributes AS syt " +
-                        "JOIN se.word as lemma " +
-                        "JOIN se.lexicon as lex " +
-                        "JOIN lex.identifier as lexId " +
+                            "FROM Sense AS se JOIN se.synset AS sy  " +
+                            "JOIN se.domain AS dom " +
+                            "JOIN dom.nameStrings AS name " +
+                            "JOIN sy.synsetAttributes AS syt " +
+                            "JOIN se.word as lemma " +
+                            "JOIN se.lexicon as lex " +
+                            "JOIN lex.identifier as lexId " +
                             "WHERE se.synset_position = 0 AND syt.type.typeName.text = :abstractName AND sy.id IN (:ids)",
                     SynsetInfo.class)
                     .setParameter("abstractName", 0) // TODO zobaczyć, czy 0 to dobra wartość
@@ -691,9 +688,9 @@ public class SynsetRepository extends GenericRepository<Synset> {
                     "WHERE sy.id IN (:ids) GROUP BY sy.id", CountInfo.class)
                     .setParameter("ids", lexicons)
                     .getResultList();
-            Map<Long, CountInfo> counter = counts.stream().collect(Collectors.toMap(CountInfo::getSynsetID, p->p));
+            Map<Long, CountInfo> counter = counts.stream().collect(Collectors.toMap(CountInfo::getSynsetID, p -> p));
 
-            for(SynsetInfo synsetInfo : infos){
+            for (SynsetInfo synsetInfo : infos) {
                 DataEntry dataEntry = map.get(synsetInfo.getSynsetID());
                 StringBuilder stringBuilder = new StringBuilder();
 

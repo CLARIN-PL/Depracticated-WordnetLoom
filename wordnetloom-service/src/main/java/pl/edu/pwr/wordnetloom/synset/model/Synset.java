@@ -36,6 +36,8 @@ public class Synset extends GenericEntity {
     @JoinColumn(name = "lexicon_id", referencedColumnName = "id", nullable = false)
     private Lexicon lexicon;
 
+    private Integer status = 0;
+
     @OneToMany(mappedBy = "child", fetch = FetchType.LAZY)
     private final Set<SynsetRelation> incomingRelations = new HashSet<>();
 
@@ -80,5 +82,13 @@ public class Synset extends GenericEntity {
 
     public Set<SynsetRelation> getOutgoingRelations() {
         return outgoingRelations;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

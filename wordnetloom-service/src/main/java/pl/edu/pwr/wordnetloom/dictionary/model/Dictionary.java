@@ -1,9 +1,9 @@
 package pl.edu.pwr.wordnetloom.dictionary.model;
 
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
-import pl.edu.pwr.wordnetloom.common.model.Localised;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "dictionaries")
@@ -15,37 +15,27 @@ public abstract class Dictionary extends GenericEntity {
 
     private static final long serialVersionUID = -7858918337069154092L;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "name_id")
-    protected Localised nameStrings = new Localised();
+    @NotNull
+    @Column(name = "name_id")
+    protected Long name;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "description_id")
-    protected Localised descriptionStrings = new Localised();
+    @Column(name = "description_id")
+    protected Long description;
 
-    public Dictionary() {
+    public Long getName() {
+        return name;
     }
 
-    public Dictionary(String locale, String name, String description) {
-        nameStrings.addString(locale, name);
-        descriptionStrings.addString(locale, description);
+    public void setName(Long name) {
+        this.name = name;
     }
 
-
-    public String getName(String locale) {
-        return nameStrings.getString(locale);
+    public Long getDescription() {
+        return description;
     }
 
-    public void setName(String locale, String name) {
-        nameStrings.addString(locale, name);
-    }
-
-    public String getDescription(String locale) {
-        return descriptionStrings.getString(locale);
-    }
-
-    public void setDescription(String locale, String description) {
-        descriptionStrings.addString(locale, description);
+    public void setDescription(Long description) {
+        this.description = description;
     }
 
     @Override

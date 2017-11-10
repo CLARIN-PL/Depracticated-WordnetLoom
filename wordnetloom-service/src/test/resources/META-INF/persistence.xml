@@ -6,7 +6,8 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>pl.edu.pwr.wordnetloom.lexicon.model.Lexicon</class>
         <class>pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech</class>
-        <class>pl.edu.pwr.wordnetloom.common.model.Localised</class>
+        <class>pl.edu.pwr.wordnetloom.localisation.model.LocalisedString</class>
+        <class>pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey</class>
         <class>pl.edu.pwr.wordnetloom.domain.model.Domain</class>
         <class>pl.edu.pwr.wordnetloom.word.model.Word</class>
         <class>pl.edu.pwr.wordnetloom.wordform.model.WordForm</class>
@@ -21,6 +22,7 @@
         <class>pl.edu.pwr.wordnetloom.relationtype.model.RelationType</class>
         <class>pl.edu.pwr.wordnetloom.dictionary.model.Dictionary</class>
         <class>pl.edu.pwr.wordnetloom.user.model.User</class>
+
         <properties>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>

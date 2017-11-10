@@ -1,3 +1,4 @@
-insert into lexicon (id, identifier, language_name, name) values (1, 'PLWN', 'Polish','Słowosieć');
-insert into lexicon (id, identifier, language_name, name) values (2, 'PWN', 'English', 'Princeton');
-insert into lexicon (id, identifier, language_name, name) values (3, 'EWN', 'English', 'EnWorndet');
+INSERT INTO lexicon (id, identifier, language_name, name, lexicon_version)
+VALUES (1, 'PLWN', 'Polish', 'Słowosieć', '3.0'),
+  (2, 'PWN', 'English', 'Princeton', '3.1'),
+  (3, 'EWN', 'English', 'EnWorndet', '3.0');

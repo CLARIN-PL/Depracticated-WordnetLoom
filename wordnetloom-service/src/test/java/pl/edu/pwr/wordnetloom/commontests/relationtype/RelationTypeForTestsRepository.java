@@ -19,10 +19,10 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType antonimia() {
         RelationType r = new RelationType();
-        r.setName("pl", "antonimia");
-        r.setDisplayText("pl", "anto");
-        r.setDescription("pl", "antonimia description");
-        r.setShortDisplayText("pl", "ant");
+        r.setName(1l);
+        r.setDisplayText(2l);
+        r.setDescription(3l);
+        r.setShortDisplayText(4l);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -31,8 +31,8 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType rola() {
         RelationType r = new RelationType();
-        r.setName("pl", "Rola");
-        r.setShortDisplayText("pl", "rol");
+        r.setName(5l);
+        r.setShortDisplayText(6l);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -41,7 +41,7 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType aspektowosc() {
         RelationType r = new RelationType();
-        r.setName("pl", "aspektowość");
+        r.setName(7l);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -50,7 +50,7 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType aspektowosc_czysta_DK_NDK() {
         RelationType r = new RelationType();
-        r.setName("pl", "aspektowość czysta DK-NDK");
+        r.setName(8l);
         r.setAutoReverse(Boolean.TRUE);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
@@ -60,7 +60,7 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType aspektowosc_czysta_NDK_DK() {
         RelationType r = new RelationType();
-        r.setName("pl", "aspektowość czysta NDK-DK");
+        r.setName(9l);
         r.setAutoReverse(Boolean.TRUE);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
@@ -70,8 +70,8 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType rola_agens() {
         RelationType r = new RelationType();
-        r.setName("pl", "agens|subiekt");
-        r.setDisplayText("pl", "rol:ag");
+        r.setName(10l);
+        r.setDisplayText(11l);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -80,8 +80,8 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType rola_pacjens() {
         RelationType r = new RelationType();
-        r.setName("pl", "pacjens|obiekt");
-        r.setDisplayText("pl", "rol:pacj");
+        r.setName(12l);
+        r.setDisplayText(13l);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -95,8 +95,8 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType hiperonimia() {
         RelationType r = new RelationType();
-        r.setName("pl", "hiperonimia");
-        r.setDisplayText("pl", "hiper");
+        r.setName(14l);
+        r.setDisplayText(15l);
         r.setRelationArgument(RelationArgument.SYNSET_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -105,8 +105,8 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType holonimia() {
         RelationType r = new RelationType();
-        r.setName("pl", "holonimia");
-        r.setDisplayText("pl", "holo");
+        r.setName(16l);
+        r.setDisplayText(17l);
         r.setRelationArgument(RelationArgument.SYNSET_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -115,8 +115,8 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType holonimia_miejsce() {
         RelationType r = new RelationType();
-        r.setName("pl", "miejsce");
-        r.setDisplayText("pl", "holo:msc");
+        r.setName(18l);
+        r.setDisplayText(19l);
         r.setRelationArgument(RelationArgument.SYNSET_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -125,8 +125,8 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType holonimia_porcja() {
         RelationType r = new RelationType();
-        r.setName("pl", "porcja");
-        r.setDisplayText("pl", "holo:porc");
+        r.setName(20l);
+        r.setDisplayText(21l);
         r.setRelationArgument(RelationArgument.SYNSET_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -135,8 +135,8 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType hiponimia() {
         RelationType r = new RelationType();
-        r.setName("pl", "hiponimia");
-        r.setDisplayText("pl", "hipo");
+        r.setName(22l);
+        r.setDisplayText(23l);
         r.setRelationArgument(RelationArgument.SYNSET_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());

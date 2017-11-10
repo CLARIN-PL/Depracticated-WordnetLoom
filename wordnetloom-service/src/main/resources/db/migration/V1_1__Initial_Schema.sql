@@ -1,22 +1,18 @@
-CREATE TABLE localised (
-  id BIGINT NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (id)
-);
-
-CREATE TABLE localised_strings (
-  id          BIGINT       NOT NULL,
-  strings     TEXT,
-  strings_KEY VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id, strings_KEY)
+CREATE TABLE application_localised_string (
+  id       BIGINT       NOT NULL,
+  value    TEXT,
+  language VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id, language)
 );
 
 CREATE TABLE lexicon (
-  id            BIGINT       NOT NULL AUTO_INCREMENT,
-  identifier    VARCHAR(255) NOT NULL
+  id              BIGINT       NOT NULL AUTO_INCREMENT,
+  identifier      VARCHAR(255) NOT NULL
   COMMENT 'Short identifiactor representing lexicon',
-  language_name VARCHAR(255) NOT NULL
+  language_name   VARCHAR(255) NOT NULL
   COMMENT 'Language of lexion',
-  name          VARCHAR(255) NOT NULL
+  name            VARCHAR(255) NOT NULL,
+  lexicon_version VARCHAR(255) NOT NULL
   COMMENT 'Lexicon name',
   PRIMARY KEY (id)
 );
@@ -86,22 +82,24 @@ CREATE TABLE sense (
   COMMENT 'Part of speech Id',
   synset_id         BIGINT COMMENT 'Synset Id',
   word_id           BIGINT        NOT NULL,
+  status            INT           NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE sense_attributes (
-  sense_id   BIGINT NOT NULL,
-  comment    TEXT,
-  definition TEXT,
-  link       VARCHAR(255),
-  register   VARCHAR(255),
-  user_id    BIGINT,
+  sense_id      BIGINT NOT NULL,
+  comment       TEXT,
+  definition    TEXT,
+  link          VARCHAR(255),
+  register      VARCHAR(255),
+  user_id       BIGINT,
+  error_comment TEXT,
   PRIMARY KEY (sense_id)
 );
 
 CREATE TABLE sense_examples (
   sense_id BIGINT NOT NULL,
-  example             TEXT
+  example  TEXT
 );
 
 CREATE TABLE sense_relation (
@@ -146,16 +144,18 @@ CREATE TABLE synset (
   id         BIGINT NOT NULL AUTO_INCREMENT,
   split      INTEGER COMMENT 'Position of line spliting synset head',
   lexicon_id BIGINT NOT NULL,
+  status     INT    NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE synset_attributes (
-  synset_id    BIGINT NOT NULL,
-  comment      TEXT,
-  definition   TEXT,
-  abstract     BOOLEAN COMMENT 'is synset abstract',
-  princeton_id VARCHAR(255) COMMENT 'External original Princeton Id',
-  owner_id     BIGINT COMMENT 'Synset owner',
+  synset_id     BIGINT NOT NULL,
+  comment       TEXT,
+  definition    TEXT,
+  abstract      BOOLEAN COMMENT 'is synset abstract',
+  princeton_id  VARCHAR(255) COMMENT 'External original Princeton Id',
+  owner_id      BIGINT COMMENT 'Synset owner',
+  error_comment TEXT,
   PRIMARY KEY (synset_id)
 );
 
@@ -187,37 +187,32 @@ CREATE TABLE word_form (
 );
 
 #ALTER TABLE relation_type_allowed_lexicons
-  #ADD CONSTRAINT UK_7p9ttfi403pkoiua29qff7vwi UNIQUE (lexicon_id);
+#ADD CONSTRAINT UK_7p9ttfi403pkoiua29qff7vwi UNIQUE (lexicon_id);
 
 ALTER TABLE dictionaries
   ADD CONSTRAINT FKflyxm5y0r293f9s1sv4q7weix
 FOREIGN KEY (description_id)
-REFERENCES localised (id);
+REFERENCES application_localised_string (id);
 
 ALTER TABLE dictionaries
   ADD CONSTRAINT FK11lr8u8vfj0m3dv9hmxpj5653
 FOREIGN KEY (name_id)
-REFERENCES localised (id);
+REFERENCES application_localised_string (id);
 
 ALTER TABLE domain
   ADD CONSTRAINT FKhgtdmfui3wtjng46asuqfa79b
 FOREIGN KEY (description_id)
-REFERENCES localised (id);
+REFERENCES application_localised_string (id);
 
 ALTER TABLE domain
   ADD CONSTRAINT FKilj10y6a5e5wvfxr4otivxy8f
 FOREIGN KEY (name_id)
-REFERENCES localised (id);
-
-ALTER TABLE localised_strings
-  ADD CONSTRAINT FKr34d31h0g5c9nnltxw9hujkee
-FOREIGN KEY (id)
-REFERENCES localised (id);
+REFERENCES application_localised_string (id);
 
 ALTER TABLE part_of_speech
   ADD CONSTRAINT FKqgj4aq3ne5hjb61eo7gagdngw
 FOREIGN KEY (name_id)
-REFERENCES localised (id);
+REFERENCES application_localised_string (id);
 
 ALTER TABLE relation_tests
   ADD CONSTRAINT FK9q4toynhnsw62qcw0rws2n6ym
@@ -292,17 +287,17 @@ REFERENCES relation_type (id);
 ALTER TABLE relation_type
   ADD CONSTRAINT FK3qs6td1pvv97n4834gc95s1w
 FOREIGN KEY (description_id)
-REFERENCES localised (id);
+REFERENCES application_localised_string (id);
 
 ALTER TABLE relation_type
   ADD CONSTRAINT FK7nfuf14f6hfcb6goi3bqbqgms
 FOREIGN KEY (display_text_id)
-REFERENCES localised (id);
+REFERENCES application_localised_string (id);
 
 ALTER TABLE relation_type
   ADD CONSTRAINT FKk1msw7t7lxfr5ciyfqpvdncip
 FOREIGN KEY (name_id)
-REFERENCES localised (id);
+REFERENCES application_localised_string (id);
 
 ALTER TABLE relation_type
   ADD CONSTRAINT FK8k2lma1x3l6nm7rm7rjxjx3a9
@@ -317,7 +312,7 @@ REFERENCES relation_type (id);
 ALTER TABLE relation_type
   ADD CONSTRAINT FKkd3s4gwfo72pasivl4jvtqnr9
 FOREIGN KEY (short_display_text_id)
-REFERENCES localised (id);
+REFERENCES application_localised_string (id);
 
 ALTER TABLE relation_type_allowed_lexicons
   ADD CONSTRAINT FK5ynuaw5d0qyhywfxj0u8vxuyl
