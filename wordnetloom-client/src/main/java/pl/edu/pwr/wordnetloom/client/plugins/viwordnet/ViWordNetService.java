@@ -446,6 +446,9 @@ public class ViWordNetService extends AbstractService implements
             getActiveGraphView().getUI().releaseDataSetCache();
             if(rootSynset != null){
                 Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getLexicons());
+                if(entries != null){
+                    getActiveGraphView().getUI().setEntrySets((HashMap<Long, DataEntry>)entries);
+                }
             } else {
                 getActiveGraphView().getUI().clear();
                 Synset empty = new Synset();

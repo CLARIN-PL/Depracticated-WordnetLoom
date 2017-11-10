@@ -145,7 +145,7 @@ public class V1_8__ParseComment implements JdbcMigration{
         commentBuilderRef.append(value).append(" ");
     }
 
-     private List<Attribute> parse(List<Attribute> attributes) throws SQLException {
+    private List<Attribute> parse(List<Attribute> attributes) throws SQLException {
         if(connection == null){
             return null;
         }
@@ -323,7 +323,7 @@ public class V1_8__ParseComment implements JdbcMigration{
     }
 
     private Long getRegisterID(final String registerName, Connection connection) throws SQLException {
-        final String GET_ID_QUERY = "SELECT R.id FROM wordnet.register_types R LEFT JOIN wordnet.localised_strings S ON R.name_id = S.id WHERE S.strings = ?";
+        final String GET_ID_QUERY = "SELECT R.id FROM wordnet.register_types R LEFT JOIN wordnet.localised_strings S ON R.name_id = S.id WHERE S.value = ?";
         PreparedStatement statement = connection.prepareStatement(GET_ID_QUERY);
         statement.setString(1, registerName);
         ResultSet resultSet = statement.executeQuery();
