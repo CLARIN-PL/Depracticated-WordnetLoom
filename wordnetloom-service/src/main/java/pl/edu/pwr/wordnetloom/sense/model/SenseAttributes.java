@@ -28,8 +28,7 @@ public class SenseAttributes extends GenericEntity {
 
 //    @ElementCollection
 //    @CollectionTable(name = "sense_examples", joinColumns = @JoinColumn(name = "sense_attributes_id"))
-    @OneToOne(fetch = FetchType.LAZY)
-    @Column(name = "example")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "senseAttribute")
     private List<SenseExample> examples;
 
     @ManyToOne

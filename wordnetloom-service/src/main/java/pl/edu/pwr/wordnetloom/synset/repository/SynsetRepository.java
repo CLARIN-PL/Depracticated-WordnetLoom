@@ -663,8 +663,8 @@ public class SynsetRepository extends GenericRepository<Synset> {
     public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons) {
         Map<Long, DataEntry> map = new HashMap<>();
         DataEntry rootEntry = new DataEntry();
-        rootEntry.setRelsFrom(synsetRelationRepository.findRelationsWhereSynsetIsParent(synset));
-        rootEntry.setRelsTo(synsetRelationRepository.findRelationsWhereSynsetIsChild(synset));
+        rootEntry.setRelsFrom(synsetRelationRepository.findRelationsWhereSynsetIsParent(synset, lexicons));
+        rootEntry.setRelsTo(synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons));
         if (!rootEntry.getRelsFrom().isEmpty() || !rootEntry.getRelsFrom().isEmpty()) {
 //            List<SynsetRelation> relations = synsetRelationRepository.findRelations(synset);
 //            map.put(rootEntry.getSynset().getId(), rootEntry);
