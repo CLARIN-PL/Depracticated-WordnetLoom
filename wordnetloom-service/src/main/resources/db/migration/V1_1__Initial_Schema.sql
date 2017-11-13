@@ -98,8 +98,10 @@ CREATE TABLE sense_attributes (
 );
 
 CREATE TABLE sense_examples (
-  sense_id BIGINT NOT NULL,
-  example  TEXT
+  id                 BIGINT PRIMARY KEY AUTO_INCREMENT;
+  attribute_sense_id BIGINT NOT NULL,
+  example  TEXT,
+  type VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE sense_relation (

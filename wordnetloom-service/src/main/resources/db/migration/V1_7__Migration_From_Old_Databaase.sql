@@ -192,13 +192,6 @@ UPDATE wordnet_work.relationtype RS INNER JOIN wordnet.relation_type RN ON RS.id
 SET RN.reverse_relation_type_id = RS.REVERSE_ID;
 SET SQL_SAFE_UPDATES = 1;
 
-# aktualizacja tabeli przykładów, dodanie do niej kolumny z id oraz kolumny z typem przykładu
-ALTER TABLE wordnet.sense_examples
-  ADD COLUMN id INT PRIMARY KEY AUTO_INCREMENT;
-
-ALTER TABLE wordnet.sense_examples
-  ADD COLUMN type VARCHAR(30) NOT NULL;
-
 # dodawanie testów , sprawdzić, czy numery id się zgadzają
 # TODO będzie trzeba wyrzucić dtype
 INSERT INTO wordnet.relation_tests (dtype, test, element_A_part_of_speech_id, element_B_part_of_speech_id, relation_type_id, position)
