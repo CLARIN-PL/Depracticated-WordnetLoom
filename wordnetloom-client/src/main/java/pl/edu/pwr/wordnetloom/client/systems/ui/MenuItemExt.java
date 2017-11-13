@@ -17,16 +17,17 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
+import com.alee.laf.menu.WebMenuItem;
+
+import javax.swing.*;
 import java.awt.event.ActionListener;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
 
 /**
  * klasa będąca rozbudowanym menu o pole tag
  *
  * @author Max
  */
-public class MenuItemExt extends JMenuItem {
+public class MenuItemExt extends WebMenuItem {
 
     private static final long serialVersionUID = 1L;
     private Object tag;
@@ -44,7 +45,7 @@ public class MenuItemExt extends JMenuItem {
     /**
      * konstruktor
      *
-     * @param text - tekst do wyświetlenia
+     * @param text     - tekst do wyświetlenia
      * @param mnemonic - mnemonic
      */
     public MenuItemExt(String text, int mnemonic) {
@@ -56,8 +57,8 @@ public class MenuItemExt extends JMenuItem {
     /**
      * konstruktor
      *
-     * @param text - tekst do wyświetlenia
-     * @param mnemonic - mnemonic
+     * @param text           - tekst do wyświetlenia
+     * @param mnemonic       - mnemonic
      * @param actionListener - obsluga akcji menu
      */
     public MenuItemExt(String text, int mnemonic, ActionListener actionListener) {
@@ -70,26 +71,26 @@ public class MenuItemExt extends JMenuItem {
     /**
      * konstruktor
      *
-     * @param text - tekst do wyświetlenia
+     * @param text      - tekst do wyświetlenia
      * @param keyStroke - skrot klawiaturowy
      */
     public MenuItemExt(String text, KeyStroke keyStroke) {
         super(text);
-        this.setAccelerator(keyStroke);
+        setAccelerator(keyStroke);
         tag = null;
     }
 
     /**
      * konstruktor
      *
-     * @param text - tekst do wyświetlenia
+     * @param text      - tekst do wyświetlenia
      * @param keyStroke - skrot klawiaturowy
-     * @param mnemonic - mnemonic
+     * @param mnemonic  - mnemonic
      */
     public MenuItemExt(String text, KeyStroke keyStroke, int mnemonic) {
         super(text);
         setMnemonic(mnemonic);
-        this.setAccelerator(keyStroke);
+        setAccelerator(keyStroke);
         tag = null;
     }
 

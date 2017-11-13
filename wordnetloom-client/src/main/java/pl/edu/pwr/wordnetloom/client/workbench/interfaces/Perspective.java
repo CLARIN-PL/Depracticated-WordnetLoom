@@ -1,15 +1,15 @@
 package pl.edu.pwr.wordnetloom.client.workbench.interfaces;
 
-import java.util.Collection;
-import javax.swing.JComponent;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ShortCut;
+
+import javax.swing.*;
+import java.util.Collection;
 
 /**
  * Interfejs zapewaniający dostęp do funkcji oferowanych przez perspektywę
- *
+ * <p>
  * NIE NALEŻY IMPLEMENTOWAĆ BEZPOŚREDNIO A WYKORZYSTYWAĆ AbstractPerspective,
  * które uproszcza tworzenie perspektyw
- *
  *
  * @author Max
  */
@@ -21,14 +21,14 @@ public interface Perspective {
      *
      * @return okno perspektywy
      */
-    public JComponent getContent();
+    JComponent getContent();
 
     /**
      * Odczytanie nazwy perspektywy
      *
      * @return - nazwa perspektywy
      */
-    public String getName();
+    String getName();
 
     /**
      * Instalajca konktregnego widoku na konktrenej pozycji w perspektywie.
@@ -36,26 +36,26 @@ public interface Perspective {
      * zazwyczaj oznacza numer okna.
      *
      * @param view - widok
-     * @param pos - numer okienka
+     * @param pos  - numer okienka
      */
-    public void installView(View view, int pos);
+    void installView(View view, int pos);
 
     /**
      * Inicjacja perpektywy, sprowadza się do utworzenia wszystkich sliterów.
      * Metoda jest wywoływana przez workbench w momencie instalacji perspektywy
      */
-    public void init();
+    void init();
 
     /**
      * Wymowałeni odświeżenia zawartości perspektywy w tym wszystkich jej okien
      */
-    public void refreshViews();
+    void refreshViews();
 
     /**
      * Przywrocenie domyslnych ustawien poszczególnych widokow, tj. rozłożenia
      * poszczególnych okienek, czyli w praktyce przywrócenie pozycji splitterów
      */
-    public void resetViews();
+    void resetViews();
 
     /**
      * Odczytanie skrótow klawiaturowych przypisanych do poszczególnych widoków
@@ -65,7 +65,7 @@ public interface Perspective {
      *
      * @return lista skrótów
      */
-    public Collection<ShortCut> getShortCuts();
+    Collection<ShortCut> getShortCuts();
 
     /**
      * Odczytanie stanu perseptkywy czyli tego co jest zaznaczone, np jakie
@@ -75,7 +75,7 @@ public interface Perspective {
      *
      * @return stan perpektywy
      */
-    public Object getState();
+    Object getState();
 
     /**
      * Ustawienie stanu perspektywy. Jako parametr dostaje jakiś obiekt albo
@@ -86,5 +86,5 @@ public interface Perspective {
      * @return TRUE jesli dane zostaly wykorzystane, FALSE jesli nic byly
      * poprawne
      */
-    public boolean setState(Object state);
+    boolean setState(Object state);
 }

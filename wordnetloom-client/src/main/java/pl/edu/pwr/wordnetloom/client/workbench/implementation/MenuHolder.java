@@ -17,30 +17,31 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.workbench.implementation;
 
-import java.awt.Component;
+import com.alee.laf.menu.WebMenu;
+import com.alee.laf.menu.WebMenuBar;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
 
 /**
  * Klasa będąca kontenerem na menu zawierająca metody do dodawania i
  * przeszukiwania zainstalowanych menu
  *
  * @author Max
- *
  */
 public class MenuHolder {
 
     private static final String SHORTCUTS = "Shortcuts";
 
-    private final JMenuBar menuBar;
-    private final JMenu shortCutsMenu;
+    private final WebMenuBar menuBar;
+    private final WebMenu shortCutsMenu;
 
     public MenuHolder() {
-        menuBar = new JMenuBar();
-        shortCutsMenu = new JMenu(SHORTCUTS);
+        menuBar = new WebMenuBar();
+        shortCutsMenu = new WebMenu(SHORTCUTS);
         shortCutsMenu.setVisible(false);
         menuBar.add(shortCutsMenu);
     }
@@ -50,7 +51,7 @@ public class MenuHolder {
      *
      * @return kontener (pasek) z menu
      */
-    public JMenuBar getMenuBar() {
+    public WebMenuBar getMenuBar() {
         return menuBar;
     }
 
@@ -59,8 +60,8 @@ public class MenuHolder {
      *
      * @param item - element do zainstalowania
      */
-    public void install(JMenu item) {
-        this.menuBar.add(item);
+    public void install(WebMenu item) {
+        menuBar.add(item);
     }
 
     /**
@@ -73,10 +74,10 @@ public class MenuHolder {
     public void install(JMenu item, int index) {
         if (index < 0) {
             if (index < -1) {
-                index = this.menuBar.getMenuCount() + index + 1;
+                index = menuBar.getMenuCount() + index + 1;
             }
         }
-        this.menuBar.add(item, index);
+        menuBar.add(item, index);
     }
 
     /**
@@ -85,12 +86,12 @@ public class MenuHolder {
      * @param name - nawa menu do odczytania
      * @return menu lub NULL gdy nie istnieje
      */
-    public JMenu getMenu(String name) {
+    public WebMenu getMenu(String name) {
         Component[] components = menuBar.getComponents();
         for (Component component : components) {
             if (component instanceof JMenu
-                    && ((JMenu) component).getText().equals(name)) {
-                return (JMenu) component;
+                    && ((WebMenu) component).getText().equals(name)) {
+                return (WebMenu) component;
             }
         }
         return null;
@@ -110,10 +111,10 @@ public class MenuHolder {
             MenuItemExt newItem = new MenuItemExt(".", cut.getKeyStroke());
             newItem.setTag(cut);
             newItem.addActionListener((ActionEvent arg0) -> {
-                MenuItemExt item = (MenuItemExt) arg0.getSource();
-                ShortCut shortCut = (ShortCut) item.getTag();
-                shortCut.doAction();
-            }
+                        MenuItemExt item = (MenuItemExt) arg0.getSource();
+                        ShortCut shortCut = (ShortCut) item.getTag();
+                        shortCut.doAction();
+                    }
             );
             shortCutsMenu.add(newItem);
         }

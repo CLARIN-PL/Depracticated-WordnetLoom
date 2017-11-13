@@ -1,22 +1,17 @@
 package pl.edu.pwr.wordnetloom.client.workbench.abstracts;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import javax.swing.AbstractButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import com.alee.laf.panel.WebPanel;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ShortCut;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * abstrakcyjny wygląd widoku
@@ -29,7 +24,7 @@ public abstract class AbstractViewUI implements KeyListener {
 
     protected Workbench workbench;
 
-    private JPanel mainContentPanel;
+    private WebPanel mainContentPanel;
     protected Collection<ShortCut> viewScopeShortCuts = new ArrayList<>();
     protected Collection<ShortCut> perspectiveScopeShortCuts = new ArrayList<>();
 
@@ -40,7 +35,7 @@ public abstract class AbstractViewUI implements KeyListener {
      */
     public void init(Workbench workbench) {
         this.workbench = workbench;
-        mainContentPanel = new JPanel();           // przygotowanie głównego panelu
+        mainContentPanel = new WebPanel();       // przygotowanie głównego panelu
         initialize(mainContentPanel);            // inicjalizacja elementów należących do panelu
         setKeyListeners(mainContentPanel);       // ustawienie słuchaczy dla wszystkich elementów należących do panel
     }
@@ -69,7 +64,7 @@ public abstract class AbstractViewUI implements KeyListener {
      *
      * @param content
      */
-    protected abstract void initialize(JPanel content);
+    protected abstract void initialize(WebPanel content);
 
     /**
      * Dodanie słuchacza do listy sluchaczy
@@ -105,9 +100,9 @@ public abstract class AbstractViewUI implements KeyListener {
      * Instalacja skrotu klawiszowego dla przycisku, który działa w obrębie
      * danego okna
      *
-     * @param button - przycisk
+     * @param button    - przycisk
      * @param modifiers - modyfikator
-     * @param keyCode - klawisz
+     * @param keyCode   - klawisz
      */
     public void installViewScopeShortCut(AbstractButton button, int modifiers, int keyCode) {
         viewScopeShortCuts.add(new ShortCut(button, modifiers, keyCode));
@@ -117,9 +112,9 @@ public abstract class AbstractViewUI implements KeyListener {
      * Instalacja globalnego skrotu klawiszowego, który działa w obrębie całej
      * perspektywy - np. tak rozwiązywane sa przyciski na toolbarze
      *
-     * @param button - przycisk
+     * @param button    - przycisk
      * @param modifiers - modyfikacja
-     * @param keyCode - kod
+     * @param keyCode   - kod
      */
     public void installPerspectiveScopeShortCut(AbstractButton button, int modifiers, int keyCode) {
         perspectiveScopeShortCuts.add(new ShortCut(button, modifiers, keyCode));
@@ -171,7 +166,7 @@ public abstract class AbstractViewUI implements KeyListener {
      *
      * @return main panel
      */
-    public JPanel getContent() {
+    public WebPanel getContent() {
         return mainContentPanel;
     }
 }

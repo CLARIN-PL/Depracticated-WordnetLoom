@@ -1,24 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import javax.swing.DefaultListModel;
-import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
+import com.alee.laf.panel.WebPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitPropertiesViewUI;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
@@ -26,6 +8,12 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
         MouseListener {
@@ -41,7 +29,7 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
     }
 
     @Override
-    protected void initialize(JPanel content) {
+    protected void initialize(WebPanel content) {
         getContent().setLayout(new RiverLayout());
         examples = new JList(listModel) {
 
@@ -77,7 +65,7 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
     }
 
     public void setExampleList(final List<String> exampleList, Sense sense) {
-        this.unit = sense;
+        unit = sense;
         listModel.clear();
         Runnable run;
         run = () -> {
@@ -106,11 +94,11 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
         if (e.getButton() == MouseEvent.BUTTON3) {
 
             LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(graphUI);
-            lui.init(this.workbench);
+            lui.init(workbench);
 
-            final DialogWindow dia = new DialogWindow(this.workbench.getFrame(),
+            final DialogWindow dia = new DialogWindow(workbench.getFrame(),
                     Labels.UNIT_PROPERTIES, 585, 520);
-            JPanel pan = new JPanel();
+            WebPanel pan = new WebPanel();
             lui.initialize(pan);
             lui.refreshData(unit);
             lui.fillKPWrExample(examples.getSelectedValues());
@@ -161,8 +149,8 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
 
         @Override
         public Component getListCellRendererComponent(final JList list,
-                final Object value, final int index, final boolean isSelected,
-                final boolean hasFocus) {
+                                                      final Object value, final int index, final boolean isSelected,
+                                                      final boolean hasFocus) {
 
             ta.setText((String) value);
             if (isSelected) {

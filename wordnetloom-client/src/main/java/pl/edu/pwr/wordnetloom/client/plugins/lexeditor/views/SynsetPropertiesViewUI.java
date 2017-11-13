@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
+import com.alee.laf.panel.WebPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
@@ -47,7 +48,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
     }
 
     @Override
-    protected void initialize(JPanel content) {
+    protected void initialize(WebPanel content) {
 
         content.setLayout(new RiverLayout());
 

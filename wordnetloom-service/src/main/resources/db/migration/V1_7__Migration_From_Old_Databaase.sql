@@ -3,13 +3,13 @@ CREATE INDEX word_index
   ON wordnet.word (word);
 
 #przeniesienie słów. m^2 oraz m^3 nalezy dodać odzielnie, ponieważ DISTINCT traktuje m^2 tak samo jak M2 i wstawia tylko jedną z tych wartości
-INSERT INTO wordnet.word(word)
-SELECT DISTINCT lemma COLLATE utf8_general_ci
-FROM wordnet_work.lexicalunit
-UNION ALL
-SELECT 'm²'
-UNION ALL
-SELECT 'm³';
+INSERT INTO wordnet.word (word)
+  SELECT DISTINCT lemma COLLATE utf8_general_ci
+  FROM wordnet_work.lexicalunit
+  UNION ALL
+  SELECT 'm²'
+  UNION ALL
+  SELECT 'm³';
 
 # przerzucenie synsetu
 # złączenia mają na celu pozbycie się synsetów pustych oraz połączeń synsetów z nieistniejącymi jednostkami
@@ -117,27 +117,29 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS insert_localised_description$$
 CREATE PROCEDURE insert_localised_description(IN columnName VARCHAR(50))
 
-BEGIN
-#DECLARE i INT DEFAULT 0;
-SET @s1 = CONCAT('SELECT COUNT(DISTINCT ', columnName, ') FROM wordnet_work.relationtype INTO @n');
-PREPARE statement1 FROM @s1;
-EXECUTE statement1;
-DEALLOCATE PREPARE statement1;
-SET @i = 0;
-WHILE @i<@n DO
-	SET @s2 = CONCAT(' SELECT DISTINCT ', columnName, ' INTO @t FROM wordnet_work.relationtype LIMIT ?, 1');
-    PREPARE statement2 FROM @s2;
-	EXECUTE statement2 USING @i;
-    DEALLOCATE PREPARE statement2;
+  BEGIN
+    #DECLARE i INT DEFAULT 0;
 
-    INSERT INTO wordnet.application_localised_string(value, language)
-    VALUES (@t, 'pl');
-    INSERT INTO wordnet.application_localised_string(id, value, language)
-    VALUES (last_insert_id, @t, 'en');
-    # w przypadku pojawienia sie nowych języków wstawic w tym miejscu odpowiednią wartość
-	SET @i = @i +1;
-END WHILE;
-END $$
+    SET @s1 = CONCAT('SELECT COUNT(DISTINCT ', columnName, ') FROM wordnet_work.relationtype INTO @n');
+    PREPARE statement1 FROM @s1;
+    EXECUTE statement1;
+    DEALLOCATE PREPARE statement1;
+    SET @i = 0;
+    WHILE @i < @n DO
+      SET @s2 = CONCAT(' SELECT DISTINCT ', columnName, ' INTO @t FROM wordnet_work.relationtype LIMIT ?, 1');
+      PREPARE statement2 FROM @s2;
+      EXECUTE statement2
+      USING @i;
+      DEALLOCATE PREPARE statement2;
+
+      INSERT INTO wordnet.application_localised_string (value, language)
+      VALUES (@t, 'pl');
+      INSERT INTO wordnet.application_localised_string (id, value, language)
+      VALUES (last_insert_id(), @t, 'en');
+      # w przypadku pojawienia sie nowych języków wstawic w tym miejscu odpowiednią wartość
+      SET @i = @i + 1;
+    END WHILE;
+  END $$
 
 DELIMITER ;
 
@@ -149,22 +151,40 @@ CALL insert_localised_description('shortcut');
 DROP PROCEDURE IF EXISTS insert_localised_description;
 
 #wstawienie typów relacji
-INSERT INTO wordnet.relation_type(id, auto_reverse, multilingual,description_id, display_text_id, name_id, parent_relation_type_id, relation_argument, short_display_text_id, node_position)
-SELECT ID,
-autoreverse,
-0 AS multilingual,
-(SELECT id FROM wordnet.application_localised_string WHERE value = R.description LIMIT 1) AS description,
-(SELECT id FROM wordnet.application_localised_string WHERE value = R.display LIMIT 1) AS display,
-(SELECT id FROM wordnet.application_localised_string WHERE value = R.name LIMIT 1) AS name,
-PARENT_ID,
-CASE WHEN
-CASE WHEN PARENT_ID IS NOT NULL THEN (SELECT objecttype FROM wordnet_work.relationtype WHERE ID = R.PARENT_ID) ELSE objecttype END = 0
-THEN 'SYNSET_RELATION' ELSE 'SENSE_RELATION' END AS relation_argument,
-(SELECT id FROM wordnet.application_localised_string WHERE value = R.shortcut LIMIT 1) AS short,
-'IGNORE'
-FROM wordnet_work.relationtype R
-WHERE objecttype != 2
-ORDER BY id;
+INSERT INTO wordnet.relation_type (id, auto_reverse, multilingual, description_id, display_text_id, name_id, parent_relation_type_id, relation_argument, short_display_text_id, node_position)
+  SELECT
+    ID,
+    autoreverse,
+    0                         AS multilingual,
+    (SELECT id
+     FROM wordnet.application_localised_string
+     WHERE value = R.description
+     LIMIT 1)                 AS description,
+    (SELECT id
+     FROM wordnet.application_localised_string
+     WHERE value = R.display
+     LIMIT 1)                 AS display,
+    (SELECT id
+     FROM wordnet.application_localised_string
+     WHERE value = R.name
+     LIMIT 1)                 AS name,
+    PARENT_ID,
+    CASE WHEN
+      CASE WHEN PARENT_ID IS NOT NULL
+        THEN (SELECT objecttype
+              FROM wordnet_work.relationtype
+              WHERE ID = R.PARENT_ID)
+      ELSE objecttype END = 0
+      THEN 'SYNSET_RELATION'
+    ELSE 'SENSE_RELATION' END AS relation_argument,
+    (SELECT id
+     FROM wordnet.application_localised_string
+     WHERE value = R.shortcut
+     LIMIT 1)                 AS short,
+    'IGNORE'
+  FROM wordnet_work.relationtype R
+  WHERE objecttype != 2
+  ORDER BY id;
 
 # wstawienie relacji odwrotnych. Relacje odwrotne trzeba wstawić odzielnie, ponieważ klucze obce nie pozwalają tego zrobić podczas wstawiania typów relacji
 SET SQL_SAFE_UPDATES = 0;
@@ -251,29 +271,28 @@ CREATE TABLE wordnet.register_types
 );
 
 ALTER TABLE wordnet.register_types
-
-ADD CONSTRAINT fk_register_types_localised
-FOREIGN KEY (name_id) REFERENCES wordnet.application_localised_string(id);
+  ADD CONSTRAINT fk_register_types_localised
+FOREIGN KEY (name_id) REFERENCES wordnet.application_localised_string (id);
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS insert_register_types$$
 CREATE PROCEDURE insert_register_types()
 
-BEGIN
-SET @registers = 'og.,daw.,książk.,nienorm.,posp.,pot.,reg.,specj.,środ.,urz.,wulg.,';
-WHILE(LOCATE(',', @registers) > 0) DO
-	SET @value = SUBSTRING(@registers, 1, LOCATE(',', @registers) -1);
-    SET @last_insert_id = LAST_INSERT_ID();
-    INSERT INTO wordnet.application_localised_string(value, language)
-    VALUES(@value, 'pl');
-    SET @last_insert_id = LAST_INSERT_ID();
-    INSERT INTO wordnet.application_localised_string(id, value, language)
-    VALUES(@last_insert_id, @value, 'en');
-    INSERT INTO wordnet.register_types(name_id)
-    VALUES(@last_insert_id);
-    SET @registers = SUBSTRING(@registers, LOCATE(',', @registers) +1);
-END WHILE;
-END $$
+  BEGIN
+    SET @registers = 'og.,daw.,książk.,nienorm.,posp.,pot.,reg.,specj.,środ.,urz.,wulg.,';
+    WHILE (LOCATE(',', @registers) > 0) DO
+      SET @value = SUBSTRING(@registers, 1, LOCATE(',', @registers) - 1);
+      SET @last_insert_id = LAST_INSERT_ID();
+      INSERT INTO wordnet.application_localised_string (value, language)
+      VALUES (@value, 'pl');
+      SET @last_insert_id = LAST_INSERT_ID();
+      INSERT INTO wordnet.application_localised_string (id, value, language)
+      VALUES (@last_insert_id, @value, 'en');
+      INSERT INTO wordnet.register_types (name_id)
+      VALUES (@last_insert_id);
+      SET @registers = SUBSTRING(@registers, LOCATE(',', @registers) + 1);
+    END WHILE;
+  END $$
 
 DELIMITER ;
 

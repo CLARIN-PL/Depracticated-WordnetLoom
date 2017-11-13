@@ -1,5 +1,5 @@
 CREATE TABLE application_localised_string (
-  id       BIGINT       NOT NULL,
+  id       BIGINT       NOT NULL AUTO_INCREMENT,
   value    TEXT,
   language VARCHAR(255) NOT NULL,
   PRIMARY KEY (id, language)

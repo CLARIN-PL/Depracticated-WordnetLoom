@@ -1,11 +1,11 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import java.util.List;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+
+import java.util.List;
 
 //Pos Combo
 public class PartOfSpeechComboBox extends ComboBoxPlain<PartOfSpeech> {
@@ -15,7 +15,7 @@ public class PartOfSpeechComboBox extends ComboBoxPlain<PartOfSpeech> {
     private String nullRepresentation;
 
     public PartOfSpeechComboBox(String nullItemRepresentation) {
-        this.nullRepresentation = nullItemRepresentation;
+        nullRepresentation = nullItemRepresentation;
     }
 
     private void loadPartOfSpeech() {
@@ -30,7 +30,7 @@ public class PartOfSpeechComboBox extends ComboBoxPlain<PartOfSpeech> {
         removeAllItems();
         addItem(new CustomDescription<>(nullRepresentation, null));
         all.stream().forEach((pos) -> {
-            addItem(new CustomDescription<>(pos.getName(RemoteConnectionProvider.getInstance().getLanguage()), pos));
+            //  addItem(new CustomDescription<>(pos.getName(RemoteConnectionProvider.getInstance().getLanguage()), pos));
         });
     }
 

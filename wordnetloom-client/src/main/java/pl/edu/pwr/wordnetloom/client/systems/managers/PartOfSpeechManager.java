@@ -1,10 +1,11 @@
 package pl.edu.pwr.wordnetloom.client.systems.managers;
 
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 public class PartOfSpeechManager {
 
@@ -14,7 +15,7 @@ public class PartOfSpeechManager {
 
 
     private PartOfSpeechManager() {
-        List<PartOfSpeech> list = RemoteService.partOfSpeechServiceRemote.findAllWithName();
+        List<PartOfSpeech> list = RemoteService.partOfSpeechServiceRemote.findAll();
         cache = Collections.unmodifiableList(Collections.synchronizedList(list));
     }
 

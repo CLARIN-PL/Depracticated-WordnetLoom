@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
+import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
@@ -26,7 +27,7 @@ public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
      *
      * @param owner - srodowisko
      */
-    private PartOfSpeechWindow(JFrame owner) {
+    private PartOfSpeechWindow(WebFrame owner) {
         super(owner, Labels.PARTS_OF_SPEECH, 190, 430);
         setResizable(false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -56,7 +57,7 @@ public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
      * @param oldPoses - aktualne czesci mowy
      * @return czesci mowy
      */
-    static public String showModal(JFrame owner, String oldPoses) {
+    static public String showModal(WebFrame owner, String oldPoses) {
         PartOfSpeechWindow frame = new PartOfSpeechWindow(owner);
         frame.poses = new ArrayList<>();
 

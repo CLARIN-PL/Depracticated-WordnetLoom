@@ -1,17 +1,17 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
+import com.alee.laf.rootpane.WebDialog;
+import com.alee.laf.rootpane.WebFrame;
 import se.datadosen.component.RiverLayout;
 
-public class DialogWindow extends JDialog {
+import java.awt.*;
+
+public class DialogWindow extends WebDialog {
 
     private static final long serialVersionUID = 1L;
     static private int BOTTOM_MARGIN = 40;
 
-    public DialogWindow(JFrame baseFrame, String title, int x, int y, int width, int height) {
+    public DialogWindow(WebFrame baseFrame, String title, int x, int y, int width, int height) {
         super(baseFrame, title, true);
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -26,7 +26,7 @@ public class DialogWindow extends JDialog {
         initializeComponents(x, y, width, height);
     }
 
-    public DialogWindow(JFrame baseFrame, String title, int width, int height) {
+    public DialogWindow(WebFrame baseFrame, String title, int width, int height) {
         super(baseFrame, title, true);
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -40,7 +40,7 @@ public class DialogWindow extends JDialog {
      * @param frame - parent frame
      * @param title - window title
      */
-    public DialogWindow(JFrame frame, String title) {
+    public DialogWindow(WebFrame frame, String title) {
         super(frame, title, true);
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -52,8 +52,8 @@ public class DialogWindow extends JDialog {
     }
 
     private void initializeComponents(int x, int y, int width, int height) {
-        this.setBounds(x, y, width, height);
-        this.setLayout(new RiverLayout());
+        setBounds(x, y, width, height);
+        setLayout(new RiverLayout());
     }
 
     private int calculateCenterPosition(int a, int b) {
@@ -63,13 +63,13 @@ public class DialogWindow extends JDialog {
     public void setInScreenCenter(int width, int height) {
 
         Dimension screenSize = new Dimension(
-                (int) this.getGraphicsConfiguration().getBounds().getWidth(),
-                (int) this.getGraphicsConfiguration().getBounds().getHeight()
+                (int) getGraphicsConfiguration().getBounds().getWidth(),
+                (int) getGraphicsConfiguration().getBounds().getHeight()
         );
 
         // set to center of main screen
         int x = getGraphicsConfiguration().getBounds().x + (screenSize.width - width) / 2;
         int y = (screenSize.height - height - BOTTOM_MARGIN) / 2;
-        this.setBounds(x, y, width, height);
+        setBounds(x, y, width, height);
     }
 }

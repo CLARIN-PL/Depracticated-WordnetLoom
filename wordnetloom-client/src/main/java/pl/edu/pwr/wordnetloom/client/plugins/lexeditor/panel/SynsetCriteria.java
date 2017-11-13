@@ -1,27 +1,26 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import com.alee.laf.radiobutton.WebRadioButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
 public final class SynsetCriteria extends CriteriaPanel implements ActionListener {
 
     private TextFieldPlain definition;
     private TextFieldPlain comment;
     private String isArtificial;
-    private JRadioButton all;
-    private JRadioButton artificial;
-    private JRadioButton notArtificial;
+    private WebRadioButton all;
+    private WebRadioButton artificial;
+    private WebRadioButton notArtificial;
     private CriteriaDTO crit;
 
     public SynsetCriteria() {
@@ -35,11 +34,11 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         isArtificial = "";
         definition = new TextFieldPlain(STANDARD_VALUE_FILTER);
         comment = new TextFieldPlain(STANDARD_VALUE_FILTER);
-        all = new JRadioButton(Labels.VALUE_ALL, true);
+        all = new WebRadioButton(Labels.VALUE_ALL, true);
         all.addActionListener(this);
-        artificial = new JRadioButton(Labels.ARTIFICIAL, false);
+        artificial = new WebRadioButton(Labels.ARTIFICIAL, false);
         artificial.addActionListener(this);
-        notArtificial = new JRadioButton(Labels.NORMAL, false);
+        notArtificial = new WebRadioButton(Labels.NORMAL, false);
         notArtificial.addActionListener(this);
     }
 

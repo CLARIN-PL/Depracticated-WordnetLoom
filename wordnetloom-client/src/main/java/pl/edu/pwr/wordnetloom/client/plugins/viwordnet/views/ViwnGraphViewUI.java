@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
+import com.alee.laf.panel.WebPanel;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.DirectedGraph;
@@ -154,7 +155,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * @author amusial
      */
     @Override
-    protected void initialize(JPanel content) {
+    protected void initialize(WebPanel content) {
         content.removeAll();
         content.setLayout(new RiverLayout());
 

@@ -1,8 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import javax.swing.JTextPane;
+import com.alee.laf.text.WebTextPane;
 
-public class TextPanePlain extends JTextPane {
+public class TextPanePlain extends WebTextPane {
 
     private static final long serialVersionUID = 153285040575089259L;
     private String oldValue = null;

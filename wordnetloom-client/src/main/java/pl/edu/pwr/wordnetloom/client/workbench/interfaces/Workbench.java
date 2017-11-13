@@ -1,8 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.workbench.interfaces;
 
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+import com.alee.laf.menu.WebMenu;
+import com.alee.laf.menu.WebMenuItem;
+import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 /**
@@ -42,7 +42,7 @@ public interface Workbench {
      *
      * @param item - menu do zainstalowania
      */
-    void installMenu(JMenu item);
+    void installMenu(WebMenu item);
 
     /**
      * Install menu on given position. If index is negative the position is
@@ -51,9 +51,9 @@ public interface Workbench {
      * @param item
      * @param index
      */
-    void installMenu(JMenu item, int index);
+    void installMenu(WebMenu item, int index);
 
-    void installMenu(String topMenu, String subMenu, JMenuItem item);
+    void installMenu(String topMenu, String subMenu, WebMenuItem item);
 
     /**
      * Odczytanie menu o konkretnej nazwie. Przeszukiwana jest lista
@@ -62,17 +62,17 @@ public interface Workbench {
      * @param itemName - nazwa menu do odczytania
      * @return menu lub NULL gdy nie znaleziono
      */
-    JMenu getMenu(String itemName);
+    WebMenu getMenu(String itemName);
 
     /**
      * Instalacja kontkretnego widoku, na konktretnej pozycji w konkretnej
      * perspektywie
      *
-     * @param view - obiekt reprezentujący widok
-     * @param pos - pozycja w widoku, znaczenia jest uzaleznione od
-     * implementacji perspektywy
+     * @param view            - obiekt reprezentujący widok
+     * @param pos             - pozycja w widoku, znaczenia jest uzaleznione od
+     *                        implementacji perspektywy
      * @param perspectiveName - nazwa perspektywy, w której widok ma zostać
-     * zainstalowany
+     *                        zainstalowany
      */
     void installView(View view, int pos, String perspectiveName);
 
@@ -119,7 +119,7 @@ public interface Workbench {
      * Zapisanie określonego parametru do środowiska
      *
      * @param paramName - nazwa parametru
-     * @param value - nowa wartość
+     * @param value     - nowa wartość
      */
     void setParam(String paramName, String value);
 
@@ -158,7 +158,7 @@ public interface Workbench {
      *
      * @return nadrzędny komponent
      */
-    JFrame getFrame();
+    WebFrame getFrame();
 
     void setBusy(boolean busy);
 

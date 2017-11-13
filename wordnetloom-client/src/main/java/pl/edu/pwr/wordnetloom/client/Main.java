@@ -1,5 +1,7 @@
 package pl.edu.pwr.wordnetloom.client;
 
+import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.rootpane.WebFrame;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import org.apache.log4j.Logger;
@@ -46,7 +48,8 @@ public class Main {
             LOGGER.error("Uncaught exception", e);
         });
 
-        LoginWindow dialog = new LoginWindow(new JFrame());
+        WebLookAndFeel.install();
+        LoginWindow dialog = new LoginWindow(new WebFrame());
         dialog.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {

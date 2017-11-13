@@ -1,13 +1,13 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DomainComboBox extends ComboBoxPlain<Domain> {
 
@@ -16,7 +16,7 @@ public class DomainComboBox extends ComboBoxPlain<Domain> {
     private final String nullRepresentation;
 
     public DomainComboBox(String nullItemRepresentation) {
-        this.nullRepresentation = nullItemRepresentation;
+        nullRepresentation = nullItemRepresentation;
     }
 
     public void allDomains(boolean withPrefix) {
@@ -35,8 +35,8 @@ public class DomainComboBox extends ComboBoxPlain<Domain> {
         }
         domains = DomainManager.getInstance().sortDomains(domains);
         for (Domain domain : domains) {
-            String name = domain.getName(RemoteConnectionProvider.getInstance().getLanguage());
-            addItem(new CustomDescription<>(withPrefix == true ? name : nameWithoutPrefix(name), domain));
+            //  String name = domain.getName(RemoteConnectionProvider.getInstance().getLanguage());
+            //addItem(new CustomDescription<>(withPrefix == true ? name : nameWithoutPrefix(name), domain));
         }
     }
 
@@ -60,13 +60,13 @@ public class DomainComboBox extends ComboBoxPlain<Domain> {
         all = DomainManager.getInstance().sortDomains(all);
         addItem(new CustomDescription<>(nullRepresentation, null));
         for (Domain domain : all) {
-            String name = domain.getName(RemoteConnectionProvider.getInstance().getLanguage());
-            addItem(new CustomDescription<>(
-                    withPrefix == true ? name : nameWithoutPrefix(name), domain));
+            // String name = domain.getName(RemoteConnectionProvider.getInstance().getLanguage());
+            //    addItem(new CustomDescription<>(
+            //            withPrefix == true ? name : nameWithoutPrefix(name), domain));
         }
     }
 
-//    private List<Domain> filterDomainByUbyPos(pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech posUby) {
+    //    private List<Domain> filterDomainByUbyPos(pl.edu.pwr.wordnetloom.model.uby.enums.PartOfSpeech posUby) {
 //        Set<Domain> result = new HashSet<>();
 //        List<PartOfSpeech> poses = new ArrayList<>(PosManager.getInstance().getAllPOSes());
 //        for (PartOfSpeech pos : poses) {

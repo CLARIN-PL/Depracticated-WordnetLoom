@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
+import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -46,7 +47,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      * @param middleUnits       - jednostki pośrednie
      * @param childUnits        - jednostki nadrzedne
      */
-    private RelationTypeFrame(JFrame frame,
+    private RelationTypeFrame(WebFrame frame,
                               String type,
                               PartOfSpeech pos,
                               RelationType fixedRelationType,
@@ -190,7 +191,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      * @param fixedRelationType fixed relation type
      * @author amusial Constructor for derived classes
      */
-    protected RelationTypeFrame(JFrame frame,
+    protected RelationTypeFrame(WebFrame frame,
                                 String type,
                                 PartOfSpeech pos,
                                 RelationType fixedRelationType) {
@@ -266,7 +267,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      * @param childUnits            - jednostki podrzedne
      * @return typ relacji albo null
      */
-    public static RelationType showModal(JFrame frame,
+    public static RelationType showModal(WebFrame frame,
                                          String type,
                                          PartOfSpeech pos,
                                          RelationType relationType,

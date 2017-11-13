@@ -17,46 +17,38 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JTabbedPane;
-import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
+import com.alee.laf.tabbedpane.WebTabbedPane;
+import pl.edu.pwr.wordnetloom.client.systems.listeners.CloseableTabbedPaneListener;
+
+import javax.swing.*;
 import javax.swing.event.EventListenerList;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.plaf.metal.MetalTabbedPaneUI;
-import pl.edu.pwr.wordnetloom.client.systems.listeners.CloseableTabbedPaneListener;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 /**
  * License
- *
+ * <p>
  * Copyright 1994-2009 Sun Microsystems, Inc. All Rights Reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
- *
+ * <p>
+ * <p>
  * Redistribution of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * <p>
  * Redistribution in binary form must reproduce the above copyright notice, this
  * list of conditions and the following disclaimer in the documentation and/or
  * other materials provided with the distribution.
- *
- *
+ * <p>
+ * <p>
  * Neither the name of Sun Microsystems, Inc. or the names of contributors may
  * be used to endorse or promote products derived from this software without
  * specific prior written permission.
- *
+ * <p>
  * This software is provided "AS IS," without a warranty of any kind. ALL
  * EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY
  * IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
@@ -68,31 +60,29 @@ import pl.edu.pwr.wordnetloom.client.systems.listeners.CloseableTabbedPaneListen
  * PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY,
  * ARISING OUT OF THE USE OF OR INABILITY TO USE THIS SOFTWARE, EVEN IF SUN HAS
  * BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
- *
+ * <p>
  * You acknowledge that this software is not designed, licensed or intended for
  * use in the design, construction, operation or maintenance of any nuclear
  * facility.
- *
  */
+
 /**
  * A JTabbedPane which has a close ('X') icon on each tab.
- *
+ * <p>
  * To add a tab, use the method addTab(String, Component)
- *
+ * <p>
  * To have an extra icon on each tab (e.g. like in JBuilder, showing the file
  * type) use the method addTab(String, Component, Icon). Only clicking the 'X'
  * closes the tab.
  *
  * @author fast_
- *
+ * <p>
  * Tab-button is a feature which gives you an ability to open new tabs in
  * firefox style. Button fires an event, you could do what you want opening a
  * new tab is only a suggestion
- *
  * @author amusial
- *
  */
-public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
+public class CloseableTabbedPane extends WebTabbedPane implements MouseListener,
         MouseMotionListener {
 
     /**
@@ -129,14 +119,12 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      * value true means that all tabs may be closed value false means that after
      * opening more than one tab, at least one must stay opened, default value
      * is false
-     *
      */
     private boolean allowAllTabsClosing = false;
 
     /**
      * specific component which fills tab added to this panel only to provide
      * adding new panels tab-button
-     *
      */
     private JLabel addTabLabel = null;
 
@@ -154,8 +142,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      * example for adding new tabs
      *
      * @param showTabButton <code>boolean</code> when true, new instance will
-     * have a tab-button added, with false works as no parameters constructor
-     *
+     *                      have a tab-button added, with false works as no parameters constructor
      */
     public CloseableTabbedPane(boolean showTabButton) {
         super();
@@ -170,11 +157,10 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      * special tab-button in firefox tabs style, which could be useful for
      * example for adding new tabs
      *
-     * @param showTabButton <code>boolean</code> when true, new instance will
-     * have a tab-button added, with false works as no parameters constructor
+     * @param showTabButton       <code>boolean</code> when true, new instance will
+     *                            have a tab-button added, with false works as no parameters constructor
      * @param allowAllTabsClosing all tabs could be closed when true, last tab
-     * close button will be disabled when false
-     *
+     *                            close button will be disabled when false
      */
     public CloseableTabbedPane(boolean showTabButton, boolean allowAllTabsClosing) {
         super();
@@ -189,7 +175,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      * Creates a new instance of <code>CloseableTabbedPane</code>
      *
      * @param horizontalTextPosition the horizontal position of the text (e.g.
-     * SwingUtilities.TRAILING or SwingUtilities.LEFT)
+     *                               SwingUtilities.TRAILING or SwingUtilities.LEFT)
      */
     public CloseableTabbedPane(int horizontalTextPosition) {
         super();
@@ -200,7 +186,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      * Initializes the <code>CloseableTabbedPane</code>
      *
      * @param horizontalTextPosition the horizontal position of the text (e.g.
-     * SwingUtilities.TRAILING or SwingUtilities.LEFT)
+     *                               SwingUtilities.TRAILING or SwingUtilities.LEFT)
      */
     private void init(int horizontalTextPosition) {
         listenerList = new EventListenerList();
@@ -217,8 +203,8 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
     /**
      * Allows setting own closeicons.
      *
-     * @param normal the normal closeicon
-     * @param hoover the closeicon when the mouse is over
+     * @param normal  the normal closeicon
+     * @param hoover  the closeicon when the mouse is over
      * @param pressed the closeicon when the mouse is pressed
      */
     public void setCloseIcons(Icon normal, Icon hoover, Icon pressed) {
@@ -230,7 +216,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
     /**
      * Adds a <code>Component</code> represented by a title and no icon.
      *
-     * @param title the title to be displayed in this tab
+     * @param title     the title to be displayed in this tab
      * @param component the component to be displayed when this tab is clicked
      */
     @Override
@@ -241,7 +227,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
     /**
      * Adds a <code>Component</code> represented by a title and an icon.
      *
-     * @param title the title to be displayed in this tab
+     * @param title     the title to be displayed in this tab
      * @param component the component to be displayed when this tab is clicked
      * @param extraIcon the icon to be displayed in this tab
      */
@@ -282,7 +268,6 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
      * Override setSelectedIndex method allow to use tab-button in firefox
      * style. The tab-button could be use to add new tabs. Tab-button selection
      * is disabled, thats only difference.
-     *
      */
     @Override
     public void setSelectedIndex(int index) {
@@ -398,7 +383,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
             }
 
             /* allow all tabs closing feature */
-            if (this.getTabCount() <= (allowAllTabsClosing ? (addTabLabel != null ? 1 : 0)
+            if (getTabCount() <= (allowAllTabsClosing ? (addTabLabel != null ? 1 : 0)
                     : addTabLabel != null ? 2 : 1)) {
                 return;
             }
@@ -509,18 +494,16 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
 
     /**
      * @param b value true means that all tabs may be closed, value false means
-     * that after opening more than one tab, at least one must stay opened
-     *
+     *          that after opening more than one tab, at least one must stay opened
      */
     public void setAllowAllTabsClosing(boolean b) {
-        this.allowAllTabsClosing = b;
+        allowAllTabsClosing = b;
     }
 
     /**
      * Notifies all listeners that have registered interest for notification on
      * this event type. When tab-button is active, and has been clicked, fire
      * it.
-     *
      */
     protected void tabButtonPressed() {
         Object[] listeners = listenerList.getListenerList();
@@ -866,7 +849,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          * Creates a new instance of <code>CloseableTabbedPaneUI</code>
          *
          * @param horizontalTextPosition the horizontal position of the text
-         * (e.g. SwingUtilities.TRAILING or SwingUtilities.LEFT)
+         *                               (e.g. SwingUtilities.TRAILING or SwingUtilities.LEFT)
          */
         public CloseableTabbedPaneUI(int horizontalTextPosition) {
             this.horizontalTextPosition = horizontalTextPosition;
@@ -876,19 +859,19 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          * Layouts the label
          *
          * @param tabPlacement the placement of the tabs
-         * @param metrics the font metrics
-         * @param tabIndex the index of the tab
-         * @param title the title of the tab
-         * @param icon the icon of the tab
-         * @param tabRect the tab boundaries
-         * @param iconRect the icon boundaries
-         * @param textRect the text boundaries
-         * @param isSelected true whether the tab is selected, false otherwise
+         * @param metrics      the font metrics
+         * @param tabIndex     the index of the tab
+         * @param title        the title of the tab
+         * @param icon         the icon of the tab
+         * @param tabRect      the tab boundaries
+         * @param iconRect     the icon boundaries
+         * @param textRect     the text boundaries
+         * @param isSelected   true whether the tab is selected, false otherwise
          */
         @Override
         protected void layoutLabel(int tabPlacement, FontMetrics metrics,
-                int tabIndex, String title, Icon icon, Rectangle tabRect,
-                Rectangle iconRect, Rectangle textRect, boolean isSelected) {
+                                   int tabIndex, String title, Icon icon, Rectangle tabRect,
+                                   Rectangle iconRect, Rectangle textRect, boolean isSelected) {
 
             textRect.x = textRect.y = iconRect.x = iconRect.y = 0;
 
@@ -935,7 +918,7 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          * Creates a new instance of <code>CloseableMetalTabbedPaneUI</code>
          *
          * @param horizontalTextPosition the horizontal position of the text
-         * (e.g. SwingUtilities.TRAILING or SwingUtilities.LEFT)
+         *                               (e.g. SwingUtilities.TRAILING or SwingUtilities.LEFT)
          */
         public CloseableMetalTabbedPaneUI(int horizontalTextPosition) {
             this.horizontalTextPosition = horizontalTextPosition;
@@ -945,19 +928,19 @@ public class CloseableTabbedPane extends JTabbedPane implements MouseListener,
          * Layouts the label
          *
          * @param tabPlacement the placement of the tabs
-         * @param metrics the font metrics
-         * @param tabIndex the index of the tab
-         * @param title the title of the tab
-         * @param icon the icon of the tab
-         * @param tabRect the tab boundaries
-         * @param iconRect the icon boundaries
-         * @param textRect the text boundaries
-         * @param isSelected true whether the tab is selected, false otherwise
+         * @param metrics      the font metrics
+         * @param tabIndex     the index of the tab
+         * @param title        the title of the tab
+         * @param icon         the icon of the tab
+         * @param tabRect      the tab boundaries
+         * @param iconRect     the icon boundaries
+         * @param textRect     the text boundaries
+         * @param isSelected   true whether the tab is selected, false otherwise
          */
         @Override
         protected void layoutLabel(int tabPlacement, FontMetrics metrics,
-                int tabIndex, String title, Icon icon, Rectangle tabRect,
-                Rectangle iconRect, Rectangle textRect, boolean isSelected) {
+                                   int tabIndex, String title, Icon icon, Rectangle tabRect,
+                                   Rectangle iconRect, Rectangle textRect, boolean isSelected) {
 
             textRect.x = textRect.y = iconRect.x = iconRect.y = 0;
 

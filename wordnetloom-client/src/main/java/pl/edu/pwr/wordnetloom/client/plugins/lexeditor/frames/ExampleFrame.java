@@ -1,11 +1,12 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JFrame;
+import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.ExamplePanel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ExampleFrame extends DialogWindow implements ActionListener {
 
@@ -14,12 +15,12 @@ public class ExampleFrame extends DialogWindow implements ActionListener {
     private String example;
     private String toReturn;
 
-    public ExampleFrame(JFrame baseFrame, String title, String example) {
+    public ExampleFrame(WebFrame baseFrame, String title, String example) {
         super(baseFrame, title, 450, 200);
         this.example = example;
-        this.setResizable(true);
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        this.setLocationRelativeTo(baseFrame);
+        setResizable(true);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(baseFrame);
         panel = new ExamplePanel();
         panel.getBtnSave().addActionListener(this);
         panel.getBtnCancel().addActionListener(this);
@@ -43,16 +44,16 @@ public class ExampleFrame extends DialogWindow implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == panel.getBtnSave()) {
             toReturn = panel.getExampleTextArea().getText();
-            this.setVisible(false);
-            this.dispose();
+            setVisible(false);
+            dispose();
         } else if (event.getSource() == panel.getBtnCancel()) {
             toReturn = example;
-            this.setVisible(false);
-            this.dispose();
+            setVisible(false);
+            dispose();
         }
     }
 
-    static public String showModal(JFrame frame, String title, String example, boolean editable) {
+    static public String showModal(WebFrame frame, String title, String example, boolean editable) {
         ExampleFrame modalFrame = new ExampleFrame(frame, title, example);
         if (editable) {
             modalFrame.changeBtnName();

@@ -1,18 +1,19 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import java.awt.Dimension;
+import com.alee.laf.rootpane.WebFrame;
+import se.datadosen.component.RiverLayout;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import se.datadosen.component.RiverLayout;
 
 /**
  * klasa frame zawierająca ikonę aplikacji
  *
  * @author Max
  */
-public class IconFrame extends JFrame {
+public class IconFrame extends WebFrame {
 
     private static final String FILE_MAIN_ICON = "icons/wordnet.gif";
     private static final long serialVersionUID = 1L;
@@ -21,7 +22,6 @@ public class IconFrame extends JFrame {
 
     /**
      * konstruktor
-     *
      */
     public IconFrame() {
         setIconImage(new ImageIcon(IconFrame.class.getClassLoader().getResource(FILE_MAIN_ICON)).getImage());
@@ -31,10 +31,9 @@ public class IconFrame extends JFrame {
      * konstruktor
      *
      * @param baseFrame
-     * @param title - tytul okna
-     * @param width - szerokosc okna
-     * @param height - wysokosc okna
-     *
+     * @param title     - tytul okna
+     * @param width     - szerokosc okna
+     * @param height    - wysokosc okna
      */
     public IconFrame(JFrame baseFrame, String title, int width, int height) {
         this(title, width, height);
@@ -44,20 +43,19 @@ public class IconFrame extends JFrame {
     /**
      * konstruktor
      *
-     * @param title - tytul okna
-     * @param x - polozenie x
-     * @param y - polozenie y
-     * @param width - szerokosc okna
+     * @param title  - tytul okna
+     * @param x      - polozenie x
+     * @param y      - polozenie y
+     * @param width  - szerokosc okna
      * @param height - wysokosc okna
-     *
      */
     public IconFrame(String title, int x, int y, int width, int height) {
-        this.setIconImage(new ImageIcon(IconFrame.class.getClassLoader().getResource(FILE_MAIN_ICON)).getImage());
+        setIconImage(new ImageIcon(IconFrame.class.getClassLoader().getResource(FILE_MAIN_ICON)).getImage());
         // odczytanie rozmiarow ekranu
 
         Dimension screenSize = new Dimension(
-                (int) this.getGraphicsConfiguration().getBounds().getWidth(),
-                (int) this.getGraphicsConfiguration().getBounds().getHeight()
+                (int) getGraphicsConfiguration().getBounds().getWidth(),
+                (int) getGraphicsConfiguration().getBounds().getHeight()
         );
 
         // koreka polożenia
@@ -73,24 +71,23 @@ public class IconFrame extends JFrame {
         }
 
         // ustawienie parametrów okna
-        this.setBounds(x, y, width, height);
-        this.setLayout(new RiverLayout());
-        this.setTitle(title);
+        setBounds(x, y, width, height);
+        setLayout(new RiverLayout());
+        setTitle(title);
     }
 
     /**
      * konstruktor
      *
-     * @param width - szerokosc okna
+     * @param width  - szerokosc okna
      * @param height - wysokosc okna
-     *
      */
     public IconFrame(int width, int height) {
-        this.setIconImage(new ImageIcon(FILE_MAIN_ICON).getImage());
+        setIconImage(new ImageIcon(FILE_MAIN_ICON).getImage());
         // odczytanie rozmiarow ekranu
         Dimension screenSize = new Dimension(
-                (int) this.getGraphicsConfiguration().getBounds().getWidth(),
-                (int) this.getGraphicsConfiguration().getBounds().getHeight()
+                (int) getGraphicsConfiguration().getBounds().getWidth(),
+                (int) getGraphicsConfiguration().getBounds().getHeight()
         );
 
         // koreka polożenia
@@ -98,37 +95,35 @@ public class IconFrame extends JFrame {
         int y = (screenSize.height - height - BOTTOM_MARGIN) / 2;
 
         // ustawienie parametrów okna
-        this.setBounds(x, y, width, height);
-        this.setLayout(new RiverLayout());
+        setBounds(x, y, width, height);
+        setLayout(new RiverLayout());
     }
 
     /**
      * konstruktor
      *
-     * @param title - tytul okna
-     * @param width - szerokosc okna
+     * @param title  - tytul okna
+     * @param width  - szerokosc okna
      * @param height - wysokosc okna
-     *
      */
     public IconFrame(String title, int width, int height) {
         this(width, height);
-        this.setTitle(title);
+        setTitle(title);
     }
 
     /**
      * konstruktor - pelny ekran z marginesem 25,25,25,25
      *
      * @param baseFrame - okno bazowe
-     * @param title - tytul okna
-     *
+     * @param title     - tytul okna
      */
     public IconFrame(JFrame baseFrame, String title) {
         this.baseFrame = baseFrame;
 
         // odczytanie rozmiarow ekranu
         Dimension screenSize = new Dimension(
-                (int) this.getGraphicsConfiguration().getBounds().getWidth(),
-                (int) this.getGraphicsConfiguration().getBounds().getHeight()
+                (int) getGraphicsConfiguration().getBounds().getWidth(),
+                (int) getGraphicsConfiguration().getBounds().getHeight()
         );
 
         // koreka polożenia
@@ -138,20 +133,20 @@ public class IconFrame extends JFrame {
         int y = (screenSize.height - height - BOTTOM_MARGIN) / 2;
 
         // ustawienie parametrów okna
-        this.setBounds(x, y, width, height);
-        this.setLayout(new RiverLayout());
-        this.setTitle(title);
+        setBounds(x, y, width, height);
+        setLayout(new RiverLayout());
+        setTitle(title);
     }
 
     /*
-	 *  (non-Javadoc)
+     *  (non-Javadoc)
 	 * @see java.awt.Component#setLocation(int, int)
      */
     @Override
     public void setLocation(int x, int y) {
         Dimension screenSize = new Dimension(
-                (int) this.getGraphicsConfiguration().getBounds().getWidth(),
-                (int) this.getGraphicsConfiguration().getBounds().getHeight()
+                (int) getGraphicsConfiguration().getBounds().getWidth(),
+                (int) getGraphicsConfiguration().getBounds().getHeight()
         );
 
         // koreka polożenia
@@ -159,11 +154,11 @@ public class IconFrame extends JFrame {
         int offsetY = getGraphicsConfiguration().getBounds().y;
 
         // koreka polożenia
-        if (x + this.getWidth() > screenSize.width) {
-            x = offsetX + screenSize.width - this.getWidth();
+        if (x + getWidth() > screenSize.width) {
+            x = offsetX + screenSize.width - getWidth();
         }
-        if (y + this.getHeight() + BOTTOM_MARGIN > screenSize.height) {
-            y = offsetY + screenSize.height - this.getHeight() - BOTTOM_MARGIN;
+        if (y + getHeight() + BOTTOM_MARGIN > screenSize.height) {
+            y = offsetY + screenSize.height - getHeight() - BOTTOM_MARGIN;
         }
 
         // ustawienie parametrów okna
@@ -176,7 +171,7 @@ public class IconFrame extends JFrame {
     public void showModal() {
         final JFrame frame = this;
 
-        this.addWindowListener(new WindowAdapter() {
+        addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent e) {
                 baseFrame.setEnabled(false);
@@ -190,7 +185,7 @@ public class IconFrame extends JFrame {
             }
         });
 
-        this.addWindowListener(new WindowAdapter() {
+        addWindowListener(new WindowAdapter() {
             @Override
             public void windowActivated(WindowEvent e) {
                 if (frame.isShowing()) {

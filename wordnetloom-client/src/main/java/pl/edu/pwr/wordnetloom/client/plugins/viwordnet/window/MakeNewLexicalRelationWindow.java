@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window;
 
+import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
@@ -25,7 +26,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
     protected JPanel jp;
     protected Sense from, to;
 
-    protected MakeNewLexicalRelationWindow(JFrame frame, String type,
+    protected MakeNewLexicalRelationWindow(WebFrame frame, String type,
                                            PartOfSpeech pos, Sense[] from, Sense[] to) {
         super(frame, type, pos, null);
 
