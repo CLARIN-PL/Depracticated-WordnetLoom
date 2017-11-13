@@ -218,13 +218,14 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return path;
     }
 
-    public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset) {
-        return getEntityManager().createQuery("FROM SynsetRelation sr WHERE sr.child.id = :id", SynsetRelation.class)
+    public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons) {
+        return getEntityManager().createQuery("FROM SynsetRelation sr WHERE  sr.child.id = :id AND sr.parent.lexicon.id IN (:lexicons)", SynsetRelation.class)
                 .setParameter("id", synset.getId())
+                .setParameter("lexicons", lexicons)
                 .getResultList();
     }
 
-    public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset) {
+    public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons) {
         return getEntityManager().createQuery("FROM SynsetRelation sr WHERE sr.parent.id = :id", SynsetRelation.class)
                 .setParameter("id", synset.getId())
                 .getResultList();

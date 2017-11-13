@@ -14,7 +14,8 @@ public class SenseCriteriaDTO implements Serializable {
     private Integer variant;
     private String comment;
     private String example;
-    private String register;
+//    private String register;
+    private Long register;
     private Long synsetId;
 
     public SenseCriteriaDTO(Long partOfSpeechId, Long domainId, String lemma, List<Long> lexicons) {
@@ -96,12 +97,20 @@ public class SenseCriteriaDTO implements Serializable {
         this.example = example;
     }
 
-    public String getRegister() {
+//    public String getRegister() {
+//        return register;
+//    }
+//
+//    public void setRegister(String register) {
+//        this.register = register;
+//    }
+
+    public Long getRegisterId(){
         return register;
     }
 
-    public void setRegister(String register) {
-        this.register = register;
+    public void setRegisterId(Long registerId){
+        this.register = registerId;
     }
 
     public Long getSynsetId() {

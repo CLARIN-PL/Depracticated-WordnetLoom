@@ -55,7 +55,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @Override
     public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons) {
-        synsetRepository.prepareCacheForRootNode(synset, lexicons);
+        return synsetRepository.prepareCacheForRootNode(synset, lexicons);
 
 //        Map<Long, DataEntry> map = new HashMap<>();
 //
@@ -130,7 +130,6 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 //        // step 4 - finish
 //        long end = System.currentTimeMillis();
 //        System.out.println("Time: " + Long.toString(end - start));
-        return null;
     }
 
 }

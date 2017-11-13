@@ -26,10 +26,11 @@ public class SenseAttributes extends GenericEntity {
     @Column(name = "error_comment")
     private String errorComment;
 
-    @ElementCollection
-    @CollectionTable(name = "sense_examples", joinColumns = @JoinColumn(name = "sense_attributes_id"))
+//    @ElementCollection
+//    @CollectionTable(name = "sense_examples", joinColumns = @JoinColumn(name = "sense_attributes_id"))
+    @OneToOne(fetch = FetchType.LAZY)
     @Column(name = "example")
-    private List<String> examples;
+    private List<SenseExample> examples;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -44,7 +45,7 @@ public class SenseAttributes extends GenericEntity {
         super();
     }
 
-    public SenseAttributes(String definition, String comment, String register, String link, List<String> examples) {
+    public SenseAttributes(String definition, String comment, String register, String link, List<SenseExample> examples) {
         this.definition = definition;
         this.comment = comment;
         this.register = register;
@@ -59,7 +60,7 @@ public class SenseAttributes extends GenericEntity {
         link = sa.link;
         owner = sa.owner;
         examples = new ArrayList<>();
-        sa.getExamples().forEach(examples::add);
+        sa.getExamples().forEach(s -> examples.add(s));
     }
 
     public String getDefinition() {
@@ -94,11 +95,11 @@ public class SenseAttributes extends GenericEntity {
         this.link = link;
     }
 
-    public List<String> getExamples() {
+    public List<SenseExample> getExamples() {
         return examples;
     }
 
-    public void setExamples(List<String> examples) {
+    public void setExamples(List<SenseExample> examples) {
         this.examples = examples;
     }
 

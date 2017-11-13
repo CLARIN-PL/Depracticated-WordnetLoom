@@ -129,12 +129,12 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     }
 
     @Override
-    public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset) {
-        return synsetRelationRepository.findRelationsWhereSynsetIsChild(synset);
+    public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons) {
+        return synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons);
     }
 
     @Override
-    public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset) {
-        return synsetRelationRepository.findRelationsWhereSynsetIsParent(synset);
+    public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons) {
+        return synsetRelationRepository.findRelationsWhereSynsetIsParent(synset, lexicons);
     }
 }
