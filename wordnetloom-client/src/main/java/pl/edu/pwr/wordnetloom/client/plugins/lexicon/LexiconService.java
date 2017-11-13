@@ -1,20 +1,20 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexicon;
 
-import java.awt.event.ActionEvent;
-import java.util.List;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.List;
+
 public class LexiconService extends AbstractService {
 
-    private final JMenuItem lexiconItem = new MenuItemExt(Labels.LEXICON);
+    private final JMenuItem lexiconItem = new MMenuItem(Labels.LEXICON);
 
     public LexiconService(final Workbench workbench) {
         super(workbench);

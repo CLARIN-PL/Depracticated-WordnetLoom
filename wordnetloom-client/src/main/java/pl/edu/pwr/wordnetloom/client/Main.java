@@ -32,6 +32,7 @@ public class Main {
     public static final String PROGRAM_NAME = "WordnetLoom";
     private static final Logger LOGGER = Logger.getLogger(Main.class);
     private static final Map<String, String> labelsMap = new HashMap<>();
+    private static final Map<Long, String> localisedStringsMap = new HashMap<>();
 
     public static void main(String[] args) {
 
@@ -115,11 +116,19 @@ public class Main {
 
     private static void loadLabels(Locale locale) {
         labelsMap.putAll(RemoteService.localisedStringServiceRemote.findLabelsByLanguage(locale.getLanguage()));
+        localisedStringsMap.putAll(RemoteService.localisedStringServiceRemote.findAllByLanguageAsMap(locale.getLanguage()));
     }
 
     public static String getResource(String key) {
         if (labelsMap.containsKey(key)) {
             return labelsMap.get(key);
+        }
+        return "";
+    }
+
+    public static String getLocalisedString(Long key) {
+        if (localisedStringsMap.containsKey(key)) {
+            return localisedStringsMap.get(key);
         }
         return "";
     }

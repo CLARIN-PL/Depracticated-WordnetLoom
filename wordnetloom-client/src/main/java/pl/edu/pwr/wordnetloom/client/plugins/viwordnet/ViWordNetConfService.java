@@ -1,14 +1,15 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import javax.swing.JMenu;
+import com.alee.laf.menu.WebMenu;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.RelationDisplayConfWindow;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 /*
  * this is just a stub for gui relations configuration
@@ -22,11 +23,13 @@ public class ViWordNetConfService extends AbstractService
 
     @Override
     public void installMenuItems() {
-        JMenu other = workbench.getMenu(Labels.SETTINGS);
+        WebMenu other = workbench.getMenu(Labels.SETTINGS);
         if (other == null) {
             return;
         }
-        other.add(new MenuItemExt(Labels.RELATIONS_CONFIGURATION, KeyEvent.VK_K, this));
+        other.add(new MMenuItem(Labels.RELATIONS_CONFIGURATION)
+                .withMnemonic(KeyEvent.VK_K)
+                .withActionListener(this));
     }
 
     @Override

@@ -13,4 +13,7 @@ public interface LocalisedStringServiceRemote {
     LocalisedString findStringsByKey(LocalisedKey key);
 
     List<LocalisedString> findAllStringsByLanguage(String pl);
+
+    Map<Long, String> findAllByLanguageAsMap(String language);
+
 }

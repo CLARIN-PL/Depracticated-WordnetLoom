@@ -19,7 +19,7 @@ package pl.edu.pwr.wordnetloom.client.workbench.implementation;
 
 import com.alee.laf.menu.WebMenu;
 import com.alee.laf.menu.WebMenuBar;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -71,7 +71,7 @@ public class MenuHolder {
      * @param item
      * @param index
      */
-    public void install(JMenu item, int index) {
+    public void install(WebMenu item, int index) {
         if (index < 0) {
             if (index < -1) {
                 index = menuBar.getMenuCount() + index + 1;
@@ -108,10 +108,12 @@ public class MenuHolder {
 
         // po wszystkich skrotach
         for (ShortCut cut : shortCuts) {
-            MenuItemExt newItem = new MenuItemExt(".", cut.getKeyStroke());
+            MMenuItem newItem = new MMenuItem(".")
+                    .withKeyStroke(cut.getKeyStroke());
+
             newItem.setTag(cut);
             newItem.addActionListener((ActionEvent arg0) -> {
-                        MenuItemExt item = (MenuItemExt) arg0.getSource();
+                        MMenuItem item = (MMenuItem) arg0.getSource();
                         ShortCut shortCut = (ShortCut) item.getTag();
                         shortCut.doAction();
                     }
