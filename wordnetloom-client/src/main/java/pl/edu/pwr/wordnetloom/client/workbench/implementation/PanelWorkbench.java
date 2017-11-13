@@ -467,9 +467,9 @@ public final class PanelWorkbench implements WindowListener, Workbench {
 
     @Override
     public void installMenu(String topMenu, String subMenu, WebMenuItem item) {
-        JMenu top = menuHolder.getMenu(topMenu);
+        WebMenu top = menuHolder.getMenu(topMenu);
         if (top == null) {
-            top = new JMenu(topMenu);
+            top = new WebMenu(topMenu);
             menuHolder.install(top, 0);
         }
 

@@ -47,8 +47,13 @@ public class LocalisedStringServiceBean implements LocalisedStringServiceRemote 
     }
 
     @Override
-    public List<LocalisedString> findAllStringsByLanguage(String pl) {
-        return repository.findAllByLanguage(pl);
+    public List<LocalisedString> findAllStringsByLanguage(String language) {
+        return repository.findAllByLanguage(language);
+    }
+
+    @Override
+    public Map<Long, String> findAllByLanguageAsMap(String language) {
+        return repository.findAllByLanguageAsMap(language);
     }
 
     public LocalisedString add(LocalisedString entity) {

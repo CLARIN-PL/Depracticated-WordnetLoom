@@ -1,25 +1,25 @@
 package pl.edu.pwr.wordnetloom.client.plugins.statusbar;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.SwingUtilities;
+import com.alee.laf.menu.WebMenu;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+
 public class StatusBarService extends AbstractService implements Runnable, ActionListener {
 
     private static final int SLEEP_TIME = 5000;
 
-    private Thread thread = null; 
+    private Thread thread = null;
     private boolean stop = false;
     private JMenuItem clearCache;
 
@@ -29,11 +29,13 @@ public class StatusBarService extends AbstractService implements Runnable, Actio
 
     @Override
     public void installMenuItems() {
-        JMenu other = workbench.getMenu(Labels.SETTINGS);
+        WebMenu other = workbench.getMenu(Labels.SETTINGS);
         if (other == null) {
             return;
         }
-        clearCache = new MenuItemExt(Labels.CLEAR_CACHE, KeyEvent.VK_W, this);
+        clearCache = new MMenuItem(Labels.CLEAR_CACHE)
+                .withMnemonic(KeyEvent.VK_W)
+                .withActionListener(this);
         other.add(clearCache);
     }
 

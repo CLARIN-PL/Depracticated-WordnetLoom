@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
+import com.alee.laf.menu.WebMenu;
 import edu.uci.ics.jung.graph.Graph;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -27,7 +28,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -117,11 +118,14 @@ public class ViWordNetService extends AbstractService implements
                     return false;
                 });
 
-        JMenu other = workbench.getMenu(Labels.SETTINGS);
+        WebMenu other = workbench.getMenu(Labels.SETTINGS);
         if (other == null) {
             return;
         }
-        other.add(new MenuItemExt(Labels.SAVE_CANDIDATES_GRAPH, KeyEvent.VK_Z, this));
+        other.add(new MMenuItem(Labels.SAVE_CANDIDATES_GRAPH)
+                .withMnemonic(KeyEvent.VK_Z)
+                .withActionListener(this));
+
         other.addSeparator();
     }
 

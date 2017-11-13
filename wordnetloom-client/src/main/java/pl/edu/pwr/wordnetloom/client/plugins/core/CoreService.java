@@ -5,7 +5,7 @@ import com.alee.laf.menu.WebMenu;
 import pl.edu.pwr.wordnetloom.client.plugins.core.window.AboutWindow;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MenuItemExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -38,16 +38,16 @@ public class CoreService extends AbstractService implements MenuListener {
         WebMenu file = new WebMenu(Labels.FILE);
         file.setMnemonic(KeyEvent.VK_P);
 
-        file.add(new MenuItemExt(Labels.EXIT, KeyEvent.VK_W, (ActionEvent arg0) -> {
-            System.exit(0);
-        }));
+        file.add(new MMenuItem(Labels.EXIT)
+                .withMnemonic(KeyEvent.VK_W)
+                .withActionListener(e -> System.exit(0)));
 
         WebMenu help = new WebMenu(Labels.HELP);
         help.setMnemonic(KeyEvent.VK_C);
 
-        help.add(new MenuItemExt(Labels.ABOUT_APP, KeyEvent.VK_O, (ActionEvent e) -> {
-            AboutWindow.showModal(w);
-        }));
+        help.add(new MMenuItem(Labels.ABOUT_APP)
+                .withMnemonic(KeyEvent.VK_O)
+                .withActionListener(e -> AboutWindow.showModal(w)));
 
         // wyswietlanie tooltipow
         showTooltips = new WebCheckBoxMenuItem(Labels.SHOW_TOOLTIPS);
@@ -65,9 +65,8 @@ public class CoreService extends AbstractService implements MenuListener {
         settings.setMnemonic(KeyEvent.VK_S);
 
         // standardowe ustawienia okna
-        settings.add(new MenuItemExt(Labels.DEFAULT_SETTINGS, KeyEvent.VK_S, (ActionEvent e) -> {
-            w.getActivePerspective().resetViews();
-        }));
+        settings.add(new MMenuItem(Labels.DEFAULT_SETTINGS)
+                .withMnemonic(KeyEvent.VK_S).withActionListener(e -> w.getActivePerspective().resetViews()));
 
         settings.addMenuListener(this);
         settings.add(showTooltips);

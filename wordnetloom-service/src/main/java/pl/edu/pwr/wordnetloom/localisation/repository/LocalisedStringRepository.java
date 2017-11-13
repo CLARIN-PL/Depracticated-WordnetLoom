@@ -21,13 +21,9 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
     public Map<String, String> findAllLabels(String locale) {
         Map<String, String> map = new HashMap<>();
 
-        List<Object[]> list = em.createNativeQuery("SELECT label_key, value FROM application_labels WHERE language = :locale")
+        final List<Object[]> list = em.createNativeQuery("SELECT label_key, value FROM application_labels WHERE language = :locale")
                 .setParameter("locale", locale).getResultList();
-
-        for (Object[] result : list) {
-            map.put(result[0].toString(), result[1].toString());
-        }
-
+        list.forEach(i -> map.put(i[0].toString(), i[1].toString()));
         return map;
     }
 
@@ -41,6 +37,13 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
         TypedQuery<LocalisedString> s = em.createQuery("SELECT s FROM  LocalisedString s WHERE s.key.language = :lang", LocalisedString.class)
                 .setParameter("lang", language);
         return s.getResultList();
+    }
+
+    public Map<Long, String> findAllByLanguageAsMap(String language) {
+        final Map<Long, String> map = new HashMap<>();
+        List<LocalisedString> list = findAllByLanguage(language);
+        list.forEach(i -> map.put(i.getKey().getId(), i.getValue()));
+        return map;
     }
 
     private Long findNextId() {
