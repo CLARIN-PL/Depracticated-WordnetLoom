@@ -8,9 +8,9 @@ CREATE TABLE application_localised_string (
 CREATE TABLE lexicon (
   id              BIGINT       NOT NULL AUTO_INCREMENT,
   identifier      VARCHAR(255) NOT NULL
-  COMMENT 'Short identifiactor representing lexicon',
+  COMMENT 'Short identification string representing lexicon',
   language_name   VARCHAR(255) NOT NULL
-  COMMENT 'Language of lexion',
+  COMMENT 'Language of lexicon',
   name            VARCHAR(255) NOT NULL,
   lexicon_version VARCHAR(255) NOT NULL
   COMMENT 'Lexicon name',
@@ -87,6 +87,7 @@ CREATE TABLE sense (
 );
 
 CREATE TABLE sense_attributes (
+  id            BIGINT NOT NULL AUTO_INCREMENT,
   sense_id      BIGINT NOT NULL,
   comment       TEXT,
   definition    TEXT,
@@ -94,14 +95,14 @@ CREATE TABLE sense_attributes (
   register      VARCHAR(255),
   user_id       BIGINT,
   error_comment TEXT,
-  PRIMARY KEY (sense_id)
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE sense_examples (
-  id                 BIGINT PRIMARY KEY AUTO_INCREMENT;
-  attribute_sense_id BIGINT NOT NULL,
-  example  TEXT,
-  type VARCHAR(30) NOT NULL
+  id                 BIGINT PRIMARY KEY AUTO_INCREMENT,
+  attribute_sense_id BIGINT      NOT NULL,
+  example            TEXT,
+  type               VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE sense_relation (
@@ -115,7 +116,7 @@ CREATE TABLE sense_relation (
 CREATE TABLE relation_type (
   id                       BIGINT        NOT NULL AUTO_INCREMENT,
   auto_reverse             BIT DEFAULT 0 NOT NULL
-  COMMENT 'On true application will create automaticly reversed relation',
+  COMMENT 'On true application will create automatically reversed relation',
   multilingual             BIT DEFAULT 0 NOT NULL
   COMMENT 'Relation between two lexicons',
   description_id           BIGINT,
@@ -144,7 +145,7 @@ CREATE TABLE relation_type_allowed_parts_of_speech (
 
 CREATE TABLE synset (
   id         BIGINT NOT NULL AUTO_INCREMENT,
-  split      INTEGER COMMENT 'Position of line spliting synset head',
+  split      INTEGER COMMENT 'Position of line splitting synset head',
   lexicon_id BIGINT NOT NULL,
   status     INT    NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
@@ -268,8 +269,8 @@ REFERENCES sense (id);
 
 ALTER TABLE sense_examples
   ADD CONSTRAINT FK8vf5o4pb6dmm3jmy1npt7snxe
-FOREIGN KEY (sense_id)
-REFERENCES sense (id);
+FOREIGN KEY (attribute_sense_id)
+REFERENCES sense_attributes (id);
 
 ALTER TABLE sense_relation
   ADD CONSTRAINT FKk682ashm51g6a7u4unytrt1ic

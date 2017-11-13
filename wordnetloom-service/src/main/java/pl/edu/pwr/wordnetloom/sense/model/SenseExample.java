@@ -5,8 +5,8 @@ import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "application_localised_string")
-public class SenseExample extends GenericEntity{
+@Table(name = "sense_examples")
+public class SenseExample extends GenericEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sense_attribute_id", referencedColumnName = "id")

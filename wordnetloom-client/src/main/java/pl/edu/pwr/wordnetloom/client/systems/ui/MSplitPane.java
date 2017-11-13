@@ -41,7 +41,8 @@ public class MSplitPane extends WebSplitPane {
     public MSplitPane(int splitType, Component first, Component second) {
         super(splitType, true, first, second);
         setOneTouchExpandable(true);
-        setDividerSize(10);
+        //setDividerSize(10);
+        setContinuousLayout(true);
     }
 
     /**

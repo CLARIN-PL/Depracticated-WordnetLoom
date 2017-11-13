@@ -11,8 +11,6 @@ import java.util.List;
 @Table(name = "sense_attributes")
 public class SenseAttributes extends GenericEntity {
 
-    private static final long serialVersionUID = -6738496417082820449L;
-
     @Lob
     private String definition;
 
@@ -26,8 +24,6 @@ public class SenseAttributes extends GenericEntity {
     @Column(name = "error_comment")
     private String errorComment;
 
-//    @ElementCollection
-//    @CollectionTable(name = "sense_examples", joinColumns = @JoinColumn(name = "sense_attributes_id"))
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "senseAttribute")
     private List<SenseExample> examples;
 
@@ -37,7 +33,6 @@ public class SenseAttributes extends GenericEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sense_id")
-    @MapsId
     private Sense sense;
 
     public SenseAttributes() {

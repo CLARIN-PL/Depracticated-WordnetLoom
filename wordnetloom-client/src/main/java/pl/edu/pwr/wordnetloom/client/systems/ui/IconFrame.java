@@ -18,7 +18,7 @@ public class IconFrame extends WebFrame {
     private static final String FILE_MAIN_ICON = "icons/wordnet.gif";
     private static final long serialVersionUID = 1L;
     static private int BOTTOM_MARGIN = 40;
-    JFrame baseFrame;
+    WebFrame baseFrame;
 
     /**
      * konstruktor
@@ -35,7 +35,7 @@ public class IconFrame extends WebFrame {
      * @param width     - szerokosc okna
      * @param height    - wysokosc okna
      */
-    public IconFrame(JFrame baseFrame, String title, int width, int height) {
+    public IconFrame(WebFrame baseFrame, String title, int width, int height) {
         this(title, width, height);
         this.baseFrame = baseFrame;
     }
@@ -117,7 +117,7 @@ public class IconFrame extends WebFrame {
      * @param baseFrame - okno bazowe
      * @param title     - tytul okna
      */
-    public IconFrame(JFrame baseFrame, String title) {
+    public IconFrame(WebFrame baseFrame, String title) {
         this.baseFrame = baseFrame;
 
         // odczytanie rozmiarow ekranu

@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
+import com.alee.laf.tabbedpane.WebTabbedPane;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.MouseGraphClickListener;
@@ -7,7 +8,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.TabChangeListen
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphView;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.CloseableTabbedPaneListener;
 import pl.edu.pwr.wordnetloom.client.systems.ui.CloseableTabbedPane;
-import pl.edu.pwr.wordnetloom.client.systems.ui.SplitPaneExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MSplitPane;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractPerspective;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ShortCut;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.View;
@@ -36,12 +37,12 @@ public class ViWordNetPerspective extends AbstractPerspective implements
     public static final int SPLIT_RIGHT_BOTTOM_VIEW = 3;
     public static final int SPLIT_RIGHT_CENTRAL_VIEW = 5;
 
-    JTabbedPane leftView;
-    JTabbedPane graphView;
-    JTabbedPane rightTopView;
-    JTabbedPane rightBottomView;
-    JTabbedPane rightCentralView;
-    JTabbedPane locker;
+    WebTabbedPane leftView;
+    WebTabbedPane graphView;
+    WebTabbedPane rightTopView;
+    WebTabbedPane rightBottomView;
+    WebTabbedPane rightCentralView;
+    WebTabbedPane locker;
 
     /**
      * @param name
@@ -82,32 +83,32 @@ public class ViWordNetPerspective extends AbstractPerspective implements
         graphView.addChangeListener(new TabChangeListener(service));
 
         // Create central and bottom views
-        SplitPaneExt splitRightBottomHorizontal = new SplitPaneExt(
+        MSplitPane splitRightBottomHorizontal = new MSplitPane(
                 JSplitPane.VERTICAL_SPLIT, rightCentralView, rightBottomView);
         splitRightBottomHorizontal.setDividerLocation(0.5D);
         splitRightBottomHorizontal.setResizeWeight(0.5f);
 
         // Create a horizontaly split panel for holding the right top and
         // central-bottom views.
-        SplitPaneExt splitRightHorizontal = new SplitPaneExt(
+        MSplitPane splitRightHorizontal = new MSplitPane(
                 JSplitPane.VERTICAL_SPLIT, rightTopView,
                 splitRightBottomHorizontal);
         splitRightHorizontal.setStartDividerLocation(230);
         splitRightHorizontal.setResizeWeight(0.0f);
 
         // vertical graphs locker splitter
-        SplitPaneExt splitGraphsAndLocker = new SplitPaneExt(
+        MSplitPane splitGraphsAndLocker = new MSplitPane(
                 JSplitPane.VERTICAL_SPLIT, graphView, locker);
         splitGraphsAndLocker.setDividerLocation(0.7D);
         splitGraphsAndLocker.setResizeWeight(1.0D);
 
-        SplitPaneExt splitMainVertical = new SplitPaneExt(
+        MSplitPane splitMainVertical = new MSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, splitGraphsAndLocker,
                 splitRightHorizontal);
         splitMainVertical.setStartDividerLocation(500);
         splitMainVertical.setResizeWeight(1.0f);
 
-        SplitPaneExt splitSearch = new SplitPaneExt(
+        MSplitPane splitSearch = new MSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, leftView, splitMainVertical);
         splitSearch.setStartDividerLocation(200);
         splitSearch.setResizeWeight(0.0f);

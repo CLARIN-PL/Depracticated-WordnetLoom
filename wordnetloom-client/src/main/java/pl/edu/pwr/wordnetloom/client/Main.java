@@ -50,6 +50,8 @@ public class Main {
         });
 
         WebLookAndFeel.install();
+        IconFontSwing.register(FontAwesome.getIconFont());
+
         LoginWindow dialog = new LoginWindow(new WebFrame());
         dialog.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -65,7 +67,6 @@ public class Main {
             DomainManager.getInstance();
             //RelationTypeManager.loadRels();
 
-            IconFontSwing.register(FontAwesome.getIconFont());
             Workbench workbench;
             try {
                 workbench = new PanelWorkbench(PROGRAM_NAME + " " + PROGRAM_VERSION);
@@ -104,7 +105,7 @@ public class Main {
         dialog.setVisible(true);
     }
 
-    public static void initializLanguage(Language lang) {
+    public static void initialiseLanguage(Language lang) {
         Locale locale;
         if (lang == null) {
             locale = new Locale(Language.English.getAbbreviation());

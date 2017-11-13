@@ -3,7 +3,7 @@ package pl.edu.pwr.wordnetloom.client.workbench.abstracts;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import pl.edu.pwr.wordnetloom.client.systems.ui.SplitPaneExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MSplitPane;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ShortCut;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Perspective;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.View;
@@ -29,7 +29,7 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
     private String perspectiveName = null;
     private int indexOfNextView = 0;
 
-    private final List<SplitPaneExt> splitters = new ArrayList<>();
+    private final List<MSplitPane> splitters = new ArrayList<>();
     private final List<WebTabbedPane> panes = new ArrayList<>();
 
     // konfiguracja perspektywy
@@ -51,14 +51,14 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
         return pane;
     }
 
-    final protected void addSplitter(SplitPaneExt splitter) {
+    final protected void addSplitter(MSplitPane splitter) {
         synchronized (splitters) {
             splitters.add(splitter);
         }
     }
 
-    final protected SplitPaneExt getFirstSplitter() {
-        SplitPaneExt result = null;
+    final protected MSplitPane getFirstSplitter() {
+        MSplitPane result = null;
         synchronized (splitters) {
             if (splitters.size() > 0) {
                 result = splitters.get(0);
@@ -114,7 +114,7 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
             return; // czy to byl dwuklik
         }
         // przejście po wszystkich splitterach
-        for (SplitPaneExt splitter : splitters) {
+        for (MSplitPane splitter : splitters) {
             // czy funkcja jest wspierana
             if (!splitter.isOneTouchExpandable()) {
                 continue;
@@ -151,7 +151,7 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
     public void resetViews() {
         synchronized (splitters) {
             for (int i = 0; i < 2; i++) {
-                splitters.forEach(SplitPaneExt::resetDividerLocation);
+                splitters.forEach(MSplitPane::resetDividerLocation);
             }
         }
     }
