@@ -18,6 +18,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
 import com.alee.laf.menu.WebMenuItem;
+import jiconfont.icons.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -37,6 +39,12 @@ public class MMenuItem extends WebMenuItem {
 
     public MMenuItem withCaption(String text) {
         super.setText(text);
+        return this;
+    }
+
+    public MMenuItem withIcon(FontAwesome icon) {
+        Icon i = IconFontSwing.buildIcon(icon, 12);
+        setIcon(i);
         return this;
     }
 

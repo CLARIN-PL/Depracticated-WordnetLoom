@@ -21,7 +21,6 @@ import com.alee.laf.menu.WebMenu;
 import com.alee.laf.menu.WebMenuBar;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
@@ -37,13 +36,13 @@ public class MenuHolder {
     private static final String SHORTCUTS = "Shortcuts";
 
     private final WebMenuBar menuBar;
-    private final WebMenu shortCutsMenu;
+    // private final WebMenu shortCutsMenu;
 
     public MenuHolder() {
         menuBar = new WebMenuBar();
-        shortCutsMenu = new WebMenu(SHORTCUTS);
-        shortCutsMenu.setVisible(false);
-        menuBar.add(shortCutsMenu);
+        //  shortCutsMenu = new WebMenu(SHORTCUTS);
+        // shortCutsMenu.setVisible(false);
+        //menuBar.add(shortCutsMenu);
     }
 
     /**
@@ -89,7 +88,7 @@ public class MenuHolder {
     public WebMenu getMenu(String name) {
         Component[] components = menuBar.getComponents();
         for (Component component : components) {
-            if (component instanceof JMenu
+            if (component instanceof WebMenu
                     && ((WebMenu) component).getText().equals(name)) {
                 return (WebMenu) component;
             }
@@ -104,7 +103,7 @@ public class MenuHolder {
      * @param shortCuts - kolekcja skrótów do zainstalowania
      */
     public void setShortCuts(Collection<ShortCut> shortCuts) {
-        shortCutsMenu.removeAll();
+        // shortCutsMenu.removeAll();
 
         // po wszystkich skrotach
         for (ShortCut cut : shortCuts) {
@@ -118,7 +117,7 @@ public class MenuHolder {
                         shortCut.doAction();
                     }
             );
-            shortCutsMenu.add(newItem);
+            //    shortCutsMenu.add(newItem);
         }
     }
 

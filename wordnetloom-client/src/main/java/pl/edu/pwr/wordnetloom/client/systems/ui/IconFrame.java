@@ -169,7 +169,7 @@ public class IconFrame extends WebFrame {
      * Wyswietlenie okienka jako modalne
      */
     public void showModal() {
-        final JFrame frame = this;
+        final WebFrame frame = this;
 
         addWindowListener(new WindowAdapter() {
             @Override

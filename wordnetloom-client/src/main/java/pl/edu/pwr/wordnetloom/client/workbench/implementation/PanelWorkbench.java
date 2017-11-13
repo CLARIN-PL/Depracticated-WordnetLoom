@@ -173,6 +173,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
             toolBar.setVisible(false);
 
             frame.setGlassPane(busyPanel = new BusyGlassPane());
+
             busyPanel.addMouseListener(new MouseAdapter() {
             });
             busyPanel.addMouseMotionListener(new MouseMotionAdapter() {
@@ -225,9 +226,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
 
                 // powiadaomienie uslug o wyswietleniu
                 Collection<Service> servicesCollection = services.values();
-                servicesCollection.stream().forEach((service) -> {
-                    service.onStart();
-                });
+                servicesCollection.stream().forEach(Service::onStart);
 
                 // powiadomienie aktualnej perspektywy
                 Perspective perspective = getActivePerspective();
@@ -473,16 +472,16 @@ public final class PanelWorkbench implements WindowListener, Workbench {
             menuHolder.install(top, 0);
         }
 
-        JMenuItem sub = null;
+        WebMenuItem sub = null;
         for (int i = 0; i < top.getItemCount(); i++) {
-            JMenuItem itemTemp = top.getItem(i);
+            WebMenuItem itemTemp = (WebMenuItem) top.getItem(i);
             if (itemTemp != null && itemTemp.getText().equals(subMenu)) {
                 sub = itemTemp;
                 break;
             }
         }
         if (sub == null) {
-            sub = new JMenu(subMenu);
+            sub = new WebMenuItem(subMenu);
             top.add(sub);
         }
 

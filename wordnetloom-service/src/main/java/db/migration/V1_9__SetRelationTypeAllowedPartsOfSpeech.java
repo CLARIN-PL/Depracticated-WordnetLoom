@@ -10,9 +10,9 @@ public class V1_9__SetRelationTypeAllowedPartsOfSpeech implements JdbcMigration 
 
     @Override
     public void migrate(Connection connection) throws Exception {
-        List<RelationType> relationTypes = getRelationType(connection);
+/*        List<RelationType> relationTypes = getRelationType(connection);
         List<AllowedPartOfSpeech> allowedPartsOfSpeech = parse(relationTypes);
-        save(allowedPartsOfSpeech, connection);
+        save(allowedPartsOfSpeech, connection);*/
     }
 
     private List<RelationType> getRelationType(Connection connection) throws SQLException {

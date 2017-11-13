@@ -17,12 +17,13 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.tabbedpane.WebTabbedPane;
+import com.alee.laf.tabbedpane.WebTabbedPaneUI;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.CloseableTabbedPaneListener;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.plaf.metal.MetalTabbedPaneUI;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -126,7 +127,7 @@ public class CloseableTabbedPane extends WebTabbedPane implements MouseListener,
      * specific component which fills tab added to this panel only to provide
      * adding new panels tab-button
      */
-    private JLabel addTabLabel = null;
+    private WebLabel addTabLabel = null;
 
     /**
      * Creates a new instance of <code>CloseableTabbedPane</code>
@@ -259,7 +260,7 @@ public class CloseableTabbedPane extends WebTabbedPane implements MouseListener,
      * adds add tab-button add tab
      */
     private void addAddTab() {
-        addTabLabel = new JLabel("ADD_TAB");
+        addTabLabel = new WebLabel("ADD_TAB");
         super.addTab("", new AddTabIcon(null), addTabLabel);
         setToolTipTextAt(0, "Dodaj zakładkę");
     }
@@ -583,7 +584,7 @@ public class CloseableTabbedPane extends WebTabbedPane implements MouseListener,
             try {
                 // JComponent.putClientProperty("isClosable", new
                 // Boolean(false));
-                JTabbedPane tabbedpane = (JTabbedPane) c;
+                WebTabbedPane tabbedpane = (WebTabbedPane) c;
                 int tabNumber = tabbedpane.getUI().tabForCoordinate(tabbedpane,
                         x, y);
                 JComponent curPanel = (JComponent) tabbedpane
@@ -669,7 +670,7 @@ public class CloseableTabbedPane extends WebTabbedPane implements MouseListener,
         public Rectangle getBounds() {
             return new Rectangle(x_pos, y_pos, width, height);
         }
-    } // CloseTabIcon
+    }
 
     /**
      * The class which generates the '+' icon for the tabs. The constructor
@@ -742,7 +743,7 @@ public class CloseableTabbedPane extends WebTabbedPane implements MouseListener,
             try {
                 // JComponent.putClientProperty("isClosable", new
                 // Boolean(false));
-                JTabbedPane tabbedpane = (JTabbedPane) c;
+                WebTabbedPane tabbedpane = (WebTabbedPane) c;
                 int tabNumber = tabbedpane.getUI().tabForCoordinate(tabbedpane,
                         x, y);
                 JComponent curPanel = (JComponent) tabbedpane
@@ -832,7 +833,7 @@ public class CloseableTabbedPane extends WebTabbedPane implements MouseListener,
     /**
      * A specific <code>BasicTabbedPaneUI</code>.
      */
-    class CloseableTabbedPaneUI extends BasicTabbedPaneUI {
+    class CloseableTabbedPaneUI extends WebTabbedPaneUI {
 
         /**
          * the horizontal position of the text
@@ -901,7 +902,7 @@ public class CloseableTabbedPane extends WebTabbedPane implements MouseListener,
     /**
      * A specific <code>MetalTabbedPaneUI</code>.
      */
-    class CloseableMetalTabbedPaneUI extends MetalTabbedPaneUI {
+    class CloseableMetalTabbedPaneUI extends WebTabbedPaneUI {
 
         /**
          * the horizontal position of the text

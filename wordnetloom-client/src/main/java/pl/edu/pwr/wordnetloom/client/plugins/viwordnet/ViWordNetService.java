@@ -1,7 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
 import com.alee.laf.menu.WebMenu;
-import edu.uci.ics.jung.graph.Graph;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitsView;
@@ -604,7 +603,7 @@ public class ViWordNetService extends AbstractService implements
     @Override
     public ViwnNode lockerSelectionChanged(ViwnNode vn) {
         for (ViwnGraphView vgv : graphViews) {
-            if (((Graph<ViwnNode, ViwnEdge>) vgv.getUI().getGraph())
+            if (vgv.getUI().getGraph()
                     .containsVertex(vn)) {
                 setActiveGraphView(vgv.getUI().getContent());
                 return vn;

@@ -22,13 +22,13 @@ public class V1_8__ParseComment implements JdbcMigration {
 
     @Override
     public void migrate(Connection connection) throws Exception {
-        this.connection = connection;
+/*        this.connection = connection;
         List<Attribute> attributes = getAttributesList();
         if (attributes == null) {
             return;
         }
         List<Attribute> parsedAttribute = parse(attributes);
-        saveAttributes(parsedAttribute);
+        saveAttributes(parsedAttribute);*/
     }
 
     public void saveAttributes(List<Attribute> attributes) throws SQLException {
@@ -51,7 +51,7 @@ public class V1_8__ParseComment implements JdbcMigration {
         PreparedStatement insertExampleStatement = connection.prepareStatement(INSERT_EXAMPLE_QUERY);
         for (Attribute attribute : attributes) {
             // sprawdzamy, czy atrybut posiada jakiekolwiek informacje. Jeżeli nie, usuwamy go
-            if (attribute.getComment() == null && attribute.getDefinition() == null && attribute.getLink() == null && attribute.getRegister() == null) {
+            if (attribute.getComment() == null && attribute.getDefinition() == null && attribute.getLink() == null && attribute.getRegister() == null && (attribute.getExamples() == null || attribute.getExamples().isEmpty())) {
                 deleteStatement.setLong(1, attribute.getId());
                 deleteStatement.executeUpdate();
 
