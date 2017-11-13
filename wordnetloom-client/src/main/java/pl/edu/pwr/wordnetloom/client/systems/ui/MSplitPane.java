@@ -26,7 +26,7 @@ import java.awt.*;
  *
  * @author Max
  */
-public class SplitPaneExt extends WebSplitPane {
+public class MSplitPane extends WebSplitPane {
 
     private static final long serialVersionUID = 1L;
     private int startDividerLocation = 0;
@@ -38,7 +38,7 @@ public class SplitPaneExt extends WebSplitPane {
      * @param first     - pierwszy komponent
      * @param second    - drugi komponent
      */
-    public SplitPaneExt(int splitType, Component first, Component second) {
+    public MSplitPane(int splitType, Component first, Component second) {
         super(splitType, true, first, second);
         setOneTouchExpandable(true);
         setDividerSize(10);
