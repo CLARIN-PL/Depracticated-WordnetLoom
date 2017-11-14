@@ -8,9 +8,9 @@ import javax.persistence.*;
 @Table(name = "sense_examples")
 public class SenseExample extends GenericEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sense_attribute_id", referencedColumnName = "id")
-    private SenseAttributes senseAttribute;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sense_id")
+    private Sense sense;
 
     @Column(name = "example")
     private String example;
@@ -18,12 +18,12 @@ public class SenseExample extends GenericEntity {
     @Column(name = "type")
     private String type;
 
-    public SenseAttributes getSenseAttribute() {
-        return senseAttribute;
+    public Sense getSense() {
+        return sense;
     }
 
-    public void setSenseAttribute(SenseAttributes senseAttribute) {
-        this.senseAttribute = senseAttribute;
+    public void setSense(Sense sense) {
+        this.sense = sense;
     }
 
     public String getExample() {

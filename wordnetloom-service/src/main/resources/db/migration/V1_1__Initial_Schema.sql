@@ -87,7 +87,6 @@ CREATE TABLE sense (
 );
 
 CREATE TABLE sense_attributes (
-  id            BIGINT NOT NULL AUTO_INCREMENT,
   sense_id      BIGINT NOT NULL,
   comment       TEXT,
   definition    TEXT,
@@ -99,10 +98,10 @@ CREATE TABLE sense_attributes (
 );
 
 CREATE TABLE sense_examples (
-  id                 BIGINT      NOT NULL AUTO_INCREMENT,
-  attribute_sense_id BIGINT      NOT NULL,
-  example            TEXT,
-  type               VARCHAR(30) NOT NULL,
+  id       BIGINT      NOT NULL AUTO_INCREMENT,
+  sense_id BIGINT      NOT NULL,
+  example  TEXT,
+  type     VARCHAR(30) NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -270,8 +269,8 @@ REFERENCES sense (id);
 
 ALTER TABLE sense_examples
   ADD CONSTRAINT FK8vf5o4pb6dmm3jmy1npt7snxe
-FOREIGN KEY (attribute_sense_id)
-REFERENCES sense_attributes (id);
+FOREIGN KEY (sense_id)
+REFERENCES sense (id);
 
 ALTER TABLE sense_relation
   ADD CONSTRAINT FKk682ashm51g6a7u4unytrt1ic

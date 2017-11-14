@@ -12,13 +12,12 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "sense")
 public class Sense extends GenericEntity {
-
-    private static final long serialVersionUID = 800201228216890725L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "domain_id", referencedColumnName = "id", nullable = false)
@@ -48,7 +47,11 @@ public class Sense extends GenericEntity {
     @Valid
     @NotNull
     @OneToOne(mappedBy = "sense", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @MapsId
     private SenseAttributes senseAttributes;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "sense")
+    private List<SenseExample> examples;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -74,6 +77,7 @@ public class Sense extends GenericEntity {
         variant = sense.variant;
         lexicon = sense.lexicon;
         senseAttributes = new SenseAttributes(sense.senseAttributes);
+        sense.getExamples().forEach(i -> getExamples().add(i));
     }
 
     public Domain getDomain() {
@@ -154,6 +158,14 @@ public class Sense extends GenericEntity {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public List<SenseExample> getExamples() {
+        return examples;
+    }
+
+    public void setExamples(List<SenseExample> examples) {
+        this.examples = examples;
     }
 
     @Override
