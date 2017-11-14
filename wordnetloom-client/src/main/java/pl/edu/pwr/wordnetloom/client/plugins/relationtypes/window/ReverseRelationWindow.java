@@ -4,8 +4,8 @@ import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.RelationTypesIM;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
@@ -77,7 +77,7 @@ public class ReverseRelationWindow extends DialogWindow implements ActionListene
         autoReverse.setSelected(false);
 
         // dodanie do zawartości okna
-        add("", new LabelExt(Labels.RELATION_TYPES_COLON, 't', tree));
+        add("", new MLabel(Labels.RELATION_TYPES_COLON, 't', tree));
         add("br hfill vfill", new JScrollPane(tree));
         add("br left", autoReverse);
         add("br center", buttonChoose);

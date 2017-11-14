@@ -3,10 +3,10 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window;
 import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MTextArea;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -34,19 +34,19 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
         this.to = to[0];
 
         // relation from:
-        parentItem = new ComboBoxPlain();
+        parentItem = new MComboBox();
         parentItem.addItem(this.from.getWord());
 
         // relation to:
-        childItem = new ComboBoxPlain();
+        childItem = new MComboBox();
         childItem.addItem(this.to.getWord());
 
         // middle element
-        middleItem = new ComboBoxPlain();
+        middleItem = new MComboBox();
         middleItem.setEnabled(false);
 
         // description of relation
-        description = new TextAreaPlain("");
+        description = new MTextArea("");
         description.setRows(6);
         description.setEditable(false);
 
@@ -54,12 +54,12 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
         testsLit = new JList();
 
         // relation subtype
-        relationSubType = new ComboBoxPlain();
+        relationSubType = new MComboBox();
         relationSubType.addKeyListener(this);
         relationSubType.setEnabled(false);
 
         // relation type
-        relationType = new ComboBoxPlain();
+        relationType = new MComboBox();
         relationType.addKeyListener(this);
 
         // show relations
@@ -108,26 +108,26 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
 //        }
         // build interface
         add("",
-                new LabelExt(Labels.RELATION_TYPE_COLON, 't', relationType));
+                new MLabel(Labels.RELATION_TYPE_COLON, 't', relationType));
         add("tab hfill", relationType);
-        add("br", new LabelExt(Labels.RELATION_SUBTYPE_COLON, 'y',
+        add("br", new MLabel(Labels.RELATION_SUBTYPE_COLON, 'y',
                 relationType));
         add("tab hfill", relationSubType);
-        add("br", new LabelExt(Labels.RELATION_DESC_COLON, '\0',
+        add("br", new MLabel(Labels.RELATION_DESC_COLON, '\0',
                 description));
         add("br hfill", new JScrollPane(description));
 
         jp = new JPanel();
         jp.setLayout(new RiverLayout());
-        jp.add("br", new LabelExt(Labels.SOURCE_UNIT_COLON, 'r', parentItem));
+        jp.add("br", new MLabel(Labels.SOURCE_UNIT_COLON, 'r', parentItem));
         jp.add("tab hfill", parentItem);
-        jp.add("br", new LabelExt(Labels.TARGET_UNIT_COLON, 'd', childItem));
+        jp.add("br", new MLabel(Labels.TARGET_UNIT_COLON, 'd', childItem));
         jp.add("tab hfill", childItem);
 
         add("br hfill", jp);
         add("", buttonSwitch);
 
-        add("br", new LabelExt(Labels.TESTS_COLON, '\0', testsLit));
+        add("br", new MLabel(Labels.TESTS_COLON, '\0', testsLit));
         add("br hfill vfill", new JScrollPane(testsLit));
         add("br center", buttonChoose);
         add("", buttonCancel);

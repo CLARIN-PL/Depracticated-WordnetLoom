@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexicon;
 
+import com.alee.laf.menu.WebMenu;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
@@ -36,7 +37,7 @@ public class LexiconService extends AbstractService {
 
     @Override
     public void installMenuItems() {
-        JMenu help = workbench.getMenu(Labels.SETTINGS);
+        WebMenu help = workbench.getMenu(Labels.SETTINGS);
         if (help == null) {
             return;
         }

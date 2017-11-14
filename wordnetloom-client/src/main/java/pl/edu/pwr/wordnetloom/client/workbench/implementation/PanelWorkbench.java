@@ -3,15 +3,12 @@ package pl.edu.pwr.wordnetloom.client.workbench.implementation;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.menu.WebMenu;
 import com.alee.laf.menu.WebMenuItem;
-import com.alee.laf.menu.WebRadioButtonMenuItem;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
-import com.alee.laf.toolbar.WebToolBar;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
 import pl.edu.pwr.wordnetloom.client.systems.managers.ConfigurationManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
@@ -23,9 +20,9 @@ import pl.edu.pwr.wordnetloom.user.model.User;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,25 +33,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * panele dla środwiska
- *
- * @author <a href="mailto:lukasz.jastrzebski@pwr.wroc.pl">Lukasz
- * Jastrzebski</a>
- * @author Max - modyfikacja i rozbudowa
- */
-public final class PanelWorkbench implements WindowListener, Workbench {
-
-    private UserSessionData userSessionData;
+public final class PanelWorkbench implements WindowListener, Workbench, Loggable {
 
     public static final String WORKBENCH_CONFIG_FILE = "workbench.cfg";
     private static final String PLUGIN_CONFIG_FILE = "plugins.cfg";
-
-    private static final String BUTTON_TOOLTIP_FORMAT = "%s (Ctrl+Shift+%s)";
     private static final String PROGRAM_TITLE = "%s";
     private static final String SHOW_TOOLTIPS_PARAM_NAME = "ShowTooltips";
-    private static final String TOOLBAR_TITLE = "Workbench toolbar";
-    private static final String PERSPECTIVE_MENU = "Perspektywa";
     private static final String ACTIVE_PERSPECTIVE_NAME = "ActivePerspective";
     private static final int STANDARD_WIDTH = 1000;
     private static final int STANDARD_HEIGHT = 700;
@@ -65,7 +49,6 @@ public final class PanelWorkbench implements WindowListener, Workbench {
     protected ArrayList<ShortCut> globalShortCuts;
 
     protected WebFrame frame = null;
-    private WebToolBar toolBar;
     private WebPanel mainPane;
     protected WebLabel statusBar;
     private WebLabel user;
@@ -104,26 +87,12 @@ public final class PanelWorkbench implements WindowListener, Workbench {
         // instalacja pluginow
         Collection<Plugin> plugins = loadPlugins(PLUGIN_CONFIG_FILE);
         for (Plugin plugin : plugins) {
-            Workbench workbench = this;
-
-            class Tmp implements Runnable {
-
-                public Plugin plugin;
-
-                @Override
-                public void run() {
-                    plugin.install(workbench);
-                }
-
-            }
-
-            Tmp run = new Tmp();
-            run.plugin = plugin;
-
             try {
-                SwingUtilities.invokeAndWait(run);
+                SwingUtilities.invokeAndWait(() -> {
+                    plugin.install(this);
+                });
             } catch (InterruptedException | InvocationTargetException ex) {
-                java.util.logging.Logger.getLogger(PanelWorkbench.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                logger().error("Plugin installation Error", ex);
             }
 
         }
@@ -141,74 +110,49 @@ public final class PanelWorkbench implements WindowListener, Workbench {
         choosePerspective(getParam(ACTIVE_PERSPECTIVE_NAME));
     }
 
-    /**
-     * utworzenie intefejsu
-     */
     private void createFrame() {
-        PanelWorkbench panel = this;
-
-        Runnable run = () -> {
-            globalShortCuts = new ArrayList<>();
-
-            // inicjacja menu
-            menuHolder = new MenuHolder();
-
-            frame = new MFrame(STANDARD_WIDTH, STANDARD_HEIGHT);
-
-            // ustawienie tytulu okienka
-            updateTitle();
-
-            frame.addWindowListener(panel);
-            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-            frame.setJMenuBar(menuHolder.getMenuBar());
-
-            // ustawienie toolbara
-            toolBar = new WebToolBar(TOOLBAR_TITLE);
-            toolBar.setFloatable(false);
-            toolBar.setRollover(false);
-            toolBar.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-            toolBar.setLayout(new RiverLayout(2, 2));
-            toolBar.setSize(new Dimension(0, 28));
-            toolBar.setPreferredSize(new Dimension(0, 28));
-            toolBar.setVisible(false);
-
-            frame.setGlassPane(busyPanel = new BusyGlassPane());
-
-            busyPanel.addMouseListener(new MouseAdapter() {
-            });
-            busyPanel.addMouseMotionListener(new MouseMotionAdapter() {
-            });
-            busyPanel.addKeyListener(new KeyAdapter() {
-            });
-
-            // ustawienie statusu
-            statusBar = new WebLabel("");
-
-            user = new WebLabel("");
-            Icon icon = IconFontSwing.buildIcon(FontAwesome.USER, 12);
-            user.setIcon(icon);
-
-            statusPanel = new WebPanel();
-            statusPanel.setBorder(BorderFactory.createEtchedBorder());
-            statusPanel.setLayout(new RiverLayout());
-            statusPanel.add(statusBar, "hfill left");
-            statusPanel.add(user, "right");
-
-            // ustawienie glownego panelu
-            mainPane = new WebPanel();
-            mainPane.setLayout(new BorderLayout());
-            mainPane.add(toolBar, BorderLayout.NORTH);
-            mainPane.add(new JPanel(), BorderLayout.CENTER);
-            mainPane.add(statusPanel, BorderLayout.SOUTH);
-
-            frame.setContentPane(mainPane);
-        };
 
         try {
-            SwingUtilities.invokeAndWait(run);
-        } catch (InterruptedException | InvocationTargetException e) {
-            Logger.getLogger(PanelWorkbench.class).log(Level.ERROR,
-                    "Error while creating frame" + e);
+            SwingUtilities.invokeAndWait(() -> {
+                globalShortCuts = new ArrayList<>();
+
+                // inicjacja menu
+                menuHolder = new MenuHolder();
+
+                frame = new MFrame(STANDARD_WIDTH, STANDARD_HEIGHT);
+
+                // ustawienie tytulu okienka
+                updateTitle();
+
+                frame.addWindowListener(this);
+                frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                frame.setJMenuBar(menuHolder.getMenuBar());
+                frame.setGlassPane(busyPanel = new BusyGlassPane());
+
+                // ustawienie statusu
+                user = new WebLabel("");
+                Icon icon = IconFontSwing.buildIcon(FontAwesome.USER, 12);
+                user.setIcon(icon);
+
+                statusBar = new WebLabel("");
+
+                statusPanel = new WebPanel();
+                statusPanel.setBorder(BorderFactory.createEtchedBorder());
+                statusPanel.setLayout(new RiverLayout());
+                statusPanel.add(statusBar, "hfill left");
+                statusPanel.add(user, "right");
+
+                // ustawienie glownego panelu
+                mainPane = new WebPanel();
+                mainPane.setLayout(new BorderLayout());
+                mainPane.add(new WebPanel(), BorderLayout.CENTER);
+                mainPane.add(statusPanel, BorderLayout.SOUTH);
+
+                frame.setContentPane(mainPane);
+            });
+
+        } catch (InterruptedException | InvocationTargetException ex) {
+            logger().error("Error while creating frame", ex);
         }
     }
 
@@ -218,100 +162,41 @@ public final class PanelWorkbench implements WindowListener, Workbench {
 
     @Override
     public void setVisible(boolean isVisible) {
-        Runnable run = () -> {
-            if (isVisible == false) {
-                windowClosing(null); // wywoalnie zamykania
-            } else {
-                frame.setVisible(isVisible);
-
-                // powiadaomienie uslug o wyswietleniu
-                Collection<Service> servicesCollection = services.values();
-                servicesCollection.stream().forEach(Service::onStart);
-
-                // powiadomienie aktualnej perspektywy
-                Perspective perspective = getActivePerspective();
-                if (perspective != null) {
-                    perspective.refreshViews();
-                }
-            }
-            updateTitle();
-        };
-
         try {
-            GUIUtils.delegateToEDT(run);
+            GUIUtils.delegateToEDT(() -> {
+                if (isVisible == false) {
+                    windowClosing(null); // wywoalnie zamykania
+                } else {
+                    frame.setVisible(isVisible);
+
+                    // powiadaomienie uslug o wyswietleniu
+                    Collection<Service> servicesCollection = services.values();
+                    servicesCollection.forEach(Service::onStart);
+
+                    // powiadomienie aktualnej perspektywy
+                    Perspective perspective = getActivePerspective();
+                    if (perspective != null) {
+                        perspective.refreshViews();
+                    }
+                }
+                updateTitle();
+            });
         } catch (InterruptedException | InvocationTargetException ex) {
-            java.util.logging.Logger.getLogger(PanelWorkbench.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            logger().error("Error while displaying frame", ex);
         }
 
     }
 
     @Override
-    public void installPerspective(Perspective perspective) {
-        class Tmp implements Runnable {
-
-            public Perspective perspective;
-            public Workbench workbench;
-
-            @Override
-            public void run() {
-                // dodanie perspektywy do listy perspektyw
-                perspectives.put(perspective.getName(), perspective);
-
-                // utworzenie zawartosci perspektywy
-                perspective.init();
-
-                // odczytanie menu
-                WebMenu menuPerspective = getMenu(PERSPECTIVE_MENU);
-                if (menuPerspective == null) {
-                    return; // brak menu, core nie odpalony
-                }
-                // nowa pozycja w menu
-                WebRadioButtonMenuItem perspectiveItem = new PerspectiveRadioMenuItem(
-                        perspective, workbench);
-                perspectiveItem
-                        .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1
-                                        + menuPerspective.getItemCount(),
-                                InputEvent.CTRL_DOWN_MASK
-                                        | InputEvent.SHIFT_DOWN_MASK));
-
-                // dodanie nowej pozycji do menu
-                menuPerspective.add(perspectiveItem); // dodanie perspektywy do menu
-                menuPerspective.setVisible(perspectives.size() > 1);
-
-                // dodanie do toolbara
-                JToggleButton perspectiveButton = new JToggleButton(
-                        perspective.getName());
-                perspectiveButton.setPreferredSize(new Dimension(140, 20));
-                perspectiveButton.setSelected(getActivePerspective() == perspective);
-                perspectiveButton.setToolTipText(String.format(
-                        BUTTON_TOOLTIP_FORMAT, perspective.getName(),
-                        new Integer(perspectives.size())));
-
-                perspectiveButton.addActionListener((ActionEvent arg0) -> {
-                    JToggleButton pressButton = (JToggleButton) arg0
-                            .getSource();
-                    pressButton.setSelected(true);
-                    if (!getActivePerspective().getName().equals(
-                            pressButton.getText())) {
-                        choosePerspective(pressButton.getText());
-                    }
-                });
-
-                // dodanie przycisku do istniejącego toolbara
-                toolBar.add(perspectiveButton);
-                int count = perspectives.size();
-                toolBar.setVisible(count > 1 && count < 5);
-
-            }
-        }
-        Tmp run = new Tmp();
-        run.perspective = perspective;
-        run.workbench = this;
-
+    public void installPerspective(final Perspective perspective) {
         try {
-            GUIUtils.delegateToEDT(run);
+            GUIUtils.delegateToEDT(() -> {
+                perspectives.put(perspective.getName(), perspective);
+                perspective.init();
+            });
+
         } catch (InterruptedException | InvocationTargetException ex) {
-            java.util.logging.Logger.getLogger(PanelWorkbench.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            logger().error("Error while installing perspective", ex);
         }
 
     }
@@ -334,21 +219,9 @@ public final class PanelWorkbench implements WindowListener, Workbench {
                 shortCuts.addAll(globalShortCuts);
                 menuHolder.setShortCuts(shortCuts); // ładowanie skrótów
 
-                // ustawienie aktywnosci przycisków w toolbarze
-                for (Component com : toolBar.getComponents()) {
-                    if (com instanceof JToggleButton) {
-                        JToggleButton button = (JToggleButton) com;
-                        button.setSelected(button.getText().equals(
-                                perspectiveName));
-                    }
-                }
-
                 // ustawienie parametru aktualna perspektywa
                 setParam(ACTIVE_PERSPECTIVE_NAME, perspectiveName);
 
-                // wymiana zawartosci ramki
-                mainPane.remove(2); // bez statusu
-                mainPane.remove(1); // bez glownego pola
                 mainPane.add(perspective.getContent(), BorderLayout.CENTER);
                 mainPane.add(statusPanel, BorderLayout.SOUTH);
                 mainPane.invalidate();
@@ -367,18 +240,18 @@ public final class PanelWorkbench implements WindowListener, Workbench {
         try {
             GUIUtils.delegateToEDT(run);
         } catch (InterruptedException | InvocationTargetException ex) {
-            java.util.logging.Logger.getLogger(PanelWorkbench.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            logger().error("Error while choosing perspective", ex);
         }
 
     }
 
     @Override
-    public void windowClosing(WindowEvent arg0) {
+    public void windowClosing(WindowEvent event) {
         // sprawdzenie czy mozna zamknac
         Collection<Service> servicesCollection = services.values();
         for (Service service : servicesCollection) {
             if (!service.onClose()) {
-                return; // nie mozna zamknac
+                return;
             }
         }
 
@@ -386,7 +259,6 @@ public final class PanelWorkbench implements WindowListener, Workbench {
         config.saveConfiguration();
 
         // zerowanie zmiennych
-        toolBar = null;
         mainPane = null;
         services = null;
         perspectives = null;
@@ -397,22 +269,12 @@ public final class PanelWorkbench implements WindowListener, Workbench {
             frame.dispose();
         } catch (Exception ex) {
             DialogBox.showError(ex.toString());
-            Logger.getLogger(PanelWorkbench.class).log(Level.ERROR,
-                    "While closing frame" + ex);
+            logger().error("Error while closing frame", ex);
+
         } finally {
             System.gc();
             System.exit(0);
         }
-    }
-
-    @Override
-    public void setToolbarVisible(boolean isVisible) {
-        toolBar.setVisible(isVisible);
-    }
-
-    @Override
-    public boolean isToolbarVisible() {
-        return toolBar.isVisible();
     }
 
     @Override
@@ -558,17 +420,17 @@ public final class PanelWorkbench implements WindowListener, Workbench {
                 // mamy nazwe klasy, trzeba ja utworzyć
                 try {
                     Class<?> pluginClass = Class.forName(line);
-                    if (pluginClass != null) { // czy klasa jest w dystrybucji
+                    if (pluginClass != null) {
                         list.add((Plugin) pluginClass.newInstance());
                     }
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+
                     Logger.getLogger(PanelWorkbench.class).log(Level.ERROR,
                             "While loading class plugins:" + e);
                 }
             }
-        } catch (IOException e) {
-            Logger.getLogger(PanelWorkbench.class).log(Level.ERROR,
-                    "While openning file : " + e);
+        } catch (IOException ex) {
+            Logger.getLogger(PanelWorkbench.class).log(Level.ERROR, "While openning file : " + ex);
         }
         return list;
     }

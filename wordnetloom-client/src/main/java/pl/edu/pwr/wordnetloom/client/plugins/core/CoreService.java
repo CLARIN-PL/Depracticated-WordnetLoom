@@ -3,7 +3,6 @@ package pl.edu.pwr.wordnetloom.client.plugins.core;
 import com.alee.laf.menu.WebCheckBoxMenuItem;
 import com.alee.laf.menu.WebMenu;
 import jiconfont.icons.FontAwesome;
-import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.plugins.core.window.AboutWindow;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
@@ -29,17 +28,15 @@ public class CoreService extends AbstractService implements MenuListener {
 
     public CoreService(Workbench workbench) {
         super(workbench);
-        //Sets default Dialog window to this frame
         DialogBox.setParentWindow(workbench.getFrame());
     }
 
     @Override
     public void installMenuItems() {
+
         final Workbench w = super.workbench;
 
         WebMenu file = new WebMenu(Labels.FILE);
-        Icon fileIcon = IconFontSwing.buildIcon(FontAwesome.FILE, 12);
-        file.setIcon(fileIcon);
         file.setMnemonic(KeyEvent.VK_P);
 
         file.add(new MMenuItem(Labels.EXIT)
@@ -48,8 +45,6 @@ public class CoreService extends AbstractService implements MenuListener {
                 .withActionListener(e -> System.exit(0)));
 
         WebMenu help = new WebMenu(Labels.HELP);
-        Icon helpIcon = IconFontSwing.buildIcon(FontAwesome.QUESTION_CIRCLE, 12);
-        help.setIcon(helpIcon);
         help.setMnemonic(KeyEvent.VK_C);
 
         help.add(new MMenuItem(Labels.ABOUT_APP)
@@ -69,8 +64,6 @@ public class CoreService extends AbstractService implements MenuListener {
         });
 
         settings = new WebMenu(Labels.SETTINGS);
-        Icon settingsIcon = IconFontSwing.buildIcon(FontAwesome.COGS, 12);
-        settings.setIcon(settingsIcon);
         settings.setMnemonic(KeyEvent.VK_S);
 
         // standardowe ustawienia okna

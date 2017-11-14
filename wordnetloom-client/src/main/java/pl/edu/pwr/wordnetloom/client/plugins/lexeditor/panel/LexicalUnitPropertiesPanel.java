@@ -36,13 +36,13 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
 
     private static final long serialVersionUID = 8598891792812358941L;
     private Sense unit;
-    private LexiconComboBox lexicon;
+    private LexiconMComboBox lexicon;
     private MTextField lemma;
     private MTextField variant;
     private MTextField link;
-    private ComboBoxPlain<Object> register;
-    private PartOfSpeechComboBox partOfSpeech;
-    private DomainComboBox domain;
+    private MComboBox<Object> register;
+    private PartOfSpeechMComboBox partOfSpeech;
+    private DomainMComboBox domain;
     private MTextPane comment;
     private final JButton btnCancel;
     private JButton btnSave;
@@ -126,7 +126,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         JLabel lblLexicon = new JLabel(Labels.LEXICON_COLON);
         lblLexicon.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblLexicon, "2, 5, left, fill");
-        lexicon = new LexiconComboBox(Labels.NOT_CHOSEN);
+        lexicon = new LexiconMComboBox(Labels.NOT_CHOSEN);
         lexicon.addActionListener(this);
         lexicon.addItemListener((ItemEvent e) -> {
             Lexicon lex = lexicon.retriveComboBoxItem();
@@ -141,7 +141,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lblPoS.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblPoS, "2, 7, left, default");
 
-        partOfSpeech = new PartOfSpeechComboBox(Labels.NOT_CHOSEN);
+        partOfSpeech = new PartOfSpeechMComboBox(Labels.NOT_CHOSEN);
         partOfSpeech.withoutFilter();
         partOfSpeech.addActionListener(this);
         partOfSpeech.addItemListener((ItemEvent e) -> {
@@ -156,7 +156,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lblDomain.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblDomain, "2, 9, left, fill");
 
-        domain = new DomainComboBox(Labels.NOT_CHOSEN);
+        domain = new DomainMComboBox(Labels.NOT_CHOSEN);
         domain.allDomains(false);
         domain.addActionListener(this);
         mainPanel.add(domain, "4, 9, 3, 1, fill, fill");
@@ -165,7 +165,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lblRegister.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblRegister, "2, 11, left, fill");
 
-        register = new ComboBoxPlain<>(RegisterTypes.values());
+        register = new MComboBox<>(RegisterTypes.values());
         register.addActionListener(this);
         mainPanel.add(register, "4, 11, 3, 1, fill, fill");
 
@@ -336,7 +336,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         String domainToSet = isDomainCorrectPartOfSpeach();
 
         domain.setSelectedItem(domainToSet == null ? null
-                : new CustomDescription<>(DomainComboBox
+                : new CustomDescription<>(DomainMComboBox
                 .nameWithoutPrefix(unit.getDomain().toString()), unit
                 .getDomain()));
 
@@ -404,7 +404,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         }
     }
 
-    public ComboBoxPlain<Lexicon> getLexicon() {
+    public MComboBox<Lexicon> getLexicon() {
         return lexicon;
     }
 
@@ -420,15 +420,15 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         return link;
     }
 
-    public ComboBoxPlain<Object> getRegister() {
+    public MComboBox<Object> getRegister() {
         return register;
     }
 
-    public ComboBoxPlain<PartOfSpeech> getPartOfSpeech() {
+    public MComboBox<PartOfSpeech> getPartOfSpeech() {
         return partOfSpeech;
     }
 
-    public ComboBoxPlain<Domain> getDomain() {
+    public MComboBox<Domain> getDomain() {
         return domain;
     }
 

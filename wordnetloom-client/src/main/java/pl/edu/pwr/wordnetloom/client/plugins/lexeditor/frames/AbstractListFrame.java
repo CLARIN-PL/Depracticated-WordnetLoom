@@ -21,8 +21,8 @@ import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -127,11 +127,11 @@ abstract public class AbstractListFrame<T, G> extends
             buttonsPanel.add(buttonNew);
         }
 
-        add("", new LabelExt(Labels.SEARCH_COLON, 'w', filterEdit));
+        add("", new MLabel(Labels.SEARCH_COLON, 'w', filterEdit));
         add("br hfill", filterEdit);
         add("", buttonSearch);
         addExtraControlsInSearchBox();
-        add("br left", new LabelExt(itemsLabelText, 'y', itemsList));
+        add("br left", new MLabel(itemsLabelText, 'y', itemsList));
         add("br hfill vfill", new JScrollPane(itemsList));
         add("br center", buttonsPanel);
     }

@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.tree.WebTree;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
@@ -34,7 +35,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
     DefaultMutableTreeNode root_to = null;
     DefaultMutableTreeNode root_from = null;
 
-    JTree tree = null;
+    WebTree tree = null;
 
     MButton addRelation = null;
     MButton delRelation = null;
@@ -56,7 +57,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         content.setLayout(new RiverLayout());
 
         root = new DefaultMutableTreeNode("");
-        tree = new JTree(root);
+        tree = new WebTree(root);
         tree.addTreeSelectionListener(this);
 
         root_from = new DefaultMutableTreeNode(Labels.FROM);

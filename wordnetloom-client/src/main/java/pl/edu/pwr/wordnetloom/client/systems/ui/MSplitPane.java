@@ -21,14 +21,8 @@ import com.alee.laf.splitpane.WebSplitPane;
 
 import java.awt.*;
 
-/**
- * rozbudowany splitter
- *
- * @author Max
- */
 public class MSplitPane extends WebSplitPane {
 
-    private static final long serialVersionUID = 1L;
     private int startDividerLocation = 0;
 
     /**

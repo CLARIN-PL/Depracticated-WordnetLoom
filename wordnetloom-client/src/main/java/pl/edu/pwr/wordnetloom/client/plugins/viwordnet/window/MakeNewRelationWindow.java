@@ -7,10 +7,10 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MTextArea;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -41,7 +41,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         lexicons = LexiconManager.getInstance().getLexicons();
 
         // relation from:
-        parentItem = new ComboBoxPlain();
+        parentItem = new MComboBox();
 //        List<Sense> senses = RemoteUtils.synsetRemote
 //                .dbFastGetUnits(((ViwnNodeSynset) from[0]).getSynset(), lexicons);
 //        for (Sense parent : senses) {
@@ -49,7 +49,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
 //        }
 
         // relation to:
-        childItem = new ComboBoxPlain();
+        childItem = new MComboBox();
 //        senses = RemoteUtils.synsetRemote
 //                .dbFastGetUnits(((ViwnNodeSynset) to[0]).getSynset(), lexicons);
 //        for (Sense child : senses) {
@@ -57,11 +57,11 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
 //        }
 
         // middle element
-        middleItem = new ComboBoxPlain();
+        middleItem = new MComboBox();
         middleItem.setEnabled(false);
 
         // description of relation
-        description = new TextAreaPlain("");
+        description = new MTextArea("");
         description.setRows(6);
         description.setEditable(false);
 
@@ -69,12 +69,12 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         testsLit = new JList();
 
         // relation subtype
-        relationSubType = new ComboBoxPlain();
+        relationSubType = new MComboBox();
         relationSubType.addKeyListener(this);
         relationSubType.setEnabled(false);
 
         // relation type
-        relationType = new ComboBoxPlain();
+        relationType = new MComboBox();
         relationType.addKeyListener(this);
 
         // show relations
@@ -133,26 +133,26 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
 
         // build interfaceTEST_LABEL
         add("",
-                new LabelExt(Labels.RELATION_TYPE_COLON, 't', relationType));
+                new MLabel(Labels.RELATION_TYPE_COLON, 't', relationType));
         add("tab hfill", relationType);
-        add("br", new LabelExt(Labels.RELATION_SUBTYPE_COLON, 'y',
+        add("br", new MLabel(Labels.RELATION_SUBTYPE_COLON, 'y',
                 relationType));
         add("tab hfill", relationSubType);
-        add("br", new LabelExt(Labels.RELATION_DESC_COLON, '\0',
+        add("br", new MLabel(Labels.RELATION_DESC_COLON, '\0',
                 description));
         add("br hfill", new JScrollPane(description));
 
         jp = new JPanel();
         jp.setLayout(new RiverLayout());
-        jp.add("br", new LabelExt(Labels.SOURCE_SYNSET_COLON, 'r', parentItem));
+        jp.add("br", new MLabel(Labels.SOURCE_SYNSET_COLON, 'r', parentItem));
         jp.add("tab hfill", parentItem);
-        jp.add("br", new LabelExt(Labels.TARGET_SYNSET_COLON, 'd', childItem));
+        jp.add("br", new MLabel(Labels.TARGET_SYNSET_COLON, 'd', childItem));
         jp.add("tab hfill", childItem);
 
         add("br hfill", jp);
         add("", buttonSwitch);
 
-        add("br", new LabelExt(Labels.TESTS_COLON, '\0', testsLit));
+        add("br", new MLabel(Labels.TESTS_COLON, '\0', testsLit));
         add("br hfill vfill", new JScrollPane(testsLit));
         add("br center", buttonChoose);
         add("", buttonCancel);

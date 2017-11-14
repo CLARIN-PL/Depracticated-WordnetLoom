@@ -1,8 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.plugins.core.window;
 
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
 
 public class AboutWindow extends DialogWindow implements ActionListener {
 
-    private static final String TEXT_COPYRIGHT = "Copyright 2005-2017, Politechnika Wrocławska";
+    private static final String TEXT_COPYRIGHT = "Copyright 2005-2017, Wrocław University of Science and Technology";
     private static final String TEXT_AUTHORS_1 = "Bartosz Broda, Łukasz Jastrzębski,";
     private static final String TEXT_AUTHORS_2 = "Paweł Koczan, Michał Marcińczuk,";
     private static final String TEXT_AUTHORS_3 = "Adam Musiał, Maciej Piasecki,";
@@ -33,19 +33,19 @@ public class AboutWindow extends DialogWindow implements ActionListener {
         Container content = getContentPane();
         content.setBackground(new Color(238, 238, 238));
         content.add("center", new JLabel(new ImageIcon(getClass().getClassLoader().getResource("icons/logo.gif")), JLabel.CENTER));
-        content.add("br left", new LabelPlain(Labels.ABOUT_DESCRIPTION));
-        content.add("br", new JLabel(" "));
-        content.add("br", new JLabel(Labels.VERSION_COLON));
-        content.add("tab", new LabelPlain(workbench.getVersion()));
-        content.add("br", new JLabel(Labels.CREATED_COLON));
-        content.add("tab", new LabelPlain(TEXT_AUTHORS_1));
-        content.add("br tab", new LabelPlain(TEXT_AUTHORS_2));
-        content.add("br tab", new LabelPlain(TEXT_AUTHORS_3));
-        content.add("br tab", new LabelPlain(TEXT_AUTHORS_4));
-        content.add("br tab", new LabelPlain(TEXT_AUTHORS_5));
-        content.add("br", new JLabel(" "));
-        content.add("br center", new JLabel(TEXT_COPYRIGHT));
-        content.add("br", new JLabel(Labels.ALL_RIGHTS_RESERVED));
+        content.add("br center", new MLabel(Labels.ABOUT_DESCRIPTION).withPlainFont());
+        content.add("br", new MLabel(" "));
+        content.add("br left", new MLabel(Labels.VERSION_COLON));
+        content.add("tab", new MLabel(workbench.getVersion()).withPlainFont());
+        content.add("br left", new MLabel(Labels.CREATED_COLON));
+        content.add("tab", new MLabel(TEXT_AUTHORS_1).withPlainFont());
+        content.add("br tab", new MLabel(TEXT_AUTHORS_2).withPlainFont());
+        content.add("br tab", new MLabel(TEXT_AUTHORS_3).withPlainFont());
+        content.add("br tab", new MLabel(TEXT_AUTHORS_4).withPlainFont());
+        content.add("br tab", new MLabel(TEXT_AUTHORS_5).withPlainFont());
+        content.add("br", new MLabel(" "));
+        content.add("br center", new MLabel(TEXT_COPYRIGHT));
+        content.add("br", new MLabel(Labels.ALL_RIGHTS_RESERVED));
         content.add("p", MButton.buildOkButton(this));
         pack();
     }

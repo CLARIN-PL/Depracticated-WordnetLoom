@@ -23,20 +23,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyListener;
 
-public class TextAreaPlain extends WebTextArea {
+public class MTextArea extends WebTextArea {
 
-    private static final long serialVersionUID = -2441734577355869232L;
     private static Font newFont = new JLabel().getFont().deriveFont(Font.PLAIN);
     private static Color disabledBackground = new JLabel().getBackground();
     private static Color enabledBackground = new JTextField().getBackground();
     private String oldValue = null;
 
-    /**
-     * konstruktor
-     *
-     * @param text - tekst
-     */
-    public TextAreaPlain(String text) {
+    public MTextArea(String text) {
         super(text);
         setFont(newFont);
         setDisabledTextColor(getForeground());
@@ -46,17 +40,8 @@ public class TextAreaPlain extends WebTextArea {
         setBorder(null);
     }
 
-    /**
-     * konstruktor
-     *
-     * @param text        - tekst
-     * @param keyListener - sluchacz klawiszy
-     * @param width       - szerokosc kontrolki
-     * @param height      - wysokosc kontrolki
-     */
-    public TextAreaPlain(String text, KeyListener keyListener, int width, int height) {
+    public MTextArea(String text, KeyListener keyListener, int width, int height) {
         this(text);
-
         addKeyListener(keyListener);
         setPreferredSize(new Dimension(width, height));
         setSize(new Dimension(width, height));
@@ -78,11 +63,6 @@ public class TextAreaPlain extends WebTextArea {
         oldValue = text;
     }
 
-    /**
-     * czy tekst się zmienił
-     *
-     * @return true jeśli tekst się zmienił
-     */
     public boolean wasTextChanged() {
         String value = getText();
         if (oldValue == null) {

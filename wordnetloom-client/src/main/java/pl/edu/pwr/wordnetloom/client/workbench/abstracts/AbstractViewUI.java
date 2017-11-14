@@ -35,9 +35,9 @@ public abstract class AbstractViewUI implements KeyListener {
      */
     public void init(Workbench workbench) {
         this.workbench = workbench;
-        mainContentPanel = new WebPanel();       // przygotowanie głównego panelu
-        initialize(mainContentPanel);            // inicjalizacja elementów należących do panelu
-        setKeyListeners(mainContentPanel);       // ustawienie słuchaczy dla wszystkich elementów należących do panel
+        mainContentPanel = new WebPanel();
+        initialize(mainContentPanel);
+        setKeyListeners(mainContentPanel);
     }
 
     /**

@@ -29,11 +29,11 @@ public abstract class CriteriaPanel extends WebPanel {
     public static final int MAX_ITEMS_COUNT = 500;
 
     private WebTextField searchTextField;
-    private LexiconComboBox lexiconComboBox;
-    private DomainComboBox domainComboBox;
-    private PartOfSpeechComboBox partsOfSpeachComboBox;
-    private ComboBoxPlain<RelationType> synsetRelationsComboBox;
-    private ComboBoxPlain<RelationType> senseRelationsComboBox;
+    private LexiconMComboBox lexiconComboBox;
+    private DomainMComboBox domainComboBox;
+    private PartOfSpeechMComboBox partsOfSpeachComboBox;
+    private MComboBox<RelationType> synsetRelationsComboBox;
+    private MComboBox<RelationType> senseRelationsComboBox;
     private WebCheckBox limitResultCheckBox;
 
     public CriteriaPanel(int scrollHeight) {
@@ -47,7 +47,7 @@ public abstract class CriteriaPanel extends WebPanel {
         setMinimumSize(new Dimension(0, SCROLL_PANE_HEIGHT));
         setPreferredSize(new Dimension(0, SCROLL_PANE_HEIGHT));
 
-        lexiconComboBox = new LexiconComboBox(Labels.VALUE_ALL);
+        lexiconComboBox = new LexiconMComboBox(Labels.VALUE_ALL);
         lexiconComboBox.setPreferredSize(new Dimension(150, 20));
         lexiconComboBox.addActionListener((ActionEvent e) -> {
             Lexicon lex = lexiconComboBox.retriveComboBoxItem();
@@ -61,7 +61,7 @@ public abstract class CriteriaPanel extends WebPanel {
 
         searchTextField = new MTextField(STANDARD_VALUE_FILTER);
 
-        partsOfSpeachComboBox = new PartOfSpeechComboBox(Labels.VALUE_ALL);
+        partsOfSpeachComboBox = new PartOfSpeechMComboBox(Labels.VALUE_ALL);
         partsOfSpeachComboBox.withoutFilter();
         partsOfSpeachComboBox.setPreferredSize(new Dimension(150, 20));
         partsOfSpeachComboBox.addItemListener((ItemEvent e) -> {
@@ -78,7 +78,7 @@ public abstract class CriteriaPanel extends WebPanel {
             }
         });
 
-        domainComboBox = new DomainComboBox(Labels.VALUE_ALL);
+        domainComboBox = new DomainMComboBox(Labels.VALUE_ALL);
         domainComboBox.allDomains(true);
         domainComboBox.setPreferredSize(new Dimension(150, 20));
 
@@ -103,46 +103,46 @@ public abstract class CriteriaPanel extends WebPanel {
     }
 
     protected void addSynsetRelationTypes() {
-        add("br", new LabelExt(Labels.RELATIONS_COLON, 'r', synsetRelationsComboBox));
+        add("br", new MLabel(Labels.RELATIONS_COLON, 'r', synsetRelationsComboBox));
         add("br hfill", synsetRelationsComboBox);
         refreshSynsetRelations();
     }
 
     protected void addSenseRelationTypes() {
-        add("br", new LabelExt(Labels.RELATIONS_COLON, 'r', senseRelationsComboBox));
+        add("br", new MLabel(Labels.RELATIONS_COLON, 'r', senseRelationsComboBox));
         add("br hfill", senseRelationsComboBox);
         refreshSenseRelations();
     }
 
     protected void addDomain() {
-        add("br", new LabelExt(Labels.DOMAIN_COLON, 'd', domainComboBox));
+        add("br", new MLabel(Labels.DOMAIN_COLON, 'd', domainComboBox));
         add("br hfill", domainComboBox);
     }
 
     protected void addPartsOfSpeach() {
-        add("br", new LabelExt(Labels.PARTS_OF_SPEECH_COLON, 'm', partsOfSpeachComboBox));
+        add("br", new MLabel(Labels.PARTS_OF_SPEECH_COLON, 'm', partsOfSpeachComboBox));
         add("br hfill", partsOfSpeachComboBox);
     }
 
     protected void addLexicon() {
-        add("br", new LabelExt(Labels.LEXICON_COLON, 'l', lexiconComboBox));
+        add("br", new MLabel(Labels.LEXICON_COLON, 'l', lexiconComboBox));
         add("br hfill", lexiconComboBox);
     }
 
     protected void addSearch() {
-        add("", new LabelExt(Labels.SEARCH_COLON, 'w', searchTextField));
+        add("", new MLabel(Labels.SEARCH_COLON, 'w', searchTextField));
         add("br hfill", searchTextField);
     }
 
-    private ComboBoxPlain<RelationType> createSynsetRelationsComboBox() {
-        ComboBoxPlain<RelationType> combo = new ComboBoxPlain<>();
+    private MComboBox<RelationType> createSynsetRelationsComboBox() {
+        MComboBox<RelationType> combo = new MComboBox<>();
         combo.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
         combo.setPreferredSize(new Dimension(150, 20));
         return combo;
     }
 
-    private ComboBoxPlain<RelationType> createSenseRelationsComboBox() {
-        ComboBoxPlain<RelationType> combo = new ComboBoxPlain<>();
+    private MComboBox<RelationType> createSenseRelationsComboBox() {
+        MComboBox<RelationType> combo = new MComboBox<>();
         combo.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
         combo.setPreferredSize(new Dimension(150, 20));
         return combo;
@@ -211,15 +211,15 @@ public abstract class CriteriaPanel extends WebPanel {
         return searchTextField;
     }
 
-    public ComboBoxPlain<Domain> getDomainComboBox() {
+    public MComboBox<Domain> getDomainComboBox() {
         return domainComboBox;
     }
 
-    public ComboBoxPlain<RelationType> getSynsetRelationTypeComboBox() {
+    public MComboBox<RelationType> getSynsetRelationTypeComboBox() {
         return synsetRelationsComboBox;
     }
 
-    public ComboBoxPlain<RelationType> getSenseRelationTypeComboBox() {
+    public MComboBox<RelationType> getSenseRelationTypeComboBox() {
         return senseRelationsComboBox;
     }
 
@@ -227,11 +227,11 @@ public abstract class CriteriaPanel extends WebPanel {
         return limitResultCheckBox;
     }
 
-    public LexiconComboBox getLexiconComboBox() {
+    public LexiconMComboBox getLexiconComboBox() {
         return lexiconComboBox;
     }
 
-    public PartOfSpeechComboBox getPartsOfSpeachComboBox() {
+    public PartOfSpeechMComboBox getPartsOfSpeachComboBox() {
         return partsOfSpeachComboBox;
     }
 

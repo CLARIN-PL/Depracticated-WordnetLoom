@@ -19,9 +19,9 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.Tools;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MTextArea;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
@@ -81,7 +81,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     private MButton buttonUp, buttonDown, buttonAdd, buttonDelete,
             buttonRelations, buttonSwitchToLexicalPerspective, buttonToNew;
     private Collection<Sense> lastUnits = null;
-    private TextAreaPlain commentValue = null;
+    private MTextArea commentValue = null;
     ArrayList<Sense> lastSelectedUnits = new ArrayList<>();
 
     private final SimpleListenersContainer clickListeners = new SimpleListenersContainer();
@@ -142,7 +142,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         unitsList.addMouseListener(this);
         unitsList.setEnabled(false);
 
-        commentValue = new TextAreaPlain(Labels.VALUE_UNKNOWN);
+        commentValue = new MTextArea(Labels.VALUE_UNKNOWN);
         commentValue.addCaretListener(this);
         commentValue.setRows(3);
         commentValue.setEnabled(false);
@@ -232,7 +232,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         }
 
         // dodanie do okna
-        content.add("", new LabelExt(Labels.LEXICAL_UNITS_IN_SYSET_COLON, 'y',
+        content.add("", new MLabel(Labels.LEXICAL_UNITS_IN_SYSET_COLON, 'y',
                 unitsList));
         content.add("br hfill vfill", new JScrollPane(unitsList));
         if (!bottomButtons) {

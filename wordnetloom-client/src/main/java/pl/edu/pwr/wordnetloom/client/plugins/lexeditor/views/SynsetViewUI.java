@@ -8,8 +8,8 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
@@ -62,7 +62,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         content.add("hfill", scroll);
         content.add("br center", btnSearch);
         content.add("center", btnReset);
-        content.add("br left", new LabelExt(Labels.SYNSETS_COLON, 'j', synsetList));
+        content.add("br left", new MLabel(Labels.SYNSETS_COLON, 'j', synsetList));
         content.add("br hfill vfill", new JScrollPane(synsetList));
         content.add("br left", infoLabel);
     }

@@ -1,7 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import com.alee.laf.radiobutton.WebRadioButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -64,12 +64,12 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
     }
 
     protected void addDefinition() {
-        add("br", new LabelExt(Labels.DEFINITION_COLON, 'd', definition));
+        add("br", new MLabel(Labels.DEFINITION_COLON, 'd', definition));
         add("br hfill", definition);
     }
 
     protected void addComment() {
-        add("br", new LabelExt(Labels.COMMENT_COLON, 'm', comment));
+        add("br", new MLabel(Labels.COMMENT_COLON, 'm', comment));
         add("br hfill", comment);
     }
 

@@ -79,7 +79,7 @@ public class MFrame extends WebFrame implements Serializable {
      * @param height - wysokosc okna
      */
     public MFrame(int width, int height) {
-        setIconImage(new ImageIcon(FILE_MAIN_ICON).getImage());
+        setIconImage(new ImageIcon(MFrame.class.getClassLoader().getResource(FILE_MAIN_ICON)).getImage());
         // odczytanie rozmiarow ekranu
         Dimension screenSize = new Dimension(
                 (int) getGraphicsConfiguration().getBounds().getWidth(),
