@@ -1,9 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconFrame;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 
@@ -12,21 +12,21 @@ import javax.swing.*;
 import java.text.ParseException;
 
 
-public class RelationsEditorWindow extends IconFrame { //implements ActionListener, TreeSelectionListener, CaretListener, ListSelectionListener, MouseListener {
+public class RelationsEditorWindow extends MFrame { //implements ActionListener, TreeSelectionListener, CaretListener, ListSelectionListener, MouseListener {
     private static final long serialVersionUID = 1L;
 
     private final int MIN_WINDOW_WIDTH = 200;
     private final int MIN_WINDOW_HEIGHT = 400;
 
     // komponenty panelu dolnego (propertiesPanel)
-    private TextFieldPlain lexicon;
-    private TextFieldPlain relationName;
+    private MTextField lexicon;
+    private MTextField relationName;
     private JCheckBox multilingual;
-    private TextFieldPlain relationDisplay;
-    private TextFieldPlain relationShortcut;
+    private MTextField relationDisplay;
+    private MTextField relationShortcut;
     //private DescriptionTextArea relationDescription;
-    private TextFieldPlain relationPos;
-    private TextFieldPlain relationReverse;
+    private MTextField relationPos;
+    private MTextField relationReverse;
     private JFormattedTextField relationColor;
     private ComboBoxPlain<NodeDirection> relationDirection; //TODO chyba będzie trzeba dodać
 
@@ -139,7 +139,7 @@ public class RelationsEditorWindow extends IconFrame { //implements ActionListen
 
     private JPanel createDetailsPanel() throws ParseException {
         //utworzenie pola lexicon
-        lexicon = new TextFieldPlain("");
+        lexicon = new MTextField("");
         lexicon.addActionListener(this);
 
         // utworzenie pola zaznaczania wielojęzyczności
@@ -147,15 +147,15 @@ public class RelationsEditorWindow extends IconFrame { //implements ActionListen
         multilingual.addActionListener(this);
 
         // utworzenie pola nazwy relacji
-        relationName = new TextFieldPlain("");
+        relationName = new MTextField("");
         relationName.addActionListener(this);
 
         // utworzenie pola formy do wyświetlenia
-        relationDisplay = new TextFieldPlain("");
+        relationDisplay = new MTextField("");
         relationDisplay.addCaretListener(this);
 
         // utworzenie skrótu relacji
-        relationShortcut = new TextFieldPlain("");
+        relationShortcut = new MTextField("");
         relationShortcut.addCaretListener(this);
 
         // utowrzenie opisu
@@ -166,13 +166,13 @@ public class RelationsEditorWindow extends IconFrame { //implements ActionListen
 
         // utworzenie pola części mowy oraz przycisku do wybierania części mowy
         String locale = RemoteConnectionProvider.getInstance().getLanguage();
-        relationPos = new TextFieldPlain(PartOfSpeechManager.getInstance().getById(1L).getName(locale));
+        relationPos = new MTextField(PartOfSpeechManager.getInstance().getById(1L).getName(locale));
 
         buttonPos = new MButton("...", e -> openPartOfSpeechDialog());
         buttonPos.setToolTipText(Hints.CHOOSE_POS_FOR_RELATION);
 
         // utworzenie relacji odwrotnej oraz przycisku do wybierania
-        relationReverse = new TextFieldPlain(Labels.NO_VALUE);
+        relationReverse = new MTextField(Labels.NO_VALUE);
 
         buttonReverse = new MButton("...", e -> openReverseRelationDialog());
         buttonReverse.setToolTipText(Hints.CHOOSE_REVERSE_RELATION);

@@ -1,9 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window;
 
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconFrame;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
-public class RelationDisplayConfWindow extends IconFrame {
+public class RelationDisplayConfWindow extends MFrame {
 
     private static final long serialVersionUID = 1L;
 

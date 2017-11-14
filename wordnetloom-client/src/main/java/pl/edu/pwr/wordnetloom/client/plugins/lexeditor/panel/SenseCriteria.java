@@ -1,21 +1,22 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class SenseCriteria extends CriteriaPanel {
 
     private ComboBoxPlain<RegisterTypes> registerComboBox;
-    private TextFieldPlain comment;
-    private TextFieldPlain example;
+    private MTextField comment;
+    private MTextField example;
     private CriteriaDTO crit;
 
     public SenseCriteria() {
@@ -33,8 +34,8 @@ public final class SenseCriteria extends CriteriaPanel {
         }
         registerComboBox.setPreferredSize(new Dimension(150, 20));
 
-        comment = new TextFieldPlain(STANDARD_VALUE_FILTER);
-        example = new TextFieldPlain(STANDARD_VALUE_FILTER);
+        comment = new MTextField(STANDARD_VALUE_FILTER);
+        example = new MTextField(STANDARD_VALUE_FILTER);
     }
 
     @Override
@@ -69,11 +70,11 @@ public final class SenseCriteria extends CriteriaPanel {
         return registerComboBox;
     }
 
-    public TextFieldPlain getComment() {
+    public MTextField getComment() {
         return comment;
     }
 
-    public TextFieldPlain getExample() {
+    public MTextField getExample() {
         return example;
     }
 

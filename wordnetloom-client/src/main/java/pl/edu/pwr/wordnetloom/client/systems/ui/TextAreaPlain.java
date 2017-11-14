@@ -23,11 +23,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyListener;
 
-/**
- * nakladka na jtextfield wylaczajaca pogrubiona czcionke
- *
- * @author Max
- */
 public class TextAreaPlain extends WebTextArea {
 
     private static final long serialVersionUID = -2441734577355869232L;

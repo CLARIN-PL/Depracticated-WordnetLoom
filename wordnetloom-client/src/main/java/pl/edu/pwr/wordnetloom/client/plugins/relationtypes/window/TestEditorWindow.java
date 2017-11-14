@@ -21,7 +21,7 @@ public class TestEditorWindow extends DialogWindow implements ActionListener {
 
     private final MButton buttonOk, buttonCancel;
 
-    private final TextFieldPlain testText;
+    private final MTextField testText;
     private final ComboBoxPlain posA;
     private final ComboBoxPlain posB;
 
@@ -51,7 +51,7 @@ public class TestEditorWindow extends DialogWindow implements ActionListener {
 
         Dimension normal = new Dimension(100, 25);
 
-        testText = new TextFieldPlain(lastText);
+        testText = new MTextField(lastText);
         testText.setPreferredSize(normal);
 
         PartOfSpeech[] posArray = PartOfSpeechManager.getInstance().getAll().toArray(new PartOfSpeech[]{});

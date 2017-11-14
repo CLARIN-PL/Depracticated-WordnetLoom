@@ -1,12 +1,18 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "sense_attributes")
-public class SenseAttributes {
+public class SenseAttributes extends GenericEntity {
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sense_id")
+    @MapsId
+    private Sense sense;
 
     @Lob
     private String definition;
@@ -24,11 +30,6 @@ public class SenseAttributes {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User owner;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sense_id")
-    @MapsId
-    private Sense sense;
 
     public SenseAttributes() {
         super();

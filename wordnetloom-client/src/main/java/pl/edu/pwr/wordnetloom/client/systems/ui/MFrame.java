@@ -7,24 +7,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.Serializable;
 
-/**
- * klasa frame zawierająca ikonę aplikacji
- *
- * @author Max
- */
-public class IconFrame extends WebFrame {
+public class MFrame extends WebFrame implements Serializable {
 
     private static final String FILE_MAIN_ICON = "icons/wordnet.gif";
-    private static final long serialVersionUID = 1L;
     static private int BOTTOM_MARGIN = 40;
+
     WebFrame baseFrame;
 
     /**
      * konstruktor
      */
-    public IconFrame() {
-        setIconImage(new ImageIcon(IconFrame.class.getClassLoader().getResource(FILE_MAIN_ICON)).getImage());
+    public MFrame() {
+        setIconImage(new ImageIcon(MFrame.class.getClassLoader().getResource(FILE_MAIN_ICON)).getImage());
     }
 
     /**
@@ -35,7 +31,7 @@ public class IconFrame extends WebFrame {
      * @param width     - szerokosc okna
      * @param height    - wysokosc okna
      */
-    public IconFrame(WebFrame baseFrame, String title, int width, int height) {
+    public MFrame(WebFrame baseFrame, String title, int width, int height) {
         this(title, width, height);
         this.baseFrame = baseFrame;
     }
@@ -49,8 +45,8 @@ public class IconFrame extends WebFrame {
      * @param width  - szerokosc okna
      * @param height - wysokosc okna
      */
-    public IconFrame(String title, int x, int y, int width, int height) {
-        setIconImage(new ImageIcon(IconFrame.class.getClassLoader().getResource(FILE_MAIN_ICON)).getImage());
+    public MFrame(String title, int x, int y, int width, int height) {
+        setIconImage(new ImageIcon(MFrame.class.getClassLoader().getResource(FILE_MAIN_ICON)).getImage());
         // odczytanie rozmiarow ekranu
 
         Dimension screenSize = new Dimension(
@@ -82,7 +78,7 @@ public class IconFrame extends WebFrame {
      * @param width  - szerokosc okna
      * @param height - wysokosc okna
      */
-    public IconFrame(int width, int height) {
+    public MFrame(int width, int height) {
         setIconImage(new ImageIcon(FILE_MAIN_ICON).getImage());
         // odczytanie rozmiarow ekranu
         Dimension screenSize = new Dimension(
@@ -106,7 +102,7 @@ public class IconFrame extends WebFrame {
      * @param width  - szerokosc okna
      * @param height - wysokosc okna
      */
-    public IconFrame(String title, int width, int height) {
+    public MFrame(String title, int width, int height) {
         this(width, height);
         setTitle(title);
     }
@@ -117,7 +113,7 @@ public class IconFrame extends WebFrame {
      * @param baseFrame - okno bazowe
      * @param title     - tytul okna
      */
-    public IconFrame(WebFrame baseFrame, String title) {
+    public MFrame(WebFrame baseFrame, String title) {
         this.baseFrame = baseFrame;
 
         // odczytanie rozmiarow ekranu
@@ -138,10 +134,7 @@ public class IconFrame extends WebFrame {
         setTitle(title);
     }
 
-    /*
-     *  (non-Javadoc)
-	 * @see java.awt.Component#setLocation(int, int)
-     */
+
     @Override
     public void setLocation(int x, int y) {
         Dimension screenSize = new Dimension(

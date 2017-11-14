@@ -7,8 +7,8 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
@@ -167,8 +167,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         if (quiteMode == true || lastSynset == null) {
             return; // nie ma co aktualizować
         }
-        if (arg0.getSource() instanceof TextFieldPlain) {
-            TextFieldPlain field = (TextFieldPlain) arg0.getSource();
+        if (arg0.getSource() instanceof MTextField) {
+            MTextField field = (MTextField) arg0.getSource();
             buttonSave.setEnabled(buttonSave.isEnabled() | field.wasTextChanged());
         }
         if (arg0.getSource() instanceof TextAreaPlain) {

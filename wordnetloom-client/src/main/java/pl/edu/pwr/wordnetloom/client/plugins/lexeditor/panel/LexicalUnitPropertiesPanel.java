@@ -37,13 +37,13 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     private static final long serialVersionUID = 8598891792812358941L;
     private Sense unit;
     private LexiconComboBox lexicon;
-    private TextFieldPlain lemma;
-    private TextFieldPlain variant;
-    private TextFieldPlain link;
+    private MTextField lemma;
+    private MTextField variant;
+    private MTextField link;
     private ComboBoxPlain<Object> register;
     private PartOfSpeechComboBox partOfSpeech;
     private DomainComboBox domain;
-    private TextPanePlain comment;
+    private MTextPane comment;
     private final JButton btnCancel;
     private JButton btnSave;
     private JScrollPane commentScrollPane;
@@ -56,7 +56,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     private DefaultListModel examplesModel;
     private JLabel lblDefinition;
     private JScrollPane definitionScrollPane;
-    private TextPanePlain definition;
+    private MTextPane definition;
 
     public LexicalUnitPropertiesPanel(final WebFrame frame) {
         setLayout(new BorderLayout(0, 0));
@@ -108,7 +108,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lblLemma.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblLemma, "2, 3, left, default");
 
-        lemma = new TextFieldPlain(Labels.VALUE_UNKNOWN);
+        lemma = new MTextField(Labels.VALUE_UNKNOWN);
         lemma.addCaretListener(this);
         mainPanel.add(lemma, "4, 3, 4, 1, fill, fill");
         lemma.setColumns(10);
@@ -117,7 +117,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lblVariant.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblVariant, "8, 3, 3, 1, fill, fill");
 
-        variant = new TextFieldPlain(Labels.VALUE_UNKNOWN);
+        variant = new MTextField(Labels.VALUE_UNKNOWN);
         variant.addCaretListener(this);
         variant.setEditable(false);
         mainPanel.add(variant, "12, 3, left, fill");
@@ -177,7 +177,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         definitionScrollPane = new JScrollPane();
         mainPanel.add(definitionScrollPane, "4, 13, 9, 1, default, fill");
 
-        definition = new TextPanePlain();
+        definition = new MTextPane();
         definition.addCaretListener(this);
         definitionScrollPane.setViewportView(definition);
 
@@ -189,7 +189,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         commentScrollPane = new JScrollPane();
         mainPanel.add(commentScrollPane, "4, 15, 9, 1, default, fill");
 
-        comment = new TextPanePlain();
+        comment = new MTextPane();
         comment.addCaretListener(this);
         commentScrollPane.setViewportView(comment);
 
@@ -267,7 +267,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lblLink.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblLink, "2, 25, left, fill");
 
-        link = new TextFieldPlain(Labels.VALUE_UNKNOWN);
+        link = new MTextField(Labels.VALUE_UNKNOWN);
         link.addCaretListener(this);
         mainPanel.add(link, "4, 25, 7, 1, fill, fill");
         link.setColumns(10);
@@ -311,12 +311,12 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
 
     @Override
     public void caretUpdate(CaretEvent event) {
-        if (event.getSource() instanceof TextFieldPlain) {
-            TextFieldPlain field = (TextFieldPlain) event.getSource();
+        if (event.getSource() instanceof MTextField) {
+            MTextField field = (MTextField) event.getSource();
             btnSave.setEnabled(btnSave.isEnabled() | field.wasTextChanged());
         }
-        if (event.getSource() instanceof TextPanePlain) {
-            TextPanePlain field = (TextPanePlain) event.getSource();
+        if (event.getSource() instanceof MTextPane) {
+            MTextPane field = (MTextPane) event.getSource();
             btnSave.setEnabled(btnSave.isEnabled() | field.wasTextChanged());
         }
     }
@@ -408,15 +408,15 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         return lexicon;
     }
 
-    public TextFieldPlain getLemma() {
+    public MTextField getLemma() {
         return lemma;
     }
 
-    public TextFieldPlain getVariant() {
+    public MTextField getVariant() {
         return variant;
     }
 
-    public TextFieldPlain getLink() {
+    public MTextField getLink() {
         return link;
     }
 

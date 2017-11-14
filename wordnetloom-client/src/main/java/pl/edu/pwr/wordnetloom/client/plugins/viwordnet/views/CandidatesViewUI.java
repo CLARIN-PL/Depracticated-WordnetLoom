@@ -12,7 +12,7 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
@@ -136,7 +136,7 @@ public class CandidatesViewUI extends AbstractViewUI
         packages.add("center hfill", buttonShow);
         packages.add("br center", buttonRecalc);
 
-        filterEdit = new TextFieldPlain("");
+        filterEdit = new MTextField("");
         filterEdit.addActionListener(this);
 
         buttonSearch = MButton.buildSearchButton(this);

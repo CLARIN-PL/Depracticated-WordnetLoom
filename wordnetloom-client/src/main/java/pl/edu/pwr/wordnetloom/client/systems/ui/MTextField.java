@@ -24,29 +24,24 @@ import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyListener;
+import java.io.Serializable;
 
-/**
- * nakladka na jtextfield wylaczajaca pogrubiona czcionke
- *
- * @author Max
- */
-public class TextFieldPlain extends WebTextField {
+public class MTextField extends WebTextField implements Serializable {
 
-    private static final long serialVersionUID = -2441734577355869232L;
     private static Font newFont = new JLabel().getFont().deriveFont(Font.PLAIN);
     private static Color disabledBackground = new JLabel().getBackground();
     private static Color enabledBackground = new JTextField().getBackground();
     private String oldValue = null;
 
-    public TextFieldPlain(String text) {
+    public MTextField(String text) {
         super(text);
         setFont(newFont);
         setDisabledTextColor(getForeground());
         setFocusHandler();
     }
 
-    public TextFieldPlain(String text, KeyListener keyListener, int width,
-                          int height) {
+    public MTextField(String text, KeyListener keyListener, int width,
+                      int height) {
         this(text);
 
         addKeyListener(keyListener);

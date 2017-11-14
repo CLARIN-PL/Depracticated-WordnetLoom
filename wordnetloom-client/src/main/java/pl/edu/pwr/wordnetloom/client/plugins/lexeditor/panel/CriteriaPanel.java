@@ -59,7 +59,7 @@ public abstract class CriteriaPanel extends WebPanel {
             refreshSenseRelations();
         });
 
-        searchTextField = new TextFieldPlain(STANDARD_VALUE_FILTER);
+        searchTextField = new MTextField(STANDARD_VALUE_FILTER);
 
         partsOfSpeachComboBox = new PartOfSpeechComboBox(Labels.VALUE_ALL);
         partsOfSpeachComboBox.withoutFilter();

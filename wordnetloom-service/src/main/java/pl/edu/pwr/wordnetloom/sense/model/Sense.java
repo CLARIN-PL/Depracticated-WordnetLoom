@@ -47,7 +47,6 @@ public class Sense extends GenericEntity {
     @Valid
     @NotNull
     @OneToOne(mappedBy = "sense", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @MapsId
     private SenseAttributes senseAttributes;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "sense")

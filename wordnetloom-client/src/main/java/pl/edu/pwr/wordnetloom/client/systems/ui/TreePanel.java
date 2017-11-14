@@ -17,18 +17,11 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import javax.swing.JPanel;
 import pl.edu.pwr.wordnetloom.client.systems.misc.NodeDrawer;
 
-/**
- * klasa rysująca drzewo
- *
- * @author Max
- *
- */
+import javax.swing.*;
+import java.awt.*;
+
 public class TreePanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
@@ -43,7 +36,7 @@ public class TreePanel extends JPanel {
      * @param down - jest true to pionowe drzewo, jesli false to poziome
      */
     public TreePanel(boolean down) {
-        this.setBackground(Color.WHITE);
+        setBackground(Color.WHITE);
         this.down = down;
     }
 
@@ -53,7 +46,7 @@ public class TreePanel extends JPanel {
      * @param object - obiekt
      */
     public void setFocusTag(Object object) {
-        this.focusTag = object;
+        focusTag = object;
     }
 
     /**
@@ -63,8 +56,8 @@ public class TreePanel extends JPanel {
      */
     public void setDirection(boolean down) {
         this.down = down;
-        this.sizeSet = false;
-        this.repaint();
+        sizeSet = false;
+        repaint();
     }
 
     /**
@@ -74,8 +67,8 @@ public class TreePanel extends JPanel {
      */
     public void setNode(NodeDrawer parent) {
         this.parent = parent;
-        this.sizeSet = false;
-        this.repaint();
+        sizeSet = false;
+        repaint();
     }
 
     @Override
@@ -95,8 +88,8 @@ public class TreePanel extends JPanel {
             if (!sizeSet) {
                 sizeSet = true;
                 Dimension size = new Dimension(parent.getBound().width + 20, parent.getBound().height + 20);
-                this.setPreferredSize(size);
-                this.setSize(size);
+                setPreferredSize(size);
+                setSize(size);
             }
         }
     }

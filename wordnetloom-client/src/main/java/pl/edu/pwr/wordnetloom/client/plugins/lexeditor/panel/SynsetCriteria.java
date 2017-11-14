@@ -2,7 +2,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import com.alee.laf.radiobutton.WebRadioButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextFieldPlain;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
@@ -15,8 +15,8 @@ import java.util.List;
 
 public final class SynsetCriteria extends CriteriaPanel implements ActionListener {
 
-    private TextFieldPlain definition;
-    private TextFieldPlain comment;
+    private MTextField definition;
+    private MTextField comment;
     private String isArtificial;
     private WebRadioButton all;
     private WebRadioButton artificial;
@@ -32,8 +32,8 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
     private void init() {
         crit = new CriteriaDTO();
         isArtificial = "";
-        definition = new TextFieldPlain(STANDARD_VALUE_FILTER);
-        comment = new TextFieldPlain(STANDARD_VALUE_FILTER);
+        definition = new MTextField(STANDARD_VALUE_FILTER);
+        comment = new MTextField(STANDARD_VALUE_FILTER);
         all = new WebRadioButton(Labels.VALUE_ALL, true);
         all.addActionListener(this);
         artificial = new WebRadioButton(Labels.ARTIFICIAL, false);
@@ -55,11 +55,11 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         addLimit();
     }
 
-    public TextFieldPlain getDefinition() {
+    public MTextField getDefinition() {
         return definition;
     }
 
-    public TextFieldPlain getComment() {
+    public MTextField getComment() {
         return comment;
     }
 

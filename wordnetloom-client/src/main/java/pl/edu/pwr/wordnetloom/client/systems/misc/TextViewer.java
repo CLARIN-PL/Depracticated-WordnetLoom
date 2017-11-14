@@ -1,10 +1,10 @@
 package pl.edu.pwr.wordnetloom.client.systems.misc;
 
-import java.awt.BorderLayout;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.Collection;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconFrame;
 
 /**
  * Klasa dostarczajaca text viewera słuszącego do wyświetlania dowolnego typu
@@ -12,7 +12,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.IconFrame;
  *
  * @author Max
  */
-public class TextViewer extends IconFrame {
+public class TextViewer extends MFrame {
 
     private static final long serialVersionUID = 1L;
     private final JTextArea textArea;
@@ -38,14 +38,14 @@ public class TextViewer extends IconFrame {
     /**
      * Konstruktor okna tekstowego
      *
-     * @param title - nazwa okienka
-     * @param width - szerokosc okna
+     * @param title  - nazwa okienka
+     * @param width  - szerokosc okna
      * @param height - wysokosc okna
      */
     private TextViewer(String title, int width, int height) {
         super(width, height);
         setTitle(title);
-        setDefaultCloseOperation(IconFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(MFrame.DISPOSE_ON_CLOSE);
 
         textArea = new JTextArea("");
         setLayout(new BorderLayout());
@@ -55,9 +55,9 @@ public class TextViewer extends IconFrame {
     /**
      * Wyświetlenie okienka tekstowego
      *
-     * @param title - nazwa okienka
-     * @param text - tekst do wyświetlenia
-     * @param width - szerokość okienka
+     * @param title  - nazwa okienka
+     * @param text   - tekst do wyświetlenia
+     * @param width  - szerokość okienka
      * @param height - wysokość okienka
      */
     public static void show(String title, String text, int width, int height) {

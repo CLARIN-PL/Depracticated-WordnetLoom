@@ -16,7 +16,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.ConfigurationManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.ui.BusyGlassPane;
-import pl.edu.pwr.wordnetloom.client.systems.ui.IconFrame;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.*;
 import pl.edu.pwr.wordnetloom.user.model.User;
@@ -153,7 +153,7 @@ public final class PanelWorkbench implements WindowListener, Workbench {
             // inicjacja menu
             menuHolder = new MenuHolder();
 
-            frame = new IconFrame(STANDARD_WIDTH, STANDARD_HEIGHT);
+            frame = new MFrame(STANDARD_WIDTH, STANDARD_HEIGHT);
 
             // ustawienie tytulu okienka
             updateTitle();
