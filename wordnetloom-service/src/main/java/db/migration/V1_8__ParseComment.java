@@ -45,7 +45,7 @@ public class V1_8__ParseComment implements JdbcMigration {
                 "WHERE sense_id = ?";
 
         String DELETE_QUERY = "DELETE FROM " + ATTRIBUTE_TABLE + " WHERE sense_id = ?";
-        String INSERT_EXAMPLE_QUERY = "INSERT INTO wordnet.sense_examples (attribute_sense_id, type, example) VALUES(?, ?, ?)";
+        String INSERT_EXAMPLE_QUERY = "INSERT INTO wordnet.sense_examples (sense_id, type, example) VALUES(?, ?, ?)";
         PreparedStatement updateStatement = connection.prepareStatement(UPDATE_QUERY);
         PreparedStatement deleteStatement = connection.prepareStatement(DELETE_QUERY);
         PreparedStatement insertExampleStatement = connection.prepareStatement(INSERT_EXAMPLE_QUERY);

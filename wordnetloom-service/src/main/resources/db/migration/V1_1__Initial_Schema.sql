@@ -94,7 +94,7 @@ CREATE TABLE sense_attributes (
   register      VARCHAR(255),
   user_id       BIGINT,
   error_comment TEXT,
-  PRIMARY KEY (id)
+  PRIMARY KEY (sense_id)
 );
 
 CREATE TABLE sense_examples (

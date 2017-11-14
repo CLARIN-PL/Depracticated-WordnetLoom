@@ -64,55 +64,9 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     public List<Sense> findByCriteria(SenseCriteriaDTO dto) {
-
-        //TODO zrobić sortowanie
         List<Sense> senses = getSensesByCriteria(dto);
         Collections.sort(senses, getSenseComparator());
         return senses;
-    }
-
-    /** Zwraca komparator, który porównuje jednostki według nastepujących kryteriów
-     *  1. słówko
-     *  2. częśc mowy
-     *  3. numer jednostki - wariant
-     *  4. leksykon
-     * @return komparator porównujący jednostki
-     */
-    private Comparator<Sense> getSenseComparator() {
-        Collator collator = Collator.getInstance(Locale.US);
-        String rules = ((RuleBasedCollator) collator).getRules();
-        try {
-            collator = new RuleBasedCollator(rules.replaceAll("<'\u005f'", "<' '<'\u005f'"));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        collator.setStrength(Collator.PRIMARY);
-        collator.setDecomposition(Collator.NO_DECOMPOSITION);
-
-        final Collator finalCollator = collator;
-
-        Comparator<Sense> senseComparator = (Sense a, Sense b) ->{
-            // porównywanie
-            String valueA = a.getWord().getWord().toLowerCase();
-            String valueB = b.getWord().getWord().toLowerCase();
-
-            int compareResult = finalCollator.compare(valueA, valueB);
-            if(compareResult == 0){
-                Long longValueA = a.getPartOfSpeech().getId();
-                Long longValueB = b.getPartOfSpeech().getId();
-                compareResult = longValueA.compareTo(longValueB); //TODO sprawdzić czy kolejnośc jest dobra
-            }
-            if(compareResult == 0){
-                compareResult = a.getVariant().compareTo(b.getVariant());
-            }
-            if(compareResult == 0){
-                compareResult = a.getLexicon().getId().compareTo(b.getLexicon().getId());
-            }
-
-            return compareResult;
-        };
-
-        return senseComparator;
     }
 
     private List<Sense> getSensesByCriteria(SenseCriteriaDTO dto){
@@ -172,6 +126,50 @@ public class SenseRepository extends GenericRepository<Sense> {
         query.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[0])));
 
         return em.createQuery(query).getResultList();
+    }
+
+    /** Zwraca komparator, który porównuje jednostki według nastepujących kryteriów
+     *  1. słówko
+     *  2. częśc mowy
+     *  3. numer jednostki - wariant
+     *  4. leksykon
+     * @return komparator porównujący jednostki
+     */
+    private Comparator<Sense> getSenseComparator() {
+        Collator collator = Collator.getInstance(Locale.US);
+        String rules = ((RuleBasedCollator) collator).getRules();
+        try {
+            collator = new RuleBasedCollator(rules.replaceAll("<'\u005f'", "<' '<'\u005f'"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        collator.setStrength(Collator.PRIMARY);
+        collator.setDecomposition(Collator.NO_DECOMPOSITION);
+
+        final Collator finalCollator = collator;
+
+        Comparator<Sense> senseComparator = (Sense a, Sense b) ->{
+            // porównywanie
+            String valueA = a.getWord().getWord().toLowerCase();
+            String valueB = b.getWord().getWord().toLowerCase();
+
+            int compareResult = finalCollator.compare(valueA, valueB);
+            if(compareResult == 0){
+                Long longValueA = a.getPartOfSpeech().getId();
+                Long longValueB = b.getPartOfSpeech().getId();
+                compareResult = longValueA.compareTo(longValueB); //TODO sprawdzić czy kolejnośc jest dobra
+            }
+            if(compareResult == 0){
+                compareResult = a.getVariant().compareTo(b.getVariant());
+            }
+            if(compareResult == 0){
+                compareResult = a.getLexicon().getId().compareTo(b.getLexicon().getId());
+            }
+
+            return compareResult;
+        };
+
+        return senseComparator;
     }
 
     private List<Sense> getSenses(String filter, PartOfSpeech pos, Domain domain, RelationType relationType,
