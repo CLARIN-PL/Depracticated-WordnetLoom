@@ -65,7 +65,7 @@ public class SenseRepository extends GenericRepository<Sense> {
 
     public List<Sense> findByCriteria(SenseCriteriaDTO dto) {
         List<Sense> senses = getSensesByCriteria(dto);
-        Collections.sort(senses, getSenseComparator());
+//        Collections.sort(senses, getSenseComparator());
         return senses;
     }
 
@@ -77,7 +77,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         Join<Sense, Word> wordJoin = senseRoot.join("word");
         query.select(senseRoot);
         List<Predicate> criteriaList = new ArrayList<>();
-        Predicate lemmaPredicate  = criteriaBuilder.like(wordJoin.get("word"), "%"+dto.getLemma()+"%"); //TODO zobaczyć, czy nie będzie trzeba dodac jakiegoś %
+        Predicate lemmaPredicate  = criteriaBuilder.like(wordJoin.get("word"), dto.getLemma()+"%");
         criteriaList.add(lemmaPredicate);
         Predicate lexiconPredicate = senseRoot.get("lexicon").in(dto.getLexicons());
         criteriaList.add(lexiconPredicate);
@@ -103,12 +103,12 @@ public class SenseRepository extends GenericRepository<Sense> {
                 Predicate senseAttributesPredicate = criteriaBuilder.equal(senseAttributesJoin.get("register"), dto.getRegisterId());
                 criteriaList.add(senseAttributesPredicate);
             }
-            if(dto.getComment() != null){
+            if(dto.getComment() !=null && !dto.getComment().isEmpty()){
                 Predicate commentPredicate = criteriaBuilder.like(senseAttributesJoin.get("comment"), "%" + dto.getComment() + "%");
                 criteriaList.add(commentPredicate);
             }
         }
-        if(dto.getExample() != null){
+        if(dto.getExample() != null && !dto.getExample().isEmpty()){
             Join<Sense, SenseExample> senseExample = senseRoot.join("examples");
             Predicate examplePredicate = criteriaBuilder.like(senseExample.get("examples"),dto.getExample());
             criteriaList.add(examplePredicate);
@@ -125,7 +125,23 @@ public class SenseRepository extends GenericRepository<Sense> {
 
         query.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[0])));
 
-        return em.createQuery(query).getResultList();
+        List<Order> orders = new ArrayList<>();
+        orders.add(criteriaBuilder.asc(wordJoin.get("word")));
+        orders.add(criteriaBuilder.asc(senseRoot.get("partOfSpeech")));
+        orders.add(criteriaBuilder.asc(senseRoot.get("variant")));
+        orders.add(criteriaBuilder.asc(senseRoot.get("lexicon")));
+
+        query.orderBy(orders);
+
+        Query selectQuery = em.createQuery(query);
+        if(dto.getLimit() > 0){
+            selectQuery.setMaxResults(dto.getLimit());
+        }
+        if(dto.getOffset() > 0){
+            selectQuery.setFirstResult(dto.getOffset());
+        }
+
+        return selectQuery.getResultList();
     }
 
     /** Zwraca komparator, który porównuje jednostki według nastepujących kryteriów
@@ -135,7 +151,7 @@ public class SenseRepository extends GenericRepository<Sense> {
      *  4. leksykon
      * @return komparator porównujący jednostki
      */
-    private Comparator<Sense> getSenseComparator() {
+    private Comparator<Sense> getSenseComparator(final String lemma) {
         Collator collator = Collator.getInstance(Locale.US);
         String rules = ((RuleBasedCollator) collator).getRules();
         try {
@@ -149,7 +165,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         final Collator finalCollator = collator;
 
         Comparator<Sense> senseComparator = (Sense a, Sense b) ->{
-            // porównywanie
+
             String valueA = a.getWord().getWord().toLowerCase();
             String valueB = b.getWord().getWord().toLowerCase();
 

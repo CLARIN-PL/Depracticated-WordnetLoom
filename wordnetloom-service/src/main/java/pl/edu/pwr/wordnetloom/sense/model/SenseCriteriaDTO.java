@@ -18,6 +18,9 @@ public class SenseCriteriaDTO implements Serializable {
     private Long register;
     private Long synsetId;
 
+    private int limit;
+    private int offset;
+
     public SenseCriteriaDTO(Long partOfSpeechId, Long domainId, String lemma, List<Long> lexicons) {
         this.partOfSpeechId = partOfSpeechId;
         this.domainId = domainId;
@@ -120,4 +123,13 @@ public class SenseCriteriaDTO implements Serializable {
     public void setSynsetId(Long synsetId) {
         this.synsetId = synsetId;
     }
+
+    public int getLimit(){return limit;}
+    public void setLimit(int limit){this.limit = limit;}
+
+    public int getOffset(){return offset;}
+    public void setOffset(int offset){
+        this.offset = offset;
+    }
+
 }

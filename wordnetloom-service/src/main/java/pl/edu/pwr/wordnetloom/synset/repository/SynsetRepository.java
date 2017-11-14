@@ -669,32 +669,33 @@ public class SynsetRepository extends GenericRepository<Synset> {
 //            List<SynsetRelation> relations = synsetRelationRepository.findRelations(synset);
 //            map.put(rootEntry.getSynset().getId(), rootEntry);
 
-            List<SynsetInfo> infos = em.createQuery(
-                    "SELECT NEW pl.edu.pwr.wordnetloom.model.dto.SynsetInfo(sy.id, se.partOfSpeech.id, name.text, lemma.word, syt.value.text, se.senseNumber, lexId.text) " +
-                            "FROM Sense AS se JOIN se.synset AS sy  " +
-                            "JOIN se.domain AS dom " +
-                            "JOIN dom.nameStrings AS name " +
-                            "JOIN sy.synsetAttributes AS syt " +
-                            "JOIN se.word as lemma " +
-                            "JOIN se.lexicon as lex " +
-                            "JOIN lex.identifier as lexId " +
-                            "WHERE se.synset_position = 0 AND syt.type.typeName.text = :abstractName AND sy.id IN (:ids)",
-                    SynsetInfo.class)
-                    .setParameter("abstractName", 0) // TODO zobaczyć, czy 0 to dobra wartość
-                    .setParameter("ids", lexicons)
-                    .getResultList();
-            List<CountInfo> counts = em.createQuery("SELECT NEW pl.edu.pwr.wordnetloom.model.dto.CountInfo(sy.id, count(se)) " +
-                    "FROM Synset AS sy JOIN sy.senseToSynset AS sts JOIN sts.sense AS se " +
-                    "WHERE sy.id IN (:ids) GROUP BY sy.id", CountInfo.class)
-                    .setParameter("ids", lexicons)
-                    .getResultList();
-            Map<Long, CountInfo> counter = counts.stream().collect(Collectors.toMap(CountInfo::getSynsetID, p -> p));
-
-            for (SynsetInfo synsetInfo : infos) {
-                DataEntry dataEntry = map.get(synsetInfo.getSynsetID());
-                StringBuilder stringBuilder = new StringBuilder();
-
-            }
+            //TODO odkomentować i przerobić
+//            List<SynsetInfo> infos = em.createQuery(
+//                    "SELECT NEW pl.edu.pwr.wordnetloom.model.dto.SynsetInfo(sy.id, se.partOfSpeech.id, name.text, lemma.word, syt.value.text, se.senseNumber, lexId.text) " +
+//                            "FROM Sense AS se JOIN se.synset AS sy  " +
+//                            "JOIN se.domain AS dom " +
+//                            "JOIN dom.nameStrings AS name " +
+//                            "JOIN sy.synsetAttributes AS syt " +
+//                            "JOIN se.word as lemma " +
+//                            "JOIN se.lexicon as lex " +
+//                            "JOIN lex.identifier as lexId " +
+//                            "WHERE se.synset_position = 0 AND syt.type.typeName.text = :abstractName AND sy.id IN (:ids)",
+//                    SynsetInfo.class)
+//                    .setParameter("abstractName", 0) // TODO zobaczyć, czy 0 to dobra wartość
+//                    .setParameter("ids", lexicons)
+//                    .getResultList();
+//            List<CountInfo> counts = em.createQuery("SELECT NEW pl.edu.pwr.wordnetloom.model.dto.CountInfo(sy.id, count(se)) " +
+//                    "FROM Synset AS sy JOIN sy.senseToSynset AS sts JOIN sts.sense AS se " +
+//                    "WHERE sy.id IN (:ids) GROUP BY sy.id", CountInfo.class)
+//                    .setParameter("ids", lexicons)
+//                    .getResultList();
+//            Map<Long, CountInfo> counter = counts.stream().collect(Collectors.toMap(CountInfo::getSynsetID, p -> p));
+//
+//            for (SynsetInfo synsetInfo : infos) {
+//                DataEntry dataEntry = map.get(synsetInfo.getSynsetID());
+//                StringBuilder stringBuilder = new StringBuilder();
+//
+//            }
         }
 
         return null;

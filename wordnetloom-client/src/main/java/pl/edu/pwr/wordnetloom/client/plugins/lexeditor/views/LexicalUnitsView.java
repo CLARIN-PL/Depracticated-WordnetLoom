@@ -38,7 +38,7 @@ public class LexicalUnitsView extends AbstractView {
      */
     public void refreshData() {
         LexicalUnitsViewUI viewUI = (LexicalUnitsViewUI) getUI(); // odczytanie UI
-        viewUI.refreshData();
+        viewUI.refreshData(15, 0); //TODO będzie to rzeba jakoś ogarnąć
     }
 
     /**

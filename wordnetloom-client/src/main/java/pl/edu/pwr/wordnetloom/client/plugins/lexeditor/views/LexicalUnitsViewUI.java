@@ -8,12 +8,14 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.LazyScrollPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButtonPanel;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
@@ -24,6 +26,7 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -32,6 +35,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -46,7 +50,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     private static final String SUPER_MODE = "SuperMode";
 
     private SenseCriteria criteria;
-    private ToolTipList unitsList;
+//    private ToolTipList unitsList;
+    private JList unitsList;
     private JLabel infoLabel;
 
     private MButton btnSearch, btnReset, btnNew, btnDelete, btnNewWithSyns, btnAddToSyns;
@@ -55,6 +60,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     private final GenericListModel<Sense> listModel = new GenericListModel<>();
     private Sense lastSelectedValue = null;
+
+    LazyScrollPane unitsListScrollPane;
 
     @Override
     protected void initialize(WebPanel content) {
@@ -115,7 +122,12 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         content.add("br center", btnSearch);
         content.add("center", btnReset);
         content.add("br left", new LabelExt(Labels.LEXICAL_UNITS_COLON, 'j', unitsList));
-        content.add("br hfill vfill", new JScrollPane(unitsList));
+        unitsListScrollPane = new LazyScrollPane(unitsList, 15);
+        unitsListScrollPane.setScrollListener((page, limit) -> {
+            refreshData(unitsListScrollPane.getLimit(), unitsListScrollPane.getOffset());
+            System.out.println("Koniec");
+        });
+        content.add("br hfill vfill", unitsListScrollPane);
         content.add("br left", infoLabel);
 
         content.add("br center", buttons);
@@ -162,15 +174,19 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     /**
      * odświeżenie listy jednostek
      */
-    public void refreshData() {
+    public void refreshData(int limit,int offset) {
+        if(offset == 0){
+            unitsListScrollPane.reset();
 
-        int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
+        }
+//        int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
         String oldFilter = criteria.getSearchTextField().getText();
         Domain oldDomain = criteria.getDomainComboBox().retriveComboBoxItem();
         RelationType oldRelation = criteria.getSenseRelationTypeComboBox().retriveComboBoxItem();
         String register = criteria.getRegisterComboBox().getSelectedIndex() == 0 ? null : criteria.getRegisterComboBox().getSelectedItem().toString();
         String comment = criteria.getComment().getText();
         String example = criteria.getExample().getText();
+
 
         List<Long> lexicons = new ArrayList<>();
 
@@ -188,9 +204,20 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                     lexicons.addAll(LexiconManager.getInstance().getLexicons());
                 }
 
-                units = LexicalDA.getLexicalUnits(oldFilter,
-                        oldDomain, criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem(),
-                        oldRelation, register, comment, example, limitSize, lexicons);
+//                units = LexicalDA.getLexicalUnits(oldFilter,
+//                        oldDomain, criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem(),
+//                        oldRelation, register, comment, example, limitSize, lexicons);
+                Long partOfSpeech = criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem().getId();
+                Long domainId = oldDomain == null ? null : oldDomain.getId();
+                SenseCriteriaDTO dto = new SenseCriteriaDTO(partOfSpeech,domainId, oldFilter, lexicons);
+
+                dto.setLimit(limit);
+                dto.setOffset(offset);
+                // TODO przerobić jakoś register, aby w combo były numery id
+                dto.setComment(comment);
+                dto.setExample(example);
+
+                units = RemoteService.senseRemote.findByCriteria(dto);
 
                 // odczytanie zaznaczonej jednostki
                 if (lastSelectedValue == null && unitsList != null
@@ -201,7 +228,11 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                     workbench.setBusy(false);
                 }
                 criteria.setSensesToHold(units);
-                listModel.setCollection(units);
+
+                Collection<Sense> newModelCollection = listModel.getCollection();
+                newModelCollection.addAll(units);
+
+                listModel.setCollection(newModelCollection);
                 return null;
             }
 
@@ -238,7 +269,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
         // wywolanie search
         if (event.getSource() == btnSearch) {
-            refreshData();
+            refreshData(15,0);
         } else if (event.getSource() == btnReset) {
             criteria.resetFields();
         } else if (event.getSource() == btnDelete) {
@@ -282,7 +313,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                     listeners.notifyAllListeners(null);
                 }
             }
-            refreshData();
+            refreshData(15,0); //TODO tutaj będzie to trzeba jakoś ogarnąć
 
         } else if (event.getSource() == btnAddToSyns) {
             int i = unitsList.getSelectedIndex();
@@ -371,7 +402,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         super.keyPressed(event);
         if (!event.isConsumed() && event.getSource() == criteria.getSearchTextField() && event.getKeyChar() == KeyEvent.VK_ENTER) {
             event.consume();
-            refreshData();
+            refreshData(15, 0); //TODO tutaj to będzie trzeba jakoś ogarnąć
         }
     }
 
