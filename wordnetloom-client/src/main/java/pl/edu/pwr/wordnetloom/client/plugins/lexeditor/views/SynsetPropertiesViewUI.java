@@ -7,8 +7,8 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MTextArea;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
-import pl.edu.pwr.wordnetloom.client.systems.ui.TextAreaPlain;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
@@ -29,8 +29,8 @@ import java.awt.event.ActionListener;
  */
 public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionListener, CaretListener {
 
-    private TextAreaPlain definitionValue;
-    private TextAreaPlain commentValue;
+    private MTextArea definitionValue;
+    private MTextArea commentValue;
 
     private final MButton buttonSave = MButton.buildSaveButton()
             .withToolTip(Hints.SAVE_CHANGES_IN_SYNSET)
@@ -52,11 +52,11 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         content.setLayout(new RiverLayout());
 
-        definitionValue = new TextAreaPlain(Labels.VALUE_UNKNOWN);
+        definitionValue = new MTextArea(Labels.VALUE_UNKNOWN);
         definitionValue.addCaretListener(this);
         definitionValue.setRows(3);
 
-        commentValue = new TextAreaPlain(Labels.VALUE_UNKNOWN);
+        commentValue = new MTextArea(Labels.VALUE_UNKNOWN);
         commentValue.addCaretListener(this);
         commentValue.setRows(3);
 
@@ -171,8 +171,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             MTextField field = (MTextField) arg0.getSource();
             buttonSave.setEnabled(buttonSave.isEnabled() | field.wasTextChanged());
         }
-        if (arg0.getSource() instanceof TextAreaPlain) {
-            TextAreaPlain field = (TextAreaPlain) arg0.getSource();
+        if (arg0.getSource() instanceof MTextArea) {
+            MTextArea field = (MTextArea) arg0.getSource();
             buttonSave.setEnabled(buttonSave.isEnabled() | field.wasTextChanged());
         }
     }

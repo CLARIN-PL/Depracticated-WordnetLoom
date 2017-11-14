@@ -17,35 +17,31 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import javax.swing.*;
+import com.alee.laf.label.WebLabel;
+
 import java.awt.*;
 
-public class LabelExt extends JLabel {
+public class MLabel extends WebLabel {
 
-    private static final long serialVersionUID = 1L;
+    public MLabel(String caption) {
+        super(caption);
+    }
 
-    /**
-     * konstruktor
-     *
-     * @param caption           - etykieta
-     * @param displayedMnemonic - znaczek do pokreslenia
-     */
-    public LabelExt(String caption, char displayedMnemonic) {
+    public MLabel(String caption, char displayedMnemonic) {
         super(caption);
         setDisplayedMnemonic(displayedMnemonic);
     }
 
-    /**
-     * konstruktor
-     *
-     * @param caption           - etykieta
-     * @param displayedMnemonic - znaczek do pokreslenia
-     * @param labelFor          - jest to etykieta dla
-     */
-    public LabelExt(String caption, char displayedMnemonic, Component labelFor) {
+    public MLabel(String caption, char displayedMnemonic, Component labelFor) {
         super(caption);
         setDisplayedMnemonic(displayedMnemonic);
         setLabelFor(labelFor);
+    }
+
+    public MLabel withPlainFont() {
+        Font newFont = getFont().deriveFont(Font.PLAIN);
+        setFont(newFont);
+        return this;
     }
 
 }

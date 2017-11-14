@@ -66,11 +66,6 @@ public class MTextField extends WebTextField implements Serializable {
         oldValue = text;
     }
 
-    /**
-     * czy tekst się zmienił
-     *
-     * @return true jeśli tekst się zmienił
-     */
     public boolean wasTextChanged() {
         String value = getText();
         if (oldValue == null && value == null) {

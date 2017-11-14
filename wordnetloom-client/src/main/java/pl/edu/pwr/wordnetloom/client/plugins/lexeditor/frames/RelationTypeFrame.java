@@ -22,14 +22,14 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
 
     protected static final long serialVersionUID = 1L;
 
-    protected ComboBoxPlain relationType;
-    protected ComboBoxPlain relationSubType;
+    protected MComboBox relationType;
+    protected MComboBox relationSubType;
     protected MButton buttonChoose, buttonCancel;
-    protected TextAreaPlain description;
+    protected MTextArea description;
     protected JList testsLit;
-    protected static ComboBoxPlain parentItem;
-    protected ComboBoxPlain middleItem;
-    protected static ComboBoxPlain childItem;
+    protected static MComboBox parentItem;
+    protected MComboBox middleItem;
+    protected static MComboBox childItem;
     protected RelationType fixedRelationType;
     protected RelationType chosenType = null;
     protected ArrayList<RelationType> mainRelations = null;
@@ -65,13 +65,13 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         //this.setAlwaysOnTop(true);
 
         // element nadrzedny
-        parentItem = new ComboBoxPlain();
+        parentItem = new MComboBox();
         for (Sense parent : parentUnits) {
             parentItem.addItem(parent.getWord().getWord());
         }
 
         // element podrzedny
-        childItem = new ComboBoxPlain();
+        childItem = new MComboBox();
         for (Sense child : childUnits) {
             childItem.addItem(child.getWord().getWord());
         }
@@ -83,7 +83,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         }
 
         // element posredni
-        middleItem = new ComboBoxPlain();
+        middleItem = new MComboBox();
         if (middleUnits != null && !middleUnits.isEmpty()) {
             for (Sense middle : middleUnits) {
                 middleItem.addItem(middle.getWord());
@@ -93,7 +93,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         }
 
         // opis relacji
-        description = new TextAreaPlain("");
+        description = new MTextArea("");
         description.setRows(6);
         description.setEditable(false);
 
@@ -101,12 +101,12 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         testsLit = new JList();
 
         // podtyp relacji
-        relationSubType = new ComboBoxPlain();
+        relationSubType = new MComboBox();
         relationSubType.addKeyListener(this);
         relationSubType.setEnabled(false);
 
         // typ relacji
-        relationType = new ComboBoxPlain();
+        relationType = new MComboBox();
         relationType.addKeyListener(this);
 
         // wyswietlenie relacji
@@ -162,23 +162,23 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         childItem.addActionListener(this);
 
         // dodanie elemetow UI do okna
-        add("", new LabelExt(Labels.RELATION_TYPE_COLON, 't', relationType));
+        add("", new MLabel(Labels.RELATION_TYPE_COLON, 't', relationType));
         add("tab hfill", relationType);
-        add("br", new LabelExt(Labels.RELATION_SUBTYPE_COLON, 'y', relationType));
+        add("br", new MLabel(Labels.RELATION_SUBTYPE_COLON, 'y', relationType));
         add("tab hfill", relationSubType);
-        add("br", new LabelExt(Labels.RELATION_DESC_COLON, '\0', description));
+        add("br", new MLabel(Labels.RELATION_DESC_COLON, '\0', description));
         add("br hfill", new JScrollPane(description));
 
-        add("br", new LabelExt(Labels.SOURCE_UNIT_COLON, 'r', parentItem));
+        add("br", new MLabel(Labels.SOURCE_UNIT_COLON, 'r', parentItem));
         add("tab hfill", parentItem);
 
         if (middleItem.isEnabled()) {
-            add("br", new LabelExt(Labels.INTERMEDIATE_UNIT_COLON, 'p', parentItem));
+            add("br", new MLabel(Labels.INTERMEDIATE_UNIT_COLON, 'p', parentItem));
             add("tab hfill", middleItem);
         }
-        add("br", new LabelExt(Labels.TARGET_UNIT_COLON, 'd', childItem));
+        add("br", new MLabel(Labels.TARGET_UNIT_COLON, 'd', childItem));
         add("tab hfill", childItem);
-        add("br", new LabelExt(Labels.TESTS_COLON, '\0', testsLit));
+        add("br", new MLabel(Labels.TESTS_COLON, '\0', testsLit));
         add("br hfill vfill", new JScrollPane(testsLit));
         add("br center", buttonChoose);
         add("", buttonCancel);

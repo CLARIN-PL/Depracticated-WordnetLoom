@@ -7,6 +7,8 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.text.WebPasswordField;
 import com.alee.laf.text.WebTextField;
+import jiconfont.icons.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import pl.edu.pwr.wordnetloom.client.Main;
@@ -44,7 +46,7 @@ public class LoginWindow extends DialogWindow implements KeyListener {
         cmbLanguage = new WebComboBox(Language.values());
         lblUsername = new WebLabel();
         btnPanel = new WebPanel();
-        btnOk = new WebButton();
+        btnSignIn = new WebButton();
         btnCancel = new WebButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -54,10 +56,10 @@ public class LoginWindow extends DialogWindow implements KeyListener {
         setIconImage(Toolkit.getDefaultToolkit().getImage("/icons/wordnet.gif"));
         setIconImages(null);
         setModal(true);
-        setName("loginDialogWindow"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(520, 260));
+        setName("loginDialogWindow");
+        setPreferredSize(new java.awt.Dimension(520, 350));
         setResizable(false);
-        setSize(new java.awt.Dimension(520, 260));
+        setSize(new java.awt.Dimension(520, 350));
         getContentPane().setLayout(null);
 
         lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/login-top.png"))); // NOI18N
@@ -123,11 +125,15 @@ public class LoginWindow extends DialogWindow implements KeyListener {
 
         btnPanel.setBackground(new java.awt.Color(190, 190, 190));
 
-        btnOk.setText("Ok");
-        btnOk.addActionListener(evt -> btnOkActionPerformed(evt));
+        btnSignIn.setText("Sign in");
+        Icon singInIcon = IconFontSwing.buildIcon(FontAwesome.SIGN_IN, 11);
+        btnSignIn.addActionListener(evt -> btnOkActionPerformed(evt));
+        btnSignIn.setIcon(singInIcon);
 
         btnCancel.setText("Cancel");
+        Icon cancelIcon = IconFontSwing.buildIcon(FontAwesome.TIMES, 11);
         btnCancel.addActionListener(evt -> btnCancelActionPerformed(evt));
+        btnCancel.setIcon(cancelIcon);
 
         javax.swing.GroupLayout btnPanelLayout = new javax.swing.GroupLayout(btnPanel);
         btnPanel.setLayout(btnPanelLayout);
@@ -135,7 +141,7 @@ public class LoginWindow extends DialogWindow implements KeyListener {
                 btnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnPanelLayout.createSequentialGroup()
                                 .addContainerGap(291, Short.MAX_VALUE)
-                                .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnSignIn, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(34, 34, 34))
@@ -145,17 +151,17 @@ public class LoginWindow extends DialogWindow implements KeyListener {
                         .addGroup(btnPanelLayout.createSequentialGroup()
                                 .addGap(14, 14, 14)
                                 .addGroup(btnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnOk)
+                                        .addComponent(btnSignIn)
                                         .addComponent(btnCancel))
                                 .addContainerGap(142, Short.MAX_VALUE))
         );
 
         getContentPane().add(btnPanel);
-        btnPanel.setBounds(0, 200, 520, 60);
+        btnPanel.setBounds(0, 200, 520, 100);
 
         getAccessibleContext().setAccessibleDescription("");
 
-        setBounds(0, 0, 516, 287);
+        setBounds(0, 0, 516, 350);
     }
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
@@ -194,11 +200,11 @@ public class LoginWindow extends DialogWindow implements KeyListener {
         txtPassword.addKeyListener(this);
         txtUsername.addKeyListener(this);
         cmbLanguage.addKeyListener(this);
-        btnOk.addKeyListener(this);
+        btnSignIn.addKeyListener(this);
     }
 
     private void initWindowPosition() {
-        setInScreenCenter(520, 260);
+        setInScreenCenter(520, 285);
     }
 
     public void setThreadOnSuccess(final Thread t) {
@@ -209,26 +215,8 @@ public class LoginWindow extends DialogWindow implements KeyListener {
         return (Language) cmbLanguage.getSelectedItem();
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(() -> {
-            LoginWindow dialog = new LoginWindow(new WebFrame());
-            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    System.exit(0);
-                }
-            });
-            dialog.setVisible(true);
-        });
-    }
-
     private WebButton btnCancel;
-    private WebButton btnOk;
+    private WebButton btnSignIn;
     private WebPanel btnPanel;
     private WebComboBox cmbLanguage;
     private WebPanel fieldsPanel;
@@ -247,7 +235,7 @@ public class LoginWindow extends DialogWindow implements KeyListener {
     public void keyPressed(KeyEvent evt) {
         if (evt.getModifiers() == 0 && evt.getKeyCode() == KeyEvent.VK_ENTER) {
             evt.consume();
-            btnOk.doClick();
+            btnSignIn.doClick();
         }
     }
 

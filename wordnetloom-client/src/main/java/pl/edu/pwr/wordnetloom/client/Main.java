@@ -50,7 +50,10 @@ public class Main {
         });
 
         WebLookAndFeel.install();
+        WebLookAndFeel.setDecorateFrames(true);
+        WebLookAndFeel.setDecorateDialogs(true);
         IconFontSwing.register(FontAwesome.getIconFont());
+
 
         LoginWindow dialog = new LoginWindow(new WebFrame());
         dialog.addWindowListener(new java.awt.event.WindowAdapter() {

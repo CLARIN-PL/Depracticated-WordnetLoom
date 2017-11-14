@@ -9,7 +9,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
-import pl.edu.pwr.wordnetloom.client.systems.ui.DomainComboBox;
+import pl.edu.pwr.wordnetloom.client.systems.ui.DomainMComboBox;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -142,7 +142,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
 
         if (lastPickDomain != null) {
             modalFrame.editPanel.getDomain().setSelectedItem(
-                    new CustomDescription<>(DomainComboBox.nameWithoutPrefix(lastPickDomain.toString()), lastPickDomain));
+                    new CustomDescription<>(DomainMComboBox.nameWithoutPrefix(lastPickDomain.toString()), lastPickDomain));
         }
 
         modalFrame.editPanel.getRegister().setSelectedItem(RegisterTypes.OG);

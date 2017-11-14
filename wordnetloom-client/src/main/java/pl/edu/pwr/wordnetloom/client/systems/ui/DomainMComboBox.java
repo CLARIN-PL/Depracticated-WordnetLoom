@@ -9,13 +9,13 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DomainComboBox extends ComboBoxPlain<Domain> {
+public class DomainMComboBox extends MComboBox<Domain> {
 
     private static final long serialVersionUID = -5108640841659123235L;
     private List<Domain> all;
     private final String nullRepresentation;
 
-    public DomainComboBox(String nullItemRepresentation) {
+    public DomainMComboBox(String nullItemRepresentation) {
         nullRepresentation = nullItemRepresentation;
     }
 

@@ -9,9 +9,9 @@ import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -53,7 +53,7 @@ public class CandidatesViewUI extends AbstractViewUI
     private JList candsList;
     private JTextField filterEdit;
     private JSpinner pckgSpinner;
-    private ComboBoxPlain posCombo;
+    private MComboBox posCombo;
     private MButton buttonSearch, buttonShow;
     private MButton buttonAdd;
     private JButton buttonRecalc;
@@ -87,7 +87,7 @@ public class CandidatesViewUI extends AbstractViewUI
 
         content.setLayout(new BorderLayout());
 
-        posCombo = new ComboBoxPlain();
+        posCombo = new MComboBox();
         posCombo.setPreferredSize(new Dimension(150, 20));
         loadPoses();
         posCombo.setSelectedItem(pos_default);
@@ -127,9 +127,9 @@ public class CandidatesViewUI extends AbstractViewUI
 
         JPanel packages = new JPanel();
         packages.setLayout(new RiverLayout());
-        packages.add("", new LabelExt(Labels.PARTS_OF_SPEECH_COLON, 'm', posCombo));
+        packages.add("", new MLabel(Labels.PARTS_OF_SPEECH_COLON, 'm', posCombo));
         packages.add("br hfill", posCombo);
-        packages.add("br", new LabelExt(Labels.PACKAGE_NUMBER_COLON, 'p', pckgSpinner));
+        packages.add("br", new MLabel(Labels.PACKAGE_NUMBER_COLON, 'p', pckgSpinner));
         packages.add("br hfill", pckgSpinner);
         packages.add("", infoPackages);
         packages.add("br center", buttonAdd);
@@ -151,7 +151,7 @@ public class CandidatesViewUI extends AbstractViewUI
 
         JPanel criterias = new JPanel();
         criterias.setLayout(new RiverLayout());
-        criterias.add("", new LabelExt(Labels.SEARCH_COLON, 'w', filterEdit));
+        criterias.add("", new MLabel(Labels.SEARCH_COLON, 'w', filterEdit));
         criterias.add("br hfill", filterEdit);
         criterias.add("br center", buttonSearch);
 
@@ -181,7 +181,7 @@ public class CandidatesViewUI extends AbstractViewUI
         all.add("br hfill", scrollCriterias);
 
         lazyPanel.add("hfill", all);
-        lazyPanel.add("br left", new LabelExt(Labels.CANDIDATES_COLON, 'j', candsList));
+        lazyPanel.add("br left", new MLabel(Labels.CANDIDATES_COLON, 'j', candsList));
         lazyPanel.add("br hfill vfill", new JScrollPane(candsList));
         lazyPanel.add("br left", infoLabel);
 

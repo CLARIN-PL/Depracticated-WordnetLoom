@@ -1,19 +1,20 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
-import java.util.List;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
+import java.util.List;
+
 //Lexcion combo
-public class LexiconComboBox extends ComboBoxPlain<Lexicon> {
+public class LexiconMComboBox extends MComboBox<Lexicon> {
 
     private static final long serialVersionUID = -3667933167567163L;
     private List<Lexicon> all;
     private final String nullRepresentation;
 
-    public LexiconComboBox(String nullItemRepresentation) {
-        this.nullRepresentation = nullItemRepresentation;
+    public LexiconMComboBox(String nullItemRepresentation) {
+        nullRepresentation = nullItemRepresentation;
         loadLexicons();
         loadItems();
     }

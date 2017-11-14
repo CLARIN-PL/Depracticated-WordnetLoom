@@ -13,9 +13,9 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButtonPanel;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
@@ -114,7 +114,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         content.add("hfill", scroll);
         content.add("br center", btnSearch);
         content.add("center", btnReset);
-        content.add("br left", new LabelExt(Labels.LEXICAL_UNITS_COLON, 'j', unitsList));
+        content.add("br left", new MLabel(Labels.LEXICAL_UNITS_COLON, 'j', unitsList));
         content.add("br hfill vfill", new JScrollPane(unitsList));
         content.add("br left", infoLabel);
 

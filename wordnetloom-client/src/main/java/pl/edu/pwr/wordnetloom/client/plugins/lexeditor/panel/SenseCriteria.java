@@ -2,8 +2,8 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
-import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public final class SenseCriteria extends CriteriaPanel {
 
-    private ComboBoxPlain<RegisterTypes> registerComboBox;
+    private MComboBox<RegisterTypes> registerComboBox;
     private MTextField comment;
     private MTextField example;
     private CriteriaDTO crit;
@@ -27,7 +27,7 @@ public final class SenseCriteria extends CriteriaPanel {
 
     private void init() {
         crit = new CriteriaDTO();
-        registerComboBox = new ComboBoxPlain<>();
+        registerComboBox = new MComboBox<>();
         registerComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
         for (RegisterTypes reg : RegisterTypes.values()) {
             registerComboBox.addItem(reg);
@@ -52,21 +52,21 @@ public final class SenseCriteria extends CriteriaPanel {
     }
 
     protected void addRegister() {
-        add("br", new LabelExt(Labels.REGISTER_COLON, 'd', registerComboBox));
+        add("br", new MLabel(Labels.REGISTER_COLON, 'd', registerComboBox));
         add("br hfill", registerComboBox);
     }
 
     protected void addComment() {
-        add("br", new LabelExt(Labels.COMMENT_COLON, 'd', comment));
+        add("br", new MLabel(Labels.COMMENT_COLON, 'd', comment));
         add("br hfill", comment);
     }
 
     protected void addExample() {
-        add("br", new LabelExt(Labels.USE_CASE_COLON, 'd', example));
+        add("br", new MLabel(Labels.USE_CASE_COLON, 'd', example));
         add("br hfill", example);
     }
 
-    public ComboBoxPlain<RegisterTypes> getRegisterComboBox() {
+    public MComboBox<RegisterTypes> getRegisterComboBox() {
         return registerComboBox;
     }
 

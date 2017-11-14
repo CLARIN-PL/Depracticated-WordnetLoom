@@ -22,8 +22,8 @@ public class TestEditorWindow extends DialogWindow implements ActionListener {
     private final MButton buttonOk, buttonCancel;
 
     private final MTextField testText;
-    private final ComboBoxPlain posA;
-    private final ComboBoxPlain posB;
+    private final MComboBox posA;
+    private final MComboBox posB;
 
     private PartOfSpeech lastAPos;
     private PartOfSpeech lastBPos;
@@ -55,11 +55,11 @@ public class TestEditorWindow extends DialogWindow implements ActionListener {
         testText.setPreferredSize(normal);
 
         PartOfSpeech[] posArray = PartOfSpeechManager.getInstance().getAll().toArray(new PartOfSpeech[]{});
-        posA = new ComboBoxPlain(posArray);
+        posA = new MComboBox(posArray);
         posA.setPreferredSize(normal);
         posA.setRenderer(new PartOfSpeechCellRenderer());
 
-        posB = new ComboBoxPlain(posArray);
+        posB = new MComboBox(posArray);
         posB.setPreferredSize(normal);
         posB.setRenderer(new PartOfSpeechCellRenderer());
 
@@ -79,8 +79,8 @@ public class TestEditorWindow extends DialogWindow implements ActionListener {
         }
 
 
-//        this.add("", new LabelExt(Labels.PARTS_OF_SPEECH_COLON, 't', posA));
-//        this.add("tab", new LabelExt(Labels.TEST_CONTENT_COLON, 't', testText));
+//        this.add("", new MLabel(Labels.PARTS_OF_SPEECH_COLON, 't', posA));
+//        this.add("tab", new MLabel(Labels.TEST_CONTENT_COLON, 't', testText));
 //
 //        this.add("br", posA);
 //        this.add("tab hfill", testText);
@@ -91,8 +91,8 @@ public class TestEditorWindow extends DialogWindow implements ActionListener {
         String TAB_FILL = RiverLayout.TAB_STOP + " " + RiverLayout.HFILL;
         String TAB_BREAK = RiverLayout.LINE_BREAK + " " + RiverLayout.TAB_STOP;
 
-        LabelExt partOfSpeechALabel = new LabelExt(Labels.PARTS_OF_SPEECH_COLON, 't', posA);
-        LabelExt testContentLabel = new LabelExt(Labels.TEST_CONTENT_COLON, 't', testText);
+        MLabel partOfSpeechALabel = new MLabel(Labels.PARTS_OF_SPEECH_COLON, 't', posA);
+        MLabel testContentLabel = new MLabel(Labels.TEST_CONTENT_COLON, 't', testText);
 
         add(RiverLayout.LINE_BREAK, partOfSpeechALabel);
         add(RiverLayout.TAB_STOP + " " + RiverLayout.HFILL, posA);

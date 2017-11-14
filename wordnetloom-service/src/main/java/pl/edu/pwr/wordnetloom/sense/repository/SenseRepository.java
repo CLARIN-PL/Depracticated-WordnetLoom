@@ -69,7 +69,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         return senses;
     }
 
-    private List<Sense> getSensesByCriteria(SenseCriteriaDTO dto){
+    private List<Sense> getSensesByCriteria(SenseCriteriaDTO dto) {
         //TODO sprawdzić działanie wszystkich warunków
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Sense> query = criteriaBuilder.createQuery(Sense.class);
@@ -77,19 +77,19 @@ public class SenseRepository extends GenericRepository<Sense> {
         Join<Sense, Word> wordJoin = senseRoot.join("word");
         query.select(senseRoot);
         List<Predicate> criteriaList = new ArrayList<>();
-        Predicate lemmaPredicate  = criteriaBuilder.like(wordJoin.get("word"), "%"+dto.getLemma()+"%"); //TODO zobaczyć, czy nie będzie trzeba dodac jakiegoś %
+        Predicate lemmaPredicate = criteriaBuilder.like(wordJoin.get("word"), "%" + dto.getLemma() + "%"); //TODO zobaczyć, czy nie będzie trzeba dodac jakiegoś %
         criteriaList.add(lemmaPredicate);
         Predicate lexiconPredicate = senseRoot.get("lexicon").in(dto.getLexicons());
         criteriaList.add(lexiconPredicate);
-        if(dto.getPartOfSpeechId() != null){
+        if (dto.getPartOfSpeechId() != null) {
             Predicate partOfSpeechPredicate = criteriaBuilder.equal(senseRoot.get("partOfSpeech"), dto.getPartOfSpeechId());
             criteriaBuilder.and(partOfSpeechPredicate);
         }
-        if(dto.getDomainId() != null){
+        if (dto.getDomainId() != null) {
             Predicate domainPredicate = criteriaBuilder.equal(senseRoot.get("domain"), dto.getDomainId());
             criteriaBuilder.and(domainPredicate);
         }
-        if(dto.getRelationTypeId() != null){
+        if (dto.getRelationTypeId() != null) {
             Join<Sense, SenseRelation> incomingRelationsJoin = senseRoot.join("incomingRelations");
             Join<Sense, SenseRelation> outgoingRelationsJoin = senseRoot.join("outgoingRelations");
             Predicate[] relationPredicates = new Predicate[2];
@@ -97,28 +97,28 @@ public class SenseRepository extends GenericRepository<Sense> {
             relationPredicates[1] = criteriaBuilder.equal(outgoingRelationsJoin.get("relationType"), dto.getRelationTypeId());
             criteriaList.add(criteriaBuilder.or(relationPredicates));
         }
-        if(dto.getRegisterId() != null || dto.getComment() != null){
-            Join<Sense,SenseAttributes> senseAttributesJoin = senseRoot.join("senseAttributes");
-            if(dto.getRegisterId() != null){
+        if (dto.getRegisterId() != null || dto.getComment() != null) {
+            Join<Sense, SenseAttributes> senseAttributesJoin = senseRoot.join("senseAttributes");
+            if (dto.getRegisterId() != null) {
                 Predicate senseAttributesPredicate = criteriaBuilder.equal(senseAttributesJoin.get("register"), dto.getRegisterId());
                 criteriaList.add(senseAttributesPredicate);
             }
-            if(dto.getComment() != null){
+            if (dto.getComment() != null) {
                 Predicate commentPredicate = criteriaBuilder.like(senseAttributesJoin.get("comment"), "%" + dto.getComment() + "%");
                 criteriaList.add(commentPredicate);
             }
         }
-        if(dto.getExample() != null){
+        if (dto.getExample() != null) {
             Join<Sense, SenseExample> senseExample = senseRoot.join("examples");
-            Predicate examplePredicate = criteriaBuilder.like(senseExample.get("examples"),dto.getExample());
+            Predicate examplePredicate = criteriaBuilder.like(senseExample.get("examples"), dto.getExample());
             criteriaList.add(examplePredicate);
         }
         // nie wiem czy to tez jest wykorzystywane
-        if(dto.getSynsetId() != null){
+        if (dto.getSynsetId() != null) {
             Predicate synsetPredicate = criteriaBuilder.equal(senseRoot.get("synset"), dto.getSynsetId());
             criteriaList.add(synsetPredicate);
         }
-        if(dto.getVariant() != null) {
+        if (dto.getVariant() != null) {
             Predicate variantPredicate = criteriaBuilder.equal(senseRoot.get("variant"), dto.getVariant());
             criteriaList.add(variantPredicate);
         }
@@ -128,11 +128,13 @@ public class SenseRepository extends GenericRepository<Sense> {
         return em.createQuery(query).getResultList();
     }
 
-    /** Zwraca komparator, który porównuje jednostki według nastepujących kryteriów
-     *  1. słówko
-     *  2. częśc mowy
-     *  3. numer jednostki - wariant
-     *  4. leksykon
+    /**
+     * Zwraca komparator, który porównuje jednostki według nastepujących kryteriów
+     * 1. słówko
+     * 2. częśc mowy
+     * 3. numer jednostki - wariant
+     * 4. leksykon
+     *
      * @return komparator porównujący jednostki
      */
     private Comparator<Sense> getSenseComparator() {
@@ -148,21 +150,21 @@ public class SenseRepository extends GenericRepository<Sense> {
 
         final Collator finalCollator = collator;
 
-        Comparator<Sense> senseComparator = (Sense a, Sense b) ->{
+        Comparator<Sense> senseComparator = (Sense a, Sense b) -> {
             // porównywanie
             String valueA = a.getWord().getWord().toLowerCase();
             String valueB = b.getWord().getWord().toLowerCase();
 
             int compareResult = finalCollator.compare(valueA, valueB);
-            if(compareResult == 0){
+            if (compareResult == 0) {
                 Long longValueA = a.getPartOfSpeech().getId();
                 Long longValueB = b.getPartOfSpeech().getId();
                 compareResult = longValueA.compareTo(longValueB); //TODO sprawdzić czy kolejnośc jest dobra
             }
-            if(compareResult == 0){
+            if (compareResult == 0) {
                 compareResult = a.getVariant().compareTo(b.getVariant());
             }
-            if(compareResult == 0){
+            if (compareResult == 0) {
                 compareResult = a.getLexicon().getId().compareTo(b.getLexicon().getId());
             }
 

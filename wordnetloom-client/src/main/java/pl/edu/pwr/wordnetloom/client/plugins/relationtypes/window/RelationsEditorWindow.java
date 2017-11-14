@@ -1,7 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
-import pl.edu.pwr.wordnetloom.client.systems.ui.ComboBoxPlain;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -28,7 +28,7 @@ public class RelationsEditorWindow extends MFrame { //implements ActionListener,
     private MTextField relationPos;
     private MTextField relationReverse;
     private JFormattedTextField relationColor;
-    private ComboBoxPlain<NodeDirection> relationDirection; //TODO chyba będzie trzeba dodać
+    private MComboBox<NodeDirection> relationDirection; //TODO chyba będzie trzeba dodać
 
     private MButton buttonPos;
     private MButton buttonReverse;
@@ -187,23 +187,23 @@ public class RelationsEditorWindow extends MFrame { //implements ActionListener,
         buttonColor.setToolTipText(Hints.CHOOSE_COLOR_RELATION);
 
         // utowrzenie pola wyboru kierunku relacji
-        relationDirection = new ComboBoxPlain<>();
+        relationDirection = new MComboBox<>();
 
         // utworzenie panelu z testami relacji
 //        JPanel testsPanel = createTestsPanel();
         JPanel testsPanel = new TestsPanel(this);
 
         // utworzenie etykiet
-        LabelExt lexiconLabel = new LabelExt(Labels.LEXICON_COLON, 'l', lexicon);
-        LabelExt nameLabel = new LabelExt(Labels.RELATION_NAME_COLON, 'n', relationName);
-        LabelExt displayLabel = new LabelExt(Labels.DISPALY_FORM_COLON, 'f', relationDisplay);
-        LabelExt shortcutLabel = new LabelExt(Labels.SHORTCUT_COLON, 's', relationShortcut);
-        LabelExt descriptionLabel = new LabelExt(Labels.DESCRIPTION_COLON, 'o', relationPos);
-        LabelExt posLabel = new LabelExt(Labels.PARTS_OF_SPEECH_COLON, 'c', relationPos);
-        LabelExt reverseLabel = new LabelExt(Labels.REVERSE_RELATION, '\0', relationReverse);
-        LabelExt colorLabel = new LabelExt(Labels.COLOR_COLON, 'q', relationColor);
-        LabelExt directionLabel = new LabelExt(Labels.DIRECTION_COLON, 'd', relationDirection);
-        LabelExt testsLabel = new LabelExt(Labels.TESTS_COLON, 't', testsPanel);
+        MLabel lexiconLabel = new MLabel(Labels.LEXICON_COLON, 'l', lexicon);
+        MLabel nameLabel = new MLabel(Labels.RELATION_NAME_COLON, 'n', relationName);
+        MLabel displayLabel = new MLabel(Labels.DISPALY_FORM_COLON, 'f', relationDisplay);
+        MLabel shortcutLabel = new MLabel(Labels.SHORTCUT_COLON, 's', relationShortcut);
+        MLabel descriptionLabel = new MLabel(Labels.DESCRIPTION_COLON, 'o', relationPos);
+        MLabel posLabel = new MLabel(Labels.PARTS_OF_SPEECH_COLON, 'c', relationPos);
+        MLabel reverseLabel = new MLabel(Labels.REVERSE_RELATION, '\0', relationReverse);
+        MLabel colorLabel = new MLabel(Labels.COLOR_COLON, 'q', relationColor);
+        MLabel directionLabel = new MLabel(Labels.DIRECTION_COLON, 'd', relationDirection);
+        MLabel testsLabel = new MLabel(Labels.TESTS_COLON, 't', testsPanel);
 
         String LINE_BREAK = RiverLayout.LINE_BREAK;
         String LEFT_BREAK = RiverLayout.LINE_BREAK + " " + RiverLayout.LEFT;
@@ -538,7 +538,7 @@ class DescriptionTextArea extends JScrollPane {
     private final JTextArea textArea;
 
     public DescriptionTextArea() {
-        textArea = new TextAreaPlain("");
+        textArea = new MTextArea("");
         getViewport().setView(textArea);
     }
 
@@ -897,7 +897,7 @@ class ReverseRelationDialog extends JDialog implements ActionListener {
     }
 
     private void addContentToWindow() {
-        add(new LabelExt(Labels.RELATION_TYPE_COLON, 't', tree));
+        add(new MLabel(Labels.RELATION_TYPE_COLON, 't', tree));
         add("br hfill vfill", new JScrollPane(tree));
         add("br left", autoReverse);
         add("br center", chooseButton);

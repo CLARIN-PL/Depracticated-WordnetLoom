@@ -9,7 +9,6 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Perspective;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.View;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -17,13 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Abstrakcyjna klasa perspektywy, ułatwiająca implementację gdyż zawiera w
- * sobie lwią część implementacji
- *
- * @author Max
- */
-abstract public class AbstractPerspective implements Perspective, MouseListener {
+public abstract class AbstractPerspective implements Perspective, MouseListener {
 
     private static final String PANEL_NAME = "%s (Ctrl %s)";
     private String perspectiveName = null;
@@ -138,7 +131,7 @@ abstract public class AbstractPerspective implements Perspective, MouseListener 
      * @param view - widok
      * @param pane - panel do dołączenia
      */
-    protected void installPane(View view, JTabbedPane pane) {
+    protected void installPane(View view, WebTabbedPane pane) {
         if (pane != null) {
             pane.addTab(String.format(PANEL_NAME, view.getTitle(), indexOfNextView + 1), view.getPanel());
             shortCuts.add(new ShortCut(pane, view.getRootComponent(), MODIFIERS, KEY_CODE + indexOfNextView));

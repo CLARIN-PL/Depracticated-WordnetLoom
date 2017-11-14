@@ -23,43 +23,25 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * nakladka na jcombobox wylaczajaca pogrubiona czcionke
- *
- * @param <T> stored item type
- * @author Max
- */
-public class ComboBoxPlain<T> extends WebComboBox {
+public class MComboBox<T> extends WebComboBox {
 
-    private static final long serialVersionUID = 1L;
     private static Font newFont = new JLabel().getFont().deriveFont(Font.PLAIN);
     private static Color backgroundColor = new JTextField().getBackground();
     private int lastSelectedIndex = 0;
 
-    /**
-     * konstruktor
-     *
-     * @param values - wartosci
-     */
-    public ComboBoxPlain(Object[] values) {
+
+    public MComboBox(Object[] values) {
         super(values);
         setFont(newFont);
         setBackground(backgroundColor);
     }
 
-    /**
-     * konstruktor
-     */
-    public ComboBoxPlain() {
+    public MComboBox() {
         super();
         setFont(newFont);
         setBackground(backgroundColor);
     }
 
-    /*
-     *  (non-Javadoc)
-	 * @see javax.swing.JComboBox#setSelectedIndex(int)
-     */
     @Override
     public void setSelectedIndex(int index) {
         if (super.getItemCount() > index) {
@@ -68,21 +50,13 @@ public class ComboBoxPlain<T> extends WebComboBox {
         lastSelectedIndex = getSelectedIndex();
     }
 
-    /*
-     *  (non-Javadoc)
-	 * @see javax.swing.JComboBox#setSelectedItem(java.lang.Object)
-     */
     @Override
     public void setSelectedItem(Object item) {
         super.setSelectedItem(item);
         lastSelectedIndex = getSelectedIndex();
     }
 
-    /**
-     * czy zmienil sie wybrany elementy
-     *
-     * @return true jesli sie zmienil
-     */
+
     public boolean wasItemChanged() {
         return lastSelectedIndex != getSelectedIndex();
     }

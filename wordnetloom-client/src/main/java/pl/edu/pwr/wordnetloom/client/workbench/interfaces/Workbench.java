@@ -21,21 +21,6 @@ public interface Workbench {
     void setVisible(boolean isVisible);
 
     /**
-     * Ustawienei widiczoności paska narzędziowego na którym znajdują się
-     * przyciski do zmiany perspektywy
-     *
-     * @param isVisible - TRUE okno jest widoczny, FALSE nie
-     */
-    void setToolbarVisible(boolean isVisible);
-
-    /**
-     * Odczytanie widocznosci paska
-     *
-     * @return TRUE jesli widoczny
-     */
-    boolean isToolbarVisible();
-
-    /**
      * Instalacja nowego menu w workbench. Pozycja jest dodawana na końcu
      * aktualnie istniejących. Jeśli zainstalowane jest już menu "Plik" i menu
      * "Edycja" to nowe menu zostanie dodane na prawo od "Edycja"
