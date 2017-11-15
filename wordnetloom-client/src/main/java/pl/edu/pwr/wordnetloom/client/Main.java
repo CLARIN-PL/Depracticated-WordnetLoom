@@ -50,7 +50,6 @@ public class Main {
         });
 
         WebLookAndFeel.install();
-
         IconFontSwing.register(FontAwesome.getIconFont());
 
 
