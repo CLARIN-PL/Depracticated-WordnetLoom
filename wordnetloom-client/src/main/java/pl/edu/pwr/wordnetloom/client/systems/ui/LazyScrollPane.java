@@ -26,18 +26,18 @@ public class LazyScrollPane extends JScrollPane{
         this.list = list;
         this.limit = limit;
         getVerticalScrollBar().addAdjustmentListener(e -> {
-            if(e.getValue() != 0 // zapobieganie wyskakiwaniu
+            if(e.getValue() != 0 
                     && e.getValue() == e.getAdjustable().getMaximum() - e.getAdjustable().getVisibleAmount()
                     && !e.getValueIsAdjusting()){
-                onBottomScroll();
+                    onBottomScroll();
             }
         });
     }
 
     private void onBottomScroll(){
         if(scrollListener != null){
-            scrollListener.onBottomScroll(offset, limit);
             offset = list.getModel().getSize();
+            scrollListener.onBottomScroll(offset, limit);
         }
     }
 

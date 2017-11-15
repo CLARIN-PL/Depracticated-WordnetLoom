@@ -55,7 +55,7 @@ public class LexiconsWindow extends DialogWindow implements ActionListener {
         for (Lexicon lexicon : lexicons) {
             lexiconMap.put(lexicon.getName(), lexicon.getId());
             arrayOfLexiconCheckBoxes[i] = new WebCheckBox(lexicon.getName());
-            arrayOfLexiconCheckBoxes[i].setAnimated(false);
+//            arrayOfLexiconCheckBoxes[i].setAnimated(false);
             if (lexiconsFromConfig.contains(lexicon.getId())) {
                 arrayOfLexiconCheckBoxes[i].setSelected(true);
             } else {
