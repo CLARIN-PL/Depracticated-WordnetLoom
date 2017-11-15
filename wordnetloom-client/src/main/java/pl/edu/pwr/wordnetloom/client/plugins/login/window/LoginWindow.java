@@ -57,9 +57,9 @@ public class LoginWindow extends DialogWindow implements KeyListener {
         setIconImages(null);
         setModal(true);
         setName("loginDialogWindow");
-        setPreferredSize(new java.awt.Dimension(520, 350));
+        setPreferredSize(new java.awt.Dimension(520, 260));
         setResizable(false);
-        setSize(new java.awt.Dimension(520, 350));
+        setSize(new java.awt.Dimension(520, 260));
         getContentPane().setLayout(null);
 
         lblLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/login-top.png"))); // NOI18N
@@ -157,11 +157,11 @@ public class LoginWindow extends DialogWindow implements KeyListener {
         );
 
         getContentPane().add(btnPanel);
-        btnPanel.setBounds(0, 200, 520, 100);
+        btnPanel.setBounds(0, 200, 520, 60);
 
         getAccessibleContext().setAccessibleDescription("");
 
-        setBounds(0, 0, 516, 350);
+        setBounds(0, 0, 516, 287);
     }
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
@@ -204,7 +204,7 @@ public class LoginWindow extends DialogWindow implements KeyListener {
     }
 
     private void initWindowPosition() {
-        setInScreenCenter(520, 285);
+        setInScreenCenter(520, 260);
     }
 
     public void setThreadOnSuccess(final Thread t) {
