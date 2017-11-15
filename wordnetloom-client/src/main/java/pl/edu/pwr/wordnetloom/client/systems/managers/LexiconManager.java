@@ -1,13 +1,14 @@
 package pl.edu.pwr.wordnetloom.client.systems.managers;
 
+import org.apache.log4j.Logger;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+
+import javax.management.InvalidAttributeValueException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.management.InvalidAttributeValueException;
-import org.apache.log4j.Logger;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
-import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
 public final class LexiconManager {
 
@@ -16,7 +17,6 @@ public final class LexiconManager {
     private List<Long> cachedLexicons;
     private List<Lexicon> cachedFullLexicons;
     private boolean lexiconMarker;
-    private final ConfigurationManager config = new ConfigurationManager(PanelWorkbench.WORKBENCH_CONFIG_FILE);
 
     private LexiconManager() {
         loadLexicons();
@@ -46,13 +46,7 @@ public final class LexiconManager {
     }
 
     private void loadLexiconMarker() {
-        config.loadConfiguration();
-        String marker = config.get("LexiconMarker");
-        if (!marker.equals("") &&  marker.equals("on")) {
-            lexiconMarker = true;
-        } else {
-            lexiconMarker = !(!marker.equals("") && marker.equals("off"));
-        }
+        lexiconMarker = RemoteConnectionProvider.getInstance().getUser().getSettings().getLexionMarker();
     }
 
     public List<Lexicon> getFullLexicons() {
@@ -73,12 +67,11 @@ public final class LexiconManager {
 
 
     private List<Long> readLexiconsFromFile() throws InvalidAttributeValueException {
-        config.loadConfiguration();
         List<Long> list = new ArrayList<>();
-        String[] lexiconArray = config.get("Lexicons").split(",");
-        for (String lexiconArray1 : lexiconArray) {
+        String[] lexiconArray = RemoteConnectionProvider.getInstance().getUser().getSettings().getChosenLexicons().split(";");
+        for (String element : lexiconArray) {
             try {
-                Long id = Long.parseLong(lexiconArray1);
+                Long id = Long.parseLong(element);
                 list.add(id);
             } catch (NumberFormatException ex) {
                 throw new InvalidAttributeValueException("Invalid character in lexicon string");
@@ -90,8 +83,8 @@ public final class LexiconManager {
     public List<Long> getLexicons() {
         return cachedLexicons;
     }
-    
-    public List<Long> setLexicons(List<Long> lexicons){
+
+    public List<Long> setLexicons(List<Long> lexicons) {
         cachedLexicons = lexicons;
         return cachedLexicons;
     }
@@ -101,7 +94,4 @@ public final class LexiconManager {
         loadFullLexicons(cachedLexicons);
     }
 
-    public ConfigurationManager getActualConfig() {
-        return config;
-    }
 }

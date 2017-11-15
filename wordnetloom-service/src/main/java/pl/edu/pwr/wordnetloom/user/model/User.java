@@ -3,10 +3,7 @@ package pl.edu.pwr.wordnetloom.user.model;
 import org.hibernate.validator.constraints.Email;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -32,6 +29,9 @@ public class User extends GenericEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserSettings settings;
 
     public User() {
     }
@@ -86,5 +86,13 @@ public class User extends GenericEntity {
 
     public String getFullname() {
         return firstname + " " + lastname;
+    }
+
+    public UserSettings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(UserSettings settings) {
+        this.settings = settings;
     }
 }

@@ -1,14 +1,14 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
-import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
+import com.alee.laf.checkbox.WebCheckBox;
+import pl.edu.pwr.wordnetloom.client.systems.ui.*;
+import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 
 import javax.management.relation.RelationType;
 import javax.swing.*;
+import java.awt.*;
 import java.text.ParseException;
 
 
@@ -18,13 +18,12 @@ public class RelationsEditorWindow extends MFrame { //implements ActionListener,
     private final int MIN_WINDOW_WIDTH = 200;
     private final int MIN_WINDOW_HEIGHT = 400;
 
-    // komponenty panelu dolnego (propertiesPanel)
     private MTextField lexicon;
     private MTextField relationName;
-    private JCheckBox multilingual;
+    private WebCheckBox multilingual;
     private MTextField relationDisplay;
     private MTextField relationShortcut;
-    //private DescriptionTextArea relationDescription;
+    private MTextArea relationDescription;
     private MTextField relationPos;
     private MTextField relationReverse;
     private JFormattedTextField relationColor;
@@ -45,50 +44,28 @@ public class RelationsEditorWindow extends MFrame { //implements ActionListener,
 
     public static void showModal(Workbench workbench) throws ParseException {
         RelationsEditorWindow frame = new RelationsEditorWindow(workbench);
-        // frame.setLocationRelativeTo(workbench.getFrame());
-        // frame.setVisible(true);
+        frame.setLocationRelativeTo(workbench.getFrame());
+        frame.setVisible(true);
         frame.showModal();
     }
 
     private RelationsEditorWindow(Workbench workbench) throws ParseException {
-        //  super(workbench.getFrame(), Labels.EDIT_RELATION_TYPES, 550, 700);
-        // setResizable(true);
-        // setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        super(workbench.getFrame(), Labels.EDIT_RELATION_TYPES, 550, 700);
+        setResizable(true);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        //Dimension separatorSize = new Dimension(10, 10);
+        Dimension separatorSize = new Dimension(10, 10);
         init();
-        //       createView();
+        //createView();
     }
 
     private void init() {
-        //setLayout(new BorderLayout());
-        //setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT));
+        setLayout(new BorderLayout());
+        setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT));
     }
-}
-    /*
-/**
- * Tworzy widok calego okna.
- * <p>
- * Tworzy podział pomiędzy dwoma panelami. Rozmiar paneli może być dzięki
- * temu zmieniany za pomocą przeciągnięcia podziału.
- *
- * @param topPanel    panel, którym ma znajdować się na górze
- * @param bottomPanel panel, który ma znajdować się na dole
- * @return widok zawierający dwa panele i przedział pobiędzy nimi
- * <p>
- * Tworzy podział pomiędzy dwoma panelami. Rozmiar paneli może być dzięki
- * temu zmieniany za pomocą przeciągnięcia podziału.
- * @param topPanel    panel, którym ma znajdować się na górze
- * @param bottomPanel panel, który ma znajdować się na dole
- * @return widok zawierający dwa panele i przedział pobiędzy nimi
- * <p>
- * Tworzy podział pomiędzy dwoma panelami. Rozmiar paneli może być dzięki
- * temu zmieniany za pomocą przeciągnięcia podziału.
- * @param topPanel    panel, którym ma znajdować się na górze
- * @param bottomPanel panel, który ma znajdować się na dole
- * @return widok zawierający dwa panele i przedział pobiędzy nimi
- *//*
 
+}
+/*
     private void createView() throws ParseException {
         relationsPanel = createTabbedPanel();
         detailsPanel = createDetailsPanel();
@@ -130,8 +107,9 @@ public class RelationsEditorWindow extends MFrame { //implements ActionListener,
  * @return widok zawierający dwa panele i przedział pobiędzy nimi
  *//*
 
-    private SplitPaneExt createSplitPanel(JComponent topPanel, JComponent bottomPanel) {
-        SplitPaneExt mainSplit = new SplitPaneExt(JSplitPane.VERTICAL_SPLIT, topPanel, bottomPanel);
+
+    private MSplitPane createSplitPanel(JComponent topPanel, JComponent bottomPanel) {
+        MSplitPane mainSplit = new MSplitPane(JSplitPane.VERTICAL_SPLIT, topPanel, bottomPanel);
         mainSplit.setStartDividerLocation(200);
         mainSplit.setResizeWeight(1.0f);
         return mainSplit;
@@ -159,9 +137,9 @@ public class RelationsEditorWindow extends MFrame { //implements ActionListener,
         relationShortcut.addCaretListener(this);
 
         // utowrzenie opisu
-        relationDescription = new DescriptionTextArea();
+        relationDescription = new MTextArea();
         relationDescription.setRows(2);
-//        relationDescription.addCaretListener(this);
+        relationDescription.addCaretListener(this);
 
 
         // utworzenie pola części mowy oraz przycisku do wybierania części mowy
@@ -190,8 +168,8 @@ public class RelationsEditorWindow extends MFrame { //implements ActionListener,
         relationDirection = new MComboBox<>();
 
         // utworzenie panelu z testami relacji
-//        JPanel testsPanel = createTestsPanel();
-        JPanel testsPanel = new TestsPanel(this);
+        WebPanel testsPanel = createTestsPanel();
+        WebPanel testsPanel = new TestsPanel(this);
 
         // utworzenie etykiet
         MLabel lexiconLabel = new MLabel(Labels.LEXICON_COLON, 'l', lexicon);
@@ -340,10 +318,10 @@ public class RelationsEditorWindow extends MFrame { //implements ActionListener,
         relationDisplay.setText(rel.getDisplayText(locale));
         relationShortcut.setText(rel.getShortDisplayText(locale));
         relationDescription.setText(rel.getDescription(locale));
-//        relationPos.setText() ; //TODO ogarnąć jak to ustawić
+        relationPos.setText(); //TODO ogarnąć jak to ustawić
         relationReverse.setText(rel.getReverse() != null ? rel.getReverse().getDisplayText(locale) : "");
         relationColor.setText(rel.getColor());
-//        relationDirection.setSelectedItem(); //TODO ustawić to
+        relationDirection.setSelectedItem(); //TODO ustawić to
     }
 
     public void clearDetails() {
@@ -925,4 +903,5 @@ class ReverseRelationDialog extends JDialog implements ActionListener {
         }
         dispose();
     }
-}*/
+}
+*/

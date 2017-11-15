@@ -5,7 +5,7 @@ import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users_settings")
 public class UserSettings extends GenericEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -14,15 +14,35 @@ public class UserSettings extends GenericEntity {
     private User user;
 
     @Column(name = "lexicon_marker")
-    private final Boolean lexionMarker = true;
+    private Boolean lexionMarker = true;
 
     @Column(name = "chosen_lexicons")
     private String chosenLexicons;
 
     @Column(name = "show_tool_tips")
-    private final Boolean showToolTips = true;
+    private Boolean showToolTips = true;
 
-    public UserSettings() {
+    public User getUser() {
+        return user;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Boolean getLexionMarker() {
+        return lexionMarker;
+    }
+
+    public String getChosenLexicons() {
+        return chosenLexicons;
+    }
+
+    public void setChosenLexicons(String chosenLexicons) {
+        this.chosenLexicons = chosenLexicons;
+    }
+
+    public Boolean getShowToolTips() {
+        return showToolTips;
+    }
 }

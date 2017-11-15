@@ -8,8 +8,8 @@ public class RelationTypesPlugin implements Plugin {
 
     @Override
     public void install(Workbench workbench) {
-        Service databasemgr = new RelationTypesService(workbench);
-        workbench.installService(databasemgr);
+        Service relationTypeService = new RelationTypesService(workbench);
+        workbench.installService(relationTypeService);
     }
 
 }

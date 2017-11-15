@@ -5,7 +5,6 @@ import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -14,10 +13,10 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LabelExt;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LazyScrollPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButtonPanel;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
@@ -50,7 +49,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     private static final String SUPER_MODE = "SuperMode";
 
     private SenseCriteria criteria;
-//    private ToolTipList unitsList;
+    //    private ToolTipList unitsList;
     private JList unitsList;
     private JLabel infoLabel;
 
@@ -121,7 +120,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         content.add("hfill", scroll);
         content.add("br center", btnSearch);
         content.add("center", btnReset);
-        content.add("br left", new LabelExt(Labels.LEXICAL_UNITS_COLON, 'j', unitsList));
+        content.add("br left", new MLabel(Labels.LEXICAL_UNITS_COLON, 'j', unitsList));
         unitsListScrollPane = new LazyScrollPane(unitsList, 15);
         unitsListScrollPane.setScrollListener((page, limit) -> {
             refreshData(unitsListScrollPane.getLimit(), unitsListScrollPane.getOffset());
@@ -174,8 +173,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     /**
      * odświeżenie listy jednostek
      */
-    public void refreshData(int limit,int offset) {
-        if(offset == 0){
+    public void refreshData(int limit, int offset) {
+        if (offset == 0) {
             unitsListScrollPane.reset();
 
         }
@@ -209,7 +208,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 //                        oldRelation, register, comment, example, limitSize, lexicons);
                 Long partOfSpeech = criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem().getId();
                 Long domainId = oldDomain == null ? null : oldDomain.getId();
-                SenseCriteriaDTO dto = new SenseCriteriaDTO(partOfSpeech,domainId, oldFilter, lexicons);
+                SenseCriteriaDTO dto = new SenseCriteriaDTO(partOfSpeech, domainId, oldFilter, lexicons);
 
                 dto.setLimit(limit);
                 dto.setOffset(offset);
@@ -269,7 +268,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
         // wywolanie search
         if (event.getSource() == btnSearch) {
-            refreshData(15,0);
+            refreshData(15, 0);
         } else if (event.getSource() == btnReset) {
             criteria.resetFields();
         } else if (event.getSource() == btnDelete) {
@@ -313,7 +312,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                     listeners.notifyAllListeners(null);
                 }
             }
-            refreshData(15,0); //TODO tutaj będzie to trzeba jakoś ogarnąć
+            refreshData(15, 0); //TODO tutaj będzie to trzeba jakoś ogarnąć
 
         } else if (event.getSource() == btnAddToSyns) {
             int i = unitsList.getSelectedIndex();
