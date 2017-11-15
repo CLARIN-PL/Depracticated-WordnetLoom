@@ -50,8 +50,6 @@ public class Main {
         });
 
         WebLookAndFeel.install();
-//        WebLookAndFeel.setDecorateFrames(true);
-//        WebLookAndFeel.setDecorateDialogs(true);
 
         IconFontSwing.register(FontAwesome.getIconFont());
 

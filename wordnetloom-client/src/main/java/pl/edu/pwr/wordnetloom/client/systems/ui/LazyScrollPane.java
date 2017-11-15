@@ -29,7 +29,9 @@ public class LazyScrollPane extends JScrollPane{
             if(e.getValue() != 0 
                     && e.getValue() == e.getAdjustable().getMaximum() - e.getAdjustable().getVisibleAmount()
                     && !e.getValueIsAdjusting()){
+                if(!end){
                     onBottomScroll();
+                }
             }
         });
     }

@@ -186,10 +186,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
      * odświeżenie listy jednostek
      */
     public void refreshData(int limit, int offset) {
-        if (offset == 0) {
-            unitsListScrollPane.reset();
-
-        }
 //        int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
         String oldFilter = criteria.getSearchTextField().getText();
         Domain oldDomain = criteria.getDomainComboBox().retriveComboBoxItem();
@@ -206,6 +202,12 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             @Override
             protected Void doInBackground() throws Exception {
                 workbench.setBusy(true);
+
+                if (offset == 0) {
+                    unitsListScrollPane.reset();
+                    listModel.clear();
+                }
+
                 List<Sense> units = new ArrayList<>();
                 Lexicon lex = criteria.getLexiconComboBox().retriveComboBoxItem();
                 if (lex != null) {
@@ -245,6 +247,11 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 newModelCollection.addAll(units);
 
                 listModel.setCollection(newModelCollection);*/
+                // jeżeli pobrało mniej elementów niż zakładano, oznacza to, że pobrano już wszystkie elementy
+                // i nie należy próbowac pobierać ponownie
+                if(units.size() < limit){
+                    unitsListScrollPane.setEnd(true);
+                }
                 for (Sense sense : units) {
                     listModel.addElement(sense);
                 }
@@ -256,11 +263,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             protected void done() {
                 if (unitsList != null) {
                     SwingUtilities.invokeLater(() -> {
-
                         if (listModel.getSize() != 0) {
-//                            unitsList.grabFocus();
-//                            unitsList.setSelectedIndex(0);
-//                            unitsList.ensureIndexIsVisible(0);
                             if (listModel.getSize() == unitsListScrollPane.getLimit()) {
                                 unitsList.clearSelection();
                                 unitsList.grabFocus();
@@ -270,7 +273,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                                 unitsList.updateUI();
                             }
                             workbench.setBusy(false);
-
                         }
                         infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "" + listModel.getSize()));
                     });
