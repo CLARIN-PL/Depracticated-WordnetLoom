@@ -75,7 +75,8 @@ public class SenseRepository extends GenericRepository<Sense> {
         CriteriaQuery<Sense> query = criteriaBuilder.createQuery(Sense.class);
         Root<Sense> senseRoot = query.from(Sense.class);
         Join<Sense, Word> wordJoin = senseRoot.join("word");
-        query.select(senseRoot);
+        Fetch<Sense, Domain> domainFetch = senseRoot.fetch("domain");
+        Fetch<Sense, Lexicon> lexiconFetch = senseRoot.fetch("lexicon");
         List<Predicate> criteriaList = new ArrayList<>();
         Predicate lemmaPredicate  = criteriaBuilder.like(wordJoin.get("word"), dto.getLemma()+"%");
         criteriaList.add(lemmaPredicate);
@@ -122,7 +123,7 @@ public class SenseRepository extends GenericRepository<Sense> {
             Predicate variantPredicate = criteriaBuilder.equal(senseRoot.get("variant"), dto.getVariant());
             criteriaList.add(variantPredicate);
         }
-
+        query.select(senseRoot);
         query.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[0])));
 
         List<Order> orders = new ArrayList<>();
