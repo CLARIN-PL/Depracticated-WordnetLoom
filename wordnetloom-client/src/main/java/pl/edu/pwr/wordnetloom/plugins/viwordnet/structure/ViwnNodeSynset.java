@@ -350,7 +350,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
                     ret = "S ";
                 // check if synset isnt null or empty
                 if (units != null && !units.isEmpty()) {
-                    ret += ((Sense) units.iterator().next()).toString();
+                    ret += units.iterator().next().toString();
                     if (units.size() > 1)
                         ret += " ...";
                 } else {
@@ -366,7 +366,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     public String getLexiconLabel() {
         if (units != null && !units.isEmpty()) {
-            Sense unit = ((Sense) units.iterator().next());
+            Sense unit =  units.iterator().next();
             return unit.getLexicon().getLexiconIdentifier().getText();
         }
         return "";

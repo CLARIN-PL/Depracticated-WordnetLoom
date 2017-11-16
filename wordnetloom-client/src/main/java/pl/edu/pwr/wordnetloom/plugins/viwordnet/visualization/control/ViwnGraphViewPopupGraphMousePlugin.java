@@ -53,6 +53,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
     protected JPopupMenu popup = new JPopupMenu();
     protected ViwnGraphViewUI vgvui;
     protected JList synset_list_ = null;
+    protected JList sense_list_ = null;
 
     /**
      * constructor
@@ -75,6 +76,36 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             other = (ViwnNode) obj;
         }
         if (syns.length > 0) {
+            ViwnNode p2 = v;
+            Graph<ViwnNode, ViwnEdge> g = vgvui.getGraph();
+            ViwnNode parent = v.getSpawner();
+            boolean dissapear = true;
+            for (ViwnEdge edge : g.getIncidentEdges(parent)) {
+                ViwnNode opposite = g.getOpposite(parent, edge);
+                if (parent.equals(opposite.getSpawner())
+                        && (opposite.getSpawnDir() != null)) {
+                    if (opposite == v) dissapear = false;
+                }
+            }
+            if (dissapear) {
+                if (other != null) p2 = other;
+                else p2 = v.getSpawner();
+            }
+            vgvui.recreateLayoutWithFix(v, p2);
+        }
+    }
+
+    private void addSenses(ViwnNode v) {
+        popup.setVisible(false);
+        Object[] senses = sense_list_.getSelectedValues();
+        if (senses.length > 0)
+            vgvui.deselectAll();
+        ViwnNode other = v;
+        for (Object obj : senses) {
+            vgvui.addSenseFromSet((ViwnNodeSense) obj);
+            other = (ViwnNode) obj;
+        }
+        if (senses.length > 0) {
             ViwnNode p2 = v;
             Graph<ViwnNode, ViwnEdge> g = vgvui.getGraph();
             ViwnNode parent = v.getSpawner();
@@ -395,7 +426,74 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 panel.add(inner_panel, BorderLayout.CENTER);
 
                 popup.add(panel);
+            } else if(vertex != null && vertex instanceof ViwnNodeSenseSet){
+                ViwnNodeSenseSet set = (ViwnNodeSenseSet) vertex;
+                DefaultListModel model = new DefaultListModel();
 
+                ArrayList<ViwnNodeSense> col = new ArrayList<>(set.getSenses());
+                Collections.sort(col, new ViwnNodeAlphabeticComparator());
+                for (ViwnNodeSense se : col) {
+                    model.addElement(se);
+                }
+
+                list_focus = true;
+                sense_list_ = new JList(model);
+                sense_list_.setSelectedIndex(0);
+                JScrollPane scroll_pane = new JScrollPane();
+                scroll_pane.setPreferredSize(new Dimension(250, 200));
+                scroll_pane.getViewport().setView(sense_list_);
+                JPanel panel = new JPanel(new BorderLayout());
+                JButton but_expand = new ButtonExt(Labels.EXPAND, null, KeyEvent.VK_R);
+                JButton but_cancel = new ButtonExt(Labels.CANCEL, null, KeyEvent.VK_A);
+                JButton but_all = new ButtonExt(Labels.VALUE_ALL, null, KeyEvent.VK_W);
+
+                sense_list_.addKeyListener(new KeyListener() {
+                    public void keyTyped(KeyEvent e) {
+                    }
+
+                    public void keyReleased(KeyEvent e) {
+                    }
+
+                    public void keyPressed(KeyEvent e) {
+                        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                            addSenses(vertex);
+                        }
+                    }
+                });
+
+                but_expand.addActionListener(e1 -> addSenses(vertex));
+
+                but_all.addActionListener(e12 -> {
+
+                    popup.setVisible(false);
+                    DefaultListModel list = (DefaultListModel) synset_list_.getModel();
+                    if (list.size() > 0)
+                        vgvui.deselectAll();
+                    for (int i = 0; i < list.size(); i++) {
+                        ViwnNodeSense obj = (ViwnNodeSense) list.get(i);
+                        vgvui.addSenseFromSet(obj);
+                    }
+                    if (list.size() > 0) {
+                            /* recreate view with fixing location */
+                        vgvui.recreateLayoutWithFix(vertex, (ViwnNode) list.get(list.size() - 1));
+                    }
+                });
+
+                but_cancel.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        popup.setVisible(false);
+                    }
+                });
+
+                panel.add(scroll_pane, BorderLayout.PAGE_START);
+                JPanel inner_panel = new JPanel(new FlowLayout());
+                inner_panel.add(but_expand);
+                inner_panel.add(but_cancel);
+                inner_panel.add(but_all);
+
+                panel.add(inner_panel, BorderLayout.CENTER);
+
+                popup.add(panel);
             } else if (edge != null) {
                 // edge clicked
                 popup.add(new AbstractAction(Labels.FOLLOW_EGDE) {
@@ -443,7 +541,10 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             if (popup.getComponentCount() > 0) {
                 popup.show(vv, e.getX(), e.getY());
                 if (list_focus)
-                    synset_list_.requestFocusInWindow();
+                    if(synset_list_ != null)
+                        synset_list_.requestFocusInWindow();
+                    if(sense_list_ != null)
+                        sense_list_.requestFocusInWindow();
             }
         }
 

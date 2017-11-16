@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.dao;
 
+import org.hibernate.Hibernate;
 import pl.edu.pwr.wordnetloom.common.model.PaginatedData;
 import pl.edu.pwr.wordnetloom.dto.*;
 import pl.edu.pwr.wordnetloom.model.*;
@@ -128,14 +129,16 @@ public class LexicalUnitDAOBean extends DAOBean implements LexicalUnitDAOLocal {
 
     @Override
     public Sense dbGetWithYiddish(Long id) {
+
         Sense sense = dao.getEM().find(Sense.class, id);
+
         if (null != sense) {
             for (YiddishSenseExtension ex : sense.getYiddishSenseExtension()) {
-                ex.getYiddishDomains().size();
-                ex.getParticels().size();
-                ex.getTranscriptions().size();
-                ex.getInflection().size();
-                ex.getYiddishDomains().size();
+                Hibernate.initialize(ex.getYiddishDomains());
+                Hibernate.initialize(ex.getParticels());
+                Hibernate.initialize(ex.getTranscriptions());
+                Hibernate.initialize(ex.getInflection());
+                Hibernate.initialize(ex.getYiddishDomains());
             }
         }
         return sense;

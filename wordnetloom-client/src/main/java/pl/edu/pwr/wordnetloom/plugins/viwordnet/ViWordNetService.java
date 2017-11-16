@@ -362,6 +362,7 @@ public class ViWordNetService extends AbstractService
         } catch (IOException e) {
         }
         ViwnEdgeSynset.relsColors = rel_colors;
+        ViwnEdgeSense.relationColors = rel_colors;
     }
 
     //TODO: Move side displaying to db
