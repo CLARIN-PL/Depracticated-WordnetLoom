@@ -17,9 +17,9 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.misc;
 
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
+
 import java.io.IOException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 /**
  * Klasa uruchamiajace przegladarka internetowego pod Windowsem i Linuxem
@@ -27,8 +27,9 @@ import org.apache.log4j.Logger;
  * @author Steven Spencer
  * @author Max - modyfikacja
  */
-public class BrowserControl {
+public class BrowserControl implements Loggable {
 
+    private static volatile BrowserControl instance = null;
     private static final String UNIX_PATH = "netscape";        // przegladarka dla linux
     private static final String UNIX_FLAG = "-remote openURL"; // komenda dla uruchomionej przegladarki
 
@@ -37,7 +38,19 @@ public class BrowserControl {
      *
      * @param url - musi zawierac "http://" lub "file://"
      */
-    public static void displayURL(String url) {
+    private BrowserControl() {
+    }
+
+    public static BrowserControl getInstance() {
+        if (instance == null) {
+            synchronized (BrowserControl.class) {
+                instance = new BrowserControl();
+            }
+        }
+        return instance;
+    }
+
+    public void displayURL(String url) {
         try {
             if (isWindowsPlatform()) {
                 Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
@@ -55,11 +68,11 @@ public class BrowserControl {
                         p = Runtime.getRuntime().exec(UNIX_PATH + " " + url);
                     }
                 } catch (InterruptedException e) {
-                    Logger.getLogger(BrowserControl.class).log(Level.ERROR, "Trying to call browser" + e);
+                    logger().error("Trying to call browser", e);
                 }
             }
         } catch (IOException e) {
-            Logger.getLogger(BrowserControl.class).log(Level.ERROR, "No file" + e);
+            logger().error("No file" + e);
         }
     }
 
@@ -68,7 +81,7 @@ public class BrowserControl {
      *
      * @return true jesli to windows
      */
-    public static boolean isWindowsPlatform() {
+    public boolean isWindowsPlatform() {
         String os = System.getProperty("os.name");
         return os != null && os.startsWith("Windows");
     }

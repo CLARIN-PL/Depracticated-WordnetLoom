@@ -1,8 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
 import com.alee.laf.menu.WebMenu;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitsView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetPropertiesView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetStructureView;
@@ -30,6 +28,7 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
@@ -56,7 +55,7 @@ import java.util.List;
  */
 public class ViWordNetService extends AbstractService implements
         SynsetSelectionChangeListener, SimpleListenerInterface,
-        LockerChangeListener, ActionListener {
+        LockerChangeListener, ActionListener, Loggable {
 
     private String perspectiveName = null;
     private ViWordNetPerspective perspective = null;
@@ -213,8 +212,7 @@ public class ViWordNetService extends AbstractService implements
                 try {
                     col = Color.decode(val.trim());
                 } catch (Exception e) {
-                    Logger.getLogger(ViWordNetPlugin.class).log(Level.WARN,
-                            val + " is not a valid color");
+                    logger().warn(val + " is not a valid color");
                 }
 
                 PartOfSpeech posT = posMap.get(pos.replace("_", " "));
@@ -254,8 +252,7 @@ public class ViWordNetService extends AbstractService implements
                 try {
                     col = Color.decode(val.trim());
                 } catch (Exception e) {
-                    Logger.getLogger(ViWordNetPlugin.class).log(Level.WARN,
-                            val + " is not a valid color");
+                    logger().warn(val + " is not a valid color");
                 }
 
                 PartOfSpeech posT = posMap.get(pos.replace("_", " "));
@@ -295,8 +292,7 @@ public class ViWordNetService extends AbstractService implements
                 try {
                     col = Color.decode(val.trim());
                 } catch (Exception e) {
-                    Logger.getLogger(ViWordNetPlugin.class).log(Level.WARN,
-                            val + " is not a valid color");
+                    logger().warn(val + " is not a valid color");
                 }
 
                 //RelationTypes rt = RelationTypeManager.getByName(rel);
@@ -361,16 +357,13 @@ public class ViWordNetService extends AbstractService implements
 //                        }
                     }
                 } else {
-                    Logger.getLogger(ViWordNetPlugin.class).log(
-                            Level.WARN,
-                            "relations in direction " + dir.name()
-                                    + " are not defined");
+                    logger().warn("relations in direction " + dir.name() + " are not defined");
                 }
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("DEFAULT RELATION TYPES");
+            logger().warn("DEFAULT RELATION TYPES");
 
             // adding default relations
 //            relTypes[0].addAll(RelationTypeManager.getByName("holonimia").getChildren());

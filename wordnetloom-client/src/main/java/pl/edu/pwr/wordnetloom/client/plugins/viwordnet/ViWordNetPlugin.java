@@ -17,47 +17,15 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
-import java.io.IOException;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Plugin;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
-/**
- * The plugin adds a top menu option 'Widok'. The 'Widok' contains an option to
- * automatic resize of the application and notes windows.
- *
- * @author Michał Marcińczuk
- */
+
 public class ViWordNetPlugin implements Plugin {
 
-    /**
-     * Plugin installation.
-     *
-     * @param workbench - an enviroment where the plugin will be installed.
-     */
+
     public void install(Workbench workbench) {
-        FileAppender fapp = null;
-
-        PatternLayout lay = new PatternLayout();
-        lay.setConversionPattern("%p %d{DATE} [%t] %c{1}: %m%n");
-
-        try {
-            fapp = new FileAppender(lay, "logs/viwn.log");
-        } catch (IOException e) {
-        }
-
-        Logger.getRootLogger().removeAllAppenders();
-
-        Logger.getLogger(ViWordNetPlugin.class).removeAllAppenders();
-        Logger.getLogger(ViWordNetPlugin.class).addAppender(fapp);
-        Logger.getLogger(ViWordNetPlugin.class).addAppender(new ConsoleAppender(lay));
-        Logger.getLogger(ViWordNetPlugin.class).setLevel(Level.ALL);
 
         //Service vimgr = new ViWordNetConfService(workbench);
         //workbench.installService(vimgr);
@@ -68,6 +36,6 @@ public class ViWordNetPlugin implements Plugin {
         workbench.installService(vwns);
         vwnp.setService(vwns);
 
-        Logger.getLogger(ViwnGraphViewUI.class).log(Level.DEBUG, "installed");
+        logger().debug("Installed");
     }
 }

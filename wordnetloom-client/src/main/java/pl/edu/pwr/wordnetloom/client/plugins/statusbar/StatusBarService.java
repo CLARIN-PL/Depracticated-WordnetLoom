@@ -1,13 +1,12 @@
 package pl.edu.pwr.wordnetloom.client.plugins.statusbar;
 
 import com.alee.laf.menu.WebMenu;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
 import javax.swing.*;
@@ -15,7 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-public class StatusBarService extends AbstractService implements Runnable, ActionListener {
+public class StatusBarService extends AbstractService implements Runnable, ActionListener, Loggable {
 
     private static final int SLEEP_TIME = 5000;
 
@@ -71,7 +70,7 @@ public class StatusBarService extends AbstractService implements Runnable, Actio
             try {
                 Thread.sleep(SLEEP_TIME);
             } catch (InterruptedException e) {
-                Logger.getLogger(StatusBarService.class).log(Level.ERROR, "Trying to sleep plugin" + e);
+                logger().error("Trying to sleep plugin", e);
             }
         }
     }

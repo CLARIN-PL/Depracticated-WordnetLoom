@@ -7,7 +7,7 @@ package pl.edu.pwr.wordnetloom.client.workbench.interfaces;
  * Jastrzebski</a>
  * @version CVS $Id$
  */
-public interface Plugin {
+public interface Plugin extends Loggable {
 
     /**
      * Wywoływana celem zainstalowania danego pluginu w środowisku

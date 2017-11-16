@@ -591,7 +591,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                     .getIndices(selectedUnits) : null;
             // zaznaczenie odpowiedniego elementu
             if (indices != null && indices.size() > 0) {
-                unitsList.setSelectedIndices(Tools.collectionToArray(indices));
+                unitsList.setSelectedIndices(Tools.getInstance().collectionToArray(indices));
                 valueChanged(new ListSelectionEvent(
                         synset == null ? new Object() : synset, 0, 0, false));
             } else if (listModel.getSize() > 0) {

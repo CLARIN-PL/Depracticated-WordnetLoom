@@ -1,8 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
 import com.alee.laf.panel.WebPanel;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
@@ -13,6 +11,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -27,7 +26,7 @@ import java.awt.event.ActionListener;
  *
  * @author Max
  */
-public class LexicalUnitPropertiesViewUI extends AbstractViewUI {
+public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Loggable {
 
     private LexicalUnitPropertiesPanel editPanel;
 
@@ -114,8 +113,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI {
 
                 listeners.notifyAllListeners(null);
             } catch (Exception e) {
-                Logger.getLogger(LexicalUnitPropertiesViewUI.class).log(
-                        Level.ERROR, "Number format" + e);
+                logger().error("Number format", e);
                 DialogBox.showError(Messages.ERROR_WRONG_NUMBER_FORMAT);
             }
         }

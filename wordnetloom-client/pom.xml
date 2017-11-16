@@ -54,9 +54,15 @@
             <version>1.6.1</version>
         </dependency>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.0.4</version>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>java3d</groupId>
@@ -103,22 +109,7 @@
             <artifactId>vecmath</artifactId>
             <version>1.3.1</version>
         </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.5</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>18.0</version>
-            <type>jar</type>
-        </dependency>
+        <!-- UI -->
         <dependency>
             <groupId>com.github.jiconfont</groupId>
             <artifactId>jiconfont-font_awesome</artifactId>
@@ -135,7 +126,24 @@
             <version>1.28</version>
             <type>pom</type>
         </dependency>
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.7</version>
+        </dependency>
 
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.1.2</version>
+        </dependency>
         <!-- Tests -->
         <dependency>
             <groupId>junit</groupId>
@@ -179,7 +187,7 @@
                 <version>1.6.0</version>
                 <configuration>
                     <executable>java</executable>
-                    <mainClass>pl.edu.pwr.wordnetloom.client.Main</mainClass>
+                    <mainClass>pl.edu.pwr.wordnetloom.client.Application</mainClass>
                     <arguments>
                         <argument>%classpath:src/main/resources</argument>
                     </arguments>
@@ -208,7 +216,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>pl.edu.pwr.wordnetloom.client.Main</mainClass>
+                            <mainClass>pl.edu.pwr.wordnetloom.client.Application</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

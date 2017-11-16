@@ -9,24 +9,22 @@ import com.alee.laf.text.WebPasswordField;
 import com.alee.laf.text.WebTextField;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
-import pl.edu.pwr.wordnetloom.client.Main;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
-import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class LoginWindow extends DialogWindow implements KeyListener {
+public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
 
-    private Thread onSuccessThread;
 
     public LoginWindow(WebFrame parent) {
         super(parent, "");
@@ -127,7 +125,6 @@ public class LoginWindow extends DialogWindow implements KeyListener {
 
         btnSignIn.setText("Sign in");
         Icon singInIcon = IconFontSwing.buildIcon(FontAwesome.SIGN_IN, 11);
-        btnSignIn.addActionListener(evt -> btnOkActionPerformed(evt));
         btnSignIn.setIcon(singInIcon);
 
         btnCancel.setText("Cancel");
@@ -168,32 +165,36 @@ public class LoginWindow extends DialogWindow implements KeyListener {
         System.exit(0);
     }
 
-    private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-        if (onSuccessThread != null) {
+    public void btnOkActionListener(ActionListener listener) {
+        btnSignIn.addActionListener(listener);
+    }
 
-            RemoteConnectionProvider
-                    .getInstance()
-                    .setUserSessionData(new UserSessionData(txtUsername.getText(), txtPassword.getText(), getSelectedLanguage().getAbbreviation()));
+    public boolean login() {
 
-            Main.initialiseLanguage(getSelectedLanguage());
+        RemoteConnectionProvider
+                .getInstance()
+                .setUserSessionData(new UserSessionData(txtUsername.getText(), txtPassword.getText(), getSelectedLanguage().getAbbreviation()));
 
-            try {
-                User user = RemoteConnectionProvider.getInstance().getUser();
-                if (user != null) {
-                    onSuccessThread.start();
-                }
+        try {
+            User user = RemoteConnectionProvider.getInstance().getUser();
+            if (user != null) {
                 dispose();
-            } catch (Exception ex) {
-                Logger.getLogger(LoginWindow.class).log(Priority.ERROR, ex);
-                RemoteConnectionProvider.getInstance().destroyInstance();
-                SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(null,
-                            Messages.ERROR_UNABLE_TO_CONNECT_TO_SERVER_OR_INCORRECT_AUTHORIZATION,
-                            Main.PROGRAM_NAME,
-                            JOptionPane.ERROR_MESSAGE);
-                });
+                return true;
             }
+
+        } catch (Exception ex) {
+            logger().error("Unable to connect or incorrect login/password", ex);
+            RemoteConnectionProvider.getInstance().destroyInstance();
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(null,
+                        "Unable to connect or incorrect login/password",
+                        Application.PROGRAM_NAME_VERSION,
+                        JOptionPane.ERROR_MESSAGE);
+
+            });
+            return false;
         }
+        return false;
     }
 
     private void initListeners() {
@@ -205,10 +206,6 @@ public class LoginWindow extends DialogWindow implements KeyListener {
 
     private void initWindowPosition() {
         setInScreenCenter(520, 260);
-    }
-
-    public void setThreadOnSuccess(final Thread t) {
-        onSuccessThread = t;
     }
 
     public Language getSelectedLanguage() {

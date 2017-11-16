@@ -1,8 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.systems.managers;
 
-import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
 import javax.management.InvalidAttributeValueException;
@@ -10,9 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class LexiconManager {
+public final class LexiconManager implements Loggable{
 
-    private static final Logger LOGGER = Logger.getLogger(LexiconManager.class);
     private static volatile LexiconManager instance = null;
     private List<Long> cachedLexicons;
     private List<Lexicon> cachedFullLexicons;
@@ -41,7 +40,7 @@ public final class LexiconManager {
         try {
             cachedLexicons = Collections.unmodifiableList(Collections.synchronizedList(readLexiconsFromFile()));
         } catch (InvalidAttributeValueException e) {
-            LOGGER.debug("Problem while loading lexicon string from file", e);
+            logger().debug("Problem while loading lexicon string from file", e);
         }
     }
 
