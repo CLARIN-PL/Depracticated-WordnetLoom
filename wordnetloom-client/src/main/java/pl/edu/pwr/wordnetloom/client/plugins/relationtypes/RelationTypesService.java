@@ -5,6 +5,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window.RelationsEdito
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
 import java.awt.event.ActionEvent;
@@ -12,7 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.text.ParseException;
 
-public class RelationTypesService extends AbstractService implements ActionListener {
+public class RelationTypesService extends AbstractService implements ActionListener, Loggable {
 
     public RelationTypesService(Workbench workbench) {
         super(workbench);
@@ -47,7 +48,7 @@ public class RelationTypesService extends AbstractService implements ActionListe
         try {
             RelationsEditorWindow.showModal(workbench);
         } catch (ParseException e) {
-            e.printStackTrace();
+            logger().error("Unable to parse", e);
         }
     }
 }

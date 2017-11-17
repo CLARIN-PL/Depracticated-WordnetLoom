@@ -31,6 +31,14 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
         initComponents();
         initListeners();
         initWindowPosition();
+
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                System.exit(0);
+            }
+        });
+
     }
 
     private void initComponents() {

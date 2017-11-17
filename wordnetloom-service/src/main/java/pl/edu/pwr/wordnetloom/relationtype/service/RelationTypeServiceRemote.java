@@ -24,6 +24,8 @@ public interface RelationTypeServiceRemote {
 
     List<RelationType> findChildren(Long relationTypeId);
 
+    List<RelationType> findAll();
+
     void delete(RelationType relation);
 
     void deleteAll(RelationType type);

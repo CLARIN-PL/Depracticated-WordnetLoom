@@ -221,7 +221,7 @@ public class RelationsDA {
 //                    return parent.getName() + " / " + rel.getName();
 //                }
             }
-            return RelationTypeManager.getInstance().getFullNameFor(rel.getId());
+            return RelationTypeManager.getInstance().getFullName(rel.getId());
         }
         return null;
     }

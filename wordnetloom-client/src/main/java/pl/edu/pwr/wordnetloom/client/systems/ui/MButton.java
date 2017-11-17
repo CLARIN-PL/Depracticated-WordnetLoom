@@ -165,4 +165,10 @@ public class MButton extends WebButton implements KeyListener {
                 .withCaption(Labels.SELECT);
 
     }
+
+    public static MButton buildEditButton() {
+        return new MButton()
+                .withMnemonic(KeyEvent.VK_E)
+                .withIcon(FontAwesome.PENCIL);
+    }
 }

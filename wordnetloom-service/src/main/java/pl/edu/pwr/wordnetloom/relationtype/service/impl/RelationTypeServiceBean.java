@@ -89,6 +89,11 @@ public class RelationTypeServiceBean implements RelationTypeServiceLocal {
     }
 
     @Override
+    public List<RelationType> findAll() {
+        return relationTypeRepository.findAll();
+    }
+
+    @Override
     public void delete(RelationType relation) {
         relationTypeRepository.delete(relation);
     }

@@ -6,10 +6,9 @@ import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.plugins.login.window.LoginWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
-import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.*;
+import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -36,7 +35,7 @@ public class Application implements Loggable {
         login.btnOkActionListener(l -> {
             if (login.login()) {
                 LocalisationManager.getInstance().load(login.getSelectedLanguage());
-                initManagers();
+                initialise();
             }
         });
         login.setVisible(true);
@@ -54,16 +53,15 @@ public class Application implements Loggable {
         }
     }
 
-    private void initManagers() {
+    private void initialise() {
 
         Thread managers = new Thread(() -> {
 
             LexiconManager.getInstance();
             PartOfSpeechManager.getInstance();
             DomainManager.getInstance();
-            //RelationTypeManager.loadRels();
+            RelationTypeManager.getInstance().loadRelationTypes(RemoteService.relationTypeRemote.findAll());
             start();
-
         }, "Mangers Thread");
 
         managers.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
@@ -74,7 +72,7 @@ public class Application implements Loggable {
                 if (first) {
                     SwingUtilities.invokeLater(() -> {
                         JOptionPane.showMessageDialog(null,
-                                "Unable to connect to server",
+                                Messages.ERROR_UNABLE_TO_CONNECT_TO_SERVER,
                                 Application.PROGRAM_NAME_VERSION,
                                 JOptionPane.ERROR_MESSAGE);
                     });

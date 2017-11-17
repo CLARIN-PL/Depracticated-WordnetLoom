@@ -1,18 +1,20 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
+import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 import com.jgoodies.forms.util.LayoutStyle;
+import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.IconsManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -44,17 +46,17 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     private PartOfSpeechMComboBox partOfSpeech;
     private DomainMComboBox domain;
     private MTextPane comment;
-    private final JButton btnCancel;
-    private JButton btnSave;
+    private final MButton btnCancel;
+    private MButton btnSave;
     private JScrollPane commentScrollPane;
     private JScrollPane scrollPaneExamples;
-    private final JButton btnGoToLink;
-    private final JButton btnNewExample;
-    private final JButton btnEditExample;
-    private final JButton btnRemoveExample;
-    private JList examplesList;
+    private final MButton btnGoToLink;
+    private final MButton btnNewExample;
+    private final MButton btnEditExample;
+    private final MButton btnRemoveExample;
+    private WebList examplesList;
     private DefaultListModel examplesModel;
-    private JLabel lblDefinition;
+    private WebLabel lblDefinition;
     private JScrollPane definitionScrollPane;
     private MTextPane definition;
 
@@ -169,7 +171,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         register.addActionListener(this);
         mainPanel.add(register, "4, 11, 3, 1, fill, fill");
 
-        lblDefinition = new JLabel(Labels.DEFINITION_COLON);
+        lblDefinition = new WebLabel(Labels.DEFINITION_COLON);
         lblDefinition.setVerticalAlignment(SwingConstants.TOP);
         lblDefinition.setHorizontalAlignment(SwingConstants.LEFT);
         mainPanel.add(lblDefinition, "2, 13, left, top");
@@ -196,7 +198,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         scrollPaneExamples = new JScrollPane();
         mainPanel.add(scrollPaneExamples, "4, 17, 7, 7, default, fill");
 
-        examplesList = new JList() {
+        examplesList = new WebList() {
 
             private static final long serialVersionUID = 1L;
 
@@ -221,7 +223,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         examplesModel = new DefaultListModel();
         scrollPaneExamples.setViewportView(examplesList);
 
-        btnNewExample = new JButton(IconsManager.getAdd());
+        btnNewExample = MButton.buildAddButton();
         btnNewExample.addActionListener((ActionEvent e) -> {
             String exa = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
             if (exa != null && !"".equals(exa)) {
@@ -237,7 +239,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         mainPanel.add(lblExample, "2, 17, left, fill");
         mainPanel.add(btnNewExample, "12, 17, fill, fill");
 
-        btnEditExample = new JButton(IconsManager.getEdit());
+        btnEditExample = MButton.buildEditButton();
         btnEditExample.addActionListener((ActionEvent e) -> {
             int idx = examplesList.getSelectedIndex();
             if (idx >= 0) {
@@ -253,7 +255,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         });
         mainPanel.add(btnEditExample, "12, 19, fill, fill");
 
-        btnRemoveExample = new JButton(IconsManager.getDelete());
+        btnRemoveExample = MButton.buildDeleteButton();
         btnRemoveExample.addActionListener((ActionEvent e) -> {
             int idx = examplesList.getSelectedIndex();
             if (idx >= 0) {
@@ -263,7 +265,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         });
         mainPanel.add(btnRemoveExample, "12, 21, fill, fill");
 
-        JLabel lblLink = new JLabel(Labels.LINK_COLON);
+        WebLabel lblLink = new WebLabel(Labels.LINK_COLON);
         lblLink.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblLink, "2, 25, left, fill");
 
@@ -272,7 +274,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         mainPanel.add(link, "4, 25, 7, 1, fill, fill");
         link.setColumns(10);
 
-        btnGoToLink = new JButton(IconsManager.getRight());
+        btnGoToLink = new MButton().withIcon(FontAwesome.INTERNET_EXPLORER);
         btnGoToLink.addActionListener((ActionEvent e) -> {
             try {
                 URI uri = new java.net.URI(link.getText());
@@ -282,7 +284,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         });
         mainPanel.add(btnGoToLink, "12, 25, fill, fill");
 
-        JTabbedPane tabs = new JTabbedPane();
+        WebTabbedPane tabs = new WebTabbedPane();
         tabs.setPreferredSize(new Dimension(620, 500));
         tabs.setLayout(new BorderLayout());
         tabs.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -291,10 +293,10 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
 
         JPanel buttons = new JPanel();
         buttons.setLayout(new FlowLayout());
-        btnCancel = new JButton(Labels.CANCEL);
+        btnCancel = MButton.buildCancelButton();
         buttons.add(btnCancel);
 
-        btnSave = new JButton(Labels.SAVE);
+        btnSave = MButton.buildSaveButton();
         buttons.add(btnSave);
         btnSave.addActionListener(this);
         add(buttons, BorderLayout.SOUTH);
@@ -366,8 +368,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         if (unit != null) {
             Domain goodDomain = DomainManager.getInstance().getNormalized(
                     unit.getDomain());
-            PartOfSpeech goodPOS = PartOfSpeechManager.getInstance().getNormalized(
-                    unit.getPartOfSpeech());
+            PartOfSpeech goodPOS = unit.getPartOfSpeech();
 
 //            if (goodDomain != null && !goodPOS.contains(goodDomain)) {
 //                DialogBox.showError(String.format(
