@@ -48,4 +48,6 @@ public interface SenseServiceRemote {
     List<Long> getAllLemmasForLexicon(List<Long> lexicon);
 
     List<Sense> findSensesByWordId(Long id, Long lexicon);
+
+    Sense findHeadSenseOfSynset(Long synsetId);
 }

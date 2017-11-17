@@ -28,8 +28,9 @@ abstract public class ViwnNodeRoot extends ViwnNode {
     }
 
     public ViwnNodeRoot() {
-        sets_ = new ViwnNodeSet[]{
-                new ViwnNodeSet(), new ViwnNodeSet(),
-                new ViwnNodeSet(), new ViwnNodeSet()};
+        sets_ = new ViwnNodeSet[NodeDirection.values().length];
+        for(int i=0; i < sets_.length; i++){
+            sets_[i] = new ViwnNodeSet();
+        }
     }
 }

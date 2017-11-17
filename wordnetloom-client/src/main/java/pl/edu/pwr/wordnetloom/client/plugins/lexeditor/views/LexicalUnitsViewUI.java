@@ -150,7 +150,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
      */
     @Override
     public void valueChanged(ListSelectionEvent event) {
-        if (unitsList == null) {
+        if (unitsList == null || unitsList.getModel().getSize() == 0) {
             return;
         }
         if (event != null && event.getValueIsAdjusting()) {
@@ -162,6 +162,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
         int returnValue = unitsList.getSelectedIndex();
 //        Sense unit = listModel.getObjectAt(returnValue);
+        if(returnValue == -1){
+            return;
+        }
         Sense unit = listModel.get(returnValue);
         boolean superMode = workbench.getParam(SUPER_MODE) != null
                 && workbench.getParam(SUPER_MODE).equals(SUPER_MODE_VALUE);
@@ -186,7 +189,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
      * odświeżenie listy jednostek
      */
     public void refreshData(int limit, int offset) {
-//        int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
         String oldFilter = criteria.getSearchTextField().getText();
         Domain oldDomain = criteria.getDomainComboBox().retriveComboBoxItem();
         RelationType oldRelation = criteria.getSenseRelationTypeComboBox().retriveComboBoxItem();
@@ -217,9 +219,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                     lexicons.addAll(LexiconManager.getInstance().getLexicons());
                 }
 
-//                units = LexicalDA.getLexicalUnits(oldFilter,
-//                        oldDomain, criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem(),
-//                        oldRelation, register, comment, example, limitSize, lexicons);
                 Long partOfSpeech = criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem().getId();
                 Long domainId = oldDomain == null ? null : oldDomain.getId();
                 SenseCriteriaDTO dto = new SenseCriteriaDTO(partOfSpeech, domainId, oldFilter, lexicons);
@@ -243,12 +242,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 }
                 criteria.setSensesToHold(units);
 
-                /*Collection<Sense> newModelCollection = listModel.getCollection();
-                newModelCollection.addAll(units);
-
-                listModel.setCollection(newModelCollection);*/
-                // jeżeli pobrało mniej elementów niż zakładano, oznacza to, że pobrano już wszystkie elementy
-                // i nie należy próbowac pobierać ponownie
                 if(units.size() < limit){
                     unitsListScrollPane.setEnd(true);
                 }

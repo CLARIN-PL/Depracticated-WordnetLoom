@@ -175,8 +175,8 @@ INSERT INTO wordnet.relation_type (id, auto_reverse, multilingual, description_i
               FROM wordnet_work.relationtype
               WHERE ID = R.PARENT_ID)
       ELSE objecttype END = 0
-      THEN 'SYNSET_RELATION'
-    ELSE 'SENSE_RELATION' END AS relation_argument,
+      THEN 'SENSE_RELATION'
+    ELSE 'SYNSET_RELATION' END AS relation_argument,
     (SELECT id
      FROM wordnet.application_localised_string
      WHERE value = R.shortcut

@@ -121,4 +121,9 @@ public class SenseServiceBean implements SenseServiceLocal {
         senseRepository.delete(sense);
     }
 
+    @Override
+    public Sense findHeadSenseOfSynset(Long synsetId){
+        return senseRepository.findHeadSenseOfSynset(synsetId);
+    }
+
 }

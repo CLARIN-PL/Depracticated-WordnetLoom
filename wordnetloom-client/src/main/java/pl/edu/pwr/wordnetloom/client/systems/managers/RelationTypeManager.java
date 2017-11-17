@@ -18,6 +18,7 @@ public class RelationTypeManager {
     private RelationTypeManager() {
         senseRelationTypesMap = new HashMap<>();
         synsetRelationTypesMap = new HashMap<>();
+        loadRelationTypes();
     }
 
     public static RelationTypeManager getInstance() {
@@ -113,12 +114,7 @@ public class RelationTypeManager {
         } else {
             currentMap = synsetRelationTypesMap;
         }
-        String locale = RemoteConnectionProvider.getInstance().getLanguage();
-        for (RelationType type : currentMap.values()) {
-/*            if(type.getName(locale).equals(name)){
-                return type;
-            }*/
-        }
+        
         return null;
     }
 

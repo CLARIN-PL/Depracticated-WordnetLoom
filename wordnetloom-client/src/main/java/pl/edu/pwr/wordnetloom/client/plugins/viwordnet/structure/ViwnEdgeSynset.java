@@ -94,7 +94,6 @@ public class ViwnEdgeSynset extends ViwnEdge {
     }
 
     public RelationType getRelationType() {
-        //TODO zobaczyć, czy typ relacji jest wstawiony poprawnie
         RelationType relationType = RelationTypeManager.getInstance().get(srel_dto_.getRelationType().getId(), RelationArgument.SYNSET_RELATION);
         if(relationType == null){
             throw new RuntimeException("relation type doesn't exist");

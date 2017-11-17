@@ -8,7 +8,9 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository;
 
 import javax.ejb.Stateless;
@@ -27,6 +29,9 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
     @Inject
     SynsetRelationRepository synsetRelationRepository;
+
+    @Inject
+    SenseRepository senseRepository;
 
     //    @NamedQuery(name = "Synset.findSynsetBySensID",
 //            query = "SELECT s.synset FROM SenseToSynset s WHERE s.idSense = :senseID AND s.sense.lexicon.id IN (:lexicons)"),
@@ -660,12 +665,58 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return result;
     }
 
+    private String buildDataEntryLabel(Sense sense){
+        StringBuilder labelBuilder = new StringBuilder();
+        labelBuilder.append(sense.getWord().getWord()).append(" ")
+                .append(sense.getVariant()).append(" ")
+                .append(sense.getDomain().getName()); // TODO przetłumaczyć domene
+        return labelBuilder.toString();
+    }
+
+    private DataEntry getDataEntry(Synset synset, Sense sense, List<SynsetRelation> relationsFrom, List<SynsetRelation> relationsTo){
+        DataEntry dataEntry = new DataEntry();
+        dataEntry.setSynset(synset);
+        dataEntry.setRelsFrom(relationsFrom);
+        dataEntry.setRelsTo(relationsTo);
+        dataEntry.setLexicon(sense.getLexicon().getIdentifier());
+        dataEntry.setPosID(sense.getPartOfSpeech().getId());
+        dataEntry.setLabel(buildDataEntryLabel(sense));
+        return dataEntry;
+    }
+
+    private void putDataEntryFromSynsetRelation(Map<Long, DataEntry> map, List<SynsetRelation> relationsList, boolean isRelationsFrom)
+    {
+        Synset relatedSynset;
+        Sense sense;
+        DataEntry dataEntry;
+        for(SynsetRelation relation : relationsList){
+            if(isRelationsFrom){
+                relatedSynset = relation.getChild();
+            } else {
+                relatedSynset = relation.getParent();
+            }
+            sense = relatedSynset.getSenses().get(0);
+            dataEntry = getDataEntry(relatedSynset, sense, relatedSynset.getOutgoingRelations(), relatedSynset.getIncomingRelations());
+            map.put(relatedSynset.getId(), dataEntry);
+        }
+    }
+
     public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons) {
-        Map<Long, DataEntry> map = new HashMap<>();
-        DataEntry rootEntry = new DataEntry();
-        rootEntry.setRelsFrom(synsetRelationRepository.findRelationsWhereSynsetIsParent(synset, lexicons));
-        rootEntry.setRelsTo(synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons));
-        if (!rootEntry.getRelsFrom().isEmpty() || !rootEntry.getRelsFrom().isEmpty()) {
+        Synset relatedSynset = synset;
+        Sense sense;
+        Map<Long, DataEntry> resultMap = new HashMap<>();
+        sense = senseRepository.findHeadSenseOfSynset(synset.getId());
+        List<SynsetRelation> relationsFrom  = synsetRelationRepository.findRelationsWhereSynsetIsParent(relatedSynset, lexicons);
+        List<SynsetRelation> relationsTo = synsetRelationRepository.findRelationsWhereSynsetIsChild(relatedSynset, lexicons);
+        relatedSynset.setOutgoingRelations(relationsFrom); // TODO przyjrzeć sie temu, prawdopodobnie jest to niepotrzebne
+        relatedSynset.setIncomingRelations(relationsTo);
+        DataEntry dataEntry = getDataEntry(relatedSynset, sense, relationsFrom, relationsTo);
+        resultMap.put(relatedSynset.getId(), dataEntry);
+        putDataEntryFromSynsetRelation(resultMap, relationsFrom, true);
+        putDataEntryFromSynsetRelation(resultMap, relationsTo, false);
+
+        return resultMap;
+//        if (!rootEntry.getRelsFrom().isEmpty() || !rootEntry.getRelsFrom().isEmpty()) {
 //            List<SynsetRelation> relations = synsetRelationRepository.findRelations(synset);
 //            map.put(rootEntry.getSynset().getId(), rootEntry);
 
@@ -696,9 +747,9 @@ public class SynsetRepository extends GenericRepository<Synset> {
 //                StringBuilder stringBuilder = new StringBuilder();
 //
 //            }
-        }
-
-        return null;
+//        }
+//
+//        return null;
     }
 
     @Override

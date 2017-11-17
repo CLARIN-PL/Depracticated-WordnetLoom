@@ -1,15 +1,17 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 
 public class ViwnNodeAlphabeticComparator implements Comparator<ViwnNode> {
 
-    public static ArrayList<RelationTypeManager> order = null;
-
-    private ArrayList<RelationTypeManager> rel_order = null;
+//    public static ArrayList<RelationTypeManager> order = null;
+    public static ArrayList<RelationType> order = null;
+//    private ArrayList<RelationTypeManager> rel_order = null;
+    private static ArrayList<RelationType> rel_order = null;
 
     public ViwnNodeAlphabeticComparator() {
         if (order == null) {

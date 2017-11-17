@@ -47,4 +47,8 @@ public interface SynsetRelationServiceRemote {
     List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons);
 
     List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons);
+
+    List<SynsetRelation> findSimpleRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons);
+
+    List<SynsetRelation> findSimpleRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons);
 }

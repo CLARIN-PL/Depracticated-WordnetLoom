@@ -54,7 +54,8 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
 
         q.where(predicates.toArray(new Predicate[predicates.size()]));
 
-        return em.createQuery(q).getResultList();
+        List<RelationType> resultList = em.createQuery(q).getResultList();
+        return resultList;
     }
 
     public List<RelationType> findLeafs(RelationArgument arg) {

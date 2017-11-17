@@ -34,6 +34,7 @@ public final class RemoteService {
     public static UserServiceRemote userServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(UserServiceRemote.class);
     public static LocalisedStringServiceRemote localisedStringServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(LocalisedStringServiceRemote.class);
 
+
     private RemoteService() {
     }
 }

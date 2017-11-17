@@ -4,7 +4,11 @@ import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
@@ -12,6 +16,8 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.criteria.*;
+
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -219,27 +225,106 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
     }
 
     public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons) {
-        return getEntityManager().createQuery("FROM SynsetRelation sr WHERE  sr.child.id = :id AND sr.parent.lexicon.id IN (:lexicons)", SynsetRelation.class)
+
+        /*Query query = getEntityManager().createQuery("FROM SynsetRelation sr LEFT JOIN FETCH sr.parent AS synset " +
+                "LEFT JOIN FETCH synset.senses AS sense " +
+                "LEFT JOIN FETCH sense.domain " +
+                "LEFT JOIN FETCH sense.lexicon lexicon " +
+                "WHERE sr.child.id = :id AND sense.synsetPosition = 0 AND lexicon.id IN (:lexicons)", SynsetRelation.class)
                 .setParameter("id", synset.getId())
-                .setParameter("lexicons", lexicons)
-                .getResultList();
+                .setParameter("lexicons", lexicons);
+        return query.getResultList();*/
+        return findRelations(synset, lexicons, true);
+//        return getEntityManager().createQuery("FROM SynsetRelation sr WHERE  sr.child.id = :id AND sr.parent.lexicon.id IN (:lexicons)", SynsetRelation.class)
+//                .setParameter("id", synset.getId())
+//                .setParameter("lexicons", lexicons)
+//                .getResultList();
     }
 
     public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons) {
-        return getEntityManager().createQuery("FROM SynsetRelation sr WHERE sr.parent.id = :id", SynsetRelation.class)
+//        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+//        CriteriaQuery<SynsetRelation> query = criteriaBuilder.createQuery(SynsetRelation.class);
+//        Root<SynsetRelation> relationRoot = query.from(SynsetRelation.class);
+//        Fetch<SynsetRelation, Synset> synsetFetch = relationRoot.fetch("child", JoinType.LEFT);
+//        Fetch<SynsetRelation, Sense> senseFetch = synsetFetch.fetch("senses", JoinType.LEFT);
+//        Fetch<SynsetRelation, Domain> domainFetch = senseFetch.fetch("domain", JoinType.LEFT);
+//        Fetch<SynsetRelation, Lexicon> lexiconFetch = senseFetch.fetch("lexicon", JoinType.LEFT);
+//        Fetch<SynsetRelation, PartOfSpeech> partOfSpeechFetch = senseFetch.fetch("partOfSpeech", JoinType.LEFT);
+//        query.select(relationRoot);
+//        query.where(criteriaBuilder.equal(relationRoot.get("parent"),synset.getId()));
+//        return em.createQuery(query).getResultList();
+
+        /*Query query = getEntityManager().createQuery("FROM SynsetRelation sr LEFT JOIN FETCH sr.child AS synset " +
+                "LEFT JOIN FETCH synset.senses AS sense " +
+                "LEFT JOIN FETCH sense.domain " +
+                "LEFT JOIN FETCH sense.lexicon AS lexicon " +
+                "WHERE sr.parent.id = :id AND sense.synsetPosition = 0 AND lexicon.id IN (:lexicons)", SynsetRelation.class)
                 .setParameter("id", synset.getId())
-                .getResultList();
+                .setParameter("lexicons", lexicons);
+        return query.getResultList();*/
+
+        return findRelations(synset, lexicons, false);
+//        List<SynsetRelation>  resultList = query.getResultList();
+//        for(SynsetRelation relation : resultList){
+//            relation.setParent(synset);
+//        }
+//        return resultList;
+        /*return getEntityManager().createQuery("FROM SynsetRelation sr WHERE sr.parent.id = :id", SynsetRelation.class)
+                .setParameter("id", synset.getId())
+                .getResultList();*/
     }
 
+    private List<SynsetRelation> findRelations(Synset synset, List<Long> lexicons, boolean synsetIsChild) {
+        final String CHILD = "child";
+        final String PARENT = "parent";
+        String synsetFetchColumn = CHILD;
+        String synsetWhereColumn = PARENT;
+        if(synsetIsChild){
+            synsetFetchColumn = PARENT;
+            synsetWhereColumn = CHILD;
+        }
+        Query query = getEntityManager().createQuery("FROM SynsetRelation sr LEFT JOIN FETCH sr."+synsetFetchColumn+" AS synset " +
+                "LEFT JOIN FETCH synset.senses AS sense " +
+                "LEFT JOIN FETCH sense.domain " +
+                "LEFT JOIN FETCH sense.lexicon AS lexicon " +
+                "WHERE sr."+synsetWhereColumn+".id =:id AND sense.synsetPosition = 0 AND lexicon.id IN (:lexicons)", SynsetRelation.class)
+                .setParameter("id", synset.getId())
+                .setParameter("lexicons", lexicons);
+        return query.getResultList();
+    }
+
+    public List<SynsetRelation> findSimpleRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons) {
+        return findSimpleRelations(synset, lexicons, false);
+    }
+
+    public List<SynsetRelation> findSimpleRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons) {
+        return findSimpleRelations(synset, lexicons, true);
+    }
+
+    private List<SynsetRelation> findSimpleRelations(Synset synset, List<Long> lexicons, boolean synsetIsChild){
+        final String CHILD = "child";
+        final String PARENT = "parent";
+        String synsetFetchColumn = PARENT;
+        if(synsetIsChild){
+            synsetFetchColumn = CHILD;
+        }
+        Query query = getEntityManager().createQuery("SELECT new SynsetRelation(sr.relationType.id, sr.parent.id, sr.child.id) FROM SynsetRelation sr WHERE sr."+synsetFetchColumn+".id = :id " +
+                "AND sr."+synsetFetchColumn+".lexicon.id IN  (:lexicons)")
+                .setParameter("id", synset.getId())
+                .setParameter("lexicons", lexicons);
+        return query.getResultList();
+    }
     /** Metoda pobierająca relację synsetów, gdzie podany synset jest albo rodzicem, albo dzieckiem
      * @param synset synset dla którego zostaną znalezione relacje
      * @return wszystkie relację podanego synsetu
      */
     public List<SynsetRelation> findRelations(Synset synset){
-        return getEntityManager().createQuery("FROM SynsetRelation WHERE sr.parent.id =:id OR sr.child.id =:id", SynsetRelation.class)
+        return getEntityManager().createQuery("SELECT sr.FROM SynsetRelation WHERE sr.parent.id =:id OR sr.child.id =:id", SynsetRelation.class)
                 .setParameter("id", synset.getId())
                 .getResultList();
     }
+
+
 
     @Override
     protected Class<SynsetRelation> getPersistentClass() {

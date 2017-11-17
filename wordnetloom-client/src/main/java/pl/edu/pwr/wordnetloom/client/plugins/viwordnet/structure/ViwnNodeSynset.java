@@ -1,12 +1,15 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
+import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -33,7 +36,8 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     protected static SynsetNodeShape geom;
 
-    public static Set<RelationTypeManager>[] relTypes;
+//    public static Set<RelationTypeManager>[] relTypes;
+    public static Set<RelationType>[] relTypes;
 
     private final Set<ViwnEdgeSynset> edges_to_this_ = new HashSet<>();
     private final Set<ViwnEdgeSynset> edges_from_this_ = new HashSet<>();
@@ -53,8 +57,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     private final boolean hadCheckedPOS = false;
 
-    protected State[] states = new State[]{State.NOT_EXPANDED,
-            State.NOT_EXPANDED, State.NOT_EXPANDED, State.NOT_EXPANDED};
+    protected State[] states = new State[NodeDirection.values().length];
 
     public ViwnNodeSynset(Synset synset, ViwnGraphViewUI ui) {
         this.synset = synset;
@@ -73,8 +76,14 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         relTypes = initializeRelTypes();
     }
 
-    private static Set<RelationTypeManager>[] initializeRelTypes() {
-        Set<RelationTypeManager>[] tempRelTypes = new Set[NodeDirection.values().length];
+//    private static Set<RelationTypeManager>[] initializeRelTypes() {
+//        Set<RelationTypeManager>[] tempRelTypes = new Set[NodeDirection.values().length];
+//        Arrays.fill(tempRelTypes, new HashSet<>());
+//        return tempRelTypes;
+//    }
+
+    private static Set<RelationType>[] initializeRelTypes(){
+        Set<RelationType>[] tempRelTypes = new Set[NodeDirection.values().length];
         Arrays.fill(tempRelTypes, new HashSet<>());
         return tempRelTypes;
     }
@@ -125,6 +134,14 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     }
 
     private void add_if_new(SynsetRelation rel) {
+        ViwnEdgeSynset newEdge = new ViwnEdgeSynset(rel);
+        if(synset.getId().equals(rel.getChild().getId())){
+            edges_to_this_.add(newEdge);
+        } else if(synset.getId().equals(rel.getParent().getId())){
+            edges_from_this_.add(newEdge);
+        } else {
+            System.err.println("Database sanity error");
+        }
 //        if (LexiconManager.getInstance().getLexicons().contains(rel.getRelationType().getLexicon().getId())) {
 //            if (rel.getChild().getId().equals(synset.getId())) {
 //                ViwnEdgeSynset new_edge = new ViwnEdgeSynset(rel);
@@ -160,14 +177,14 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     }
 
     public void construct() {
-        Set<ViwnEdgeSynset> rels = new HashSet<>(edges_from_this_);
-        Set<ViwnEdgeSynset> to = new HashSet<>(edges_to_this_);
+        Set<ViwnEdgeSynset> relationsFrom = new HashSet<>(edges_from_this_);
+        Set<ViwnEdgeSynset> relationsTo = new HashSet<>(edges_to_this_);
 
         for (NodeDirection dir : NodeDirection.values()) {
             relations[dir.ordinal()].clear();
         }
 
-        Iterator<ViwnEdgeSynset> it = rels.iterator();
+        Iterator<ViwnEdgeSynset> it = relationsFrom.iterator();
         while (it.hasNext()) {
             ViwnEdgeSynset e = it.next();
 
@@ -175,21 +192,21 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
                 if (relTypes[dir.ordinal()].contains(e.getRelationType())) {
                     relations[dir.ordinal()].add(e);
-                    rels.remove(e);
+                    relationsFrom.remove(e);
 
-                    to.remove(e);
+                    relationsTo.remove(e);
 
                     ViwnEdgeSynset rev = e.createDummyReverse();
                     if (rev != null) {
-                        to.remove(rev);
+                        relationsTo.remove(rev);
                     }
 
-                    it = rels.iterator();
+                    it = relationsFrom.iterator();
                 }
             }
         }
 
-        it = to.iterator();
+        it = relationsFrom.iterator();
         while (it.hasNext()) {
             ViwnEdgeSynset e = it.next();
             if (skip(e)) {
@@ -273,6 +290,9 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
      */
     public PartOfSpeech getPos() {
         if (pos == null && !hadCheckedPOS) {
+            DataEntry dataEntry = ui.getEntrySetFor(getId());
+            pos = PartOfSpeechManager.getInstance().getById(dataEntry.getPosID());
+
 //            DataEntry dataSet = ui.getEntrySetFor(getId());
 //            Long l = null;
 //

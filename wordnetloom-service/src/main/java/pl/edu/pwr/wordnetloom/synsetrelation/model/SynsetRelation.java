@@ -16,15 +16,24 @@ public class SynsetRelation extends GenericEntity {
     @JoinColumn(name = "synset_relation_type_id", referencedColumnName = "id", nullable = false)
     private RelationType relationType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_synset_id", referencedColumnName = "id", nullable = false)
     private Synset parent;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "child_synset_id", referencedColumnName = "id", nullable = false)
     private Synset child;
 
     public SynsetRelation() {
+    }
+
+    public SynsetRelation(Long relationTypeId, Long parentId, Long childId){
+        relationType = new RelationType();
+        relationType.setId(relationTypeId);
+        parent = new Synset();
+        parent.setId(parentId);
+        child = new Synset();
+        child.setId(childId);
     }
 
     public Synset getParent() {

@@ -39,10 +39,12 @@ public class Synset extends GenericEntity {
     private Integer status = 0;
 
     @OneToMany(mappedBy = "child", fetch = FetchType.LAZY)
-    private final Set<SynsetRelation> incomingRelations = new HashSet<>();
+//    private final List<SynsetRelation> incomingRelations = new ArrayList<>();
+    private List<SynsetRelation> incomingRelations = new ArrayList<>();
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
-    private final Set<SynsetRelation> outgoingRelations = new HashSet<>();
+//    private final List<SynsetRelation> outgoingRelations = new ArrayList<>();
+    private List<SynsetRelation> outgoingRelations = new ArrayList<>();
 
     public Integer getSplit() {
         return split;
@@ -76,12 +78,20 @@ public class Synset extends GenericEntity {
         this.lexicon = lexicon;
     }
 
-    public Set<SynsetRelation> getIncomingRelations() {
+    public List<SynsetRelation> getIncomingRelations() {
         return incomingRelations;
     }
 
-    public Set<SynsetRelation> getOutgoingRelations() {
+    public List<SynsetRelation> getOutgoingRelations() {
         return outgoingRelations;
+    }
+
+    public void setIncomingRelations(List<SynsetRelation> relations){
+        incomingRelations = relations;
+    }
+
+    public void setOutgoingRelations(List<SynsetRelation> relations){
+        outgoingRelations = relations;
     }
 
     public Integer getStatus() {

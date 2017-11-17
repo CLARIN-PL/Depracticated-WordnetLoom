@@ -131,5 +131,4 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 //        long end = System.currentTimeMillis();
 //        System.out.println("Time: " + Long.toString(end - start));
     }
-
 }

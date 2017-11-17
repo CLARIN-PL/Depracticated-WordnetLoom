@@ -556,6 +556,16 @@ public class SenseRepository extends GenericRepository<Sense> {
         return query.getResultList();
     }
 
+    public Sense findHeadSenseOfSynset(Long synsetId){
+        Query query = getEntityManager().createQuery("FROM Sense s JOIN FETCH s.domain JOIN FETCH s.lexicon WHERE s.synset.id = :id AND s.synsetPosition = 0")
+                .setParameter("id", synsetId);
+        List<Sense> resultList = query.getResultList();
+        if(!resultList.isEmpty()){
+            return resultList.get(0);
+        }
+        return null;
+    }
+
     @Override
     protected Class<Sense> getPersistentClass() {
         return Sense.class;

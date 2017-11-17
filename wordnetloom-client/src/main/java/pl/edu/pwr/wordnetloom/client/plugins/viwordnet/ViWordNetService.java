@@ -34,6 +34,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
@@ -329,7 +330,8 @@ public class ViWordNetService extends AbstractService implements
         ArrayList[] arrayLists = new ArrayList[5];
         Arrays.fill(arrayLists, new ArrayList<>());
 
-        ArrayList<RelationTypeManager>[] relTypes = arrayLists;
+//        ArrayList<RelationTypeManager>[] relTypes = arrayLists;
+        ArrayList<RelationType>[] relTypes = arrayLists;
 
         Properties conf = new Properties();
         try {
@@ -338,35 +340,48 @@ public class ViWordNetService extends AbstractService implements
             }
 
             conf.load(istrem);
-
-            for (NodeDirection dir : NodeDirection.values()) {
-                String val = conf.getProperty(dir.getAsString());
-                if (val != null) {
-                    String[] rels = val.split(",");
-                    for (String s : rels) {
-//                        RelationTypeManager rt = RelationTypeManager.getByName(s);
-//                        if (rt != null) {
-//                            Collection<RelationTypes> children = rt
-//                                    .getChildren();
-//                            if (children != null) {
-//                                children.stream().forEach((r) -> {
-//                                    relTypes[dir.ordinal()].add(r);
-//                                });
-//                            } else {
-//                                relTypes[dir.ordinal()].add(rt);
-//                            }
-//                        } else {
-//                            Logger.getLogger(ViWordNetPlugin.class).log(
-//                                    Level.WARN, s + " is not a relation");
-//                        }
-                    }
-                } else {
-                    Logger.getLogger(ViWordNetPlugin.class).log(
-                            Level.WARN,
-                            "relations in direction " + dir.name()
-                                    + " are not defined");
+            String key;
+            String value;
+            for(Map.Entry<Object, Object> entry : conf.entrySet()){
+                key = (String)entry.getKey();
+                value = (String)entry.getValue();
+                String[] relationsArray = value.split(",");
+                int nodeDirectionPosition = NodeDirection.valueOf(key).ordinal();
+                for(String relation : relationsArray){
+                    RelationType relationType = RelationTypeManager.getInstance().getByName(relation);
+                    relTypes[nodeDirectionPosition].add(relationType);
                 }
             }
+
+//            for (NodeDirection dir : NodeDirection.values()) {
+//                String val = conf.getProperty(dir.getAsString());
+//                if (val != null) {
+//                    String[] rels = val.split(",");
+//                    for (String s : rels) {
+//
+////                        RelationTypeManager rt = RelationTypeManager.getByName(s);
+////                        if (rt != null) {
+////                            Collection<RelationTypes> children = rt
+////                                    .getChildren();
+////                            if (children != null) {
+////                                children.stream().forEach((r) -> {
+////                                    relTypes[dir.ordinal()].add(r);
+////                                });
+////                            } else {
+////                                relTypes[dir.ordinal()].add(rt);
+////                            }
+////                        } else {
+////                            Logger.getLogger(ViWordNetPlugin.class).log(
+////                                    Level.WARN, s + " is not a relation");
+////                        }
+//                    }
+//                } else {
+//                    Logger.getLogger(ViWordNetPlugin.class).log(
+//                            Level.WARN,
+//                            "relations in direction " + dir.name()
+//                                    + " are not defined");
+//                }
+//            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -383,7 +398,8 @@ public class ViWordNetService extends AbstractService implements
 //            relTypes[3].add(RelationTypeManager.getByName("hiponimia"));
         }
 
-        ArrayList<RelationTypeManager> order = new ArrayList<>();
+//        ArrayList<RelationTypeManager> order = new ArrayList<>();
+        ArrayList<RelationType> order = new ArrayList<>();
 
         for (NodeDirection dir : NodeDirection.values()) {
             ViwnNodeSynset.relTypes[dir.ordinal()].addAll(relTypes[dir.ordinal()]);
@@ -451,12 +467,14 @@ public class ViWordNetService extends AbstractService implements
                 if (entries != null) {
                     getActiveGraphView().getUI().setEntrySets((HashMap<Long, DataEntry>) entries);
                 }
+                LoadSynsetTask synsetTask = new LoadSynsetTask(rootSynset, unit, my_tag);
+                synsetTask.execute();
             } else {
                 getActiveGraphView().getUI().clear();
                 Synset empty = new Synset();
                 empty.setId(new Long(0));
                 activeGraphView.loadSynset(empty);
-                workbench.setBusy(false);
+
             }
             // final Synset rootSynset = RemoteUtils.synsetRemote.fetchSynsetForSense(unit, LexiconManager.getInstance().getLexicons());
 //            if (rootSynset != null) {
@@ -481,6 +499,7 @@ public class ViWordNetService extends AbstractService implements
 
         @Override
         public void done() {
+            workbench.setBusy(false);
         }
     }
 

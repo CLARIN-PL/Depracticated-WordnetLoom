@@ -276,15 +276,19 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             forest.addVertex(rootNode);
         }
 
-        cache.values().stream().map((n) -> {
-            n.setSpawner(null, null);
-            return n;
-        }).filter((n) -> (n instanceof ViwnNodeSynset)).forEachOrdered((n) -> {
-            for (NodeDirection rclass : NodeDirection.values()) {
-                ViwnNodeSynset nn = (ViwnNodeSynset) n;
-                nn.setState(rclass, ViwnNodeSynset.State.NOT_EXPANDED);
-            }
-        });
+        try{
+            cache.values().stream().map((n) -> {
+                n.setSpawner(null, null);
+                return n;
+            }).filter((n) -> (n instanceof ViwnNodeSynset)).forEachOrdered((n) -> {
+                for (NodeDirection rclass : NodeDirection.values()) {
+                    ViwnNodeSynset nn = n;
+                    nn.setState(rclass, ViwnNodeSynset.State.NOT_EXPANDED);
+                }
+            });
+        } catch(Exception e){
+            e.printStackTrace();
+        }
 
         for (NodeDirection rel_class : NodeDirection.values()) {
             if (rootNode instanceof ViwnNodeSynset) {
