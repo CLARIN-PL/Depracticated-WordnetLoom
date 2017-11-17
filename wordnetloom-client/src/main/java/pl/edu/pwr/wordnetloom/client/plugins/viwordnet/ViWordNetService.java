@@ -437,10 +437,10 @@ public class ViWordNetService extends AbstractService implements
         public Void doInBackground() {
 
             workbench.setBusy(true);
-            Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getLexicons());
+            Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getUserChosenLexiconsIds());
             getActiveGraphView().getUI().releaseDataSetCache();
             if (rootSynset != null) {
-                Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getLexicons());
+                Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getUserChosenLexiconsIds());
                 if (entries != null) {
                     getActiveGraphView().getUI().setEntrySets((HashMap<Long, DataEntry>) entries);
                 }
@@ -1063,7 +1063,7 @@ public class ViWordNetService extends AbstractService implements
             if (DialogBox.showYesNo(String.format(ToolbarViewUI.MERGE_SYNSETS,
                     src.getUnitsStr(), dst.getUnitsStr())) == DialogBox.YES) {
                 RelationsDA.mergeSynsets(src.getSynset(), dst.getSynset(),
-                        LexiconManager.getInstance().getLexicons());
+                        LexiconManager.getInstance().getUserChosenLexiconsIds());
                 for (ViwnGraphView gv : new ArrayList<>(graphViews)) {
                     gv.getUI().removeSynset(src);
                     gv.getUI().updateSynset(dst);

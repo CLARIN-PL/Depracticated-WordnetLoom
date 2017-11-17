@@ -57,7 +57,7 @@ public class Application implements Loggable {
 
         Thread managers = new Thread(() -> {
 
-            LexiconManager.getInstance();
+            LexiconManager.getInstance().loadLexicons(RemoteService.lexiconServiceRemote.findAll());
             PartOfSpeechManager.getInstance();
             DomainManager.getInstance();
             RelationTypeManager.getInstance().loadRelationTypes(RemoteService.relationTypeRemote.findAll());

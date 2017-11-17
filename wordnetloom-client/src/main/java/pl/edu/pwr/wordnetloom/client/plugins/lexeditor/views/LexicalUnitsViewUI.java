@@ -214,7 +214,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                     lexicons.clear();
                     lexicons.add(lex.getId());
                 } else {
-                    lexicons.addAll(LexiconManager.getInstance().getLexicons());
+                    lexicons.addAll(LexiconManager.getInstance().getUserChosenLexiconsIds());
                 }
 
 //                units = LexicalDA.getLexicalUnits(oldFilter,
@@ -249,7 +249,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 listModel.setCollection(newModelCollection);*/
                 // jeżeli pobrało mniej elementów niż zakładano, oznacza to, że pobrano już wszystkie elementy
                 // i nie należy próbowac pobierać ponownie
-                if(units.size() < limit){
+                if (units.size() < limit) {
                     unitsListScrollPane.setEnd(true);
                 }
                 for (Sense sense : units) {

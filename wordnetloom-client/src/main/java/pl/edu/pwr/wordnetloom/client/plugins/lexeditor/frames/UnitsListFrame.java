@@ -17,8 +17,6 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
-import java.util.Collection;
-import javax.swing.JCheckBox;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
@@ -28,6 +26,9 @@ import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+
+import javax.swing.*;
+import java.util.Collection;
 
 /**
  * klasa dostarczajace okno z lista jednostek leksykalnych
@@ -47,8 +48,8 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
      * konsuktor
      *
      * @param workbench - srodowisko
-     * @param x - położenie X
-     * @param y - położenie Y
+     * @param x         - położenie X
+     * @param y         - położenie Y
      */
     protected UnitsListFrame(Workbench workbench, int x, int y) {
         super(workbench, Labels.LEXICAL_UNITS, Labels.LEXICAL_UNITS_COLON, x, y, true);
@@ -57,14 +58,14 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
 
     @Override
     protected void addExtraControlsInSearchBox() {
-        this.filterUnitsInAnySynset = new JCheckBox(Labels.HIDE_UNITS_ASSIGNED_TO_SYNSETS, true);
-        this.add("br", filterUnitsInAnySynset);
+        filterUnitsInAnySynset = new JCheckBox(Labels.HIDE_UNITS_ASSIGNED_TO_SYNSETS, true);
+        add("br", filterUnitsInAnySynset);
     }
 
     @Override
     protected boolean verifySelectedElements() {
-        if (this.filterObject != null) {
-            for (Sense elem : this.selectedElements) {
+        if (filterObject != null) {
+            for (Sense elem : selectedElements) {
                 if (LexicalDA.checkIfInAnySynset(elem)) {
                     DialogBox.showError(String.format(Messages.INFO_UNIT_ALREADY_ASSIGNED_TO_SYNSET, (elem).getWord()));
                     return false;
@@ -78,15 +79,15 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
      * wypełnienie kolekcji danymi
      *
      * @param filter - filtr tekstowy
-     * @param pos - czesc mowy
+     * @param pos    - czesc mowy
      * @return kolekcja z danymi
      */
     @Override
     protected Collection<Sense> fillCollection(String filter, PartOfSpeech pos) {
-        if (this.filterObject != null && this.filterUnitsInAnySynset.isSelected()) {
+        if (filterObject != null && filterUnitsInAnySynset.isSelected()) {
             return LexicalDA.getLexicalUnitsNotInAnySynset(filter, pos);
         } else {
-            return LexicalDA.getLexicalUnits(filter, pos, LexiconManager.getInstance().getLexicons());
+            return LexicalDA.getLexicalUnits(filter, pos, LexiconManager.getInstance().getUserChosenLexiconsIds());
         }
     }
 
@@ -99,7 +100,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
         Sense newUnit = NewLexicalUnitFrame.showModal(workbench, filterObject);
         if (newUnit != null) {
             LexicalDA.saveUnit(newUnit);
-            this.filterEdit.setText(newUnit.getWord().getWord());
+            filterEdit.setText(newUnit.getWord().getWord());
             unitWasCreated = true;
             // odswieżenie listy
             refreshListModel();
@@ -109,27 +110,27 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
     protected void setFilterObject(PartOfSpeech filterObject) {
         this.filterObject = filterObject;
         if (this.filterObject == null) {
-            this.filterUnitsInAnySynset.setVisible(false);
+            filterUnitsInAnySynset.setVisible(false);
         }
     }
 
     /**
      * wyswietlenie okienka
      *
-     * @param workbench - srodowisko
-     * @param x - położenie X
-     * @param y - położenie Y
-     * @param multiSelect - pozwala zaznaczyc wiecej niz jeden obiekt na liscie
-     * @param filterObject - obiekt filtrujący
+     * @param workbench      - srodowisko
+     * @param x              - położenie X
+     * @param y              - położenie Y
+     * @param multiSelect    - pozwala zaznaczyc wiecej niz jeden obiekt na liscie
+     * @param filterObject   - obiekt filtrujący
      * @param unitWasCreated - parametr wyjsciowy, przechowuje informacje o tym
-     * czy nowa jednostka zostala stworzona
+     *                       czy nowa jednostka zostala stworzona
      * @return zaznaczone elemty albo null gdy anulowano
      */
     static public Collection<Sense> showModal(Workbench workbench,
-            int x, int y,
-            boolean multiSelect,
-            PartOfSpeech filterObject,
-            ValueContainer<Boolean> unitWasCreated) {
+                                              int x, int y,
+                                              boolean multiSelect,
+                                              PartOfSpeech filterObject,
+                                              ValueContainer<Boolean> unitWasCreated) {
         UnitsListFrame frame = new UnitsListFrame(workbench, x, y);
         frame.setFilterObject(filterObject);
         frame.setMultSelect(multiSelect);

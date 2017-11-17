@@ -6,21 +6,20 @@ import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
 import java.util.List;
 
-//Lexcion combo
-public class LexiconMComboBox extends MComboBox<Lexicon> {
+public class LexiconComboBox extends MComboBox<Lexicon> {
 
     private static final long serialVersionUID = -3667933167567163L;
     private List<Lexicon> all;
     private final String nullRepresentation;
 
-    public LexiconMComboBox(String nullItemRepresentation) {
+    public LexiconComboBox(String nullItemRepresentation) {
         nullRepresentation = nullItemRepresentation;
         loadLexicons();
         loadItems();
     }
 
     private void loadLexicons() {
-        all = LexiconManager.getInstance().getFullLexicons();
+        all = LexiconManager.getInstance().getLexicons();
     }
 
     private void loadItems() {

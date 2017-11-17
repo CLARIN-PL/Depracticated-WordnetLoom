@@ -27,7 +27,7 @@ public abstract class CriteriaPanel extends WebPanel {
     public static final int MAX_ITEMS_COUNT = 500;
 
     private WebTextField searchTextField;
-    private LexiconMComboBox lexiconComboBox;
+    private LexiconComboBox lexiconComboBox;
     private DomainMComboBox domainComboBox;
     private PartOfSpeechMComboBox partsOfSpeachComboBox;
     private MComboBox<RelationType> synsetRelationsComboBox;
@@ -45,7 +45,7 @@ public abstract class CriteriaPanel extends WebPanel {
         setMinimumSize(new Dimension(0, SCROLL_PANE_HEIGHT));
         setPreferredSize(new Dimension(0, SCROLL_PANE_HEIGHT));
 
-        lexiconComboBox = new LexiconMComboBox(Labels.VALUE_ALL);
+        lexiconComboBox = new LexiconComboBox(Labels.VALUE_ALL);
         lexiconComboBox.setPreferredSize(new Dimension(150, 20));
         lexiconComboBox.addActionListener((ActionEvent e) -> {
             Lexicon lex = lexiconComboBox.retriveComboBoxItem();
@@ -230,7 +230,7 @@ public abstract class CriteriaPanel extends WebPanel {
         return limitResultCheckBox;
     }
 
-    public LexiconMComboBox getLexiconComboBox() {
+    public LexiconComboBox getLexiconComboBox() {
         return lexiconComboBox;
     }
 

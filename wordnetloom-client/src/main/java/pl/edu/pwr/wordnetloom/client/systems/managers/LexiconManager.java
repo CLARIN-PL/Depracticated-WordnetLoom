@@ -1,26 +1,23 @@
 package pl.edu.pwr.wordnetloom.client.systems.managers;
 
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
+import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
-import javax.management.InvalidAttributeValueException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public final class LexiconManager implements Loggable{
+public final class LexiconManager implements Loggable {
 
     private static volatile LexiconManager instance = null;
-    private List<Long> cachedLexicons;
-    private List<Lexicon> cachedFullLexicons;
+    private List<Lexicon> lexicons;
+
     private boolean lexiconMarker;
 
     private LexiconManager() {
-        loadLexicons();
-        loadLexiconMarker();
-        loadFullLexicons(cachedLexicons);
+        lexicons = new ArrayList<>();
     }
 
     public static LexiconManager getInstance() {
@@ -32,24 +29,17 @@ public final class LexiconManager implements Loggable{
         return instance;
     }
 
-    private void loadFullLexicons(List<Long> lexicons) {
-        cachedFullLexicons = RemoteService.lexiconServiceRemote.findAllByLexicon(lexicons);
-    }
-
-    private void loadLexicons() {
-        try {
-            cachedLexicons = Collections.unmodifiableList(Collections.synchronizedList(readLexiconsFromFile()));
-        } catch (InvalidAttributeValueException e) {
-            logger().debug("Problem while loading lexicon string from file", e);
-        }
+    public void loadLexicons(List<Lexicon> lexicons) {
+        this.lexicons.clear();
+        this.lexicons.addAll(lexicons);
     }
 
     private void loadLexiconMarker() {
         lexiconMarker = RemoteConnectionProvider.getInstance().getUser().getSettings().getLexionMarker();
     }
 
-    public List<Lexicon> getFullLexicons() {
-        return cachedFullLexicons;
+    public List<Lexicon> getLexicons() {
+        return lexicons;
     }
 
     public boolean getLexiconMarker() {
@@ -65,32 +55,27 @@ public final class LexiconManager implements Loggable{
     }
 
 
-    private List<Long> readLexiconsFromFile() throws InvalidAttributeValueException {
+    public List<Long> getUserChosenLexiconsIds() {
         List<Long> list = new ArrayList<>();
         String[] lexiconArray = RemoteConnectionProvider.getInstance().getUser().getSettings().getChosenLexicons().split(";");
+
         for (String element : lexiconArray) {
             try {
                 Long id = Long.parseLong(element);
                 list.add(id);
             } catch (NumberFormatException ex) {
-                throw new InvalidAttributeValueException("Invalid character in lexicon string");
+                logger().error("Invalid format");
+                list = getLexiconsIds();
             }
         }
         return list;
     }
 
-    public List<Long> getLexicons() {
-        return cachedLexicons;
-    }
-
-    public List<Long> setLexicons(List<Long> lexicons) {
-        cachedLexicons = lexicons;
-        return cachedLexicons;
-    }
-
-    public void refresh() {
-        loadLexicons();
-        loadFullLexicons(cachedLexicons);
+    public List<Long> getLexiconsIds() {
+        return lexicons
+                .stream()
+                .map(GenericEntity::getId)
+                .collect(Collectors.toList());
     }
 
 }

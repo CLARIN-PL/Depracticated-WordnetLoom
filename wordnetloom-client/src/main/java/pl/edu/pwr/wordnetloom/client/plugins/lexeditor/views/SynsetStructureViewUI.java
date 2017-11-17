@@ -307,7 +307,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             Collection<Sense> selectedUnits = new ArrayList<>();
             selectedUnits = UnitsListFrame.showModal(
                     workbench, x, location.y, true,
-                    LexicalDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()), created);
+                    LexicalDA.getPos(lastSynset, LexiconManager.getInstance().getUserChosenLexiconsIds()), created);
 
             if (created.getValue()) {
                 clickListeners.notifyAllListeners(lastSynset, UNIT_CREATED);

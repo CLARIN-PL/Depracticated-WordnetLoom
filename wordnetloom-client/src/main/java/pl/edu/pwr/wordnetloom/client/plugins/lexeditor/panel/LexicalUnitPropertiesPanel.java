@@ -38,7 +38,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
 
     private static final long serialVersionUID = 8598891792812358941L;
     private Sense unit;
-    private LexiconMComboBox lexicon;
+    private LexiconComboBox lexicon;
     private MTextField lemma;
     private MTextField variant;
     private MTextField link;
@@ -128,7 +128,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         JLabel lblLexicon = new JLabel(Labels.LEXICON_COLON);
         lblLexicon.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblLexicon, "2, 5, left, fill");
-        lexicon = new LexiconMComboBox(Labels.NOT_CHOSEN);
+        lexicon = new LexiconComboBox(Labels.NOT_CHOSEN);
         lexicon.addActionListener(this);
         lexicon.addItemListener((ItemEvent e) -> {
             Lexicon lex = lexicon.retriveComboBoxItem();

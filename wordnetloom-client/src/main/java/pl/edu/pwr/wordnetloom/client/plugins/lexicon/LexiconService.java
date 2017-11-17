@@ -54,8 +54,8 @@ public class LexiconService extends AbstractService {
     }
 
     private void showLexiconWindow() {
-        LexiconsWindow window = new LexiconsWindow(workbench.getFrame(), LexiconManager.getInstance().getLexicons());
+        LexiconsWindow window = new LexiconsWindow(workbench.getFrame(), LexiconManager.getInstance().getUserChosenLexiconsIds());
         List<Long> lexicons = window.showModal();
-        LexiconManager.getInstance().setLexicons(lexicons);
+        //LexiconManager.getInstance().setLexicons(lexicons);
     }
 }
