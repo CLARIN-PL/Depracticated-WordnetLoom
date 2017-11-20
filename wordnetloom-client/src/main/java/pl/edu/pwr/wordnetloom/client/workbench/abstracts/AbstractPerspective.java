@@ -1,10 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.workbench.abstracts;
 
 import com.alee.laf.tabbedpane.WebTabbedPane;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MSplitPane;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ShortCut;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Perspective;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.View;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class AbstractPerspective implements Perspective, MouseListener {
+public abstract class AbstractPerspective implements Perspective, MouseListener, Loggable {
 
     private static final String PANEL_NAME = "%s (Ctrl %s)";
     private String perspectiveName = null;
@@ -65,7 +64,7 @@ public abstract class AbstractPerspective implements Perspective, MouseListener 
         try {
             installPane(view, panes.get(pos));
         } catch (Exception e) {
-            Logger.getLogger(AbstractPerspective.class).log(Level.ERROR, "While installing pane " + e);
+            logger().error("While installing pane", e);
         }
     }
 

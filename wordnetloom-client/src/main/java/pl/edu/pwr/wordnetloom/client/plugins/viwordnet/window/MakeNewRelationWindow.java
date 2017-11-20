@@ -38,7 +38,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         this.from = from;
         this.to = to;
 
-        lexicons = LexiconManager.getInstance().getLexicons();
+        lexicons = LexiconManager.getInstance().getUserChosenLexiconsIds();
 
         // relation from:
         parentItem = new MComboBox();

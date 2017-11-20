@@ -1,9 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.systems.tooltips;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.systems.misc.IObjectWrapper;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -15,7 +14,7 @@ import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
  *
  * @author Max
  */
-public class ToolTipGenerator implements ToolTipGeneratorInterface {
+public class ToolTipGenerator implements ToolTipGeneratorInterface, Loggable {
     // elementy wspolne
 
     protected final static String HTML_HEADER = "<html><body style=\"font-weight:normal\">";
@@ -37,9 +36,8 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface {
             + HTML_SPA + "<b>" + Labels.OWNER_COLON + "</b> %s" + HTML_BR
             + HTML_SPA + "<b>" + Labels.SYNSET_COMMENT_COLON + "</b> " + DESC_STR + HTML_BR
             + HTML_SPA + "<b>" + Labels.UNIT_COMMENT_COLON + "</b> " + DESC_STR + HTML_BR;
-    ;
 
-	static String LEXICALUNIT_TEMPLATE
+    static String LEXICALUNIT_TEMPLATE
             = HTML_SPA + "<font size=\"4\"><b><i>%s</i></b></font>" + HTML_BR
             + HTML_SPA + "<b>" + Labels.LEXICON_COLON + "</b> %s" + HTML_BR
             + HTML_SPA + "<b>" + Labels.DOMAIN_COLON + "</b> %s" + HTML_BR
@@ -76,7 +74,6 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface {
 
     /**
      * konstrukor prywatny
-     *
      */
     private ToolTipGenerator() {
         /**
@@ -301,7 +298,7 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface {
                 return getToolTipText((SenseRelation) object);
             }
         } catch (Exception e) {
-            Logger.getLogger(ToolTipGenerator.class).log(Level.ERROR, "While getting tooltip " + e);
+            logger().error("While getting tooltip ", e);
         }
         return "";
     }
@@ -320,11 +317,10 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface {
      * wylaczone
      *
      * @return TRUE jesli podpowiedzi sa pokazywane
-     *
      */
     @Override
     public boolean hasEnabledTooltips() {
-        return this.isEnabled;
+        return isEnabled;
     }
 
 }

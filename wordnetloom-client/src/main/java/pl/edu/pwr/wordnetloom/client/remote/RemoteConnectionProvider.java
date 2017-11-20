@@ -1,21 +1,21 @@
 package pl.edu.pwr.wordnetloom.client.remote;
 
-import java.io.IOException;
-import java.util.Properties;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.jboss.ejb.client.EJBClientConfiguration;
 import org.jboss.ejb.client.EJBClientContext;
 import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
 import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.user.model.User;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
 
-public class RemoteConnectionProvider {
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.IOException;
+import java.util.Properties;
+
+public class RemoteConnectionProvider implements Loggable {
 
     private static RemoteConnectionProvider instance;
 
@@ -44,7 +44,7 @@ public class RemoteConnectionProvider {
             String lookupName = getLookupName(remoteClass, "Bean");
             bean = (E) context.lookup(lookupName);
         } catch (NamingException | IOException ex) {
-            Logger.getLogger(RemoteConnectionProvider.class).log(Level.ERROR, "Service Lookup error:", ex);
+            logger().error("Service Lookup error:", ex);
         }
         return bean;
     }
@@ -98,7 +98,7 @@ public class RemoteConnectionProvider {
     }
 
     public void setUserSessionData(UserSessionData data) {
-        this.userSessionData = data;
+        userSessionData = data;
     }
 
     public User getUser() {

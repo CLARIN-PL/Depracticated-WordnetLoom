@@ -1,8 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
 import com.alee.laf.tabbedpane.WebTabbedPane;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.MouseGraphClickListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.TabChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphView;
@@ -11,6 +9,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.CloseableTabbedPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MSplitPane;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractPerspective;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ShortCut;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.View;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
@@ -26,7 +25,7 @@ import java.beans.PropertyChangeListener;
  * @author amusial
  */
 public class ViWordNetPerspective extends AbstractPerspective implements
-        CloseableTabbedPaneListener, PropertyChangeListener {
+        CloseableTabbedPaneListener, PropertyChangeListener, Loggable {
 
     private ViWordNetService service = null;
 
@@ -172,7 +171,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
             shortCuts.addAll(view.getShortCuts());
 
         } catch (Exception e) {
-            Logger.getLogger(ViWordNetPerspective.class).log(Level.ERROR, "Installing view" + e);
+            logger().error("Installing view", e);
         }
     }
 

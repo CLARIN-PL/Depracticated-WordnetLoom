@@ -7,8 +7,7 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.systems.managers.ConfigurationManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
@@ -37,7 +36,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
 
     public static final String WORKBENCH_CONFIG_FILE = "workbench.cfg";
     private static final String PLUGIN_CONFIG_FILE = "plugins.cfg";
-    private static final String PROGRAM_TITLE = "%s";
     private static final String SHOW_TOOLTIPS_PARAM_NAME = "ShowTooltips";
     private static final String ACTIVE_PERSPECTIVE_NAME = "ActivePerspective";
     private static final int STANDARD_WIDTH = 1000;
@@ -61,11 +59,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
     private final String version;
     public static ConfigurationManager config;
 
-    /**
-     * konstruktor
-     *
-     * @param title - tytuł dla okna
-     */
     public PanelWorkbench(String title) {
         version = title;
 
@@ -120,9 +113,7 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
                 menuHolder = new MenuHolder();
 
                 frame = new MFrame(STANDARD_WIDTH, STANDARD_HEIGHT);
-
-                // ustawienie tytulu okienka
-                updateTitle();
+                frame.setTitle(Application.PROGRAM_NAME_VERSION);
 
                 frame.addWindowListener(this);
                 frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -179,7 +170,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
                         perspective.refreshViews();
                     }
                 }
-                updateTitle();
             });
         } catch (InterruptedException | InvocationTargetException ex) {
             logger().error("Error while displaying frame", ex);
@@ -402,7 +392,7 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
      * @param fileName - nazwa pliku konfiguracyjnego
      * @return kolekcja pluginow
      */
-    static private Collection<Plugin> loadPlugins(String fileName) {
+    private Collection<Plugin> loadPlugins(String fileName) {
         Collection<Plugin> list = new ArrayList<>();
 
         // odczytanie pliku z listą pluginów
@@ -424,22 +414,13 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
                         list.add((Plugin) pluginClass.newInstance());
                     }
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-
-                    Logger.getLogger(PanelWorkbench.class).log(Level.ERROR,
-                            "While loading class plugins:" + e);
+                    logger().error("While loading class plugins:", e);
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(PanelWorkbench.class).log(Level.ERROR, "While openning file : " + ex);
+            logger().error("While openning file:", ex);
         }
         return list;
-    }
-
-    /**
-     * Uaktualnia nazwę okna aplikacji.
-     */
-    public void updateTitle() {
-        frame.setTitle(String.format(PROGRAM_TITLE, version));
     }
 
     @Override

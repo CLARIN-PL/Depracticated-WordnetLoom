@@ -17,7 +17,6 @@ import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.collections15.Transformer;
-import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.GraphChangeListener;
@@ -33,6 +32,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.A
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexFillColor;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexRenderer;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
@@ -57,9 +57,8 @@ import java.util.List;
  * @author Michał Marcińczuk <michal.marcinczuk@pwr.wroc.pl>
  */
 public class ViwnGraphViewUI extends AbstractViewUI implements
-        VertexSelectionChangeListener<ViwnNode> {
+        VertexSelectionChangeListener<ViwnNode>, Loggable {
 
-    private static final Logger LOGGER = Logger.getLogger(ViwnGraphViewUI.class);
     /**
      * A graph of synset and relations between synsets.
      */
@@ -166,7 +165,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             graph = getSampleGraphViewer();
             content.add(graph, "hfill vfill");
         } catch (IOException ex) {
-            LOGGER.error("IO exception", ex);
+            logger().error("IO exception", ex);
         }
 
     }
@@ -1066,7 +1065,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             second = cache.get(edge.getParent());
         }
         if (second == null) {
-            LOGGER.fatal("node of edge not in cache");
+            logger().error("node of edge not in cache");
         }
 
         NodeDirection d = findCommonRelationDir(second, node);
@@ -1078,7 +1077,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
 
         if (d == null) {
-            LOGGER.fatal("can't find relation in any direction");
+            logger().error("can't find relation in any direction");
         }
 
         node.setSpawner(second, d);
@@ -1390,9 +1389,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         try (OutputStream out = new FileOutputStream(filename)) {
             ImageIO.write(myImage, "png", out);
         } catch (FileNotFoundException ex) {
-            LOGGER.error("File not found", ex);
+            logger().error("File not found", ex);
         } catch (IOException ex) {
-            LOGGER.error("IO Error", ex);
+            logger().error("IO Error", ex);
         }
 
     }

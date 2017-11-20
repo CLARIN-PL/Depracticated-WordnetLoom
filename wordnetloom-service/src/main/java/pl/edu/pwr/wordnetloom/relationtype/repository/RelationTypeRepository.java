@@ -40,6 +40,18 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
                 .executeUpdate();
     }
 
+    public List<RelationType> findAll() {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<RelationType> q = cb.createQuery(RelationType.class);
+
+        Root<RelationType> root = q.from(RelationType.class);
+        root.fetch("lexicons");
+        root.fetch("parent");
+        root.fetch("reverse");
+
+        return em.createQuery(q).getResultList();
+    }
+
     public List<RelationType> findHighestLeafs(RelationArgument arg) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -93,9 +105,6 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery q = cb.createQuery(RelationType.class);
         Root o = q.from(RelationType.class);
-        o.fetch("descriptionStrings", JoinType.INNER);
-        o.fetch("displayStrings", JoinType.INNER);
-        o.fetch("shortDisplayStrings", JoinType.INNER);
         o.fetch("parent", JoinType.LEFT);
         o.fetch("reverse", JoinType.LEFT);
         q.select(o);

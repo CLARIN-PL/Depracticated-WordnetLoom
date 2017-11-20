@@ -140,10 +140,10 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
             //Ustawienie na sugestię, jeśli istnieje
             if (suggestedRelationType != null) {
                 if (suggestedRelationType.getParent() == null) { //TODO
-                    relationType.setSelectedItem(RelationTypeManager.getInstance().getFullNameFor(suggestedRelationType.getId(), RelationArgument.SENSE_RELATION));
+                    relationType.setSelectedItem(RelationTypeManager.getInstance().getFullName(suggestedRelationType.getId(), RelationArgument.SENSE_RELATION));
                 } else {
-                    relationType.setSelectedItem(RelationTypeManager.getInstance().getFullNameFor(suggestedRelationType.getParent().getId(), RelationArgument.SENSE_RELATION));
-                    relationSubType.setSelectedItem(RelationTypeManager.getInstance().getFullNameFor(suggestedRelationType.getId(), RelationArgument.SENSE_RELATION));
+                    relationType.setSelectedItem(RelationTypeManager.getInstance().getFullName(suggestedRelationType.getParent().getId(), RelationArgument.SENSE_RELATION));
+                    relationSubType.setSelectedItem(RelationTypeManager.getInstance().getFullName(suggestedRelationType.getId(), RelationArgument.SENSE_RELATION));
                 }
             } else {
                 relationType.setSelectedIndex(0);

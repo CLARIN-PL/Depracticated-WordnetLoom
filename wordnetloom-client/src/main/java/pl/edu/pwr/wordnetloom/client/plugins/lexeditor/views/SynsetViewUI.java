@@ -109,7 +109,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
                     lexicons.clear();
                     lexicons.add(lex.getId());
                 } else {
-                    lexicons.addAll(LexiconManager.getInstance().getLexicons());
+                    lexicons.addAll(LexiconManager.getInstance().getUserChosenLexiconsIds());
                 }
                 List<Sense> sense = new ArrayList<>();
                 sense = LexicalDA.getSenseBySynsets(oldFilter, oldDomain, oldRelation,

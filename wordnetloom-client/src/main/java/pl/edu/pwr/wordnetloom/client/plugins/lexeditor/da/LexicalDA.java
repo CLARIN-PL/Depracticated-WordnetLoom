@@ -29,10 +29,10 @@ public class LexicalDA {
 //        return null;
         Long domainId = null;
         Long posId = null;
-        if(domain != null){
+        if (domain != null) {
             domainId = domain.getId();
         }
-        if(pos != null){
+        if (pos != null) {
             posId = pos.getId();
         }
         SenseCriteriaDTO criteria = new SenseCriteriaDTO(posId, domainId, filterText, lexicons);
@@ -650,7 +650,7 @@ public class LexicalDA {
 //                    return RelationTypeManager.get(parent.getId()).name() + " / " + RelationTypeManager.get(rel.getId()).name();
 //                }
             }
-            return RelationTypeManager.getInstance().getFullNameFor(rel.getId());
+            return RelationTypeManager.getInstance().getFullName(rel.getId());
         }
         return null;
     }

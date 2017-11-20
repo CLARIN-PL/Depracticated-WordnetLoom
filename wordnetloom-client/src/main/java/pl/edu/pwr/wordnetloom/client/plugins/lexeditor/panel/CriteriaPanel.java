@@ -3,7 +3,6 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
@@ -19,7 +18,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
-import java.util.List;
 
 public abstract class CriteriaPanel extends WebPanel {
 
@@ -29,7 +27,7 @@ public abstract class CriteriaPanel extends WebPanel {
     public static final int MAX_ITEMS_COUNT = 500;
 
     private WebTextField searchTextField;
-    private LexiconMComboBox lexiconComboBox;
+    private LexiconComboBox lexiconComboBox;
     private DomainMComboBox domainComboBox;
     private PartOfSpeechMComboBox partsOfSpeachComboBox;
     private MComboBox<RelationType> synsetRelationsComboBox;
@@ -47,7 +45,7 @@ public abstract class CriteriaPanel extends WebPanel {
         setMinimumSize(new Dimension(0, SCROLL_PANE_HEIGHT));
         setPreferredSize(new Dimension(0, SCROLL_PANE_HEIGHT));
 
-        lexiconComboBox = new LexiconMComboBox(Labels.VALUE_ALL);
+        lexiconComboBox = new LexiconComboBox(Labels.VALUE_ALL);
         lexiconComboBox.setPreferredSize(new Dimension(150, 20));
         lexiconComboBox.addActionListener((ActionEvent e) -> {
             Lexicon lex = lexiconComboBox.retriveComboBoxItem();
@@ -172,25 +170,30 @@ public abstract class CriteriaPanel extends WebPanel {
     }
 
     public void refreshSenseRelations() {
-        RelationTypeManager.getInstance().refresh();
-        List<RelationType> relations = RemoteService.relationTypeRemote.findLeafs(RelationArgument.SENSE_RELATION);
+
         int selected = senseRelationsComboBox.getSelectedIndex();
 
         senseRelationsComboBox.removeAllItems();
         senseRelationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
 
         if (lexiconComboBox.retriveComboBoxItem() != null) {
-            for (RelationType relation : relations) {
-                if (relation.getLexicons().contains(lexiconComboBox.retriveComboBoxItem())) {
-                    RelationType currentRelation = relation;//RelationTypeManager.get(relation.getId()).getRelationType(), RelationTypeManager.getFullNameFor(currentRelation.getId();
-                    //senseRelationsComboBox.addItem(new CustomDescription<>(relation.getName(RemoteConnectionProvider.getInstance().getLanguage()), currentRelation));
-                }
-            }
+            RelationTypeManager
+                    .getInstance()
+                    .getRealtionsWithoutProxyParent(RelationArgument.SENSE_RELATION, lexiconComboBox.retriveComboBoxItem())
+                    .forEach(r ->
+                            senseRelationsComboBox.addItem(new CustomDescription<>(
+                                    RelationTypeManager
+                                            .getInstance()
+                                            .getFullName(r.getId()), r)));
         } else {
-            for (RelationType relation : relations) {
-                RelationType currentRelation = relation; //RelationTypeManager.get(relation.getId()).getRelationType();
-                // senseRelationsComboBox.addItem(new CustomDescription<>(relation.getName(RemoteConnectionProvider.getInstance().getLanguage()), currentRelation));
-            }
+            RelationTypeManager
+                    .getInstance()
+                    .getRealtionsWithoutProxyParent(RelationArgument.SENSE_RELATION)
+                    .forEach(r ->
+                            senseRelationsComboBox.addItem(new CustomDescription<>(
+                                    RelationTypeManager
+                                            .getInstance()
+                                            .getFullName(r.getId()), r)));
         }
 
         if (selected != -1) {
@@ -227,7 +230,7 @@ public abstract class CriteriaPanel extends WebPanel {
         return limitResultCheckBox;
     }
 
-    public LexiconMComboBox getLexiconComboBox() {
+    public LexiconComboBox getLexiconComboBox() {
         return lexiconComboBox;
     }
 

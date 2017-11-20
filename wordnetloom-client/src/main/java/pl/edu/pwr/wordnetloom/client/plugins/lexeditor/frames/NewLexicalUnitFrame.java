@@ -165,7 +165,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
 
             String testLemma = editPanel.getLemma().getText();
 
-            List<Sense> units = LexicalDA.getFullLexicalUnits(testLemma, LexiconManager.getInstance().getLexicons());
+            List<Sense> units = LexicalDA.getFullLexicalUnits(testLemma, LexiconManager.getInstance().getUserChosenLexiconsIds());
 
             if (validateSelections()) {
                 if (checkUnitExists(testLemma, units)) {

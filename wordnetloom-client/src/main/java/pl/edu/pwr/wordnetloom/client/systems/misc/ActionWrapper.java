@@ -17,29 +17,28 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.misc;
 
+import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 
 /**
  * klasa będąca wrapperam na ActioListener oraz SimpleListenerInterface pozwala
  * używać innych metod z klasy, a nie tylko tej nazwanej "actionPerformed" czy
  * "doAction" metody nie maja parametrow, a wiec argumenty wywolania sa tracone
- *
+ * <p>
  * przykład: testButton.addActionListener(new
  * ActionWrapper(this,"testButton_click")); zamiast:
  * testButton.addActionListener(this); gdzie: testButton_click to nazwa metody,
  * ktora ma zostac uzyta
  *
  * @author Max
- *
  */
 // cała ta klasa to jeden wielki syf do skasowania, za dużo porętnej refleksji która będzie tylko przyciemniać kod.
-public class ActionWrapper implements ActionListener, SimpleListenerInterface {
+public class ActionWrapper implements ActionListener, SimpleListenerInterface, Loggable {
 
     private Method method;
     private Object owner;
@@ -50,9 +49,9 @@ public class ActionWrapper implements ActionListener, SimpleListenerInterface {
         this.owner = owner;
         this.methodName = methodName;
         try {
-            this.method = owner.getClass().getMethod(methodName, new Class[0]);
+            method = owner.getClass().getMethod(methodName, new Class[0]);
         } catch (NoSuchMethodException | SecurityException e) {
-            Logger.getLogger(ActionWrapper.class).log(Level.ERROR, "Trying to call method" + e);
+            logger().error("Trying to call method", e);
         }
     }
 
@@ -62,7 +61,7 @@ public class ActionWrapper implements ActionListener, SimpleListenerInterface {
             method.invoke(owner, args); // wywołanie metody zastępczej
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             System.err.println("Problem invoking method: " + methodName + " in object: " + owner);
-            Logger.getLogger(ActionWrapper.class).log(Level.ERROR, "Trying to call method" + e);
+            logger().error("Trying to call method", e);
         }
     }
 
@@ -71,7 +70,7 @@ public class ActionWrapper implements ActionListener, SimpleListenerInterface {
         try {
             method.invoke(owner, args); // wywołanie metody zastępczej
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            Logger.getLogger(ActionWrapper.class).log(Level.ERROR, "Trying to call method" + e);
+            logger().error("Trying to call method", e);
         }
     }
 }

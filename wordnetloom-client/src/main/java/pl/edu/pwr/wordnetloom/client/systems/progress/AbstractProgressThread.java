@@ -1,18 +1,12 @@
 package pl.edu.pwr.wordnetloom.client.systems.progress;
 
 import com.alee.laf.rootpane.WebFrame;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * abstrakcyjan klasa do obslugi watku z paskiem postepu
- *
- * @author Max
- */
-abstract public class AbstractProgressThread implements Runnable {
+public abstract class AbstractProgressThread implements Runnable, Loggable {
 
     private static final boolean RUN_THREAD = true;
     protected ProgressFrame progress; // okno z paskiem postepu
@@ -88,7 +82,7 @@ abstract public class AbstractProgressThread implements Runnable {
                 try {
                     thread.join();
                 } catch (InterruptedException e) {
-                    Logger.getLogger(AbstractProgressThread.class).log(Level.ERROR, "Whiel joing threds " + e);
+                    logger().error("Whiel joing threds", e);
                 }
             }
         } else {

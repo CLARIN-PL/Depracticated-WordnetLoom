@@ -34,13 +34,6 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * okno wyswietlajace liste elementow
- *
- * @param <T> typ przechowywanego obiektu
- * @param <G> typ obiektu sluzacego jako filtr
- * @author Max
- */
 abstract public class AbstractListFrame<T, G> extends
         DialogWindow implements ActionListener, ListSelectionListener,
         KeyListener, MouseListener {
