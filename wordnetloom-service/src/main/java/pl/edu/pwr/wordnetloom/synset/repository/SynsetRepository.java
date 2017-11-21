@@ -1,8 +1,6 @@
 package pl.edu.pwr.wordnetloom.synset.repository;
 
-import pl.edu.pwr.wordnetloom.common.dto.CountInfo;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.common.dto.SynsetInfo;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -18,8 +16,12 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Stateless
 public class SynsetRepository extends GenericRepository<Synset> {
@@ -665,7 +667,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return result;
     }
 
-    private String buildDataEntryLabel(Sense sense){
+    private String buildDataEntryLabel(Sense sense) {
         StringBuilder labelBuilder = new StringBuilder();
         labelBuilder.append(sense.getWord().getWord()).append(" ")
                 .append(sense.getVariant()).append(" ")
@@ -673,7 +675,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return labelBuilder.toString();
     }
 
-    private DataEntry getDataEntry(Synset synset, Sense sense, List<SynsetRelation> relationsFrom, List<SynsetRelation> relationsTo){
+    private DataEntry getDataEntry(Synset synset, Sense sense, Set<SynsetRelation> relationsFrom, Set<SynsetRelation> relationsTo) {
         DataEntry dataEntry = new DataEntry();
         dataEntry.setSynset(synset);
         dataEntry.setRelsFrom(relationsFrom);
@@ -684,13 +686,12 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return dataEntry;
     }
 
-    private void putDataEntryFromSynsetRelation(Map<Long, DataEntry> map, List<SynsetRelation> relationsList, boolean isRelationsFrom)
-    {
+    private void putDataEntryFromSynsetRelation(Map<Long, DataEntry> map, List<SynsetRelation> relationsList, boolean isRelationsFrom) {
         Synset relatedSynset;
         Sense sense;
         DataEntry dataEntry;
-        for(SynsetRelation relation : relationsList){
-            if(isRelationsFrom){
+        for (SynsetRelation relation : relationsList) {
+            if (isRelationsFrom) {
                 relatedSynset = relation.getChild();
             } else {
                 relatedSynset = relation.getParent();
@@ -701,26 +702,59 @@ public class SynsetRepository extends GenericRepository<Synset> {
         }
     }
 
-    public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons) {
-        Synset relatedSynset = synset;
-        Sense sense;
-        Map<Long, DataEntry> resultMap = new HashMap<>();
-        sense = senseRepository.findHeadSenseOfSynset(synset.getId());
-        List<SynsetRelation> relationsFrom  = synsetRelationRepository.findRelationsWhereSynsetIsParent(relatedSynset, lexicons);
-        List<SynsetRelation> relationsTo = synsetRelationRepository.findRelationsWhereSynsetIsChild(relatedSynset, lexicons);
-        relatedSynset.setOutgoingRelations(relationsFrom); // TODO przyjrzeć sie temu, prawdopodobnie jest to niepotrzebne
-        relatedSynset.setIncomingRelations(relationsTo);
-        DataEntry dataEntry = getDataEntry(relatedSynset, sense, relationsFrom, relationsTo);
-        resultMap.put(relatedSynset.getId(), dataEntry);
-        putDataEntryFromSynsetRelation(resultMap, relationsFrom, true);
-        putDataEntryFromSynsetRelation(resultMap, relationsTo, false);
+    private Synset findSynsetWithRelationsAandSenseById(Long id) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Synset> cq = cb.createQuery(Synset.class);
 
-        return resultMap;
+        Root<Synset> root = cq.from(Synset.class);
+        root.fetch("incomingRelations");
+        root.fetch("outgoingRelations");
+        root.fetch("senses");
+
+        cq.where(cb.equal(root.get("id"), id));
+
+        final TypedQuery<Synset> query = getEntityManager().createQuery(cq);
+
+        return query.getSingleResult();
+
+    }
+
+    private DataEntry buildDataEntry(Long id) {
+        Synset synset = findSynsetWithRelationsAandSenseById(id);
+        DataEntry dataEntry = getDataEntry(
+                synset,
+                synset.getSenses()
+                        .stream()
+                        .findFirst().orElse(null)
+                , synset.getOutgoingRelations(), synset.getIncomingRelations());
+        return dataEntry;
+    }
+
+    public Map<Long, DataEntry> prepareCacheForRootNode(final Long synsetId, final List<Long> lexicons) {
+
+        Map<Long, DataEntry> result = new HashMap<>();
+
+        DataEntry root = buildDataEntry(synsetId);
+        result.put(synsetId, root);
+
+        Set<Long> relatedSynsetsToFetch = Stream
+                .concat(
+                        root.getRelsFrom().stream(),
+                        root.getRelsTo().stream())
+                .flatMap(s -> Stream.of(s.getParent().getId(), s.getChild().getId()))
+                .distinct()
+                .collect(Collectors.toSet());
+
+        relatedSynsetsToFetch.forEach(s -> result.put(s, buildDataEntry(s)));
+
+        return result;
+
+
 //        if (!rootEntry.getRelsFrom().isEmpty() || !rootEntry.getRelsFrom().isEmpty()) {
 //            List<SynsetRelation> relations = synsetRelationRepository.findRelations(synset);
 //            map.put(rootEntry.getSynset().getId(), rootEntry);
 
-            //TODO odkomentować i przerobić
+        //TODO odkomentować i przerobić
 //            List<SynsetInfo> infos = em.createQuery(
 //                    "SELECT NEW pl.edu.pwr.wordnetloom.model.dto.SynsetInfo(sy.id, se.partOfSpeech.id, name.text, lemma.word, syt.value.text, se.senseNumber, lexId.text) " +
 //                            "FROM Sense AS se JOIN se.synset AS sy  " +

@@ -10,7 +10,6 @@ import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
-
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Area;
@@ -36,7 +35,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     protected static SynsetNodeShape geom;
 
-//    public static Set<RelationTypeManager>[] relTypes;
+    //    public static Set<RelationTypeManager>[] relTypes;
     public static Set<RelationType>[] relTypes;
 
     private final Set<ViwnEdgeSynset> edges_to_this_ = new HashSet<>();
@@ -63,14 +62,14 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         this.synset = synset;
         this.ui = ui;
         this.ui.addSynsetToCash(synset.getId(), this);
-        this.relations = new ArrayList[NodeDirection.values().length];
+        relations = new ArrayList[NodeDirection.values().length];
         Arrays.fill(relations, new ArrayList<>());
 
         units = null; //RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
         setup();
     }
 
-    static{
+    static {
         PosBgColors = new HashMap<>();
         geom = new SynsetNodeShape();
         relTypes = initializeRelTypes();
@@ -82,7 +81,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 //        return tempRelTypes;
 //    }
 
-    private static Set<RelationType>[] initializeRelTypes(){
+    private static Set<RelationType>[] initializeRelTypes() {
         Set<RelationType>[] tempRelTypes = new Set[NodeDirection.values().length];
         Arrays.fill(tempRelTypes, new HashSet<>());
         return tempRelTypes;
@@ -135,9 +134,9 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     private void add_if_new(SynsetRelation rel) {
         ViwnEdgeSynset newEdge = new ViwnEdgeSynset(rel);
-        if(synset.getId().equals(rel.getChild().getId())){
+        if (synset.getId().equals(rel.getChild().getId())) {
             edges_to_this_.add(newEdge);
-        } else if(synset.getId().equals(rel.getParent().getId())){
+        } else if (synset.getId().equals(rel.getParent().getId())) {
             edges_from_this_.add(newEdge);
         } else {
             System.err.println("Database sanity error");
@@ -254,8 +253,8 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         edges_from_this_.clear();
 
         // first - primary cache
-        List<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
-        List<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());
+        Set<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
+        Set<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());
 
         // no cache? fetch from database
 //        if (relsUP == null) {
