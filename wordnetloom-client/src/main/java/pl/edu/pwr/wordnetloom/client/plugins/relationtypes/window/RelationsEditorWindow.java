@@ -1,18 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
-import com.alee.laf.checkbox.WebCheckBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.*;
-import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
+/*
+public class RelationsEditorWindow extends MFrame implements ActionListener, TreeSelectionListener, CaretListener, ListSelectionListener, MouseListener {
 
-import javax.management.relation.RelationType;
-import javax.swing.*;
-import java.awt.*;
-import java.text.ParseException;
-
-
-public class RelationsEditorWindow extends MFrame { //implements ActionListener, TreeSelectionListener, CaretListener, ListSelectionListener, MouseListener {
     private static final long serialVersionUID = 1L;
 
     private final int MIN_WINDOW_WIDTH = 200;
@@ -65,7 +55,7 @@ public class RelationsEditorWindow extends MFrame { //implements ActionListener,
     }
 
 }
-/*
+
     private void createView() throws ParseException {
         relationsPanel = createTabbedPanel();
         detailsPanel = createDetailsPanel();
@@ -96,16 +86,6 @@ public class RelationsEditorWindow extends MFrame { //implements ActionListener,
         return relationsTabbedPane;
         //this.add(relationsTabbedPane, BorderLayout.CENTER);
     }
-
-    */
-/**
- * Tworzy podział pomiędzy dwoma panelami. Rozmiar paneli może być dzięki
- * temu zmieniany za pomocą przeciągnięcia podziału.
- *
- * @param topPanel    panel, którym ma znajdować się na górze
- * @param bottomPanel panel, który ma znajdować się na dole
- * @return widok zawierający dwa panele i przedział pobiędzy nimi
- *//*
 
 
     private MSplitPane createSplitPanel(JComponent topPanel, JComponent bottomPanel) {

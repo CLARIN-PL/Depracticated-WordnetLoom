@@ -1,25 +1,26 @@
 package pl.edu.pwr.wordnetloom.common.dto;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DataEntry implements Serializable {
 
     private static final long serialVersionUID = 5708346930324155121L;
 
     private Synset synset;
-    private List<SynsetRelation> relsFrom;
-    private List<SynsetRelation> relsTo;
+    private Set<SynsetRelation> relsFrom;
+    private Set<SynsetRelation> relsTo;
     private String label;
     private Long posID;
     private String lexicon;
 
     public DataEntry() {
-        relsFrom = new ArrayList<>();
-        relsTo = new ArrayList<>();
+        relsFrom = new HashSet<>();
+        relsTo = new HashSet<>();
     }
 
     public Synset getSynset() {
@@ -30,19 +31,19 @@ public class DataEntry implements Serializable {
         this.synset = synset;
     }
 
-    public List<SynsetRelation> getRelsFrom() {
+    public Set<SynsetRelation> getRelsFrom() {
         return relsFrom;
     }
 
-    public void setRelsFrom(List<SynsetRelation> relsFrom) {
+    public void setRelsFrom(Set<SynsetRelation> relsFrom) {
         this.relsFrom = relsFrom;
     }
 
-    public List<SynsetRelation> getRelsTo() {
+    public Set<SynsetRelation> getRelsTo() {
         return relsTo;
     }
 
-    public void setRelsTo(List<SynsetRelation> relsTo) {
+    public void setRelsTo(Set<SynsetRelation> relsTo) {
         this.relsTo = relsTo;
     }
 

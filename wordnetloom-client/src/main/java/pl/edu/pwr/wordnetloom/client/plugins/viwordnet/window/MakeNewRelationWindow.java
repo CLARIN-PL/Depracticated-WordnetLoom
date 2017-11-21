@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window;
 
+import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
@@ -28,7 +29,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
     private static final long serialVersionUID = 5479457915334417348L;
 
     protected MButton buttonSwitch;
-    protected JPanel jp;
+    protected WebPanel jp;
     protected List<Long> lexicons;
     protected ViwnNode from[], to[];
 
@@ -142,7 +143,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
                 description));
         add("br hfill", new JScrollPane(description));
 
-        jp = new JPanel();
+        jp = new WebPanel();
         jp.setLayout(new RiverLayout());
         jp.add("br", new MLabel(Labels.SOURCE_SYNSET_COLON, 'r', parentItem));
         jp.add("tab hfill", parentItem);

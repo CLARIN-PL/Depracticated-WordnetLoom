@@ -121,7 +121,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         return rels;
     }
 
-    public List<SynsetRelation> getUpperRelationsFor(Long id) {
+    public Set<SynsetRelation> getUpperRelationsFor(Long id) {
         DataEntry e = getEntrySetFor(id);
         if (e == null) {
             return null;
@@ -130,7 +130,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         return e.getRelsFrom();
     }
 
-    public List<SynsetRelation> getSubRelationsFor(Long id) {
+    public Set<SynsetRelation> getSubRelationsFor(Long id) {
         DataEntry e = getEntrySetFor(id);
         if (e == null) {
             return null;
@@ -275,7 +275,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             forest.addVertex(rootNode);
         }
 
-        try{
+        try {
             cache.values().stream().map((n) -> {
                 n.setSpawner(null, null);
                 return n;
@@ -285,7 +285,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                     nn.setState(rclass, ViwnNodeSynset.State.NOT_EXPANDED);
                 }
             });
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

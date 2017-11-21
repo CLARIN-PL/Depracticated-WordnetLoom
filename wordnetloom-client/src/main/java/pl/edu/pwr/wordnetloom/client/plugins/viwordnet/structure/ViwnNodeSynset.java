@@ -270,8 +270,8 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         edges_from_this_.clear();
 
         // first - primary cache
-        List<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
-        List<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());
+        Set<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
+        Set<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());
 
         // no cache? fetch from database
 //        if (relsUP == null) {

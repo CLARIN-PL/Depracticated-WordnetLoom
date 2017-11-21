@@ -12,7 +12,6 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +54,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @Override
     public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons) {
-        return synsetRepository.prepareCacheForRootNode(synset, lexicons);
+        return synsetRepository.prepareCacheForRootNode(synset.getId(), lexicons);
 
 //        Map<Long, DataEntry> map = new HashMap<>();
 //
