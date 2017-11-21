@@ -29,4 +29,9 @@ public class MButtonPanel extends WebPanel {
                 .forEach(c -> c.setEnabled(enabled));
         return this;
     }
+
+    public MButtonPanel withMargin(int margin) {
+        setMargin(margin);
+        return this;
+    }
 }

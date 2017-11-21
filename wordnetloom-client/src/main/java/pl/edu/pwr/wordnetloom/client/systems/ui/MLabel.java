@@ -23,6 +23,9 @@ import java.awt.*;
 
 public class MLabel extends WebLabel {
 
+    public MLabel() {
+    }
+
     public MLabel(String caption) {
         super(caption);
     }
@@ -36,6 +39,27 @@ public class MLabel extends WebLabel {
         super(caption);
         setDisplayedMnemonic(displayedMnemonic);
         setLabelFor(labelFor);
+    }
+
+    public MLabel withLabelFor(Component cmp) {
+        setLabelFor(cmp);
+        return this;
+    }
+
+    public MLabel withMnemonic(char mnemonic) {
+        setDisplayedMnemonic(mnemonic);
+        return this;
+    }
+
+    public MLabel withCaption(String caption) {
+        setText(caption);
+        return this;
+    }
+
+    public MLabel withAlignment(int alignment) {
+        setHorizontalAlignment(alignment);
+        setHorizontalTextPosition(alignment);
+        return this;
     }
 
     public MLabel withPlainFont() {

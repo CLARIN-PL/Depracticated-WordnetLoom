@@ -20,6 +20,7 @@ package pl.edu.pwr.wordnetloom.client.systems.ui;
 import com.alee.laf.text.WebTextArea;
 
 import javax.swing.*;
+import javax.swing.event.CaretListener;
 import java.awt.*;
 import java.awt.event.KeyListener;
 
@@ -37,7 +38,6 @@ public class MTextArea extends WebTextArea {
         setBorder(new JTextField().getBorder());
         setLineWrap(true);
         setWrapStyleWord(true);
-        setBorder(null);
     }
 
     public MTextArea(String text, KeyListener keyListener, int width, int height) {
@@ -45,6 +45,16 @@ public class MTextArea extends WebTextArea {
         addKeyListener(keyListener);
         setPreferredSize(new Dimension(width, height));
         setSize(new Dimension(width, height));
+    }
+
+    public MTextArea withRows(int rowsNumber) {
+        setRows(rowsNumber);
+        return this;
+    }
+
+    public MTextArea withCaretListener(CaretListener listener) {
+        addCaretListener(listener);
+        return this;
     }
 
     @Override

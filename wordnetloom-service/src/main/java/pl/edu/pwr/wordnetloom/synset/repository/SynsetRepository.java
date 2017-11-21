@@ -702,7 +702,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         }
     }
 
-    private Synset findSynsetWithRelationsAandSenseById(Long id) {
+    private Synset findSynsetWithRelationsAndSenseById(Long id) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Synset> cq = cb.createQuery(Synset.class);
 
@@ -720,7 +720,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
     }
 
     private DataEntry buildDataEntry(Long id) {
-        Synset synset = findSynsetWithRelationsAandSenseById(id);
+        Synset synset = findSynsetWithRelationsAndSenseById(id);
         DataEntry dataEntry = getDataEntry(
                 synset,
                 synset.getSenses()
