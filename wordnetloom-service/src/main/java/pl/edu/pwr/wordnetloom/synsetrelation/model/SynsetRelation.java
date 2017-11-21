@@ -16,11 +16,11 @@ public class SynsetRelation extends GenericEntity {
     @JoinColumn(name = "synset_relation_type_id", referencedColumnName = "id", nullable = false)
     private RelationType relationType;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_synset_id", referencedColumnName = "id", nullable = false)
     private Synset parent;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "child_synset_id", referencedColumnName = "id", nullable = false)
     private Synset child;
 

@@ -1,8 +1,6 @@
 package pl.edu.pwr.wordnetloom.synset.repository;
 
-import pl.edu.pwr.wordnetloom.common.dto.CountInfo;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.common.dto.SynsetInfo;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -19,7 +17,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Stateless
 public class SynsetRepository extends GenericRepository<Synset> {
@@ -696,6 +693,8 @@ public class SynsetRepository extends GenericRepository<Synset> {
                 relatedSynset = relation.getParent();
             }
             sense = relatedSynset.getSenses().get(0);
+            Hibernate.initialize(sense.getIncomingRelations());
+            Hibernate.initialize(sense.getOutgoingRelations());
             dataEntry = getDataEntry(relatedSynset, sense, relatedSynset.getOutgoingRelations(), relatedSynset.getIncomingRelations());
             map.put(relatedSynset.getId(), dataEntry);
         }

@@ -45,9 +45,8 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         CriteriaQuery<RelationType> q = cb.createQuery(RelationType.class);
 
         Root<RelationType> root = q.from(RelationType.class);
-        root.fetch("lexicons");
-        root.fetch("parent");
-        root.fetch("reverse");
+//        root.fetch("parent", JoinType.LEFT);
+//        root.fetch("reverse", JoinType.LEFT);
 
         return em.createQuery(q).getResultList();
     }

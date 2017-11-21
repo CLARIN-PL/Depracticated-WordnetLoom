@@ -64,7 +64,9 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         this.ui = ui;
         this.ui.addSynsetToCash(synset.getId(), this);
         this.relations = new ArrayList[NodeDirection.values().length];
-        Arrays.fill(relations, new ArrayList<>());
+        for(int i = 0; i<relations.length; i++){
+            relations[i] = new ArrayList<>();
+        }
 
         units = null; //RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
         setup();
@@ -184,57 +186,71 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
             relations[dir.ordinal()].clear();
         }
 
-        Iterator<ViwnEdgeSynset> it = relationsFrom.iterator();
-        while (it.hasNext()) {
-            ViwnEdgeSynset e = it.next();
+        NodeDirection direction;
+        for(ViwnEdgeSynset edge : relationsFrom){
+            direction = edge.getRelationType().getNodePosition();
+            relations[direction.ordinal()].add(edge); //TODO sprawdzić, czy nie będzie potrzebne sprawdzanie, czy już dany typ relacji jest na liście
+        }
 
-            for (NodeDirection dir : NodeDirection.values()) {
-
-                if (relTypes[dir.ordinal()].contains(e.getRelationType())) {
-                    relations[dir.ordinal()].add(e);
-                    relationsFrom.remove(e);
-
-                    relationsTo.remove(e);
-
-                    ViwnEdgeSynset rev = e.createDummyReverse();
-                    if (rev != null) {
-                        relationsTo.remove(rev);
-                    }
-
-                    it = relationsFrom.iterator();
-                }
+        for(ViwnEdgeSynset edge : relationsTo){
+            if(edge.getRelationType() != null){ // po usunięciu błędnych relacji usunąć tego ifa
+                direction = edge.getRelationType().getNodePosition();
+                relations[direction.ordinal()].add(edge);
             }
         }
 
-        it = relationsFrom.iterator();
-        while (it.hasNext()) {
-            ViwnEdgeSynset e = it.next();
-            if (skip(e)) {
-                continue;
-            }
-            for (NodeDirection dir : NodeDirection.values()) {
-                if (e.getRelationType() != null) {
-                    // TODO odkomentować i przerobić tak, aby działało
-//                    if (relTypes[dir.ordinal()].contains(RelationTypeManager.get(e
-//                            .getRelationType().rev_id()))) {
-//                        if (skip(e)) {
-//                            continue;
-//                        }
-//                        relations[dir.ordinal()].add(e);
-//                        to.remove(e);
-//                        it = to.iterator();
-//                    } else if (relTypes[dir.getOpposite().ordinal()].contains(e
-//                            .getRelationType())) {
-//                        if (skip(e)) {
-//                            continue;
-//                        }
-//                        relations[dir.ordinal()].add(e);
-//                        to.remove(e);
-//                        it = to.iterator();
+
+//        Iterator<ViwnEdgeSynset> it = relationsFrom.iterator();
+//        while (it.hasNext()) {
+//            ViwnEdgeSynset e = it.next();
+//
+//            for (NodeDirection dir : NodeDirection.values()) {
+//
+//                if (relTypes[dir.ordinal()].contains(e.getRelationType())) {
+//                    relations[dir.ordinal()].add(e);
+//                    relationsFrom.remove(e);
+//
+//                    relationsTo.remove(e);
+//
+//                    ViwnEdgeSynset rev = e.createDummyReverse();
+//                    if (rev != null) {
+//                        relationsTo.remove(rev);
 //                    }
-                }
-            }
-        }
+//
+//                    it = relationsFrom.iterator();
+//                }
+//            }
+//        }
+//
+//        it = relationsFrom.iterator();
+//        while (it.hasNext()) {
+//            ViwnEdgeSynset e = it.next();
+//            if (skip(e)) {
+//                continue;
+//            }
+//            for (NodeDirection dir : NodeDirection.values()) {
+//                if (e.getRelationType() != null) {
+//                    // TODO odkomentować i przerobić tak, aby działało
+////                    if (relTypes[dir.ordinal()].contains(RelationTypeManager.get(e
+////                            .getRelationType().rev_id()))) {
+////                        if (skip(e)) {
+////                            continue;
+////                        }
+////                        relations[dir.ordinal()].add(e);
+////                        to.remove(e);
+////                        it = to.iterator();
+////                    } else if (relTypes[dir.getOpposite().ordinal()].contains(e
+////                            .getRelationType())) {
+////                        if (skip(e)) {
+////                            continue;
+////                        }
+////                        relations[dir.ordinal()].add(e);
+////                        to.remove(e);
+////                        it = to.iterator();
+////                    }
+//                }
+//            }
+//        }
 
         is_dirty_cache_ = false;
     }

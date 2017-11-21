@@ -297,7 +297,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
 
         for (NodeDirection dir : NodeDirection.values()) {
-            showRelationGUI(synsetNode, dir);
+            if(dir != NodeDirection.IGNORE){
+                showRelationGUI(synsetNode, dir);
+            }
         }
 
         recreateLayout();

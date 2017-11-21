@@ -447,6 +447,12 @@ public class ViWordNetService extends AbstractService implements
                 if (entries != null) {
                     getActiveGraphView().getUI().setEntrySets((HashMap<Long, DataEntry>) entries);
                 }
+                DataEntry dataEntry = entries.get(rootSynset.getId()); //pobieranie synsetu z wcześniej pobranej mapy, aby otrzymać obiekt, który ma relacje (nie są leniwymi kolekcjami)
+                if(dataEntry != null){
+                    rootSynset = dataEntry.getSynset();
+                } //TODO sprawdzić, czy nie można w inny sposób rozwiązać leniwych relacji, które spowodują błąd w LoadSynsetTask.
+                LoadSynsetTask task = new LoadSynsetTask(rootSynset, unit, my_tag);
+                task.execute();
             } else {
                 getActiveGraphView().getUI().clear();
                 Synset empty = new Synset();
