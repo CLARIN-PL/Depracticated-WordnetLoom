@@ -1,18 +1,24 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.components;
 
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.tree.WebTree;
 import jiconfont.icons.FontAwesome;
+import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.models.RelationTreeModel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButtonPanel;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.util.List;
 
 public class RelationTreePanel extends WebPanel {
 
     private WebTree tree;
+
+    private final RelationTreeModel model = new RelationTreeModel();
 
     private final MButton moveUpButton = MButton.buildUpButton()
             .withToolTip(Hints.MOVE_RELATION_UP)
@@ -32,7 +38,7 @@ public class RelationTreePanel extends WebPanel {
             .withIcon(FontAwesome.PLUS_SQUARE)
             .withActionListener(e -> addSubRelation());
 
-    private final MButton removeButton = MButton.buildRemoveButton()
+    private final MButton removeButton = MButton.buildDeleteButton()
             .withToolTip(Hints.REMOVE_SELECTED_REL_AND_SUBRELATION)
             .withActionListener(e -> removeRelation());
 
@@ -44,26 +50,30 @@ public class RelationTreePanel extends WebPanel {
 
         setLayout(new BorderLayout());
 
-
-        tree = new WebTree();
+        tree = new WebTree(model);
         tree.setToggleClickCount(2);
         tree.setScrollsOnExpand(true);
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         tree.setRootVisible(true);
 
-        WebPanel listPanelWrapper = new WebPanel();
-        listPanelWrapper.setMargin(5, 10, 10, 0);
-        listPanelWrapper.add(tree);
+        WebScrollPane treeScrollWrapper = new WebScrollPane(tree);
+
+        WebPanel wrapper = new WebPanel(treeScrollWrapper);
+        wrapper.setMargin(5, 10, 10, 0);
 
         MButtonPanel buttonPanel = new MButtonPanel(moveUpButton, moveDownButton,
                 addButton, addSubRelationButton, removeButton)
-                .withVeritcalLayout()
+                .withVerticalLayout()
                 .withAllButtonsEnabled(true)
                 .withMargin(10);
 
-        add(listPanelWrapper, BorderLayout.CENTER);
+        add(wrapper, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.EAST);
 
+    }
+
+    public void setRelationsTypes(final List<RelationType> list) {
+        model.setRelationTypes(list);
     }
 
     private void moveRelationDown() {

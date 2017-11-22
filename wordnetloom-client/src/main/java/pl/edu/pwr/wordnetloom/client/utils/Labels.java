@@ -86,7 +86,7 @@ public class Labels {
     public static final String ADD_TO_CLIPBOARD = LocalisationManager.getInstance().getResource("label.add.to.clipboard");
     public static final String GRUPPING = LocalisationManager.getInstance().getResource("label.grupping");
     public static final String MEMORY_USAGE = LocalisationManager.getInstance().getResource("label.memory.usage");
-    public static final String CLEAR_CACHE = LocalisationManager.getInstance().getResource("label.clear.cache");
+    public static final String CLEAR_CACHE = LocalisationManager.getInstance().getResource("label.removeAllNodes.cache");
     public static final String VISUALIZATION = LocalisationManager.getInstance().getResource("label.visualization");
     public static final String SAVE_CANDIDATES_GRAPH = LocalisationManager.getInstance().getResource("label.save.candidates.graphs");
     public static final String OTHER = LocalisationManager.getInstance().getResource("label.other");
@@ -197,7 +197,7 @@ public class Labels {
     public static final String KPWR = LocalisationManager.getInstance().getResource("label.kpwr");
     public static final String CHOOSE_RELATED_LEXICON_TO_EXPORT = LocalisationManager.getInstance().getResource("label.related.lexicon.to.export");
     public static final String MULTILINGUAL = LocalisationManager.getInstance().getResource("label.multilingual");
-    public static final String CLEAR = LocalisationManager.getInstance().getResource("label.clear");
+    public static final String CLEAR = LocalisationManager.getInstance().getResource("label.removeAllNodes");
     public static final String OTHER_QUALIFIERS = LocalisationManager.getInstance().getResource("label.other.qualifier");
     public static final String NEW_EXAMPLE = LocalisationManager.getInstance().getResource("label.new.example");
     public static final String EDIT_EXAMPLE = LocalisationManager.getInstance().getResource("label.edit.example");

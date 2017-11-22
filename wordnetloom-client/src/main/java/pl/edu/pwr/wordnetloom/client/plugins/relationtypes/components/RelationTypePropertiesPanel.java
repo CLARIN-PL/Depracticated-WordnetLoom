@@ -1,5 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.components;
 
+import com.alee.extended.colorchooser.ColorChooserFieldType;
+import com.alee.extended.colorchooser.WebColorChooserField;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
@@ -12,7 +14,10 @@ import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
+import java.awt.*;
 
 public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
 
@@ -27,11 +32,18 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
     }
 
     private void init() {
+        setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Relation properties", TitledBorder.LEADING,
+                TitledBorder.TOP, null, new Color(51, 51, 51)));
 
         WebScrollPane descriptionScrollWrapper = new WebScrollPane(descriptionRelation);
+        //setLayout(new BorderLayout(0, 0));
 
         setLayout(new RiverLayout());
-        add(LINE_BREAK, nameLabel);
+
+        colorChooser.setPipetteEnabled(false);
+        colorChooser.setFieldType(ColorChooserFieldType.hex);
+
+        add(LINE_BREAK + " " + RIGHT, nameLabel);
         add(TAB_FILL, relationName);
         add(LINE_BREAK, displayLabel);
         add(TAB_FILL, relationDisplay);
@@ -51,11 +63,10 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         add(TAB_FILL, reverseRelation);
         add(RIGHT, reverseRelationBtn);
         add(LINE_BREAK, colorLabel);
-        add(TAB_FILL, colorRelation);
-        add(RIGHT, colorBtn);
+        add(TAB_FILL, colorChooser);
         add(LINE_BREAK, directionLabel);
         add(TAB_FILL, relationDirection);
-
+        add(RiverLayout.LINE_BREAK + " " + RiverLayout.CENTER, btnSave);
     }
 
     private void openReverseRelationDialog() {
@@ -73,6 +84,8 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         }
         return formatter;
     }
+
+    private final MButton btnSave = MButton.buildSaveButton();
 
     private final MTextField lexicon = new MTextField("");
 
@@ -104,63 +117,72 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
             .withActionListener(e -> openReverseRelationDialog())
             .withToolTip(Hints.CHOOSE_REVERSE_RELATION);
 
-    private final MComboBox<NodeDirection> relationDirection = new MComboBox<>();
+    private final MComboBox<NodeDirection> relationDirection = new MComboBox<>()
+            .withSize(new Dimension(150, 25));
 
     private final WebFormattedTextField colorRelation = new WebFormattedTextField(createFormatter("#HHHHHH"));
 
     private final MLabel lexiconLabel = new MLabel(Labels.LEXICON_COLON)
             .withMnemonic('l')
             .withAlignment(SwingConstants.RIGHT)
+            .withSize(new Dimension(130, 15))
             .withLabelFor(lexicon);
 
     private final MLabel nameLabel = new MLabel(Labels.RELATION_NAME_COLON)
             .withMnemonic('n')
             .withAlignment(SwingConstants.RIGHT)
+            .withSize(new Dimension(130, 15))
             .withLabelFor(relationName);
 
     private final MLabel displayLabel = new MLabel(Labels.DISPALY_FORM_COLON)
             .withMnemonic('f')
             .withAlignment(SwingConstants.RIGHT)
+            .withSize(new Dimension(130, 15))
             .withLabelFor(relationDisplay);
 
     private final MLabel shortcutLabel = new MLabel(Labels.SHORTCUT_COLON)
             .withMnemonic('s')
             .withAlignment(SwingConstants.RIGHT)
+            .withSize(new Dimension(130, 15))
             .withLabelFor(relationShortcut);
 
     private final MLabel descriptionLabel = new MLabel(Labels.DESCRIPTION_COLON)
             .withMnemonic('o')
             .withAlignment(SwingConstants.RIGHT)
+            .withSize(new Dimension(130, 15))
             .withLabelFor(descriptionRelation);
 
     private final MLabel posLabel = new MLabel(Labels.PARTS_OF_SPEECH_COLON)
             .withMnemonic('c')
             .withAlignment(SwingConstants.RIGHT)
+            .withSize(new Dimension(130, 15))
             .withLabelFor(allowedPartsOfSpeech);
 
     private final MLabel reverseLabel = new MLabel(Labels.REVERSE_RELATION)
             .withMnemonic('\0')
             .withAlignment(SwingConstants.RIGHT)
+            .withSize(new Dimension(130, 15))
             .withLabelFor(reverseRelation);
 
     private final MLabel colorLabel = new MLabel(Labels.COLOR_COLON)
             .withMnemonic('q')
             .withAlignment(SwingConstants.RIGHT)
+            .withSize(new Dimension(130, 15))
             .withLabelFor(colorRelation);
 
     private final MLabel directionLabel = new MLabel()
             .withMnemonic('d')
             .withAlignment(SwingConstants.RIGHT)
+            .withSize(new Dimension(130, 15))
             .withCaption(Labels.DIRECTION_COLON)
             .withLabelFor(relationDirection);
 
     private final MLabel multilingualLabel = new MLabel(Labels.MULTILINGUAL)
             .withMnemonic('m')
             .withAlignment(SwingConstants.RIGHT)
+            .withSize(new Dimension(130, 15))
             .withLabelFor(multilingual);
 
-    private MButton colorBtn = new MButton()
-            .withCaption("...")
-            .withToolTip(Hints.CHOOSE_COLOR_RELATION);
+    private final WebColorChooserField colorChooser = new WebColorChooserField();
 
 }

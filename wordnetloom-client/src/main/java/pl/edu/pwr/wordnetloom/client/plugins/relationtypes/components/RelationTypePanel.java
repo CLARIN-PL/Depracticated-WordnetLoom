@@ -10,18 +10,25 @@ import java.util.List;
 
 public class RelationTypePanel extends WebPanel {
 
-    private RelationTreePanel treePanel;
-    private RelationTypePropertiesPanel propertiesPanel;
-    private RelationTypeTestsPanel testsPanel;
-
-    private List<RelationType> relations;
+    private final RelationTreePanel treePanel;
+    private final RelationTypePropertiesPanel propertiesPanel;
+    private final RelationTypeTestsPanel testsPanel;
 
     private int parentWidth;
     private int parentHeight;
 
     public RelationTypePanel(List<RelationType> relations) {
         setLayout(new BorderLayout());
-        this.relations = relations;
+
+        treePanel = new RelationTreePanel();
+        propertiesPanel = new RelationTypePropertiesPanel();
+        testsPanel = new RelationTypeTestsPanel();
+
+        setRelationTypes(relations);
+    }
+
+    public void setRelationTypes(List<RelationType> relations) {
+        treePanel.setRelationsTypes(relations);
     }
 
     public RelationTypePanel withSize(int width, int height) {
@@ -32,19 +39,25 @@ public class RelationTypePanel extends WebPanel {
         return this;
     }
 
-
     public RelationTypePanel build() {
-        treePanel = new RelationTreePanel();
-        propertiesPanel = new RelationTypePropertiesPanel();
-        testsPanel = new RelationTypeTestsPanel();
-        MSplitPane properties = buildSplitPanel(propertiesPanel, testsPanel, parentHeight / 4);
-        MSplitPane main = buildSplitPanel(treePanel, properties, parentHeight / 2);
+
+
+        WebPanel propertiesWrapper = new WebPanel(propertiesPanel);
+        propertiesWrapper.setMargin(10);
+
+        WebPanel testsWrapper = new WebPanel(testsPanel);
+        testsWrapper.setMargin(10);
+
+        MSplitPane properties = buildSplitPanel(propertiesWrapper, testsWrapper, (int) (parentWidth * 0.45), JSplitPane.HORIZONTAL_SPLIT);
+        MSplitPane main = buildSplitPanel(treePanel, properties, parentHeight / 3, JSplitPane.VERTICAL_SPLIT);
+
         add(main, BorderLayout.CENTER);
+
         return this;
     }
 
-    private MSplitPane buildSplitPanel(JComponent top, JComponent bottom, int dividerPosition) {
-        MSplitPane mainSplit = new MSplitPane(JSplitPane.VERTICAL_SPLIT, top, bottom);
+    private MSplitPane buildSplitPanel(JComponent first, JComponent second, int dividerPosition, int splitType) {
+        MSplitPane mainSplit = new MSplitPane(splitType, first, second).withExpandable(false);
         mainSplit.setStartDividerLocation(dividerPosition);
         mainSplit.setResizeWeight(1.0f);
         return mainSplit;

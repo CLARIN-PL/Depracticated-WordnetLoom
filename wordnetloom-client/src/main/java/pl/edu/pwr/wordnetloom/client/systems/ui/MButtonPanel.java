@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
+import com.alee.extended.layout.GroupLayout;
 import com.alee.laf.panel.WebPanel;
 
 import javax.swing.*;
@@ -14,12 +15,12 @@ public class MButtonPanel extends WebPanel {
     }
 
     public MButtonPanel withHorizontalLayout() {
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        setLayout(new GroupLayout(SwingConstants.HORIZONTAL, 2));
         return this;
     }
 
-    public MButtonPanel withVeritcalLayout() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    public MButtonPanel withVerticalLayout() {
+        setLayout(new GroupLayout(SwingConstants.VERTICAL, 2));
         return this;
     }
 

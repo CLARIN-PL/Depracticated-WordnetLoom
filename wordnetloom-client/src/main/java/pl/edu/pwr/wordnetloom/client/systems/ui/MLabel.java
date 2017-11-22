@@ -30,6 +30,11 @@ public class MLabel extends WebLabel {
         super(caption);
     }
 
+    public MLabel(String caption, int alignment) {
+        super(caption, alignment);
+        setOpaque(true);
+    }
+
     public MLabel(String caption, char displayedMnemonic) {
         super(caption);
         setDisplayedMnemonic(displayedMnemonic);
@@ -68,4 +73,8 @@ public class MLabel extends WebLabel {
         return this;
     }
 
+    public MLabel withSize(Dimension dimension) {
+        setPreferredSize(dimension);
+        return this;
+    }
 }

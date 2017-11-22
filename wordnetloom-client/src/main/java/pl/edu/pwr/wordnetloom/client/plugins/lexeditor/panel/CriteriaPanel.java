@@ -29,7 +29,7 @@ public abstract class CriteriaPanel extends WebPanel {
     private WebTextField searchTextField;
     private LexiconComboBox lexiconComboBox;
     private DomainMComboBox domainComboBox;
-    private PartOfSpeechMComboBox partsOfSpeachComboBox;
+    private PartOfSpeechComboBox partsOfSpeachComboBox;
     private MComboBox<RelationType> synsetRelationsComboBox;
     private MComboBox<RelationType> senseRelationsComboBox;
     private WebCheckBox limitResultCheckBox;
@@ -48,7 +48,7 @@ public abstract class CriteriaPanel extends WebPanel {
         lexiconComboBox = new LexiconComboBox(Labels.VALUE_ALL);
         lexiconComboBox.setPreferredSize(new Dimension(150, 20));
         lexiconComboBox.addActionListener((ActionEvent e) -> {
-            Lexicon lex = lexiconComboBox.retriveComboBoxItem();
+            Lexicon lex = lexiconComboBox.getEntity();
             if (lex != null) {
                 domainComboBox.filterDomainsByLexicon(lex, true);
             } else {
@@ -59,12 +59,12 @@ public abstract class CriteriaPanel extends WebPanel {
 
         searchTextField = new MTextField(STANDARD_VALUE_FILTER);
 
-        partsOfSpeachComboBox = new PartOfSpeechMComboBox(Labels.VALUE_ALL);
+        partsOfSpeachComboBox = new PartOfSpeechComboBox(Labels.VALUE_ALL);
         partsOfSpeachComboBox.withoutFilter();
         partsOfSpeachComboBox.setPreferredSize(new Dimension(150, 20));
         partsOfSpeachComboBox.addItemListener((ItemEvent e) -> {
-            PartOfSpeech pos = partsOfSpeachComboBox.retriveComboBoxItem();
-            Lexicon lex = lexiconComboBox.retriveComboBoxItem();
+            PartOfSpeech pos = partsOfSpeachComboBox.getEntity();
+            Lexicon lex = lexiconComboBox.getEntity();
             if (pos != null && lex != null) {
                 domainComboBox.filterDomainByUbyPosAndLexcion(pos, lex, true);
             } else if (lex != null && pos == null) {
@@ -176,10 +176,10 @@ public abstract class CriteriaPanel extends WebPanel {
         senseRelationsComboBox.removeAllItems();
         senseRelationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
 
-        if (lexiconComboBox.retriveComboBoxItem() != null) {
+        if (lexiconComboBox.getEntity() != null) {
             RelationTypeManager
                     .getInstance()
-                    .getRealtionsWithoutProxyParent(RelationArgument.SENSE_RELATION, lexiconComboBox.retriveComboBoxItem())
+                    .getRealtionsWithoutProxyParent(RelationArgument.SENSE_RELATION, lexiconComboBox.getEntity())
                     .forEach(r ->
                             senseRelationsComboBox.addItem(new CustomDescription<>(
                                     RelationTypeManager
@@ -234,7 +234,7 @@ public abstract class CriteriaPanel extends WebPanel {
         return lexiconComboBox;
     }
 
-    public PartOfSpeechMComboBox getPartsOfSpeachComboBox() {
+    public PartOfSpeechComboBox getPartsOfSpeachComboBox() {
         return partsOfSpeachComboBox;
     }
 

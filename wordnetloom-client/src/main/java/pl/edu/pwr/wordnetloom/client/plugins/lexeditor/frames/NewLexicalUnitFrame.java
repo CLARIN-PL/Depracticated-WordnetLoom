@@ -58,12 +58,12 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         Sense newUnit = new Sense();
 
         newUnit.setWord(new Word(editPanel.getLemma().getText()));
-        newUnit.setLexicon(editPanel.getLexicon().retriveComboBoxItem());
+        newUnit.setLexicon(editPanel.getLexicon().getEntity());
 
-        PartOfSpeech pos = editPanel.getPartOfSpeech().retriveComboBoxItem();
+        PartOfSpeech pos = editPanel.getPartOfSpeech().getEntity();
         newUnit.setPartOfSpeech(pos);
 
-        Domain domain = editPanel.getDomain().retriveComboBoxItem();
+        Domain domain = editPanel.getDomain().getEntity();
         newUnit.setDomain(domain);
 
 //        int variant = RemoteUtils.lexicalUnitRemote.dbGetNextVariant(editPanel.getLemma().getText(), pos);
@@ -174,8 +174,8 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
                 }
             }
 
-            lastPickDomain = editPanel.getDomain().retriveComboBoxItem();
-            lastPickPos = editPanel.getPartOfSpeech().retriveComboBoxItem();
+            lastPickDomain = editPanel.getDomain().getEntity();
+            lastPickPos = editPanel.getPartOfSpeech().getEntity();
 
         } else if (event.getSource() == editPanel.getBtnCancel()) {
             setVisible(false);
@@ -185,8 +185,8 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     private boolean checkUnitExists(String testLemma, List<Sense> units) {
         if (units != null && units.size() > 0) {
 
-            Domain testDomain = editPanel.getDomain().retriveComboBoxItem();
-            PartOfSpeech testPos = editPanel.getPartOfSpeech().retriveComboBoxItem();
+            Domain testDomain = editPanel.getDomain().getEntity();
+            PartOfSpeech testPos = editPanel.getPartOfSpeech().getEntity();
             String testComments = editPanel.getComment().getText();
 
 //            for (Sense unit : units) {
@@ -211,15 +211,15 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
             DialogBox.showError(Messages.SELECT_LEMMA);
             return false;
         }
-        if (editPanel.getLexicon().retriveComboBoxItem() == null) {
+        if (editPanel.getLexicon().getEntity() == null) {
             DialogBox.showError(Messages.SELECT_LEXICON);
             return false;
         }
-        if (editPanel.getPartOfSpeech().retriveComboBoxItem() == null) {
+        if (editPanel.getPartOfSpeech().getEntity() == null) {
             DialogBox.showError(Messages.SELECT_POS);
             return false;
         }
-        if (editPanel.getDomain().retriveComboBoxItem() == null) {
+        if (editPanel.getDomain().getEntity() == null) {
             DialogBox.showError(Messages.SELECT_DOMAIN);
             return false;
         }

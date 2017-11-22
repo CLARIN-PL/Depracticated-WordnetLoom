@@ -6,6 +6,7 @@ import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -16,11 +17,18 @@ public class MButton extends WebButton implements KeyListener {
     private static final long serialVersionUID = 1L;
 
     public MButton() {
+        setMinimumWidth(40);
         addKeyListener(this);
     }
 
     public MButton(ActionListener listener) {
+        setMinimumWidth(40);
         addActionListener(listener);
+    }
+
+    public MButton withDefaultIconSize() {
+        setPreferredSize(new Dimension(40, 25));
+        return this;
     }
 
     public MButton withCaption(String caption) {

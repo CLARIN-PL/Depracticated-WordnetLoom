@@ -25,41 +25,27 @@ public class MSplitPane extends WebSplitPane {
 
     private int startDividerLocation = 0;
 
-    /**
-     * konstruktor
-     *
-     * @param splitType - typ spliitera
-     * @param first     - pierwszy komponent
-     * @param second    - drugi komponent
-     */
+
     public MSplitPane(int splitType, Component first, Component second) {
         super(splitType, true, first, second);
         setOneTouchExpandable(true);
         setContinuousLayout(true);
     }
 
-    /**
-     * ustawienie podczatkowego polazenia suwaka
-     *
-     * @param location - polozenie
-     */
+    public MSplitPane withExpandable(boolean expandable) {
+        setOneTouchExpandable(expandable);
+        return this;
+    }
+
     public void setStartDividerLocation(int location) {
         setDividerLocation(location);
         startDividerLocation = location;
     }
 
-    /**
-     * ustawienie poczatkowego polozenia suwaka
-     */
     public void resetDividerLocation() {
         setDividerLocation(startDividerLocation);
     }
 
-    /**
-     * schowanie ktorego z paneli
-     *
-     * @param number - nr panelu do schowania
-     */
     public void collapse(int number) {
         if (number == 0) {
             setDividerLocation(0);

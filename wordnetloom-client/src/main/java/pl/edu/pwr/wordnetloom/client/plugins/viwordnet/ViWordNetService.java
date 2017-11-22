@@ -465,7 +465,7 @@ public class ViWordNetService extends AbstractService implements
 //                synsetTask.execute();
 //            } else {
 //                getActiveGraphView().getUI().releaseDataSetCache();
-//                getActiveGraphView().getUI().clear();
+//                getActiveGraphView().getUI().removeAllNodes();
 //                Synset empty = new Synset();
 //                empty.setId(new Long(0));
 //                activeGraphView.loadSynset(empty);
