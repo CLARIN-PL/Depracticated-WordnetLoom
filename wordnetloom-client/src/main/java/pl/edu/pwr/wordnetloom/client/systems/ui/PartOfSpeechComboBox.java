@@ -8,13 +8,13 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import java.util.List;
 
 //Pos Combo
-public class PartOfSpeechMComboBox extends MComboBox<PartOfSpeech> {
+public class PartOfSpeechComboBox extends MComboBox<PartOfSpeech> {
 
     private static final long serialVersionUID = -2688488007035679886L;
     private List<PartOfSpeech> all;
     private String nullRepresentation;
 
-    public PartOfSpeechMComboBox(String nullItemRepresentation) {
+    public PartOfSpeechComboBox(String nullItemRepresentation) {
         nullRepresentation = nullItemRepresentation;
     }
 

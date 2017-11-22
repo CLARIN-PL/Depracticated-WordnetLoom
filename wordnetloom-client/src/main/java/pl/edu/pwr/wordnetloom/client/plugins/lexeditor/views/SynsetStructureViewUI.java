@@ -395,7 +395,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 //                }
 //            }
 //        } else if (event.getSource() == buttonToNew) {
-//            lastSelectedUnits.clear();
+//            lastSelectedUnits.removeAllNodes();
 //            lastSelectedUnits.add(listModel.getObjectAt(index));
         // czy nie ma przypadkiem do przeniesienia wszystkich jednostek
 //            List<Sense> list = RemoteUtils.lexicalUnitRemote

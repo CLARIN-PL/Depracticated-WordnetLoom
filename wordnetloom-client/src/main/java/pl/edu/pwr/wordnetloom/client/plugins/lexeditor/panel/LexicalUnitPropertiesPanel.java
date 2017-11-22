@@ -43,7 +43,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     private MTextField variant;
     private MTextField link;
     private MComboBox<Object> register;
-    private PartOfSpeechMComboBox partOfSpeech;
+    private PartOfSpeechComboBox partOfSpeech;
     private DomainMComboBox domain;
     private MTextPane comment;
     private final MButton btnCancel;
@@ -131,7 +131,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lexicon = new LexiconComboBox(Labels.NOT_CHOSEN);
         lexicon.addActionListener(this);
         lexicon.addItemListener((ItemEvent e) -> {
-            Lexicon lex = lexicon.retriveComboBoxItem();
+            Lexicon lex = lexicon.getEntity();
             if (lex != null) {
                 partOfSpeech.filterByLexicon(lex);
                 domain.filterDomainsByLexicon(lex, false);
@@ -143,11 +143,11 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lblPoS.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblPoS, "2, 7, left, default");
 
-        partOfSpeech = new PartOfSpeechMComboBox(Labels.NOT_CHOSEN);
+        partOfSpeech = new PartOfSpeechComboBox(Labels.NOT_CHOSEN);
         partOfSpeech.withoutFilter();
         partOfSpeech.addActionListener(this);
         partOfSpeech.addItemListener((ItemEvent e) -> {
-            PartOfSpeech pos = partOfSpeech.retriveComboBoxItem();
+            PartOfSpeech pos = partOfSpeech.getEntity();
             if (pos != null) {
                 domain.filterDomainByPos(pos, false);
             }

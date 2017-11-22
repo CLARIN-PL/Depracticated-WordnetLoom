@@ -73,8 +73,8 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
         if (validateSelections()) {
             try {
                 String lemma = editPanel.getLemma().getText();
-                PartOfSpeech pos = editPanel.getPartOfSpeech().retriveComboBoxItem();
-                Domain domain = editPanel.getDomain().retriveComboBoxItem();
+                PartOfSpeech pos = editPanel.getPartOfSpeech().getEntity();
+                Domain domain = editPanel.getDomain().getEntity();
                 int variant = Integer.parseInt(editPanel.getVariant().getText());
                 String register = editPanel.getRegister().getSelectedItem() != null ? editPanel
                         .getRegister().getSelectedItem().toString() : RegisterTypes.BRAK_REJESTRU.toString();
@@ -90,7 +90,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
                 }
 
                 if (!LexicalDA.updateUnit(editPanel.getSense(), lemma,
-                        editPanel.getLexicon().retriveComboBoxItem(), variant,
+                        editPanel.getLexicon().getEntity(), variant,
                         domain, pos, 0, comment,
                         register, example, link, definition)) {
                     refreshData(editPanel.getSense());
@@ -142,15 +142,15 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
             DialogBox.showError(Messages.SELECT_LEMMA);
             return false;
         }
-        if (editPanel.getLexicon().retriveComboBoxItem() == null) {
+        if (editPanel.getLexicon().getEntity() == null) {
             DialogBox.showError(Messages.SELECT_LEXICON);
             return false;
         }
-        if (editPanel.getPartOfSpeech().retriveComboBoxItem() == null) {
+        if (editPanel.getPartOfSpeech().getEntity() == null) {
             DialogBox.showError(Messages.SELECT_POS);
             return false;
         }
-        if (editPanel.getDomain().retriveComboBoxItem() == null) {
+        if (editPanel.getDomain().getEntity() == null) {
             DialogBox.showError(Messages.SELECT_DOMAIN);
             return false;
         }

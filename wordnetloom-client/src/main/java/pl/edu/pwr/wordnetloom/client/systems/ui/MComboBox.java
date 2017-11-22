@@ -42,6 +42,11 @@ public class MComboBox<T> extends WebComboBox {
         setBackground(backgroundColor);
     }
 
+    public MComboBox withSize(Dimension dimension) {
+        setPreferredSize(dimension);
+        return this;
+    }
+
     @Override
     public void setSelectedIndex(int index) {
         if (super.getItemCount() > index) {
@@ -56,12 +61,11 @@ public class MComboBox<T> extends WebComboBox {
         lastSelectedIndex = getSelectedIndex();
     }
 
-
     public boolean wasItemChanged() {
         return lastSelectedIndex != getSelectedIndex();
     }
 
-    public T retriveComboBoxItem() {
+    public T getEntity() {
         if (getSelectedIndex() > 0) {
             CustomDescription<T> item = (CustomDescription<T>) getItemAt(getSelectedIndex());
             return item.getObject();

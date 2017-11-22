@@ -192,8 +192,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     public void refreshData(int limit, int offset) {
 //        int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
         String oldFilter = criteria.getSearchTextField().getText();
-        Domain oldDomain = criteria.getDomainComboBox().retriveComboBoxItem();
-        RelationType oldRelation = criteria.getSenseRelationTypeComboBox().retriveComboBoxItem();
+        Domain oldDomain = criteria.getDomainComboBox().getEntity();
+        RelationType oldRelation = criteria.getSenseRelationTypeComboBox().getEntity();
         String register = criteria.getRegisterComboBox().getSelectedIndex() == 0 ? null : criteria.getRegisterComboBox().getSelectedItem().toString();
         String comment = criteria.getComment().getText();
         String example = criteria.getExample().getText();
@@ -213,7 +213,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 }
 
                 List<Sense> units = new ArrayList<>();
-                Lexicon lex = criteria.getLexiconComboBox().retriveComboBoxItem();
+                Lexicon lex = criteria.getLexiconComboBox().getEntity();
                 if (lex != null) {
                     lexicons.clear();
                     lexicons.add(lex.getId());
@@ -222,9 +222,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 }
 
 //                units = LexicalDA.getLexicalUnits(oldFilter,
-//                        oldDomain, criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem(),
+//                        oldDomain, criteria.getPartsOfSpeachComboBox().getEntity() == null ? null : criteria.getPartsOfSpeachComboBox().getEntity(),
 //                        oldRelation, register, comment, example, limitSize, lexicons);
-                Long partOfSpeech = criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem().getId();
+                Long partOfSpeech = criteria.getPartsOfSpeachComboBox().getEntity() == null ? null : criteria.getPartsOfSpeachComboBox().getEntity().getId();
                 Long domainId = oldDomain == null ? null : oldDomain.getId();
                 SenseCriteriaDTO dto = new SenseCriteriaDTO(partOfSpeech, domainId, oldFilter, lexicons);
 
@@ -497,7 +497,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         if (criteria.getSearchTextField() == null) {
             return null;
         }
-        return criteria.getDomainComboBox().retriveComboBoxItem();
+        return criteria.getDomainComboBox().getEntity();
     }
 
     /**

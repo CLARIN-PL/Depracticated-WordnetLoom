@@ -92,8 +92,8 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
 
         int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
         String oldFilter = criteria.getSearchTextField().getText();
-        Domain oldDomain = criteria.getDomainComboBox().retriveComboBoxItem();
-        RelationType oldRelation = criteria.getSynsetRelationTypeComboBox().retriveComboBoxItem();
+        Domain oldDomain = criteria.getDomainComboBox().getEntity();
+        RelationType oldRelation = criteria.getSynsetRelationTypeComboBox().getEntity();
         String definition = criteria.getDefinition().getText();
         String comment = criteria.getComment().getText();
         String artificial = criteria.getIsArtificial();
@@ -104,7 +104,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
             @Override
             protected Void doInBackground() throws Exception {
                 workbench.setBusy(true);
-                Lexicon lex = (Lexicon) criteria.getLexiconComboBox().retriveComboBoxItem();
+                Lexicon lex = (Lexicon) criteria.getLexiconComboBox().getEntity();
                 if (lex != null) {
                     lexicons.clear();
                     lexicons.add(lex.getId());
@@ -114,7 +114,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
                 List<Sense> sense = new ArrayList<>();
                 sense = LexicalDA.getSenseBySynsets(oldFilter, oldDomain, oldRelation,
                         definition, comment, artificial, limitSize,
-                        criteria.getPartsOfSpeachComboBox().retriveComboBoxItem() == null ? null : criteria.getPartsOfSpeachComboBox().retriveComboBoxItem(), lexicons);
+                        criteria.getPartsOfSpeachComboBox().getEntity() == null ? null : criteria.getPartsOfSpeachComboBox().getEntity(), lexicons);
                 if (lastSelectedValue == null && synsetList != null && !synsetList.isSelectionEmpty()) {
                     lastSelectedValue = senseListModel.getObjectAt(synsetList.getSelectedIndex());
                 }
