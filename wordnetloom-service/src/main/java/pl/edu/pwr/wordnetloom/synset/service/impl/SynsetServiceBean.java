@@ -54,7 +54,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @Override
     public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons) {
-        return synsetRepository.prepareCacheForRootNode(synset.getId(), lexicons);
+        return synsetRepository.prepareCacheForRootNode(synset.getId(), lexicons, 4);
 
 //        Map<Long, DataEntry> map = new HashMap<>();
 //

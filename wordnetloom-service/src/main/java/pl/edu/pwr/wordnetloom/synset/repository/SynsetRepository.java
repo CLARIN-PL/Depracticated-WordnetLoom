@@ -679,8 +679,8 @@ public class SynsetRepository extends GenericRepository<Synset> {
     private DataEntry getDataEntry(Synset synset, Sense sense, Set<SynsetRelation> relationsFrom, Set<SynsetRelation> relationsTo) {
         DataEntry dataEntry = new DataEntry();
         dataEntry.setSynset(synset);
-        dataEntry.setRelsFrom(relationsFrom);
-        dataEntry.setRelsTo(relationsTo);
+//        dataEntry.setRelsFrom(relationsFrom);
+//        dataEntry.setRelsTo(relationsTo); //TODO dorobić
         dataEntry.setLexicon(sense.getLexicon().getIdentifier());
         dataEntry.setPosID(sense.getPartOfSpeech().getId());
         dataEntry.setLabel(buildDataEntryLabel(sense));
@@ -741,7 +741,8 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return getDataEntry(synset, synset.getSenses().get(0), synset.getOutgoingRelations(), synset.getIncomingRelations());
     }
 
-    public Map<Long, DataEntry> prepareCacheForRootNode(final Long synsetId, final List<Long> lexicons) {
+
+    public Map<Long, DataEntry> prepareCacheForRootNode(final Long synsetId, final List<Long> lexicons, int numSynsetOnDirection) {
 
         Map<Long, DataEntry> result = new HashMap<>();
         Synset synset = findSynsetWithRelationsAandSenseById(synsetId);

@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.common.dto;
 
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
@@ -11,16 +12,23 @@ public class DataEntry implements Serializable {
 
     private static final long serialVersionUID = 5708346930324155121L;
 
+    private final int DIRECTIONS_NUMBER = 4;
+
     private Synset synset;
-    private Set<SynsetRelation> relsFrom;
-    private Set<SynsetRelation> relsTo;
+    private Set[] relationsFrom;
+    private Set[] relationsTo;
+
     private String label;
     private Long posID;
     private String lexicon;
 
     public DataEntry() {
-        relsFrom = new HashSet<>();
-        relsTo = new HashSet<>();
+        relationsFrom = new Set[DIRECTIONS_NUMBER];
+        relationsTo = new Set[DIRECTIONS_NUMBER];
+        for(int i = 0; i<DIRECTIONS_NUMBER; i++){
+            relationsFrom[i] = new HashSet();
+            relationsTo[i] = new HashSet();
+        }
     }
 
     public Synset getSynset() {
@@ -31,20 +39,30 @@ public class DataEntry implements Serializable {
         this.synset = synset;
     }
 
-    public Set<SynsetRelation> getRelsFrom() {
-        return relsFrom;
+    public Set<SynsetRelation> getRelationsFrom(NodeDirection direction) {
+        if(direction != NodeDirection.IGNORE){
+            return relationsFrom[direction.ordinal()];
+        }
+        return new HashSet<>();
     }
 
-    public void setRelsFrom(Set<SynsetRelation> relsFrom) {
-        this.relsFrom = relsFrom;
+    public Set<SynsetRelation> getRelationsTo(NodeDirection direction){
+        if(direction != NodeDirection.IGNORE){
+            return relationsTo[direction.ordinal()];
+        }
+        return new HashSet<>();
     }
 
-    public Set<SynsetRelation> getRelsTo() {
-        return relsTo;
+    public void setRelationsFrom(Set<SynsetRelation> relations, NodeDirection direction){
+        if(direction != NodeDirection.IGNORE){
+            relationsFrom[direction.ordinal()] = relations;
+        }
     }
 
-    public void setRelsTo(Set<SynsetRelation> relsTo) {
-        this.relsTo = relsTo;
+    public void setRelationsTo(Set<SynsetRelation> relations, NodeDirection direction){
+        if(direction != NodeDirection.IGNORE){
+            relationsTo[direction.ordinal()] = relations;
+        }
     }
 
     public String getLabel() {

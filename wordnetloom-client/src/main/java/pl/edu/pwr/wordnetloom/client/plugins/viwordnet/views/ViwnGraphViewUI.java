@@ -115,8 +115,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
 
         ArrayList<SynsetRelation> rels = new ArrayList<>();
-        rels.addAll(e.getRelsFrom());
-        rels.addAll(e.getRelsTo());
+//        rels.addAll(e.getRelsFrom()); //TODO dorobić
+//        rels.addAll(e.getRelsTo());
 
         return rels;
     }
@@ -127,7 +127,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             return null;
         }
 
-        return e.getRelsFrom();
+//        return e.getRelsFrom();
+        return null; // TODO dorobić
     }
 
     public Set<SynsetRelation> getSubRelationsFor(Long id) {
@@ -136,7 +137,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             return null;
         }
 
-        return e.getRelsTo();
+//        return e.getRelsTo();
+        return null; //TODO dorobić
     }
 
     public void releaseDataSetCache() {
