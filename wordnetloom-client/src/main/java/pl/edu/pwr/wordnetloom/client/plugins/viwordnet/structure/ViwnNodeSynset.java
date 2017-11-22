@@ -158,6 +158,16 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 //        }
     }
 
+    private void addEdgeToThis(SynsetRelation rel){
+        ViwnEdgeSynset edge = new ViwnEdgeSynset(rel);
+        edges_to_this_.add(edge);
+    }
+
+    private void addEdgeFromThis(SynsetRelation rel){
+        ViwnEdgeSynset edge = new ViwnEdgeSynset(rel);
+        edges_from_this_.add(edge);
+    }
+
     public void removeRelation(ViwnEdgeSynset e) {
         ArrayList<Iterator<ViwnEdgeSynset>> iters = new ArrayList<>();
 
@@ -284,12 +294,15 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 //        }
         // Get relations 'OTHER synset' -> 'THIS synset'
         for (SynsetRelation rel : relsUP) {
-            add_if_new(rel);
+//            add_if_new(rel);
+            addEdgeFromThis(rel);
         }
+
 
         // Get relations 'THIS synset' -> 'OTHER synset'
         for (SynsetRelation rel : relsDW) {
-            add_if_new(rel);
+//            add_if_new(rel);
+            addEdgeToThis(rel);
         }
 
         // fetching poses from temporary cache
@@ -384,6 +397,12 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     @Override
     public String getLabel() {
         if (ret == null) {
+            DataEntry dataEntry = ui.getEntrySetFor(getId());
+            if(dataEntry != null && dataEntry.getLabel() != null){
+                ret = dataEntry.getLabel();
+            } else {
+                ret = "";
+            }
 //            DataEntry dataSet = ui.getEntrySetFor(getId());
 //            if (dataSet == null || dataSet.getLabel() == null) {
 //                String ret = "";

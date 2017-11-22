@@ -18,6 +18,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -686,7 +687,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return dataEntry;
     }
 
-    private void putDataEntryFromSynsetRelation(Map<Long, DataEntry> map, List<SynsetRelation> relationsList, boolean isRelationsFrom) {
+    private void putDataEntryFromSynsetRelation(Map<Long, DataEntry> map, List<SynsetRelation> relationsList, boolean isRelationsFrom, List<Long> lexicons) {
         Synset relatedSynset;
         Sense sense;
         DataEntry dataEntry;
@@ -696,6 +697,10 @@ public class SynsetRepository extends GenericRepository<Synset> {
             } else {
                 relatedSynset = relation.getParent();
             }
+            List<SynsetRelation> relationsFrom = synsetRelationRepository.findSimpleRelationsWhereSynsetIsParent(relatedSynset, lexicons);
+            List<SynsetRelation> relationsTo = synsetRelationRepository.findSimpleRelationsWhereSynsetIsChild(relatedSynset, lexicons);
+            relatedSynset.setIncomingRelations(new HashSet<>(relationsTo));
+            relatedSynset.setOutgoingRelations(new HashSet<>(relationsFrom));
             sense = relatedSynset.getSenses().get(0);
             dataEntry = getDataEntry(relatedSynset, sense, relatedSynset.getOutgoingRelations(), relatedSynset.getIncomingRelations());
             map.put(relatedSynset.getId(), dataEntry);
@@ -707,8 +712,8 @@ public class SynsetRepository extends GenericRepository<Synset> {
         CriteriaQuery<Synset> cq = cb.createQuery(Synset.class);
 
         Root<Synset> root = cq.from(Synset.class);
-        root.fetch("incomingRelations");
-        root.fetch("outgoingRelations");
+//        root.fetch("incomingRelations", JoinType.LEFT);
+//        root.fetch("outgoingRelations", JoinType.LEFT);
         root.fetch("senses");
 
         cq.where(cb.equal(root.get("id"), id));
@@ -721,6 +726,8 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
     private DataEntry buildDataEntry(Long id) {
         Synset synset = findSynsetWithRelationsAandSenseById(id);
+//        synset.getIncomingRelations().forEach(e->e.setChild(synset));
+//        synset.getOutgoingRelations().forEach(e->e.setParent(synset));
         DataEntry dataEntry = getDataEntry(
                 synset,
                 synset.getSenses()
@@ -730,24 +737,42 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return dataEntry;
     }
 
+    private DataEntry buildDataEntry(Synset synset){
+        return getDataEntry(synset, synset.getSenses().get(0), synset.getOutgoingRelations(), synset.getIncomingRelations());
+    }
+
     public Map<Long, DataEntry> prepareCacheForRootNode(final Long synsetId, final List<Long> lexicons) {
 
         Map<Long, DataEntry> result = new HashMap<>();
-
-        DataEntry root = buildDataEntry(synsetId);
-        result.put(synsetId, root);
-
-        Set<Long> relatedSynsetsToFetch = Stream
-                .concat(
-                        root.getRelsFrom().stream(),
-                        root.getRelsTo().stream())
-                .flatMap(s -> Stream.of(s.getParent().getId(), s.getChild().getId()))
-                .distinct()
-                .collect(Collectors.toSet());
-
-        relatedSynsetsToFetch.forEach(s -> result.put(s, buildDataEntry(s)));
+        Synset synset = findSynsetWithRelationsAandSenseById(synsetId);
+        List<SynsetRelation> relationsFrom = synsetRelationRepository.findRelationsWhereSynsetIsParent(synset, lexicons);
+        List<SynsetRelation> relationsTo = synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons);
+        synset.setOutgoingRelations(new HashSet<>(relationsFrom));
+        synset.setIncomingRelations(new HashSet<>(relationsTo));
+        DataEntry dataEntry = buildDataEntry(synset);
+        result.put(synset.getId(), dataEntry);
+        putDataEntryFromSynsetRelation(result, relationsFrom, true, lexicons);
+        putDataEntryFromSynsetRelation(result, relationsTo, false, lexicons);
 
         return result;
+
+//
+//        Map<Long, DataEntry> result = new HashMap<>();
+//
+//        DataEntry root = buildDataEntry(synsetId);
+//        result.put(synsetId, root);
+//
+//        Set<Long> relatedSynsetsToFetch = Stream
+//                .concat(
+//                        root.getRelsFrom().stream(),
+//                        root.getRelsTo().stream())
+//                .flatMap(s -> Stream.of(s.getParent().getId(), s.getChild().getId()))
+//                .distinct()
+//                .collect(Collectors.toSet());
+//
+//        relatedSynsetsToFetch.forEach(s -> result.put(s, buildDataEntry(s)));
+//
+//        return result;
 
 
 //        if (!rootEntry.getRelsFrom().isEmpty() || !rootEntry.getRelsFrom().isEmpty()) {

@@ -257,10 +257,16 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
             // now, time to place its neighbors
             // Divide neighbors according to relation type, and future place
             // in graph
-            Set<ViwnNode> sbottom = new HashSet<>();
-            Set<ViwnNode> stop = new HashSet<>();
-            Set<ViwnNode> sright = new HashSet<>();
-            Set<ViwnNode> sleft = new HashSet<>();
+
+//            Set<ViwnNode> sbottom = new HashSet<>();
+//            Set<ViwnNode> stop = new HashSet<>();
+//            Set<ViwnNode> sright = new HashSet<>();
+//            Set<ViwnNode> sleft = new HashSet<>();
+
+            List<ViwnNode> bottom = new ArrayList<>();
+            List<ViwnNode> top = new ArrayList<>();
+            List<ViwnNode> right = new ArrayList<>();
+            List<ViwnNode> left = new ArrayList<>();
 
             Collection<ViwnEdge> edges = graph.getIncidentEdges(center);
 
@@ -271,26 +277,26 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
                         && (opposite.getSpawnDir() != null)) {
                     switch (opposite.getSpawnDir()) {
                         case BOTTOM:
-                            sbottom.add(opposite);
+                            bottom.add(opposite);
                             break;
                         case TOP:
-                            stop.add(opposite);
+                            top.add(opposite);
                             break;
                         case RIGHT:
-                            sright.add(opposite);
+                            right.add(opposite);
                             break;
                         case LEFT:
-                            sleft.add(opposite);
+                            left.add(opposite);
                             break;
                     }
                 }
             }
 
             // sort children alphabetically
-            List<ViwnNode> bottom = new ArrayList<>(sbottom);
-            List<ViwnNode> top = new ArrayList<>(stop);
-            List<ViwnNode> right = new ArrayList<>(sright);
-            List<ViwnNode> left = new ArrayList<>(sleft);
+//            List<ViwnNode> bottom = new ArrayList<>(sbottom);
+//            List<ViwnNode> top = new ArrayList<>(stop);
+//            List<ViwnNode> right = new ArrayList<>(sright);
+//            List<ViwnNode> left = new ArrayList<>(sleft);
             Collections.sort(bottom, new ViwnNodeAlphabeticComparator());
             Collections.sort(top, new ViwnNodeAlphabeticComparator());
             Collections.sort(right, new ViwnNodeAlphabeticComparator());

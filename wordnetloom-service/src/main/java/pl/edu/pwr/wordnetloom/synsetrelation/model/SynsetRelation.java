@@ -27,7 +27,8 @@ public class SynsetRelation extends GenericEntity {
     public SynsetRelation() {
     }
 
-    public SynsetRelation(Long relationTypeId, Long parentId, Long childId){
+    public SynsetRelation(Long id,Long relationTypeId, Long parentId, Long childId){
+        this.id = id;
         relationType = new RelationType();
         relationType.setId(relationTypeId);
         parent = new Synset();

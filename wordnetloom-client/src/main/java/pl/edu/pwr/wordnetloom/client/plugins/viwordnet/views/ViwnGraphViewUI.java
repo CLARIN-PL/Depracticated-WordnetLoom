@@ -264,12 +264,11 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         clear();
 
         selectedNode = rootNode = new ViwnNodeSynset(synset, this);
-        cache.put(synset.getId(), (ViwnNodeSynset) rootNode);
+        ViwnNodeSynset rootSynsetNode = (ViwnNodeSynset)rootNode;
+        cache.put(synset.getId(), rootSynsetNode);
 
         vv.getRenderContext().setVertexFillPaintTransformer(
                 new ViwnVertexFillColor(vv.getPickedVertexState(), rootNode));
-
-        ViwnNodeSynset synsetNode = (ViwnNodeSynset) rootNode;
 
         if (!forest.containsVertex(rootNode)) {
             forest.addVertex(rootNode);
@@ -281,24 +280,20 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                 return n;
             }).filter((n) -> (n instanceof ViwnNodeSynset)).forEachOrdered((n) -> {
                 for (NodeDirection rclass : NodeDirection.values()) {
-                    ViwnNodeSynset nn = n;
-                    nn.setState(rclass, ViwnNodeSynset.State.NOT_EXPANDED);
+                    n.setState(rclass, ViwnNodeSynset.State.NOT_EXPANDED);
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        for (NodeDirection rel_class : NodeDirection.values()) {
+        for (NodeDirection dir : NodeDirection.values()) {
             if (rootNode instanceof ViwnNodeSynset) {
-                ((ViwnNodeSynset) rootNode).setState(rel_class,
+                ((ViwnNodeSynset) rootNode).setState(dir,
                         ViwnNodeSynset.State.EXPANDED);
             }
-        }
-
-        for (NodeDirection dir : NodeDirection.values()) {
             if(dir != NodeDirection.IGNORE){
-                showRelationGUI(synsetNode, dir);
+                showRelationGUI(rootSynsetNode, dir);
             }
         }
 
@@ -873,7 +868,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         Collection<ViwnEdgeSynset> to_show_edges = new ArrayList<>();
 
         TreeMap<String, ArrayList<ViwnEdgeSynset>> all_sorted = new TreeMap<>(
-                (String o1, String o2) -> o2.compareTo(o1));
+                Comparator.reverseOrder());
 
         MultiValueMap mult_all_sorted = MultiValueMap.decorate(all_sorted);
 
@@ -938,7 +933,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                             loadSynsetNode(rel.getSynsetTo()));
                 }
                 node.setSpawner(synsetNode, dir);
-
+                forest.addVertex(node); //add node to graph
             }
         }
 

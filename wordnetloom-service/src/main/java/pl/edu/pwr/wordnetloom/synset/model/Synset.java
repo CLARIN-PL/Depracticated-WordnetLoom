@@ -26,7 +26,7 @@ public class Synset extends GenericEntity {
     @OrderBy("synsetPosition")
     private List<Sense> senses = new ArrayList<>();
 
-    @NotNull
+//    @NotNull
     @Valid
     @OneToOne(mappedBy = "synset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private SynsetAttributes synsetAttributes;

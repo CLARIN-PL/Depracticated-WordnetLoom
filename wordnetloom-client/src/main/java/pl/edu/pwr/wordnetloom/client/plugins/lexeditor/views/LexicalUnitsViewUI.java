@@ -26,6 +26,7 @@ import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
@@ -162,6 +163,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
         int returnValue = unitsList.getSelectedIndex();
 //        Sense unit = listModel.getObjectAt(returnValue);
+        if(returnValue < 0){
+            return;
+        }
         Sense unit = listModel.get(returnValue);
         boolean superMode = workbench.getParam(SUPER_MODE) != null
                 && workbench.getParam(SUPER_MODE).equals(SUPER_MODE_VALUE);

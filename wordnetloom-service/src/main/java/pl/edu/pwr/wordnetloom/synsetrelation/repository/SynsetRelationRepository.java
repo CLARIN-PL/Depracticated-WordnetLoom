@@ -308,7 +308,8 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         if(synsetIsChild){
             synsetFetchColumn = CHILD;
         }
-        Query query = getEntityManager().createQuery("SELECT new SynsetRelation(sr.relationType.id, sr.parent.id, sr.child.id) FROM SynsetRelation sr WHERE sr."+synsetFetchColumn+".id = :id " +
+        Query query = getEntityManager().createQuery("SELECT new SynsetRelation(sr.id,sr.relationType.id, sr.parent.id, sr.child.id) FROM SynsetRelation sr " +
+                "WHERE sr."+synsetFetchColumn+".id = :id " +
                 "AND sr."+synsetFetchColumn+".lexicon.id IN  (:lexicons)")
                 .setParameter("id", synset.getId())
                 .setParameter("lexicons", lexicons);
