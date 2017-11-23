@@ -1,34 +1,38 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.components;
 
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.tabbedpane.WebTabbedPane;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MSplitPane;
-import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 public class RelationTypePanel extends WebPanel {
 
-    private final RelationTreePanel treePanel;
+    private final RelationTreePanel synsetRelationTreePanel;
+
+    private final RelationTreePanel senseRelationTreePanel;
+
     private final RelationTypePropertiesPanel propertiesPanel;
     private final RelationTypeTestsPanel testsPanel;
 
     private int parentWidth;
     private int parentHeight;
 
-    public RelationTypePanel(List<RelationType> relations) {
+    public RelationTypePanel() {
         setLayout(new BorderLayout());
 
-        treePanel = new RelationTreePanel();
+        synsetRelationTreePanel = new RelationTreePanel(RelationArgument.SYNSET_RELATION);
+        synsetRelationTreePanel.setRelationsTypes(RelationTypeManager.getInstance().getParents(RelationArgument.SYNSET_RELATION));
+
+        senseRelationTreePanel = new RelationTreePanel(RelationArgument.SENSE_RELATION);
+        senseRelationTreePanel.setRelationsTypes(RelationTypeManager.getInstance().getParents(RelationArgument.SENSE_RELATION));
+
         propertiesPanel = new RelationTypePropertiesPanel();
         testsPanel = new RelationTypeTestsPanel();
 
-        setRelationTypes(relations);
-    }
-
-    public void setRelationTypes(List<RelationType> relations) {
-        treePanel.setRelationsTypes(relations);
     }
 
     public RelationTypePanel withSize(int width, int height) {
@@ -41,6 +45,13 @@ public class RelationTypePanel extends WebPanel {
 
     public RelationTypePanel build() {
 
+        WebTabbedPane tabs = new WebTabbedPane();
+
+        WebPanel tabsWrapper = new WebPanel(tabs);
+        tabsWrapper.setMargin(5);
+
+        tabs.add("Synset relation", synsetRelationTreePanel);
+        tabs.add("Lexical units relations ", senseRelationTreePanel);
 
         WebPanel propertiesWrapper = new WebPanel(propertiesPanel);
         propertiesWrapper.setMargin(10);
@@ -48,8 +59,8 @@ public class RelationTypePanel extends WebPanel {
         WebPanel testsWrapper = new WebPanel(testsPanel);
         testsWrapper.setMargin(10);
 
-        MSplitPane properties = buildSplitPanel(propertiesWrapper, testsWrapper, (int) (parentWidth * 0.45), JSplitPane.HORIZONTAL_SPLIT);
-        MSplitPane main = buildSplitPanel(treePanel, properties, parentHeight / 3, JSplitPane.VERTICAL_SPLIT);
+        MSplitPane properties = buildSplitPanel(propertiesWrapper, testsWrapper, (int) (parentWidth * 0.55), JSplitPane.HORIZONTAL_SPLIT);
+        MSplitPane main = buildSplitPanel(tabsWrapper, properties, parentHeight / 3, JSplitPane.VERTICAL_SPLIT);
 
         add(main, BorderLayout.CENTER);
 

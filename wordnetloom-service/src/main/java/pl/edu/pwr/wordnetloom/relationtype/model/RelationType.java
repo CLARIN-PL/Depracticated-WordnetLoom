@@ -10,7 +10,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "relation_type")
@@ -25,7 +27,7 @@ public class RelationType extends GenericEntity {
 
     @NotNull
     @Size(min = 1)
-    private List<Lexicon> lexicons = new ArrayList<>();
+    private Set<Lexicon> lexicons = new HashSet<>();
 
     @OneToMany
     @JoinTable(
@@ -35,7 +37,7 @@ public class RelationType extends GenericEntity {
     )
     @NotNull
     @Size(min = 1)
-    private List<PartOfSpeech> partsOfSpeech = new ArrayList<>();
+    private Set<PartOfSpeech> partsOfSpeech = new HashSet<>();
 
     @NotNull
     @Column(name = "name_id")
@@ -202,19 +204,19 @@ public class RelationType extends GenericEntity {
         this.nodePosition = nodePosition;
     }
 
-    public List<Lexicon> getLexicons() {
+    public Set<Lexicon> getLexicons() {
         return lexicons;
     }
 
-    public void setLexicons(List<Lexicon> lexicons) {
+    public void setLexicons(Set<Lexicon> lexicons) {
         this.lexicons = lexicons;
     }
 
-    public List<PartOfSpeech> getPartsOfSpeech() {
+    public Set<PartOfSpeech> getPartsOfSpeech() {
         return partsOfSpeech;
     }
 
-    public void setPartsOfSpeech(List<PartOfSpeech> partsOfSpeech) {
+    public void setPartsOfSpeech(Set<PartOfSpeech> partsOfSpeech) {
         this.partsOfSpeech = partsOfSpeech;
     }
 

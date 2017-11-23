@@ -136,7 +136,7 @@ public class RelationTypeRepositoryUTest extends TestBaseRepository {
         createAntonimia();
 
         RelationType ant = relationTypeRepository.findById(1l);
-        RelationType expect = relationTypeRepository.findFullByRelationType(ant.getId());
+        RelationType expect = relationTypeRepository.findByIdWithDependencies(ant.getId());
 
         assertThat(ant.getId(), equalTo(expect.getId()));
         assertThat(ant.getName(), is(equalTo(antonimia().getName())));

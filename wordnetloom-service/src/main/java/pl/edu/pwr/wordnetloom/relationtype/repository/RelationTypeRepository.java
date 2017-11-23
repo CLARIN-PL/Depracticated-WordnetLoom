@@ -45,10 +45,26 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         CriteriaQuery<RelationType> q = cb.createQuery(RelationType.class);
 
         Root<RelationType> root = q.from(RelationType.class);
-//        root.fetch("parent", JoinType.LEFT);
-//        root.fetch("reverse", JoinType.LEFT);
+        root.fetch("parent", JoinType.LEFT);
+        root.fetch("reverse", JoinType.LEFT);
 
         return em.createQuery(q).getResultList();
+    }
+
+    public RelationType findByIdWithDependencies(Long id) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<RelationType> q = cb.createQuery(RelationType.class);
+
+        Root<RelationType> root = q.from(RelationType.class);
+        root.fetch("parent", JoinType.LEFT);
+        root.fetch("reverse", JoinType.LEFT);
+        root.fetch("lexicons", JoinType.LEFT);
+        root.fetch("partsOfSpeech", JoinType.LEFT);
+        root.fetch("relationTests", JoinType.LEFT);
+
+        q.where(cb.equal(root.get("id"), id));
+
+        return em.createQuery(q).getSingleResult();
     }
 
     public List<RelationType> findHighestLeafs(RelationArgument arg) {
@@ -97,21 +113,6 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
             return null;
         }
         return r.getId();
-    }
-
-    public RelationType findFullByRelationType(Long relationTypeId) {
-
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery q = cb.createQuery(RelationType.class);
-        Root o = q.from(RelationType.class);
-        o.fetch("parent", JoinType.LEFT);
-        o.fetch("reverse", JoinType.LEFT);
-        q.select(o);
-        q.where(cb.equal(o.get("id"), relationTypeId));
-
-        return (RelationType) getEntityManager()
-                .createQuery(q)
-                .getSingleResult();
     }
 
     @Override
