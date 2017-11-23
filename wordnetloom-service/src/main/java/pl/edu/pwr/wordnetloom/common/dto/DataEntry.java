@@ -65,6 +65,18 @@ public class DataEntry implements Serializable {
         }
     }
 
+    public void addRelationFrom(SynsetRelation relation, NodeDirection direction){
+        if(direction != NodeDirection.IGNORE){
+            relationsFrom[direction.ordinal()].add(relation);
+        }
+    }
+
+    public void addRelationTo(SynsetRelation relation, NodeDirection direction){
+        if(direction != NodeDirection.IGNORE){
+            relationsTo[direction.ordinal()].add(relation);
+        }
+    }
+
     public String getLabel() {
         return label;
     }

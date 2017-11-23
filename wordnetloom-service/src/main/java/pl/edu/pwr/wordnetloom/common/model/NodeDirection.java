@@ -1,11 +1,11 @@
 package pl.edu.pwr.wordnetloom.common.model;
 
 public enum NodeDirection {
-    IGNORE("IGNORE"),
     LEFT("LEFT"),
     RIGHT("RIGHT"),
     BOTTOM("BOTTOM"),
-    TOP("TOP");
+    TOP("TOP"),
+    IGNORE("IGNORE");
 
     private final String str;
 

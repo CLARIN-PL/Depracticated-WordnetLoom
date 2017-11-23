@@ -17,6 +17,7 @@ import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.collections15.Transformer;
+import org.hibernate.query.criteria.internal.expression.function.AggregationFunction;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.GraphChangeListener;
@@ -128,6 +129,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
 
 //        return e.getRelsFrom();
+
         return null; // TODO dorobić
     }
 
@@ -867,87 +869,149 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * @param dir        relation class which will be shown
      */
     private void showRelationGUI(ViwnNodeSynset synsetNode, NodeDirection dir) {
-        Collection<ViwnEdgeSynset> to_show_edges = new ArrayList<>();
-
-        TreeMap<String, ArrayList<ViwnEdgeSynset>> all_sorted = new TreeMap<>(
-                Comparator.reverseOrder());
-
-        MultiValueMap mult_all_sorted = MultiValueMap.decorate(all_sorted);
-
-        for (ViwnEdgeSynset e : synsetNode.getRelation(dir)) {
-            ViwnNodeSynset node = loadSynsetNode(e.getSynsetTo());
-            if (node.equals(synsetNode)) {
-                node = loadSynsetNode(e.getSynsetFrom());
-            }
-            if (!forest.containsEdge(e)) {
-                mult_all_sorted.put(node.getLabel(), e);
-            }
-        }
-
-        Iterator<ViwnEdgeSynset> it = mult_all_sorted.values().iterator();
-
-        int to_add = all_sorted.size() - MAX_SYNSETS_SHOWN;
-        if (to_add >= MIN_SYNSETS_IN_GROUP) {
-            ViwnNodeSet set = synsetNode.getSynsetSet(dir);
-            while (to_add > 0 && it.hasNext()) {
-                ViwnEdgeSynset e = it.next();
-
-                ViwnNodeSynset node = loadSynsetNode(e.getSynsetFrom());
-                if (node.equals(synsetNode)) {
-                    node = loadSynsetNode(e.getSynsetTo());
+        List<ViwnEdgeSynset> relations = (List<ViwnEdgeSynset>) synsetNode.getRelation(dir); //TODO można to przerobić tak, aby było rozdzielenie na od i do
+        relations.sort(new Comparator<ViwnEdgeSynset>() {
+            @Override
+            public int compare(ViwnEdgeSynset o1, ViwnEdgeSynset o2) {
+                int compareResult = loadSynsetNode(o1.getSynsetTo()).getLabel().compareTo(loadSynsetNode(o2.getSynsetTo()).getLabel());
+                if(compareResult==0){
+                    compareResult = loadSynsetNode(o1.getSynsetFrom()).getLabel().compareTo(loadSynsetNode(o2.getSynsetFrom()).getLabel());
                 }
-
-                if (!forest.containsVertex(node)) {
-                    if (set.contains(node)) {
-                        continue;
-                    }
-                    node.setSpawner(synsetNode, dir);
-                    node.setSet(set);
-                    set.add(node);
-                }
-                to_add--;
+                return compareResult;
             }
-
-            if (!set.getSynsets().isEmpty()) {
-                set.setSpawner(synsetNode, dir);
-                forest.addVertex(set);
-                addEdgeSynsSet(synsetNode, set, dir);
+        }); //TODO to tylko tymczasowe rozwiązanie. Nalezy pozmieniać we wszystkich miejscach gdzie sa przechowywane relacje na liste, aby nie było trzeba ponownie sortować. Wystarczy pobrać dane z bazy
+        int toShow = Math.min(MAX_SYNSETS_SHOWN, relations.size());
+        // dodanie elementów, które będą wyświetlane
+        for(int i = 0; i < toShow; i++){
+            ViwnEdgeSynset edge = relations.get(i);
+            ViwnNodeSynset node = loadSynsetNode(edge.getSynsetFrom());
+            if(node.equals(synsetNode)){
+                node = loadSynsetNode(edge.getSynsetTo());
             }
-        }
-
-        while (it.hasNext()) {
-            to_show_edges.add(it.next());
-        }
-
-        for (ViwnEdgeSynset rel : to_show_edges) {
-            ViwnNodeSynset node = loadSynsetNode(rel.getSynsetFrom());
-            if (node.equals(synsetNode)) {
-                node = loadSynsetNode(rel.getSynsetTo());
-            }
-
-            if (!forest.containsVertex(node)) {
-                if (node.getSet() != null) {
+            if(!forest.containsVertex(node)){
+                if(node.getSet() != null){
                     node.getSet().remove(node);
                     node.setSet(null);
                 }
-                if (!node.getLexiconLabel().equals("")) {
-                    addEdge(rel, loadSynsetNode(rel.getSynsetFrom()),
-                            loadSynsetNode(rel.getSynsetTo()));
-                }
+                //TOOD tutaj było coś ze sprawdzaniem etykiety
                 node.setSpawner(synsetNode, dir);
-                forest.addVertex(node); //add node to graph
+                forest.addVertex(node);
             }
         }
+        //dodanie elementów, które będą schowane
+        ViwnNodeSet set = synsetNode.getSynsetSet(dir);
+        for(int i = toShow; i< relations.size(); i++){
+            ViwnEdgeSynset edge = relations.get(i); //TODO refaktor
+            ViwnNodeSynset node = loadSynsetNode(edge.getSynsetFrom());
+            if(node.equals(synsetNode)){
+                node = loadSynsetNode(edge.getSynsetTo());
+            }
+            if (!forest.containsVertex(node)) {
+                if(set.contains(node)){
+                    continue;
+                }
+                node.setSpawner(synsetNode, dir);
+                node.setSet(set);
+                set.add(node);
+            }
 
-        synsetNode.setState(dir, ViwnNodeSynset.State.EXPANDED);
+        }
+
+
+        if(!set.getSynsets().isEmpty()){
+            set.setSpawner(synsetNode, dir);
+            forest.addVertex(set);
+            addEdgeSynsSet(synsetNode, set, dir);
+        }
 
         List<ViwnNode> nodes = new ArrayList<>(forest.getVertices());
-        nodes.stream().filter((node) -> ((node instanceof ViwnNodeSynset))).forEachOrdered((node) -> {
-            addMissingRelations((ViwnNodeSynset) node);
-        });
+        nodes.stream().filter((node)->((node instanceof ViwnNodeSynset))).forEachOrdered((node) ->addMissingRelations((ViwnNodeSynset) node));
 
         vv.setVisible(true);
         checkAllStates();
+//        Collection<ViwnEdgeSynset> to_show_edges = new ArrayList<>();
+//
+//        TreeMap<String, ArrayList<ViwnEdgeSynset>> all_sorted = new TreeMap<>(
+//                Comparator.reverseOrder());
+//
+//        MultiValueMap mult_all_sorted = MultiValueMap.decorate(all_sorted);
+//
+//        for (ViwnEdgeSynset e : synsetNode.getRelation(dir)) {
+//            ViwnNodeSynset node = loadSynsetNode(e.getSynsetTo());
+//            if (node.equals(synsetNode)) {
+//                node = loadSynsetNode(e.getSynsetFrom());
+//            }
+//            if (!forest.containsEdge(e)) {
+//                mult_all_sorted.put(node.getLabel(), e);
+//            }
+//        }
+//
+//
+//
+//        Iterator<ViwnEdgeSynset> it = mult_all_sorted.values().iterator();
+//
+//        int to_add = all_sorted.size() - MAX_SYNSETS_SHOWN;
+//        if (to_add >= MIN_SYNSETS_IN_GROUP) {
+//            ViwnNodeSet set = synsetNode.getSynsetSet(dir);
+//            while (to_add > 0 && it.hasNext()) {
+//                ViwnEdgeSynset e = it.next();
+//
+//                ViwnNodeSynset node = loadSynsetNode(e.getSynsetFrom());
+//                if (node.equals(synsetNode)) {
+//                    node = loadSynsetNode(e.getSynsetTo());
+//                }
+//
+//                if (!forest.containsVertex(node)) {
+//                    if (set.contains(node)) {
+//                        continue;
+//                    }
+//                    node.setSpawner(synsetNode, dir);
+//                    node.setSet(set);
+//                    set.add(node);
+//                }
+//                to_add--;
+//            }
+//
+//            if (!set.getSynsets().isEmpty()) {
+//                set.setSpawner(synsetNode, dir);
+//                forest.addVertex(set);
+//                addEdgeSynsSet(synsetNode, set, dir);
+//            }
+//        }
+//
+//        while (it.hasNext()) {
+//            to_show_edges.add(it.next());
+//        }
+//
+//        for (ViwnEdgeSynset rel : to_show_edges) {
+//            ViwnNodeSynset node = loadSynsetNode(rel.getSynsetFrom());
+//            if (node.equals(synsetNode)) {
+//                node = loadSynsetNode(rel.getSynsetTo());
+//            }
+//
+//            if (!forest.containsVertex(node)) {
+//                if (node.getSet() != null) {
+//                    node.getSet().remove(node);
+//                    node.setSet(null);
+//                }
+//                if (!node.getLexiconLabel().equals("")) {
+//                    addEdge(rel, loadSynsetNode(rel.getSynsetFrom()),
+//                            loadSynsetNode(rel.getSynsetTo()));
+//                }
+//                node.setSpawner(synsetNode, dir);
+//                forest.addVertex(node); //add node to graph
+//            }
+//        }
+//
+//        synsetNode.setState(dir, ViwnNodeSynset.State.EXPANDED);
+//
+//        List<ViwnNode> nodes = new ArrayList<>(forest.getVertices());
+//        nodes.stream().filter((node) -> ((node instanceof ViwnNodeSynset))).forEachOrdered((node) -> {
+//            addMissingRelations((ViwnNodeSynset) node);
+//        });
+//
+//        vv.setVisible(true);
+//        checkAllStates();
     }
 
     /**

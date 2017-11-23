@@ -275,14 +275,39 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         setup();
     }
 
+    private void addSynsetEdges(DataEntry dataEntry)
+    {
+        ViwnEdgeSynset edge;
+        for(NodeDirection direction : NodeDirection.values()){
+            if(direction != NodeDirection.IGNORE){
+                for(SynsetRelation relation : dataEntry.getRelationsFrom(direction)){
+                    addEdgeSynsetToRelations(relation, direction);
+                }
+                for(SynsetRelation relation : dataEntry.getRelationsTo(direction)){
+                    addEdgeSynsetToRelations(relation, direction);
+                }
+            }
+        }
+    }
+
+    private void addEdgeSynsetToRelations(SynsetRelation relation, NodeDirection direction)
+    {
+        ViwnEdgeSynset edge = new ViwnEdgeSynset(relation);
+        relations[direction.ordinal()].add(edge);
+    }
+
     private void setup() {
         edges_to_this_.clear();
         edges_from_this_.clear();
 
         // first - primary cache
-        Set<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
-        Set<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());
+//        Set<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
+//        Set<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());
 
+        DataEntry dataEntry = ui.getEntrySetFor(synset.getId());
+        if(dataEntry != null){
+            addSynsetEdges(dataEntry);
+        }
         // no cache? fetch from database
 //        if (relsUP == null) {
 //            relsUP = RemoteUtils.synsetRelationRemote.dbGetUpperRelations(
@@ -293,23 +318,25 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 //                    null, LexiconManager.getInstance().getLexicons());
 //        }
         // Get relations 'OTHER synset' -> 'THIS synset'
-        for (SynsetRelation rel : relsUP) {
-//            add_if_new(rel);
-            addEdgeFromThis(rel);
-        }
 
-
-        // Get relations 'THIS synset' -> 'OTHER synset'
-        for (SynsetRelation rel : relsDW) {
-//            add_if_new(rel);
-            addEdgeToThis(rel);
-        }
+//
+//        for (SynsetRelation rel : relsUP) {
+////            add_if_new(rel);
+//            addEdgeFromThis(rel);
+//        }
+//
+//
+//        // Get relations 'THIS synset' -> 'OTHER synset'
+//        for (SynsetRelation rel : relsDW) {
+////            add_if_new(rel);
+//            addEdgeToThis(rel);
+//        }
 
         // fetching poses from temporary cache
         getPos();
 
         // adding relations to appropiate groups
-        construct();
+//        construct();
     }
 
     /**
