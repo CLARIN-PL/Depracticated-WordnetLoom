@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.model;
 
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
@@ -27,14 +28,16 @@ public class SynsetRelation extends GenericEntity {
     public SynsetRelation() {
     }
 
-    public SynsetRelation(Long id,Long relationTypeId, Long parentId, Long childId){
+    public SynsetRelation(Long id, Long relationTypeId, Long parentId, Long childId, NodeDirection direction){
         this.id = id;
         relationType = new RelationType();
         relationType.setId(relationTypeId);
+        relationType.setNodePosition(direction);
         parent = new Synset();
         parent.setId(parentId);
         child = new Synset();
         child.setId(childId);
+
     }
 
     public Synset getParent() {

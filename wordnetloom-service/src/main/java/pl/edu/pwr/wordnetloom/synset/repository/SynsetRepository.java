@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.synset.repository;
 
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -679,6 +680,15 @@ public class SynsetRepository extends GenericRepository<Synset> {
     private DataEntry getDataEntry(Synset synset, Sense sense, Set<SynsetRelation> relationsFrom, Set<SynsetRelation> relationsTo) {
         DataEntry dataEntry = new DataEntry();
         dataEntry.setSynset(synset);
+        NodeDirection direction;
+        for(SynsetRelation relation : relationsFrom){
+            direction = relation.getRelationType().getNodePosition();
+            dataEntry.addRelationFrom(relation, direction);
+        }
+        for(SynsetRelation relation : relationsTo){
+            direction = relation.getRelationType().getNodePosition();
+            dataEntry.addRelationTo(relation, direction);
+        }
 //        dataEntry.setRelsFrom(relationsFrom);
 //        dataEntry.setRelsTo(relationsTo); //TODO dorobić
         dataEntry.setLexicon(sense.getLexicon().getIdentifier());
@@ -697,10 +707,10 @@ public class SynsetRepository extends GenericRepository<Synset> {
             } else {
                 relatedSynset = relation.getParent();
             }
-            List<SynsetRelation> relationsFrom = synsetRelationRepository.findSimpleRelationsWhereSynsetIsParent(relatedSynset, lexicons);
-            List<SynsetRelation> relationsTo = synsetRelationRepository.findSimpleRelationsWhereSynsetIsChild(relatedSynset, lexicons);
-            relatedSynset.setIncomingRelations(new HashSet<>(relationsTo));
-            relatedSynset.setOutgoingRelations(new HashSet<>(relationsFrom));
+//            List<SynsetRelation> relationsFrom = synsetRelationRepository.findSimpleRelationsWhereSynsetIsParent(relatedSynset, lexicons);
+//            List<SynsetRelation> relationsTo = synsetRelationRepository.findSimpleRelationsWhereSynsetIsChild(relatedSynset, lexicons);
+//            relatedSynset.setIncomingRelations(new HashSet<>(relationsTo));
+//            relatedSynset.setOutgoingRelations(new HashSet<>(relationsFrom));
             sense = relatedSynset.getSenses().get(0);
             dataEntry = getDataEntry(relatedSynset, sense, relatedSynset.getOutgoingRelations(), relatedSynset.getIncomingRelations());
             map.put(relatedSynset.getId(), dataEntry);
