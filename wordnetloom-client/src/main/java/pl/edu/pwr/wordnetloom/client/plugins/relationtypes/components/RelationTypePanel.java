@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.components;
 
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MSplitPane;
@@ -21,7 +22,7 @@ public class RelationTypePanel extends WebPanel {
     private int parentWidth;
     private int parentHeight;
 
-    public RelationTypePanel() {
+    public RelationTypePanel(WebFrame parent) {
         setLayout(new BorderLayout());
 
         synsetRelationTreePanel = new RelationTreePanel(RelationArgument.SYNSET_RELATION);
@@ -30,7 +31,7 @@ public class RelationTypePanel extends WebPanel {
         senseRelationTreePanel = new RelationTreePanel(RelationArgument.SENSE_RELATION);
         senseRelationTreePanel.setRelationsTypes(RelationTypeManager.getInstance().getParents(RelationArgument.SENSE_RELATION));
 
-        propertiesPanel = new RelationTypePropertiesPanel();
+        propertiesPanel = new RelationTypePropertiesPanel(parent);
         testsPanel = new RelationTypeTestsPanel();
 
     }

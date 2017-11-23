@@ -38,7 +38,7 @@ public class RelationsEditorWindow extends MFrame {
         setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT));
 
 
-        relationTypePanel = new RelationTypePanel()
+        relationTypePanel = new RelationTypePanel(this)
                 .withSize(MAX_WINDOW_WIDTH, MAX_WINDOW_HEIGHT)
                 .build();
 
