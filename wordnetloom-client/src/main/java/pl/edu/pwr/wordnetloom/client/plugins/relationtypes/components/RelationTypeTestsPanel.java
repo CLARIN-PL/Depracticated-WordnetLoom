@@ -7,14 +7,17 @@ import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButtonPanel;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
+import pl.edu.pwr.wordnetloom.relationtest.model.RelationTest;
 
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.List;
 
 public class RelationTypeTestsPanel extends WebPanel {
 
     private final WebList tests;
+
 
     public RelationTypeTestsPanel() {
 
@@ -24,7 +27,6 @@ public class RelationTypeTestsPanel extends WebPanel {
         setLayout(new BorderLayout());
 
         tests = new WebList();
-        //tests.setCellRenderer(new TestListRenderer());
 
         MButtonPanel buttonsPanel = new MButtonPanel(moveUpButton, moveDownButton,
                 addButton, addEditButton, removeButton)
@@ -36,6 +38,9 @@ public class RelationTypeTestsPanel extends WebPanel {
         add(buttonsPanel, BorderLayout.EAST);
     }
 
+    public void setRelationTests(List<RelationTest> tests) {
+
+    }
 
     private void moveTestUp() {
     }

@@ -4,13 +4,23 @@ import com.alee.extended.colorchooser.ColorChooserFieldType;
 import com.alee.extended.colorchooser.WebColorChooserField;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebFormattedTextField;
+import com.google.common.eventbus.Subscribe;
+import pl.edu.pwr.wordnetloom.client.Application;
+import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.events.ShowRelationTypeEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window.PartOfSpeechWindow;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -18,6 +28,8 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
 
@@ -27,7 +39,12 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
     private static final String TAB_FILL = RiverLayout.TAB_STOP + " " + RiverLayout.HFILL;
     private static final String RIGHT = RiverLayout.RIGHT;
 
-    public RelationTypePropertiesPanel() {
+    private RelationType currentRelation;
+    private WebFrame parent;
+
+    public RelationTypePropertiesPanel(WebFrame parent) {
+        this.parent = parent;
+        Application.eventBus.register(this);
         init();
     }
 
@@ -35,8 +52,7 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Relation properties", TitledBorder.LEADING,
                 TitledBorder.TOP, null, new Color(51, 51, 51)));
 
-        WebScrollPane descriptionScrollWrapper = new WebScrollPane(descriptionRelation);
-        //setLayout(new BorderLayout(0, 0));
+        WebScrollPane descriptionScrollWrapper = new WebScrollPane(relationDescription);
 
         setLayout(new RiverLayout());
 
@@ -69,10 +85,45 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         add(RiverLayout.LINE_BREAK + " " + RiverLayout.CENTER, btnSave);
     }
 
+    @Subscribe
+    public void onShowRelationType(ShowRelationTypeEvent event) {
+        currentRelation = RemoteService.relationTypeRemote.findByIdWithDependencies(event.getRelationType().getId());
+        bind(currentRelation);
+    }
+
+    private void bind(RelationType rt) {
+        relationName.setText(LocalisationManager.getInstance().getLocalisedString(rt.getName()));
+        relationDisplay.setText(LocalisationManager.getInstance().getLocalisedString(rt.getDisplayText()));
+        relationShortcut.setText(LocalisationManager.getInstance().getLocalisedString(rt.getShortDisplayText()));
+        relationDescription.setText(LocalisationManager.getInstance().getLocalisedString(rt.getDescription()));
+        relationDirection.setSelectedItem(rt.getNodePosition());
+        colorChooser.setColor(Color.decode(rt.getColor() != null ? rt.getColor() : "#FFFFFF"));
+        multilingual.setSelected(rt.getMultilingual());
+        reverseRelation.setText(rt.getReverse() != null ? LocalisationManager.getInstance().getLocalisedString(rt.getReverse().getName()) : "");
+        lexicon.setText(lexiconsToString(rt.getLexicons()));
+        allowedPartsOfSpeech.setText(partsOfSpeechToString(rt.getPartsOfSpeech()));
+    }
+
+    private String lexiconsToString(Set<Lexicon> lexicons) {
+        return lexicons.stream()
+                .map(Lexicon::getName)
+                .collect(Collectors.joining(", "));
+    }
+
+    private String partsOfSpeechToString(Set<PartOfSpeech> pos) {
+        return pos.stream()
+                .map(p -> LocalisationManager.getInstance().getLocalisedString(p.getName()))
+                .collect(Collectors.joining(", "));
+    }
+
+
     private void openReverseRelationDialog() {
     }
 
     private void openPartOfSpeechDialog() {
+        final Set<PartOfSpeech> selected = PartOfSpeechWindow.showModal(parent, currentRelation.getPartsOfSpeech());
+        currentRelation.setPartsOfSpeech(selected);
+        allowedPartsOfSpeech.setText(partsOfSpeechToString(currentRelation.getPartsOfSpeech()));
     }
 
     private MaskFormatter createFormatter(String s) {
@@ -98,8 +149,8 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
 
     private final MTextField relationShortcut = new MTextField("");
 
-    private final MTextArea descriptionRelation = new MTextArea("")
-            .withRows(2);
+    private final MTextArea relationDescription = new MTextArea("")
+            .withRows(4);
 
     private final MTextField allowedPartsOfSpeech = new MTextField("");
 
@@ -117,7 +168,7 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
             .withActionListener(e -> openReverseRelationDialog())
             .withToolTip(Hints.CHOOSE_REVERSE_RELATION);
 
-    private final MComboBox<NodeDirection> relationDirection = new MComboBox<>()
+    private final MComboBox<NodeDirection> relationDirection = new MComboBox<>(NodeDirection.values())
             .withSize(new Dimension(150, 25));
 
     private final WebFormattedTextField colorRelation = new WebFormattedTextField(createFormatter("#HHHHHH"));
@@ -150,7 +201,7 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
             .withMnemonic('o')
             .withAlignment(SwingConstants.RIGHT)
             .withSize(new Dimension(130, 15))
-            .withLabelFor(descriptionRelation);
+            .withLabelFor(relationDescription);
 
     private final MLabel posLabel = new MLabel(Labels.PARTS_OF_SPEECH_COLON)
             .withMnemonic('c')

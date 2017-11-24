@@ -12,8 +12,6 @@ public interface RelationTypeServiceRemote {
 
     Long findReverseId(Long relationTypeId);
 
-    RelationType findFullRelationType(Long relationTypeId);
-
     RelationType findReverseByRelationType(Long relationTypeId);
 
     RelationType save(RelationType rel);
@@ -31,4 +29,6 @@ public interface RelationTypeServiceRemote {
     void deleteAll(RelationType type);
 
     boolean isReverseRelation(Collection<RelationType> relations, RelationType test);
+
+    RelationType findByIdWithDependencies(Long id);
 }

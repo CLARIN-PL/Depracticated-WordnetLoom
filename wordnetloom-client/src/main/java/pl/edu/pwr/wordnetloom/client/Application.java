@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.client;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.rootpane.WebFrame;
+import com.google.common.eventbus.EventBus;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.plugins.login.window.LoginWindow;
@@ -20,6 +21,8 @@ import java.lang.Thread.UncaughtExceptionHandler;
 public class Application implements Loggable {
 
     public static final String PROGRAM_NAME_VERSION = "WordnetLoom 2.0";
+
+    public static final EventBus eventBus = new EventBus();
 
     public static void main(String[] args) {
 

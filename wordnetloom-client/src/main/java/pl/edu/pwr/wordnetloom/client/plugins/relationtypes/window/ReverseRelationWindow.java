@@ -35,11 +35,6 @@ public class ReverseRelationWindow extends DialogWindow implements ActionListene
     private final JTree tree;
     private final JCheckBox autoReverse;
 
-    /**
-     * konstruktor
-     *
-     * @param owner - srodowisko
-     */
     private ReverseRelationWindow(WebFrame owner) {
         super(owner, Labels.REVERSE_RELATION, 400, 450);
         setResizable(false);

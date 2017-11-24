@@ -179,7 +179,7 @@ public abstract class CriteriaPanel extends WebPanel {
         if (lexiconComboBox.getEntity() != null) {
             RelationTypeManager
                     .getInstance()
-                    .getRealtionsWithoutProxyParent(RelationArgument.SENSE_RELATION, lexiconComboBox.getEntity())
+                    .getRelationsWithoutProxyParent(RelationArgument.SENSE_RELATION, lexiconComboBox.getEntity())
                     .forEach(r ->
                             senseRelationsComboBox.addItem(new CustomDescription<>(
                                     RelationTypeManager
@@ -188,7 +188,7 @@ public abstract class CriteriaPanel extends WebPanel {
         } else {
             RelationTypeManager
                     .getInstance()
-                    .getRealtionsWithoutProxyParent(RelationArgument.SENSE_RELATION)
+                    .getRelationsWithoutProxyParent(RelationArgument.SENSE_RELATION)
                     .forEach(r ->
                             senseRelationsComboBox.addItem(new CustomDescription<>(
                                     RelationTypeManager

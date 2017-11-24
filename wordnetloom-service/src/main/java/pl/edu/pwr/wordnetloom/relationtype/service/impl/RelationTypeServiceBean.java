@@ -43,6 +43,15 @@ public class RelationTypeServiceBean implements RelationTypeServiceLocal {
     }
 
     @Override
+    public RelationType findByIdWithDependencies(Long id) {
+        RelationType rel = relationTypeRepository.findByIdWithDependencies(id);
+        if (rel == null) {
+            throw new RelationTypeNotFoundException();
+        }
+        return rel;
+    }
+
+    @Override
     public void deleteAll(RelationType type) {
 
         relationTypeRepository.deleteRelationWithChilds(type);
@@ -53,14 +62,6 @@ public class RelationTypeServiceBean implements RelationTypeServiceLocal {
         return relationTypeRepository.findReverseId(relationTypeId);
     }
 
-    @Override
-    public RelationType findFullRelationType(Long relationTypeId) {
-        RelationType rel = relationTypeRepository.findFullByRelationType(relationTypeId);
-        if (rel == null) {
-            throw new RelationTypeNotFoundException();
-        }
-        return rel;
-    }
 
     @Override
     public RelationType findReverseByRelationType(Long relationTypeId) {

@@ -67,7 +67,7 @@ public class RelationTypeManager {
                 .collect(Collectors.toList());
     }
 
-    public List<RelationType> getRealtionsWithoutProxyParent(final RelationArgument relationArgument) {
+    public List<RelationType> getRelationsWithoutProxyParent(final RelationArgument relationArgument) {
         return relationTypes
                 .stream()
                 .filter(r -> relationArgument.equals(r.getRelationArgument()))
@@ -75,7 +75,7 @@ public class RelationTypeManager {
                 .collect(Collectors.toList());
     }
 
-    public List<RelationType> getRealtionsWithoutProxyParent(final RelationArgument relationArgument, final Lexicon lexicon) {
+    public List<RelationType> getRelationsWithoutProxyParent(final RelationArgument relationArgument, final Lexicon lexicon) {
         return relationTypes
                 .stream()
                 .filter(r -> relationArgument.equals(r.getRelationArgument()))

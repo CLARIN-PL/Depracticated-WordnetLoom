@@ -54,7 +54,7 @@ public class RelationTypeManagerTest {
     public void shouldReturnRelationsWithoutProxyParentRelations() {
 
         RelationTypeManager.getInstance().loadRelationTypes(RelationTypeForTestsRepository.allRelations());
-        List<RelationType> list = RelationTypeManager.getInstance().getRealtionsWithoutProxyParent(RelationArgument.SENSE_RELATION);
+        List<RelationType> list = RelationTypeManager.getInstance().getRelationsWithoutProxyParent(RelationArgument.SENSE_RELATION);
         assertThat(list, is(notNullValue()));
         assertThat(list.size(), equalTo(5));
         assertThat(list, not(hasItem(aspektowosc())));
