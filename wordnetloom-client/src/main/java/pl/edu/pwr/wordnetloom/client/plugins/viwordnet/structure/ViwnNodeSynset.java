@@ -277,7 +277,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     private void addSynsetEdges(DataEntry dataEntry)
     {
-        ViwnEdgeSynset edge;
         for(NodeDirection direction : NodeDirection.values()){
             if(direction != NodeDirection.IGNORE){
                 for(SynsetRelation relation : dataEntry.getRelationsFrom(direction)){
@@ -430,6 +429,9 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
             } else {
                 ret = "";
             }
+            if(ret.equals("")){
+                System.out.println();
+            }
 //            DataEntry dataSet = ui.getEntrySetFor(getId());
 //            if (dataSet == null || dataSet.getLabel() == null) {
 //                String ret = "";
@@ -507,6 +509,9 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 //                unitsStr = RemoteUtils.synsetRemote
 //                        .dbRebuildUnitsStr(getSynset(), LexiconManager
 //                                .getInstance().getLexicons());
+            }
+            if(unitsStr == null || unitsStr.equals("")){
+                System.out.println();
             }
             return unitsStr;
         }

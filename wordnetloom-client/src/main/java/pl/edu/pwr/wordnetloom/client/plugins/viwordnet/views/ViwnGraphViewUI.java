@@ -304,7 +304,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         recreateLayout();
         center();
         vv.setVisible(true);
-        releaseDataSetCache();
+//        releaseDataSetCache();
     }
 
     /**
@@ -870,16 +870,16 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      */
     private void showRelationGUI(ViwnNodeSynset synsetNode, NodeDirection dir) {
         List<ViwnEdgeSynset> relations = (List<ViwnEdgeSynset>) synsetNode.getRelation(dir); //TODO można to przerobić tak, aby było rozdzielenie na od i do
-        relations.sort(new Comparator<ViwnEdgeSynset>() {
-            @Override
-            public int compare(ViwnEdgeSynset o1, ViwnEdgeSynset o2) {
-                int compareResult = loadSynsetNode(o1.getSynsetTo()).getLabel().compareTo(loadSynsetNode(o2.getSynsetTo()).getLabel());
-                if(compareResult==0){
-                    compareResult = loadSynsetNode(o1.getSynsetFrom()).getLabel().compareTo(loadSynsetNode(o2.getSynsetFrom()).getLabel());
-                }
-                return compareResult;
-            }
-        }); //TODO to tylko tymczasowe rozwiązanie. Nalezy pozmieniać we wszystkich miejscach gdzie sa przechowywane relacje na liste, aby nie było trzeba ponownie sortować. Wystarczy pobrać dane z bazy
+//        relations.sort(new Comparator<ViwnEdgeSynset>() {
+//            @Override
+//            public int compare(ViwnEdgeSynset o1, ViwnEdgeSynset o2) {
+//                int compareResult = loadSynsetNode(o1.getSynsetTo()).getLabel().compareTo(loadSynsetNode(o2.getSynsetTo()).getLabel());
+//                if(compareResult==0){
+//                    compareResult = loadSynsetNode(o1.getSynsetFrom()).getLabel().compareTo(loadSynsetNode(o2.getSynsetFrom()).getLabel());
+//                }
+//                return compareResult;
+//            }
+//        }); //TODO to tylko tymczasowe rozwiązanie. Nalezy pozmieniać we wszystkich miejscach gdzie sa przechowywane relacje na liste, aby nie było trzeba ponownie sortować. Wystarczy pobrać dane z bazy
         int toShow = Math.min(MAX_SYNSETS_SHOWN, relations.size());
         // dodanie elementów, które będą wyświetlane
         for(int i = 0; i < toShow; i++){
@@ -899,6 +899,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             }
         }
         //dodanie elementów, które będą schowane
+        if(relations.size() > MAX_SYNSETS_SHOWN){
+
+        }
         ViwnNodeSet set = synsetNode.getSynsetSet(dir);
         for(int i = toShow; i< relations.size(); i++){
             ViwnEdgeSynset edge = relations.get(i); //TODO refaktor
@@ -914,10 +917,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                 node.setSet(set);
                 set.add(node);
             }
-
         }
 
-
+        //TODO ogarnąć co się stanie, jeśli set będzie pusty
         if(!set.getSynsets().isEmpty()){
             set.setSpawner(synsetNode, dir);
             forest.addVertex(set);
@@ -929,89 +931,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         vv.setVisible(true);
         checkAllStates();
-//        Collection<ViwnEdgeSynset> to_show_edges = new ArrayList<>();
-//
-//        TreeMap<String, ArrayList<ViwnEdgeSynset>> all_sorted = new TreeMap<>(
-//                Comparator.reverseOrder());
-//
-//        MultiValueMap mult_all_sorted = MultiValueMap.decorate(all_sorted);
-//
-//        for (ViwnEdgeSynset e : synsetNode.getRelation(dir)) {
-//            ViwnNodeSynset node = loadSynsetNode(e.getSynsetTo());
-//            if (node.equals(synsetNode)) {
-//                node = loadSynsetNode(e.getSynsetFrom());
-//            }
-//            if (!forest.containsEdge(e)) {
-//                mult_all_sorted.put(node.getLabel(), e);
-//            }
-//        }
-//
-//
-//
-//        Iterator<ViwnEdgeSynset> it = mult_all_sorted.values().iterator();
-//
-//        int to_add = all_sorted.size() - MAX_SYNSETS_SHOWN;
-//        if (to_add >= MIN_SYNSETS_IN_GROUP) {
-//            ViwnNodeSet set = synsetNode.getSynsetSet(dir);
-//            while (to_add > 0 && it.hasNext()) {
-//                ViwnEdgeSynset e = it.next();
-//
-//                ViwnNodeSynset node = loadSynsetNode(e.getSynsetFrom());
-//                if (node.equals(synsetNode)) {
-//                    node = loadSynsetNode(e.getSynsetTo());
-//                }
-//
-//                if (!forest.containsVertex(node)) {
-//                    if (set.contains(node)) {
-//                        continue;
-//                    }
-//                    node.setSpawner(synsetNode, dir);
-//                    node.setSet(set);
-//                    set.add(node);
-//                }
-//                to_add--;
-//            }
-//
-//            if (!set.getSynsets().isEmpty()) {
-//                set.setSpawner(synsetNode, dir);
-//                forest.addVertex(set);
-//                addEdgeSynsSet(synsetNode, set, dir);
-//            }
-//        }
-//
-//        while (it.hasNext()) {
-//            to_show_edges.add(it.next());
-//        }
-//
-//        for (ViwnEdgeSynset rel : to_show_edges) {
-//            ViwnNodeSynset node = loadSynsetNode(rel.getSynsetFrom());
-//            if (node.equals(synsetNode)) {
-//                node = loadSynsetNode(rel.getSynsetTo());
-//            }
-//
-//            if (!forest.containsVertex(node)) {
-//                if (node.getSet() != null) {
-//                    node.getSet().remove(node);
-//                    node.setSet(null);
-//                }
-//                if (!node.getLexiconLabel().equals("")) {
-//                    addEdge(rel, loadSynsetNode(rel.getSynsetFrom()),
-//                            loadSynsetNode(rel.getSynsetTo()));
-//                }
-//                node.setSpawner(synsetNode, dir);
-//                forest.addVertex(node); //add node to graph
-//            }
-//        }
-//
-//        synsetNode.setState(dir, ViwnNodeSynset.State.EXPANDED);
-//
-//        List<ViwnNode> nodes = new ArrayList<>(forest.getVertices());
-//        nodes.stream().filter((node) -> ((node instanceof ViwnNodeSynset))).forEachOrdered((node) -> {
-//            addMissingRelations((ViwnNodeSynset) node);
-//        });
-//
-//        vv.setVisible(true);
-//        checkAllStates();
     }
 
     /**
