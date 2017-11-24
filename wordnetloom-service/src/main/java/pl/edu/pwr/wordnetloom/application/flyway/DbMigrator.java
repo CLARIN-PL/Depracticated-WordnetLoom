@@ -39,5 +39,12 @@ public class DbMigrator {
             log.log(Level.INFO, "Migrate task: {0} : {1} from file: {2}", new Object[]{i.getVersion(), i.getDescription(), i.getScript()});
         }
         flyway.migrate();
+
+        // aby ustawił kierunki relacji z pliku, odkomentować i ustawić ścieżkę do pliku disp_relations.cfg
+//        try {
+//            TempRelationsDirectionsUpdater.run(path, dataSource.getConnection());
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
     }
 }

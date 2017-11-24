@@ -4,6 +4,7 @@ import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -734,92 +735,27 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
     }
 
-    private DataEntry buildDataEntry(Long id) {
-        Synset synset = findSynsetWithRelationsAandSenseById(id);
-//        synset.getIncomingRelations().forEach(e->e.setChild(synset));
-//        synset.getOutgoingRelations().forEach(e->e.setParent(synset));
-        DataEntry dataEntry = getDataEntry(
-                synset,
-                synset.getSenses()
-                        .stream()
-                        .findFirst().orElse(null)
-                , synset.getOutgoingRelations(), synset.getIncomingRelations());
-        return dataEntry;
-    }
-
     private DataEntry buildDataEntry(Synset synset){
         return getDataEntry(synset, synset.getSenses().get(0), synset.getOutgoingRelations(), synset.getIncomingRelations());
     }
 
 
     public Map<Long, DataEntry> prepareCacheForRootNode(final Long synsetId, final List<Long> lexicons, int numSynsetOnDirection) {
-
+        //TODO trzeba jakoś wykorzystać tutaj liczbę pokazywanych synsetów
         Map<Long, DataEntry> result = new HashMap<>();
+        // łączenie synsetu z jednostką, aby uzyskać opis (wyraz, domene, wariant)
         Synset synset = findSynsetWithRelationsAandSenseById(synsetId);
+        // pobranie relacji dla synsetu. Relacje pobierane są wraz z połączonymi synsetami oraz ich opisami (wyraz, domena, wariant)
         List<SynsetRelation> relationsFrom = synsetRelationRepository.findRelationsWhereSynsetIsParent(synset, lexicons);
         List<SynsetRelation> relationsTo = synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons);
-        synset.setOutgoingRelations(new HashSet<>(relationsFrom));
-        synset.setIncomingRelations(new HashSet<>(relationsTo));
+        synset.setOutgoingRelations(new LinkedHashSet<>(relationsFrom));
+        synset.setIncomingRelations(new LinkedHashSet<>(relationsTo));
         DataEntry dataEntry = buildDataEntry(synset);
         result.put(synset.getId(), dataEntry);
         putDataEntryFromSynsetRelation(result, relationsFrom, true, lexicons);
         putDataEntryFromSynsetRelation(result, relationsTo, false, lexicons);
-
+        //TODO można przerboić metode, aby wszystko działo się w niej, a nie było skitrane w innych metodach
         return result;
-
-//
-//        Map<Long, DataEntry> result = new HashMap<>();
-//
-//        DataEntry root = buildDataEntry(synsetId);
-//        result.put(synsetId, root);
-//
-//        Set<Long> relatedSynsetsToFetch = Stream
-//                .concat(
-//                        root.getRelsFrom().stream(),
-//                        root.getRelsTo().stream())
-//                .flatMap(s -> Stream.of(s.getParent().getId(), s.getChild().getId()))
-//                .distinct()
-//                .collect(Collectors.toSet());
-//
-//        relatedSynsetsToFetch.forEach(s -> result.put(s, buildDataEntry(s)));
-//
-//        return result;
-
-
-//        if (!rootEntry.getRelsFrom().isEmpty() || !rootEntry.getRelsFrom().isEmpty()) {
-//            List<SynsetRelation> relations = synsetRelationRepository.findRelations(synset);
-//            map.put(rootEntry.getSynset().getId(), rootEntry);
-
-        //TODO odkomentować i przerobić
-//            List<SynsetInfo> infos = em.createQuery(
-//                    "SELECT NEW pl.edu.pwr.wordnetloom.model.dto.SynsetInfo(sy.id, se.partOfSpeech.id, name.text, lemma.word, syt.value.text, se.senseNumber, lexId.text) " +
-//                            "FROM Sense AS se JOIN se.synset AS sy  " +
-//                            "JOIN se.domain AS dom " +
-//                            "JOIN dom.nameStrings AS name " +
-//                            "JOIN sy.synsetAttributes AS syt " +
-//                            "JOIN se.word as lemma " +
-//                            "JOIN se.lexicon as lex " +
-//                            "JOIN lex.identifier as lexId " +
-//                            "WHERE se.synset_position = 0 AND syt.type.typeName.text = :abstractName AND sy.id IN (:ids)",
-//                    SynsetInfo.class)
-//                    .setParameter("abstractName", 0) // TODO zobaczyć, czy 0 to dobra wartość
-//                    .setParameter("ids", lexicons)
-//                    .getResultList();
-//            List<CountInfo> counts = em.createQuery("SELECT NEW pl.edu.pwr.wordnetloom.model.dto.CountInfo(sy.id, count(se)) " +
-//                    "FROM Synset AS sy JOIN sy.senseToSynset AS sts JOIN sts.sense AS se " +
-//                    "WHERE sy.id IN (:ids) GROUP BY sy.id", CountInfo.class)
-//                    .setParameter("ids", lexicons)
-//                    .getResultList();
-//            Map<Long, CountInfo> counter = counts.stream().collect(Collectors.toMap(CountInfo::getSynsetID, p -> p));
-//
-//            for (SynsetInfo synsetInfo : infos) {
-//                DataEntry dataEntry = map.get(synsetInfo.getSynsetID());
-//                StringBuilder stringBuilder = new StringBuilder();
-//
-//            }
-//        }
-//
-//        return null;
     }
 
     @Override

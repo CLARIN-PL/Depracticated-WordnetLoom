@@ -351,8 +351,15 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         }
         List<SynsetRelation> allRelations = getRelationsFrom(synset, lexicons, fetchColumn, synsetIdColumn);
         List<Integer> indexesRelationToShow = getIndexRelationsToShow(allRelations, 4);
-        Synset fetchedSynset; //TODO można zmienić nazwę
+        Synset fetchedSynset;
         SynsetRelation relation;
+        for(SynsetRelation synsetRelation : allRelations){
+            if(synsetIsParent){
+                synsetRelation.getChild().setIncomingRelations(new LinkedHashSet<>());
+                synsetRelation.getChild().setOutgoingRelations(new LinkedHashSet<>());
+            }
+        }
+
         for(Integer i : indexesRelationToShow){
             relation = allRelations.get(i);
             if(synsetIsParent){
@@ -362,25 +369,10 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
             }
             List<SynsetRelation> relationsFrom = findSimpleRelationsWhereSynsetIsParent(fetchedSynset, lexicons);
             List<SynsetRelation> relationsTo = findSimpleRelationsWhereSynsetIsChild(fetchedSynset, lexicons);
-            fetchedSynset.setOutgoingRelations(new HashSet<>(relationsFrom));
-            fetchedSynset.setIncomingRelations(new HashSet<>(relationsTo));
+            fetchedSynset.setOutgoingRelations(new LinkedHashSet<>(relationsFrom));
+            fetchedSynset.setIncomingRelations(new LinkedHashSet<>(relationsTo));
         }
         return allRelations;
-//        List<Long> relationIds = getRelationsIds(allRelations, numRelationsOnDirection);
-//        List<SynsetRelation> fetchedRelations = fetchRelatedSynset(relationIds,lexicons, fetchColumn);
-//        Synset fetchedSynset;
-//        for(SynsetRelation relation : fetchedRelations){
-//            if(synsetIsParent){
-//                fetchedSynset = relation.getChild();
-//            } else {
-//                fetchedSynset = relation.getParent();
-//            }
-//            List<SynsetRelation> relationsFrom = findSimpleRelationsWhereSynsetIsParent(fetchedSynset, lexicons);
-//            List<SynsetRelation> relationTo = findSimpleRelationsWhereSynsetIsChild(fetchedSynset, lexicons);
-//            fetchedSynset.setOutgoingRelations(new HashSet<>(relationsFrom));
-//            fetchedSynset.setIncomingRelations(new HashSet<>(relationTo));
-//        }
-//        return fetchedRelations;
     }
 
     public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons) {

@@ -8,10 +8,7 @@ import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "synset")
@@ -39,10 +36,12 @@ public class Synset extends GenericEntity {
     private Integer status = 0;
 
     @OneToMany(mappedBy = "child", fetch = FetchType.LAZY)
-    private Set<SynsetRelation> incomingRelations = new HashSet<>();
+    private Set<SynsetRelation> incomingRelations = new LinkedHashSet<>();
+//    private List<SynsetRelation> incomingRelations = new ArrayList<>();
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
-    private Set<SynsetRelation> outgoingRelations = new HashSet<>();
+    private Set<SynsetRelation> outgoingRelations = new LinkedHashSet<>();
+//    private List<SynsetRelation> outgoingRelations = new ArrayList<>();
 
     public Integer getSplit() {
         return split;
@@ -75,6 +74,18 @@ public class Synset extends GenericEntity {
     public void setLexicon(Lexicon lexicon) {
         this.lexicon = lexicon;
     }
+
+//    public List<SynsetRelation> getIncomingRelations(){return incomingRelations;}
+//
+//    public void setIncomingRelations(List<SynsetRelation> incomingRelations){
+//        this.incomingRelations = incomingRelations;
+//    }
+//
+//    public List<SynsetRelation> getOutgoingRelations() {return outgoingRelations;}
+//
+//    public void setOutgoingRelations(List<SynsetRelation> outgoingRelations){
+//        this.outgoingRelations = outgoingRelations;
+//    }
 
     public Set<SynsetRelation> getIncomingRelations() {
         return incomingRelations;

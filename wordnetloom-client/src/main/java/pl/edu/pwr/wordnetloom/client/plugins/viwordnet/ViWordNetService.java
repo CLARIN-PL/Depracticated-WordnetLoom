@@ -438,7 +438,6 @@ public class ViWordNetService extends AbstractService implements
 
         @Override
         public Void doInBackground() {
-
             workbench.setBusy(true);
             Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getLexiconsIds());
             getActiveGraphView().getUI().releaseDataSetCache();
@@ -447,7 +446,8 @@ public class ViWordNetService extends AbstractService implements
                 if (entries != null) {
                     getActiveGraphView().getUI().setEntrySets((HashMap<Long, DataEntry>) entries);
                 }
-                DataEntry dataEntry = entries.get(rootSynset.getId()); //pobieranie synsetu z wcześniej pobranej mapy, aby otrzymać obiekt, który ma relacje (nie są leniwymi kolekcjami)
+                //pobieranie synsetu z wcześniej pobranej mapy, aby otrzymać obiekt, który ma relacje (nie są leniwymi kolekcjami)
+                DataEntry dataEntry = entries.get(rootSynset.getId());
                 if(dataEntry != null){
                     rootSynset = dataEntry.getSynset();
                 } //TODO sprawdzić, czy nie można w inny sposób rozwiązać leniwych relacji, które spowodują błąd w LoadSynsetTask.
