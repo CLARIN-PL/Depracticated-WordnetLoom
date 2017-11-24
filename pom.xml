@@ -129,5 +129,6 @@
         <module>wordnetloom-client</module>
         <module>wordnetloom-server</module>
         <module>wordnetloom-download</module>
+        <module>wordnetloom-client-fx</module>
     </modules>
 </project>
