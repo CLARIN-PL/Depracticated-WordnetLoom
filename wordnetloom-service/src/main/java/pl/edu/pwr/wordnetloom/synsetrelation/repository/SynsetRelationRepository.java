@@ -8,14 +8,12 @@ import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
-import pl.edu.pwr.wordnetloom.word.model.Word;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
-
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -133,7 +131,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
     }
 
     /**
-     * Returns a path to the top synset in relation graph.
+     * Returns a path to the top synset in relation visualisation.
      *
      * @param synset start synset
      * @param rtype  relation type
@@ -222,7 +220,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return path;
     }
 
-    private List<SynsetRelation> getRelationsFrom(Synset synset, List<Long> lexicons, String joinColumn, String synsetIdColumn){
+    private List<SynsetRelation> getRelationsFrom(Synset synset, List<Long> lexicons, String joinColumn, String synsetIdColumn) {
 //        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 //        CriteriaQuery<SynsetRelation> query = criteriaBuilder.createQuery(SynsetRelation.class);
 //        Root<SynsetRelation> relationRoot = query.from(SynsetRelation.class);
@@ -250,20 +248,20 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
 //        List<SynsetRelation> resultList = getEntityManager().createQuery(query).getResultList();
 //        return resultList ;
 
-        Query query = getEntityManager().createQuery("FROM SynsetRelation sr LEFT JOIN FETCH sr."+joinColumn+" AS synset " +
+        Query query = getEntityManager().createQuery("FROM SynsetRelation sr LEFT JOIN FETCH sr." + joinColumn + " AS synset " +
                 "LEFT JOIN FETCH synset.senses AS sense " +
                 "LEFT JOIN FETCH sense.domain " +
                 "LEFT JOIN FETCH sense.lexicon " +
-                "WHERE sr."+synsetIdColumn+".id = :id " +
+                "WHERE sr." + synsetIdColumn + ".id = :id " +
                 "AND sense.synsetPosition = 0 " +
                 "ORDER BY sense.word.word")
                 .setParameter("id", synset.getId());
 
         List<SynsetRelation> resultList = query.getResultList();
-        return resultList ;
+        return resultList;
     }
 
-    private List<SynsetRelation> fetchRelatedSynset(List<Long> relationsIds, List<Long> lexicons,  String fetchColumn){
+    private List<SynsetRelation> fetchRelatedSynset(List<Long> relationsIds, List<Long> lexicons, String fetchColumn) {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<SynsetRelation> query = criteriaBuilder.createQuery(SynsetRelation.class);
         Root<SynsetRelation> relationRoot = query.from(SynsetRelation.class);
@@ -287,7 +285,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return resultList;
     }
 
-    private List<Long> getRelationsIds(List<SynsetRelation> synsetList, int numRelationsOnDirection){
+    private List<Long> getRelationsIds(List<SynsetRelation> synsetList, int numRelationsOnDirection) {
         final int NUM_DIRECTION = 4;
         int[] directionCounter = new int[NUM_DIRECTION];
         Arrays.fill(directionCounter, 0);
@@ -296,15 +294,15 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
 
         List<Long> resultList = new ArrayList<>();
 
-        for(SynsetRelation relation : synsetList){
+        for (SynsetRelation relation : synsetList) {
             int direction = relation.getRelationType().getNodePosition().ordinal();
-            if(directionCounter[direction] != numRelationsOnDirection){
+            if (directionCounter[direction] != numRelationsOnDirection) {
                 resultList.add(relation.getId());
                 directionCounter[direction]++;
-                if(directionCounter[direction]==numRelationsOnDirection){
+                if (directionCounter[direction] == numRelationsOnDirection) {
                     filledDirectionsCounter++;
                 }
-                if(filledDirectionsCounter==NUM_DIRECTION){
+                if (filledDirectionsCounter == NUM_DIRECTION) {
                     return resultList;
                 }
             }
@@ -312,7 +310,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return resultList;
     }
 
-    private List<Integer> getIndexRelationsToShow(List<SynsetRelation> synsetsList, int numRelationsOnDirection){
+    private List<Integer> getIndexRelationsToShow(List<SynsetRelation> synsetsList, int numRelationsOnDirection) {
         final int NUM_DIRECTION = 4;
         int[] directionCounter = new int[NUM_DIRECTION];
         Arrays.fill(directionCounter, 0);
@@ -321,15 +319,15 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
 
         List<Integer> resultList = new ArrayList<>();
 
-        for(int i=0; i<synsetsList.size(); i++){
+        for (int i = 0; i < synsetsList.size(); i++) {
             int direction = synsetsList.get(i).getRelationType().getNodePosition().ordinal();
-            if(directionCounter[direction] != numRelationsOnDirection){
+            if (directionCounter[direction] != numRelationsOnDirection) {
                 resultList.add(i);
                 directionCounter[direction]++;
-                if(directionCounter[direction]==numRelationsOnDirection){
+                if (directionCounter[direction] == numRelationsOnDirection) {
                     filledDirectionsCounter++;
                 }
-                if(filledDirectionsCounter==NUM_DIRECTION){
+                if (filledDirectionsCounter == NUM_DIRECTION) {
                     return resultList;
                 }
             }
@@ -337,12 +335,12 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return resultList;
     }
 
-    private List<SynsetRelation> findAllRelationBySynset(Synset synset, List<Long> lexicons, boolean synsetIsParent, int numRelationsOnDirection){
+    private List<SynsetRelation> findAllRelationBySynset(Synset synset, List<Long> lexicons, boolean synsetIsParent, int numRelationsOnDirection) {
         final String PARENT = "parent";
         final String CHILD = "child";
         String synsetIdColumn;
         String fetchColumn;
-        if(synsetIsParent){
+        if (synsetIsParent) {
             synsetIdColumn = PARENT;
             fetchColumn = CHILD;
         } else {
@@ -353,16 +351,16 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         List<Integer> indexesRelationToShow = getIndexRelationsToShow(allRelations, 4);
         Synset fetchedSynset;
         SynsetRelation relation;
-        for(SynsetRelation synsetRelation : allRelations){
-            if(synsetIsParent){
+        for (SynsetRelation synsetRelation : allRelations) {
+            if (synsetIsParent) {
                 synsetRelation.getChild().setIncomingRelations(new LinkedHashSet<>());
                 synsetRelation.getChild().setOutgoingRelations(new LinkedHashSet<>());
             }
         }
 
-        for(Integer i : indexesRelationToShow){
+        for (Integer i : indexesRelationToShow) {
             relation = allRelations.get(i);
-            if(synsetIsParent){
+            if (synsetIsParent) {
                 fetchedSynset = relation.getChild();
             } else {
                 fetchedSynset = relation.getParent();
@@ -406,30 +404,32 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return findSimpleRelations(synset, lexicons, true);
     }
 
-    private List<SynsetRelation> findSimpleRelations(Synset synset, List<Long> lexicons, boolean synsetIsChild){
+    private List<SynsetRelation> findSimpleRelations(Synset synset, List<Long> lexicons, boolean synsetIsChild) {
         final String CHILD = "child";
         final String PARENT = "parent";
         String synsetFetchColumn = PARENT;
-        if(synsetIsChild){
+        if (synsetIsChild) {
             synsetFetchColumn = CHILD;
         }
         Query query = getEntityManager().createQuery("SELECT new SynsetRelation(sr.id,sr.relationType.id, sr.parent.id, sr.child.id, sr.relationType.nodePosition) FROM SynsetRelation sr " +
-                "WHERE sr."+synsetFetchColumn+".id = :id " +
-                "AND sr."+synsetFetchColumn+".lexicon.id IN  (:lexicons)")
+                "WHERE sr." + synsetFetchColumn + ".id = :id " +
+                "AND sr." + synsetFetchColumn + ".lexicon.id IN  (:lexicons)")
                 .setParameter("id", synset.getId())
                 .setParameter("lexicons", lexicons);
         return query.getResultList();
     }
-    /** Metoda pobierająca relację synsetów, gdzie podany synset jest albo rodzicem, albo dzieckiem
+
+    /**
+     * Metoda pobierająca relację synsetów, gdzie podany synset jest albo rodzicem, albo dzieckiem
+     *
      * @param synset synset dla którego zostaną znalezione relacje
      * @return wszystkie relację podanego synsetu
      */
-    public List<SynsetRelation> findRelations(Synset synset){
+    public List<SynsetRelation> findRelations(Synset synset) {
         return getEntityManager().createQuery("SELECT sr.FROM SynsetRelation WHERE sr.parent.id =:id OR sr.child.id =:id", SynsetRelation.class)
                 .setParameter("id", synset.getId())
                 .getResultList();
     }
-
 
 
     @Override

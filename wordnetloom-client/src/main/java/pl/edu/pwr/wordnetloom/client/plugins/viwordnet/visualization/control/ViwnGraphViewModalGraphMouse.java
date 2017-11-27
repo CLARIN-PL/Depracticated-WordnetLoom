@@ -20,28 +20,21 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.control;
 import edu.uci.ics.jung.visualization.MultiLayerTransformer;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.AbstractModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.PickingGraphMousePlugin;
-import edu.uci.ics.jung.visualization.control.ScalingGraphMousePlugin;
-import edu.uci.ics.jung.visualization.control.TranslatingGraphMousePlugin;
-import edu.uci.ics.jung.visualization.control.ViewScalingControl;
-import java.awt.Cursor;
-import java.awt.ItemSelectable;
-import java.awt.event.InputEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.MouseEvent;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
+import edu.uci.ics.jung.visualization.control.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Service;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.MouseEvent;
+
 /**
  * @author amusial
- *
  */
 public final class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
         implements ModalGraphMouse, ItemSelectable {
@@ -55,7 +48,7 @@ public final class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
     /**
      * default constructor sets default scaling factor
      *
-     * @param vgvui graph view
+     * @param vgvui visualisation view
      */
     public ViwnGraphViewModalGraphMouse(ViwnGraphViewUI vgvui) {
         this(1.1f, 1 / 1.1f, vgvui);
@@ -64,9 +57,9 @@ public final class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
     /**
      * create an instance with passed values
      *
-     * @param in override value for scale in
-     * @param out override value for scale out
-     * @param vgvui viwn graph view ui
+     * @param in    override value for scale in
+     * @param out   override value for scale out
+     * @param vgvui viwn visualisation view ui
      */
     protected ViwnGraphViewModalGraphMouse(float in, float out, ViwnGraphViewUI vgvui) {
         super(in, out);
@@ -150,13 +143,12 @@ public final class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
     /**
      * ViwnPickingGraphMousePlugin is an extension of PickingGraphMousePlugin
      * Cursor changed... why JUNG do not allow this?
-     *
      */
     private class ViwnPickingGraphMousePlugin extends PickingGraphMousePlugin<ViwnNode, ViwnEdge> {
 
         public ViwnPickingGraphMousePlugin() {
             super(InputEvent.BUTTON1_MASK, InputEvent.BUTTON1_MASK | InputEvent.CTRL_MASK);
-            this.cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+            cursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
         }
 
         public void mouseEntered(MouseEvent e) {
@@ -180,7 +172,6 @@ public final class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
      * ViwnTranslatingGraphMousePlugin is a combination of
      * TranslatingGraphMousePlugin and AnimatedPickingGraphMousePlugin when
      * vertex is clicked it is centered when mouse is dragged, screen translates
-     *
      */
     private class ViwnTranslatingGraphMousePlugin extends TranslatingGraphMousePlugin {
 

@@ -9,7 +9,7 @@ import java.awt.event.MouseListener;
 
 /**
  * <b>MouseGraphClickListener</b> class provide satellite view
- * (<i>ViWordNetService.satelliteView</i>) refresh after clicking at graph
+ * (<i>ViWordNetService.satelliteView</i>) refresh after clicking at visualisation
  * view (<i>ViwnGraphViewUI.vv</i>) after any changes in structure of
  * <code>ViwnGraphViewUI</code> this could stop working properly, because of
  * many class castings and strong depending on ui hierarchy<br>

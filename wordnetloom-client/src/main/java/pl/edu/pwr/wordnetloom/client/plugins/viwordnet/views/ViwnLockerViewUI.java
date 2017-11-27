@@ -408,7 +408,7 @@ public class ViwnLockerViewUI extends AbstractViewUI
             if (elem instanceof ViwnNode) {
                 ViwnNode vn = (ViwnNode) elem;
 
-                // one node graph
+                // one node visualisation
                 Graph<ViwnNode, ViwnEdge> g = new DirectedSparseGraph<>();
                 g.addVertex(vn);
                 VisualizationViewer<ViwnNode, ViwnEdge> vv = new VisualizationViewer<>(new StaticLayout<>(g));

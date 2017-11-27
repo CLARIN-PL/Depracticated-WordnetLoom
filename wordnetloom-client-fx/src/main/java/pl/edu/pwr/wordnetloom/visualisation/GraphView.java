@@ -1,8 +1,9 @@
-package pl.edu.pwr.wordnetloom;
+package pl.edu.pwr.wordnetloom.visualisation;
 
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;
 
 @FXMLView
-public class PerspectiveView extends AbstractFxmlView {
+public class GraphView extends AbstractFxmlView {
+
 }

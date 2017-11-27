@@ -17,7 +17,6 @@ import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.collections15.Transformer;
-import org.hibernate.query.criteria.internal.expression.function.AggregationFunction;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.GraphChangeListener;
@@ -61,7 +60,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         VertexSelectionChangeListener<ViwnNode>, Loggable {
 
     /**
-     * A graph of synset and relations between synsets.
+     * A visualisation of synset and relations between synsets.
      */
     private final DirectedGraph<ViwnNode, ViwnEdge> forest = new DirectedSparseMultigraph<>();
 
@@ -77,7 +76,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     // change.
     protected Collection<SynsetSelectionChangeListener> synsetSelectionChangeListeners = new ArrayList<>();
 
-    // Collection of objects which listen for an event of graph changes
+    // Collection of objects which listen for an event of visualisation changes
     protected Collection<GraphChangeListener> graphChangeListeners = new ArrayList<>();
 
     private ViwnNode selectedNode = null;
@@ -94,7 +93,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     final int MAX_SYNSETS_SHOWN = 4;
     final int MIN_SYNSETS_IN_GROUP = 2;
 
-    /* Transient cache for graph biulding */
+    /* Transient cache for visualisation biulding */
     private HashMap<Long, DataEntry> entrySets = new HashMap<>();
 
     public void setEntrySets(HashMap<Long, DataEntry> entrySets) {
@@ -147,7 +146,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         entrySets.clear();
     }
 
-    /* End of transient cache for graph biulding */
+    /* End of transient cache for visualisation biulding */
     @Override
     public JComponent getRootComponent() {
         return null;
@@ -162,7 +161,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         content.removeAll();
         content.setLayout(new RiverLayout());
 
-        // Create a panel for graph visualisation.
+        // Create a panel for visualisation visualisation.
         JPanel graph;
 
         try {
@@ -264,11 +263,11 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * @param synset
      */
     public void refreshView(Synset synset) {
-        // Clear the graph.
+        // Clear the visualisation.
         clear();
 
         selectedNode = rootNode = new ViwnNodeSynset(synset, this);
-        ViwnNodeSynset rootSynsetNode = (ViwnNodeSynset)rootNode;
+        ViwnNodeSynset rootSynsetNode = (ViwnNodeSynset) rootNode;
         cache.put(synset.getId(), rootSynsetNode);
 
         vv.getRenderContext().setVertexFillPaintTransformer(
@@ -296,7 +295,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                 ((ViwnNodeSynset) rootNode).setState(dir,
                         ViwnNodeSynset.State.EXPANDED);
             }
-            if(dir != NodeDirection.IGNORE){
+            if (dir != NodeDirection.IGNORE) {
                 showRelationGUI(rootSynsetNode, dir);
             }
         }
@@ -465,7 +464,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     /**
-     * Recreate a graph layout. Currently fires graphChanged event, this should
+     * Recreate a visualisation layout. Currently fires graphChanged event, this should
      * be done somewhere else
      *
      * @author amusial
@@ -475,7 +474,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         graphChanged();
         /*
-         * this event above (graphChanged) should be fired only when graph
+         * this event above (graphChanged) should be fired only when visualisation
 		 * changes, and not in here where layout is recreated, it should be
 		 * fired when new nodes shows or some nodes hides...
          */
@@ -507,14 +506,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     /**
-     * deselects all graph nodes
+     * deselects all visualisation nodes
      */
     public void deselectAll() {
         vv.getPickedVertexState().clear();
     }
 
     /**
-     * scale graph to fill full visualization viewer space
+     * scale visualisation to fill full visualization viewer space
      *
      * @author amusial
      */
@@ -533,9 +532,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         if (vv.isShowing()) {
             vd = vv.getSize();
         }
-        // get graph layout size
+        // get visualisation layout size
         Dimension ld = vv.getGraphLayout().getSize();
-        // finally scale it if view bounds are different than graph layer bounds
+        // finally scale it if view bounds are different than visualisation layer bounds
         if (vd.equals(ld) == false) {
             float heightRatio = (float) (vd.getWidth() / ld.getWidth());
             float widthRatio = (float) (vd
@@ -779,7 +778,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         set.add(synset);
         synset.setSet(set);
 
-        // if this is first synset, add the set to the graph
+        // if this is first synset, add the set to the visualisation
         if (set.getSynsets().size() == 1) {
             forest.addVertex(set);
             addEdgeSynsSet((ViwnNodeSynset) synset.getSpawner(), set,
@@ -882,14 +881,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 //        }); //TODO to tylko tymczasowe rozwiązanie. Nalezy pozmieniać we wszystkich miejscach gdzie sa przechowywane relacje na liste, aby nie było trzeba ponownie sortować. Wystarczy pobrać dane z bazy
         int toShow = Math.min(MAX_SYNSETS_SHOWN, relations.size());
         // dodanie elementów, które będą wyświetlane
-        for(int i = 0; i < toShow; i++){
+        for (int i = 0; i < toShow; i++) {
             ViwnEdgeSynset edge = relations.get(i);
             ViwnNodeSynset node = loadSynsetNode(edge.getSynsetFrom());
-            if(node.equals(synsetNode)){
+            if (node.equals(synsetNode)) {
                 node = loadSynsetNode(edge.getSynsetTo());
             }
-            if(!forest.containsVertex(node)){
-                if(node.getSet() != null){
+            if (!forest.containsVertex(node)) {
+                if (node.getSet() != null) {
                     node.getSet().remove(node);
                     node.setSet(null);
                 }
@@ -899,18 +898,18 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             }
         }
         //dodanie elementów, które będą schowane
-        if(relations.size() > MAX_SYNSETS_SHOWN){
+        if (relations.size() > MAX_SYNSETS_SHOWN) {
 
         }
         ViwnNodeSet set = synsetNode.getSynsetSet(dir);
-        for(int i = toShow; i< relations.size(); i++){
+        for (int i = toShow; i < relations.size(); i++) {
             ViwnEdgeSynset edge = relations.get(i); //TODO refaktor
             ViwnNodeSynset node = loadSynsetNode(edge.getSynsetFrom());
-            if(node.equals(synsetNode)){
+            if (node.equals(synsetNode)) {
                 node = loadSynsetNode(edge.getSynsetTo());
             }
             if (!forest.containsVertex(node)) {
-                if(set.contains(node)){
+                if (set.contains(node)) {
                     continue;
                 }
                 node.setSpawner(synsetNode, dir);
@@ -920,24 +919,24 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
 
         //TODO ogarnąć co się stanie, jeśli set będzie pusty
-        if(!set.getSynsets().isEmpty()){
+        if (!set.getSynsets().isEmpty()) {
             set.setSpawner(synsetNode, dir);
             forest.addVertex(set);
             addEdgeSynsSet(synsetNode, set, dir);
         }
 
         List<ViwnNode> nodes = new ArrayList<>(forest.getVertices());
-        nodes.stream().filter((node)->((node instanceof ViwnNodeSynset))).forEachOrdered((node) ->addMissingRelations((ViwnNodeSynset) node));
+        nodes.stream().filter((node) -> ((node instanceof ViwnNodeSynset))).forEachOrdered((node) -> addMissingRelations((ViwnNodeSynset) node));
 
         vv.setVisible(true);
         checkAllStates();
     }
 
     /**
-     * Clear graph (removes all edges and nodes).
+     * Clear visualisation (removes all edges and nodes).
      */
     public void clear() {
-        // Lock the graph object
+        // Lock the visualisation object
         synchronized (forest) {
 
             new ArrayList<>(forest.getEdges()).forEach((o) -> {
@@ -1225,7 +1224,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     /**
-     * Invoke graph change events.
+     * Invoke visualisation change events.
      *
      * @author amusial
      */
@@ -1252,7 +1251,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     /**
-     * @return graph
+     * @return visualisation
      */
     public Graph<ViwnNode, ViwnEdge> getGraph() {
         return forest;
@@ -1311,7 +1310,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         vv.getRenderContext().getMultiLayerTransformer()
                 .getTransformer(Layer.LAYOUT)
                 .translate(p1.getX() - p2.getX(), p1.getY() - p2.getY());
-        /* fire graph changed event, do it somewhere else... */
+        /* fire visualisation changed event, do it somewhere else... */
         graphChanged();
     }
 

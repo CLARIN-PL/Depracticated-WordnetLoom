@@ -2,14 +2,16 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121"
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.pwr.wordnetloom.login.LoginController">
     <children>
         <ComboBox layoutX="342.0" layoutY="200.0" prefHeight="26.0" prefWidth="224.0"/>
-        <PasswordField fx:id="txtPassword" layoutX="342.0" layoutY="168.0" prefHeight="26.0" prefWidth="224.0"/>
+        <PasswordField fx:id="txtPassword" layoutX="342.0" layoutY="168.0" prefHeight="26.0" prefWidth="224.0"
+                       text="password"/>
         <Button layoutX="462.0" layoutY="232.0" mnemonicParsing="false" onAction="#login" prefHeight="26.0"
                 prefWidth="104.0" text="Button"/>
-        <TextField fx:id="txtLogin" layoutX="342.0" layoutY="136.0" prefHeight="26.0" prefWidth="224.0"/>
+        <TextField fx:id="txtLogin" layoutX="342.0" layoutY="136.0" prefHeight="26.0" prefWidth="224.0"
+                   text="admin@gmail.com"/>
         <Label layoutX="300.0" layoutY="141.0" text="Label"/>
         <Label layoutX="300.0" layoutY="173.0" text="Label"/>
         <Label layoutX="300.0" layoutY="205.0" text="Label"/>

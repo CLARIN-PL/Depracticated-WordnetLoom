@@ -30,27 +30,26 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.layout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Graph;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.map.LazyMap;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
- * TODO: This layout won't work with new version of graph (synset groups). The
+ * TODO: This layout won't work with new version of visualisation (synset groups). The
  * problem is about unchecked casts of ViwnEdge to ViwnEdgeSynset.
  *
  * @author Michał Marcińczuk (modification of TreeLayout)
  * @author Karlheinz Toni
  * @author Tom Nelson - converted to jung2
- *
  */
 public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
 
@@ -85,7 +84,7 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
     protected transient Point m_currentPoint = new Point();
 
     /**
-     * Creates an instance for the specified graph with default X and Y
+     * Creates an instance for the specified visualisation with default X and Y
      * distances.
      *
      * @param g
@@ -95,7 +94,7 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
     }
 
     /**
-     * Creates an instance for the specified graph and X distance with default Y
+     * Creates an instance for the specified visualisation and X distance with default Y
      * distance.
      *
      * @param g
@@ -106,7 +105,7 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
     }
 
     /**
-     * Creates an instance for the specified graph, X distance, and Y distance.
+     * Creates an instance for the specified visualisation, X distance, and Y distance.
      *
      * @param g
      * @param distx
@@ -120,13 +119,13 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
             throw new IllegalArgumentException(
                     "X and Y distances must each be positive");
         }
-        this.graph = g;
-        this.distX = distx;
-        this.distY = disty;
+        graph = g;
+        distX = distx;
+        distY = disty;
     }
 
     public void buildTree(ViwnNode rootNode) {
-        this.m_currentPoint = new Point(200, 200);
+        m_currentPoint = new Point(200, 200);
         calculateDimensionX(rootNode);
         buildTreeR(rootNode);
     }
@@ -136,7 +135,7 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
         if (!alreadyDone.contains(v)) {
             alreadyDone.add(v);
 
-            this.setCurrentPositionFor(v);
+            setCurrentPositionFor(v);
 
             int sizeXofCurrent = 0;
             if (basePositions.containsKey(v)) {
@@ -166,13 +165,13 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
 
             // Layout major children below the node
             for (ViwnNode element : majorVertex) {
-                sizeXofChild = this.basePositions.get(element);
+                sizeXofChild = basePositions.get(element);
                 startXofChild = lastX + sizeXofChild / 2;
 
-                this.m_currentPoint.y += this.distY;
-                this.m_currentPoint.x = startXofChild;
+                m_currentPoint.y += distY;
+                m_currentPoint.x = startXofChild;
                 buildTreeR(element);
-                this.m_currentPoint.y -= this.distY;
+                m_currentPoint.y -= distY;
 
                 lastX = lastX + sizeXofChild + distX;
             }
@@ -180,12 +179,12 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
             // Layout minor children on the right
             lastY = startY;
             for (ViwnNode element : minorVertex) {
-                this.m_currentPoint.x = startX + this.distX;
-                this.m_currentPoint.y = lastY;
+                m_currentPoint.x = startX + distX;
+                m_currentPoint.y = lastY;
 
                 buildTreeR(element);
 
-                lastY += this.distY / 2;
+                lastY += distY / 2;
             }
 
             // Divide accessors according to relation type (minor and major)
@@ -202,28 +201,28 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
 
             // Layout major children below the node
             lastX = startX;
-            this.m_currentPoint.y = startY;
+            m_currentPoint.y = startY;
             for (ViwnNode element : majorVertexParent) {
                 // sizeXofChild = this.basePositions.get(element);
                 startXofChild = lastX;
 
-                this.m_currentPoint.y -= this.distY;
-                this.m_currentPoint.x = lastX;
+                m_currentPoint.y -= distY;
+                m_currentPoint.x = lastX;
                 buildTreeR(element);
-                this.m_currentPoint.y += this.distY;
+                m_currentPoint.y += distY;
 
                 lastX = lastX + distX;
             }
 
             // Layout minor children on the right
             lastY = startY;
-            this.m_currentPoint.x += this.distX;
+            m_currentPoint.x += distX;
             for (ViwnNode element : minorVertexParent) {
-                this.m_currentPoint.y = lastY;
-                this.m_currentPoint.x = startX - this.distX;
+                m_currentPoint.y = lastY;
+                m_currentPoint.x = startX - distX;
                 buildTreeR(element);
 
-                lastY += this.distY / 2;
+                lastY += distY / 2;
             }
         }
     }
@@ -325,7 +324,7 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
         if (graph instanceof Forest) {
             this.graph = (Forest<ViwnNode, ViwnEdge>) graph;
         } else {
-            throw new IllegalArgumentException("graph must be a Forest");
+            throw new IllegalArgumentException("visualisation must be a Forest");
         }
     }
 

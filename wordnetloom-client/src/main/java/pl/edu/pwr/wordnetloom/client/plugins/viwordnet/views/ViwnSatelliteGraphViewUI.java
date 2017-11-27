@@ -106,7 +106,7 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
         rootPanel = content;
         content.setLayout(new RiverLayout());
 
-        // Create and add a panel for graph visualization.
+        // Create and add a panel for visualisation visualization.
         content.add(getSatelliteGraphViewer(), "hfill vfill");
     }
 
@@ -122,10 +122,10 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
      * refresh satellite view
      * <p>
      * TODO: do it better than recreating satellite, probably wont fix TODO:
-     * graph should be centered in the view, centered at the center of the view
-     * not at the root or selected node, probably done, need testing TODO: graph
+     * visualisation should be centered in the view, centered at the center of the view
+     * not at the root or selected node, probably done, need testing TODO: visualisation
      * should be resized to fill full size of view, something is wrong when
-     * graph scale is >1, fixed by double scaling
+     * visualisation scale is >1, fixed by double scaling
      */
     public void refreshViewUI() {
         // System.out.println("refresh satellite view UI");
@@ -152,9 +152,9 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
         if (satellite.isShowing()) {
             vd = satellite.getSize();
         }
-        // get graph layout size
+        // get visualisation layout size
         Dimension ld = satellite.getGraphLayout().getSize();
-        // finally scale it if view bounds are different than graph layer bounds
+        // finally scale it if view bounds are different than visualisation layer bounds
         if (vd.equals(ld) == false) {
             float heightRatio = (float) (vd.getWidth() / ld.getWidth()), widthRatio = (float) (vd
                     .getHeight() / ld.getHeight());
@@ -176,7 +176,7 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
                 Layer.LAYOUT).translate(lvc.getX() - q.getX(),
                 lvc.getY() - q.getY());
 
-        // Create and add a panel for graph visualization.
+        // Create and add a panel for visualisation visualization.
         rootPanel.add(getSatelliteGraphViewer(), "hfill vfill");
 
         // force repaint of the view

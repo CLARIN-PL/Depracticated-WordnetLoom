@@ -5,9 +5,9 @@ import com.google.common.eventbus.Subscribe;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.scene.layout.Pane;
 import org.springframework.beans.factory.annotation.Autowired;
-import pl.edu.pwr.wordnetloom.PerspectiveView;
 import pl.edu.pwr.wordnetloom.login.LoginView;
 import pl.edu.pwr.wordnetloom.login.events.LoginSuccessEvent;
+import pl.edu.pwr.wordnetloom.perspective.PerspectiveView;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

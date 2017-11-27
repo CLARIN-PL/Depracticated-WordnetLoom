@@ -15,7 +15,7 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import java.util.*;
 
 /**
- * [View] VisualizesactiveGraphView a graph.
+ * [View] VisualizesactiveGraphView a visualisation.
  */
 public class ViwnGraphView extends AbstractView {
 
