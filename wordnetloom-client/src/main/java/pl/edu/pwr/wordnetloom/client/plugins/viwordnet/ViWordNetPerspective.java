@@ -226,8 +226,8 @@ public class ViWordNetPerspective extends AbstractPerspective implements
     }
 
     /**
-     * main view property, listen for moves of divider between graph views and
-     * single second graph view
+     * main view property, listen for moves of divider between visualisation views and
+     * single second visualisation view
      */
     @Override
     public void propertyChange(PropertyChangeEvent e) {

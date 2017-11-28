@@ -6,6 +6,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButtonPanel;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
@@ -34,9 +35,9 @@ public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         buildCheckBoxesForAvailablePartsOfSpeech();
-
-        add("br center", btnOk);
-        add("", btnCancel);
+        addPartOfSpeech();
+        addButtonsPanel();
+        
     }
 
     private void buildCheckBoxesForAvailablePartsOfSpeech() {
@@ -50,11 +51,17 @@ public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
 
     private void setPartsOfSpeech(Set<PartOfSpeech> list) {
         list.forEach(p -> checkboxes.get(p.getId()).setSelected(true));
-        addPartOfSpeech();
     }
 
     private void addPartOfSpeech() {
         checkboxes.forEach((k, v) -> add("br", v));
+    }
+
+    public void addButtonsPanel() {
+
+        MButtonPanel buttonPanel = new MButtonPanel(btnOk, btnCancel)
+                .withHorizontalLayout();
+        add("br center", buttonPanel);
     }
 
     private Set<PartOfSpeech> getSelected() {

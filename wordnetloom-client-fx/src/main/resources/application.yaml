@@ -1,0 +1,9 @@
+spring:
+    jmx: 
+        enabled: false
+    main:
+        banner-mode: "off"
+javafx:
+    stage:
+        resizable: false
+    title: WordnetLoom 3.0

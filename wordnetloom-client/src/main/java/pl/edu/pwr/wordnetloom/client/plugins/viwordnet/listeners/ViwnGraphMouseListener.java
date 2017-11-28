@@ -2,21 +2,22 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners;
 
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.control.GraphMouseListener;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
+
 /**
  * class ViwnGraphMouseListener implements GraphMouseListener and handles mouse
- * actions in graph panel
+ * actions in visualisation panel
  */
 public class ViwnGraphMouseListener implements GraphMouseListener<ViwnNode> {
 
     private final ViwnGraphViewUI owner;
 
     /**
-     * @param owner ViwnGraphViewUI owner of this graph listener
+     * @param owner ViwnGraphViewUI owner of this visualisation listener
      */
     public ViwnGraphMouseListener(ViwnGraphViewUI owner) {
         this.owner = owner;
@@ -38,7 +39,7 @@ public class ViwnGraphMouseListener implements GraphMouseListener<ViwnNode> {
         Point2D p1 = (Point2D) owner.getLayout().transform(v).clone();
 
         // propagate event to nodes
-        v.mouseClick(me, this.owner);
+        v.mouseClick(me, owner);
 
         // find new node location
         Point2D p2 = (Point2D) owner.getLayout().transform(v).clone();

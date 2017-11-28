@@ -22,7 +22,6 @@ import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
@@ -448,7 +447,7 @@ public class ViWordNetService extends AbstractService implements
                 }
                 //pobieranie synsetu z wcześniej pobranej mapy, aby otrzymać obiekt, który ma relacje (nie są leniwymi kolekcjami)
                 DataEntry dataEntry = entries.get(rootSynset.getId());
-                if(dataEntry != null){
+                if (dataEntry != null) {
                     rootSynset = dataEntry.getSynset();
                 } //TODO sprawdzić, czy nie można w inny sposób rozwiązać leniwych relacji, które spowodują błąd w LoadSynsetTask.
                 LoadSynsetTask task = new LoadSynsetTask(rootSynset, unit, my_tag);
@@ -611,11 +610,11 @@ public class ViWordNetService extends AbstractService implements
                 return vn;
             }
         }
-        // in case of failure, recreate the graph
+        // in case of failure, recreate the visualisation
         if (graphViews.size() < GRAPH_VIEWS_LIMIT) {
             if (DialogBox.showYesNo("Nie znaleziono źródłowej wizualizacji synsetu, otworzyć nową?") == DialogBox.YES) {
                 addGraphView();
-                // reload active graph view
+                // reload active visualisation view
                 activeGraphView.loadSynset(((ViwnNodeSynset) vn).getSynset());
                 // change tab title and tool tip
                 ((ViWordNetPerspective) workbench.getActivePerspective())
@@ -628,8 +627,8 @@ public class ViWordNetService extends AbstractService implements
     }
 
     /**
-     * Add new graph view tab (<code>ViwnGraphView</code>), and set it to active
-     * graph view tab refresh other views of this perspective
+     * Add new visualisation view tab (<code>ViwnGraphView</code>), and set it to active
+     * visualisation view tab refresh other views of this perspective
      */
     public void addGraphView() {
         if (graphViews.size() < GRAPH_VIEWS_LIMIT) {
@@ -662,7 +661,7 @@ public class ViWordNetService extends AbstractService implements
     }
 
     /**
-     * sets activeGraphView to graph view which <code>ViwnGraphViewUI</code>
+     * sets activeGraphView to visualisation view which <code>ViwnGraphViewUI</code>
      * produces panel jp
      *
      * @param jp (JPanel) panel from view
@@ -728,7 +727,7 @@ public class ViWordNetService extends AbstractService implements
     }
 
     /**
-     * gets graph view which <code>ViwnGraphViewUI</code> produces panel jp
+     * gets visualisation view which <code>ViwnGraphViewUI</code> produces panel jp
      *
      * @param jp (JPanel) panel from view
      * @return <code>ViwnGraphView</code> which ViwnGraphViewUI produces panel
@@ -744,7 +743,7 @@ public class ViWordNetService extends AbstractService implements
     }
 
     /**
-     * @return number of graph views
+     * @return number of visualisation views
      */
     public int graphViewsCount() {
         return graphViews.size();

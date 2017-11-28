@@ -62,7 +62,7 @@ public class Labels {
     public static final String OPEN_IN_NEW_TAB = LocalisationManager.getInstance().getResource("label.open.in.new.tab");
     public static final String PATH_TO_HIPERONIM = LocalisationManager.getInstance().getResource("label.path.to.hiperonim");
     public static final String CREATE_RELATION_WITH = LocalisationManager.getInstance().getResource("label.create.relation.with");
-    public static final String SAVE_GRAPH_TO_FILE_COLON = LocalisationManager.getInstance().getResource("label.save.graph.to.file.colon");
+    public static final String SAVE_GRAPH_TO_FILE_COLON = LocalisationManager.getInstance().getResource("label.save.visualisation.to.file.colon");
     public static final String WINDOW = LocalisationManager.getInstance().getResource("label.window");
     public static final String SETTINGS = LocalisationManager.getInstance().getResource("label.settings");
     public static final String DEFAULT_SETTINGS = LocalisationManager.getInstance().getResource("label.default.settings");

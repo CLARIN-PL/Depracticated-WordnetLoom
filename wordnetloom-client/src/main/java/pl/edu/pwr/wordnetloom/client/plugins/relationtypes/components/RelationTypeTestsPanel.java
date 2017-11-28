@@ -29,7 +29,7 @@ public class RelationTypeTestsPanel extends WebPanel {
         tests = new WebList();
 
         MButtonPanel buttonsPanel = new MButtonPanel(moveUpButton, moveDownButton,
-                addButton, addEditButton, removeButton)
+                addButton, editButton, removeButton)
                 .withVerticalLayout()
                 .withAllButtonsEnabled(true)
                 .withMargin(10);
@@ -73,9 +73,9 @@ public class RelationTypeTestsPanel extends WebPanel {
             .withDefaultIconSize()
             .withActionListener(e -> addTest());
 
-    private final MButton addEditButton = new MButton()
+    private final MButton editButton = new MButton()
             .withToolTip(Hints.EDIT_SELECTED_TEST)
-            .withIcon(FontAwesome.PLUS_SQUARE)
+            .withIcon(FontAwesome.PENCIL)
             .withDefaultIconSize()
             .withActionListener(e -> addEditTest());
 

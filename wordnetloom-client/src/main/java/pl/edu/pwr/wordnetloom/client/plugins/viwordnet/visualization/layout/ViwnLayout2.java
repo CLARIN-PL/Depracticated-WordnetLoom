@@ -19,44 +19,34 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.layout;
 
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.map.LazyMap;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeAlphabeticComparator;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.*;
+import java.util.List;
+
 /**
  * @author amusial
- *
  */
 public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
 
     /**
      * total size of layout
-     *
      */
     protected Dimension size = new Dimension(100, 100);
 
     /**
-     * graph to draw
-     *
+     * visualisation to draw
      */
     protected Graph<ViwnNode, ViwnEdge> graph;
 
     /**
      * nodes and its locations
-     *
      */
     protected Map<ViwnNode, Point2D> locations = LazyMap.decorate(new HashMap<ViwnNode, Point2D>(), (ViwnNode arg0) -> new Point2D.Double());
 
@@ -64,13 +54,11 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
 
     /**
      * default distance from node to node at x axis
-     *
      */
     protected final static int DEFAULT_DISTX = 80;
 
     /**
      * default distance from node to node at y axis
-     *
      */
     protected final static int DEFAULT_DISTY = 30;
 
@@ -78,17 +66,17 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
     protected int distY = DEFAULT_DISTY;
 
     /**
-     * Creates an instance for the specified graph with default X and Y
+     * Creates an instance for the specified visualisation with default X and Y
      * distances.
      *
-     * @param g graph to draw
+     * @param g visualisation to draw
      */
     public ViwnLayout2(Graph<ViwnNode, ViwnEdge> g) {
         this(g, DEFAULT_DISTX, DEFAULT_DISTY);
     }
 
     /**
-     * Creates an instance for the specified graph, X distance, and Y distance.
+     * Creates an instance for the specified visualisation, X distance, and Y distance.
      *
      * @param g
      * @param distx
@@ -101,9 +89,9 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
         if (distx < 1 || disty < 1) {
             throw new IllegalArgumentException("X and Y distances must each be positive");
         }
-        this.graph = g;
-        this.distX = distx;
-        this.distY = disty;
+        graph = g;
+        distX = distx;
+        distY = disty;
     }
 
     @Override
@@ -132,8 +120,7 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
     }
 
     /**
-     * at the moment this feature is not implemented in this graph layout
-     *
+     * at the moment this feature is not implemented in this visualisation layout
      */
     @Override
     public void lock(ViwnNode v, boolean state) {
@@ -142,7 +129,7 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
     // TODO Check
     @Override
     public void reset() {
-        this.alreadyDone.clear();
+        alreadyDone.clear();
         ViwnNode center = findRoot();
         if (center != null) {
             mapNodes2Points(center, null, null);
@@ -150,10 +137,9 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
     }
 
     /**
-     * method tries to find root node of the graph
+     * method tries to find root node of the visualisation
      *
-     * @return root node of graph or null if cannot find it
-     *
+     * @return root node of visualisation or null if cannot find it
      */
     private ViwnNode findRoot() {
         for (ViwnNode n : graph.getVertices()) {
@@ -186,13 +172,12 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
 
     @Override
     public void setSize(Dimension d) {
-        this.size = d;
+        size = d;
     }
 
     /**
      * @param arg0
      * @return location of the node
-     *
      */
     @Override
     public Point2D transform(ViwnNode arg0) {
@@ -207,7 +192,7 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
     }
 
     /**
-     * set graph nodes locations
+     * set visualisation nodes locations
      *
      * @param center main, central node
      */
@@ -216,18 +201,19 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
     }
 
     /*
-	 * to allow user permanently change node placing: 1. when node(s) is taken
+     * to allow user permanently change node placing: 1. when node(s) is taken
 	 * from set of nodes - refresh layout 2. when relation was added - refresh
 	 * layout after expanding a node - place only expanded and its children
 	 * after reducing a node?
      */
+
     /**
-     * set graph nodes locations
-     *
-     * TODO: bug fix #1 cycles in graph causes stack overflow, wont fix
+     * set visualisation nodes locations
+     * <p>
+     * TODO: bug fix #1 cycles in visualisation causes stack overflow, wont fix
      *
      * @param center main, central node
-     * @param loc location in which central node should stay, null for root node
+     * @param loc    location in which central node should stay, null for root node
      * @param placed nodes mapped in previous method calls
      * @return mapped in current call
      */
@@ -256,7 +242,7 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
 
             // now, time to place its neighbors
             // Divide neighbors according to relation type, and future place
-            // in graph
+            // in visualisation
 
 //            Set<ViwnNode> sbottom = new HashSet<>();
 //            Set<ViwnNode> stop = new HashSet<>();
@@ -339,7 +325,7 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
                                 - Math.sqrt(ile)
                                 * distY
                                 * Math.cos(Math.PI
-                                        * ((ile / 2D - i - 0.5D) / ile))));
+                                * ((ile / 2D - i - 0.5D) / ile))));
                 // mark as mapped
                 actual.add(vn);
 
@@ -365,7 +351,7 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
                         new Point2D.Double((p.x + Math.sqrt(ile)
                                 * distY
                                 * Math.cos(Math.PI
-                                        * ((ile / 2D - i - 0.5D) / ile))), p.y));
+                                * ((ile / 2D - i - 0.5D) / ile))), p.y));
                 // mark as mapped
                 actual.add(vn);
 
@@ -444,12 +430,11 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
 
     /**
      * @param col collection of nodes which location should be corrected
-     * @param dx x axis correction
-     * @param dy y axis correction
-     *
+     * @param dx  x axis correction
+     * @param dy  y axis correction
      */
     protected void correctNode2PointMapping(Collection<ViwnNode> col, int dx,
-            int dy) {
+                                            int dy) {
         col.stream().forEach((vn) -> {
             Point2D current = locations.get(vn);
             setLocation(vn, new Point2D.Double(current.getX() + dx, current.getY() + dy));
@@ -459,12 +444,11 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
     /**
      * @param parent parent of central node of collection to correct
      * @param center central node of set to correct
-     * @param upper parent node neighbors
-     * @param lower central node neighbors, nodes to correct
-     *
+     * @param upper  parent node neighbors
+     * @param lower  central node neighbors, nodes to correct
      */
     protected void correctSubGraphMapping(ViwnNode parent, ViwnNode center,
-            Collection<ViwnNode> upper, Collection<ViwnNode> lower) {
+                                          Collection<ViwnNode> upper, Collection<ViwnNode> lower) {
         // calculate direction vector from parent to center
         Point2D par = locations.get(parent);
         Point2D cen = locations.get(center);
@@ -500,9 +484,7 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
     /**
      * @param center center of subgraph to get
      * @return subgraph from node center
-     *
      */
-    @SuppressWarnings("unused")
     private Set<ViwnNode> getSubGraphOf(ViwnNode center) {
         Set<ViwnNode> ret = new HashSet<>();
         ret.add(center);
@@ -519,10 +501,9 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
     }
 
     /**
-     * @param col collection of vertices to check
+     * @param col    collection of vertices to check
      * @param bounds bounds in which vertices should not be
      * @return true if at least one node from col is inside bounds
-     *
      */
     protected boolean isAnyInsideBounds(Collection<ViwnNode> col, int[] bounds) {
         for (ViwnNode vn : col) {
@@ -537,9 +518,8 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
     }
 
     /**
-     * @param col collection of graph nodes
-     * @return graph dimension
-     *
+     * @param col collection of visualisation nodes
+     * @return visualisation dimension
      */
     protected Dimension calcSetSize(Collection<ViwnNode> col) {
         if (col.size() > 0) {
@@ -570,11 +550,11 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
 
     /**
      * @param central central node
-     * @param col collection of already mapped vertices
+     * @param col     collection of already mapped vertices
      * @return table of 4 integers minx, maxx, miny, maxy
      */
     protected int[] findMappedGraphBoundaries(ViwnNode central,
-            Collection<ViwnNode> col) {
+                                              Collection<ViwnNode> col) {
 
         // boundary coordinates
         int minx, maxx, miny, maxy;
@@ -599,16 +579,16 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
         }
 
         return new int[]{minx - distX, maxx + distX, miny - distY,
-            maxy + distY};
+                maxy + distY};
     }
 
     /*
-	 * place all vertices in positive coordinates set size value to contain full
-	 * graph in it
+     * place all vertices in positive coordinates set size value to contain full
+	 * visualisation in it
 	 *
 	 * @param toCorrect collection of nodes which position should be corrected
 	 *
-	 * @param anode node from graph
+	 * @param anode node from visualisation
      */
     protected void correctGraph(Collection<ViwnNode> toCorrect, ViwnNode anode) {
 
@@ -637,17 +617,16 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
         // replace nodes
         correctNode2PointMapping(toCorrect, -minx + distX, -miny + distY);
 
-        // set graph size
+        // set visualisation size
         size = new Dimension((maxx - minx) + 2 * distX, (maxy - miny) + 2 * distY);
 
     }
 
     /**
      * place all vertices in positive coordinates set size value to contain full
-     * graph in it
+     * visualisation in it
      *
      * @param toCorrect collection of nodes which position should be corrected
-     *
      */
     protected void correctGraph(Collection<ViwnNode> toCorrect) {
 
@@ -676,7 +655,7 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
         // replace nodes
         correctNode2PointMapping(toCorrect, -minx + distX, -miny + distY);
 
-        // set graph size
+        // set visualisation size
         size = new Dimension((maxx - minx) + 2 * distX, (maxy - miny) + 2 * distY);
 
     }
