@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane prefHeight="400.0" prefWidth="302.0" xmlns="http://javafx.com/javafx/8.0.121"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="pl.edu.pwr.wordnetloom.ui.search.results.SearchResultListController">
+    <children>
+        <ListView fx:id="lstResults" layoutX="28.0" layoutY="23.0" prefHeight="331.0" prefWidth="229.0"/>
+    </children>
+</AnchorPane>
