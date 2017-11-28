@@ -203,12 +203,11 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         }
 
         for(ViwnEdgeSynset edge : relationsTo){
-            if(edge.getRelationType() != null){ // po usunięciu błędnych relacji usunąć tego ifa
-                direction = edge.getRelationType().getNodePosition();
+            if(edge.getRelationType() != null){ //TODO po usunięciu błędnych relacji usunąć tego ifa
+                direction = edge.getRelationType().getNodePosition().getOpposite();
                 relations[direction.ordinal()].add(edge);
             }
         }
-
 
 //        Iterator<ViwnEdgeSynset> it = relationsFrom.iterator();
 //        while (it.hasNext()) {
@@ -283,7 +282,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
                     addEdgeSynsetToRelations(relation, direction);
                 }
                 for(SynsetRelation relation : dataEntry.getRelationsTo(direction)){
-                    addEdgeSynsetToRelations(relation, direction);
+                    addEdgeSynsetToRelations(relation, direction.getOpposite());
                 }
             }
         }
@@ -547,5 +546,4 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         }
         return true;
     }
-
 }
