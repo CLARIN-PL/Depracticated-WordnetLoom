@@ -66,13 +66,13 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
      * default distance from node to node at x axis
      *
      */
-    protected final static int DEFAULT_DISTX = 110;
+    protected final static int DEFAULT_DISTX = 80;
 
     /**
      * default distance from node to node at y axis
      *
      */
-    protected final static int DEFAULT_DISTY = 35;
+    protected final static int DEFAULT_DISTY = 30;
 
     protected int distX = DEFAULT_DISTX;
     protected int distY = DEFAULT_DISTY;

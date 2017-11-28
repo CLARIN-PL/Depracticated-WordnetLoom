@@ -919,7 +919,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             }
         }
 
-        //TODO ogarnąć co się stanie, jeśli set będzie pusty
+        //TODO ogarnąć co się stanie
         if(!set.getSynsets().isEmpty()){
             set.setSpawner(synsetNode, dir);
             forest.addVertex(set);
