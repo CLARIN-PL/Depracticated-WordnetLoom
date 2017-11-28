@@ -8,7 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 import org.springframework.beans.factory.annotation.Autowired;
-import pl.edu.pwr.wordnetloom.application.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.application.service.RemoteService;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.ui.search.results.events.ShowGraphEvent;
 import pl.edu.pwr.wordnetloom.ui.search.sense.events.SenseSearchEvent;

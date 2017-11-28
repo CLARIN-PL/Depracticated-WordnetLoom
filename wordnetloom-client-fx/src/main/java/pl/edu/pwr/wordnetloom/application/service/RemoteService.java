@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.application.remote;
+package pl.edu.pwr.wordnetloom.application.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

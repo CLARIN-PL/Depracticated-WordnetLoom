@@ -10,7 +10,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
-import pl.edu.pwr.wordnetloom.application.security.SecurityService;
+import pl.edu.pwr.wordnetloom.application.service.SecurityService;
 import pl.edu.pwr.wordnetloom.application.utils.Language;
 import pl.edu.pwr.wordnetloom.application.utils.Loggable;
 import pl.edu.pwr.wordnetloom.ui.login.events.LoginSuccessEvent;
@@ -36,11 +36,10 @@ public class LoginController implements Loggable, Initializable {
     private SecurityService service;
 
     @Autowired
-    public void LoginController(SecurityService s, EventBus bus) {
-        service = s;
+    public void LoginController(SecurityService srv, EventBus bus) {
+        service = srv;
         eventBus = bus;
     }
-
 
     public void login(Event event) throws IOException {
 

@@ -1,9 +1,10 @@
-package pl.edu.pwr.wordnetloom.application.remote;
+package pl.edu.pwr.wordnetloom.application.service;
 
 import org.jboss.ejb.client.EJBClientConfiguration;
 import org.jboss.ejb.client.EJBClientContext;
 import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.wordnetloom.application.utils.Loggable;
 
@@ -20,8 +21,12 @@ public class EJBConnectionProviderService implements Loggable {
 
     private String login;
     private String password;
-    private String host = "localhost";
-    private String port = "8080";
+
+    @Value("${service.host}")
+    private String host;
+
+    @Value("${service.port}")
+    private String port;
 
     public <E> E lookupForService(Class<E> remoteClass) {
         E bean = null;
@@ -49,16 +54,16 @@ public class EJBConnectionProviderService implements Loggable {
     private Properties getEjbProperties() {
         Properties ejbProperties = new Properties();
         ejbProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
-        ejbProperties.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
+        ejbProperties.put("service.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
         ejbProperties.put("jboss.naming.client.ejb.context", "true");
-        ejbProperties.put("remote.connections", "default");
-        ejbProperties.put("remote.connection.default.host", host);
-        ejbProperties.put("remote.connection.default.port", port);
-        ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_DISALLOWED_MECHANISMS", "JBOSS-LOCAL-USER");
-        ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_POLICY_NOPLAINTEXT", "false");
-        ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SSL_STARTTLS", "false");
-        ejbProperties.put("remote.connection.default.username", login);
-        ejbProperties.put("remote.connection.default.password", password);
+        ejbProperties.put("service.connections", "default");
+        ejbProperties.put("service.connection.default.host", host);
+        ejbProperties.put("service.connection.default.port", port);
+        ejbProperties.put("service.connection.default.connect.options.org.xnio.Options.SASL_DISALLOWED_MECHANISMS", "JBOSS-LOCAL-USER");
+        ejbProperties.put("service.connection.default.connect.options.org.xnio.Options.SASL_POLICY_NOPLAINTEXT", "false");
+        ejbProperties.put("service.connection.default.connect.options.org.xnio.Options.SSL_STARTTLS", "false");
+        ejbProperties.put("service.connection.default.username", login);
+        ejbProperties.put("service.connection.default.password", password);
         return ejbProperties;
     }
 

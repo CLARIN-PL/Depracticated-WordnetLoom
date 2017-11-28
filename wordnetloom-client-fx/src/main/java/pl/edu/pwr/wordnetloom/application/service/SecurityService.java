@@ -1,8 +1,7 @@
-package pl.edu.pwr.wordnetloom.application.security;
+package pl.edu.pwr.wordnetloom.application.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.edu.pwr.wordnetloom.application.remote.EJBConnectionProviderService;
 import pl.edu.pwr.wordnetloom.application.utils.Language;
 import pl.edu.pwr.wordnetloom.user.model.Role;
 import pl.edu.pwr.wordnetloom.user.model.User;
@@ -11,8 +10,8 @@ import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
 @Service
 public class SecurityService {
 
-    private static User user;
-    private static Language language;
+    private User user;
+    private Language language;
 
     private final EJBConnectionProviderService service;
 

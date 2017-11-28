@@ -8,7 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
 import org.springframework.beans.factory.annotation.Autowired;
-import pl.edu.pwr.wordnetloom.application.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.application.service.RemoteService;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.ui.search.results.events.ShowGraphEvent;
@@ -33,7 +33,7 @@ public class GraphController implements Initializable {
 
     private SwingNode swingNode = new SwingNode();
 
-    private RemoteService service;
+    private final RemoteService service;
 
     @Autowired
     public GraphController(final RemoteService s, final EventBus eventBus) {
