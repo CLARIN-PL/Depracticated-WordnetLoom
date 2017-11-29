@@ -197,18 +197,28 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         }
 
         NodeDirection direction;
+
+        Set<ViwnEdgeSynset>[] edgesSet = new HashSet[4]; // set zapobiegający powstawaniu powtórzeń
+        for(int i = 0; i<edgesSet.length; i++){
+            edgesSet[i] = new HashSet<>();
+        }
         for(ViwnEdgeSynset edge : relationsFrom){
             direction = edge.getRelationType().getNodePosition();
-            relations[direction.ordinal()].add(edge); //TODO sprawdzić, czy nie będzie potrzebne sprawdzanie, czy już dany typ relacji jest na liście
+//            relations[direction.ordinal()].add(edge); //TODO sprawdzić, czy nie będzie potrzebne sprawdzanie, czy już dany typ relacji jest na liście
+            edgesSet[direction.ordinal()].add(edge);
         }
 
         for(ViwnEdgeSynset edge : relationsTo){
             if(edge.getRelationType() != null){ //TODO po usunięciu błędnych relacji usunąć tego ifa
                 direction = edge.getRelationType().getNodePosition().getOpposite();
-                relations[direction.ordinal()].add(edge);
+//                relations[direction.ordinal()].add(edge);
+                edgesSet[direction.ordinal()].add(edge);
             }
         }
 
+        for(int i=0; i<edgesSet.length; i++){
+            relations[i] = new ArrayList<>(edgesSet[i]);
+        }
 //        Iterator<ViwnEdgeSynset> it = relationsFrom.iterator();
 //        while (it.hasNext()) {
 //            ViwnEdgeSynset e = it.next();
