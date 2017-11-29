@@ -41,10 +41,10 @@ public class DbMigrator {
         flyway.migrate();
 
         // aby ustawił kierunki relacji z pliku, odkomentować i ustawić ścieżkę do pliku disp_relations.cfg
-//        try {
-//            TempRelationsDirectionsUpdater.run(path, dataSource.getConnection());
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            TempRelationsDirectionsUpdater.run("/home/rdyszlewski/Projekty/wordnetloom3/WordnetLoom/wordnetloom-client/src/main/resources/disp_relations.cfg", dataSource.getConnection());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

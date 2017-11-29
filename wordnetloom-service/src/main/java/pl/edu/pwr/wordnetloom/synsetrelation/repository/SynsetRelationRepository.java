@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.synsetrelation.repository;
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -321,6 +322,9 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
 
         for (int i = 0; i < synsetsList.size(); i++) {
             int direction = synsetsList.get(i).getRelationType().getNodePosition().ordinal();
+            if(direction == NodeDirection.IGNORE.ordinal()){
+                continue;
+            }
             if (directionCounter[direction] != numRelationsOnDirection) {
                 resultList.add(i);
                 directionCounter[direction]++;
