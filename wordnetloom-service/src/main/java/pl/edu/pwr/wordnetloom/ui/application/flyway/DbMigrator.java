@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +38,7 @@ public class DbMigrator {
 
         // aby ustawił kierunki relacji z pliku, odkomentować i ustawić ścieżkę do pliku disp_relations.cfg
 //        try {
-//            TempRelationsDirectionsUpdater.run(path, dataSource.getConnection());
+//            TempRelationsDirectionsUpdater.run("/home/rdyszlewski/Projekty/wordnetloom3/WordnetLoom/wordnetloom-client/src/main/resources/disp_relations.cfg", dataSource.getConnection());
 //        } catch (SQLException e) {
 //            e.printStackTrace();
 //        }
