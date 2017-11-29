@@ -8,5 +8,5 @@ javafx:
         resizable: false
     title: WordnetLoom 3.0
 remote:
-    host: localhost
+    host: 127.0.0.1
     port: 8080

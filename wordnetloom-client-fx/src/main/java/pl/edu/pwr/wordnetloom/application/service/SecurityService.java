@@ -3,12 +3,13 @@ package pl.edu.pwr.wordnetloom.application.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.edu.pwr.wordnetloom.application.utils.Language;
+import pl.edu.pwr.wordnetloom.application.utils.Loggable;
 import pl.edu.pwr.wordnetloom.user.model.Role;
 import pl.edu.pwr.wordnetloom.user.model.User;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
 
 @Service
-public class SecurityService {
+public class SecurityService implements Loggable {
 
     private User user;
     private Language language;
@@ -34,6 +35,7 @@ public class SecurityService {
                 }
             }
         } catch (Exception ex) {
+            logger().warn("Login failed", ex);
             service.destroyInstance();
             user = null;
             language = null;
