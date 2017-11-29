@@ -7,3 +7,6 @@ javafx:
     stage:
         resizable: false
     title: WordnetLoom 3.0
+remote:
+    host: localhost
+    port: 8080

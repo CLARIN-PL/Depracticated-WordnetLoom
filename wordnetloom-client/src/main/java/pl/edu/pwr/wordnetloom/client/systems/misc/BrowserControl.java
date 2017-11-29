@@ -31,7 +31,7 @@ public class BrowserControl implements Loggable {
 
     private static volatile BrowserControl instance = null;
     private static final String UNIX_PATH = "netscape";        // przegladarka dla linux
-    private static final String UNIX_FLAG = "-remote openURL"; // komenda dla uruchomionej przegladarki
+    private static final String UNIX_FLAG = "-service openURL"; // komenda dla uruchomionej przegladarki
 
     /**
      * Uruchomienie przegladarki
@@ -55,11 +55,11 @@ public class BrowserControl implements Loggable {
             if (isWindowsPlatform()) {
                 Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
             } else {
-                // Under Unix, Netscape has to be running for the "-remote"
+                // Under Unix, Netscape has to be running for the "-service"
                 // command to work.  So, we try sending the command and
                 // check for an exit value.  If the exit command is 0,
                 // it worked, otherwise we need to start the browser.
-                // cmd = 'netscape -remote openURL(http://www.javaworld.com)'
+                // cmd = 'netscape -service openURL(http://www.javaworld.com)'
                 Process p = Runtime.getRuntime().exec(UNIX_PATH + " " + UNIX_FLAG + "(" + url + ")");
                 try {
                     // wait for exit code -- if it's 0, command worked, otherwise we need to start the browser up.

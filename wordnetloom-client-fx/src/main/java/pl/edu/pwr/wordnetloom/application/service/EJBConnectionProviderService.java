@@ -1,13 +1,12 @@
-package pl.edu.pwr.wordnetloom.client.remote;
+package pl.edu.pwr.wordnetloom.application.service;
 
 import org.jboss.ejb.client.EJBClientConfiguration;
 import org.jboss.ejb.client.EJBClientContext;
 import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
-import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
-import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
-import pl.edu.pwr.wordnetloom.user.model.User;
-import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import pl.edu.pwr.wordnetloom.application.utils.Loggable;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -15,27 +14,19 @@ import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.Properties;
 
-public class RemoteConnectionProvider implements Loggable {
-
-    private static RemoteConnectionProvider instance;
+@Service
+public class EJBConnectionProviderService implements Loggable {
 
     private Context initialContext;
 
-    private UserSessionData userSessionData;
+    private String login;
+    private String password;
 
-    private RemoteConnectionProvider() {
-    }
+    @Value("${service.host}")
+    private String host;
 
-    public static RemoteConnectionProvider getInstance() {
-        if (instance == null) {
-            synchronized (RemoteConnectionProvider.class) {
-                if (instance == null) {
-                    instance = new RemoteConnectionProvider();
-                }
-            }
-        }
-        return instance;
-    }
+    @Value("${service.port}")
+    private String port;
 
     public <E> E lookupForService(Class<E> remoteClass) {
         E bean = null;
@@ -43,7 +34,7 @@ public class RemoteConnectionProvider implements Loggable {
             Context context = getInitialContext();
             String lookupName = getLookupName(remoteClass, "Bean");
             bean = (E) context.lookup(lookupName);
-        } catch (NamingException | IOException ex) {
+        } catch (Exception ex) {
             logger().error("Service Lookup error:", ex);
         }
         return bean;
@@ -61,10 +52,6 @@ public class RemoteConnectionProvider implements Loggable {
     }
 
     private Properties getEjbProperties() {
-
-        String host = System.getProperty("wordnetloom.server.host") != null ? System.getProperty("wordnetloom.server.host") : "127.0.0.1";
-        String port = System.getProperty("wordnetloom.server.port") != null ? System.getProperty("wordnetloom.server.host") : "8080";
-
         Properties ejbProperties = new Properties();
         ejbProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
         ejbProperties.put("service.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
@@ -75,8 +62,8 @@ public class RemoteConnectionProvider implements Loggable {
         ejbProperties.put("service.connection.default.connect.options.org.xnio.Options.SASL_DISALLOWED_MECHANISMS", "JBOSS-LOCAL-USER");
         ejbProperties.put("service.connection.default.connect.options.org.xnio.Options.SASL_POLICY_NOPLAINTEXT", "false");
         ejbProperties.put("service.connection.default.connect.options.org.xnio.Options.SSL_STARTTLS", "false");
-        ejbProperties.put("service.connection.default.username", userSessionData.getUsername());
-        ejbProperties.put("service.connection.default.password", userSessionData.getPassword());
+        ejbProperties.put("service.connection.default.username", login);
+        ejbProperties.put("service.connection.default.password", password);
         return ejbProperties;
     }
 
@@ -97,23 +84,13 @@ public class RemoteConnectionProvider implements Loggable {
         return name.toString();
     }
 
-    public void setUserSessionData(UserSessionData data) {
-        userSessionData = data;
-    }
-
-    public User getUser() {
-        if (userSessionData != null && userSessionData.getUser() == null) {
-            User u = lookupForService(UserServiceRemote.class).findUserByEmail(userSessionData.getUsername());
-            userSessionData = new UserSessionData(userSessionData, u);
-        }
-        return userSessionData.getUser();
-    }
-
-    public String getLanguage() {
-        return userSessionData.getLanguage();
+    public void setLoginAndPassword(String login, String password) {
+        this.login = login;
+        this.password = password;
     }
 
     public void destroyInstance() {
+        setLoginAndPassword(null, null);
         initialContext = null;
     }
 }

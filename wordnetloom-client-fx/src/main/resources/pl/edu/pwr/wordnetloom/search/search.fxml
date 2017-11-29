@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.scene.control.TabPane?>
-<TabPane prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.121"
-         tabClosingPolicy="UNAVAILABLE"
-         xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.pwr.wordnetloom.search.SearchController">
-</TabPane>
