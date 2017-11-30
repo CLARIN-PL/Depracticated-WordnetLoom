@@ -59,6 +59,24 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     protected State[] states = new State[NodeDirection.values().length];
 
+    //TODO zrefaktorować to
+    /** Określa, stronę z której zostały w pełni pobrane relacje */
+    private boolean[] fullRelation = new boolean[NodeDirection.values().length];
+
+    public boolean isFullRelation(NodeDirection direction){
+        return fullRelation[direction.ordinal()];
+    }
+
+    public void setFullRelation(NodeDirection direction, boolean isFullRelation){
+        fullRelation[direction.ordinal()] = isFullRelation;
+    }
+
+    public void setAllFullRelation(boolean isFullRelation){
+        for(int i=0; i < fullRelation.length; i++){
+            fullRelation[i] = isFullRelation;
+        }
+    }
+
     public ViwnNodeSynset(Synset synset, ViwnGraphViewUI ui) {
         this.synset = synset;
         this.ui = ui;
@@ -211,6 +229,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         for(ViwnEdgeSynset edge : relationsTo){
             if(edge.getRelationType() != null){ //TODO po usunięciu błędnych relacji usunąć tego ifa
                 direction = edge.getRelationType().getNodePosition().getOpposite();
+
 //                relations[direction.ordinal()].add(edge);
                 edgesSet[direction.ordinal()].add(edge);
             }
@@ -292,19 +311,22 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
                     addEdgeSynsetToRelations(relation, direction);
                 }
                 for(SynsetRelation relation : dataEntry.getRelationsTo(direction)){
-                    addEdgeSynsetToRelations(relation, direction.getOpposite());
+//                    if(relation.getRelationType().getAutoReverse()){
+//                        addEdgeSynsetToRelations(relation, direction);
+//                    } else {
+                        addEdgeSynsetToRelations(relation, direction.getOpposite());
+//                    }
                 }
             }
         }
     }
 
-    private void addEdgeSynsetToRelations(SynsetRelation relation, NodeDirection direction)
-    {
+    private void addEdgeSynsetToRelations(SynsetRelation relation, NodeDirection direction) {
         ViwnEdgeSynset edge = new ViwnEdgeSynset(relation);
         relations[direction.ordinal()].add(edge);
     }
 
-    private void setup() {
+    public void setup() {
         edges_to_this_.clear();
         edges_from_this_.clear();
 
@@ -312,6 +334,9 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 //        Set<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
 //        Set<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());
 
+        for(int i=0; i < relations.length; i++){
+            relations[i].clear();
+        }
         DataEntry dataEntry = ui.getEntrySetFor(synset.getId());
         if(dataEntry != null){
             addSynsetEdges(dataEntry);

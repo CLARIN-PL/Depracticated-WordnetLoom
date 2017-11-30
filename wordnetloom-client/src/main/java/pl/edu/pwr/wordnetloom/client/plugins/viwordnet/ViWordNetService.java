@@ -441,7 +441,7 @@ public class ViWordNetService extends AbstractService implements
             Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getLexiconsIds());
             getActiveGraphView().getUI().releaseDataSetCache();
             if (rootSynset != null) {
-                Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getLexiconsIds());
+                Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getLexiconsIds(), NodeDirection.values());
                 if (entries != null) {
                     getActiveGraphView().getUI().setEntrySets((HashMap<Long, DataEntry>) entries);
                 }

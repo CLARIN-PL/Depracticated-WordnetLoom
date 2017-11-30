@@ -221,7 +221,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return path;
     }
 
-    private List<SynsetRelation> getRelationsFrom(Synset synset, List<Long> lexicons, String joinColumn, String synsetIdColumn) {
+    private List<SynsetRelation> getRelationsFrom(Synset synset, List<Long> lexicons, String joinColumn, String synsetIdColumn,NodeDirection[] directions) {
 //        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 //        CriteriaQuery<SynsetRelation> query = criteriaBuilder.createQuery(SynsetRelation.class);
 //        Root<SynsetRelation> relationRoot = query.from(SynsetRelation.class);
@@ -253,10 +253,13 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 "LEFT JOIN FETCH synset.senses AS sense " +
                 "LEFT JOIN FETCH sense.domain " +
                 "LEFT JOIN FETCH sense.lexicon " +
+                "LEFT JOIN FETCH sr.relationType AS type " +
                 "WHERE sr." + synsetIdColumn + ".id = :id " +
+                "AND type.nodePosition IN (:directions)" +
                 "AND sense.synsetPosition = 0 " +
                 "ORDER BY sense.word.word")
-                .setParameter("id", synset.getId());
+                .setParameter("id", synset.getId())
+                .setParameter("directions", Arrays.asList(directions));
 
         List<SynsetRelation> resultList = query.getResultList();
         return resultList;
@@ -339,7 +342,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return resultList;
     }
 
-    private List<SynsetRelation> findAllRelationBySynset(Synset synset, List<Long> lexicons, boolean synsetIsParent, int numRelationsOnDirection) {
+    private List<SynsetRelation> findAllRelationBySynset(Synset synset, List<Long> lexicons, boolean synsetIsParent, int numRelationsOnDirection, NodeDirection[] directions) {
         final String PARENT = "parent";
         final String CHILD = "child";
         String synsetIdColumn;
@@ -351,8 +354,8 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
             synsetIdColumn = CHILD;
             fetchColumn = PARENT;
         }
-        List<SynsetRelation> allRelations = getRelationsFrom(synset, lexicons, fetchColumn, synsetIdColumn);
-        List<Integer> indexesRelationToShow = getIndexRelationsToShow(allRelations, 4);
+        List<SynsetRelation> allRelations = getRelationsFrom(synset, lexicons, fetchColumn, synsetIdColumn, directions);
+        List<Integer> indexesRelationToShow = getIndexRelationsToShow(allRelations, 4); //TODO poprawić parametr
         Synset fetchedSynset;
         SynsetRelation relation;
         for (SynsetRelation synsetRelation : allRelations) {
@@ -377,13 +380,13 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return allRelations;
     }
 
-    public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons) {
-        return findAllRelationBySynset(synset, lexicons, false, 4);
+    public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
+        return findAllRelationBySynset(synset, lexicons, false, 4, directions);
 
     }
 
-    public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons) {
-        return findAllRelationBySynset(synset, lexicons, true, 4);
+    public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
+        return findAllRelationBySynset(synset, lexicons, true, 4, directions);
 
 
         //TO było dobre

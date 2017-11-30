@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.service.impl;
 
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
@@ -129,13 +130,13 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     }
 
     @Override
-    public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons) {
-        return synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons);
+    public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
+        return synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons, directions);
     }
 
     @Override
-    public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons) {
-        return synsetRelationRepository.findRelationsWhereSynsetIsParent(synset,lexicons);
+    public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
+        return synsetRelationRepository.findRelationsWhereSynsetIsParent(synset,lexicons, directions);
     }
 
     @Override

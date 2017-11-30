@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.service;
 
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
@@ -44,9 +45,9 @@ public interface SynsetRelationServiceRemote {
 
     List<Synset> findTopPathInSynsets(Synset synset, Long rtype);
 
-    List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons);
+    List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons, NodeDirection[] directions);
 
-    List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons);
+    List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons, NodeDirection[] directions);
 
     List<SynsetRelation> findSimpleRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons);
 

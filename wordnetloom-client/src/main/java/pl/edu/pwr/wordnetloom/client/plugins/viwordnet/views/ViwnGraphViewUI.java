@@ -31,6 +31,8 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.layout.Viwn
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.AstrideLabelRenderer;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexFillColor;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexRenderer;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -42,6 +44,7 @@ import se.datadosen.component.RiverLayout;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -851,7 +854,20 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         setSelectedNode(synsetNode);
         for (NodeDirection dir : dirs) {
-            showRelationGUI(synsetNode, dir);
+            //TODO wsadzić to do jakieś metody
+            if(!synsetNode.isFullRelation(dir)){ // jeżeli synset nie ma pobranych w pełni relacji dla danego kierunku
+
+                Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synsetNode.getSynset(), LexiconManager.getInstance().getLexiconsIds(), dirs);
+                addToEntrySet(entries);
+                synsetNode.setFullRelation(dir, true);
+                DataEntry entry = entries.get(synsetNode.getId());
+                ViwnNodeSynset node = new ViwnNodeSynset(entry.getSynset(), this);
+                showRelationGUI(node, dir);
+            } else {
+                showRelationGUI(synsetNode, dir);
+            }
+
+
         }
 
         SwingUtilities.invokeLater(() -> {
@@ -861,6 +877,11 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
             workbench.setBusy(false);
         });
+    }
+
+    private void addToEntrySet(Map<Long,DataEntry> entries)
+    {
+        entrySets.putAll(entries);
     }
 
     /**
@@ -899,7 +920,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
         //dodanie elementów, które będą schowane
         if (relations.size() > MAX_SYNSETS_SHOWN) {
-
+            //TODO tutaj coś miało być
         }
         ViwnNodeSet set = synsetNode.getSynsetSet(dir);
         for (int i = toShow; i < relations.size(); i++) {
@@ -939,13 +960,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         // Lock the visualisation object
         synchronized (forest) {
 
-            new ArrayList<>(forest.getEdges()).forEach((o) -> {
-                forest.removeEdge(o);
-            });
+            new ArrayList<>(forest.getEdges()).forEach((o) -> forest.removeEdge(o));
 
-            new ArrayList<>(forest.getVertices()).forEach((o) -> {
-                forest.removeVertex(o);
-            });
+            new ArrayList<>(forest.getVertices()).forEach((o) -> forest.removeVertex(o));
         }
     }
 

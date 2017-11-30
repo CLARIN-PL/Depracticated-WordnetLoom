@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.synset.service.impl;
 
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -53,8 +54,8 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     }
 
     @Override
-    public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons) {
-        return synsetRepository.prepareCacheForRootNode(synset.getId(), lexicons, 4);
+    public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
+        return synsetRepository.prepareCacheForRootNode(synset.getId(), lexicons, 4, directions);
 
 //        Map<Long, DataEntry> map = new HashMap<>();
 //

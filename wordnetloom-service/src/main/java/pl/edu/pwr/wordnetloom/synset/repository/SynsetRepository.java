@@ -740,14 +740,14 @@ public class SynsetRepository extends GenericRepository<Synset> {
     }
 
 
-    public Map<Long, DataEntry> prepareCacheForRootNode(final Long synsetId, final List<Long> lexicons, int numSynsetOnDirection) {
+    public Map<Long, DataEntry> prepareCacheForRootNode(final Long synsetId, final List<Long> lexicons, int numSynsetOnDirection, NodeDirection[] directions) {
         //TODO trzeba jakoś wykorzystać tutaj liczbę pokazywanych synsetów
         Map<Long, DataEntry> result = new HashMap<>();
         // łączenie synsetu z jednostką, aby uzyskać opis (wyraz, domene, wariant)
         Synset synset = findSynsetWithRelationsAandSenseById(synsetId);
         // pobranie relacji dla synsetu. Relacje pobierane są wraz z połączonymi synsetami oraz ich opisami (wyraz, domena, wariant)
-        List<SynsetRelation> relationsFrom = synsetRelationRepository.findRelationsWhereSynsetIsParent(synset, lexicons);
-        List<SynsetRelation> relationsTo = synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons);
+        List<SynsetRelation> relationsFrom = synsetRelationRepository.findRelationsWhereSynsetIsParent(synset, lexicons, directions);
+        List<SynsetRelation> relationsTo = synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons, directions);
         synset.setOutgoingRelations(new LinkedHashSet<>(relationsFrom));
         synset.setIncomingRelations(new LinkedHashSet<>(relationsTo));
         DataEntry dataEntry = buildDataEntry(synset);
