@@ -60,13 +60,13 @@ public class SenseSpecification {
 						case Etymological_root:
 							criteriaList.add(SenseYiddishExtensionSpecification.byEtymologicalRoot(dto.getLemma())
 									.toPredicate(root, query, cb)); break;
-						case Latin_Philological_Transcritpiton:
+						case Latin_Philological_Transcription:
 							criteriaList.add(SenseYiddishExtensionSpecification.byTranscritpiton(dto.getLemma())
 									.toPredicate(root, query, cb)); break;
-						case Latin_YIVO_Transcritption:
+						case Latin_YIVO_Transcription:
 							criteriaList.add(SenseYiddishExtensionSpecification.byTranscritpiton(dto.getLemma())
 									.toPredicate(root, query, cb)); break;
-						case Phonetic_Transcritpiton:
+						case Phonetic_Transcription:
 							criteriaList.add(SenseYiddishExtensionSpecification.byTranscritpiton(dto.getLemma())
 									.toPredicate(root, query, cb)); break;
 						case Prefix:

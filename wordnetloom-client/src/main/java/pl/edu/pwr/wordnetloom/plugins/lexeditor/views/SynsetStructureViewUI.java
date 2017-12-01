@@ -632,12 +632,9 @@ public class SynsetStructureViewUI extends AbstractViewUI
             JPanel pan = new JPanel();
             lui.initialize(pan);
             lui.refreshData(unit);
-            lui.closeWindow(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    refreshData(lastSynset);
-                    dia.dispose();
-                }
+            lui.closeWindow(e1 -> {
+                refreshData(lastSynset);
+                dia.dispose();
             });
             dia.setLocationRelativeTo(workbench.getFrame());
             dia.setContentPane(pan);

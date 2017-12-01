@@ -171,35 +171,31 @@ public class ParticlesPanel extends JPanel {
 		btnRemove.setHorizontalAlignment(SwingConstants.RIGHT);
 		panel.add(btnRemove, "10, 4");
 
-		btnNewButton.addActionListener(new ActionListener() {
+		btnNewButton.addActionListener(e -> {
+            Particle p = null;
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Particle p = null;
-
-				if (ParticleElementType.interfix == particleType.getSelectedItem()
-						&& particle.getSelectedItem() instanceof InterfixDictionary) {
-					p = new InterfixParticle((InterfixDictionary) particle.getSelectedItem());
-					listModel.addElement(p);
-				}
-				if (ParticleElementType.suffix == particleType.getSelectedItem()
-						&& particle.getSelectedItem() instanceof SuffixDictionary) {
-					p = new SuffixParticle((SuffixDictionary) particle.getSelectedItem());
-					listModel.addElement(p);
-				}
-				if (ParticleElementType.prefix == particleType.getSelectedItem()
-						&& particle.getSelectedItem() instanceof PrefixDictionary) {
-					p = new PrefixParticle((PrefixDictionary) particle.getSelectedItem());
-					listModel.addElement(p);
-				}
-				if (ParticleElementType.root == particleType.getSelectedItem()) {
-					p = new RootParticle(root.getText());
-					listModel.addElement(p);
-				}
-				p.setExtension(ex);
-				RemoteUtils.lexicalUnitRemote.saveParticle(p);
-			}
-		});
+            if (ParticleElementType.interfix == particleType.getSelectedItem()
+                    && particle.getSelectedItem() instanceof InterfixDictionary) {
+                p = new InterfixParticle((InterfixDictionary) particle.getSelectedItem());
+                listModel.addElement(p);
+            }
+            if (ParticleElementType.suffix == particleType.getSelectedItem()
+                    && particle.getSelectedItem() instanceof SuffixDictionary) {
+                p = new SuffixParticle((SuffixDictionary) particle.getSelectedItem());
+                listModel.addElement(p);
+            }
+            if (ParticleElementType.prefix == particleType.getSelectedItem()
+                    && particle.getSelectedItem() instanceof PrefixDictionary) {
+                p = new PrefixParticle((PrefixDictionary) particle.getSelectedItem());
+                listModel.addElement(p);
+            }
+            if (ParticleElementType.root == particleType.getSelectedItem()) {
+                p = new RootParticle(root.getText());
+                listModel.addElement(p);
+            }
+            p.setExtension(ex);
+            RemoteUtils.lexicalUnitRemote.saveParticle(p);
+        });
 
 		btnRemove.addActionListener(e -> {
             if (list.getSelectedValue() != null) {

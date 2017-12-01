@@ -35,6 +35,7 @@ public class ViwnEdgeSense extends ViwnEdge {
     public static HashMap<Long, Color> relationColors = new HashMap<>();
 
     private final SenseRelation relation;
+
     private ViwnNodeSense firstSense = null;
     private ViwnNodeSense secondSense = null;
 
@@ -63,11 +64,11 @@ public class ViwnEdgeSense extends ViwnEdge {
     }
 
     public void setFirstSense(ViwnNodeSense s1) {
-        firstSense = s1;
+        this.firstSense = s1;
     }
 
     public void setSecondSense(ViwnNodeSense s2) {
-        secondSense = s2;
+        this.secondSense = s2;
     }
 
     public ViwnNodeSense getFirstSense() {
@@ -158,11 +159,16 @@ public class ViwnEdgeSense extends ViwnEdge {
 
         ViwnEdgeSense that = (ViwnEdgeSense) o;
 
-        return relation != null ? relation.equals(that.relation) : that.relation == null;
+        if (relation != null ? !relation.equals(that.relation) : that.relation != null) return false;
+        if (firstSense != null ? !firstSense.equals(that.firstSense) : that.firstSense != null) return false;
+        return secondSense != null ? secondSense.equals(that.secondSense) : that.secondSense == null;
     }
 
     @Override
     public int hashCode() {
-        return relation != null ? relation.hashCode() : 0;
+        int result = relation != null ? relation.hashCode() : 0;
+        result = 31 * result + (firstSense != null ? firstSense.hashCode() : 0);
+        result = 31 * result + (secondSense != null ? secondSense.hashCode() : 0);
+        return result;
     }
 }

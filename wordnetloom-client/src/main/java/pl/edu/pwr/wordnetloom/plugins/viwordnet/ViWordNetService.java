@@ -531,6 +531,12 @@ public class ViWordNetService extends AbstractService
             synsetStructureView.doAction(synset.getSynset(), 1);
             synsetPropertiesView.doAction(synset.getSynset(), 1);
         }
+        if(node != null && node instanceof  ViwnNodeSense){
+            ViwnNodeSense sense = (ViwnNodeSense) node;
+            Synset synset = RemoteUtils.synsetRemote.fetchSynsetForSense(sense.getSense(), LexiconManager.getInstance().getLexicons());
+            synsetStructureView.doAction(synset, 1);
+            synsetPropertiesView.doAction(synset, 1);
+        }
     }
 
     public void doAction(Object object, int tag) {

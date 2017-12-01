@@ -3,8 +3,6 @@ package pl.edu.pwr.wordnetloom.plugins.lexeditor.panel;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.List;
 
 import javax.swing.JCheckBox;
@@ -308,10 +306,10 @@ public abstract class CriteriaPanel extends JPanel {
 		ComboBoxPlain<SearchType> combo = new ComboBoxPlain<>(new CustomDescription<SearchType>("Lemma", null));
 		combo.addItem(SearchType.Yiddish_Spelling.name(), SearchType.Yiddish_Spelling);
 		combo.addItem(SearchType.YIVO_Spelling.name(), SearchType.YIVO_Spelling);
-		combo.addItem(SearchType.Latin_Philological_Transcritpiton.name(),
-				SearchType.Latin_Philological_Transcritpiton);
-		combo.addItem(SearchType.Latin_YIVO_Transcritption.name(), SearchType.Latin_YIVO_Transcritption);
-		combo.addItem(SearchType.Phonetic_Transcritpiton.name(), SearchType.Phonetic_Transcritpiton);
+		combo.addItem(SearchType.Latin_Philological_Transcription.name(),
+				SearchType.Latin_Philological_Transcription);
+		combo.addItem(SearchType.Latin_YIVO_Transcription.name(), SearchType.Latin_YIVO_Transcription);
+		combo.addItem(SearchType.Phonetic_Transcription.name(), SearchType.Phonetic_Transcription);
 		combo.addItem(SearchType.Etymological_root.name(), SearchType.Etymological_root);
 		combo.addItem(SearchType.Prefix.name(), SearchType.Prefix);
 		combo.addItem(SearchType.Interfix.name(), SearchType.Interfix);

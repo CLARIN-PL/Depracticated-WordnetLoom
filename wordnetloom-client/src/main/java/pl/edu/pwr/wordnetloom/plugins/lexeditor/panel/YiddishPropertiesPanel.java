@@ -147,8 +147,11 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 
 	public YiddishPropertiesPanel(final LexicalUnitPropertiesPanel parent, final YiddishSenseExtension extension) {
 		this.parent = parent;
-		this.yiddish = extension;
-
+		if(extension.getId() == null){
+			this.yiddish = RemoteUtils.lexicalUnitRemote.save(extension);
+		}else {
+			this.yiddish = extension;
+		}
 		setLayout(new FormLayout(new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("default:grow"), },
 				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC,
 						RowSpec.decode("max(25dlu;default)"), FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
@@ -244,7 +247,7 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 		JLabel lblYivoSpelling = new JLabel("  YIVO spelling:");
 		formPanel.add(lblYivoSpelling, "1, 1");
 
-		JLabel lblLatinSpelling = new JLabel("  Latin spelling:");
+		JLabel lblLatinSpelling = new JLabel("  Philological spelling:");
 		formPanel.add(lblLatinSpelling, "1, 3");
 
 		yivoSpelling = new TextFieldPlain("");
@@ -435,7 +438,7 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 		context.setWrapStyleWord(true);
 		contextScrollPane.setViewportView(context);
 		
-		particlesPanel = new ParticlesPanel(extension);
+		particlesPanel = new ParticlesPanel(yiddish);
 		particlesPanel.getBtnNewButton().addActionListener(this);
 		add(particlesPanel, "2, 8, fill, fill");
 
@@ -482,12 +485,13 @@ public class YiddishPropertiesPanel extends JPanel implements CaretListener, Act
 		}
 	}
 
-	public void save() {
+	public YiddishSenseExtension save() {
 		YiddishSenseExtension yse = bindData();
 		yse = RemoteUtils.lexicalUnitRemote.save(yse);
 		if (yiddish.getId() == null) {
 			yiddish.setId(yse.getId());
 		}
+		return yse;
 	}
 
 	@Override

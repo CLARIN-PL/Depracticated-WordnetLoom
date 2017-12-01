@@ -768,7 +768,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements VertexSelectionCh
         ArrayList<ViwnNodeSense> changed = new ArrayList<>();
         for (Direction dir : Direction.values())
             for (ViwnEdgeSense e : sense.getRelation(dir)) {
-                ViwnNodeSense inner = null;
+                ViwnNodeSense inner;
                 if (!forest.containsEdge(e)) {
                     if (sense == senseCache.get(e.getChild()))
                         inner = senseCache.get(e.getParent());
