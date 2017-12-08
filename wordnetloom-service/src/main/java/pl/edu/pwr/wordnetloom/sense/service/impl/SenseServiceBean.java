@@ -126,4 +126,8 @@ public class SenseServiceBean implements SenseServiceLocal {
         return senseRepository.findHeadSenseOfSynset(synsetId);
     }
 
+    @Override
+    public Sense fetchSense(Long senseId) {
+        return senseRepository.fetchSense(senseId);
+    }
 }

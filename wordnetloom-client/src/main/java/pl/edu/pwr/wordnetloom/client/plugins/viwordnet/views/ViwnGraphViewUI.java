@@ -550,29 +550,36 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
     /**
      * @param node
-     * @param rel
+     * @param direction
      */
-    public void checkState(ViwnNodeSynset node, NodeDirection rel) {
-        node.setState(rel, ViwnNodeSynset.State.NOT_EXPANDED);
+    public void checkState(ViwnNodeSynset node, NodeDirection direction) {
+        node.setState(direction, ViwnNodeSynset.State.NOT_EXPANDED);
         boolean all_ok = true;
 
-        for (ViwnEdgeSynset e : node.getRelation(rel)) {
-            ViwnNodeSynset other = cache.get(e.getParent());
-            if (other != null && other.equals(node)) {
+        ViwnNodeSynset other;
+        for (ViwnEdgeSynset e : node.getRelation(direction)) {
+            if(e.getParent().equals(node.getId())) {
                 other = cache.get(e.getChild());
+            } else {
+                other = cache.get(e.getParent());
             }
 
-            if (forest.getEdges().contains(e)) {
-                node.setState(rel, ViwnNodeSynset.State.SEMI_EXPANDED);
-            } else if (!node.getSynsetSet(rel).getSynsets().contains(other)) {
+//            if (forest.getEdges().contains(e)) {
+//                node.setState(direction, ViwnNodeSynset.State.SEMI_EXPANDED);
+//            } else if (!node.getSynsetSet(direction).getSynsets().contains(other)) {
+//                all_ok = false;
+//            }
+            if(forest.containsVertex(other)){
+                node.setState(direction, ViwnNodeSynset.State.SEMI_EXPANDED);
+            } else if(!node.getSynsetSet(direction).getSynsets().contains(other)){
                 all_ok = false;
             }
         }
 
         if (all_ok) {
-            if (forest.containsVertex(node.getSynsetSet(rel))
-                    || node.getSynsetSet(rel).getSynsets().isEmpty()) {
-                node.setState(rel, ViwnNodeSynset.State.EXPANDED);
+            if (forest.containsVertex(node.getSynsetSet(direction))
+                    || node.getSynsetSet(direction).getSynsets().isEmpty()) {
+                node.setState(direction, ViwnNodeSynset.State.EXPANDED);
             }
         }
     }
@@ -713,7 +720,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     private void addSynsetFromSet_(ViwnNodeSynset synset) {
         synset.setSet(null);
         forest.addVertex(synset);
-
+//        addMissingRelations(synset);
         ViwnNodeSynset spawner = (ViwnNodeSynset) synset.getSpawner();
         ViwnNodeSet set = getSetFrom(synset);
 
@@ -728,27 +735,27 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             forest.removeVertex(set);
         }
 
-        Collection<ViwnNodeSynset> changed = new ArrayList<>();
+//        Collection<ViwnNodeSynset> changed = new ArrayList<>();
+//
+//        for (ViwnNode node : forest.getVertices()) {
+//            if (node instanceof ViwnNodeSynset) {
+//                changed.addAll(addMissingRelations((ViwnNodeSynset) node));
+//            }
+//        }
+//
+//
+//        Iterator<ViwnNodeSynset> iter = changed.iterator();
+//        while (iter.hasNext()) {
+//            ViwnNodeSynset node = iter.next();
+//            for (NodeDirection rclass : NodeDirection.values()) {
+//                checkState(node, rclass);
+//            }
+//        }
 
-        for (ViwnNode node : forest.getVertices()) {
-            if (node instanceof ViwnNodeSynset) {
-                changed.addAll(addMissingRelations((ViwnNodeSynset) node));
-            }
-        }
 
-        {
-            Iterator<ViwnNodeSynset> iter = changed.iterator();
-            while (iter.hasNext()) {
-                ViwnNodeSynset node = iter.next();
-                for (NodeDirection rclass : NodeDirection.values()) {
-                    checkState(node, rclass);
-                }
-            }
-        }
-
-        for (NodeDirection dir : NodeDirection.values()) {
-            checkState(synset, dir);
-        }
+//        for (NodeDirection dir : NodeDirection.values()) {
+//            checkState(synset, dir);
+//        }
     }
 
     /**
@@ -845,30 +852,21 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
     }
 
-    public void showRelation(ViwnNodeSynset synsetNode,
-                             NodeDirection[] dirs) {
-
-        SwingUtilities.invokeLater(() -> {
-            workbench.setBusy(true);
-        });
+    public void showRelation(ViwnNodeSynset synsetNode, NodeDirection[] dirs) {
+        SwingUtilities.invokeLater(() -> workbench.setBusy(true));
 
         setSelectedNode(synsetNode);
         for (NodeDirection dir : dirs) {
             //TODO wsadzić to do jakieś metody
-            if(!synsetNode.isFullRelation(dir)){ // jeżeli synset nie ma pobranych w pełni relacji dla danego kierunku
-
+            if (!synsetNode.isFullRelation(dir)) { // jeżeli synset nie ma pobranych w pełni relacji dla danego kierunku
                 Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synsetNode.getSynset(), LexiconManager.getInstance().getLexiconsIds(), dirs);
-                addToEntrySet(entries);
+                addToEntrySet(entries); //TODO, sprawdzić, czy nie da rady zrobić tego bez dodawania elementów do entries
                 synsetNode.setFullRelation(dir, true);
-                DataEntry entry = entries.get(synsetNode.getId());
-                ViwnNodeSynset node = new ViwnNodeSynset(entry.getSynset(), this);
-                showRelationGUI(node, dir);
-            } else {
-                showRelationGUI(synsetNode, dir);
+                synsetNode.setup(); //TODO zobaczyc, czy nie da się tego rozwiązać inaczej
             }
-
-
+            showRelationGUI(synsetNode, dir);
         }
+
 
         SwingUtilities.invokeLater(() -> {
             recreateLayoutWithFix(synsetNode, synsetNode);
@@ -879,78 +877,96 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         });
     }
 
-    private void addToEntrySet(Map<Long,DataEntry> entries)
+    public void addToEntrySet(Map<Long,DataEntry> entries)
     {
         entrySets.putAll(entries);
     }
 
+    public void addToEntrySet(DataEntry dataEntry){
+        entrySets.put(dataEntry.getSynset().getId(), dataEntry);
+    }
+
     /**
      * @param synsetNode node which relations will be shown
-     * @param dir        relation class which will be shown
+     * @param direction        relation class which will be shown
      */
-    private void showRelationGUI(ViwnNodeSynset synsetNode, NodeDirection dir) {
-        List<ViwnEdgeSynset> relations = (List<ViwnEdgeSynset>) synsetNode.getRelation(dir); //TODO można to przerobić tak, aby było rozdzielenie na od i do
-//        relations.sort(new Comparator<ViwnEdgeSynset>() {
-//            @Override
-//            public int compare(ViwnEdgeSynset o1, ViwnEdgeSynset o2) {
-//                int compareResult = loadSynsetNode(o1.getSynsetTo()).getLabel().compareTo(loadSynsetNode(o2.getSynsetTo()).getLabel());
-//                if(compareResult==0){
-//                    compareResult = loadSynsetNode(o1.getSynsetFrom()).getLabel().compareTo(loadSynsetNode(o2.getSynsetFrom()).getLabel());
-//                }
-//                return compareResult;
-//            }
-//        }); //TODO to tylko tymczasowe rozwiązanie. Nalezy pozmieniać we wszystkich miejscach gdzie sa przechowywane relacje na liste, aby nie było trzeba ponownie sortować. Wystarczy pobrać dane z bazy
-        int toShow = Math.min(MAX_SYNSETS_SHOWN, relations.size());
-        // dodanie elementów, które będą wyświetlane
-        for (int i = 0; i < toShow; i++) {
-            ViwnEdgeSynset edge = relations.get(i);
-            ViwnNodeSynset node = loadSynsetNode(edge.getSynsetFrom());
-            if (node.equals(synsetNode)) {
-                node = loadSynsetNode(edge.getSynsetTo());
-            }
-            if (!forest.containsVertex(node)) {
-                if (node.getSet() != null) {
-                    node.getSet().remove(node);
-                    node.setSet(null);
-                }
-                //TOOD tutaj było coś ze sprawdzaniem etykiety
-                node.setSpawner(synsetNode, dir);
-                forest.addVertex(node);
-            }
+    private void showRelationGUI(ViwnNodeSynset synsetNode, NodeDirection direction) {
+        List<ViwnEdgeSynset> relations = (List<ViwnEdgeSynset>) synsetNode.getRelation(direction);
+        int toShow = Math.min(MAX_SYNSETS_SHOWN, relations.size()); // number synset to show on the graph
+        int insertedNodes = insertVisibleSynsetNodes(relations, synsetNode, direction, toShow);
+        if(insertedNodes < relations.size()){
+            insertInvisibleSynsetNodes(relations, synsetNode, direction, insertedNodes);
         }
-        //dodanie elementów, które będą schowane
-        if (relations.size() > MAX_SYNSETS_SHOWN) {
-            //TODO tutaj coś miało być
-        }
-        ViwnNodeSet set = synsetNode.getSynsetSet(dir);
-        for (int i = toShow; i < relations.size(); i++) {
-            ViwnEdgeSynset edge = relations.get(i); //TODO refaktor
-            ViwnNodeSynset node = loadSynsetNode(edge.getSynsetFrom());
-            if (node.equals(synsetNode)) {
-                node = loadSynsetNode(edge.getSynsetTo());
-            }
-            if (!forest.containsVertex(node)) {
-                if (set.contains(node)) {
-                    continue;
-                }
-                node.setSpawner(synsetNode, dir);
-                node.setSet(set);
-                set.add(node);
-            }
-        }
+//        List<ViwnNode> nodes = new ArrayList<>(forest.getVertices());
+//        nodes.stream().filter((n) -> ((n instanceof ViwnNodeSynset))).forEachOrdered((n) -> addMissingRelations((ViwnNodeSynset) n));
+//        nodes.stream().forEach(n->{if(n instanceof  ViwnNodeSynset)
+//            addMissingRelations((ViwnNodeSynset)n);
+//        });
+        forest.getVertices().stream().forEach(n->{
+            if (n instanceof ViwnNodeSynset) addMissingRelations((ViwnNodeSynset)n);
+        });
 
-        //TODO ogarnąć co się stanie, jeśli set będzie pusty
-        if (!set.getSynsets().isEmpty()) {
-            set.setSpawner(synsetNode, dir);
-            forest.addVertex(set);
-            addEdgeSynsSet(synsetNode, set, dir);
-        }
-
-        List<ViwnNode> nodes = new ArrayList<>(forest.getVertices());
-        nodes.stream().filter((node) -> ((node instanceof ViwnNodeSynset))).forEachOrdered((node) -> addMissingRelations((ViwnNodeSynset) node));
-
-        vv.setVisible(true);
+//        synsetNode.setState(direction, ViwnNodeSynset.State.EXPANDED);
         checkAllStates();
+        vv.setVisible(true);
+    }
+
+    private int insertVisibleSynsetNodes(List<ViwnEdgeSynset> relations, ViwnNodeSynset nodeSynset, NodeDirection direction, int maxShowedNodes) {
+        int i = 0;
+        ViwnNodeSynset node;
+        while(i < maxShowedNodes && i <relations.size()) {
+            node = getNodeSynsetFromEdge(relations.get(i), nodeSynset);
+            tryInsertNodeToForest(node, nodeSynset, direction);
+            i++;
+        }
+        return i;
+    }
+
+    private void insertInvisibleSynsetNodes(List<ViwnEdgeSynset> relations, ViwnNodeSynset nodeSynset, NodeDirection direction, int insertedNodes) {
+        ViwnNodeSet set = nodeSynset.getSynsetSet(direction);
+        ViwnNodeSynset node;
+        for(int i = insertedNodes; i<relations.size(); i++) {
+            node = getNodeSynsetFromEdge(relations.get(i), nodeSynset);
+            if(!forest.containsVertex(node)){
+                if(!set.contains(node)){
+                    node.setSpawner(nodeSynset, direction);
+                    node.setSet(set);
+                    set.add(node);
+                }
+            }
+        }
+
+        if(!set.getSynsets().isEmpty()){
+            if(set.getSynsets().size() == 1){
+                node = set.getSynsets().iterator().next();
+                tryInsertNodeToForest(node, nodeSynset, direction);
+            } else {
+                set.setSpawner(nodeSynset, direction);
+                forest.addVertex(set);
+                addEdgeSynsSet(nodeSynset, set, direction);
+            }
+        }
+    }
+
+    private void tryInsertNodeToForest(ViwnNodeSynset node,ViwnNodeSynset spawnerNode, NodeDirection direction) {
+        if(!forest.containsVertex(node)) {
+            if(node.getSet() != null){
+                node.getSet().remove(node);
+                node.setSet(null);
+            }
+            node.setSpawner(spawnerNode, direction);
+            forest.addVertex(node);
+//            addMissingRelations(node);
+        }
+    }
+
+    private ViwnNodeSynset getNodeSynsetFromEdge(ViwnEdgeSynset edge, ViwnNodeSynset originalNode)
+    {
+        if(edge.getSynsetFrom().getId().equals(originalNode.getId())){
+            return loadSynsetNode(edge.getSynsetTo());
+        } else {
+            return loadSynsetNode(edge.getSynsetFrom());
+        }
     }
 
     /**

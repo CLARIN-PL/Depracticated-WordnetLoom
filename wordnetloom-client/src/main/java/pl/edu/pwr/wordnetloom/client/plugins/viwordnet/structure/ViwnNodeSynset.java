@@ -85,6 +85,9 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         for(int i = 0; i<relations.length; i++){
             relations[i] = new ArrayList<>();
         }
+        for(int i =0 ; i <states.length; i++){
+            states[i] = State.NOT_EXPANDED;
+        }
 
         units = null; //RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
         setup();
@@ -341,6 +344,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         if(dataEntry != null){
             addSynsetEdges(dataEntry);
         }
+
         // no cache? fetch from database
 //        if (relsUP == null) {
 //            relsUP = RemoteUtils.synsetRelationRemote.dbGetUpperRelations(
@@ -441,9 +445,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
                             ui.recreateLayout();
                             break;
                         case SEMI_EXPANDED:
-                            ui.showRelation(this, new NodeDirection[]{rel});
-                            ui.recreateLayout();
-                            break;
                         case NOT_EXPANDED:
                             ui.showRelation(this, new NodeDirection[]{rel});
                             ui.recreateLayout();
@@ -462,9 +463,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
                 ret = dataEntry.getLabel();
             } else {
                 ret = "";
-            }
-            if(ret.equals("")){
-                System.out.println();
             }
 //            DataEntry dataSet = ui.getEntrySetFor(getId());
 //            if (dataSet == null || dataSet.getLabel() == null) {

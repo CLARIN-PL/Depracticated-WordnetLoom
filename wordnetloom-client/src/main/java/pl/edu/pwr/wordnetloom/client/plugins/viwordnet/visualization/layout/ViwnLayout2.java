@@ -279,10 +279,6 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
             }
 
             // sort children alphabetically
-//            List<ViwnNode> bottom = new ArrayList<>(sbottom);
-//            List<ViwnNode> top = new ArrayList<>(stop);
-//            List<ViwnNode> right = new ArrayList<>(sright);
-//            List<ViwnNode> left = new ArrayList<>(sleft);
             Collections.sort(bottom, new ViwnNodeAlphabeticComparator());
             Collections.sort(top, new ViwnNodeAlphabeticComparator());
             Collections.sort(right, new ViwnNodeAlphabeticComparator());
@@ -384,36 +380,28 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
 
             // =========================== lower level
             for (ViwnNode vn : bottom) {
-                if (root) {
                     Set<ViwnNode> children = mapNodes2Points(vn, locations.get(vn), placed);
 
                     correctSubGraphMapping(center, vn, actual, children);
                     actual.addAll(children);
-                }
             }
             for (ViwnNode vn : top) {
-                if (root) {
                     Set<ViwnNode> children = mapNodes2Points(vn, locations.get(vn), placed);
                     correctSubGraphMapping(center, vn, actual, children);
 
                     actual.addAll(children);
-                }
             }
             for (ViwnNode vn : right) {
-                if (root) {
                     Set<ViwnNode> children = mapNodes2Points(vn, locations.get(vn), placed);
 
                     correctSubGraphMapping(center, vn, actual, children);
                     actual.addAll(children);
-                }
             }
             for (ViwnNode vn : left) {
-                if (root) {
                     Set<ViwnNode> children = mapNodes2Points(vn, locations.get(vn), placed);
 
                     correctSubGraphMapping(center, vn, actual, children);
                     actual.addAll(children);
-                }
             }
 
         }

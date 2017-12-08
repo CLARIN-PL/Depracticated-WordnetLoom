@@ -23,6 +23,7 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -341,7 +342,12 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                 : new CustomDescription<>(DomainMComboBox
                 .nameWithoutPrefix(unit.getDomain().toString()), unit
                 .getDomain()));
-
+        SenseAttributes attributes = unit.getSenseAttributes();
+        definition.setText(attributes.getDefinition());
+        comment.setText(attributes.getComment());
+        //TODO wstawić tutaj jakoś rejestr
+        //TODO pobrać przykłady dla jednostki
+        link.setText(attributes.getLink());
 //        definition.setText(formatValue(unit != null ? Common.getSenseAttribute(
 //                unit, Sense.DEFINITION) : null));
 //        comment.setText(formatValue(unit != null ? Common.getSenseAttribute(

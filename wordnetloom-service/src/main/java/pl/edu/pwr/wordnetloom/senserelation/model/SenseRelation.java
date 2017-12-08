@@ -60,5 +60,4 @@ public class SenseRelation extends GenericEntity {
     public void setChild(Sense child) {
         this.child = child;
     }
-
 }

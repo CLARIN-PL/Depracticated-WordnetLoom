@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
 import java.util.*;
 
 @Stateless
@@ -151,40 +152,34 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
     }
 
     public List<SenseRelation> findRelations(Sense unit, RelationType relationType, boolean asParent, boolean hideAutoReverse) {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery query = criteriaBuilder.createQuery(SenseRelation.class);
+        Root<SenseRelation> relationRoot = query.from(SenseRelation.class);
+        Join<SenseRelation, RelationType> relationTypeJoin = relationRoot.join("relationType");
+        String fetchColumn = asParent ? "child" : "parent";
+        Fetch<SenseRelation, Sense> senseFetch = relationRoot.fetch(fetchColumn);
+        senseFetch.fetch("domain");
 
-        if (null == unit) {
-            return new ArrayList<>();
-        }
-
-        Map<String, Object> params = new HashMap<>();
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT distinct sr FROM SenseRelation sr WHERE ");
-
-        if (asParent) {
-            query.append(" sr.parent.id = :senseID ");
+        List<Predicate> predicateList = new ArrayList<>();
+        Predicate sensePredicate;
+        if(asParent) {
+            sensePredicate = criteriaBuilder.equal(relationRoot.get("parent"), unit.getId());
         } else {
-            query.append(" sr.child.id = :senseID ");
+            sensePredicate = criteriaBuilder.equal(relationRoot.get("child"), unit.getId());
         }
-        params.put("senseID", unit.getId());
+        predicateList.add(sensePredicate);
 
-        if (null != relationType) {
-            query.append(" AND sr.relation.id = :relationID ");
-            params.put("relationID", relationType.getId());
+        if(relationType != null){
+            Predicate relationPredicate = criteriaBuilder.equal(relationRoot.get("relationType"), relationType);
+            predicateList.add(relationPredicate);
         }
-
-        if (hideAutoReverse) {
-            query.append(" AND sr.relation.autoReverse = 1 ");
+        if(hideAutoReverse){
+            Predicate autoReversePredicate = criteriaBuilder.equal(relationTypeJoin.get("autoReverse"), 1);
+            predicateList.add(autoReversePredicate);
         }
+        query.where(sensePredicate);
 
-        query.append("ORDER BY sr.relation.id");
-
-        TypedQuery<SenseRelation> q = getEntityManager().createQuery(query.toString(), SenseRelation.class);
-
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            q.setParameter(entry.getKey(), entry.getValue());
-        }
-
-        return q.getResultList();
+        return getEntityManager().createQuery(query).getResultList();
     }
 
     @Override

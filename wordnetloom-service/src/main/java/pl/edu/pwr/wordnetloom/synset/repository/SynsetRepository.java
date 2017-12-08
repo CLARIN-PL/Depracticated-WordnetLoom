@@ -758,6 +758,17 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return result;
     }
 
+    public DataEntry findSynsetDataEntry(Long synsetId, List<Long> lexicons)
+    {
+        Synset newSynset = findSynsetWithRelationsAandSenseById(synsetId);
+        List<SynsetRelation> relationsFrom = synsetRelationRepository.findSimpleRelationsWhereSynsetIsParent(newSynset, lexicons);
+        List<SynsetRelation> relationsTo = synsetRelationRepository.findSimpleRelationsWhereSynsetIsChild(newSynset, lexicons);
+        newSynset.setIncomingRelations(new LinkedHashSet<>(relationsTo));
+        newSynset.setOutgoingRelations(new LinkedHashSet<>(relationsFrom));
+        DataEntry dataEntry = buildDataEntry(newSynset);
+        return dataEntry;
+    }
+
     @Override
     protected Class<Synset> getPersistentClass() {
         return Synset.class;

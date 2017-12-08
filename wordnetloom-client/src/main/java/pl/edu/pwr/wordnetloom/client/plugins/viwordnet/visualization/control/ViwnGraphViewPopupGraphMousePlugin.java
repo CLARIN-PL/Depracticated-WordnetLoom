@@ -12,8 +12,14 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerViewUI;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,10 +28,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMousePlugin {
 
@@ -39,16 +42,25 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
     private void addSynsets(ViwnNode v) {
         popup.setVisible(false);
-        Object[] syns = synset_list_.getSelectedValues();
-        if (syns.length > 0) {
+        java.util.List syns = synset_list_.getSelectedValuesList();
+        if(!syns.isEmpty()){
             vgvui.deselectAll();
         }
         ViwnNode other = v;
         for (Object obj : syns) {
-            vgvui.addSynsetFromSet((ViwnNodeSynset) obj);
+            ViwnNodeSynset node = (ViwnNodeSynset)obj;
+            Synset synset = node.getSynset();
+            //TODO sprawdzić, czy w cache synset ma pobrane relacje
+//            Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synset, LexiconManager.getInstance().getLexiconsIds(), NodeDirection.values());
+            DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(node.getId(), LexiconManager.getInstance().getLexiconsIds());
+            vgvui.addToEntrySet(dataEntry);
+            node.setup();
+            vgvui.addSynsetFromSet(node);
+//            vgvui.addSynsetFromSet((ViwnNodeSynset) obj);
             other = (ViwnNode) obj;
+
         }
-        if (syns.length > 0) {
+        if(!syns.isEmpty()){
             ViwnNode p2 = v;
             Graph<ViwnNode, ViwnEdge> g = vgvui.getGraph();
             ViwnNode parent = v.getSpawner();

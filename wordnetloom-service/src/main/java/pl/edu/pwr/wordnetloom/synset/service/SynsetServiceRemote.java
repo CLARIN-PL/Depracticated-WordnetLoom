@@ -17,4 +17,6 @@ public interface SynsetServiceRemote {
     Synset findSynsetBySense(Sense sense, List<Long> lexicons);
 
     Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons, NodeDirection[] directions);
+
+    DataEntry findSynsetDataEntry(Long synsetId, List<Long> lexicons);
 }

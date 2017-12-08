@@ -456,7 +456,8 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     public List<Sense> findBySynset(Synset synset, List<Long> lexicons) {
-        return getEntityManager().createQuery("FROM Sense s WHERE s.synset.id = :synsetId AND s.lexicon.id IN (:lexicons)", Sense.class)
+        return getEntityManager().createQuery("FROM Sense s " +
+                "WHERE s.synset.id = :synsetId AND s.lexicon.id IN (:lexicons)", Sense.class)
                 .setParameter("synsetId", synset.getId())
                 .setParameter("lexicons", lexicons)
                 .getResultList();
@@ -564,6 +565,20 @@ public class SenseRepository extends GenericRepository<Sense> {
             return resultList.get(0);
         }
         return null;
+    }
+
+    public Sense fetchSense(Long senseId) {
+        CriteriaBuilder  criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Sense> query = criteriaBuilder.createQuery(Sense.class);
+        Root<Sense> senseRoot = query.from(Sense.class);
+        senseRoot.fetch("domain");
+        senseRoot.fetch("lexicon");
+        senseRoot.fetch("partOfSpeech");
+        senseRoot.fetch("senseAttributes");
+
+        query.where(criteriaBuilder.equal(senseRoot.get("id"), senseId));
+
+        return getEntityManager().createQuery(query).getSingleResult();
     }
 
     @Override
