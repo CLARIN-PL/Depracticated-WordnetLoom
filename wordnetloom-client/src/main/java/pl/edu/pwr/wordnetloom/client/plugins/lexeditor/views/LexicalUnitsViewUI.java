@@ -44,6 +44,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     private static final String SUPER_MODE_VALUE = "1";
     private static final String SUPER_MODE = "SuperMode";
+    private final int DEFAULT_SCROLL_HEIGHT = 220;
+    private final Dimension DEFAULT_SCROLL_DIMENSION = new Dimension(0, DEFAULT_SCROLL_HEIGHT);
 
     private SenseCriteria criteria;
     //    private ToolTipList unitsList;
@@ -60,13 +62,19 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     LazyScrollPane unitsListScrollPane;
 
+    private SenseCriteria initSenseCriteria()
+    {
+        SenseCriteria senseCriteria = new SenseCriteria();
+        senseCriteria.getDomainComboBox().addActionListener(this);
+        senseCriteria.getPartsOfSpeachComboBox().addActionListener(this);
+        return senseCriteria;
+    }
+
     @Override
     protected void initialize(WebPanel content) {
         // ustawienie layoutu
         content.setLayout(new RiverLayout());
-        criteria = new SenseCriteria();
-        criteria.getDomainComboBox().addActionListener(this);
-        criteria.getPartsOfSpeachComboBox().addActionListener(this);
+        criteria = initSenseCriteria();
 
         btnSearch = MButton.buildSearchButton()
                 .withActionListener(this);
@@ -108,11 +116,10 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         JPanel buttons = new MButtonPanel(btnNewWithSyns, btnNew, btnDelete, btnAddToSyns)
                 .withHorizontalLayout();
 
-        int scrollHeight = 220;
         JScrollPane scroll = new JScrollPane(criteria);
-        scroll.setMaximumSize(new Dimension(0, scrollHeight));
-        scroll.setMinimumSize(new Dimension(0, scrollHeight));
-        scroll.setPreferredSize(new Dimension(0, scrollHeight));
+        scroll.setMaximumSize(DEFAULT_SCROLL_DIMENSION);
+        scroll.setMinimumSize(DEFAULT_SCROLL_DIMENSION);
+        scroll.setPreferredSize(DEFAULT_SCROLL_DIMENSION);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         content.setLayout(new RiverLayout());
@@ -198,7 +205,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         String comment = criteria.getComment().getText();
         String example = criteria.getExample().getText();
 
-
         List<Long> lexicons = new ArrayList<>();
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
@@ -271,7 +277,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                             if (listModel.getSize() == unitsListScrollPane.getLimit()) {
                                 unitsList.clearSelection();
                                 unitsList.grabFocus();
-                                unitsList.setSelectedIndex(0);
+//                                unitsList.setSelectedIndex(0);
                                 unitsList.ensureIndexIsVisible(0);
                             } else {
                                 unitsList.updateUI();
@@ -304,28 +310,40 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         } else if (event.getSource() == btnReset) {
             criteria.resetFields();
         } else if (event.getSource() == btnDelete) {
-            int[] returnValues = unitsList.getSelectedIndices();
-            if (returnValues == null || returnValues.length == 0) {
-                return;
-            }
-            // warto sie zapytac
-            if (returnValues.length == 1
-                    && DialogBox.showYesNoCancel(Messages.QUESTION_REMOVE_UNIT) != DialogBox.YES) {
-                return;
-            }
-            if (returnValues.length != 1
-                    && DialogBox
-                    .showYesNoCancel(Messages.QUESTION_REMOVE_UNITS) != DialogBox.YES) {
-                return;
-            }
+           deleteSense();
+        } else if (event.getSource() == btnAddToSyns) {
+            addToSynset();
+        } else if (event.getSource() == btnNew) { // dodanie nowej jednostki
+            addNewSense();
+        } else if (event.getSource() == btnNewWithSyns) {
+            addNewSenseWithSynset();
+        }
+    }
 
-            // usuuniecie zaznaczonych jednostek
-            for (int i : returnValues) {
+    private void deleteSense()
+    {
+        int[] returnValues = unitsList.getSelectedIndices();
+        if (returnValues == null || returnValues.length == 0) {
+            return;
+        }
+        // warto sie zapytac
+        if (returnValues.length == 1
+                && DialogBox.showYesNoCancel(Messages.QUESTION_REMOVE_UNIT) != DialogBox.YES) {
+            return;
+        }
+        if (returnValues.length != 1
+                && DialogBox
+                .showYesNoCancel(Messages.QUESTION_REMOVE_UNITS) != DialogBox.YES) {
+            return;
+        }
+
+        // usuuniecie zaznaczonych jednostek
+        for (int i : returnValues) {
 //                Sense unit = listModel.getObjectAt(i);
-                Sense unit = listModel.get(i);
+            Sense unit = listModel.get(i);
 
-                // spradzenie czy ma jakies relacje
-                int result = DialogBox.YES;
+            // spradzenie czy ma jakies relacje
+            int result = DialogBox.YES;
 //                if (RemoteUtils.lexicalRelationRemote
 //                        .dbGetRelationCountOfUnit(unit) > 0) {
 //                    result = DialogBox.showYesNoCancel(String.format(
@@ -336,78 +354,84 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 //                    }
 //                }
 
-                if (result == DialogBox.YES) {
-                    LexicalDA.delete(unit);
-                    ViWordNetService s = (ViWordNetService) workbench
-                            .getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
-                    s.getActiveGraphView().getUI().releaseDataSetCache();
-                    s.getActiveGraphView().getUI().clear();
-                    listeners.notifyAllListeners(null);
-                }
+            if (result == DialogBox.YES) {
+                LexicalDA.delete(unit);
+                ViWordNetService s = (ViWordNetService) workbench
+                        .getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
+                s.getActiveGraphView().getUI().releaseDataSetCache();
+                s.getActiveGraphView().getUI().clear();
+                listeners.notifyAllListeners(null);
             }
-            refreshData(15, 0); //TODO tutaj będzie to trzeba jakoś ogarnąć
+        }
+        refreshData(15, 0); //TODO tutaj będzie to trzeba jakoś ogarnąć
+    }
 
-        } else if (event.getSource() == btnAddToSyns) {
-            int i = unitsList.getSelectedIndex();
+    private void addToSynset()
+    {
+        int i = unitsList.getSelectedIndex();
 //            Sense unit = listModel.getObjectAt(i);
-            Sense unit = listModel.get(i);
-            LexicalDA.addToNewSynset(unit);
+        Sense unit = listModel.get(i);
+        LexicalDA.addToNewSynset(unit);
 
-            lastSelectedValue = null;
+        lastSelectedValue = null;
 
-            if (lastSelectedValue == null && unitsList != null
-                    && !unitsList.isSelectionEmpty()) {
+        if (lastSelectedValue == null && unitsList != null
+                && !unitsList.isSelectionEmpty()) {
 //                lastSelectedValue = listModel.getObjectAt(unitsList
 //                        .getSelectedIndex());
-                lastSelectedValue = listModel.get(unitsList.getSelectedIndex());
-            }
+            lastSelectedValue = listModel.get(unitsList.getSelectedIndex());
+        }
 
-            // przywrocenie zaznaczenia
-            if (unitsList != null) {
-                SwingUtilities.invokeLater(() -> {
-                    unitsList.clearSelection();
-                    if (listModel.getSize() != 0) {
-                        unitsList.grabFocus();
-                        unitsList.setSelectedIndex(0);
-                        unitsList.ensureIndexIsVisible(0);
-                    }
-                    infoLabel.setText(String.format(
-                            Labels.VALUE_COUNT_SIMPLE,
-                            "" + listModel.getSize()));
-                });
-            }
-            // dodanie nowej jednostki
-        } else if (event.getSource() == btnNew) {
-            // wyswietlenie okienka
-            Sense newUnit = NewLexicalUnitFrame.showModal(workbench, null);
-            if (newUnit != null) {
-                ArrayList<Sense> col = new ArrayList<>();
-                col.add(newUnit);
-//                listModel.setCollection(col);
-                listModel.clear();
-                for (Sense sense : col) {
-                    listModel.addElement(sense);
+        // przywrocenie zaznaczenia
+        if (unitsList != null) {
+            SwingUtilities.invokeLater(() -> {
+                unitsList.clearSelection();
+                if (listModel.getSize() != 0) {
+                    unitsList.grabFocus();
+                    unitsList.setSelectedIndex(0);
+                    unitsList.ensureIndexIsVisible(0);
                 }
-                unitsList.setSelectedIndex(0);
-                valueChanged(new ListSelectionEvent(btnNew, 0, 0, false));
-                lastSelectedValue = null;
-            }
-        } else if (event.getSource() == btnNewWithSyns) {
-            Sense newUnit = NewLexicalUnitFrame.showModal(workbench, null);
-            if (newUnit != null) {
-                newUnit = LexicalDA.saveUnitWithReturn(newUnit);
-                ArrayList<Sense> col = new ArrayList<>();
-                col.add(newUnit);
+                infoLabel.setText(String.format(
+                        Labels.VALUE_COUNT_SIMPLE,
+                        "" + listModel.getSize()));
+            });
+        }
+    }
+
+    private void addNewSense()
+    {
+        // wyswietlenie okienka
+        Sense newUnit = NewLexicalUnitFrame.showModal(workbench, null);
+        if (newUnit != null) {
+            ArrayList<Sense> col = new ArrayList<>();
+            col.add(newUnit);
 //                listModel.setCollection(col);
-                listModel.clear();
-                for (Sense sense : col) {
-                    listModel.addElement(sense);
-                }
-                unitsList.setSelectedIndex(0);
-                LexicalDA.addToNewSynset(newUnit);
-                valueChanged(new ListSelectionEvent(btnNewWithSyns, 0, 0, false));
-                lastSelectedValue = null;
+            listModel.clear();
+            for (Sense sense : col) {
+                listModel.addElement(sense);
             }
+            unitsList.setSelectedIndex(0);
+            valueChanged(new ListSelectionEvent(btnNew, 0, 0, false));
+            lastSelectedValue = null;
+        }
+    }
+
+    private void addNewSenseWithSynset()
+    {
+        Sense newUnit = NewLexicalUnitFrame.showModal(workbench, null);
+        if (newUnit != null) {
+            newUnit = LexicalDA.saveUnitWithReturn(newUnit);
+            ArrayList<Sense> col = new ArrayList<>();
+            col.add(newUnit);
+//                listModel.setCollection(col);
+            listModel.clear();
+            for (Sense sense : col) {
+                listModel.addElement(sense);
+            }
+            unitsList.setSelectedIndex(0);
+            LexicalDA.addToNewSynset(newUnit);
+            valueChanged(new ListSelectionEvent(btnNewWithSyns, 0, 0, false));
+            lastSelectedValue = null;
         }
     }
 

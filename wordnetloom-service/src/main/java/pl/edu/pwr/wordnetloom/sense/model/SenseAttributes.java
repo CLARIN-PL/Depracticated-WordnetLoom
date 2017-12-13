@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Table(name = "sense_attributes")
 public class SenseAttributes extends GenericEntity {
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "sense_id")
     @MapsId
     private Sense sense;
@@ -20,7 +20,9 @@ public class SenseAttributes extends GenericEntity {
     @Lob
     private String comment;
 
-    private String register;
+//    private String register;
+
+    private Long register;
 
     private String link;
 
@@ -35,7 +37,7 @@ public class SenseAttributes extends GenericEntity {
         super();
     }
 
-    public SenseAttributes(String definition, String comment, String register, String link) {
+    public SenseAttributes(String definition, String comment, Long register, String link) {
         this.definition = definition;
         this.comment = comment;
         this.register = register;
@@ -66,11 +68,19 @@ public class SenseAttributes extends GenericEntity {
         this.comment = comment;
     }
 
-    public String getRegister() {
+//    public String getRegister() {
+//        return register;
+//    }
+//
+//    public void setRegister(String register) {
+//        this.register = register;
+//    }
+
+    public Long getRegister(){
         return register;
     }
 
-    public void setRegister(String register) {
+    public void setRegister(Long register){
         this.register = register;
     }
 

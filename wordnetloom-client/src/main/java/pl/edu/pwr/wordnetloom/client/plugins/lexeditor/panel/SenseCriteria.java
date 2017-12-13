@@ -1,6 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
-import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RegisterManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
@@ -8,13 +8,13 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class SenseCriteria extends CriteriaPanel {
 
-    private MComboBox<RegisterTypes> registerComboBox;
+//    private MComboBox<RegisterTypes> registerComboBox;
+    private MComboBox<String> registerComboBox;
     private MTextField comment;
     private MTextField example;
     private CriteriaDTO crit;
@@ -27,15 +27,26 @@ public final class SenseCriteria extends CriteriaPanel {
 
     private void init() {
         crit = new CriteriaDTO();
-        registerComboBox = new MComboBox<>();
-        registerComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
-        for (RegisterTypes reg : RegisterTypes.values()) {
-            registerComboBox.addItem(reg);
-        }
-        registerComboBox.setPreferredSize(new Dimension(150, 20));
 
+        registerComboBox = initRegisterComboBox();
         comment = new MTextField(STANDARD_VALUE_FILTER);
         example = new MTextField(STANDARD_VALUE_FILTER);
+    }
+
+    private MComboBox initRegisterComboBox()
+    {
+        //TODO zastanowić się, czy ma to być string czy jakiś inny typ danych
+        MComboBox<String> resultComboBox = new MComboBox<>();
+        resultComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
+        List<String> registerTypes = RegisterManager.getInstance().getAllRegisterNames();
+        for(String registerName : registerTypes)
+        {
+            resultComboBox.addItem(registerName);
+        }
+
+        resultComboBox.setPreferredSize(DEFAULT_DIMENSION);
+
+        return resultComboBox;
     }
 
     @Override
@@ -66,7 +77,12 @@ public final class SenseCriteria extends CriteriaPanel {
         add("br hfill", example);
     }
 
-    public MComboBox<RegisterTypes> getRegisterComboBox() {
+//    public MComboBox<RegisterTypes> getRegisterComboBox() {
+//        return registerComboBox;
+//    }
+
+
+    public MComboBox<String> getRegisterComboBox() {
         return registerComboBox;
     }
 

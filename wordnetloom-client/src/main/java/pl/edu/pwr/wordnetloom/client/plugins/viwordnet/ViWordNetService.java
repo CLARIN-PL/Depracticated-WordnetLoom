@@ -21,7 +21,6 @@ import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
@@ -96,9 +95,7 @@ public class ViWordNetService extends AbstractService implements
         this.perspectiveName = perspectiveName;
         this.perspective = perspective;
 
-        PartOfSpeechManager.getInstance().getAll().stream().forEach((pos) -> {
-            // posMap.put(pos.getName(RemoteConnectionProvider.getInstance().getLanguage()), pos);
-        });
+//        0
     }
 
     @Override

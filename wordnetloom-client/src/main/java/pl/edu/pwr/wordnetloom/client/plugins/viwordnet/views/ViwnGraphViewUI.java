@@ -856,17 +856,26 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         SwingUtilities.invokeLater(() -> workbench.setBusy(true));
 
         setSelectedNode(synsetNode);
-        for (NodeDirection dir : dirs) {
+//        for (NodeDirection dir : dirs) {
             //TODO wsadzić to do jakieś metody
-            if (!synsetNode.isFullRelation(dir)) { // jeżeli synset nie ma pobranych w pełni relacji dla danego kierunku
+//            if (!synsetNode.isFullRelation(dir)) { // jeżeli synset nie ma pobranych w pełni relacji dla danego kierunku
                 Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synsetNode.getSynset(), LexiconManager.getInstance().getLexiconsIds(), dirs);
                 addToEntrySet(entries); //TODO, sprawdzić, czy nie da rady zrobić tego bez dodawania elementów do entries
-                synsetNode.setFullRelation(dir, true);
-                synsetNode.setup(); //TODO zobaczyc, czy nie da się tego rozwiązać inaczej
+//                synsetNode.setFullRelation(dir, true);
+//                synsetNode.setup(); //TODO zobaczyc, czy nie da się tego rozwiązać inaczej
+//            }
+            synsetNode.setup(dirs);
+            for(NodeDirection dir : dirs) {
+                showRelationGUI(synsetNode, dir);
             }
-            showRelationGUI(synsetNode, dir);
-        }
-
+//            forest.getVertices().stream().forEach(n->{
+//                if (n instanceof ViwnNodeSynset) addMissingRelations((ViwnNodeSynset)n);
+//            });
+//
+//        //        synsetNode.setState(direction, ViwnNodeSynset.State.EXPANDED);
+//            checkAllStates();
+//            vv.setVisible(true);
+//        }
 
         SwingUtilities.invokeLater(() -> {
             recreateLayoutWithFix(synsetNode, synsetNode);
@@ -902,6 +911,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 //        nodes.stream().forEach(n->{if(n instanceof  ViwnNodeSynset)
 //            addMissingRelations((ViwnNodeSynset)n);
 //        });
+        //TODO wstawić to na koniec dodawania wszysztkiego
         forest.getVertices().stream().forEach(n->{
             if (n instanceof ViwnNodeSynset) addMissingRelations((ViwnNodeSynset)n);
         });
@@ -932,6 +942,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                     node.setSpawner(nodeSynset, direction);
                     node.setSet(set);
                     set.add(node);
+                    node.setDirty(true);
                 }
             }
         }
@@ -986,7 +997,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         if (cache.containsKey(synset.getId())) {
             ViwnNodeSynset s = cache.get(synset.getId());
             if (s.isDirty()) {
-                s.construct();
+//                s.construct();
+                s.setup();
             }
             return s;
         }

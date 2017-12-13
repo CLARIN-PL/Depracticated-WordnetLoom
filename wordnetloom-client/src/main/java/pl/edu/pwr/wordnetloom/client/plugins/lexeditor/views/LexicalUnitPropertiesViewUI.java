@@ -6,8 +6,10 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitProperti
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RegisterManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
@@ -15,6 +17,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -72,34 +75,54 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
     public void saveChangesInUnit() {
         if (validateSelections()) {
             try {
-                String lemma = editPanel.getLemma().getText();
-                PartOfSpeech pos = editPanel.getPartOfSpeech().getEntity();
-                Domain domain = editPanel.getDomain().getEntity();
-                int variant = Integer.parseInt(editPanel.getVariant().getText());
-                String register = editPanel.getRegister().getSelectedItem() != null ? editPanel
-                        .getRegister().getSelectedItem().toString() : RegisterTypes.BRAK_REJESTRU.toString();
-                String definition = editPanel.getDefinition().getText();
-                String example = transformExamplesToString();
-                String link = editPanel.getLink().getText();
-                String comment = editPanel.getComment().getText();
 
-                // Zmienił się lemat, więc należy uaktualnić numer lematu
-                // (wariant)
-                if (!editPanel.getSense().getWord().getWord().equals(lemma)) {
-                    variant = LexicalDA.getAvaibleVariantNumber(lemma, pos, LexiconManager.getInstance().getUserChosenLexiconsIds());
-                }
+//                String lemma = editPanel.getLemma().getText();
+//                PartOfSpeech pos = editPanel.getPartOfSpeech().getEntity();
+//                Domain domain = editPanel.getDomain().getEntity();
+//                int variant = Integer.parseInt(editPanel.getVariant().getText());
+//                String register = editPanel.getRegister().getSelectedItem() != null ? editPanel
+//                        .getRegister().getSelectedItem().toString() : RegisterTypes.BRAK_REJESTRU.toString();
+//                Long registerId = RegisterManager.getInstance().getId(register);
+//                String definition = editPanel.getDefinition().getText();
+//                String example = transformExamplesToString();
+//                String link = editPanel.getLink().getText();
+//                String comment = editPanel.getComment().getText();
+//
+//                Sense sense = editPanel.getSense();
+//                sense.getWord().setWord(lemma);
+//                sense.setPartOfSpeech(pos);
+//                sense.setDomain(domain);
+//                sense.setVariant(variant);
+//                SenseAttributes attributes = sense.getSenseAttributes();
+//                if(attributes != null){
+//                    attributes.setRegister(registerId);
+//                    attributes.setDefinition(definition);
+//                    attributes.setLink(link);
+//                    attributes.setComment(comment);
+//                }
+//
+//                //TODO zrobić ustawianie
+//                // Zmienił się lemat, więc należy uaktualnić numer lematu
+//                // (wariant)
+//                if (!editPanel.getSense().getWord().getWord().equals(lemma)) {
+//                    variant = LexicalDA.getAvaibleVariantNumber(lemma, pos, LexiconManager.getInstance().getUserChosenLexiconsIds());
+//                }
+                Sense sense = editPanel.updateAndGetSense();
+                RemoteService.senseRemote.persist(sense);
+                refreshData(sense);
 
-                if (!LexicalDA.updateUnit(editPanel.getSense(), lemma,
-                        editPanel.getLexicon().getEntity(), variant,
-                        domain, pos, 0, comment,
-                        register, example, link, definition)) {
-                    refreshData(editPanel.getSense());
-                    DialogBox.showError(Messages.ERROR_NO_STATUS_CHANGE_BECAUSE_OF_RELATIONS_IN_UNITS);
-                }
+//                if (!LexicalDA.updateUnit(editPanel.getSense(), lemma,
+//                        editPanel.getLexicon().getEntity(), variant,
+//                        domain, pos, 0, comment,
+//                        register, example, link, definition)) {
+//                    refreshData(editPanel.getSense());
+//                    DialogBox.showError(Messages.ERROR_NO_STATUS_CHANGE_BECAUSE_OF_RELATIONS_IN_UNITS);
+//                }
+
 
                 // Uaktualnij numer wariantu, jeżeli został w związku ze zmianą
                 // lematu
-                editPanel.getVariant().setText("" + variant);
+                editPanel.getVariant().setText("" + sense.getVariant());
 
                 ViwnNode node = graphUI.getSelectedNode();
                 if (node != null && node instanceof ViwnNodeSynset) {

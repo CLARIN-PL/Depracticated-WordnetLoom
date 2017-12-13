@@ -362,6 +362,9 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
             if (synsetIsParent) {
                 synsetRelation.getChild().setIncomingRelations(new LinkedHashSet<>());
                 synsetRelation.getChild().setOutgoingRelations(new LinkedHashSet<>());
+            } else {
+                synsetRelation.getParent().setIncomingRelations(new LinkedHashSet<>());
+                synsetRelation.getParent().setOutgoingRelations(new LinkedHashSet<>());
             }
         }
 
@@ -381,7 +384,14 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
     }
 
     public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
-        return findAllRelationBySynset(synset, lexicons, false, 4, directions);
+        //TODO sprawdzić czy to dobrze działa
+        NodeDirection[] oppositeDirections = new NodeDirection[directions.length];
+        for(int i = 0; i < directions.length; i++)
+        {
+            oppositeDirections[i] = directions[i].getOpposite();
+        }
+
+        return findAllRelationBySynset(synset, lexicons, false, 4, oppositeDirections);
 
     }
 
@@ -423,7 +433,9 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 "AND sr." + synsetFetchColumn + ".lexicon.id IN  (:lexicons)")
                 .setParameter("id", synset.getId())
                 .setParameter("lexicons", lexicons);
-        return query.getResultList();
+        List<SynsetRelation> result = query.getResultList();
+//        return query.getResultList();
+        return result;
     }
 
     /**

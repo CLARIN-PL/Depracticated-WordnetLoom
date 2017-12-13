@@ -49,7 +49,7 @@ public class Sense extends GenericEntity {
     @OneToOne(mappedBy = "sense", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private SenseAttributes senseAttributes;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "sense")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "sense", orphanRemoval = true)
     private List<SenseExample> examples;
 
     @NotNull

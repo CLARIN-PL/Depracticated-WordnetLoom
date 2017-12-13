@@ -685,10 +685,13 @@ public class SynsetRepository extends GenericRepository<Synset> {
         for(SynsetRelation relation : relationsFrom){
             direction = relation.getRelationType().getNodePosition();
             dataEntry.addRelationFrom(relation, direction);
+            relationsTo.removeIf(s->s.getParent().getId().equals(relation.getChild().getId()));
+//            relationsTo.removeIf(s->s.getChild().getId().equals(relation.getChild().getId()));
         }
         for(SynsetRelation relation : relationsTo){
             direction = relation.getRelationType().getNodePosition();
-            dataEntry.addRelationTo(relation, direction);
+            dataEntry.addRelationTo(relation, direction.getOpposite());
+//            relationsFrom.remove(relation);
         }
 //        dataEntry.setRelsFrom(relationsFrom);
 //        dataEntry.setRelsTo(relationsTo); //TODO dorobić

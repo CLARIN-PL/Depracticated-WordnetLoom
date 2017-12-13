@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -16,6 +17,8 @@ public class PartOfSpeechComboBox extends MComboBox<PartOfSpeech> {
 
     public PartOfSpeechComboBox(String nullItemRepresentation) {
         nullRepresentation = nullItemRepresentation;
+        loadPartOfSpeech();
+        loadItems();
     }
 
     private void loadPartOfSpeech() {
@@ -30,7 +33,8 @@ public class PartOfSpeechComboBox extends MComboBox<PartOfSpeech> {
         removeAllItems();
         addItem(new CustomDescription<>(nullRepresentation, null));
         all.stream().forEach((pos) -> {
-            //  addItem(new CustomDescription<>(pos.getName(RemoteConnectionProvider.getInstance().getLanguage()), pos));
+            String posName = LocalisationManager.getInstance().getLocalisedString(pos.getName());
+            addItem(new CustomDescription<>(posName, pos));
         });
     }
 

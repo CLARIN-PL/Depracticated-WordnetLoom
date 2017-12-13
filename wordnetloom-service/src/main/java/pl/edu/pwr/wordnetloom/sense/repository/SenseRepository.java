@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.sense.repository;
 
+import pl.edu.pwr.wordnetloom.common.dto.DataMap;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -17,6 +18,7 @@ import pl.edu.pwr.wordnetloom.word.model.Word;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
@@ -46,7 +48,12 @@ public class SenseRepository extends GenericRepository<Sense> {
         if (sense.getId() == null) {
             sense.setVariant(findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech()));
         }
-        return super.persist(sense);
+        if(em.contains(sense))
+        {
+            return super.persist(sense);
+        } else {
+            return em.merge(sense);
+        }
     }
 
     @Override
@@ -99,7 +106,7 @@ public class SenseRepository extends GenericRepository<Sense> {
             criteriaList.add(criteriaBuilder.or(relationPredicates));
         }
         if(dto.getRegisterId() != null || dto.getComment() != null){
-            Join<Sense,SenseAttributes> senseAttributesJoin = senseRoot.join("senseAttributes");
+            Join<Sense,SenseAttributes> senseAttributesJoin = senseRoot.join("senseAttributes", JoinType.LEFT);
             if(dto.getRegisterId() != null){
                 Predicate senseAttributesPredicate = criteriaBuilder.equal(senseAttributesJoin.get("register"), dto.getRegisterId());
                 criteriaList.add(senseAttributesPredicate);
@@ -571,15 +578,17 @@ public class SenseRepository extends GenericRepository<Sense> {
         CriteriaBuilder  criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Sense> query = criteriaBuilder.createQuery(Sense.class);
         Root<Sense> senseRoot = query.from(Sense.class);
-        senseRoot.fetch("domain");
-        senseRoot.fetch("lexicon");
-        senseRoot.fetch("partOfSpeech");
-        senseRoot.fetch("senseAttributes");
+        senseRoot.fetch("domain", JoinType.LEFT);
+        senseRoot.fetch("lexicon", JoinType.LEFT);
+        senseRoot.fetch("partOfSpeech", JoinType.LEFT);
+        senseRoot.fetch("senseAttributes", JoinType.LEFT);
+        senseRoot.fetch("examples", JoinType.LEFT);
 
         query.where(criteriaBuilder.equal(senseRoot.get("id"), senseId));
 
         return getEntityManager().createQuery(query).getSingleResult();
     }
+
 
     @Override
     protected Class<Sense> getPersistentClass() {

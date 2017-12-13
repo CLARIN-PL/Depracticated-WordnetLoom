@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -20,7 +21,8 @@ public class DomainMComboBox extends MComboBox<Domain> {
     }
 
     public void allDomains(boolean withPrefix) {
-        all = DomainManager.getInstance().getAllDomainsSorted();
+//        all = DomainManager.getInstance().getAllDomainsSorted();
+        all = DomainManager.getInstance().getAllDomains();
         loadItems(withPrefix);
     }
 
@@ -59,10 +61,10 @@ public class DomainMComboBox extends MComboBox<Domain> {
         removeAllItems();
         all = DomainManager.getInstance().sortDomains(all);
         addItem(new CustomDescription<>(nullRepresentation, null));
+        String text;
         for (Domain domain : all) {
-            // String name = domain.getName(RemoteConnectionProvider.getInstance().getLanguage());
-            //    addItem(new CustomDescription<>(
-            //            withPrefix == true ? name : nameWithoutPrefix(name), domain));
+            text = LocalisationManager.getInstance().getLocalisedString(domain.getName());
+            addItem(new CustomDescription<>(withPrefix ? text : nameWithoutPrefix(text), domain));
         }
     }
 

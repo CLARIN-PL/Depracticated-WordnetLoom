@@ -49,7 +49,6 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
         ViwnNode other = v;
         for (Object obj : syns) {
             ViwnNodeSynset node = (ViwnNodeSynset)obj;
-            Synset synset = node.getSynset();
             //TODO sprawdzić, czy w cache synset ma pobrane relacje
 //            Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synset, LexiconManager.getInstance().getLexiconsIds(), NodeDirection.values());
             DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(node.getId(), LexiconManager.getInstance().getLexiconsIds());
