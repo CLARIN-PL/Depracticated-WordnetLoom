@@ -868,13 +868,15 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             for(NodeDirection dir : dirs) {
                 showRelationGUI(synsetNode, dir);
             }
+
+            //TODO zobaczyć, dlaczego to w tym miejscu nie działa. Wstawiając to tutaj powinno działać wydajniej
 //            forest.getVertices().stream().forEach(n->{
 //                if (n instanceof ViwnNodeSynset) addMissingRelations((ViwnNodeSynset)n);
 //            });
-//
-//        //        synsetNode.setState(direction, ViwnNodeSynset.State.EXPANDED);
-//            checkAllStates();
-//            vv.setVisible(true);
+
+        //        synsetNode.setState(direction, ViwnNodeSynset.State.EXPANDED);
+            checkAllStates();
+            vv.setVisible(true);
 //        }
 
         SwingUtilities.invokeLater(() -> {
@@ -906,19 +908,10 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         if(insertedNodes < relations.size()){
             insertInvisibleSynsetNodes(relations, synsetNode, direction, insertedNodes);
         }
-//        List<ViwnNode> nodes = new ArrayList<>(forest.getVertices());
-//        nodes.stream().filter((n) -> ((n instanceof ViwnNodeSynset))).forEachOrdered((n) -> addMissingRelations((ViwnNodeSynset) n));
-//        nodes.stream().forEach(n->{if(n instanceof  ViwnNodeSynset)
-//            addMissingRelations((ViwnNodeSynset)n);
-//        });
-        //TODO wstawić to na koniec dodawania wszysztkiego
+
         forest.getVertices().stream().forEach(n->{
             if (n instanceof ViwnNodeSynset) addMissingRelations((ViwnNodeSynset)n);
         });
-
-//        synsetNode.setState(direction, ViwnNodeSynset.State.EXPANDED);
-        checkAllStates();
-        vv.setVisible(true);
     }
 
     private int insertVisibleSynsetNodes(List<ViwnEdgeSynset> relations, ViwnNodeSynset nodeSynset, NodeDirection direction, int maxShowedNodes) {

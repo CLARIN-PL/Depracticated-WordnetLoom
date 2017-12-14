@@ -319,11 +319,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
                     addEdgeSynsetToRelations(relation, direction);
                 }
                 for(SynsetRelation relation : dataEntry.getRelationsTo(direction)){
-//                    if(relation.getRelationType().getAutoReverse()){
-//                        addEdgeSynsetToRelations(relation, direction);
-//                    } else {
-                        addEdgeSynsetToRelations(relation, direction);
-//                    }
+                    addEdgeSynsetToRelations(relation, direction);
                 }
             }
         }

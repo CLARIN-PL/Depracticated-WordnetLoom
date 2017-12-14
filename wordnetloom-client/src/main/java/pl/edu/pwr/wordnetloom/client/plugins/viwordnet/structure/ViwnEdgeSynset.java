@@ -3,17 +3,12 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 import java.awt.Color;
 import java.util.HashMap;
 
-import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
-import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
-import pl.edu.pwr.wordnetloom.localisation.repository.LocalisedStringRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
-
-import javax.management.relation.Relation;
 
 /**
  * Edge between synset.

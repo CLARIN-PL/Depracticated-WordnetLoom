@@ -25,7 +25,7 @@ public class Synset extends GenericEntity {
 
 //    @NotNull
     @Valid
-    @OneToOne(mappedBy = "synset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "synset", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     private SynsetAttributes synsetAttributes;
 
     @NotNull
@@ -36,12 +36,12 @@ public class Synset extends GenericEntity {
     private Integer status = 0;
 
     @OneToMany(mappedBy = "child", fetch = FetchType.LAZY)
-    private Set<SynsetRelation> incomingRelations = new LinkedHashSet<>();
-//    private List<SynsetRelation> incomingRelations = new ArrayList<>();
+//    private Set<SynsetRelation> incomingRelations = new LinkedHashSet<>();
+    private List<SynsetRelation> incomingRelations = new ArrayList<>();
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
-    private Set<SynsetRelation> outgoingRelations = new LinkedHashSet<>();
-//    private List<SynsetRelation> outgoingRelations = new ArrayList<>();
+//    private Set<SynsetRelation> outgoingRelations = new LinkedHashSet<>();
+    private List<SynsetRelation> outgoingRelations = new ArrayList<>();
 
     public Integer getSplit() {
         return split;
@@ -75,33 +75,33 @@ public class Synset extends GenericEntity {
         this.lexicon = lexicon;
     }
 
-//    public List<SynsetRelation> getIncomingRelations(){return incomingRelations;}
-//
-//    public void setIncomingRelations(List<SynsetRelation> incomingRelations){
-//        this.incomingRelations = incomingRelations;
-//    }
-//
-//    public List<SynsetRelation> getOutgoingRelations() {return outgoingRelations;}
-//
-//    public void setOutgoingRelations(List<SynsetRelation> outgoingRelations){
-//        this.outgoingRelations = outgoingRelations;
-//    }
+    public List<SynsetRelation> getIncomingRelations(){return incomingRelations;}
 
-    public Set<SynsetRelation> getIncomingRelations() {
-        return incomingRelations;
-    }
-
-    public void setIncomingRelations(Set<SynsetRelation> incomingRelations) {
+    public void setIncomingRelations(List<SynsetRelation> incomingRelations){
         this.incomingRelations = incomingRelations;
     }
 
-    public Set<SynsetRelation> getOutgoingRelations() {
-        return outgoingRelations;
-    }
+    public List<SynsetRelation> getOutgoingRelations() {return outgoingRelations;}
 
-    public void setOutgoingRelations(Set<SynsetRelation> outgoingRelations) {
+    public void setOutgoingRelations(List<SynsetRelation> outgoingRelations){
         this.outgoingRelations = outgoingRelations;
     }
+
+//    public Set<SynsetRelation> getIncomingRelations() {
+//        return incomingRelations;
+//    }
+//
+//    public void setIncomingRelations(Set<SynsetRelation> incomingRelations) {
+//        this.incomingRelations = incomingRelations;
+//    }
+//
+//    public Set<SynsetRelation> getOutgoingRelations() {
+//        return outgoingRelations;
+//    }
+//
+//    public void setOutgoingRelations(Set<SynsetRelation> outgoingRelations) {
+//        this.outgoingRelations = outgoingRelations;
+//    }
 
     public Integer getStatus() {
         return status;
