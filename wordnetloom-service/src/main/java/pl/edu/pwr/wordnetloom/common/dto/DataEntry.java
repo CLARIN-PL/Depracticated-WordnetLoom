@@ -17,19 +17,19 @@ public class DataEntry implements Serializable {
     private final int DIRECTIONS_NUMBER = 4;
 
     private Synset synset;
-    private List[] relationsFrom;
-    private List[] relationsTo;
+    private List[] relations;
 
-    private String label;
+//    private String label;
+    private String name;
+    private String variant;
+    private Long domain;
     private Long posID;
     private String lexicon;
 
     public DataEntry() {
-        relationsFrom = new List[DIRECTIONS_NUMBER];
-        relationsTo = new List[DIRECTIONS_NUMBER];
-        for(int i =0; i<DIRECTIONS_NUMBER; i++){
-            relationsFrom[i] = new ArrayList();
-            relationsTo[i] = new ArrayList();
+        relations = new List[DIRECTIONS_NUMBER];
+        for(int i=0; i<DIRECTIONS_NUMBER; i++) {
+            relations[i] = new ArrayList();
         }
     }
 
@@ -41,50 +41,50 @@ public class DataEntry implements Serializable {
         this.synset = synset;
     }
 
-    public List<SynsetRelation> getRelationsFrom(NodeDirection direction) {
+    public List<SynsetRelation> getRelations(NodeDirection direction)
+    {
         if(direction != NodeDirection.IGNORE){
-            return relationsFrom[direction.ordinal()];
+            return relations[direction.ordinal()];
         }
         return new ArrayList<>();
     }
 
-    public List<SynsetRelation> getRelationsTo(NodeDirection direction){
+    public void setRelations(List<SynsetRelation> relations, NodeDirection direction)
+    {
         if(direction != NodeDirection.IGNORE){
-            return relationsTo[direction.ordinal()];
-        }
-        return new ArrayList<>();
-    }
-
-    public void setRelationsFrom(List<SynsetRelation> relations, NodeDirection direction){
-        if(direction != NodeDirection.IGNORE){
-            relationsFrom[direction.ordinal()] = relations;
+            this.relations[direction.ordinal()] = relations;
         }
     }
 
-    public void setRelationsTo(List<SynsetRelation> relations, NodeDirection direction){
+    public void addRelation(SynsetRelation relation, NodeDirection direction) {
         if(direction != NodeDirection.IGNORE){
-            relationsTo[direction.ordinal()] = relations;
+            this.relations[direction.ordinal()].add(relation);
         }
     }
 
-    public void addRelationFrom(SynsetRelation relation, NodeDirection direction){
-        if(direction != NodeDirection.IGNORE){
-            relationsFrom[direction.ordinal()].add(relation);
-        }
+//    public String getLabel() {
+//        return label;
+//    }
+//
+//    public void setLabel(String label) {
+//        this.label = label;
+//    }
+
+    public String getName() {return name;}
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void addRelationTo(SynsetRelation relation, NodeDirection direction){
-        if(direction != NodeDirection.IGNORE){
-            relationsTo[direction.ordinal()].add(relation);
-        }
+    public String getVariant() {return variant;}
+
+    public void setVariant(String variant){
+        this.variant = variant;
     }
 
-    public String getLabel() {
-        return label;
-    }
+    public Long getDomain(){return domain;}
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setDomain(Long domain) {
+        this.domain = domain;
     }
 
     public Long getPosID() {

@@ -231,38 +231,11 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 "WHERE sr." + synsetIdColumn + ".id = :id " +
                 "AND type.nodePosition IN (:directions)" +
                 "AND sense.synsetPosition = 0 " +
-                "AND synset.lexicon.id IN (:lexicons)" +
-                "ORDER BY sense.word.word")
+                "AND synset.lexicon.id IN (:lexicons)")
                 .setParameter("id", synset.getId())
                 .setParameter("directions", Arrays.asList(directions))
                 .setParameter("lexicons", lexicons);
         return query.getResultList();
-
-//        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-//        CriteriaQuery<SynsetRelation> query = criteriaBuilder.createQuery(SynsetRelation.class);
-//        Root<SynsetRelation> relationRoot = query.from(SynsetRelation.class);
-//        Join<SynsetRelation, Synset> synsetJoin = relationRoot.join(joinColumn);
-//        Join<SynsetRelation, Sense> senseJoin = synsetJoin.join("senses");
-//        Join<SynsetRelation, RelationType> relationTypeJoin = relationRoot.join("relationType");
-//        Fetch<SynsetRelation, Synset> synsetFetch = relationRoot.fetch(joinColumn, JoinType.LEFT);
-//        Fetch<SynsetRelation, Sense> senseFetch = synsetFetch.fetch("senses", JoinType.LEFT);
-//
-//        senseFetch.fetch("domain", JoinType.LEFT);
-//        senseFetch.fetch("lexicon", JoinType.LEFT);
-//
-//        List<Predicate> predicatesList = new ArrayList<>();
-//        Predicate synsetIdPredicate = criteriaBuilder.equal(relationRoot.get(synsetIdColumn), synset.getId());
-//        predicatesList.add(synsetIdPredicate);
-//        Predicate sensePredicate = criteriaBuilder.equal(senseJoin.get("synsetPosition"), 0);
-//        predicatesList.add(sensePredicate);
-//        Predicate directionPredicate = relationTypeJoin.get("nodePosition").in(directions);
-//        predicatesList.add(directionPredicate);
-//
-//        query.where(predicatesList.toArray(new Predicate[0]));
-//
-//        query.orderBy(criteriaBuilder.asc(senseJoin.get("word").get("word")));
-//
-//        return em.createQuery(query).getResultList();
     }
 
     private List<SynsetRelation> fetchRelatedSynset(List<Long> relationsIds, List<Long> lexicons, String fetchColumn) {
@@ -363,9 +336,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 "AND sr." + synsetFetchColumn + ".lexicon.id IN  (:lexicons)")
                 .setParameter("id", synset.getId())
                 .setParameter("lexicons", lexicons);
-        List<SynsetRelation> result = query.getResultList();
-//        return query.getResultList();
-        return result;
+        return (List<SynsetRelation>) query.getResultList();
     }
 
     /**

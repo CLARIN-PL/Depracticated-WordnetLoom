@@ -13,6 +13,7 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository;
 
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -678,37 +679,39 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return labelBuilder.toString();
     }
 
-    private DataEntry getDataEntry(Synset synset, Sense sense, List<SynsetRelation> relationsFrom, List<SynsetRelation> relationsTo) {
+    private DataEntry getDataEntry(Synset synset, Sense sense, List<SynsetRelation> relations) {
         DataEntry dataEntry = new DataEntry();
         dataEntry.setSynset(synset);
         NodeDirection direction;
-        for(SynsetRelation relation : relationsFrom){
-            direction = relation.getRelationType().getNodePosition();
-            dataEntry.addRelationFrom(relation, direction);
-            relationsTo.removeIf(s->s.getParent().getId().equals(relation.getChild().getId()));
-        }
-        for(SynsetRelation relation : relationsTo){
-            direction = relation.getRelationType().getNodePosition();
-            dataEntry.addRelationTo(relation, direction.getOpposite());
+        for(SynsetRelation relation : relations) {
+            if(relation.getChild().getId().equals(synset.getId())) {
+                direction = relation.getRelationType().getNodePosition().getOpposite();
+            } else {
+                direction = relation.getRelationType().getNodePosition() ;
+            }
+            dataEntry.addRelation(relation, direction);
         }
         dataEntry.setLexicon(sense.getLexicon().getIdentifier());
         dataEntry.setPosID(sense.getPartOfSpeech().getId());
-        dataEntry.setLabel(buildDataEntryLabel(sense));
+//        dataEntry.setLabel(buildDataEntryLabel(sense));
+        dataEntry.setName(sense.getWord().getWord());
+        dataEntry.setVariant(String.valueOf(sense.getVariant()));
+        dataEntry.setDomain(sense.getDomain().getName());
         return dataEntry;
     }
 
-    private void putDataEntryFromSynsetRelation(Map<Long, DataEntry> map, List<SynsetRelation> relationsList, boolean isRelationsFrom) {
+    private void putDataEntryFromSynsetRelation(Map<Long, DataEntry> map, List<SynsetRelation> relationsList, Long isRelationsFrom) {
         Synset relatedSynset;
         Sense sense;
         DataEntry dataEntry;
         for (SynsetRelation relation : relationsList) {
-            if (isRelationsFrom) {
+            if (isRelationsFrom.equals(relation.getParent().getId())) {
                 relatedSynset = relation.getChild();
             } else {
                 relatedSynset = relation.getParent();
             }
             sense = relatedSynset.getSenses().get(0);
-            dataEntry = getDataEntry(relatedSynset, sense, relatedSynset.getOutgoingRelations(), relatedSynset.getIncomingRelations());
+            dataEntry = getDataEntry(relatedSynset, sense, relatedSynset.getOutgoingRelations());
             map.put(relatedSynset.getId(), dataEntry);
         }
     }
@@ -718,8 +721,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
         CriteriaQuery<Synset> cq = cb.createQuery(Synset.class);
 
         Root<Synset> root = cq.from(Synset.class);
-//        root.fetch("incomingRelations", JoinType.LEFT);
-//        root.fetch("outgoingRelations", JoinType.LEFT);
         root.fetch("senses");
 
         cq.where(cb.equal(root.get("id"), id));
@@ -730,10 +731,9 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
     }
 
-    private DataEntry buildDataEntry(Synset synset){
-        return getDataEntry(synset, synset.getSenses().get(0), synset.getOutgoingRelations(), synset.getIncomingRelations());
+    private DataEntry buildDataEntry(Synset synset, List<SynsetRelation> relations){
+        return getDataEntry(synset, synset.getSenses().get(0), relations);
     }
-
 
     public Map<Long, DataEntry> prepareCacheForRootNode(final Long synsetId, final List<Long> lexicons, int numSynsetOnDirection, NodeDirection[] directions) {
         Map<Long, DataEntry> result = new HashMap<>();
@@ -742,32 +742,59 @@ public class SynsetRepository extends GenericRepository<Synset> {
         // pobranie relacji dla synsetu. Relacje pobierane są wraz z połączonymi synsetami oraz ich opisami (wyraz, domena, wariant)
         List<SynsetRelation> relationsFrom = synsetRelationRepository.findRelationsWhereSynsetIsParent(synset, lexicons, directions);
         List<SynsetRelation> relationsTo = synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons, directions);
-        for(SynsetRelation parent : relationsFrom)
-        {
-            for(SynsetRelation child : relationsTo)
-            {
+        //szukanie i usuwanie relacji, które pojawiają się na liście relacji "od" i na liście relacji "do"
+        for(SynsetRelation parent : relationsFrom) {
+            for(SynsetRelation child : relationsTo) {
                 if(child.getParent().getId().equals(parent.getChild().getId())){
                     relationsTo.remove(child);
                     break;
                 }
             }
         }
-        //TODO zrobić połączenie tych list, aby nie pobierać niepotrzebnie relacji
-        List<Integer> indexesRelationsFrom = getIndexRelationsToShow(relationsFrom, numSynsetOnDirection);
-        List<Integer> indexesRelationsTo = getIndexRelationsToShow(relationsTo, numSynsetOnDirection);
-        fillRelations(relationsFrom, indexesRelationsFrom, true, lexicons);
-        fillRelations(relationsTo, indexesRelationsTo, false, lexicons);
-        synset.setOutgoingRelations(relationsFrom);
-        synset.setIncomingRelations(relationsTo);
-
-        DataEntry dataEntry = buildDataEntry(synset);
+        relationsFrom.addAll(relationsTo);
+        // sortowanie listy alfabetycznie
+        relationsFrom.sort(new RelationWordComparator(synsetId));
+        // wyszukiwanie kilku pierwszych synsetów z każdego kierunku, które zostaną pokazane na grafie
+        List<Integer> indexesRelationsFrom = getIndexRelationsToShow(relationsFrom, numSynsetOnDirection, synsetId);
+        // pobranie relacji dla synsetów które zostaną pokazane
+        fillRelations(relationsFrom, indexesRelationsFrom, synsetId, lexicons);
+        // budowanie wyniku
+        DataEntry dataEntry = buildDataEntry(synset, relationsFrom);
         result.put(synset.getId(), dataEntry);
-        putDataEntryFromSynsetRelation(result, relationsFrom, true);
-        putDataEntryFromSynsetRelation(result, relationsTo, false);
+        putDataEntryFromSynsetRelation(result, relationsFrom, synsetId);
         return result;
     }
 
-    private List<Integer> getIndexRelationsToShow(List<SynsetRelation> synsetsList, int numRelationsOnDirection) {
+    private class RelationWordComparator implements Comparator<SynsetRelation>
+    {
+        private Long synsetId;
+
+        RelationWordComparator(Long synsetId) {
+            this.synsetId = synsetId;
+        }
+
+        @Override
+        public int compare(SynsetRelation o1, SynsetRelation o2) {
+            String word1;
+            String word2;
+            if(o1.getParent().getId().equals(synsetId))
+            {
+                word1 = o1.getChild().getSenses().get(0).getWord().getWord();
+            } else {
+                word1 = o1.getParent().getSenses().get(0).getWord().getWord();
+            }
+
+            if(o2.getParent().getId().equals(synsetId)) {
+                word2 = o2.getChild().getSenses().get(0).getWord().getWord();
+            } else {
+                word2 = o2.getParent().getSenses().get(0).getWord().getWord();
+            }
+
+            return word1.toLowerCase().compareTo(word2.toLowerCase());
+        }
+    }
+
+    private List<Integer> getIndexRelationsToShow(List<SynsetRelation> synsetsList, int numRelationsOnDirection, Long synsetId) {
         final int NUM_DIRECTION = 4;
         int[] directionCounter = new int[NUM_DIRECTION];
         Arrays.fill(directionCounter, 0);
@@ -778,6 +805,13 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
         for (int i = 0; i < synsetsList.size(); i++) {
             int direction = synsetsList.get(i).getRelationType().getNodePosition().ordinal();
+            if(synsetsList.get(i).getChild().getId().equals(synsetId))
+            {
+                direction = synsetsList.get(i).getRelationType().getNodePosition().getOpposite().ordinal();
+            }
+            if(direction == NodeDirection.LEFT.ordinal()){
+                System.out.println();
+            }
             if(direction == NodeDirection.IGNORE.ordinal()){
                 continue;
             }
@@ -795,14 +829,14 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return resultList;
     }
 
-    private void fillRelations(List<SynsetRelation> relations, List<Integer> indexesRelationsToExtend, boolean synsetIsParent, List<Long> lexicons)
+    private void fillRelations(List<SynsetRelation> relations, List<Integer> indexesRelationsToExtend, Long synsetIsParent, List<Long> lexicons)
     {
         SynsetRelation relation;
         Synset synset;
         for(Integer i : indexesRelationsToExtend)
         {
             relation = relations.get(i);
-            if(synsetIsParent) {
+            if(synsetIsParent.equals(relation.getParent().getId())) {
                 synset = relation.getChild();
             } else {
                 synset = relation.getParent();
@@ -818,9 +852,8 @@ public class SynsetRepository extends GenericRepository<Synset> {
         Synset newSynset = findSynsetWithRelationsAndSenseById(synsetId);
         List<SynsetRelation> relationsFrom = synsetRelationRepository.findSimpleRelationsWhereSynsetIsParent(newSynset, lexicons);
         List<SynsetRelation> relationsTo = synsetRelationRepository.findSimpleRelationsWhereSynsetIsChild(newSynset, lexicons);
-        newSynset.setIncomingRelations(relationsTo);
-        newSynset.setOutgoingRelations(relationsFrom);
-        DataEntry dataEntry = buildDataEntry(newSynset);
+        relationsFrom.addAll(relationsTo);
+        DataEntry dataEntry = buildDataEntry(newSynset, relationsFrom);
         return dataEntry;
     }
 

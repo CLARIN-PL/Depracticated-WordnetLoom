@@ -104,7 +104,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
             @Override
             protected Void doInBackground() throws Exception {
                 workbench.setBusy(true);
-                Lexicon lex = (Lexicon) criteria.getLexiconComboBox().getEntity();
+                Lexicon lex = criteria.getLexiconComboBox().getEntity();
                 if (lex != null) {
                     lexicons.clear();
                     lexicons.add(lex.getId());

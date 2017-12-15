@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
@@ -315,14 +316,19 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     {
         for(NodeDirection direction : directions){
             if(direction != NodeDirection.IGNORE){
-                for(SynsetRelation relation : dataEntry.getRelationsFrom(direction)){
-                    addEdgeSynsetToRelations(relation, direction);
-                }
-                for(SynsetRelation relation : dataEntry.getRelationsTo(direction)){
+//                for(SynsetRelation relation : dataEntry.getRelationsFrom(direction)){
+//                    addEdgeSynsetToRelations(relation, direction);
+//                }
+//                for(SynsetRelation relation : dataEntry.getRelationsTo(direction)){
+//                    addEdgeSynsetToRelations(relation, direction);
+//                }
+                for(SynsetRelation relation : dataEntry.getRelations(direction))
+                {
                     addEdgeSynsetToRelations(relation, direction);
                 }
             }
         }
+
     }
 
     private void addEdgeSynsetToRelations(SynsetRelation relation, NodeDirection direction) {
@@ -484,9 +490,15 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     @Override
     public String getLabel() {
         if (ret == null) {
+            ret = "";
             DataEntry dataEntry = ui.getEntrySetFor(getId());
-            if(dataEntry != null && dataEntry.getLabel() != null){
-                ret = dataEntry.getLabel();
+            if(dataEntry != null){
+//                ret = dataEntry.getLabel();
+                Synset synset = dataEntry.getSynset();
+                if(synset.getSynsetAttributes() != null && synset.getSynsetAttributes().getIsAbstract()) {
+                    ret = "S ";
+                }
+                ret += dataEntry.getName() + " " + dataEntry.getVariant() + " (" + LocalisationManager.getInstance().getLocalisedString(dataEntry.getDomain()) + ")";
             } else {
                 ret = "";
             }

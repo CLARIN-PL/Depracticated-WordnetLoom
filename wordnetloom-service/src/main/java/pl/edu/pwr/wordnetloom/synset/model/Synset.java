@@ -25,7 +25,7 @@ public class Synset extends GenericEntity {
 
 //    @NotNull
     @Valid
-    @OneToOne(mappedBy = "synset", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @OneToOne(mappedBy = "synset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private SynsetAttributes synsetAttributes;
 
     @NotNull
