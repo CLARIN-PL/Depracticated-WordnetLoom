@@ -437,7 +437,7 @@ public class ViWordNetService extends AbstractService implements
         @Override
         public Void doInBackground() {
             workbench.setBusy(true);
-            Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getLexiconsIds());
+            Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getLexiconsIds()); //TODO można to przenieść do inego miejsca
             getActiveGraphView().getUI().releaseDataSetCache();
             if (rootSynset != null) {
                 Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getLexiconsIds(), NodeDirection.values());

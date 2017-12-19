@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.synset.repository;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
@@ -19,10 +20,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -684,6 +682,9 @@ public class SynsetRepository extends GenericRepository<Synset> {
         dataEntry.setSynset(synset);
         NodeDirection direction;
         for(SynsetRelation relation : relations) {
+            if(relation.getId()==105811){
+                System.out.println();
+            }
             if(relation.getChild().getId().equals(synset.getId())) {
                 direction = relation.getRelationType().getNodePosition().getOpposite();
             } else {
@@ -705,6 +706,9 @@ public class SynsetRepository extends GenericRepository<Synset> {
         Sense sense;
         DataEntry dataEntry;
         for (SynsetRelation relation : relationsList) {
+            if(relation.getId() == 105811){
+                System.out.println();
+            }
             if (isRelationsFrom.equals(relation.getParent().getId())) {
                 relatedSynset = relation.getChild();
             } else {
@@ -721,14 +725,19 @@ public class SynsetRepository extends GenericRepository<Synset> {
         CriteriaQuery<Synset> cq = cb.createQuery(Synset.class);
 
         Root<Synset> root = cq.from(Synset.class);
-        root.fetch("senses");
-
-        cq.where(cb.equal(root.get("id"), id));
-
+        Join<Synset, Sense> senseJoin = root.join("senses");
+        Fetch<Synset, Sense> senseFetch = root.fetch("senses");
+        senseFetch.fetch("word");
+        List<Predicate> predicatesList = new ArrayList<>();
+        Predicate idPredicate = cb.equal(root.get("id"), id);
+        predicatesList.add(idPredicate);
+        Predicate sensePredicate = cb.equal(senseJoin.get("synsetPosition"), 0);
+        predicatesList.add(sensePredicate);
+//        cq.where(cb.equal(root.get("id"), id));
+        cq.where(predicatesList.toArray(new Predicate[0]));
         final TypedQuery<Synset> query = getEntityManager().createQuery(cq);
-
+        query.setHint("org.hibernate.cacheable", Boolean.TRUE);
         return query.getSingleResult();
-
     }
 
     private DataEntry buildDataEntry(Synset synset, List<SynsetRelation> relations){

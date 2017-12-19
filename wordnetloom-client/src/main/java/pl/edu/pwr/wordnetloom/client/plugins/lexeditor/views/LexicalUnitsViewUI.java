@@ -241,6 +241,10 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 dto.setExample(example);
 
                 units = RemoteService.senseRemote.findByCriteria(dto);
+                if(units.isEmpty())
+                {
+                    System.out.println("puste");
+                }
 
                 // odczytanie zaznaczonej jednostki
                 if (lastSelectedValue == null && unitsList != null
@@ -253,10 +257,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 }
                 criteria.setSensesToHold(units);
 
-                /*Collection<Sense> newModelCollection = listModel.getCollection();
-                newModelCollection.addAll(units);
-
-                listModel.setCollection(newModelCollection);*/
                 // jeżeli pobrało mniej elementów niż zakładano, oznacza to, że pobrano już wszystkie elementy
                 // i nie należy próbowac pobierać ponownie
                 if (units.size() < limit) {
@@ -265,6 +265,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 for (Sense sense : units) {
                     listModel.addElement(sense);
                 }
+                unitsList.updateUI();
 
                 return null;
             }
@@ -342,7 +343,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 //                Sense unit = listModel.getObjectAt(i);
             Sense unit = listModel.get(i);
 
-            // spradzenie czy ma jakies relacje
+            // TODOspradzenie czy ma jakies relacje
             int result = DialogBox.YES;
 //                if (RemoteUtils.lexicalRelationRemote
 //                        .dbGetRelationCountOfUnit(unit) > 0) {
@@ -398,8 +399,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         }
     }
 
-    private void addNewSense()
-    {
+    private void addNewSense() {
         // wyswietlenie okienka
         Sense newUnit = NewLexicalUnitFrame.showModal(workbench, null);
         if (newUnit != null) {

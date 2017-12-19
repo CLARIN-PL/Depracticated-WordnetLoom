@@ -271,6 +271,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
 //        selectedNode = rootNode = new ViwnNodeSynset(synset, this);
         rootNode = new ViwnNodeSynset(synset, this);
+        for(NodeDirection direction : NodeDirection.values()){
+            ((ViwnNodeSynset)rootNode).setFullRelation(direction, true);
+        }
         ViwnNodeSynset rootSynsetNode = (ViwnNodeSynset) rootNode;
         cache.put(synset.getId(), rootSynsetNode);
 
@@ -853,41 +856,22 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     public void showRelation(ViwnNodeSynset synsetNode, NodeDirection[] dirs) {
         SwingUtilities.invokeLater(() -> workbench.setBusy(true));
 
-//        setSelectedNode(synsetNode);
-        //TODO poprawić to, ponieważ powoduje będy podczas zwijania (np. człowiek)
-//        if(cache.containsKey(synsetNode.getId())) {
-//            boolean isFullRelation = true;
-//            ViwnNodeSynset cachedSynsetNode = cache.get(synsetNode.getId());
-//            for(NodeDirection direction : dirs)
-//            {
-//                if(!cachedSynsetNode.isFullRelation(direction)){
-//                    isFullRelation = false;
-//                    break;
-//                }
-//            }
-//            if(!isFullRelation){ //TODO srawdzić, czy nie powoduje to żadnych problemów
-                Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synsetNode.getSynset(), LexiconManager.getInstance().getLexiconsIds(), dirs);
-                addToEntrySet(entries); //TODO, sprawdzić, czy nie da rady zrobić tego bez dodawania elementów do entries
-                synsetNode.setup(dirs);
-                for(NodeDirection direction : dirs){
-                    synsetNode.setFullRelation(direction, true);;
-                }
-//            }
-//        }
-//        for (NodeDirection dir : dirs) {
-            //TODO wsadzić to do jakieś metody
-//            if (!synsetNode.isFullRelation(dir)) { // jeżeli synset nie ma pobranych w pełni relacji dla danego kierunku
-
-//                synsetNode.setFullRelation(dir, true);
-//                synsetNode.setup(); //TODO zobaczyc, czy nie da się tego rozwiązać inaczej
-//            }
-
-            for(NodeDirection dir : dirs) {
-                showRelationGUI(synsetNode, dir);
+        // jeżeli relacje nie były pobrane wczesniej, zostaną pobrane
+        if(!checkNodeWasExtended(synsetNode, dirs)) {
+            Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synsetNode.getSynset(), LexiconManager.getInstance().getLexiconsIds(), dirs);
+            addToEntrySet(entries); //TODO, sprawdzić, czy nie da rady zrobić tego bez dodawania elementów do entries
+            synsetNode.setup(dirs);
+            for(NodeDirection direction : dirs){
+                synsetNode.setFullRelation(direction, true);
             }
-            addMissingRelationInForest();
-            checkAllStates();
-//        }
+        }
+
+        // pokazanie relacji
+        for(NodeDirection dir : dirs) {
+            showRelationGUI(synsetNode, dir);
+        }
+        addMissingRelationInForest();
+        checkAllStates();
 
         SwingUtilities.invokeLater(() -> {
             recreateLayoutWithFix(synsetNode, synsetNode);
@@ -897,6 +881,15 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             workbench.setBusy(false);
             vv.setVisible(true);
         });
+    }
+
+    private boolean checkNodeWasExtended(ViwnNodeSynset node, NodeDirection[] directions) {
+        for(NodeDirection direction : directions) {
+            if(!node.isFullRelation(direction)){
+                return false;
+            }
+        }
+        return true;
     }
 
     public void addToEntrySet(Map<Long,DataEntry> entries)

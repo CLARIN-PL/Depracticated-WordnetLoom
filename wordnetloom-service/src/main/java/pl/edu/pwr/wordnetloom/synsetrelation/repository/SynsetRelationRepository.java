@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.synsetrelation.repository;
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import org.hibernate.SessionFactory;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
@@ -12,6 +13,7 @@ import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.jms.Session;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
@@ -224,6 +226,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
     private List<SynsetRelation> getRelations(Synset synset, List<Long> lexicons, String joinColumn, String synsetIdColumn, NodeDirection[] directions) {
         Query query = getEntityManager().createQuery("FROM SynsetRelation sr LEFT JOIN FETCH sr." + joinColumn + " AS synset " +
                 "LEFT JOIN FETCH synset.senses AS sense " +
+                "LEFT JOIN FETCH synset.synsetAttributes AS attributes " +
                 "LEFT JOIN FETCH sense.domain " +
                 "LEFT JOIN FETCH sense.lexicon " +
                 "LEFT JOIN FETCH sr.relationType AS type " +
@@ -234,7 +237,8 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 "AND synset.lexicon.id IN (:lexicons)")
                 .setParameter("id", synset.getId())
                 .setParameter("directions", Arrays.asList(directions))
-                .setParameter("lexicons", lexicons);
+                .setParameter("lexicons", lexicons)
+                .setHint("org.hibernate.cacheable", Boolean.TRUE);
         return query.getResultList();
     }
 
@@ -331,11 +335,14 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         if (synsetIsChild) {
             synsetFetchColumn = CHILD;
         }
+
         Query query = getEntityManager().createQuery("SELECT new SynsetRelation(sr.id,sr.relationType.id, sr.parent.id, sr.child.id, sr.relationType.nodePosition) FROM SynsetRelation sr " +
                 "WHERE sr." + synsetFetchColumn + ".id = :id " +
                 "AND sr." + synsetFetchColumn + ".lexicon.id IN  (:lexicons)")
                 .setParameter("id", synset.getId())
-                .setParameter("lexicons", lexicons);
+                .setParameter("lexicons", lexicons)
+                .setHint("org.hibernate.cacheable", Boolean.TRUE);
+
         return (List<SynsetRelation>) query.getResultList();
     }
 
