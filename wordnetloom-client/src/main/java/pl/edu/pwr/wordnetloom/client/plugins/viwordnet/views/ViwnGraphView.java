@@ -124,9 +124,7 @@ public class ViwnGraphView extends AbstractView {
                             || (Objects.equals(node.getExt().getScore1(), max.getExt().getScore1())
                             && node.getExt().getScore2() > max.getExt().getScore2())) {
                         max = node;
-                    } else {
                     }
-
                     if (node.isAdded()) {
                         containsWord = true;
                     }

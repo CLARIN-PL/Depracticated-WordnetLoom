@@ -161,6 +161,8 @@ public class LexicalDA {
             lexicalUnit.setVariant(variant);
             lexicalUnit.setPartOfSpeech(pos);
 
+
+
 //            RemoteUtils.lexicalUnitRemote.updateSense(lexicalUnit);
 //            if (definition != null) {
 //                RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(lexicalUnit, Sense.DEFINITION, definition);

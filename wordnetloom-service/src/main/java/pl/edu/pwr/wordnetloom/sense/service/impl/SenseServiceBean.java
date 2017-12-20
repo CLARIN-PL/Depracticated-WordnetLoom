@@ -5,6 +5,8 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
+import pl.edu.pwr.wordnetloom.common.dto.DataMap;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -126,4 +128,8 @@ public class SenseServiceBean implements SenseServiceLocal {
         return senseRepository.findHeadSenseOfSynset(synsetId);
     }
 
+    @Override
+    public Sense fetchSense(Long senseId) {
+        return senseRepository.fetchSense(senseId);
+    }
 }

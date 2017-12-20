@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.relationtype.model;
 
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -16,6 +17,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "relation_type")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class RelationType extends GenericEntity {
 
     @OneToMany

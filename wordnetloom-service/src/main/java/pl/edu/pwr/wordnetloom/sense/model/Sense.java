@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -17,6 +18,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "sense")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Sense extends GenericEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,10 +49,10 @@ public class Sense extends GenericEntity {
 
     @Valid
     @NotNull
-    @OneToOne(mappedBy = "sense", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "sense", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     private SenseAttributes senseAttributes;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "sense")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "sense", orphanRemoval = true)
     private List<SenseExample> examples;
 
     @NotNull

@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.sense.service;
 
 import java.util.List;
+
+import pl.edu.pwr.wordnetloom.common.dto.DataMap;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -50,4 +52,7 @@ public interface SenseServiceRemote {
     List<Sense> findSensesByWordId(Long id, Long lexicon);
 
     Sense findHeadSenseOfSynset(Long synsetId);
+
+    Sense fetchSense(Long senseId);
+
 }

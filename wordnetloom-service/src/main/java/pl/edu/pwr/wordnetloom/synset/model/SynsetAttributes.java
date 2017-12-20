@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.synset.model;
 
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
@@ -8,6 +9,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "synset_attributes")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SynsetAttributes extends GenericEntity {
 
     private static final long serialVersionUID = -3305787239727633359L;
@@ -28,7 +31,7 @@ public class SynsetAttributes extends GenericEntity {
     @Column(name = "abstract")
     private Boolean isAbstract = false;
 
-    @ManyToOne
+    @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
 

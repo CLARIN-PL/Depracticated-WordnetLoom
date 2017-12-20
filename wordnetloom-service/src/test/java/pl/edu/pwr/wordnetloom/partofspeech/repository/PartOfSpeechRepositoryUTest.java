@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.partofspeech.repository;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import pl.edu.pwr.wordnetloom.commontests.utils.TestBaseRepository;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;

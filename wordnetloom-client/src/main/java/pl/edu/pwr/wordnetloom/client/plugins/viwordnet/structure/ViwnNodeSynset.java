@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
@@ -85,6 +86,9 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         for(int i = 0; i<relations.length; i++){
             relations[i] = new ArrayList<>();
         }
+        for(int i =0 ; i <states.length; i++){
+            states[i] = State.NOT_EXPANDED;
+        }
 
         units = null; //RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
         setup();
@@ -134,6 +138,11 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     public boolean isDirty() {
         return is_dirty_cache_;
+    }
+
+    public void setDirty(boolean dirty)
+    {
+        is_dirty_cache_ = dirty;
     }
 
     @Override
@@ -228,7 +237,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
         for(ViwnEdgeSynset edge : relationsTo){
             if(edge.getRelationType() != null){ //TODO po usunięciu błędnych relacji usunąć tego ifa
-                direction = edge.getRelationType().getNodePosition().getOpposite();
+                direction = edge.getRelationType().getNodePosition();
 
 //                relations[direction.ordinal()].add(edge);
                 edgesSet[direction.ordinal()].add(edge);
@@ -303,22 +312,23 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         setup();
     }
 
-    private void addSynsetEdges(DataEntry dataEntry)
+    private void addSynsetEdges(DataEntry dataEntry, NodeDirection[] directions)
     {
-        for(NodeDirection direction : NodeDirection.values()){
+        for(NodeDirection direction : directions){
             if(direction != NodeDirection.IGNORE){
-                for(SynsetRelation relation : dataEntry.getRelationsFrom(direction)){
+//                for(SynsetRelation relation : dataEntry.getRelationsFrom(direction)){
+//                    addEdgeSynsetToRelations(relation, direction);
+//                }
+//                for(SynsetRelation relation : dataEntry.getRelationsTo(direction)){
+//                    addEdgeSynsetToRelations(relation, direction);
+//                }
+                for(SynsetRelation relation : dataEntry.getRelations(direction))
+                {
                     addEdgeSynsetToRelations(relation, direction);
-                }
-                for(SynsetRelation relation : dataEntry.getRelationsTo(direction)){
-//                    if(relation.getRelationType().getAutoReverse()){
-//                        addEdgeSynsetToRelations(relation, direction);
-//                    } else {
-                        addEdgeSynsetToRelations(relation, direction.getOpposite());
-//                    }
                 }
             }
         }
+
     }
 
     private void addEdgeSynsetToRelations(SynsetRelation relation, NodeDirection direction) {
@@ -326,10 +336,34 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         relations[direction.ordinal()].add(edge);
     }
 
+    public void setup(NodeDirection[] directions)
+    {
+        edges_to_this_.clear();
+        edges_from_this_.clear();
+
+
+        // first - primary cache
+//        Set<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
+//        Set<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());
+
+        for(int i=0; i < directions.length; i++){
+            relations[directions[i].ordinal()].clear();
+        }
+
+        DataEntry dataEntry = ui.getEntrySetFor(synset.getId());
+        if(dataEntry != null){
+            addSynsetEdges(dataEntry, directions);
+        }
+        getPos();
+    }
+
     public void setup() {
         edges_to_this_.clear();
         edges_from_this_.clear();
 
+        if(getSynset().getId() == 256186){
+            System.out.println();
+        }
         // first - primary cache
 //        Set<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
 //        Set<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());
@@ -337,10 +371,12 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         for(int i=0; i < relations.length; i++){
             relations[i].clear();
         }
+
         DataEntry dataEntry = ui.getEntrySetFor(synset.getId());
         if(dataEntry != null){
-            addSynsetEdges(dataEntry);
+            addSynsetEdges(dataEntry, NodeDirection.values());
         }
+
         // no cache? fetch from database
 //        if (relsUP == null) {
 //            relsUP = RemoteUtils.synsetRelationRemote.dbGetUpperRelations(
@@ -441,9 +477,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
                             ui.recreateLayout();
                             break;
                         case SEMI_EXPANDED:
-                            ui.showRelation(this, new NodeDirection[]{rel});
-                            ui.recreateLayout();
-                            break;
                         case NOT_EXPANDED:
                             ui.showRelation(this, new NodeDirection[]{rel});
                             ui.recreateLayout();
@@ -457,14 +490,17 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     @Override
     public String getLabel() {
         if (ret == null) {
+            ret = "";
             DataEntry dataEntry = ui.getEntrySetFor(getId());
-            if(dataEntry != null && dataEntry.getLabel() != null){
-                ret = dataEntry.getLabel();
+            if(dataEntry != null){
+//                ret = dataEntry.getLabel();
+                Synset synset = dataEntry.getSynset();
+                if(synset.getSynsetAttributes() != null && synset.getSynsetAttributes().getIsAbstract()) {
+                    ret = "S ";
+                }
+                ret += dataEntry.getName() + " " + dataEntry.getVariant() + " (" + LocalisationManager.getInstance().getLocalisedString(dataEntry.getDomain()) + ")";
             } else {
                 ret = "";
-            }
-            if(ret.equals("")){
-                System.out.println();
             }
 //            DataEntry dataSet = ui.getEntrySetFor(getId());
 //            if (dataSet == null || dataSet.getLabel() == null) {

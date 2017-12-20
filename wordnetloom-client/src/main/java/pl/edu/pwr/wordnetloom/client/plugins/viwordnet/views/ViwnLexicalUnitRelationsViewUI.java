@@ -2,8 +2,11 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tree.WebTree;
+import org.hibernate.dialect.unique.DefaultUniqueDelegate;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -11,6 +14,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -20,8 +24,7 @@ import javax.swing.tree.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.Collection;
-import java.util.Enumeration;
+import java.util.*;
 
 /**
  * [View User Interface] Displays a list of lexical relations for given unit.
@@ -31,9 +34,9 @@ import java.util.Enumeration;
 public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         SimpleListenerInterface, ActionListener, TreeSelectionListener {
 
-    DefaultMutableTreeNode root = null;
-    DefaultMutableTreeNode root_to = null;
-    DefaultMutableTreeNode root_from = null;
+    private DefaultMutableTreeNode root = null;
+    private DefaultMutableTreeNode root_to = null;
+    private DefaultMutableTreeNode root_from = null;
 
     WebTree tree = null;
 
@@ -59,6 +62,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         root = new DefaultMutableTreeNode("");
         tree = new WebTree(root);
         tree.addTreeSelectionListener(this);
+        tree.setCellRenderer(new ViwnLexicalUnitRelationRenderer());
 
         root_from = new DefaultMutableTreeNode(Labels.FROM);
         root_to = new DefaultMutableTreeNode(Labels.TO);
@@ -95,14 +99,42 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
         SwingWorker<String, Object> worker = new SwingWorker<String, Object>() {
 
-            Collection<SenseRelation> relations;
-            Collection<SenseRelation> relations_sub;
-
             @Override
             protected String doInBackground() throws Exception {
-                // relations = RemoteUtils.lexicalRelationRemote.dbGetFullRelations((Sense) object);
-                // relations_sub = RemoteUtils.lexicalRelationRemote.dbGetUpperRelations((Sense) object, null);
+//                relations = RemoteService.senseRelationRemote.findFullRelations((Sense)object);
+                root_from.removeAllChildren();
+                root_to.removeAllChildren();
+                List<SenseRelation> relationsFrom =  RemoteService.senseRelationRemote.findRelations((Sense)object, null, true, false);
+                List<SenseRelation> relationTo = RemoteService.senseRelationRemote.findRelations((Sense)object, null, false, false);
+                fillRootRelations(root_from, relationsFrom, true);
+                fillRootRelations(root_to, relationTo, false);
+
                 return null;
+            }
+
+            private void fillRootRelations(DefaultMutableTreeNode nodeToFill, List<SenseRelation> relations, boolean displayChild)
+            {
+                Map<Long, DefaultMutableTreeNode> relationTypeNodeMap = new HashMap<>();
+                DefaultMutableTreeNode node;
+                DefaultMutableTreeNode senseNode;
+                Sense senseToDisplay;
+                for(SenseRelation relation : relations) {
+                    if(!relationTypeNodeMap.containsKey(relation.getRelationType().getId())){
+                        node = new DefaultMutableTreeNode(relation);
+                        node.setUserObject(relation);
+                        relationTypeNodeMap.put(relation.getRelationType().getId(), node);
+                    }
+
+                    if(relation.getChild() != null && relation.getParent() != null){
+                        senseToDisplay = displayChild ? relation.getChild() : relation.getParent();
+                        senseNode = new DefaultMutableTreeNode(new Pair<>(senseToDisplay, relation));
+                        DefaultMutableTreeNode parentNode = relationTypeNodeMap.get(relation.getRelationType().getId());
+                        parentNode.add(senseNode);
+                    }
+                }
+                for(Map.Entry<Long, DefaultMutableTreeNode> entry : relationTypeNodeMap.entrySet()){
+                    nodeToFill.add(entry.getValue());
+                }
             }
 
             @Override
@@ -113,57 +145,10 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                     // ugly hack, to switch button off after changing tree
                     delRelation.setEnabled(false);
                 }
-
                 root.setUserObject(object);
-                root_to.removeAllChildren();
-                root_from.removeAllChildren();
 
-                tree.setCellRenderer(new ViwnLexicalUnitRelationRenderer());
-                tree.expandRow(0);
-
-                int rel_id = 0;
-                DefaultMutableTreeNode rel_node = null;
-
-                for (SenseRelation rel : relations) {
-
-                    if (rel_id != rel.getRelationType().getId().intValue()) {
-                        rel_node = new DefaultMutableTreeNode(rel);
-                        rel_node.setUserObject(rel);
-                        rel_id = rel.getRelationType().getId().intValue();
-                        root_from.add(rel_node);
-                    }
-
-                    if (rel.getChild() != null && rel.getParent() != null) {
-                        DefaultMutableTreeNode node = new DefaultMutableTreeNode(new Pair<>(rel.getChild(), rel));
-                        rel_node.add(node);
-                    }
-                }
-
-                rel_id = 0;
-                rel_node = null;
-
-                for (SenseRelation rel : relations_sub) {
-
-                    if (rel_id != rel.getRelationType().getId().intValue()) {
-                        rel_node = new DefaultMutableTreeNode(rel);
-                        rel_node.setUserObject(rel);
-                        rel_id = rel.getRelationType().getId().intValue();
-                        root_to.add(rel_node);
-                    }
-
-                    if (rel.getChild() != null && rel.getParent() != null) {
-                        DefaultMutableTreeNode node = new DefaultMutableTreeNode(new Pair<>(rel.getParent(), rel));
-                        rel_node.add(node);
-                    }
-                }
-
-                DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-                DefaultMutableTreeNode root = (DefaultMutableTreeNode) model
-                        .getRoot();
-                model.reload(root);
-
+                ((DefaultTreeModel) tree.getModel()).reload();
                 tree.updateUI();
-                tree.repaint();
 
                 expandAll(true);
             }
@@ -250,15 +235,15 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                 if (dmtn.isRoot()) {
                     setIcon(openIcon);
                 } else /* else, because, root shouldn't be relation */ if (dmtn.getUserObject() instanceof SenseRelation) {
-//                    this.setText((RelationTypes.get(((SenseRelation) dmtn
-//                            .getUserObject()).getRelationType().getId())).name());
+                    Long nameId = ((SenseRelation)dmtn.getUserObject()).getRelationType().getName();
+                    setText(LocalisationManager.getInstance().getLocalisedString(nameId));
                 } else if (dmtn.getUserObject() instanceof Pair<?, ?>) {
-                    Pair<Sense, SenseRelation> pair = (Pair<Sense, SenseRelation>) dmtn
-                            .getUserObject();
-                    setText(pair.getA().toString());
+                    Pair<Sense, SenseRelation> pair = (Pair<Sense, SenseRelation>) dmtn.getUserObject();
+                    Sense sense = pair.getA();
+                    String domainText = LocalisationManager.getInstance().getLocalisedString(sense.getDomain().getName());
+                    setText(sense.toString() + " " + sense.getVariant() + " (" + domainText + ")");
                 }
             }
-
             return this;
         }
     }

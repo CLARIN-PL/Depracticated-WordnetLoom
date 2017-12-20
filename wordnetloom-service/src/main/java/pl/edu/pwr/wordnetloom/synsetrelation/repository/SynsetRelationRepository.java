@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.synsetrelation.repository;
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import org.hibernate.SessionFactory;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
@@ -12,6 +13,7 @@ import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.jms.Session;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
@@ -221,48 +223,25 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return path;
     }
 
-    private List<SynsetRelation> getRelationsFrom(Synset synset, List<Long> lexicons, String joinColumn, String synsetIdColumn,NodeDirection[] directions) {
-//        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-//        CriteriaQuery<SynsetRelation> query = criteriaBuilder.createQuery(SynsetRelation.class);
-//        Root<SynsetRelation> relationRoot = query.from(SynsetRelation.class);
-//        Join<SynsetRelation, RelationType> relationTypeJoin = relationRoot.join("relationType");
-//        Join<SynsetRelation, Synset> synsetJoin = relationRoot.join(joinColumn,JoinType.LEFT);
-//        Join<SynsetRelation, Sense> senseJoin = synsetJoin.join("senses");
-//        Join<Synset, Word> wordJoin = senseJoin.join("word",JoinType.LEFT);
-//        Fetch<SynsetRelation, Synset> synsetFetch = relationRoot.fetch(joinColumn, JoinType.LEFT);
-//        Fetch<SynsetRelation, Sense> senseFetch = synsetFetch.fetch("senses", JoinType.LEFT);
-//        List<Predicate> predicates = new ArrayList<>();
-//        Predicate parentPredicate = criteriaBuilder.equal(relationRoot.get(synsetIdColumn), synset.getId());
-//        Predicate synsetPositionPredicate = criteriaBuilder.equal(senseJoin.get("synsetPosition"), 0);
-//        predicates.add(parentPredicate);
-//        predicates.add(synsetPositionPredicate);
-//        query.where(predicates.toArray(new Predicate[0]));
-//        //TODO chyba powino wstawić sie warunek z leksykonem
-//
-//        List<Order> orders = new ArrayList<>();
-//        Order nodePositionOrder = criteriaBuilder.asc(relationTypeJoin.get("nodePosition"));
-//        Order wordOrder = criteriaBuilder.asc(wordJoin.get("word"));
-//        orders.add(nodePositionOrder);
-//        orders.add(wordOrder);
-//        query.orderBy(orders);
-//
-//        List<SynsetRelation> resultList = getEntityManager().createQuery(query).getResultList();
-//        return resultList ;
-
+    private List<SynsetRelation> getRelations(Synset synset, List<Long> lexicons, String joinColumn, String synsetIdColumn, NodeDirection[] directions) {
         Query query = getEntityManager().createQuery("FROM SynsetRelation sr LEFT JOIN FETCH sr." + joinColumn + " AS synset " +
+                "LEFT JOIN FETCH sr."+synsetIdColumn+ " AS synset2 " +
+                "LEFT JOIN FETCH synset2.synsetAttributes AS attributtes2 "+
                 "LEFT JOIN FETCH synset.senses AS sense " +
+                "LEFT JOIN FETCH synset.synsetAttributes AS attributes " +
                 "LEFT JOIN FETCH sense.domain " +
                 "LEFT JOIN FETCH sense.lexicon " +
                 "LEFT JOIN FETCH sr.relationType AS type " +
+                "LEFT JOIN FETCH sense.word AS word " +
                 "WHERE sr." + synsetIdColumn + ".id = :id " +
                 "AND type.nodePosition IN (:directions)" +
                 "AND sense.synsetPosition = 0 " +
-                "ORDER BY sense.word.word")
+                "AND synset.lexicon.id IN (:lexicons)")
                 .setParameter("id", synset.getId())
-                .setParameter("directions", Arrays.asList(directions));
-
-        List<SynsetRelation> resultList = query.getResultList();
-        return resultList;
+                .setParameter("directions", Arrays.asList(directions))
+                .setParameter("lexicons", lexicons)
+                .setHint("org.hibernate.cacheable", Boolean.TRUE);
+        return query.getResultList();
     }
 
     private List<SynsetRelation> fetchRelatedSynset(List<Long> relationsIds, List<Long> lexicons, String fetchColumn) {
@@ -314,35 +293,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return resultList;
     }
 
-    private List<Integer> getIndexRelationsToShow(List<SynsetRelation> synsetsList, int numRelationsOnDirection) {
-        final int NUM_DIRECTION = 4;
-        int[] directionCounter = new int[NUM_DIRECTION];
-        Arrays.fill(directionCounter, 0);
-
-        int filledDirectionsCounter = 0;
-
-        List<Integer> resultList = new ArrayList<>();
-
-        for (int i = 0; i < synsetsList.size(); i++) {
-            int direction = synsetsList.get(i).getRelationType().getNodePosition().ordinal();
-            if(direction == NodeDirection.IGNORE.ordinal()){
-                continue;
-            }
-            if (directionCounter[direction] != numRelationsOnDirection) {
-                resultList.add(i);
-                directionCounter[direction]++;
-                if (directionCounter[direction] == numRelationsOnDirection) {
-                    filledDirectionsCounter++;
-                }
-                if (filledDirectionsCounter == NUM_DIRECTION) {
-                    return resultList;
-                }
-            }
-        }
-        return resultList;
-    }
-
-    private List<SynsetRelation> findAllRelationBySynset(Synset synset, List<Long> lexicons, boolean synsetIsParent, int numRelationsOnDirection, NodeDirection[] directions) {
+    private List<SynsetRelation> findAllRelationBySynset(Synset synset, List<Long> lexicons, boolean synsetIsParent, NodeDirection[] directions) {
         final String PARENT = "parent";
         final String CHILD = "child";
         String synsetIdColumn;
@@ -354,53 +305,21 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
             synsetIdColumn = CHILD;
             fetchColumn = PARENT;
         }
-        List<SynsetRelation> allRelations = getRelationsFrom(synset, lexicons, fetchColumn, synsetIdColumn, directions);
-        List<Integer> indexesRelationToShow = getIndexRelationsToShow(allRelations, 4); //TODO poprawić parametr
-        Synset fetchedSynset;
-        SynsetRelation relation;
-        for (SynsetRelation synsetRelation : allRelations) {
-            if (synsetIsParent) {
-                synsetRelation.getChild().setIncomingRelations(new LinkedHashSet<>());
-                synsetRelation.getChild().setOutgoingRelations(new LinkedHashSet<>());
-            }
-        }
-
-        for (Integer i : indexesRelationToShow) {
-            relation = allRelations.get(i);
-            if (synsetIsParent) {
-                fetchedSynset = relation.getChild();
-            } else {
-                fetchedSynset = relation.getParent();
-            }
-            List<SynsetRelation> relationsFrom = findSimpleRelationsWhereSynsetIsParent(fetchedSynset, lexicons);
-            List<SynsetRelation> relationsTo = findSimpleRelationsWhereSynsetIsChild(fetchedSynset, lexicons);
-            fetchedSynset.setOutgoingRelations(new LinkedHashSet<>(relationsFrom));
-            fetchedSynset.setIncomingRelations(new LinkedHashSet<>(relationsTo));
-        }
-        return allRelations;
+        return getRelations(synset, lexicons, fetchColumn, synsetIdColumn, directions);
     }
 
     public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
-        return findAllRelationBySynset(synset, lexicons, false, 4, directions);
+        NodeDirection[] oppositeDirections = new NodeDirection[directions.length];
+        for(int i = 0; i < directions.length; i++)
+        {
+            oppositeDirections[i] = directions[i].getOpposite();
+        }
 
+        return findAllRelationBySynset(synset, lexicons, false, oppositeDirections);
     }
 
     public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
-        return findAllRelationBySynset(synset, lexicons, true, 4, directions);
-
-
-        //TO było dobre
-//        return findRelations(synset, lexicons, false);
-
-
-//        List<SynsetRelation>  resultList = query.getResultList();
-//        for(SynsetRelation relation : resultList){
-//            relation.setParent(synset);
-//        }
-//        return resultList;
-        /*return getEntityManager().createQuery("FROM SynsetRelation sr WHERE sr.parent.id = :id", SynsetRelation.class)
-                .setParameter("id", synset.getId())
-                .getResultList();*/
+        return findAllRelationBySynset(synset, lexicons, true, directions);
     }
 
     public List<SynsetRelation> findSimpleRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons) {
@@ -418,12 +337,15 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         if (synsetIsChild) {
             synsetFetchColumn = CHILD;
         }
+
         Query query = getEntityManager().createQuery("SELECT new SynsetRelation(sr.id,sr.relationType.id, sr.parent.id, sr.child.id, sr.relationType.nodePosition) FROM SynsetRelation sr " +
                 "WHERE sr." + synsetFetchColumn + ".id = :id " +
                 "AND sr." + synsetFetchColumn + ".lexicon.id IN  (:lexicons)")
                 .setParameter("id", synset.getId())
-                .setParameter("lexicons", lexicons);
-        return query.getResultList();
+                .setParameter("lexicons", lexicons)
+                .setHint("org.hibernate.cacheable", Boolean.TRUE);
+
+        return (List<SynsetRelation>) query.getResultList();
     }
 
     /**

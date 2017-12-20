@@ -17,8 +17,9 @@ public class DomainManager {
 
     private DomainManager() {
         List<Domain> list = RemoteService.domainServiceRemote.findAll();
-        cache = new ArrayList<>();
-        Collections.unmodifiableList(Collections.synchronizedList(list));
+//        cache = new ArrayList<>();
+        cache = list;
+//        Collections.unmodifiableList(Collections.synchronizedList(list));
     }
 
     public static DomainManager getInstance() {

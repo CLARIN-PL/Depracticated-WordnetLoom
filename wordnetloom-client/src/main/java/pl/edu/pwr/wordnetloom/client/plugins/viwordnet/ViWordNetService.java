@@ -21,7 +21,6 @@ import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
@@ -96,9 +95,7 @@ public class ViWordNetService extends AbstractService implements
         this.perspectiveName = perspectiveName;
         this.perspective = perspective;
 
-        PartOfSpeechManager.getInstance().getAll().stream().forEach((pos) -> {
-            // posMap.put(pos.getName(RemoteConnectionProvider.getInstance().getLanguage()), pos);
-        });
+//        0
     }
 
     @Override
@@ -392,7 +389,7 @@ public class ViWordNetService extends AbstractService implements
     public void onStart() {
 
         new Thread(() -> {
-            loadRelationsSides();
+            //loadRelationsSides();
             loadRelsColors();
             loadPosBackgroundColors();
             loadPosFrameColors();
@@ -410,9 +407,11 @@ public class ViWordNetService extends AbstractService implements
     public void synsetSelectionChangeListener(ViwnNode node) {
         if (node != null && node instanceof ViwnNodeSynset) {
             ViwnNodeSynset synset = (ViwnNodeSynset) node;
-
-            synsetStructureView.doAction(synset.getSynset(), 1);
-            synsetPropertiesView.doAction(synset.getSynset(), 1);
+            if(getActiveGraphView().getUI().getSelectedNode() == null || !getActiveGraphView().getUI().getSelectedNode().equals(synset)){
+                getActiveGraphView().getUI().setSelectedNode(synset); //TODO to powinno być trochę w innym miejscu
+                synsetStructureView.doAction(synset.getSynset(), 1);
+                synsetPropertiesView.doAction(synset.getSynset(), 1);
+            }
         }
     }
 
@@ -438,7 +437,7 @@ public class ViWordNetService extends AbstractService implements
         @Override
         public Void doInBackground() {
             workbench.setBusy(true);
-            Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getLexiconsIds());
+            Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getLexiconsIds()); //TODO można to przenieść do inego miejsca
             getActiveGraphView().getUI().releaseDataSetCache();
             if (rootSynset != null) {
                 Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getLexiconsIds(), NodeDirection.values());
@@ -459,24 +458,6 @@ public class ViWordNetService extends AbstractService implements
                 activeGraphView.loadSynset(empty);
                 workbench.setBusy(false);
             }
-            // final Synset rootSynset = RemoteUtils.synsetRemote.fetchSynsetForSense(unit, LexiconManager.getInstance().getLexicons());
-//            if (rootSynset != null) {
-//                getActiveGraphView().getUI().releaseDataSetCache();
-//             //   HashMap<Long, DataEntry> entries = RemoteUtils.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getLexicons());
-////                if (entries != null) {
-////                    getActiveGraphView().getUI().setEntrySets(entries);
-////                }
-////                LoadSynsetTask synsetTask = new LoadSynsetTask(rootSynset, unit, my_tag);
-//                synsetTask.execute();
-//            } else {
-//                getActiveGraphView().getUI().releaseDataSetCache();
-//                getActiveGraphView().getUI().removeAllNodes();
-//                Synset empty = new Synset();
-//                empty.setId(new Long(0));
-//                activeGraphView.loadSynset(empty);
-//                workbench.setBusy(false);
-//            }
-
             return null;
         }
 

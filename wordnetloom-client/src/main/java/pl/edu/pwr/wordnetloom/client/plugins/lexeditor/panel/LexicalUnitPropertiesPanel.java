@@ -11,18 +11,26 @@ import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 import com.jgoodies.forms.util.LayoutStyle;
 import jiconfont.icons.FontAwesome;
+import org.hibernate.mapping.Collection;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RegisterManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.localisation.model.RegisterType;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
+import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -31,6 +39,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class LexicalUnitPropertiesPanel extends JPanel implements
@@ -43,7 +53,8 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     private MTextField variant;
     private MTextField link;
     private MComboBox<Object> register;
-    private PartOfSpeechComboBox partOfSpeech;
+//    private PartOfSpeechComboBox partOfSpeech;
+    private MComboBox<PartOfSpeech> partOfSpeech;
     private DomainMComboBox domain;
     private MTextPane comment;
     private final MButton btnCancel;
@@ -133,7 +144,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lexicon.addItemListener((ItemEvent e) -> {
             Lexicon lex = lexicon.getEntity();
             if (lex != null) {
-                partOfSpeech.filterByLexicon(lex);
+//                partOfSpeech.filterByLexicon(lex);
                 domain.filterDomainsByLexicon(lex, false);
             }
         });
@@ -144,7 +155,15 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         mainPanel.add(lblPoS, "2, 7, left, default");
 
         partOfSpeech = new PartOfSpeechComboBox(Labels.NOT_CHOSEN);
-        partOfSpeech.withoutFilter();
+        java.util.List<PartOfSpeech> partOfSpeechList = PartOfSpeechManager.getInstance().getAll();
+        java.util.List<CustomDescription> partOfSpeechDescriptorList = new ArrayList<>();
+        partOfSpeechDescriptorList.add(new CustomDescription("Brak", null)); //TODO zmienić puste
+        String posName;
+        for(PartOfSpeech pos : partOfSpeechList){
+            posName = LocalisationManager.getInstance().getLocalisedString(pos.getName());
+            partOfSpeechDescriptorList.add(new CustomDescription(posName, pos));
+        }
+        partOfSpeech.setModel(new DefaultComboBoxModel(partOfSpeechDescriptorList.toArray()));
         partOfSpeech.addActionListener(this);
         partOfSpeech.addItemListener((ItemEvent e) -> {
             PartOfSpeech pos = partOfSpeech.getEntity();
@@ -167,7 +186,8 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lblRegister.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblRegister, "2, 11, left, fill");
 
-        register = new MComboBox<>(RegisterTypes.values());
+//        register = new MComboBox<>(RegisterTypes.values());
+        register = new MComboBox<>(RegisterManager.getInstance().getAllRegisterNames().toArray());
         register.addActionListener(this);
         mainPanel.add(register, "4, 11, 3, 1, fill, fill");
 
@@ -207,7 +227,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                 return true;
             }
         };
-        examplesList.setCellRenderer(new MyCellRenderer());
+        examplesList.setCellRenderer(new ExampleCellRenderer());
 
         ComponentListener l = new ComponentAdapter() {
 
@@ -225,11 +245,15 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
 
         btnNewExample = MButton.buildAddButton();
         btnNewExample.addActionListener((ActionEvent e) -> {
-            String exa = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
-            if (exa != null && !"".equals(exa)) {
-                examplesModel.addElement(exa);
+            String example = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
+            if (example != null && !"".equals(example)) {
+                SenseExample senseExample = new SenseExample();
+                senseExample.setExample(example);
+                senseExample.setSense(unit);
+                senseExample.setType("W");
+                examplesModel.addElement(senseExample);
                 btnSave.setEnabled(true);
-                examplesList.setModel(examplesModel);
+                examplesList.updateUI();
             }
         });
 
@@ -242,13 +266,16 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         btnEditExample = MButton.buildEditButton();
         btnEditExample.addActionListener((ActionEvent e) -> {
             int idx = examplesList.getSelectedIndex();
+            SenseExample example = (SenseExample) examplesModel.get(idx);
             if (idx >= 0) {
                 String modified = ExampleFrame.showModal(frame,
                         Labels.EDIT_EXAMPLE,
-                        (String) examplesModel.get(idx), true);
-                String old = examplesModel.get(idx).toString();
+                        example.getExample(), true);
+                String old = example.getExample();
                 if (modified != null && !old.equals(modified)) {
-                    examplesModel.set(idx, modified);
+                    example.setExample(modified);
+//                    examplesModel.set(idx,example);
+                    examplesList.updateUI();
                     btnSave.setEnabled(true);
                 }
             }
@@ -302,6 +329,40 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         add(buttons, BorderLayout.SOUTH);
     }
 
+    public Sense updateAndGetSense()
+    {
+        unit.getWord().setWord(getLemma().getText());
+        unit.setPartOfSpeech(getPartOfSpeech().getEntity());
+        unit.setDomain(getDomain().getEntity());
+        int variant = Integer.parseInt(getVariant().getText());
+        unit.setVariant(variant);
+        String registerText = getRegister().getSelectedItem().toString();
+        Long registerId = RegisterManager.getInstance().getId(registerText);
+        SenseAttributes attributes = unit.getSenseAttributes();
+        String definition = getDefinition().getText();
+        String link = getLink().getToolTipText();
+        String comment = getComment().getText();
+        if(attributes == null && (definition != null || link != null || comment != null || registerId > 0))
+        {
+            attributes = new SenseAttributes();
+        }
+        attributes.setComment(comment);
+        attributes.setLink(link);
+        attributes.setDefinition(definition);
+        attributes.setRegister(registerId);
+
+        java.util.List<SenseExample> examples = unit.getExamples();
+        examples.clear();
+        if(!examplesModel.isEmpty()) {
+            for(int i = 0; i < examplesModel.size(); i++)
+            {
+                examples.add((SenseExample)examplesModel.getElementAt(i));
+            }
+        }
+        return unit;
+
+    }
+
     public Sense getSense() {
         return unit;
     }
@@ -324,24 +385,38 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     }
 
     public void refreshData() {
-        if (unit != null) {
-            LexicalDA.refresh(unit);
-        }
+//        if (unit != null) {
+//            LexicalDA.refresh(unit);
+//        }
 
         lemma.setText(formatValue(unit != null ? unit.getWord().getWord() : null));
         variant.setText(unit != null ? "" + unit.getVariant() : null);
         lexicon.setSelectedItem(unit != null ? new CustomDescription<>(unit.getLexicon().toString(), unit.getLexicon()) : null);
+        String partOfSpeechText = LocalisationManager.getInstance().getLocalisedString(unit.getPartOfSpeech().getId());
         partOfSpeech.setSelectedItem(unit != null ? new CustomDescription<>(
-                unit.getPartOfSpeech().toString(), unit
-                .getPartOfSpeech()) : null);
+                partOfSpeechText, unit.getPartOfSpeech()): null);
 
-        String domainToSet = isDomainCorrectPartOfSpeach();
+//        String domainToSet = isDomainCorrectPartOfSpeach();
 
-        domain.setSelectedItem(domainToSet == null ? null
-                : new CustomDescription<>(DomainMComboBox
-                .nameWithoutPrefix(unit.getDomain().toString()), unit
-                .getDomain()));
+        String domainText = LocalisationManager.getInstance().getLocalisedString(unit.getDomain().getName());
+        domain.setSelectedItem(domainText == null ? null
+                : new CustomDescription<>(domainText, unit.getDomain()));
 
+        SenseAttributes attributes = unit.getSenseAttributes();
+        if(attributes != null){
+            definition.setText(attributes.getDefinition());
+            comment.setText(attributes.getComment());
+            register.setSelectedItem(RegisterManager.getInstance().getName(attributes.getRegister()));
+            link.setText(attributes.getLink());
+        }
+
+        examplesModel.clear();
+        if(unit.getExamples() != null){
+            for(SenseExample example : unit.getExamples()){
+                examplesModel.addElement(example);
+            }
+            examplesList.setModel(examplesModel);
+        }
 //        definition.setText(formatValue(unit != null ? Common.getSenseAttribute(
 //                unit, Sense.DEFINITION) : null));
 //        comment.setText(formatValue(unit != null ? Common.getSenseAttribute(
@@ -486,12 +561,12 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         }
     }
 
-    public class MyCellRenderer implements ListCellRenderer {
+    public class ExampleCellRenderer implements ListCellRenderer {
 
         private final JPanel panel;
         private final JTextArea textArea;
 
-        public MyCellRenderer() {
+        public ExampleCellRenderer() {
             panel = new JPanel();
             panel.setLayout(new BorderLayout());
 
@@ -508,7 +583,11 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                                                       final Object value, final int index, final boolean isSelected,
                                                       final boolean hasFocus) {
 
-            textArea.setText((String) value);
+            if(value == null)
+            {
+                return null;
+            }
+            textArea.setText(((SenseExample) value).getExample());
             if (isSelected) {
                 textArea.setBackground(new Color(135, 206, 250));
             } else if (index % 2 == 0) {

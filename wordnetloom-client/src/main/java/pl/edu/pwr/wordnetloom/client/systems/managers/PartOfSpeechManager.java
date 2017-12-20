@@ -55,6 +55,7 @@ public class PartOfSpeechManager {
 
     public List<PartOfSpeech> getByLexiconId(Long id) {
         List<PartOfSpeech> filtred = new ArrayList<>();
+
 //        partOfSpeeches.stream().filter((pos) -> (pos.getLexicon().getId() == id)).forEach((pos) -> {
 //            filtred.add(pos);
 //        });

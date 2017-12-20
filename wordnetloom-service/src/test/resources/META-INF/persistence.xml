@@ -34,6 +34,11 @@
             <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
             <property name="hibernate.flushMode" value="FLUSH_AUTO"/>
             <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+
+            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            <property name="hibernate.cache.use_query_cache" value="true"/>
+            <property name="hibernate.cache.region.factory_class"
+                      value="org.jboss.as.jpa.hibernate5.infinispan.SharedInfinispanRegionFactory"/>
         </properties>
     </persistence-unit>
 </persistence>

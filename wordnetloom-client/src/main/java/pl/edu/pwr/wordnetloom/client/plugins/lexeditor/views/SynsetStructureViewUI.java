@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
 import com.alee.laf.panel.WebPanel;
 import jiconfont.icons.FontAwesome;
+import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
@@ -11,6 +12,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
@@ -554,6 +556,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             // odczytanie punktu podzialu
             newSplitPoint = synset.getSplit();
             // odczytanie jednostek
+            units = RemoteService.senseRemote.findBySynset(synset, LexiconManager.getInstance().getLexiconsIds());
 //            units = RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
 //            if (units == null) {
 //                units = LexicalDA.getLexicalUnits(synset, LexiconManager.getInstance().getLexicons());
@@ -595,9 +598,10 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 valueChanged(new ListSelectionEvent(
                         synset == null ? new Object() : synset, 0, 0, false));
             } else if (listModel.getSize() > 0) {
+                // czyścimy zaznaczenie, aby podczas ustawienia pierwszego elementu zostało wywołane zdarzenie
+                // które doprowadzi do załadowania relacji dla jednostki
+                unitsList.clearSelection();
                 unitsList.setSelectedIndex(0); // zaznaczenie pierwszej
-                valueChanged(new ListSelectionEvent(
-                        synset == null ? new Object() : synset, 0, 0, false));
             } else {
                 unitsList.clearSelection();
             }
@@ -643,6 +647,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         if (e.getButton() == MouseEvent.BUTTON3 && idx != -1
                 && idx != listModel.getSplitPosition()) {
             Sense unit = listModel.getObjectAt(idx);
+            unit = RemoteService.senseRemote.fetchSense(unit.getId());
 
             LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(graphUI);
             lui.init(workbench);
