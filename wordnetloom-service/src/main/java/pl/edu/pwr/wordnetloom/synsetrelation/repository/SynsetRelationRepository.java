@@ -225,6 +225,8 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
 
     private List<SynsetRelation> getRelations(Synset synset, List<Long> lexicons, String joinColumn, String synsetIdColumn, NodeDirection[] directions) {
         Query query = getEntityManager().createQuery("FROM SynsetRelation sr LEFT JOIN FETCH sr." + joinColumn + " AS synset " +
+                "LEFT JOIN FETCH sr."+synsetIdColumn+ " AS synset2 " +
+                "LEFT JOIN FETCH synset2.synsetAttributes AS attributtes2 "+
                 "LEFT JOIN FETCH synset.senses AS sense " +
                 "LEFT JOIN FETCH synset.synsetAttributes AS attributes " +
                 "LEFT JOIN FETCH sense.domain " +

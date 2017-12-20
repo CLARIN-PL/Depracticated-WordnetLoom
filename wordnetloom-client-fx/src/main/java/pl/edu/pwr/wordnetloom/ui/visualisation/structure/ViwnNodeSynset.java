@@ -276,10 +276,13 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     private void addSynsetEdges(DataEntry dataEntry) {
         for (NodeDirection direction : NodeDirection.values()) {
             if (direction != NodeDirection.IGNORE) {
-                for (SynsetRelation relation : dataEntry.getRelationsFrom(direction)) {
-                    addEdgeSynsetToRelations(relation, direction);
-                }
-                for (SynsetRelation relation : dataEntry.getRelationsTo(direction)) {
+//                for (SynsetRelation relation : dataEntry.getRelationsFrom(direction)) {
+//                    addEdgeSynsetToRelations(relation, direction);
+//                }
+//                for (SynsetRelation relation : dataEntry.getRelationsTo(direction)) {
+//                    addEdgeSynsetToRelations(relation, direction);
+//                }
+                for(SynsetRelation relation : dataEntry.getRelations(direction)) {
                     addEdgeSynsetToRelations(relation, direction);
                 }
             }
@@ -419,14 +422,19 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     @Override
     public String getLabel() {
         if (ret == null) {
+//            DataEntry dataEntry = ui.getEntrySetFor(getId());
+//            if (dataEntry != null && dataEntry.getLabel() != null) {
+//                ret = dataEntry.getLabel();
+//            } else {
+//                ret = "";
+//            }
+//            if (ret.equals("")) {
+//                System.out.println();
+//            }
             DataEntry dataEntry = ui.getEntrySetFor(getId());
-            if (dataEntry != null && dataEntry.getLabel() != null) {
-                ret = dataEntry.getLabel();
-            } else {
-                ret = "";
-            }
-            if (ret.equals("")) {
-                System.out.println();
+            if(dataEntry != null)
+            {
+
             }
 //            DataEntry dataSet = ui.getEntrySetFor(getId());
 //            if (dataSet == null || dataSet.getLabel() == null) {

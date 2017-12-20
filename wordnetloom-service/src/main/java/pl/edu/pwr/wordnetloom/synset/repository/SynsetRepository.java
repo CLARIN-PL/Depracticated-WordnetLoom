@@ -669,14 +669,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return result;
     }
 
-    private String buildDataEntryLabel(Sense sense) {
-        StringBuilder labelBuilder = new StringBuilder();
-        labelBuilder.append(sense.getWord().getWord()).append(" ")
-                .append(sense.getVariant()).append(" ")
-                .append(sense.getDomain().getName()); // TODO przetłumaczyć domene
-        return labelBuilder.toString();
-    }
-
     private DataEntry getDataEntry(Synset synset, Sense sense, List<SynsetRelation> relations) {
         DataEntry dataEntry = new DataEntry();
         dataEntry.setSynset(synset);
@@ -706,7 +698,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         Sense sense;
         DataEntry dataEntry;
         for (SynsetRelation relation : relationsList) {
-            if(relation.getId() == 105811){
+            if(relation.getId() == 59303){
                 System.out.println();
             }
             if (isRelationsFrom.equals(relation.getParent().getId())) {
@@ -845,6 +837,9 @@ public class SynsetRepository extends GenericRepository<Synset> {
         for(Integer i : indexesRelationsToExtend)
         {
             relation = relations.get(i);
+            if(relation.getId()==1380773){
+                System.out.println();
+            }
             if(synsetIsParent.equals(relation.getParent().getId())) {
                 synset = relation.getChild();
             } else {
