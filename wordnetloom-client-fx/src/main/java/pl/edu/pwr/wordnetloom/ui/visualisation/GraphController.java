@@ -10,6 +10,7 @@ import javafx.scene.layout.Pane;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.edu.pwr.wordnetloom.application.service.RemoteService;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.ui.search.results.events.ShowGraphEvent;
 
@@ -48,7 +49,10 @@ public class GraphController implements Initializable {
         ui.releaseDataSetCache();
 
         if (rootSynset != null) {
-            Map<Long, DataEntry> entries = service.synsetRemote().prepareCacheForRootNode(rootSynset, Arrays.asList(1l, 2l, 3l));
+            Map<Long, DataEntry> entries = service.synsetRemote()
+                    .prepareCacheForRootNode(rootSynset, Arrays.asList(1l, 2l, 3l),
+                            new NodeDirection[]{NodeDirection.LEFT,NodeDirection.TOP, NodeDirection.BOTTOM, NodeDirection.RIGHT});
+
             if (entries != null) {
                 ui.setEntrySets((HashMap<Long, DataEntry>) entries);
             }
