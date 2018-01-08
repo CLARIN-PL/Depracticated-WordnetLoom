@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class LazyScrollPane extends JScrollPane{
 
@@ -14,32 +15,43 @@ public class LazyScrollPane extends JScrollPane{
          */
         void onBottomScroll(int offset, int limit);
     }
-
+    //TODO sprawdzić to
     private JList list;
     private int limit;
     private int offset;
     private boolean end;
     private ScrollListener scrollListener;
+    private JPanel panel;
+    private JButton loadMoreButton;
 
     public LazyScrollPane(JList list,int limit){
-        super(list);
+        panel = new JPanel(new BorderLayout());
+        panel.add(list, BorderLayout.NORTH);
+        loadMoreButton = new JButton("Ładuj"); //TODO dorobić etykietę
+        loadMoreButton.addActionListener(e -> onBottomScroll());
+        loadMoreButton.setVisible(false);
+        loadMoreButton.setHorizontalAlignment(SwingConstants.LEFT);
+        panel.add(loadMoreButton);
+        setViewportView(panel);
+
         this.list = list;
         this.limit = limit;
-        getVerticalScrollBar().addAdjustmentListener(e -> {
-            if(e.getValue() != 0 
-                    && e.getValue() == e.getAdjustable().getMaximum() - e.getAdjustable().getVisibleAmount()
-                    && !e.getValueIsAdjusting()){
-                if(!end){
-                    onBottomScroll();
-                }
-            }
-        });
+//        getVerticalScrollBar().addAdjustmentListener(e -> {
+//            if(e.getValue() != 0
+//                    && e.getValue() == e.getAdjustable().getMaximum() - e.getAdjustable().getVisibleAmount()
+//                    && !e.getValueIsAdjusting()){
+//                if(!end){
+//                    onBottomScroll();
+//                }
+//            }
+//        });
     }
 
     private void onBottomScroll(){
-        if(scrollListener != null){
+        if(scrollListener != null && !end){
             offset = list.getModel().getSize();
             scrollListener.onBottomScroll(offset, limit);
+
         }
     }
 
@@ -47,20 +59,17 @@ public class LazyScrollPane extends JScrollPane{
         scrollListener = listener;
     }
 
-    public int getOffset() {return offset;}
-    public void setOffset(int offset){
-        this.offset = offset;
-    }
-
     public int getLimit() {return limit;}
-    public void setLimit(int limit) {this.limit = limit;}
 
     public void setEnd(boolean end){
         this.end = end;
+        loadMoreButton.setVisible(!end);
     }
 
     public void reset(){
+        list.clearSelection();
         end = false;
         offset = 0;
+        loadMoreButton.setVisible(false);
     }
 }

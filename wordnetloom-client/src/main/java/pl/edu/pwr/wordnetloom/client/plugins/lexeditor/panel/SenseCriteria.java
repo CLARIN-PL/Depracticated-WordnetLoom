@@ -1,12 +1,15 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
+import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RegisterManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +50,27 @@ public final class SenseCriteria extends CriteriaPanel {
         resultComboBox.setPreferredSize(DEFAULT_DIMENSION);
 
         return resultComboBox;
+    }
+
+    public SenseCriteriaDTO getSenseCriteriaDTO() {
+        String lemma = getSearchTextField().getText();
+        String comment = getComment().getText();
+        String example = getExample().getText();
+        Long partOfSpeechId = getPartsOfSpeachComboBox().getEntity() == null ? null : getPartsOfSpeachComboBox().getEntity().getId();
+        Long domainId = getDomainComboBox().getEntity() == null ? null : getDomainComboBox().getEntity().getId();
+        List<Long> lexicons = new ArrayList<>();
+        Lexicon lexicon = getLexiconComboBox().getEntity();
+        if(lexicon!=null){
+            lexicons.add(lexicon.getId());
+        } else {
+            lexicons.addAll(LexiconManager.getInstance().getUserChosenLexiconsIds());
+        }
+        SenseCriteriaDTO senseCriteria = new SenseCriteriaDTO(partOfSpeechId, domainId, lemma, lexicons);
+        senseCriteria.setComment(comment);
+        senseCriteria.setExample(example);
+
+        return senseCriteria;
+
     }
 
     @Override

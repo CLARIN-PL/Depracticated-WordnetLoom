@@ -95,8 +95,8 @@
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>5.2.12.Final</version>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>3.5.6-Final</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.*;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import pl.edu.pwr.wordnetloom.commontests.utils.TestBaseRepository;
 import static pl.edu.pwr.wordnetloom.commontests.word.WordForTestsRepository.*;

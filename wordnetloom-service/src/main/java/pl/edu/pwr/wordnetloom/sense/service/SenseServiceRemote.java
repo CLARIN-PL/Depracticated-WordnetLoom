@@ -23,6 +23,8 @@ public interface SenseServiceRemote {
 
     List<Sense> findByCriteria(SenseCriteriaDTO dto);
 
+    int getCountUnitsByCriteria(SenseCriteriaDTO dto);
+
     List<Sense> filterSenseByLexicon(final List<Sense> senses, final List<Long> lexicons);
 
     List<Sense> findByLikeLemma(String lemma, List<Long> lexicons);

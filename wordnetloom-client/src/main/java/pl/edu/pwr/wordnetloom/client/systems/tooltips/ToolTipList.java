@@ -36,11 +36,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
-import javax.swing.ToolTipManager;
+import javax.swing.*;
+
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -125,7 +122,8 @@ public class ToolTipList extends JList {
      * @param notepadSupport
      */
     public ToolTipList(final Workbench workbench,
-            final GenericListModel<?> model,
+//            final GenericListModel<?> model,
+                       final ListModel model,
             final ToolTipGeneratorInterface toolTipsGenerator,
             final boolean notepadSupport) {
         super(model);
@@ -180,8 +178,11 @@ public class ToolTipList extends JList {
      * @param model
      * @param toolTipsGenerator
      */
-    public ToolTipList(Workbench workbench, final GenericListModel<?> model,
-            ToolTipGeneratorInterface toolTipsGenerator) {
+//    public ToolTipList(Workbench workbench, final GenericListModel<?> model,
+//            ToolTipGeneratorInterface toolTipsGenerator) {
+//        this(workbench, model, toolTipsGenerator, false);
+//    }
+    public ToolTipList(Workbench workbench, final ListModel model, ToolTipGeneratorInterface toolTipsGenerator){
         this(workbench, model, toolTipsGenerator, false);
     }
 
@@ -220,24 +221,28 @@ public class ToolTipList extends JList {
         Point point = event.getPoint();
         int index = locationToIndex(point); // odczytanie indeksu
 
-        GenericListModel<?> model = (GenericListModel<?>) getModel(); // odczytanie modelu
+//        GenericListModel<?> model = (GenericListModel<?>) getModel(); // odczytanie modelu
+        ListModel model = getModel();
 
         if (toolTipsGenerator != null && model != null && index != -1 && this.getCellBounds(index, index).contains(point)) { // czy jest cos na liscie
-            final Object item = model.getObjectAt(index);
+//            final Object item = model.getObjectAt(index);
+            final Object item = model.getElementAt(index);
             if (item == null) {
                 return null;
             }
 
+            //TODO zrobić poprawne pokazywanie tooltipa z bazy danych
             String get = cache.getIfPresent(item);
-
-            if (get == null) {
-                try {
-                    return cache.get(item);
-                } catch (ExecutionException ex) {
-                    Logger.getLogger(ToolTipList.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            return get;
+            String result = toolTipsGenerator.getToolTipText(item);
+            return result;
+//            if (get == null) {
+//                try {
+//                    return cache.get(item);
+//                } catch (ExecutionException ex) {
+//                    Logger.getLogger(ToolTipList.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
+//            return get;
         }
         return super.getToolTipText(event); // standardowy tooltip
     }

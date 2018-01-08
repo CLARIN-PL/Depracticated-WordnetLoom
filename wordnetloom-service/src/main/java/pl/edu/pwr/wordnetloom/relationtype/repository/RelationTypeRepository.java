@@ -48,7 +48,9 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         root.fetch("parent", JoinType.LEFT);
         root.fetch("reverse", JoinType.LEFT);
 
-        return em.createQuery(q).getResultList();
+        List<RelationType> result = em.createQuery(q).getResultList();
+//        return em.createQuery(q).getResultList();
+        return result;
     }
 
     public RelationType findByIdWithDependencies(Long id) {

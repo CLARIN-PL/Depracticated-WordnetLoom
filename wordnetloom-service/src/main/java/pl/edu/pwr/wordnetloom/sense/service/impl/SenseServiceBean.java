@@ -49,6 +49,11 @@ public class SenseServiceBean implements SenseServiceLocal {
     }
 
     @Override
+    public int getCountUnitsByCriteria(SenseCriteriaDTO dto){
+        return senseRepository.getCountUnitsByCriteria(dto);
+    }
+
+    @Override
     public List<Sense> filterSenseByLexicon(List<Sense> senses, List<Long> lexicons) {
         return senseRepository.filterSenseByLexicon(senses, lexicons);
     }

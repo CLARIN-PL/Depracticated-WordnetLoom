@@ -40,8 +40,6 @@ public class TempRelationsDirectionsUpdater {
                 if(id > 0){
                     int result = updateRelationTypeDirection(id, direction, connection);
                     System.out.println(result);
-                } else {
-                    System.out.println();
                 }
             }
         }

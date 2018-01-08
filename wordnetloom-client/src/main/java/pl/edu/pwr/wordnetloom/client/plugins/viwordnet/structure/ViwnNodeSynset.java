@@ -361,9 +361,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         edges_to_this_.clear();
         edges_from_this_.clear();
 
-        if(getSynset().getId() == 256186){
-            System.out.println();
-        }
         // first - primary cache
 //        Set<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
 //        Set<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());

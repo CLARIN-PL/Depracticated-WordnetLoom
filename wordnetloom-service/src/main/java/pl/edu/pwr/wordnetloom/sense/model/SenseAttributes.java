@@ -1,17 +1,25 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
-import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
+import org.hibernate.annotations.GenericGenerator;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "sense_attributes")
-public class SenseAttributes extends GenericEntity {
+public class SenseAttributes /*extends GenericEntity */ implements Serializable, Cloneable{
+
+    @Id
+    @Column(name = "sense_id", unique = true, nullable = false)
+    @GenericGenerator(name = "foreigngen", strategy = "foreign", parameters = @org.hibernate.annotations.Parameter(name = "property", value = "sense"))
+    @GeneratedValue(generator = "foreigngen")
+    private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "sense_id")
     @MapsId
+    @PrimaryKeyJoinColumn
     private Sense sense;
 
     @Lob
@@ -50,6 +58,14 @@ public class SenseAttributes extends GenericEntity {
         register = sa.register;
         link = sa.link;
         owner = sa.owner;
+    }
+
+    public Long getId(){
+        return id;
+    }
+
+    public void setId(Long id){
+        this.id = id;
     }
 
     public String getDefinition() {

@@ -514,9 +514,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 //                        .dbRebuildUnitsStr(getSynset(), LexiconManager
 //                                .getInstance().getLexicons());
             }
-            if (unitsStr == null || unitsStr.equals("")) {
-                System.out.println();
-            }
             return unitsStr;
         }
         return null;

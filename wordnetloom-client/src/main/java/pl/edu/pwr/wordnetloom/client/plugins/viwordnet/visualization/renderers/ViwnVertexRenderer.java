@@ -59,9 +59,6 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
     }
 
     private void drawVertexArea(ViwnNodeSynset.State state, Shape shape, boolean horiz, GraphicsDecorator g) {
-        if(state == null){
-            System.out.println();
-        }
         switch (state) {
             case NOT_EXPANDED:
                 g.setColor(Color.blue);

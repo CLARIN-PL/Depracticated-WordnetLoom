@@ -124,7 +124,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
                                   String word, PartOfSpeech newPos, Domain domain) {
 
         NewLexicalUnitFrame modalFrame = new NewLexicalUnitFrame(workbench, frame);
-        modalFrame.editPanel.refreshData();
+//        modalFrame.editPanel.refreshData();
 
         modalFrame.editPanel.getLexicon().setSelectedIndex(1);
         if (word != null) {

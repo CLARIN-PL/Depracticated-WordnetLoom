@@ -709,6 +709,22 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
     }
 
+    public void addSynsetsFromSet(List<ViwnNodeSynset> synsets) {
+        if(synsets.isEmpty()) {
+            return;
+        }
+        DataEntry dataEntry;
+        for(ViwnNodeSynset synset : synsets) {
+            dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(synset.getId(), LexiconManager.getInstance().getLexiconsIds());
+            addToEntrySet(dataEntry);
+            synset.setup();
+            addSynsetFromSet(synset);
+        }
+        addMissingRelationInForest();
+        checkAllStates();
+        recreateLayout();
+    }
+
     private void addSynsetFromSet_(ViwnNodeSynset synset) {
         synset.setSet(null);
         forest.addVertex(synset);
@@ -726,28 +742,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         if (set.getSynsets().isEmpty()) {
             forest.removeVertex(set);
         }
-
-//        Collection<ViwnNodeSynset> changed = new ArrayList<>();
-//
-//        for (ViwnNode node : forest.getVertices()) {
-//            if (node instanceof ViwnNodeSynset) {
-//                changed.addAll(addMissingRelations((ViwnNodeSynset) node));
-//            }
-//        }
-//
-//
-//        Iterator<ViwnNodeSynset> iter = changed.iterator();
-//        while (iter.hasNext()) {
-//            ViwnNodeSynset node = iter.next();
-//            for (NodeDirection rclass : NodeDirection.values()) {
-//                checkState(node, rclass);
-//            }
-//        }
-
-
-//        for (NodeDirection dir : NodeDirection.values()) {
-//            checkState(synset, dir);
-//        }
     }
 
     /**

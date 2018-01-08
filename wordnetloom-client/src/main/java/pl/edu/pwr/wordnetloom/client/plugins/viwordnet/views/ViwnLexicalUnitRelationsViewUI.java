@@ -2,7 +2,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tree.WebTree;
-import org.hibernate.dialect.unique.DefaultUniqueDelegate;
+//import org.hibernate.dialect.unique.DefaultUniqueDelegate;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
@@ -14,7 +14,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+//import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;

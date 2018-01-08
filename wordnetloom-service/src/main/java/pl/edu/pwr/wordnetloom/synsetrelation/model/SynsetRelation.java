@@ -1,6 +1,5 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.model;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
@@ -10,8 +9,6 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "synset_relation")
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SynsetRelation extends GenericEntity {
 
     private static final long serialVersionUID = 1624355230288462084L;

@@ -1,6 +1,5 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -18,8 +17,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "sense")
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Sense extends GenericEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,7 +24,7 @@ public class Sense extends GenericEntity {
     private Domain domain;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL) //TODO może będzie można zmienić na lazy
     @JoinColumn(name = "word_id", referencedColumnName = "id", nullable = false)
     private Word word;
 
@@ -60,16 +57,18 @@ public class Sense extends GenericEntity {
     @JoinColumn(name = "lexicon_id", referencedColumnName = "id", nullable = false)
     private Lexicon lexicon;
 
-    @OneToMany(mappedBy = "child", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "child", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final Set<SenseRelation> incomingRelations = new HashSet<>();
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final Set<SenseRelation> outgoingRelations = new HashSet<>();
 
     private Integer status = 0;
 
     public Sense() {
         super();
+        senseAttributes = new SenseAttributes();
+        senseAttributes.setSense(this);
     }
 
     public Sense(Sense sense) {
@@ -188,7 +187,10 @@ public class Sense extends GenericEntity {
 
     @Override
     public int hashCode() {
-        int hashCode = (id.hashCode());
+        int hashCode = 0;
+        if(id != null){
+            hashCode = id.hashCode();
+        }
         if (hashCode == 0) {
             return super.hashCode();
         }

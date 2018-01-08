@@ -1,12 +1,23 @@
 package pl.edu.pwr.wordnetloom.client.systems.tooltips;
 
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.*;
 import pl.edu.pwr.wordnetloom.client.systems.misc.IObjectWrapper;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * klasa dostarcza metod zwracajacych tooltipy dla jednostki leksyklanej i
@@ -123,60 +134,63 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface, Loggable {
             return null;
         }
 
-//        object = RemoteUtils.lexicalUnitRemote.dbGet(object.getId());
-//
-//        Domain domain = DomainManager.getInstance().getNormalized(object.getDomain());
-//        String register = Common.getSenseAttribute(object, Sense.REGISTER);
-//        String useCase = Common.getSenseAttribute(object, Sense.USE_CASES);
-//        StringBuilder exampleBuilder = new StringBuilder();
-//        if (useCase != null) {
-//            String[] examples = useCase.split("\\|");
-//            for (String example : examples) {
-//                exampleBuilder.append(String.format(DESC_STR, example));
-//            }
-//        }
-//        // czy jest bledny
-//        String global = String.format(LEXICALUNIT_TEMPLATE,
-//                object.toString(), object.getLexicon().getName().getText(),
-//                domain.toString() + " => " + domain.getDescription().toString(),
-//                PosManager.getInstance().getNormalized(object.getPartOfSpeech()),
-//                register == null ? Labels.ND : register,
-//                format(Common.getSenseAttribute(object, Sense.COMMENT)),
-//                useCase == null ? Labels.ND : exampleBuilder.toString());
-//
-//        // odczytanie relacji
-//        List<SenseRelation> relations = RemoteUtils.unitsRelationsRemote.dbGetRelations(object, null, SenseRelation.IS_PARENT, false);
-//        StringBuilder relString = new StringBuilder();
-//        if (relations.size() > 0) {
-//            relString.append(RELATIONS_HEADER);
-//            // stworzenie opisu relacji
-//            for (SenseRelation unitRelations : relations) {
-//                RelationTypes rts = RelationTypes.get(unitRelations.getRelation().getId());
-//                relString.append(String.format(// dodanie typu relacji
-//                        RELATIONS_TYPE,
-//                        rts.name()
-//                ));
-//
-//                int size = relations.size();
-//                for (int i = 0; i < size; i++) {
-//                    if (relations.get(i).getRelation().getId().equals(rts.getRelationType().getId())) {
-//                        relString.append(String.format( // dodanie konkretnej relacji
-//                                RELATIONS_ITEM,
-//                                relations.get(i).getSenseTo().toString()));
-//                    }
-//                }
-//            }
-//        }
-        // doczytanie synsetow dla jednostki
-//        List<Synset> synsets = RemoteUtils.lexicalUnitRemote.dbFastGetSynsets(object, LexiconManager.getInstance().getLexicons());
-//        StringBuilder synsetString = new StringBuilder();
-//        if (synsets.size() > 0) {
-//            synsetString.append(SYNSETS_HEADER);
-//            for (Synset synset : synsets) {
-//                synsetString.append(String.format(SYNSET_ITEM, "" + RemoteUtils.synsetRemote.dbRebuildUnitsStr(synset, LexiconManager.getInstance().getLexicons())));
-//            }
-//        }
-        return "";// HTML_HEADER + global + relString.toString() + synsetString.toString() + HTML_FOOTER;
+        Sense sense = RemoteService.senseRemote.fetchSense(object.getId());
+        String global = getGlobalSenseInfo(sense);
+        // odczytywanie relacji
+        List<SenseRelation> relations = RemoteService.senseRelationRemote.findRelations(sense,null, true, false);
+        String relationsText = getSenseRelationsText(relations);
+
+        //TODO wcześniej było jeszcze ustawianie synsetów
+        return HTML_HEADER + global + relationsText + HTML_FOOTER;
+    }
+
+    private String getGlobalSenseInfo(Sense sense){
+        Domain domain = DomainManager.getInstance().getNormalized(sense.getDomain());
+        String register = null;
+        String comment = null;
+
+        if(sense.getSenseAttributes() != null){
+            register = RegisterManager.getInstance().getName(sense.getSenseAttributes().getRegister());
+            comment = sense.getSenseAttributes().getComment();
+        }
+        StringBuilder exampleBuilder = new StringBuilder();
+        for(SenseExample example : sense.getExamples()){
+            exampleBuilder.append(String.format(DESC_STR, example.getExample()));
+        }
+        String global = String.format(LEXICALUNIT_TEMPLATE,
+                sense.toString(),
+                sense.getLexicon().getName(),
+                LocalisationManager.getInstance().getLocalisedString(domain.getName()) + " => " + domain.getDescription().toString(),
+                LocalisationManager.getInstance().getLocalisedString(sense.getPartOfSpeech().getName()),
+                register == null ? Labels.ND : register,
+                format(comment),
+                exampleBuilder.length() ==0 ? Labels.ND : exampleBuilder.toString());
+        return global;
+    }
+
+    private String getSenseRelationsText(List<SenseRelation> relations)
+    {
+        Map<Long, List<String>> relationsMap = new HashMap<>();
+        Long relationTypeNameId;
+        for(SenseRelation relation : relations){
+            relationTypeNameId = relation.getRelationType().getName();
+            if(!relationsMap.containsKey(relationTypeNameId)){
+                relationsMap.put(relationTypeNameId, new ArrayList<>());
+            }
+            relationsMap.get(relationTypeNameId).add(relation.getChild().toString());
+
+        }
+        String relationTypeText;
+        StringBuilder relationBuilder = new StringBuilder(RELATIONS_HEADER);
+        for(Map.Entry<Long, List<String>> entry : relationsMap.entrySet()){
+            relationTypeText = LocalisationManager.getInstance().getLocalisedString(entry.getKey());
+            relationBuilder.append(String.format(RELATIONS_TYPE, relationTypeText));
+            for(String s : entry.getValue()){
+                relationBuilder.append(String.format(RELATIONS_ITEM, s));
+            }
+        }
+
+        return relationBuilder.toString();
     }
 
     /**

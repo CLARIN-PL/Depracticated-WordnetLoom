@@ -42,46 +42,52 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
     private void addSynsets(ViwnNode v) {
         popup.setVisible(false);
-        java.util.List syns = synset_list_.getSelectedValuesList();
+        java.util.List<ViwnNodeSynset> syns = synset_list_.getSelectedValuesList();
         if(!syns.isEmpty()){
             vgvui.deselectAll();
         }
-        ViwnNode other = v;
-        for (Object obj : syns) {
-            ViwnNodeSynset node = (ViwnNodeSynset)obj;
-            //TODO sprawdzić, czy w cache synset ma pobrane relacje
-//            Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synset, LexiconManager.getInstance().getLexiconsIds(), NodeDirection.values());
-            DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(node.getId(), LexiconManager.getInstance().getLexiconsIds());
-            vgvui.addToEntrySet(dataEntry);
-            node.setup();
-            vgvui.addSynsetFromSet(node);
-//            vgvui.addSynsetFromSet((ViwnNodeSynset) obj);
-            other = (ViwnNode) obj;
+        vgvui.addSynsetsFromSet(syns);
+//        ViwnNode other = v;
+//        for (Object obj : syns) {
+//            ViwnNodeSynset node = (ViwnNodeSynset)obj;
+//            //TODO sprawdzić, czy w cache synset ma pobrane relacje
+////            Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synset, LexiconManager.getInstance().getLexiconsIds(), NodeDirection.values());
+//            DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(node.getId(), LexiconManager.getInstance().getLexiconsIds());
+//            vgvui.addToEntrySet(dataEntry);
+//            node.setup();
+//            vgvui.addSynsetFromSet(node);
+////            vgvui.addSynsetFromSet((ViwnNodeSynset) obj);
+//            other = (ViwnNode) obj;
+//        }
+//        if(!syns.isEmpty()){
+//            vgvui.recreateLayout();
+//        }
 
-        }
-        if(!syns.isEmpty()){
-            ViwnNode p2 = v;
-            Graph<ViwnNode, ViwnEdge> g = vgvui.getGraph();
-            ViwnNode parent = v.getSpawner();
-            boolean dissapear = true;
-            for (ViwnEdge edge : g.getIncidentEdges(parent)) {
-                ViwnNode opposite = g.getOpposite(parent, edge);
-                if (parent.equals(opposite.getSpawner())
-                        && (opposite.getSpawnDir() != null)) {
-                    if (opposite == v) {
-                        dissapear = false;
-                    }
-                }
-            }
-            if (dissapear) {
-                if (other != null) {
-                    p2 = other;
-                } else {
-                    p2 = v.getSpawner();
-                }
-            }
-            vgvui.recreateLayoutWithFix(v, p2);
-        }
+
+//        if(!syns.isEmpty()){
+//            ViwnNode p2 = v;
+//            Graph<ViwnNode, ViwnEdge> g = vgvui.getGraph();
+//            ViwnNode parent = v.getSpawner();
+//            boolean dissapear = true;
+//            for (ViwnEdge edge : g.getIncidentEdges(parent)) {
+//                ViwnNode opposite = g.getOpposite(parent, edge);
+//                if (parent.equals(opposite.getSpawner())
+//                        && (opposite.getSpawnDir() != null)) {
+//                    if (opposite == v) {
+//                        dissapear = false;
+//                    }
+//                }
+//            }
+//            if (dissapear) {
+//                if (other != null) {
+//                    p2 = other;
+//                } else {
+//                    p2 = v.getSpawner();
+//                }
+//            }
+//
+//            vgvui.recreateLayoutWithFix(v, p2);
+//        }
     }
 
     @Override

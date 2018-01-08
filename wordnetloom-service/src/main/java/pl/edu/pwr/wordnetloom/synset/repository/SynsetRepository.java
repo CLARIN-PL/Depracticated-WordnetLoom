@@ -17,9 +17,7 @@ import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.persistence.criteria.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,22 +35,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
     @Inject
     SenseRepository senseRepository;
 
-    //    @NamedQuery(name = "Synset.findSynsetBySensID",
-//            query = "SELECT s.synset FROM SenseToSynset s WHERE s.idSense = :senseID AND s.sense.lexicon.id IN (:lexicons)"),
-//    @NamedQuery(name = "Synset.findListSynsetByID",
-//            query = "SELECT s FROM Synset s WHERE s.id IN ( :synsetsID )"),
-//    @NamedQuery(name = "Synset.getAllIDs",
-//            query = "SELECT s FROM Synset s"),
-//    @NamedQuery(name = "Synset.dbGetUnit",
-//            query = "SELECT s FROM Synset s JOIN s.senseToSynset AS sts LEFT JOIN sts.sense AS sen LEFT JOIN sen.senseAttributes AS sea LEFT JOIN s.synsetAttributes AS sa WHERE sen.lexicon.id IN( :lexicons) AND  s.id = :synsetID ORDER BY s.id, sts.senseIndex"),
-//    @NamedQuery(name = "Synset.dbGetUnitsByIDs",
-//            query = "SELECT s FROM Synset s JOIN s.senseToSynset AS sts LEFT JOIN sts.sense AS sen LEFT JOIN sen.senseAttributes AS sea LEFT JOIN s.synsetAttributes AS sa WHERE s.id IN ( :synsetsIDs ) ORDER BY s.id, sts.senseIndex"),
-//    @NamedQuery(name = "Synset.dbGetSynsetRels",
-//            query = "SELECT sr.synsetFrom FROM SynsetRelation sr WHERE sr.synsetFrom.id IN ( SELECT sr.synsetFrom.id FROM SynsetRelation sr WHERE sr.synsetFrom.id = :synsetID ) OR sr.synsetFrom.id IN ( SELECT sr.synsetTo.id FROM SynsetRelation sr WHERE sr.synsetTo.id = :synsetID )"),
-//    @NamedQuery(name = "Synset.dbGetSynsetsRels",
-//            query = "SELECT sr.synsetFrom FROM SynsetRelation sr WHERE sr.id IN ( SELECT sr.id FROM SynsetRelation sr WHERE sr.synsetFrom IN ( :synsetList ) ) OR sr.id IN ( SELECT sr.id FROM SynsetRelation sr WHERE sr.synsetTo IN ( :synsetList ) )"),
-//    @NamedQuery(name = "Synset.fastGetPOSID",
-//            query = "SELECT s.sense.partOfSpeech.id FROM SenseToSynset s WHERE s.idSynset = :idSynset ORDER BY s.senseIndex"),})
     public List<Synset> findSynsetsByWord(String word, List<Long> lexicons) {
 
         Query query = getEntityManager().createQuery("SELECT s.synset FROM Sense s WHERE s.word.word = :word AND s.lexicon.id IN (:lexicon)");
@@ -669,49 +651,8 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return result;
     }
 
-    private DataEntry getDataEntry(Synset synset, Sense sense, List<SynsetRelation> relations) {
-        DataEntry dataEntry = new DataEntry();
-        dataEntry.setSynset(synset);
-        NodeDirection direction;
-        for(SynsetRelation relation : relations) {
-            if(relation.getId()==105811){
-                System.out.println();
-            }
-            if(relation.getChild().getId().equals(synset.getId())) {
-                direction = relation.getRelationType().getNodePosition().getOpposite();
-            } else {
-                direction = relation.getRelationType().getNodePosition() ;
-            }
-            dataEntry.addRelation(relation, direction);
-        }
-        dataEntry.setLexicon(sense.getLexicon().getIdentifier());
-        dataEntry.setPosID(sense.getPartOfSpeech().getId());
-//        dataEntry.setLabel(buildDataEntryLabel(sense));
-        dataEntry.setName(sense.getWord().getWord());
-        dataEntry.setVariant(String.valueOf(sense.getVariant()));
-        dataEntry.setDomain(sense.getDomain().getName());
-        return dataEntry;
-    }
 
-    private void putDataEntryFromSynsetRelation(Map<Long, DataEntry> map, List<SynsetRelation> relationsList, Long isRelationsFrom) {
-        Synset relatedSynset;
-        Sense sense;
-        DataEntry dataEntry;
-        for (SynsetRelation relation : relationsList) {
-            if(relation.getId() == 59303){
-                System.out.println();
-            }
-            if (isRelationsFrom.equals(relation.getParent().getId())) {
-                relatedSynset = relation.getChild();
-            } else {
-                relatedSynset = relation.getParent();
-            }
-            sense = relatedSynset.getSenses().get(0);
-            dataEntry = getDataEntry(relatedSynset, sense, relatedSynset.getOutgoingRelations());
-            map.put(relatedSynset.getId(), dataEntry);
-        }
-    }
-
+    //TODO zmienić nazwę
     private Synset findSynsetWithRelationsAndSenseById(Long id) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Synset> cq = cb.createQuery(Synset.class);
@@ -720,20 +661,15 @@ public class SynsetRepository extends GenericRepository<Synset> {
         Join<Synset, Sense> senseJoin = root.join("senses");
         Fetch<Synset, Sense> senseFetch = root.fetch("senses");
         senseFetch.fetch("word");
+        senseFetch.fetch("partOfSpeech");
         List<Predicate> predicatesList = new ArrayList<>();
         Predicate idPredicate = cb.equal(root.get("id"), id);
         predicatesList.add(idPredicate);
         Predicate sensePredicate = cb.equal(senseJoin.get("synsetPosition"), 0);
         predicatesList.add(sensePredicate);
-//        cq.where(cb.equal(root.get("id"), id));
         cq.where(predicatesList.toArray(new Predicate[0]));
         final TypedQuery<Synset> query = getEntityManager().createQuery(cq);
-        query.setHint("org.hibernate.cacheable", Boolean.TRUE);
         return query.getSingleResult();
-    }
-
-    private DataEntry buildDataEntry(Synset synset, List<SynsetRelation> relations){
-        return getDataEntry(synset, synset.getSenses().get(0), relations);
     }
 
     public Map<Long, DataEntry> prepareCacheForRootNode(final Long synsetId, final List<Long> lexicons, int numSynsetOnDirection, NodeDirection[] directions) {
@@ -744,14 +680,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         List<SynsetRelation> relationsFrom = synsetRelationRepository.findRelationsWhereSynsetIsParent(synset, lexicons, directions);
         List<SynsetRelation> relationsTo = synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons, directions);
         //szukanie i usuwanie relacji, które pojawiają się na liście relacji "od" i na liście relacji "do"
-        for(SynsetRelation parent : relationsFrom) {
-            for(SynsetRelation child : relationsTo) {
-                if(child.getParent().getId().equals(parent.getChild().getId())){
-                    relationsTo.remove(child);
-                    break;
-                }
-            }
-        }
+        deleteRepeatingRelations(relationsFrom, relationsTo);
         relationsFrom.addAll(relationsTo);
         // sortowanie listy alfabetycznie
         relationsFrom.sort(new RelationWordComparator(synsetId));
@@ -764,6 +693,67 @@ public class SynsetRepository extends GenericRepository<Synset> {
         result.put(synset.getId(), dataEntry);
         putDataEntryFromSynsetRelation(result, relationsFrom, synsetId);
         return result;
+    }
+
+    private DataEntry buildDataEntry(Synset synset, List<SynsetRelation> relations){
+        return getDataEntry(synset, synset.getSenses().get(0), relations);
+    }
+
+    private void deleteRepeatingRelations(List<SynsetRelation> relationsFrom, List<SynsetRelation> relationsTo) {
+        for(SynsetRelation parent : relationsFrom) {
+            for(SynsetRelation child : relationsTo) {
+                if(child.getParent().getId().equals(parent.getChild().getId())){
+                    relationsTo.remove(child);
+                    break;
+                }
+            }
+        }
+    }
+
+    private DataEntry getDataEntry(Synset synset, Sense sense, List<SynsetRelation> relations) {
+        DataEntry dataEntry = new DataEntry();
+        dataEntry.setSynset(synset);
+        NodeDirection direction;
+        for(SynsetRelation relation : relations) {
+            if(relation.getChild().getId().equals(synset.getId())) {
+                direction = relation.getRelationType().getNodePosition().getOpposite();
+            } else {
+                direction = relation.getRelationType().getNodePosition() ;
+            }
+            dataEntry.addRelation(relation, direction);
+        }
+        dataEntry.setLexicon(sense.getLexicon().getIdentifier());
+        dataEntry.setPosID(sense.getPartOfSpeech().getId());
+        dataEntry.setName(sense.getWord().getWord());
+        dataEntry.setVariant(String.valueOf(sense.getVariant()));
+        dataEntry.setDomain(sense.getDomain().getName());
+        return dataEntry;
+    }
+
+    private void putDataEntryFromSynsetRelation(Map<Long, DataEntry> map, List<SynsetRelation> relationsList, Long isRelationsFrom) {
+        Synset relatedSynset;
+        Sense sense;
+        DataEntry dataEntry;
+        PersistenceUnitUtil unitUtil = em.getEntityManagerFactory().getPersistenceUnitUtil(); // narzedzie do okreslania, czy kolekcja została załadowana
+        for (SynsetRelation relation : relationsList) {
+            if (isRelationsFrom.equals(relation.getParent().getId())) {
+                relatedSynset = relation.getChild();
+            } else {
+                relatedSynset = relation.getParent();
+            }
+            sense = relatedSynset.getSenses().get(0);
+            if(unitUtil.isLoaded(relatedSynset.getOutgoingRelations())){
+                deleteRepeatingRelations(relatedSynset.getOutgoingRelations(), relatedSynset.getIncomingRelations());
+                relatedSynset.getOutgoingRelations().addAll(relatedSynset.getIncomingRelations());
+                List<SynsetRelation> allRelationsList = new ArrayList<>(relatedSynset.getOutgoingRelations());
+                allRelationsList.addAll(relatedSynset.getIncomingRelations());
+                dataEntry = getDataEntry(relatedSynset, sense, allRelationsList);
+            } else {
+                dataEntry = getDataEntry(relatedSynset, sense, new ArrayList<>());
+            }
+
+            map.put(relatedSynset.getId(), dataEntry);
+        }
     }
 
     private class RelationWordComparator implements Comparator<SynsetRelation>
@@ -810,9 +800,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
             {
                 direction = synsetsList.get(i).getRelationType().getNodePosition().getOpposite().ordinal();
             }
-            if(direction == NodeDirection.LEFT.ordinal()){
-                System.out.println();
-            }
             if(direction == NodeDirection.IGNORE.ordinal()){
                 continue;
             }
@@ -830,16 +817,12 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return resultList;
     }
 
-    private void fillRelations(List<SynsetRelation> relations, List<Integer> indexesRelationsToExtend, Long synsetIsParent, List<Long> lexicons)
-    {
+    private void fillRelations(List<SynsetRelation> relations, List<Integer> indexesRelationsToExtend, Long synsetIsParent, List<Long> lexicons) {
         SynsetRelation relation;
         Synset synset;
         for(Integer i : indexesRelationsToExtend)
         {
             relation = relations.get(i);
-            if(relation.getId()==1380773){
-                System.out.println();
-            }
             if(synsetIsParent.equals(relation.getParent().getId())) {
                 synset = relation.getChild();
             } else {
@@ -857,8 +840,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         List<SynsetRelation> relationsFrom = synsetRelationRepository.findSimpleRelationsWhereSynsetIsParent(newSynset, lexicons);
         List<SynsetRelation> relationsTo = synsetRelationRepository.findSimpleRelationsWhereSynsetIsChild(newSynset, lexicons);
         relationsFrom.addAll(relationsTo);
-        DataEntry dataEntry = buildDataEntry(newSynset, relationsFrom);
-        return dataEntry;
+        return buildDataEntry(newSynset, relationsFrom);
     }
 
     @Override

@@ -21,11 +21,22 @@ public class SenseCriteriaDTO implements Serializable {
     private int limit;
     private int offset;
 
+    public SenseCriteriaDTO(){
+
+    }
+
     public SenseCriteriaDTO(Long partOfSpeechId, Long domainId, String lemma, List<Long> lexicons) {
         this.partOfSpeechId = partOfSpeechId;
         this.domainId = domainId;
         this.lemma = lemma;
         this.lexicons = lexicons;
+    }
+
+    public SenseCriteriaDTO copy(SenseCriteriaDTO dto)
+    {
+        SenseCriteriaDTO newDto = new SenseCriteriaDTO();
+
+        return newDto;
     }
 
     public Long getSenseId() {
@@ -89,7 +100,11 @@ public class SenseCriteriaDTO implements Serializable {
     }
 
     public void setComment(String comment) {
-        this.comment = comment;
+        if(comment != null && !comment.isEmpty()){
+            this.example = example;
+        } else {
+            this.example = null;
+        }
     }
 
     public String getExample() {
@@ -97,7 +112,12 @@ public class SenseCriteriaDTO implements Serializable {
     }
 
     public void setExample(String example) {
-        this.example = example;
+        if(example != null && !example.isEmpty()){
+            this.example = example;
+        } else {
+            this.example = null;
+        }
+
     }
 
 //    public String getRegister() {

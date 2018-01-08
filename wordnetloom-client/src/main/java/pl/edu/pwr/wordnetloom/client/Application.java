@@ -13,9 +13,12 @@ import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
 import javax.swing.*;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.List;
 
 
 public class Application implements Loggable {
@@ -60,10 +63,14 @@ public class Application implements Loggable {
 
         Thread managers = new Thread(() -> {
 
-            LexiconManager.getInstance().loadLexicons(RemoteService.lexiconServiceRemote.findAll());
+            List<Lexicon> lexicons = RemoteService.lexiconServiceRemote.findAll();
+            LexiconManager.getInstance().loadLexicons(lexicons);
+//            LexiconManager.getInstance().loadLexicons(RemoteService.lexiconServiceRemote.findAll());
             PartOfSpeechManager.getInstance();
             DomainManager.getInstance();
-            RelationTypeManager.getInstance().loadRelationTypes(RemoteService.relationTypeRemote.findAll());
+            List<RelationType> relations = RemoteService.relationTypeRemote.findAll();
+            RelationTypeManager.getInstance().loadRelationTypes(relations);
+//            RelationTypeManager.getInstance().loadRelationTypes(RemoteService.relationTypeRemote.findAll());
             start();
         }, "Mangers Thread");
 

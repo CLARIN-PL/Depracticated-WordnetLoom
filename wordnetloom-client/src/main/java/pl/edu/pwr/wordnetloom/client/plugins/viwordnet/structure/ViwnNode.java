@@ -48,7 +48,7 @@ public abstract class ViwnNode {
     /**
      * Get vertex shape (clickable area of the Vertex).
      *
-     * @return shape
+     * @return shapee
      */
     public abstract Shape getShape();
 
