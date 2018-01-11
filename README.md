@@ -1,7 +1,17 @@
 # WordnetLoom
+
 Wordnet Visual Editor
 
-# Wildfly configuration
+# Installation
+
+Application requirement's 
+- Linux OS
+- installed java 8 jre
+- installed Maven 3+
+- installed MySql 5.7+
+- installed Wildfly 10.1.0+ (add necessary DB Drivers in this case MySql )
+
+## Wildfly configuration
 
 Security config
 
@@ -62,3 +72,20 @@ Database config
         </driver>
 </drivers>
 ```
+
+## Step 1 (preparation phase)
+
+   Master branch is prepared to run based on older database version which at first run is transformed to new schema.
+   1. Download database dump from http://ws.clarin-pl.eu/public/wordnet-work.LATEST.sql.gz
+   2. Create empty database "wordnet_work"
+   3. Load dump to "wordnet_work" database
+   
+## Step 2 (Compilation & Deployment)
+
+   1. ```git clone https://github.com/CLARIN-PL/WordnetLoom.git```
+   2. ```mvn clean install```
+   3. ```deploy wordnetloom-server.ear to wildfly```
+    
+## Step 3 (Client Application)
+   1. to run client go to ..\wordnetloom-client\target ``` java -jar wordnetloom-client.jar```
+   2. e.g. login  user:admin@gmail.com password:password
