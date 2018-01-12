@@ -31,4 +31,6 @@ public interface RelationTypeServiceRemote {
     boolean isReverseRelation(Collection<RelationType> relations, RelationType test);
 
     RelationType findByIdWithDependencies(Long id);
+
+    RelationType findByName(String name);
 }

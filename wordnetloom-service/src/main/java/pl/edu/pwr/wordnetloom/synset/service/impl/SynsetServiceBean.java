@@ -13,6 +13,7 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -31,9 +32,6 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @Override
     public boolean delete(Synset synset) {
-        // remove  relations
-        // remove units
-        // remove synset
         synsetRepository.delete(synset);
         return true;
     }
@@ -56,6 +54,11 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @Override
     public DataEntry findSynsetDataEntry(Long synsetId, List<Long> lexicons){
         return synsetRepository.findSynsetDataEntry(synsetId, lexicons);
+    }
+
+    @Override
+    public Synset updateSynset(Synset synset){
+        return synsetRepository.updateSynset(synset);
     }
 
     @Override
@@ -135,5 +138,15 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 //        // step 4 - finish
 //        long end = System.currentTimeMillis();
 //        System.out.println("Time: " + Long.toString(end - start));
+    }
+
+    @Override
+    public void addSenseToSynset(Sense sense, Synset synset){
+        synsetRepository.addSenseToSynset(sense, synset);
+    }
+
+    @Override
+    public void deleteSensesFromSynset(Collection<Sense> senses, Synset synset){
+        synsetRepository.deleteSensesFromSynset(senses, synset);
     }
 }

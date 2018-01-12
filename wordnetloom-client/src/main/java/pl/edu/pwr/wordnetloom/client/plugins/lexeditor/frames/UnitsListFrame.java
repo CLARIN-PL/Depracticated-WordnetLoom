@@ -18,6 +18,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
@@ -26,6 +27,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
 
 import javax.swing.*;
 import java.util.Collection;
@@ -85,9 +87,15 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
     @Override
     protected Collection<Sense> fillCollection(String filter, PartOfSpeech pos) {
         if (filterObject != null && filterUnitsInAnySynset.isSelected()) {
-            return LexicalDA.getLexicalUnitsNotInAnySynset(filter, pos);
+            return RemoteService.senseRemote.findNotInAnySynset(filter, pos);
         } else {
-            return LexicalDA.getLexicalUnits(filter, pos, LexiconManager.getInstance().getUserChosenLexiconsIds());
+            SenseCriteriaDTO dto = new SenseCriteriaDTO();
+            dto.setLemma(filter);
+            if(pos != null){
+                dto.setPartOfSpeechId(pos.getId());
+            }
+            dto.setLexicons(LexiconManager.getInstance().getUserChosenLexiconsIds());
+            return RemoteService.senseRemote.findByCriteria(dto);
         }
     }
 
@@ -99,7 +107,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
         // wyswiętlanie okienka z parametrami
         Sense newUnit = NewLexicalUnitFrame.showModal(workbench, filterObject);
         if (newUnit != null) {
-            LexicalDA.saveUnit(newUnit);
+            RemoteService.senseRemote.persist(newUnit);
             filterEdit.setText(newUnit.getWord().getWord());
             unitWasCreated = true;
             // odswieżenie listy
@@ -138,5 +146,4 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
         unitWasCreated.setValue(frame.unitWasCreated);
         return frame.selectedElements;
     }
-
 }

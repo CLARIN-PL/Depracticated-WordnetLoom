@@ -1,9 +1,15 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.models;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.awt.*;
+import java.awt.font.TextAttribute;
+import java.util.*;
+import java.util.List;
+
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+
+import javax.swing.*;
 
 /**
  * klasa dostarczajaca danych z uwzglednieniem linii podzialu
@@ -32,13 +38,23 @@ public class UnitsInSynsetListModel extends GenericListModel<Sense> {
      * @param splitPosition - polozenie linii podzialu
      */
     public void setCollection(Collection<Sense> collection, int splitPosition) {
+
         this.splitPosition = splitPosition;
         if (collection == null) {
             itemsCollection = new ArrayList<>();
         } else {
-            itemsCollection = collection;
+            setCollection(collection);
         }
         notifyAllListeners();
+    }
+
+    @Override
+    public void setCollection(Collection<Sense> collection){
+        if(collection != null){
+            List<Sense> list = new ArrayList<>(collection);
+            list.sort(new UnitInSynsetComparator());
+            itemsCollection = list;
+        }
     }
 
     /**
@@ -66,10 +82,18 @@ public class UnitsInSynsetListModel extends GenericListModel<Sense> {
             return VALUE_SPLIT_LINE;
         }
         if (unit != null) {
-            return unit.toString();
+            return toString(unit);
         }
         return ".";
     }
+
+    public String toString(Sense sense){
+        String word = sense.getWord().getWord();
+        String variant = String.valueOf(sense.getVariant());
+        String domain = LocalisationManager.getInstance().getLocalisedString(sense.getDomain().getName());
+        return word + " " + variant + " (" + domain + ")";
+    }
+
 
     /**
      * odczytanie obiektu o podanym indeksie z uwzglednieniem lini podzialu
@@ -91,6 +115,18 @@ public class UnitsInSynsetListModel extends GenericListModel<Sense> {
      */
     public int getSplitPosition() {
         return splitPosition;
+    }
+
+    private class UnitInSynsetComparator implements Comparator<Sense>{
+
+        @Override
+        public int compare(Sense o1, Sense o2) {
+            return o1.getSynsetPosition().compareTo(o2.getSynsetPosition());
+        }
+    }
+
+    public void setSplitPosition(int splitPosition){
+        this.splitPosition = splitPosition;
     }
 
     /**

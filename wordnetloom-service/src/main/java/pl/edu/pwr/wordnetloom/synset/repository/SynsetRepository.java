@@ -19,6 +19,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
+import java.rmi.server.RemoteServer;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,13 +36,27 @@ public class SynsetRepository extends GenericRepository<Synset> {
     @Inject
     SenseRepository senseRepository;
 
+    @Override
+    public void delete(Synset synset){
+        Synset loadedSynset = synset;
+        synsetRelationRepository.deleteConnection(synset);
+        getEntityManager().createQuery("DELETE FROM Synset WHERE id = :id")
+                .setParameter("id", synset.getId())
+                .executeUpdate();
+//        synset.getOutgoingRelations().clear();
+//        synset.getIncomingRelations().clear();
+//        if(!getEntityManager().contains(synset)) {
+//            loadedSynset = getEntityManager().merge(synset);
+//        }
+//        getEntityManager().remove(loadedSynset);
+    }
+
     public List<Synset> findSynsetsByWord(String word, List<Long> lexicons) {
 
         Query query = getEntityManager().createQuery("SELECT s.synset FROM Sense s WHERE s.word.word = :word AND s.lexicon.id IN (:lexicon)");
         query.setParameter("word", word);
         query.setParameter("lexicon", lexicons);
         return query.getResultList();
-
     }
 
     public Synset findSynset(Synset synset, List<Long> lexicons) {
@@ -499,64 +514,49 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return true;
     }
 
-    public boolean addSenseToSynset(Sense unit, Synset synset, boolean rebuildUnitsStr) {
-
-        // pobranie wszystkich elementow synsetu
-//        List<SenseToSynset> old = dbGetConnections(synset);
-//
-//        // przeindeksowanie
-//        int index = 0;
-//        for (SenseToSynset synsetOld : old) {
-//            // czy nie sa identyczne
-//            if (synsetOld.getSynset().getId().equals(synset.getId())
-//                    && synsetOld.getSense().getId().equals(unit.getId())) {
-//                return false;
-//            }
-//            synsetOld.setSenseIndex(index++);
-//            dao.mergeObject(synsetOld);
-//        }
-//
-//        // dodanie nowego
-//        SenseToSynset newRel = new SenseToSynset();
-//        newRel.setSynset(synset);
-//        newRel.setSense(unit);
-//        newRel.setIdSense(unit.getId());
-//        newRel.setIdSynset(synset.getId());
-//        newRel.setSenseIndex(index++);
-//
-//        dao.persistObject(newRel);
-        return true;
+    public Synset updateSynset(Synset synset){
+        if(getEntityManager().contains(synset)){
+            getEntityManager().persist(synset);
+            return synset;
+        } else {
+            return getEntityManager().merge(synset);
+        }
     }
 
-    public Synset deleteSenseFromSynset(Sense unit, Synset synset) {
-        // usuniecie jednego powiazania
-//        dao.getEM()
-//                .createNamedQuery("SenseToSynset.DeleteBySynsetIdAndSenseId")
-//                .setParameter("idSynset", synset.getId())
-//                .setParameter("idSense", unit.getId())
-//                .executeUpdate();
-//
-//        // pobranie wszystkich elementow dla synsetu
-//        List<SenseToSynset> rest = dbGetConnections(synset);
-//
-//        // przeindeksowanie
+    public void addSenseToSynset(Sense unit, Synset synset) {
+        // pobranie wszystkich elementow synsetu
+        List<Sense> sensesInSynset = senseRepository.findBySynset(synset.getId());
 //        int index = 0;
-//        for (SenseToSynset synsetDTO : rest) {
-//            synsetDTO.setSenseIndex(index++);
-//            dao.mergeObject(synsetDTO);
+//        for(Sense sense :  sensesInSynset){
+//            //TODO tutaj było jakieś sprawdzenie, czy nie sa identyczne
+//            sense.setSynsetPosition(index++);
+//            getEntityManager().merge(sense);
 //        }
-//
-//        // synset jest pusty, nastepuje usuniecie takiego synsetu z bazy danych
-//        if (rest.isEmpty()) {
-//            saDAO.deleteAttributesFor(synset);
-//            exeDAO.dbDeleteForSynset(synset);
-//            exDAO.deleteForSynset(synset);
-//            srDAO.dbDeleteConnection(synset);
-//            dao.deleteObject(Synset.class, synset.getId());
-//            return null;
-//        }
+        //dodanie jednostki do synsetu
+        unit.setSynset(synset);
+        unit.setSynsetPosition(sensesInSynset.size());
+        getEntityManager().merge(unit);
+    }
 
-        return synset;
+    public void deleteSensesFromSynset(Collection<Sense> senses, Synset synset) {
+        // usunięcie jednostek z synsetu
+        for(Sense sense : senses){
+            sense.setSynset(null);
+            sense.setSynsetPosition(null);
+            getEntityManager().merge(sense);
+        }
+        reindexSensesInSynset(synset);
+    }
+
+    private int reindexSensesInSynset(Synset synset){
+        //TODO można dodać jeszcze sprawdzenie, czy indeksowanie jest potrzebne
+        List<Sense> sensesInSynset = senseRepository.findBySynset(synset.getId());
+        int index = 0;
+        for(Sense sense : sensesInSynset) {
+            sense.setSynsetPosition(index++);
+            getEntityManager().merge(sense);
+        }
+        return index;
     }
 
     public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain,

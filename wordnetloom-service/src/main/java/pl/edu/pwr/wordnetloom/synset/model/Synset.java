@@ -17,7 +17,7 @@ public class Synset extends GenericEntity {
     private static final long serialVersionUID = 800201223603990725L;
 
     @Column(name = "split")
-    private Integer split = 0;
+    private Integer split = 1;
 
     @OneToMany(mappedBy = "synset", fetch = FetchType.LAZY)
     @OrderBy("synsetPosition")

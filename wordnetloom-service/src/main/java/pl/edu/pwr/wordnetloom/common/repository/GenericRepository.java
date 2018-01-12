@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.common.repository;
 
 import java.util.List;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 

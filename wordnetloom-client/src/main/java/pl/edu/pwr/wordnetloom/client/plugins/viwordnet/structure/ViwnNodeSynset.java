@@ -486,6 +486,8 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     @Override
     public String getLabel() {
+
+
         if (ret == null) {
             ret = "";
             DataEntry dataEntry = ui.getEntrySetFor(getId());
@@ -499,6 +501,9 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
             } else {
                 ret = "";
             }
+
+
+
 //            DataEntry dataSet = ui.getEntrySetFor(getId());
 //            if (dataSet == null || dataSet.getLabel() == null) {
 //                String ret = "";

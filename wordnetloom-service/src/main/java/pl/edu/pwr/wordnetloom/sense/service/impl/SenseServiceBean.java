@@ -74,6 +74,11 @@ public class SenseServiceBean implements SenseServiceLocal {
     }
 
     @Override
+    public List<Sense> findBySynset(Long synsetId){
+        return senseRepository.findBySynset(synsetId);
+    }
+
+    @Override
     public int findCountBySynset(Synset synset, List<Long> lexicons) {
         return senseRepository.findCountBySynset(synset, lexicons);
     }

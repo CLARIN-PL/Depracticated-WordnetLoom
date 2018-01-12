@@ -11,6 +11,7 @@ import pl.edu.pwr.wordnetloom.word.model.Word;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,6 +70,7 @@ public class Sense extends GenericEntity {
         super();
         senseAttributes = new SenseAttributes();
         senseAttributes.setSense(this);
+        examples = new ArrayList<>();
     }
 
     public Sense(Sense sense) {

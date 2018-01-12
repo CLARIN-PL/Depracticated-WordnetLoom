@@ -20,6 +20,4 @@ public class SenseRepositoryUTest extends TestBaseRepository {
     public void setDownTestCase() {
         closeEntityManager();
     }
-
-  
 }

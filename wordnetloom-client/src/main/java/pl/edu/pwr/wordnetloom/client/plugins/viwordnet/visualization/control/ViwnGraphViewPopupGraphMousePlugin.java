@@ -11,24 +11,27 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerView;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerViewUI;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.util.*;
+import java.util.List;
 
 public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMousePlugin {
 
@@ -90,6 +93,10 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 //        }
     }
 
+    private ViWordNetService getViWordNetService(){
+        return (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
+    }
+
     @Override
     protected void handlePopup(MouseEvent e) {
 
@@ -104,9 +111,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
         synset_list_ = null;
 
         // exit make relation mode
-        ViWordNetService s
-                = ((ViWordNetService) vgvui.getWorkbench().getService(
-                "pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService"));
+        ViWordNetService s = getViWordNetService();
         if (s.isMakeRelationModeOn()) {
             s.switchMakeRelationMode();
             return;
@@ -164,7 +169,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            pickedVertexState.pick(vertex, true);
+                            pickedVertexState.pick(vertex, false);
                             vertex.setMarked(false);
                         }
                     });
@@ -175,6 +180,11 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        Synset synset = ((ViwnNodeSynset)vertex).getSynset();
+
+                        Long hiperonimId = RemoteService.relationTypeRemote.findByName("hiperonimia").getId();
+                        List<Synset> path = RemoteService.synsetRelationRemote.findTopPathInSynsets(synset, hiperonimId);
+                        getViWordNetService().getActiveGraphView().getUI().addConnectedSynsetsToGraph((ViwnNodeSynset)vertex, path);
 //                        Synset synset = ((ViwnNodeSynset) vertex).getSynset();
 //                        List<Synset> path
 //                                = RemoteUtils.synsetRelationRemote.dbGetTopPathInSynsets(synset,
@@ -193,8 +203,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        ViWordNetService s = (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
-                        s.addToLocker(vertex, ViwnLockerViewUI.getInstance().new ViwnNodeRenderer());
+                        getViWordNetService().addToLocker(vertex, ViwnLockerViewUI.getInstance().new ViwnNodeRenderer());
                     }
                 });
 
@@ -206,7 +215,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        ViWordNetService s = (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
+                        ViWordNetService s = getViWordNetService();
                         s.addGraphView();
                         s.getActiveGraphView().loadSynset(((ViwnNodeSynset) vertex).getSynset());
                         ViWordNetPerspective p
@@ -254,8 +263,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        ViWordNetService s = (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
-                        s.setFirstMakeRelation(vertex);
+                        getViWordNetService().setFirstMakeRelation(vertex);
                     }
                 });
 
@@ -264,8 +272,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        ViWordNetService s = (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
-                        s.setFirstMergeSynsets(vertex);
+                        getViWordNetService().setFirstMergeSynsets(vertex);
                     }
                 });
 
@@ -275,37 +282,41 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                 // TODO: make lexical units relations
                 // show lexical units of synset
-                JMenuItem lexicalUnits = new JMenu(Labels.UNIT_CREATE_RELATION_WITH);
+                final JMenuItem createRelationItem = new JMenu(Labels.UNIT_CREATE_RELATION_WITH);
+                createRelationItem.addItemListener(e1 -> {
+                    createRelationItem.removeAll();
+                    final List<Sense> senses = RemoteService.senseRemote.findBySynset(((ViwnNodeSynset)vertex).getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds());
+                    String senseText;
+                    for(Sense sense : senses){
+                        senseText = getSenseMenuItemText(sense);
+                        createRelationItem.add(new JMenuItem(new AbstractAction(senseText) {
+                            @Override
+                            public void actionPerformed(ActionEvent e1) {
+                                getViWordNetService().setFirstMakeRelation(sense);
+                            }
+                        }));
+                    }
+                });
 
-//                for (final Sense lu : RemoteUtils.synsetRemote.dbFastGetUnits(((ViwnNodeSynset) vertex).getSynset(), LexiconManager.getInstance().getLexicons())) {
-//                    lexicalUnits.add(new JMenuItem(new AbstractAction(lu.toString()) {
-//
-//                        private static final long serialVersionUID = 65468435418L;
-//
-//                        public void actionPerformed(ActionEvent ae) {
-//                            ViWordNetService s = (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
-//                            s.setFirstMakeRelation(lu);
-//                        }
-//                    }));
-//                }
-                popup.add(lexicalUnits);
+                popup.add(createRelationItem);
 
                 // add lexical unit to locker
-                lexicalUnits = new JMenu(Labels.UNIT_ADD_TO_CLIPBOARD);
-//                for (final Sense lu : RemoteUtils.synsetRemote.dbFastGetUnits(((ViwnNodeSynset) vertex).getSynset(), LexiconManager.getInstance().getLexicons())) {
-//                    lexicalUnits.add(new JMenuItem(new AbstractAction(lu.toString()) {
-//                        /**
-//                         *
-//                         */
-//                        private static final long serialVersionUID = 712639812536152L;
-//
-//                        public void actionPerformed(ActionEvent ae) {
-//                            ViWordNetService s = (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
-//                            s.addToLocker(lu, ViwnLockerViewUI.getInstance().new SenseRenderer());
-//                        }
-//                    }));
-//                }
-                popup.add(lexicalUnits);
+                final JMenuItem addToClipboardItem = new JMenu(Labels.UNIT_ADD_TO_CLIPBOARD);
+                addToClipboardItem.addItemListener(e12 -> {
+                    addToClipboardItem.removeAll();
+                    final List<Sense> senses = RemoteService.senseRemote.findBySynset(((ViwnNodeSynset)vertex).getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds());
+                    String senseText;
+                    for(Sense sense : senses){
+                        senseText = getSenseMenuItemText(sense);
+                        addToClipboardItem.add(new JMenuItem(new AbstractAction(senseText) {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                getViWordNetService().addToLocker(sense, ViwnLockerViewUI.getInstance().new SenseRenderer());
+                            }
+                        }));
+                    }
+                });
+                popup.add(addToClipboardItem);
 
             } else if (vertex != null && vertex instanceof ViwnNodeSet) {
                 ViwnNodeSet set = (ViwnNodeSet) vertex;
@@ -406,11 +417,10 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            ViWordNetService s = (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
                             Pair<ViwnNode> c = vgvui.getGraph().getEndpoints(edge);
                             HashSet<ViwnEdge> rel = new HashSet<>(vgvui.getGraph().findEdgeSet(c.getFirst(), c.getSecond()));
                             rel.addAll(vgvui.getGraph().findEdgeSet(c.getSecond(), c.getFirst()));
-                            s.removeRelation(rel);
+                            getViWordNetService().removeRelation(rel);
                         }
                     });
                 }
@@ -440,6 +450,13 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             }
         }
 
+    }
+
+    private String getSenseMenuItemText(Sense sense){
+        String name = sense.getWord().getWord();
+        String variant = String.valueOf(sense.getVariant());
+        String domain = LocalisationManager.getInstance().getLocalisedString(sense.getDomain().getName());
+        return name + " " + variant + " (" + domain + ")";
     }
 
 }

@@ -59,9 +59,12 @@ public class SenseRepository extends GenericRepository<Sense> {
              return sense.getSenseAttributes().getSense();
 
         } else {
-//            return em.merge(sense);
-            SenseAttributes attributes = getEntityManager().merge(sense.getSenseAttributes());
-            return attributes.getSense();
+            if(sense.getId() != null){ // jeżeli aktualizujemy obiekt
+                return getEntityManager().merge(sense);
+            } else { // w przypadku zapisu nowego obiektu, należy zapisać atrybut. W innym przypadku zostanie zgłoszony wyjątek. Może da się to jakoś obejść
+                SenseAttributes attributes = getEntityManager().merge(sense.getSenseAttributes());
+                return attributes.getSense();
+            }
         }
 
     }
@@ -95,8 +98,9 @@ public class SenseRepository extends GenericRepository<Sense> {
         CriteriaQuery<Sense> query = criteriaBuilder.createQuery(Sense.class);
         Root<Sense> senseRoot = query.from(Sense.class);
         Join<Sense, Word> wordJoin = senseRoot.join("word");
-        Fetch<Sense, Domain> domainFetch = senseRoot.fetch("domain");
-        Fetch<Sense, Lexicon> lexiconFetch = senseRoot.fetch("lexicon");
+        senseRoot.fetch("word");
+        senseRoot.fetch("domain");
+        senseRoot.fetch("lexicon");
 //        List<Predicate> criteriaList = new ArrayList<>();
 //        Predicate lemmaPredicate  = criteriaBuilder.like(wordJoin.get("word"), dto.getLemma()+"%");
 //        criteriaList.add(lemmaPredicate);
@@ -539,10 +543,16 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     public List<Sense> findBySynset(Synset synset, List<Long> lexicons) {
-        return getEntityManager().createQuery("FROM Sense s " +
+        return getEntityManager().createQuery("FROM Sense s LEFT JOIN FETCH s.domain " +
                 "WHERE s.synset.id = :synsetId AND s.lexicon.id IN (:lexicons)", Sense.class)
                 .setParameter("synsetId", synset.getId())
                 .setParameter("lexicons", lexicons)
+                .getResultList();
+    }
+
+    public List<Sense> findBySynset(Long synsetId){
+        return getEntityManager().createQuery("FROM Sense s WHERE s.synset.id = :synsetId")
+                .setParameter("synsetId", synsetId)
                 .getResultList();
     }
 

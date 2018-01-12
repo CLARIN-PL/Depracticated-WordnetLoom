@@ -109,6 +109,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         //s.setFirstMakeRelation(vertex);
+                        System.out.println("HAHAHA");
                     }
                 });
 

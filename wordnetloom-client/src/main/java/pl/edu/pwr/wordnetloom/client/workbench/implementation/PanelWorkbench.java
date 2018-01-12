@@ -14,6 +14,7 @@ import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.ui.BusyGlassPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
+import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.*;
 import pl.edu.pwr.wordnetloom.user.model.User;
 import se.datadosen.component.RiverLayout;
@@ -100,7 +101,8 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
         }
 
         // wybranie ostatnio używanej perspektywy
-        choosePerspective(getParam(ACTIVE_PERSPECTIVE_NAME));
+//        choosePerspective(getParam(ACTIVE_PERSPECTIVE_NAME)); //TODO wrócić tutaj i zobaczyć, czy zmiana perspektywy
+        choosePerspective(Labels.WORDNET_VISUALIZATION);
     }
 
     private void createFrame() {
@@ -383,7 +385,8 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
 
     @Override
     public Perspective getActivePerspective() {
-        return perspectives.get("Wordnet Visualization");
+//        return perspectives.get("Wordnet Visualization");
+        return perspectives.get(Labels.WORDNET_VISUALIZATION);
     }
 
     /**

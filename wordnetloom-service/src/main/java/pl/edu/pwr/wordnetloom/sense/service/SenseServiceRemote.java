@@ -33,6 +33,8 @@ public interface SenseServiceRemote {
 
     List<Sense> findBySynset(Synset synset, List<Long> lexicons);
 
+    List<Sense> findBySynset(Long synsetId);
+
     int findCountBySynset(Synset synset, List<Long> lexicons);
 
     int findNextVariant(String lemma, PartOfSpeech pos);

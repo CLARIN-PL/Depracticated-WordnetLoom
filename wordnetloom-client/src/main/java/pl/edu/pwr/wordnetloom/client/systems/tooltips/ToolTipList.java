@@ -231,10 +231,7 @@ public class ToolTipList extends JList {
                 return null;
             }
 
-            //TODO zrobić poprawne pokazywanie tooltipa z bazy danych
-            String get = cache.getIfPresent(item);
-            String result = toolTipsGenerator.getToolTipText(item);
-            return result;
+            return toolTipsGenerator.getToolTipText(item);
 //            if (get == null) {
 //                try {
 //                    return cache.get(item);

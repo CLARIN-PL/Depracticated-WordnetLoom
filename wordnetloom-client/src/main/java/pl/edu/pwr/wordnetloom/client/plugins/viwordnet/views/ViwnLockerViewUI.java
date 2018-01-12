@@ -427,6 +427,10 @@ public class ViwnLockerViewUI extends AbstractViewUI
         }
     }
 
+    public SenseRenderer getSenseRenderer(){
+        return new SenseRenderer();
+    }
+
     /**
      * @author amusial
      */

@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.relationtype.repository;
 
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
+import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
@@ -115,6 +116,18 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
             return null;
         }
         return r.getId();
+    }
+
+    public RelationType findByName(String name) {
+        Long nameId = (Long)getEntityManager().createQuery("SELECT K.id FROM LocalisedString S JOIN S.key K WHERE S.value = :name")
+                .setParameter("name", name)
+                .getSingleResult();
+        if(nameId != null){
+            return (RelationType) getEntityManager().createQuery("FROM RelationType r WHERE r.name = :nameId")
+                    .setParameter("nameId", nameId)
+                    .getSingleResult();
+        }
+        return null;
     }
 
     @Override
