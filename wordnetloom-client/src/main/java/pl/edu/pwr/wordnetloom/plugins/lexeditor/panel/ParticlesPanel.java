@@ -30,13 +30,9 @@ import com.jgoodies.forms.layout.RowSpec;
 import pl.edu.pwr.wordnetloom.model.yiddish.YiddishSenseExtension;
 import pl.edu.pwr.wordnetloom.model.yiddish.dictionary.PrefixDictionary;
 import pl.edu.pwr.wordnetloom.model.yiddish.dictionary.SuffixDictionary;
-import pl.edu.pwr.wordnetloom.model.yiddish.particle.InterfixParticle;
-import pl.edu.pwr.wordnetloom.model.yiddish.particle.RootParticle;
-import pl.edu.pwr.wordnetloom.model.yiddish.particle.SuffixParticle;
+import pl.edu.pwr.wordnetloom.model.yiddish.particle.*;
 import pl.edu.pwr.wordnetloom.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.model.yiddish.dictionary.InterfixDictionary;
-import pl.edu.pwr.wordnetloom.model.yiddish.particle.Particle;
-import pl.edu.pwr.wordnetloom.model.yiddish.particle.PrefixParticle;
 import pl.edu.pwr.wordnetloom.utils.RemoteUtils;
 
 public class ParticlesPanel extends JPanel {
@@ -45,6 +41,7 @@ public class ParticlesPanel extends JPanel {
 	private JComboBox particleType;
 	private JComboBox particle;
 	private JTextField root;
+	private JTextField constituent;
 	private JList list;
 	private DefaultListModel listModel;
 	private JScrollPane scrollPane;
@@ -95,6 +92,9 @@ public class ParticlesPanel extends JPanel {
 					if (p instanceof InterfixParticle) {
 						tip = ((InterfixParticle) p).getInterfix().getDescription();
 					}
+					if (p instanceof ConstituentParticle){
+						tip = ((ConstituentParticle) p).getConstituent();
+					}
 					l.setToolTipText(tip);
 				}
 			}
@@ -116,10 +116,12 @@ public class ParticlesPanel extends JPanel {
 
 					if ("Select".equals(e.getItem().toString())) {
 						root.setVisible(false);
+						constituent.setVisible(false);
 						particle.setVisible(false);
 					}
 					if (ParticleElementType.interfix == e.getItem()) {
 						root.setVisible(false);
+						constituent.setVisible(false);
 						particle.setVisible(true);
 						particle.removeAllItems();
 						for (InterfixDictionary p : RemoteUtils.dictionaryRemote.findAllInterfixDictionary()) {
@@ -129,6 +131,7 @@ public class ParticlesPanel extends JPanel {
 
 					if (ParticleElementType.prefix == e.getItem()) {
 						root.setVisible(false);
+						constituent.setVisible(false);
 						particle.setVisible(true);
 						particle.removeAllItems();
 						for (PrefixDictionary p : RemoteUtils.dictionaryRemote.findAllPrefixDictionary()) {
@@ -138,6 +141,7 @@ public class ParticlesPanel extends JPanel {
 
 					if (ParticleElementType.suffix == e.getItem()) {
 						root.setVisible(false);
+						constituent.setVisible(false);
 						particle.setVisible(true);
 						for (SuffixDictionary p : RemoteUtils.dictionaryRemote.findAllSuffixDictionary()) {
 							particle.addItem(p);
@@ -146,6 +150,13 @@ public class ParticlesPanel extends JPanel {
 
 					if (ParticleElementType.root == e.getItem()) {
 						root.setVisible(true);
+						constituent.setVisible(false);
+						particle.setVisible(false);
+					}
+
+					if (ParticleElementType.constituent == e.getItem()) {
+						root.setVisible(false);
+						constituent.setVisible(true);
 						particle.setVisible(false);
 					}
 				}
@@ -160,8 +171,15 @@ public class ParticlesPanel extends JPanel {
 
 		root = new JTextField();
 		root.setVisible(false);
+
 		panel.add(root, "6, 4, fill, fill");
 		root.setColumns(10);
+
+		constituent = new JTextField();
+		constituent.setVisible(false);
+
+		panel.add(constituent, "6, 4, fill, fill");
+		constituent.setColumns(10);
 
 		btnNewButton = new JButton("Add");
 		btnNewButton.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -193,6 +211,12 @@ public class ParticlesPanel extends JPanel {
                 p = new RootParticle(root.getText());
                 listModel.addElement(p);
             }
+
+			if (ParticleElementType.constituent == particleType.getSelectedItem()) {
+				p = new ConstituentParticle(constituent.getText());
+				listModel.addElement(p);
+			}
+
             p.setExtension(ex);
             RemoteUtils.lexicalUnitRemote.saveParticle(p);
         });
