@@ -79,7 +79,7 @@ public class SenseRelationServiceBean implements SenseRelationServiceLocal {
 
     @Override
     public boolean makeRelation(Sense parent, Sense child, RelationType relation) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return senseRelationRepository.makeRelation(parent, child, relation);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class SenseRelationServiceBean implements SenseRelationServiceLocal {
 
     @Override
     public boolean relationExists(Sense parent, Sense child, RelationType relationType) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return senseRelationRepository.relationExists(parent, child, relationType);
     }
 
     @Override

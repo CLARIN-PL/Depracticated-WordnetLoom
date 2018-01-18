@@ -101,7 +101,7 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
         }
 
         // wybranie ostatnio używanej perspektywy
-//        choosePerspective(getParam(ACTIVE_PERSPECTIVE_NAME)); //TODO wrócić tutaj i zobaczyć, czy zmiana perspektywy
+//        choosePerspective(getParam(ACTIVE_PERSPECTIVE_NAME)); //TODO jeżeli to odkomentujemy, aplikacja nie uruchomi się
         choosePerspective(Labels.WORDNET_VISUALIZATION);
     }
 

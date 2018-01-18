@@ -3,15 +3,23 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tree.WebTree;
 //import org.hibernate.dialect.unique.DefaultUniqueDelegate;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
+import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 //import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
@@ -21,10 +29,12 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.*;
+import java.util.List;
 
 /**
  * [View User Interface] Displays a list of lexical relations for given unit.
@@ -40,8 +50,8 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
     WebTree tree = null;
 
-    MButton addRelation = null;
-    MButton delRelation = null;
+    MButton addRelationButton = null;
+    MButton deleteRelationButton = null;
 
     Workbench workbench;
 
@@ -70,21 +80,21 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         root.add(root_from);
         root.add(root_to);
 
-        addRelation = MButton.buildAddButton(this)
+        addRelationButton = MButton.buildAddButton(this)
                 .withEnabled(true)
                 .withToolTip(Hints.ADD_RELATION_UNITS);
 
-        installViewScopeShortCut(addRelation, 0, KeyEvent.VK_INSERT);
+        installViewScopeShortCut(addRelationButton, 0, KeyEvent.VK_INSERT);
 
-        delRelation = MButton.buildDeleteButton(this)
+        deleteRelationButton = MButton.buildDeleteButton(this)
                 .withEnabled(true)
                 .withToolTip(Hints.REMOVE_RELTAION_UNITS);
 
-        installViewScopeShortCut(delRelation, 0, KeyEvent.VK_DELETE);
+        installViewScopeShortCut(deleteRelationButton, 0, KeyEvent.VK_DELETE);
 
         content.add("hfill vfill", new JScrollPane(tree));
-        content.add("br center", addRelation);
-        content.add(delRelation);
+        content.add("br center", addRelationButton);
+        content.add(deleteRelationButton);
     }
 
     @Override
@@ -143,7 +153,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                         .getUserObject() != object) {
                     // TODO: find better solution
                     // ugly hack, to switch button off after changing tree
-                    delRelation.setEnabled(false);
+                    deleteRelationButton.setEnabled(false);
                 }
                 root.setUserObject(object);
 
@@ -248,14 +258,66 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         }
     }
 
+    private void addRelation() {
+         // TODO zrobić  dodawanie relacji do jednostki
+        Point location = addRelationButton.getLocationOnScreen();
+        ValueContainer<Boolean> created = new ValueContainer<>(false);
+        Rectangle rectangle = workbench.getFrame().getBounds();
+        int x = rectangle.x + rectangle.width - AbstractListFrame.WIDTH /2 - 50;
+
+        Collection<Sense> selectedUnits = UnitsListFrame.showModal(workbench, x, location.y, true, null, created);
+        Sense rootSense = (Sense) root.getUserObject(); //TODO zobaczyć, czy zwróci poprawny obiekt
+        if(selectedUnits != null && !selectedUnits.isEmpty()) {
+            for(Sense sense : selectedUnits) {
+                if(sense.getId().equals(rootSense.getId())){
+                    DialogBox.showError(Messages.FAILURE_SOURCE_UNIT_SAME_AS_TARGET);
+                    return;
+                }
+            }
+            RelationType relationType = RelationTypeFrame.showModal(workbench, RelationArgument.SENSE_RELATION, rootSense.getPartOfSpeech(),
+                    RelationTypeFrame.unitToList(rootSense), selectedUnits);
+            if(relationType == null){
+                return;
+            }
+            for(Sense sense : selectedUnits) {
+                if(RemoteService.senseRelationRemote.relationExists(rootSense, sense, relationType)){
+                    String relationTypeName = LocalisationManager.getInstance().getLocalisedString(relationType.getName());
+                    DialogBox.showError(String.format(Messages.FAILURE_RELATION_EXISTS,relationTypeName,
+                            rootSense.getWord().getWord(), sense.getWord().getWord()));
+                } else {
+                    boolean saveResult = RemoteService.senseRelationRemote.makeRelation(rootSense, sense, relationType);
+                    if(!saveResult){
+                        //TODO wyświetlić komunikat o niepowodzeniu zapisu
+                        return;
+                    }
+                    // sprawdzanie, czy relacja odwrotna istnieje
+                    if(relationType.getReverse() != null){
+                        RelationType reverseRelationType = RemoteService.relationTypeRemote.findReverseByRelationType(relationType.getId());
+                        String reverseRelationName = LocalisationManager.getInstance().getLocalisedString(reverseRelationType.getName());
+                        //TODO dorobić pobieranie i ustawianie testów
+                    }
+                }
+                refresh();
+            }
+        }
+    }
+
+    private void removeRelation() {
+
+    }
     /**
      * @author amusial ActionListener interface implementation
      */
     @Override
-    public void actionPerformed(ActionEvent ae) {
+    public void actionPerformed(ActionEvent event) {
+        if(event.getSource() == addRelationButton){
+            addRelation();
+        } else if(event.getSource() == deleteRelationButton) {
+            removeRelation();
+        }
         // add relation
-//        if (ae.getSource() == addRelation) {
-//            Point location = addRelation.getLocationOnScreen();
+//        if (ae.getSource() == addRelationButton) {
+//            Point location = addRelationButton.getLocationOnScreen();
 //            // choose second lexical unit
 //            ValueContainer<Boolean> created = new ValueContainer<>(false);
 //
@@ -344,7 +406,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 //            }
 //
 //            // delete relation
-//        } else if (ae.getSource() == delRelation) {
+//        } else if (ae.getSource() == deleteRelationButton) {
 //            @SuppressWarnings("unchecked")
 //            SenseRelation relation = ((Pair<Sense, SenseRelation>) ((DefaultMutableTreeNode) ((DefaultMutableTreeNode) tree
 //                    .getLastSelectedPathComponent())).getUserObject()).getB();
@@ -394,9 +456,9 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                     && !((DefaultMutableTreeNode) paths[0]
                     .getLastPathComponent()).isRoot()) {
                 // a leaf has been selected, allow delete relation
-                delRelation.setEnabled(true);
+                deleteRelationButton.setEnabled(true);
             } else {
-                delRelation.setEnabled(false);
+                deleteRelationButton.setEnabled(false);
             }
         }
 

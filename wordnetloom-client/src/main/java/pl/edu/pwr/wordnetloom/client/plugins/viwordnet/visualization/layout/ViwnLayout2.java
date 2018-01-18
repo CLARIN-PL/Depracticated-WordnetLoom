@@ -256,24 +256,26 @@ public class ViwnLayout2 implements Layout<ViwnNode, ViwnEdge> {
 
             Collection<ViwnEdge> edges = graph.getIncidentEdges(center);
 
-            for (ViwnEdge edge : edges) {
-                ViwnNode opposite = graph.getOpposite(center, edge);
+            if(edges!=null){
+                for (ViwnEdge edge : edges) {
+                    ViwnNode opposite = graph.getOpposite(center, edge);
 
-                if (center.equals(opposite.getSpawner())
-                        && (opposite.getSpawnDir() != null)) {
-                    switch (opposite.getSpawnDir()) {
-                        case BOTTOM:
-                            bottom.add(opposite);
-                            break;
-                        case TOP:
-                            top.add(opposite);
-                            break;
-                        case RIGHT:
-                            right.add(opposite);
-                            break;
-                        case LEFT:
-                            left.add(opposite);
-                            break;
+                    if (center.equals(opposite.getSpawner())
+                            && (opposite.getSpawnDir() != null)) {
+                        switch (opposite.getSpawnDir()) {
+                            case BOTTOM:
+                                bottom.add(opposite);
+                                break;
+                            case TOP:
+                                top.add(opposite);
+                                break;
+                            case RIGHT:
+                                right.add(opposite);
+                                break;
+                            case LEFT:
+                                left.add(opposite);
+                                break;
+                        }
                     }
                 }
             }

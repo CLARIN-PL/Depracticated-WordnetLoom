@@ -6,7 +6,10 @@ import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
@@ -16,12 +19,19 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtest.model.RelationTest;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class MakeNewRelationWindow extends RelationTypeFrame {
@@ -41,20 +51,25 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
 
         lexicons = LexiconManager.getInstance().getUserChosenLexiconsIds();
 
+        ViwnNodeSynset fromNode = (ViwnNodeSynset)from[0];
+        ViwnNodeSynset toNode = (ViwnNodeSynset)to[0];
         // relation from:
         parentItem = new MComboBox();
+        //TODO sprawdzić, czy rzeczywiście o jednostki chodzi
+        List<Sense> parentSenses = RemoteService.senseRemote.findBySynset(fromNode.getSynset(), lexicons);
+        for(Sense parent : parentSenses){
+            parentItem.addItem(parent.getWord().getWord());
+        }
+        childItem = new MComboBox();
+        List<Sense> childSenses = RemoteService.senseRemote.findBySynset(toNode.getSynset(), lexicons);
+        for(Sense child : childSenses){
+            childItem.addItem(child.getWord().getWord());
+        }
+
 //        List<Sense> senses = RemoteUtils.synsetRemote
 //                .dbFastGetUnits(((ViwnNodeSynset) from[0]).getSynset(), lexicons);
 //        for (Sense parent : senses) {
 //            parentItem.addItem(parent.getLemma().getWord());
-//        }
-
-        // relation to:
-        childItem = new MComboBox();
-//        senses = RemoteUtils.synsetRemote
-//                .dbFastGetUnits(((ViwnNodeSynset) to[0]).getSynset(), lexicons);
-//        for (Sense child : senses) {
-//            childItem.addItem(child.getLemma().getWord());
 //        }
 
         // middle element
@@ -79,7 +94,16 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         relationType.addKeyListener(this);
 
         // show relations
-        mainRelations = new ArrayList<>();
+
+        mainRelations = RelationTypeManager.getInstance().getParents(RelationArgument.SYNSET_RELATION);
+        for(RelationType relType : mainRelations){
+            relationType.addItem(relType);
+        }
+//        mainRelations = new ArrayList<>();
+//        List<RelationType> relationTypes = RelationTypeManager.getInstance().getParents(RelationArgument.SYNSET_RELATION);
+//        for(RelationType relType : relationTypes) {
+//            relationType.add(relType);
+//        }
 //        Collection<IRelationType> readRelations = LexicalDA.getHighestRelations(
 //                type, pos);
 //        for (IRelationType relType : readRelations) {
@@ -240,6 +264,90 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
     public void keyTyped(KeyEvent arg0) {
     }
 
+    private static List<String> getTests(RelationType relation, String parent, String child, PartOfSpeech partOfSpeechA, PartOfSpeech partOfSpeechB) {
+        List<String> result = new ArrayList<>();
+        List<RelationTest> tests = RemoteService.relationTestRemote.findByRelationType(relation);
+        String text;
+        Collection<String> defOfUnitA = new ArrayList<>();
+        Collection<String> defOfUnitB = new ArrayList<>();
+        String[] parseResult;
+        boolean found = true;
+        int testIndex = 1;
+        for(RelationTest test : tests) {
+            if(test.getSenseApartOfSpeech().equals(partOfSpeechA) && test.getSenseBpartOfSpeech().equals(partOfSpeechB)) {
+                text = test.getTest();
+                while(found){
+                    parseResult = extractUnitDefinition(text, "<x#", "<x" + defOfUnitA.size() + ">");
+                    found = parseResult[0] != null;
+                    if(found){
+                        defOfUnitA.add(parseResult[0]);
+                    }
+                    text = parseResult[1];
+                }
+                found = true;
+                while(found) {
+                    parseResult = extractUnitDefinition(text, "<y#", "<y" + defOfUnitB.size() + ">");
+                    found = parseResult[0] != null;
+                    if(found){
+                        defOfUnitB.add(parseResult[0]);
+                    }
+                    text = parseResult[1];
+                }
+
+                Collection<String> formsOfUnitA = getForms(defOfUnitA, parent);
+                Collection<String> formsOfUnitB = getForms(defOfUnitB, child);
+
+                int index = 0;
+                for(String f : formsOfUnitA) {
+                    text = text.replace("<x" + index + ">", "<font color=\"blue\">" + (f == null || "null".equals(f) || "null się".equals(f) ? parent : f) + "</font>");
+                    index++;
+                }
+                index = 0;
+                for(String f : formsOfUnitB) {
+                    text = text.replace("<y" + index + ">", "<font color=\"blue\">" + (f == null || "null".equals(f) || "null się".equals(f) ? child : f) + "</font>");
+                    index++;
+                }
+                result.add("<html>" + (testIndex++) + ". " + text + "</html>");
+            }
+        }
+        return result;
+    }
+
+    private static Collection<String> getForms(Collection<String> defs, String unit) {
+        Collection<String> forms = new ArrayList<>();
+        // ustawieni suffixu
+        String suffix = "";
+        if (unit.endsWith("się")) { // konczy sie z się, a ma to zostać odcięte
+            unit = unit.substring(0, unit.length() - 4);
+            suffix = " się"; // ustawienie sufixu
+        }
+        for (String def : defs) {
+            List<String> splits = Arrays.asList(def.split("\\|"));
+            //forms.add(RemoteUtils.wordFormsRemote.getFormFor(new Word(unit), splits) + suffix);
+        }
+        return forms;
+    }
+
+    private static String[] extractUnitDefinition(String text, String code, String replace) {
+        String[] result = new String[2];
+        int pos = text.indexOf(code);
+        if (pos != -1) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(text.substring(0, pos));
+            int endPos = text.indexOf(">", pos);
+
+            result[0] = text.substring(pos + code.length(), endPos);
+
+            sb.append(replace).append(text.substring(endPos + 1));
+            result[1] = sb.toString();
+        } else {
+            result[0] = null;
+            result[1] = text;
+        }
+
+        return result;
+    }
+
     /**
      * @param workbench <code>Workbench</code> to get JFrame
      * @param from      <code>ViwnNode</code> parent for relation
@@ -248,16 +356,67 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
      */
     public static boolean showMakeSynsetRelationModal(Workbench workbench,
                                                       ViwnNode from, ViwnNode to) {
-        ViwnNode[] from1 = new ViwnNode[]{from};
-        ViwnNode[] to1 = new ViwnNode[]{to};
-        ViwnNodeSynset sf = (ViwnNodeSynset) from1[0];
-        ViwnNodeSynset st = (ViwnNodeSynset) to1[0];
-        // check if parent and child are different synsets
-        if (sf.getId().equals(st.getId())) {
-            DialogBox
-                    .showInformation(Messages.FAILURE_SOURCE_SYNSET_SAME_AS_TARGET);
+        boolean saveResult = false;
+        ViwnNodeSynset nodeFrom = (ViwnNodeSynset) from;
+        ViwnNodeSynset nodeTo = (ViwnNodeSynset) to;
+        if(nodeFrom.getId().equals(nodeTo.getId())){ // nie można stworzyć relacji z samym sobą
+            DialogBox.showInformation(Messages.FAILURE_SOURCE_SYNSET_SAME_AS_TARGET);
             return false;
         }
+        //TODO przetestować to wszystko
+        PartOfSpeech partOfSpeech = nodeFrom.getPos();
+        ViwnNode[] nodeFromArray = {from};
+        ViwnNode[] nodeToArray = {to};
+        MakeNewRelationWindow relationWindow = new MakeNewRelationWindow(workbench.getFrame(), partOfSpeech, nodeFromArray, nodeToArray, workbench);
+        relationWindow.setVisible(true);
+        RelationType relationType = relationWindow.chosenType;
+
+        if(relationType != null) {
+            Synset parent = nodeFrom.getSynset();
+            Synset child = nodeTo.getSynset();
+            // sprawdzenie, czy taka relacja już istnieje w bazie danych
+            if(RemoteService.synsetRelationRemote.checkRelationExists(parent, child, relationType)){
+                DialogBox.showInformation(Messages.FAILURE_RELATION_EXISTS);
+                return false;
+            }
+            // zapisanie relacji w bazie danych
+            saveResult = RemoteService.synsetRelationRemote.makeRelation(parent, child, relationType);
+
+            // TODO ogarnąć o co tutaj chodzi
+            if(saveResult && relationType.isAutoReverse() && RemoteService.relationTypeRemote.findReverseByRelationType(relationType.getId()) != null){
+                String parentText = (String) parentItem.getItemAt(parentItem.getSelectedIndex());
+                String childText = (String) childItem.getItemAt(childItem.getSelectedIndex());
+                List<String> tests = getTests(relationType, parentText, childText, nodeFrom.getPos(), nodeTo.getPos());
+                String test = "\n\n";
+                test = tests.stream().map((i) -> i + "\n").reduce(test, String::concat);
+                boolean hasReversRelation = relationType.getReverse() != null;
+                final String relationTypeName = LocalisationManager.getInstance().getLocalisedString(relationType.getName());
+                if(hasReversRelation){
+                    int reverseRelationAnswer = DialogBox.showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION + test), relationTypeName);
+                    if(reverseRelationAnswer == DialogBox.YES){ //TODO sprawdzić, czy rzeczywiście o taką chodzi
+                        RelationType reverseRelationType = RemoteService.relationTypeRemote.findReverseByRelationType(relationType.getId());
+                        saveResult= RemoteService.synsetRelationRemote.makeRelation(child, parent, reverseRelationType);
+                    }
+                }
+            }
+            if(saveResult){
+                DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
+                //TODO w przypadku pomyślnego zapisania relacji w bazie danych, zaktualizować graf
+            } else {
+                DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
+            }
+        }
+        return saveResult;
+//        ViwnNode[] from1 = new ViwnNode[]{from};
+//        ViwnNode[] to1 = new ViwnNode[]{to};
+//        ViwnNodeSynset sf = (ViwnNodeSynset) from1[0];
+//        ViwnNodeSynset st = (ViwnNodeSynset) to1[0];
+//        // check if parent and child are different synsets
+//        if (sf.getId().equals(st.getId())) {
+//            DialogBox
+//                    .showInformation(Messages.FAILURE_SOURCE_SYNSET_SAME_AS_TARGET);
+//            return false;
+//        }
 //        MakeNewRelationFrame framew = null;
 //        framew = new MakeNewRelationFrame(
 //                workbench.getFrame(), RelationArgument.SYNSET,
@@ -302,7 +461,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
 //                DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
 //            }
 //        }
-        return false;
+//        return false;
     }
 
 }

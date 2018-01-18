@@ -7,6 +7,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 import edu.uci.ics.jung.visualization.picking.PickedState;
+import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
@@ -19,6 +20,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
@@ -94,14 +96,27 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
     }
 
     private ViWordNetService getViWordNetService(){
-        return (ViWordNetService) vgvui.getWorkbench().getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
+        return ServiceManager.getViWordNetService(vgvui.getWorkbench());
+    }
+
+    private void showPathToHyponim(ViwnNode vertex) {
+        Synset synset = ((ViwnNodeSynset)vertex).getSynset();
+
+        Long hiperonimId = RemoteService.relationTypeRemote.findByName("hiponimia").getId();
+        List<Synset> path = RemoteService.synsetRelationRemote.findTopPathInSynsets(synset, hiperonimId);
+        DataEntry dataEntry;
+        for(Synset synsetInPath : path){
+            // TODO spróbowac zlikwidować dodatkowe pobieranie danych z bazy
+            dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(synsetInPath.getId(), LexiconManager.getInstance().getUserChosenLexiconsIds());
+            vgvui.addToEntrySet(dataEntry);
+        }
+        getViWordNetService().getActiveGraphView().getUI().addConnectedSynsetsToGraph((ViwnNodeSynset)vertex, path);
     }
 
     @Override
     protected void handlePopup(MouseEvent e) {
 
-        VisualizationViewer<ViwnNode, ViwnEdge> vv
-                = (VisualizationViewer<ViwnNode, ViwnEdge>) e.getSource();
+        VisualizationViewer<ViwnNode, ViwnEdge> vv = (VisualizationViewer<ViwnNode, ViwnEdge>) e.getSource();
         Layout<ViwnNode, ViwnEdge> layout = vv.getGraphLayout();
         Graph<ViwnNode, ViwnEdge> graph = layout.getGraph();
         Point2D p = e.getPoint();
@@ -129,7 +144,6 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             ViwnNode vertex = pickSupport.getVertex(layout, ivp.getX(), ivp.getY());
             ViwnEdge edge = pickSupport.getEdge(layout, ivp.getX(), ivp.getY());
             PickedState<ViwnNode> pickedVertexState = vv.getPickedVertexState();
-            PickedState<ViwnEdge> pickedEdgeState = vv.getPickedEdgeState();
 
             if (vertex != null && vertex instanceof ViwnNodeWord) {
                 popup.add(new AbstractAction(Labels.CREATE_RELATION_WITH) {
@@ -180,17 +194,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        Synset synset = ((ViwnNodeSynset)vertex).getSynset();
-
-                        Long hiperonimId = RemoteService.relationTypeRemote.findByName("hiperonimia").getId();
-                        List<Synset> path = RemoteService.synsetRelationRemote.findTopPathInSynsets(synset, hiperonimId);
-                        getViWordNetService().getActiveGraphView().getUI().addConnectedSynsetsToGraph((ViwnNodeSynset)vertex, path);
-//                        Synset synset = ((ViwnNodeSynset) vertex).getSynset();
-//                        List<Synset> path
-//                                = RemoteUtils.synsetRelationRemote.dbGetTopPathInSynsets(synset,
-//                                        RelationTypes.getByName("hiponimia").Id());
-//                        s.getActiveGraphView().getUI().
-//                                addConnectedSynsetsToGraph((ViwnNodeSynset) vertex, path);
+                       showPathToHyponim(vertex);
                     }
                 });
 
@@ -216,12 +220,22 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         ViWordNetService s = getViWordNetService();
+                        Synset synset = ((ViwnNodeSynset)vertex).getSynset();
+                        // pobranie obiektu DataEntry ze starego grafu, z którego zostanie zbudowany węzeł synsetu
+                        DataEntry synsetDataEntry = s.getActiveGraphView().getUI().getEntrySetFor(synset.getId());
+                        //utworzenie nowego widoku. W tym momencie aktywnym grafem staje się ten nowo utworzony
                         s.addGraphView();
-                        s.getActiveGraphView().loadSynset(((ViwnNodeSynset) vertex).getSynset());
-                        ViWordNetPerspective p
-                                = (ViWordNetPerspective) vgvui.getWorkbench().getActivePerspective();
-                        p.setTabTitle(
-                                s.getActiveGraphView().getUI().getRootNode().getLabel());
+                        // utworzenie nowego węzła synsetu, który zostanie przekazany do nowo utowrzonowego grafu
+                        ViwnNodeSynset newSynset = new ViwnNodeSynset(synset, s.getActiveGraphView().getUI());
+                        // przekazanie obiektu DataEntry do nowego grafu
+                        s.getActiveGraphView().getUI().addToEntrySet(synsetDataEntry);
+                        // wstawienie węzła synsetu do grafu
+                        s.getActiveGraphView().getUI().addSynsetNode(newSynset); //TODO można przekazać tylko synset, reszta i tak dzieje się w środku metody
+                        // aktualizowanie nazwy zakładki
+                        ViWordNetPerspective perspective = (ViWordNetPerspective) vgvui.getWorkbench().getActivePerspective();
+                        perspective.setTabTitle(s.getActiveGraphView().getUI().getRootNode().getLabel());
+
+
                     }
                 });
 

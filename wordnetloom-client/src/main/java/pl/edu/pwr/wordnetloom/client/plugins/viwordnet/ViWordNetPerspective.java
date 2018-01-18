@@ -8,6 +8,7 @@ import pl.edu.pwr.wordnetloom.client.systems.listeners.CloseableTabbedPaneListen
 import pl.edu.pwr.wordnetloom.client.systems.ui.CloseableTabbedPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MSplitPane;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractPerspective;
+import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ShortCut;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.View;
@@ -79,7 +80,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
 
         // events connected with tabs
         ((CloseableTabbedPane) graphView).addCloseableTabbedPaneListener(this);
-        graphView.addChangeListener(new TabChangeListener(service));
+//        graphView.addChangeListener(new TabChangeListener(service));
 
         // Create central and bottom views
         MSplitPane splitRightBottomHorizontal = new MSplitPane(
@@ -183,6 +184,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
      */
     public void setService(ViWordNetService s) {
         service = s;
+        graphView.addChangeListener(new TabChangeListener(service));
     }
 
     /**

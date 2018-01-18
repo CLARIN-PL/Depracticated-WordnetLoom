@@ -220,7 +220,7 @@ public class RelationsEditorWindow extends MFrame implements ActionListener, Tre
 
     private void openReverseRelationDialog() {
         RelationTreeModel model = ((RelationsTypePanel) relationsPanel.getSelectedComponent()).getModel();
-        Pair<RelationType, Boolean> reverseRelationPair = ReverseRelationDialog.showModal(this, currentEditedType.getReverse(), currentEditedType.getAutoReverse(), model);
+        Pair<RelationType, Boolean> reverseRelationPair = ReverseRelationDialog.showModal(this, currentEditedType.getReverse(), currentEditedType.isAutoReverse(), model);
         if (reverseRelationPair.getA() != null) {
             String locale = RemoteConnectionProvider.getInstance().getLanguage();
             relationReverse.setText(reverseRelationPair.getA().getName(locale));

@@ -188,18 +188,16 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         g.addVertex(synset.getId());
         Deque<Long> stack = new ArrayDeque<>();
         stack.push(synset.getId());
-
+        Long item;
+        List<SynsetRelation> relations;
         while (!stack.isEmpty()) {
-            Long item = stack.pop();
-
-            List<SynsetRelation> rels = getEntityManager().createNamedQuery("SynsetRelation.dbGetTopPath", SynsetRelation.class)
-                    .setParameter("id_s", item)
-                    .setParameter("id_r", rtype)
-                    .getResultList();
-
-            for (SynsetRelation rel : rels) {
-                stack.push(rel.getChild().getId());
-                g.addEdge(rel, item, rel.getChild().getId());
+            item = stack.pop();
+            relations = findSynsetRelation(item, rtype);
+            for (SynsetRelation rel : relations) {
+                if (!g.containsVertex(rel.getChild().getId())) {
+                    stack.push(rel.getChild().getId());
+                    g.addEdge(rel, item, rel.getChild().getId());
+                }
             }
         }
 
@@ -219,6 +217,13 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
             }
         }
         return path;
+    }
+
+    private List<SynsetRelation> findSynsetRelation(Long parentId, Long relationTypeId) {
+        return getEntityManager().createQuery("SELECT s FROM SynsetRelation s  LEFT JOIN FETCH s.parent WHERE (s.parent.id = :id_s) AND s.relationType.id = :id_r")
+                .setParameter("id_s", parentId)
+                .setParameter("id_r", relationTypeId)
+                .getResultList();
     }
 
     private List<SynsetRelation> getRelations(Synset synset, List<Long> lexicons, String joinColumn, String synsetIdColumn, NodeDirection[] directions) {

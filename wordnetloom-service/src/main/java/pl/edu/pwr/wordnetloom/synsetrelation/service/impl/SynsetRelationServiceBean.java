@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.service.impl;
 
+import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -41,7 +42,7 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     public void delete(RelationType relationType) {
 //        SynsetRelationType relation = rel.getRelationType();
 //
-//        if (relation.getAutoReverse()) {
+//        if (relation.isAutoReverse()) {
 //            IRelationType reverse = relationType.dbGetReverseByRelationType(relation);
 //            dbDelete(rel.getSynsetTo(), rel.getSynsetFrom(), reverse);
 //        }
@@ -128,6 +129,11 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     public List<Synset> findTopPathInSynsets(Synset synset, Long rtype) {
         return synsetRelationRepository.findTopPathInSynsets(synset, rtype);
     }
+
+//    @Override
+//    public List<DataEntry> findTopPathInSynsets(Synset synset, Long rtype){
+//        return synsetRelationRepository.findTopPathInSynsets(synset, rtype);
+//    }
 
     @Override
     public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons, NodeDirection[] directions) {

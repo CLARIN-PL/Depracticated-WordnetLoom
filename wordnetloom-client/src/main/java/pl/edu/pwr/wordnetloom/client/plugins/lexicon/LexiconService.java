@@ -7,6 +7,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
+import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
 import javax.swing.*;
@@ -22,8 +23,7 @@ public class LexiconService extends AbstractService {
 
         lexiconItem.addActionListener((ActionEvent e) -> {
             showLexiconWindow();
-            ViWordNetService s = (ViWordNetService) workbench
-                    .getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
+            ViWordNetService s = ServiceManager.getViWordNetService(workbench);
             s.getLexicalUnitsView().refreshLexicons();
             s.getSynsetView().refreshLexicons();
             s.clearAllViews();

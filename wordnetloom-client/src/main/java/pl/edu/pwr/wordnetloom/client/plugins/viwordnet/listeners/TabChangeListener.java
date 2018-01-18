@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners;
 
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
+import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

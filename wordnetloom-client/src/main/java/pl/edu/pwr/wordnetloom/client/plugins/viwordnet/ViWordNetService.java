@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
 import com.alee.laf.menu.WebMenu;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitsView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetPropertiesView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetStructureView;
@@ -26,6 +27,7 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
+import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
@@ -310,81 +312,6 @@ public class ViWordNetService extends AbstractService implements
         ViwnEdgeSynset.relsColors = rel_colors;
     }
 
-    private void loadRelationsSides() {
-
-        InputStreamReader istrem = null;
-        try {
-            istrem = new InputStreamReader(ViWordNetService.class.getClassLoader().getResourceAsStream("disp_relations.cfg"), "UTF8");
-        } catch (UnsupportedEncodingException e) {
-            System.err.println(e.toString());
-        }
-
-        ArrayList[] arrayLists = new ArrayList[5];
-        Arrays.fill(arrayLists, new ArrayList<>());
-
-//        ArrayList<RelationTypeManager>[] relTypes = arrayLists;
-        ArrayList<RelationType>[] relTypes = arrayLists;
-
-        Properties conf = new Properties();
-        try {
-            if (istrem == null) {
-                throw new IOException();
-            }
-
-            conf.load(istrem);
-
-            for (NodeDirection dir : NodeDirection.values()) {
-                String val = conf.getProperty(dir.getAsString());
-                if (val != null) {
-                    String[] rels = val.split(",");
-                    for (String s : rels) {
-//                        RelationTypeManager rt = RelationTypeManager.getByName(s);
-//                        if (rt != null) {
-//                            Collection<RelationTypes> children = rt
-//                                    .getChildren();
-//                            if (children != null) {
-//                                children.stream().forEach((r) -> {
-//                                    relTypes[dir.ordinal()].add(r);
-//                                });
-//                            } else {
-//                                relTypes[dir.ordinal()].add(rt);
-//                            }
-//                        } else {
-//                            Logger.getLogger(ViWordNetPlugin.class).log(
-//                                    Level.WARN, s + " is not a relation");
-//                        }
-                    }
-                } else {
-                    logger().warn("relations in direction " + dir.name() + " are not defined");
-                }
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger().warn("DEFAULT RELATION TYPES");
-
-            // adding default relations
-//            relTypes[0].addAll(RelationTypeManager.getByName("holonimia").getChildren());
-//            relTypes[1].addAll(RelationTypeManager.getByName("meronimia").getChildren());
-//
-//            relTypes[2].add(RelationTypeManager.getByName("hiperonimia"));
-//            relTypes[2].add(RelationTypeManager.getByName("mieszkaniec"));
-//            relTypes[2].add(RelationTypeManager.getByName("bliskoznaczność"));
-//
-//            relTypes[3].add(RelationTypeManager.getByName("hiponimia"));
-        }
-
-//        ArrayList<RelationTypeManager> order = new ArrayList<>();
-        ArrayList<RelationType> order = new ArrayList<>();
-
-        for (NodeDirection dir : NodeDirection.values()) {
-            ViwnNodeSynset.relTypes[dir.ordinal()].addAll(relTypes[dir.ordinal()]);
-            order.addAll(relTypes[dir.ordinal()]);
-        }
-
-        ViwnNodeAlphabeticComparator.order = order;
-    }
-
     @Override
     public void onStart() {
 
@@ -618,9 +545,10 @@ public class ViWordNetService extends AbstractService implements
             if (isMakeRelationModeOn()) {
                 graphUI.setCursor(MAKE_RELATION_CURSOR);
             }
+            activeGraphView.getUI().getLayout().setSize(new Dimension(500, 500));
             workbench.installView(activeGraphView, 1, perspectiveName);
             graphViews.add(activeGraphView);
-
+            activeGraphView.getUI().center();
             setActiveGraphView(graphUI.getContent());
         }
     }
@@ -1055,8 +983,7 @@ public class ViWordNetService extends AbstractService implements
                     gv.getUI().removeSynset(src);
                     gv.getUI().updateSynset(dst);
                 }
-                ViWordNetService s = (ViWordNetService) workbench
-                        .getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
+                ViWordNetService s = ServiceManager.getViWordNetService(workbench);
                 src.getSynset().setId((long) -1);
                 s.lockerView.refreshData();
             }

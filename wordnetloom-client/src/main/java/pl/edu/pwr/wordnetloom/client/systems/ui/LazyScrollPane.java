@@ -48,10 +48,9 @@ public class LazyScrollPane extends JScrollPane{
     }
 
     private void onBottomScroll(){
-        if(scrollListener != null && !end){
+        if(scrollListener != null && !end) {
             offset = list.getModel().getSize();
             scrollListener.onBottomScroll(offset, limit);
-
         }
     }
 

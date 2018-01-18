@@ -1,7 +1,6 @@
 package pl.edu.pwr.wordnetloom.relationtype.repository;
 
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
@@ -21,7 +20,7 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
     EntityManager em;
 
     public boolean isReverse(Collection<RelationType> relations, RelationType test) {
-        return relations.stream().anyMatch((relation) -> (relation.getAutoReverse() && Objects.equals(relation.getReverse().getId(), test.getId())));
+        return relations.stream().anyMatch((relation) -> (relation.isAutoReverse() && Objects.equals(relation.getReverse().getId(), test.getId())));
     }
 
     public void deleteRelationWithChilds(RelationType relation) {

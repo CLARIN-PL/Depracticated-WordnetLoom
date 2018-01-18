@@ -20,6 +20,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
+import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
@@ -45,17 +46,18 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     private static final String SUPER_MODE = "SuperMode";
     private final int DEFAULT_SCROLL_HEIGHT = 220;
     private final Dimension DEFAULT_SCROLL_DIMENSION = new Dimension(0, DEFAULT_SCROLL_HEIGHT);
+    private final int LIMIT = 15;
 
     private SenseCriteria criteria;
-        private ToolTipList unitsList;
-//    private JList unitsList;
+    private ToolTipList unitsList;
     private JLabel infoLabel;
+    private SenseCriteriaDTO lastSenseCriteria;
+    private int allUnitsCount;
 
     private MButton btnSearch, btnReset, btnNew, btnDelete, btnNewWithSyns, btnAddToSyns;
 
     private final boolean quietMode = false;
 
-    //    private final GenericListModel<Sense> listModel = new GenericListModel<>();
     private DefaultListModel<Sense> listModel = new DefaultListModel<>();
     private Sense lastSelectedValue = null;
 
@@ -82,7 +84,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 .withActionListener(this);
 
         unitsList = new ToolTipList(workbench, listModel, ToolTipGenerator.getGenerator());
-//        unitsList = new JList(listModel);
 
         unitsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         unitsList.getSelectionModel().addListSelectionListener(this);
@@ -127,12 +128,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         content.add("br center", btnSearch);
         content.add("center", btnReset);
         content.add("br left", new MLabel(Labels.LEXICAL_UNITS_COLON, 'j', unitsList));
-        unitsListScrollPane = new LazyScrollPane(unitsList, 15); //TODO dodać stałą
-//        unitsListScrollPane.setScrollListener((offset, limit) -> {
-////            refreshData(limit, offset);
-//            loadUnits(); //TODO sprawdzić to
-//            System.out.println("Koniec");
-//        });
+        unitsListScrollPane = new LazyScrollPane(unitsList, LIMIT);
+        unitsListScrollPane.setScrollListener((offset, limit) -> loadUnits());
         final Font listFont = new Font("Courier New", Font.PLAIN, 14);
         unitsList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
             JLabel label = new JLabel();
@@ -193,10 +190,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         criteria.getLexiconComboBox().refreshLexicons();
     }
 
-    //TODO dokończyć to lub usunąć
-    private SenseCriteriaDTO lastSenseCriteria;
-    private int allUnitsCount;
-
     /** Metoda ładująca nową listę jednostek
      *  1. wyczyszczenie listy
      *  2. pobranie jednostek i umieszczenie ich na liście
@@ -216,7 +209,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         }
         unitsListScrollPane.setEnd(units.size()<limit);
     }
-
 
     public void setInfoText(int loadedUnits, int allUnitsCount){
         String labelText;
@@ -243,7 +235,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
      */
     public void loadUnits() {
         List<Sense> units = getSenses(lastSenseCriteria, lastSenseCriteria.getLimit(), listModel.getSize());
-
         for(Sense sense : units) {
             listModel.addElement(sense);
         }
@@ -328,11 +319,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         if (quietMode) {
             return;
         }
-
         // wywolanie search
         if (event.getSource() == btnSearch) {
-//            refreshData(15, 0);
-            loadUnits(15); //TODO przerzucić wartość do stałej
+            loadUnits(LIMIT);
         } else if (event.getSource() == btnReset) {
             criteria.resetFields();
         } else if (event.getSource() == btnDelete) {
@@ -383,8 +372,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 //            if (result == DialogBox.YES) {
 
 
-                ViWordNetService s = (ViWordNetService) workbench
-                        .getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService"); //TODO można to zrobić jakoś inaczej, żeby tak chamsko nie pobierać usługi
+                ViWordNetService s = ServiceManager.getViWordNetService(workbench);
                 s.getActiveGraphView().getUI().releaseDataSetCache();
                 s.getActiveGraphView().getUI().clear();
                 listeners.notifyAllListeners(null);
@@ -504,8 +492,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         super.keyPressed(event);
         if (!event.isConsumed() && event.getSource() == criteria.getSearchTextField() && event.getKeyChar() == KeyEvent.VK_ENTER) {
             event.consume();
-//            refreshData(15, 0); //TODO tutaj to będzie trzeba jakoś ogarnąć
-            loadUnits(15); //TODO przenieśc to do jakieś wspólnej metody razem z naciśnięciem przycisku szukaj
+            loadUnits(LIMIT);
         }
     }
 
@@ -525,7 +512,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
      */
     public Sense getSelectedUnit() {
         int returnValue = unitsList.getSelectedIndex();
-//        return listModel.getObjectAt(returnValue);
         return listModel.get(returnValue);
     }
 
@@ -587,7 +573,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     public void setCriteria(CriteriaDTO crit) {
         criteria.restoreCriteria(crit);
 //        listModel.setCollection(crit.getSense());
-        listModel.clear();
+//        listModel.clear();
         if (crit != null && crit.getSense() != null) {
             for (Sense sense : crit.getSense()) {
                 listModel.addElement(sense);

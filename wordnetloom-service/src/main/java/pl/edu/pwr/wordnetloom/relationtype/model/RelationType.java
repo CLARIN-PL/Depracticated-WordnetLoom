@@ -168,7 +168,7 @@ public class RelationType extends GenericEntity {
         this.relationArgument = relationArgument;
     }
 
-    public Boolean getAutoReverse() {
+    public Boolean isAutoReverse() {
         return autoReverse;
     }
 

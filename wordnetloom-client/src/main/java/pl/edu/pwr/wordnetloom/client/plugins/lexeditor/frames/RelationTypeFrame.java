@@ -67,7 +67,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      * @param childUnits        - jednostki nadrzedne
      */
     private RelationTypeFrame(WebFrame frame,
-                              String type,
+                              RelationArgument type,
                               PartOfSpeech pos,
                               RelationType fixedRelationType,
                               RelationType suggestedRelationType,
@@ -132,7 +132,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
 
         // wyswietlenie relacji
         mainRelations = new ArrayList<>();
-        mainRelations = RelationTypeManager.getInstance().getParents(RelationArgument.SYNSET_RELATION);
+        mainRelations = RelationTypeManager.getInstance().getParents(type);
         for(RelationType relType : mainRelations) {
             relationType.addItem(relType);
         }
@@ -240,7 +240,8 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      * @return typ relacji albo null
      */
     public static RelationType showModal(Workbench workbench,
-                                         String type,
+//                                         String type,
+                                         RelationArgument type,
                                          PartOfSpeech pos,
                                          Collection<Sense> parentUnits,
                                          Collection<Sense> childUnits) {
@@ -258,7 +259,8 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      * @return typ relacji albo null
      */
     public static RelationType showModal(Workbench workbench,
-                                         String type,
+//                                         String type,
+                                         RelationArgument type,
                                          PartOfSpeech pos,
                                          RelationType fixedRelationType,
                                          Collection<Sense> parentUnits,
@@ -294,7 +296,8 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      * @return typ relacji albo null
      */
     public static RelationType showModal(WebFrame frame,
-                                         String type,
+//                                         String type,
+                                         RelationArgument type,
                                          PartOfSpeech pos,
                                          RelationType relationType,
                                          RelationType suggestedRelationType,

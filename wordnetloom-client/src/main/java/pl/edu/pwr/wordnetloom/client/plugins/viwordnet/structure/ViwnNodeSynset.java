@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
@@ -37,7 +39,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     protected static SynsetNodeShape geom;
 
-//    public static Set<RelationTypeManager>[] relTypes;
     public static Set<RelationType>[] relTypes;
 
     private final Set<ViwnEdgeSynset> edges_to_this_ = new HashSet<>();
@@ -47,7 +48,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     private final List<Sense> units;
     private ViwnNodeSet in_set_ = null;
     private boolean hasFrame = false;
-    private boolean is_dirty_cache_;
+    private boolean is_dirty_cache_ = true;
 
     private String ret = null;
     private PartOfSpeech pos = null;
@@ -64,14 +65,20 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     /** Określa, stronę z której zostały w pełni pobrane relacje */
     private boolean[] fullRelation = new boolean[NodeDirection.values().length];
 
-    public boolean isFullRelation(NodeDirection direction){
+    public boolean isFullLoadedRelation(NodeDirection direction){
         return fullRelation[direction.ordinal()];
     }
 
-    public void setFullRelation(NodeDirection direction, boolean isFullRelation){
+    public void setFullLoadedRelation(NodeDirection direction, boolean isFullRelation){
         fullRelation[direction.ordinal()] = isFullRelation;
     }
 
+    public void setFullLoadedRelation(NodeDirection[] directions, boolean isFullLoadedRelation) {
+        for(NodeDirection direction : directions) {
+            setFullLoadedRelation(direction, isFullLoadedRelation);
+        }
+    }
+    
     public void setAllFullRelation(boolean isFullRelation){
         for(int i=0; i < fullRelation.length; i++){
             fullRelation[i] = isFullRelation;
@@ -400,7 +407,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
         // fetching poses from temporary cache
         getPos();
-
+        is_dirty_cache_ = false;
         // adding relations to appropiate groups
 //        construct();
     }
@@ -413,24 +420,13 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     public PartOfSpeech getPos() {
         if (pos == null && !hadCheckedPOS) {
             DataEntry dataEntry = ui.getEntrySetFor(getId());
+            if(dataEntry == null){
+                //TODO zlikwidować pobieranie DataEntry. DataEtry potrzebne jest tylko, aby pobrać część mowy
+                DataEntry entry = RemoteService.synsetRemote.findSynsetDataEntry(getId(), LexiconManager.getInstance().getUserChosenLexiconsIds());
+                ui.addToEntrySet(entry);
+                dataEntry = entry;
+            }
             pos = PartOfSpeechManager.getInstance().getById(dataEntry.getPosID());
-
-//            DataEntry dataSet = ui.getEntrySetFor(getId());
-//            Long l = null;
-//
-//            if (dataSet == null || dataSet.getPosID() == null) {
-//                l = RemoteUtils.synsetRemote.fastGetPOSID(this.synset);
-//            } else {
-//                l = dataSet.getPosID();
-//            }
-//
-//            if (l == null) {
-//                pos = null;
-//                hadCheckedPOS = true;
-//                pos = PosManager.getInstance().getFromID(0);
-//            } else {
-//                pos = PosManager.getInstance().getFromID(l.intValue());
-//            }
         }
         return pos;
     }
@@ -476,7 +472,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
                         case SEMI_EXPANDED:
                         case NOT_EXPANDED:
                             ui.showRelation(this, new NodeDirection[]{rel});
-                            ui.recreateLayout();
+//                            ui.recreateLayout();
                             break;
                     }
                 }

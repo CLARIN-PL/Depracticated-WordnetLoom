@@ -35,6 +35,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexFillColor;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexRenderer;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
+import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
 
@@ -214,13 +215,9 @@ public class ViwnLockerViewUI extends AbstractViewUI
          */
         public LockerElement(Object o, LockerElementRenderer renderer) {
             this();
-
             val = o;
-
             setType(o);
-
             renderer.renderElement(this, o);
-
         }
 
         /**
@@ -246,7 +243,7 @@ public class ViwnLockerViewUI extends AbstractViewUI
 		 * */
         @Override
         public boolean equals(Object o) {
-            return (o != null
+            return (o != null && val != null
                     && getClass().equals(o.getClass())
                     && val.equals(((LockerElement) o).val));
         }
@@ -281,7 +278,8 @@ public class ViwnLockerViewUI extends AbstractViewUI
 
         @Override
         public void mouseClicked(MouseEvent mE) {
-            ViWordNetService s = (ViWordNetService) workbench.getService("pl.edu.pwr.wordnetloom.client.plwordnet.plugins.viwordnet.ViWordNetService");
+            //TODO 22
+            ViWordNetService s = ServiceManager.getViWordNetService(workbench);
             // if make relation mode is on
             if (s.isMakeRelationModeOn()
                     && jl.locationToIndex(mE.getPoint()) != -1) {
@@ -349,17 +347,18 @@ public class ViwnLockerViewUI extends AbstractViewUI
 						 * action should be handled at upper level
 						 * for example by service
 						 * */
-                            ViWordNetService s = (ViWordNetService) workbench.getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
+                            ViWordNetService s = ServiceManager.getViWordNetService(workbench);
                             s.setFirstMakeRelation(me.val);
+
                         }
                     });
 
-                    jpm.add(new AbstractAction("Połącz synset z ...") {
+                    jpm.add(new AbstractAction("Połącz synset z ...") { //TODO dodać tłumaczenie do bazy danych
                         private static final long serialVersionUID = 1L;
 
                         @Override
                         public void actionPerformed(ActionEvent ae) {
-                            ViWordNetService s = (ViWordNetService) workbench.getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
+                            ViWordNetService s = ServiceManager.getViWordNetService(workbench);
                             s.setFirstMergeSynsets(me.val);
                         }
                     });
@@ -368,7 +367,7 @@ public class ViwnLockerViewUI extends AbstractViewUI
                     /* TODO: implement me
                  * generate popup menu and it actions for lexical unit
 				 * */
-                    jpm.add(new AbstractAction("Utwórz relację z jednostką ...") {
+                    jpm.add(new AbstractAction("Utwórz relację z jednostką ...") { //TODO dodać tłumaczenie do bazy danych
 
                         private static final long serialVersionUID = -987233321164815L;
 
@@ -379,7 +378,7 @@ public class ViwnLockerViewUI extends AbstractViewUI
 						 * action should be handled at upper level
 						 * for example by service
 						 * */
-                            ViWordNetService s = (ViWordNetService) workbench.getService("pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService");
+                            ViWordNetService s = ServiceManager.getViWordNetService(workbench);
                             s.setFirstMakeRelation(me.val);
                         }
                     });
