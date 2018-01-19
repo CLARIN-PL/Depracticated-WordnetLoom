@@ -9,12 +9,9 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MTextArea;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -22,7 +19,6 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtest.model.RelationTest;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import se.datadosen.component.RiverLayout;
 
@@ -43,6 +39,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
     protected List<Long> lexicons;
     protected ViwnNode from[], to[];
 
+
     protected MakeNewRelationWindow(WebFrame frame, PartOfSpeech pos, ViwnNode[] from, ViwnNode[] to, Workbench workbench) {
         super(frame, "", pos, null);
 
@@ -51,54 +48,49 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
 
         lexicons = LexiconManager.getInstance().getUserChosenLexiconsIds();
 
+        init(RelationArgument.SYNSET_RELATION);
+
         ViwnNodeSynset fromNode = (ViwnNodeSynset)from[0];
         ViwnNodeSynset toNode = (ViwnNodeSynset)to[0];
-        // relation from:
-        parentItem = new MComboBox();
-        //TODO sprawdzić, czy rzeczywiście o jednostki chodzi
-        List<Sense> parentSenses = RemoteService.senseRemote.findBySynset(fromNode.getSynset(), lexicons);
-        for(Sense parent : parentSenses){
-            parentItem.addItem(parent.getWord().getWord());
-        }
-        childItem = new MComboBox();
-        List<Sense> childSenses = RemoteService.senseRemote.findBySynset(toNode.getSynset(), lexicons);
-        for(Sense child : childSenses){
-            childItem.addItem(child.getWord().getWord());
-        }
+        //TODO zobaczyć, czy nie można przekazać coś innego i w jaki sposób później będzie zapisywana relacja
+        parentItem.addItem(fromNode.getSynset().getSenses().get(0));
+        childItem.addItem(toNode.getSynset().getSenses().get(0));
 
-//        List<Sense> senses = RemoteUtils.synsetRemote
-//                .dbFastGetUnits(((ViwnNodeSynset) from[0]).getSynset(), lexicons);
-//        for (Sense parent : senses) {
-//            parentItem.addItem(parent.getLemma().getWord());
+
+//
+////        List<Sense> senses = RemoteUtils.synsetRemote
+////                .dbFastGetUnits(((ViwnNodeSynset) from[0]).getSynset(), lexicons);
+////        for (Sense parent : senses) {
+////            parentItem.addItem(parent.getLemma().getWord());
+////        }
+//
+//        // middle element
+//        middleItem = new MComboBox();
+//        middleItem.setEnabled(false);
+//
+//        // description of relation
+//        description = new MTextArea("");
+//        description.setRows(6);
+//        description.setEditable(false);
+//
+//        // list of tests
+//        testsList = new JList();
+//
+//        // relation subtype
+//        relationSubType = new MComboBox();
+//        relationSubType.addKeyListener(this);
+//        relationSubType.setEnabled(false);
+//
+//        // relation type
+//        relationType = new MComboBox();
+//        relationType.addKeyListener(this);
+//
+//        // show relations
+//
+//        mainRelations = RelationTypeManager.getInstance().getParents(RelationArgument.SYNSET_RELATION);
+//        for(RelationType relType : mainRelations){
+//            relationType.addItem(relType);
 //        }
-
-        // middle element
-        middleItem = new MComboBox();
-        middleItem.setEnabled(false);
-
-        // description of relation
-        description = new MTextArea("");
-        description.setRows(6);
-        description.setEditable(false);
-
-        // list of tests
-        testsLit = new JList();
-
-        // relation subtype
-        relationSubType = new MComboBox();
-        relationSubType.addKeyListener(this);
-        relationSubType.setEnabled(false);
-
-        // relation type
-        relationType = new MComboBox();
-        relationType.addKeyListener(this);
-
-        // show relations
-
-        mainRelations = RelationTypeManager.getInstance().getParents(RelationArgument.SYNSET_RELATION);
-        for(RelationType relType : mainRelations){
-            relationType.addItem(relType);
-        }
 //        mainRelations = new ArrayList<>();
 //        List<RelationType> relationTypes = RelationTypeManager.getInstance().getParents(RelationArgument.SYNSET_RELATION);
 //        for(RelationType relType : relationTypes) {
@@ -124,29 +116,28 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         // System.out.println("ID: "+rt.getId()+"\t"+RelationTypes.getFullNameFor(rt.getId()));
         // }
         // event listeners
-        parentItem.addKeyListener(this);
-        parentItem.addActionListener(this);
-        middleItem.addKeyListener(this);
-        middleItem.addActionListener(this);
-        childItem.addKeyListener(this);
-        childItem.addActionListener(this);
+//        middleItem = new MComboBox();
+//        parentItem.addKeyListener(this);
+//        parentItem.addActionListener(this);
+//        middleItem.addKeyListener(this);
+//        middleItem.addActionListener(this);
+//        childItem.addKeyListener(this);
+//        childItem.addActionListener(this);
 
         // buttons
-        buttonChoose = MButton.buildSelectButton()
-                .withKeyListener(this)
-                .withActionListener(this);
-
-        buttonCancel = MButton.buildCancelButton()
-                .withKeyListener(this)
-                .withActionListener(this);
+//        buttonChoose = MButton.buildSelectButton()
+//                .withKeyListener(this)
+//                .withActionListener(this);
+//
+//        buttonCancel = MButton.buildCancelButton()
+//                .withKeyListener(this)
+//                .withActionListener(this);
 
         buttonSwitch = new MButton(this)
                 .withIcon(FontAwesome.EXCHANGE)
                 .withMnemonic(KeyEvent.VK_Z)
                 .withKeyListener(this);
 
-        relationSubType.addActionListener(this);
-        relationType.addActionListener(this);
 
         // if there are any relations
         if (mainRelations.size() > 0) {
@@ -156,7 +147,36 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
             buttonChoose.setEnabled(false);
         }
 
+        initView();
         // build interfaceTEST_LABEL
+//        add("",
+//                new MLabel(Labels.RELATION_TYPE_COLON, 't', relationType));
+//        add("tab hfill", relationType);
+//        add("br", new MLabel(Labels.RELATION_SUBTYPE_COLON, 'y',
+//                relationType));
+//        add("tab hfill", relationSubType);
+//        add("br", new MLabel(Labels.RELATION_DESC_COLON, '\0',
+//                description));
+//        add("br hfill", new JScrollPane(description));
+//
+//        jp = new WebPanel();
+//        jp.setLayout(new RiverLayout());
+//        jp.add("br", new MLabel(Labels.SOURCE_SYNSET_COLON, 'r', parentItem));
+//        jp.add("tab hfill", parentItem);
+//        jp.add("br", new MLabel(Labels.TARGET_SYNSET_COLON, 'd', childItem));
+//        jp.add("tab hfill", childItem);
+//
+//        add("br hfill", jp);
+//        add("", buttonSwitch);
+//
+//        add("br", new MLabel(Labels.TESTS_COLON, '\0', testsList));
+//        add("br hfill vfill", new JScrollPane(testsList));
+//        add("br center", buttonChoose);
+//        add("", buttonCancel);
+    }
+
+    @Override
+    protected void initView() {
         add("",
                 new MLabel(Labels.RELATION_TYPE_COLON, 't', relationType));
         add("tab hfill", relationType);
@@ -177,8 +197,8 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         add("br hfill", jp);
         add("", buttonSwitch);
 
-        add("br", new MLabel(Labels.TESTS_COLON, '\0', testsLit));
-        add("br hfill vfill", new JScrollPane(testsLit));
+        add("br", new MLabel(Labels.TESTS_COLON, '\0', testsList));
+        add("br hfill vfill", new JScrollPane(testsList));
         add("br center", buttonChoose);
         add("", buttonCancel);
     }
@@ -204,55 +224,56 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
             childItem.setModel(cbm);
 
             // refresh tests
-            testsLit.setListData(new String[]{});
+            testsList.setListData(new String[]{});
 //            IRelationType relation = getSelectedRelation();
 //            if (relation != null) {
 //                loadTests(relation);
 //            }
 
             // relation type changed
-        } else if (event.getSource() == relationType) {
-            relationSubType.removeAllItems();
-            description.setText("");
-            testsLit.setListData(new String[]{});
-
-            // read chosen function index
-            int index = relationType.getSelectedIndex();
-//            for (IRelationType type : mainRelations) {
-//                if (index-- == 0) {
-//                    // refresh subrelation
-//                    subRelations = new ArrayList<>();
-//                    Collection<IRelationType> readRelations = LexicalDA
-//                            .getChildren(type);
-//                    for (IRelationType relType : readRelations) {
-//                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
-//                            relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
-//                            subRelations.add(relType);
-//                        }
-//                    }
-//                    if (subRelations.size() > 0) {
-//                        relationSubType.setSelectedIndex(0);
-//                    } else {
-//                        loadTests(type);
-//                    }
-//                    description.setText(RelationTypes.get(type.getId())
-//                            .getRelationType().getDescription().getText());
-//                    break;
-//                }
-//            }
-            relationSubType.setEnabled(subRelations != null
-                    && subRelations.size() > 0);
-
-            // subtype changed
+//        } else if (event.getSource() == relationType) {
+//            relationSubType.removeAllItems();
+//            description.setText("");
+//            testsList.setListData(new String[]{});
+//            // read chosen function index
+//            int index = relationType.getSelectedIndex();
+////            for (IRelationType type : mainRelations) {
+////                if (index-- == 0) {
+////                    // refresh subrelation
+////                    subRelations = new ArrayList<>();
+////                    Collection<IRelationType> readRelations = LexicalDA
+////                            .getChildren(type);
+////                    for (IRelationType relType : readRelations) {
+////                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
+////                            relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
+////                            subRelations.add(relType);
+////                        }
+////                    }
+////                    if (subRelations.size() > 0) {
+////                        relationSubType.setSelectedIndex(0);
+////                    } else {
+////                        loadTests(type);
+////                    }
+////                    description.setText(RelationTypes.get(type.getId())
+////                            .getRelationType().getDescription().getText());
+////                    break;
+////                }
+////            }
+//            relationSubType.setEnabled(subRelations != null
+//                    && subRelations.size() > 0);
+//
+//            // subtype changed
         } else if (event.getSource() == relationSubType
-                || event.getSource() == parentItem
-                || event.getSource() == childItem
+//                || event.getSource() == parentItem
+//                || event.getSource() == childItem
                 || event.getSource() == middleItem) {
-            testsLit.setListData(new String[]{});
+            testsList.setListData(new String[]{});
 //            IRelationType relation = getSelectedRelation();
 //            if (relation != null) {
 //                loadTests(relation);
 //            }
+        } else {
+            super.actionPerformed(event);
         }
     }
 
@@ -264,89 +285,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
     public void keyTyped(KeyEvent arg0) {
     }
 
-    private static List<String> getTests(RelationType relation, String parent, String child, PartOfSpeech partOfSpeechA, PartOfSpeech partOfSpeechB) {
-        List<String> result = new ArrayList<>();
-        List<RelationTest> tests = RemoteService.relationTestRemote.findByRelationType(relation);
-        String text;
-        Collection<String> defOfUnitA = new ArrayList<>();
-        Collection<String> defOfUnitB = new ArrayList<>();
-        String[] parseResult;
-        boolean found = true;
-        int testIndex = 1;
-        for(RelationTest test : tests) {
-            if(test.getSenseApartOfSpeech().equals(partOfSpeechA) && test.getSenseBpartOfSpeech().equals(partOfSpeechB)) {
-                text = test.getTest();
-                while(found){
-                    parseResult = extractUnitDefinition(text, "<x#", "<x" + defOfUnitA.size() + ">");
-                    found = parseResult[0] != null;
-                    if(found){
-                        defOfUnitA.add(parseResult[0]);
-                    }
-                    text = parseResult[1];
-                }
-                found = true;
-                while(found) {
-                    parseResult = extractUnitDefinition(text, "<y#", "<y" + defOfUnitB.size() + ">");
-                    found = parseResult[0] != null;
-                    if(found){
-                        defOfUnitB.add(parseResult[0]);
-                    }
-                    text = parseResult[1];
-                }
 
-                Collection<String> formsOfUnitA = getForms(defOfUnitA, parent);
-                Collection<String> formsOfUnitB = getForms(defOfUnitB, child);
-
-                int index = 0;
-                for(String f : formsOfUnitA) {
-                    text = text.replace("<x" + index + ">", "<font color=\"blue\">" + (f == null || "null".equals(f) || "null się".equals(f) ? parent : f) + "</font>");
-                    index++;
-                }
-                index = 0;
-                for(String f : formsOfUnitB) {
-                    text = text.replace("<y" + index + ">", "<font color=\"blue\">" + (f == null || "null".equals(f) || "null się".equals(f) ? child : f) + "</font>");
-                    index++;
-                }
-                result.add("<html>" + (testIndex++) + ". " + text + "</html>");
-            }
-        }
-        return result;
-    }
-
-    private static Collection<String> getForms(Collection<String> defs, String unit) {
-        Collection<String> forms = new ArrayList<>();
-        // ustawieni suffixu
-        String suffix = "";
-        if (unit.endsWith("się")) { // konczy sie z się, a ma to zostać odcięte
-            unit = unit.substring(0, unit.length() - 4);
-            suffix = " się"; // ustawienie sufixu
-        }
-        for (String def : defs) {
-            List<String> splits = Arrays.asList(def.split("\\|"));
-            //forms.add(RemoteUtils.wordFormsRemote.getFormFor(new Word(unit), splits) + suffix);
-        }
-        return forms;
-    }
-
-    private static String[] extractUnitDefinition(String text, String code, String replace) {
-        String[] result = new String[2];
-        int pos = text.indexOf(code);
-        if (pos != -1) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(text.substring(0, pos));
-            int endPos = text.indexOf(">", pos);
-
-            result[0] = text.substring(pos + code.length(), endPos);
-
-            sb.append(replace).append(text.substring(endPos + 1));
-            result[1] = sb.toString();
-        } else {
-            result[0] = null;
-            result[1] = text;
-        }
-
-        return result;
-    }
 
     /**
      * @param workbench <code>Workbench</code> to get JFrame
@@ -367,6 +306,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         PartOfSpeech partOfSpeech = nodeFrom.getPos();
         ViwnNode[] nodeFromArray = {from};
         ViwnNode[] nodeToArray = {to};
+
         MakeNewRelationWindow relationWindow = new MakeNewRelationWindow(workbench.getFrame(), partOfSpeech, nodeFromArray, nodeToArray, workbench);
         relationWindow.setVisible(true);
         RelationType relationType = relationWindow.chosenType;

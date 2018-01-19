@@ -39,6 +39,11 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 .executeUpdate();
     }
 
+    public void delete(SynsetRelation relation){
+//        getEntityManager().remove(relation);
+        em.remove(em.contains(relation) ? relation : em.merge(relation));
+    }
+
     public void deleteAll() {
         getEntityManager().createQuery("DELETE FROM SynsetRelation", SynsetRelation.class)
                 .executeUpdate();
@@ -110,7 +115,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
     }
 
     public List<SynsetRelation> findRelations(Synset parent, Synset child, RelationType relation) {
-        return getEntityManager().createQuery("SELECT sr FROM SynsetRelation sr WHERE sr.parent.id = :parent AND sr.child = : child AND sr.relationType.id = :relation", SynsetRelation.class)
+        return getEntityManager().createQuery("SELECT sr FROM SynsetRelation sr WHERE sr.parent.id = :parent AND sr.child.id = :child AND sr.relationType.id = :relation", SynsetRelation.class)
                 .setParameter("parent", parent.getId())
                 .setParameter("child", child.getId())
                 .setParameter("relation", relation.getId())

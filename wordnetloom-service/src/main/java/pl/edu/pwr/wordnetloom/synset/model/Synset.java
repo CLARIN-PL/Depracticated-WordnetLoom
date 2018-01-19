@@ -110,4 +110,5 @@ public class Synset extends GenericEntity {
     public void setStatus(Integer status) {
         this.status = status;
     }
+
 }

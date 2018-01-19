@@ -16,6 +16,8 @@ public interface SynsetRelationServiceRemote {
 
     void delete(RelationType relationType);
 
+    void delete(SynsetRelation relation);
+
     void deleteAll();
 
     List<SynsetRelation> findSubRelations(Synset synset, RelationType relationType);

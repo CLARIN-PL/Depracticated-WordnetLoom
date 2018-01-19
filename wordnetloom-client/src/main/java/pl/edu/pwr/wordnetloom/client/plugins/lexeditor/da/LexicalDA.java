@@ -589,7 +589,7 @@ public class LexicalDA {
 //                Collection<String> defOfUnitA = new ArrayList<>();
 //                Collection<String> defOfUnitB = new ArrayList<>();
 //                String[] parseResult;
-//                boolean found = true;
+//                boolean found = true;F
 //                while (found) {
 //                    parseResult = extractUnitDefinition(text, "<x#", "<x" + defOfUnitA.size() + ">");
 //                    found = parseResult[0] != null;

@@ -3,9 +3,13 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window;
 import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeSynset;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import se.datadosen.component.RiverLayout;
@@ -103,6 +107,12 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == delete) {
             ViwnEdgeSynset ves = toRemove.get(relations.getSelectedItem());
+            SynsetRelation synsetRelation = ves.getSynsetRelation();
+            // deleting synset relation from database
+            RemoteService.synsetRelationRemote.delete(synsetRelation);
+            //TODO sprawdzenie, czy nie ma relacji odwrotnych, które też będzie trzeba usunąć
+            removed.add(ves);
+
 //
 //            RemoteUtils.synsetRelationRemote.dbDelete(ves.getSynsetRelation());
 //
@@ -167,41 +177,29 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
             setOpaque(true);
         }
 
-        private String getLabel(Synset synset) {
+        private String getSynsetLabel(Synset synset) {
             String cached = synsetCache.get(synset.getId());
             if (cached != null) {
                 return cached;
             }
-
-            String ret = "";
-//            if (Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT))) {
-//                ret = "S ";
-//            }
-//            // check if synset isnt null or empty
-//            List<Sense> units = RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
-//            if (units != null && !units.isEmpty()) {
-//                ret += ((Sense) units.iterator().next()).toString();
-//                if (units.size() > 1) {
-//                    ret += " ...";
-//                }
-//            } else {
-//                ret = "! S.y.n.s.e.t p.u.s.t.y !";
-//            }
-
-            //    synsetCache.put(synset.getId(), ret);
-            return ret;
+            Sense sense = RemoteService.senseRemote.findHeadSenseOfSynset(synset.getId());
+            String senseName = sense.getWord().getWord();
+            Integer variant = sense.getVariant();
+            String domain = LocalisationManager.getInstance().getLocalisedString(sense.getDomain().getName());
+            return senseName + " " + variant + "(" + domain + ")";
         }
 
         @Override
         public Component getListCellRendererComponent(JList list,
                                                       Object value, int index, boolean isSelected,
                                                       boolean cellHasFocus) {
-
             if (value instanceof Integer) {
                 ViwnEdgeSynset ves = toRemove.get((Integer) value);
                 SynsetRelation sr = ves.getSynsetRelation();
-
-                //         setText(String.format(Labels.RELATION_INFO, RelationTypes.get(sr.getRelation().getId()).name(), getLabel(sr.getSynsetFrom()), getLabel(sr.getSynsetTo())));
+                String relationTypeText = LocalisationManager.getInstance().getLocalisedString(sr.getRelationType().getName());
+                String parentSynsetText = getSynsetLabel(sr.getParent());
+                String childSynsetText = getSynsetLabel(sr.getChild());
+                setText(String.format(Labels.RELATION_INFO, relationTypeText, parentSynsetText, childSynsetText));
             }
 
             Color background;

@@ -51,7 +51,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
         description.setEditable(false);
 
         // list of tests
-        testsLit = new JList();
+        testsList = new JList();
 
         // relation subtype
         relationSubType = new MComboBox();
@@ -127,8 +127,8 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
         add("br hfill", jp);
         add("", buttonSwitch);
 
-        add("br", new MLabel(Labels.TESTS_COLON, '\0', testsLit));
-        add("br hfill vfill", new JScrollPane(testsLit));
+        add("br", new MLabel(Labels.TESTS_COLON, '\0', testsList));
+        add("br hfill vfill", new JScrollPane(testsList));
         add("br center", buttonChoose);
         add("", buttonCancel);
     }
@@ -154,7 +154,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
             childItem.setModel(cbm);
 
             // refresh tests
-            testsLit.setListData(new String[]{});
+            testsList.setListData(new String[]{});
             //      IRelationType relation = getSelectedRelation();
 //            if (relation != null) {
 //                loadTests(relation);
@@ -164,7 +164,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
         } else if (event.getSource() == relationType) {
             relationSubType.removeAllItems();
             description.setText("");
-            testsLit.setListData(new String[]{});
+            testsList.setListData(new String[]{});
 
             // read chosen function index
             int index = relationType.getSelectedIndex();
@@ -198,7 +198,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
 //                || event.getSource() == parentItem
 //                || event.getSource() == childItem
 //                || event.getSource() == middleItem) {
-//            testsLit.setListData(new String[]{});
+//            testsList.setListData(new String[]{});
 //            IRelationType relation = getSelectedRelation();
 //            if (relation != null) {
 //                loadTests(relation);

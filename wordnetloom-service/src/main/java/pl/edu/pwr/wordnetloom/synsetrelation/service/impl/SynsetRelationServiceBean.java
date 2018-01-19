@@ -35,11 +35,13 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
 
     @Override
     public boolean delete(Synset parent, Synset child, RelationType relationType) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return synsetRelationRepository.delete(parent, child, relationType);
     }
 
     @Override
     public void delete(RelationType relationType) {
+        synsetRelationRepository.delete(relationType);
 //        SynsetRelationType relation = rel.getRelationType();
 //
 //        if (relation.isAutoReverse()) {
@@ -53,6 +55,11 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
 //            System.err.println(this.getClass() + ": WARRNING: " + e.getLocalizedMessage());
 //        }
 //        synsetRelationRepository.dbDelete(rel);
+    }
+
+    @Override
+    public void delete(SynsetRelation relation) {
+        synsetRelationRepository.delete(relation);
     }
 
     @Override
