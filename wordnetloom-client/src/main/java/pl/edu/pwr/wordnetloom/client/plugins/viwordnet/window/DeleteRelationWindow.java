@@ -108,7 +108,7 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
         if (e.getSource() == delete) {
             ViwnEdgeSynset ves = toRemove.get(relations.getSelectedItem());
             SynsetRelation synsetRelation = ves.getSynsetRelation();
-            // deleting synset relation from database
+            // deleting synset relation from databasegit pull
             RemoteService.synsetRelationRemote.delete(synsetRelation);
             //TODO sprawdzenie, czy nie ma relacji odwrotnych, które też będzie trzeba usunąć
             removed.add(ves);
