@@ -6,6 +6,7 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.relationtype.repository.RelationTypeRepository;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
@@ -23,6 +24,9 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
 
     @Inject
     EntityManager em;
+
+    @Inject
+    RelationTypeRepository relationTypeRepository;
 
     public boolean delete(Synset parent, Synset child, RelationType relationType) {
         Query query = getEntityManager().createQuery("DELETE FROM SynsetRelation s WHERE s.parent.id = :parent AND s.child.id = :child AND s.relationType.id = :relationType", SynsetRelation.class);

@@ -45,6 +45,8 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
     protected Sense parentSense;
     protected Sense childSense;
 
+    protected static boolean testsPositive; //TODO może nie będize konieczności, aby to było statyczne
+
     private class PartOfSpeechRenderer implements ListCellRenderer {
 
         protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
@@ -381,42 +383,6 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         }
     }
 
-    /**
-     * wczytanie testow dla podanej relacji
-     *
-     * @param type - typ relacji
-     */
-    protected void loadTests(RelationType type) {
-        if (middleItem.getItemCount() == 0) {
-            int a = parentItem.getSelectedIndex();
-            int b = childItem.getSelectedIndex();
-
-            if (a < 0 || b < 0) {
-                return;
-            }
-
-//            List<String> tests = LexicalDA.getTests(type,
-//                    (parentItem.getItemAt(parentItem.getSelectedIndex())).toString(),
-//                    (childItem.getItemAt(childItem.getSelectedIndex())).toString(),
-//                    pos);
-//            testsList.setListData(tests.toArray(new String[]{}));
-//        } else {
-//            List<String> tests = LexicalDA.getTests(type,
-//                    (parentItem.getItemAt(parentItem.getSelectedIndex())).toString(),
-//                    middleItem.getItemAt(middleItem.getSelectedIndex()).toString(),
-//                    pos);
-//            tests.addAll(LexicalDA.getTests(type,
-//                    (parentItem.getItemAt(parentItem.getSelectedIndex())).toString(),
-//                    (childItem.getItemAt(childItem.getSelectedIndex())).toString(),
-//                    pos));
-//
-//            testsList.setListData(tests.toArray(new String[]{}));
-        }
-    }
-
-    Sense sense1;
-    Sense sense2;
-
     @Override
     public void actionPerformed(ActionEvent event) {
 
@@ -464,63 +430,50 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         description.setText(descriptionText);
     }
 
-    private void setTests(RelationType relationType) {
-        //TODO zrobić wypisywanie testów
-        List<RelationTest> tests = RemoteService.relationTestRemote.findByRelationType(relationType);
-        List<String> testsTextList = new ArrayList<>();
-        for(RelationTest test : tests){
-            testsTextList.add(test.getTest());
+    private static String getMarker(final String startWith, final String text){
+        int startIndex = text.indexOf(startWith);
+        if(startIndex < 0){
+            return null;
         }
-        testsList.setListData(testsTextList.toArray());
+        int endIndex = text.indexOf(">", startIndex);
+        return text.substring(startIndex, endIndex+1);
     }
 
     protected static List<String> getTests(RelationType relation, String parent, String child, PartOfSpeech partOfSpeechA, PartOfSpeech partOfSpeechB) {
         List<String> result = new ArrayList<>();
         List<RelationTest> tests = RemoteService.relationTestRemote.findByRelationType(relation);
         String text;
-        Collection<String> defOfUnitA = new ArrayList<>();
-        Collection<String> defOfUnitB = new ArrayList<>();
-        String[] parseResult;
-        boolean found = true;
+        String markerX;
+        String markerY;
         int testIndex = 1;
+        testsPositive = true;
         for(RelationTest test : tests) {
-//            if(test.getSenseApartOfSpeech().equals(partOfSpeechA) && test.getSenseBpartOfSpeech().equals(partOfSpeechB)) {
-                text = test.getTest();
-                while(found){
-                    parseResult = extractUnitDefinition(text, "<x#", "<x" + defOfUnitA.size() + ">");
-                    found = parseResult[0] != null;
-                    if(found){
-                        defOfUnitA.add(parseResult[0]);
-                    }
-                    text = parseResult[1];
+            text = test.getTest();
+            markerX = getMarker("<x#", text);
+            markerY = getMarker("<y#", text);
+            // zaznaczanie poprawności części mowy
+            try{
+                if ((test.getSenseApartOfSpeech() != null && !test.getSenseApartOfSpeech().equals(partOfSpeechA)) || (test.getSenseBpartOfSpeech() != null && !test.getSenseBpartOfSpeech().equals(partOfSpeechB))) {
+                    text += "<font color=\"red\">[" + Labels.PARTS_OF_SPEECH_COLON + Labels.ERROR + "]</font>";
+                    testsPositive = false;
+                } else {
+                    text += "<font color=\"green\">[" + Labels.PARTS_OF_SPEECH_COLON + Labels.OK + "]</font>";
                 }
-                found = true;
-                while(found) {
-                    parseResult = extractUnitDefinition(text, "<y#", "<y" + defOfUnitB.size() + ">");
-                    found = parseResult[0] != null;
-                    if(found){
-                        defOfUnitB.add(parseResult[0]);
-                    }
-                    text = parseResult[1];
-                }
-
-                Collection<String> formsOfUnitA = getForms(defOfUnitA, parent);
-                Collection<String> formsOfUnitB = getForms(defOfUnitB, child);
-
-                int index = 0;
-                for(String f : formsOfUnitA) {
-                    text = text.replace("<x" + index + ">", "<font color=\"blue\">" + (f == null || "null".equals(f) || "null się".equals(f) ? parent : f) + "</font>");
-                    index++;
-                }
-                index = 0;
-                for(String f : formsOfUnitB) {
-                    text = text.replace("<y" + index + ">", "<font color=\"blue\">" + (f == null || "null".equals(f) || "null się".equals(f) ? child : f) + "</font>");
-                    index++;
-                }
-                result.add("<html>" + (testIndex++) + ". " + text + "</html>");
+            } catch (Exception e){
+                System.out.println();
             }
-//        }
-        return result;
+
+
+            if(markerX != null) {
+                text = text.replace(markerX, "<font color=\"blue\">" + parent + "</font>");
+            }
+            if(markerY != null) {
+                text = text.replace(markerY, "<font color=\"blue\">" + child + "</font>");
+            }
+
+            result.add("<html>" + (testIndex++) + ". " + text + "</html>");
+        }
+            return result;
     }
 
     private static Collection<String> getForms(Collection<String> defs, String unit) {
@@ -540,25 +493,6 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         return forms;
     }
 
-    private static String[] extractUnitDefinition(String text, String code, String replace) {
-        String[] result = new String[2];
-        int pos = text.indexOf(code);
-        if (pos != -1) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(text.substring(0, pos));
-            int endPos = text.indexOf(">", pos);
-
-            result[0] = text.substring(pos + code.length(), endPos);
-
-            sb.append(replace).append(text.substring(endPos + 1));
-            result[1] = sb.toString();
-        } else {
-            result[0] = null;
-            result[1] = text;
-        }
-
-        return result;
-    }
     @Override
     public void keyReleased(KeyEvent arg0) {
     }

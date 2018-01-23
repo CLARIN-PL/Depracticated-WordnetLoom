@@ -364,6 +364,13 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         getPos();
     }
 
+    public void refresh(){
+        DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(getSynset().getId(), LexiconManager.getInstance().getUserChosenLexiconsIds());
+        ui.addToEntrySet(dataEntry);
+        setup();
+        ui.refreshView(getSynset());
+    }
+
     public void setup() {
         edges_to_this_.clear();
         edges_from_this_.clear();

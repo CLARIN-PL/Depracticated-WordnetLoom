@@ -35,7 +35,6 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
 
     @Override
     public boolean delete(Synset parent, Synset child, RelationType relationType) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         return synsetRelationRepository.delete(parent, child, relationType);
     }
 
