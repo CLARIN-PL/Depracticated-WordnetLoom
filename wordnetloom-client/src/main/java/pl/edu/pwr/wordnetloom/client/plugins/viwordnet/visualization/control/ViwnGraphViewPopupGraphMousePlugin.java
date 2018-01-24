@@ -222,7 +222,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                         ViWordNetService s = getViWordNetService();
                         Synset synset = ((ViwnNodeSynset)vertex).getSynset();
                         // pobranie obiektu DataEntry ze starego grafu, z którego zostanie zbudowany węzeł synsetu
-                        DataEntry synsetDataEntry = s.getActiveGraphView().getUI().getEntrySetFor(synset.getId());
+                        DataEntry synsetDataEntry = getViWordNetService().getSynsetData().getById(synset.getId());
                         //utworzenie nowego widoku. W tym momencie aktywnym grafem staje się ten nowo utworzony
                         s.addGraphView();
                         // utworzenie nowego węzła synsetu, który zostanie przekazany do nowo utowrzonowego grafu
@@ -234,8 +234,6 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                         // aktualizowanie nazwy zakładki
                         ViWordNetPerspective perspective = (ViWordNetPerspective) vgvui.getWorkbench().getActivePerspective();
                         perspective.setTabTitle(s.getActiveGraphView().getUI().getRootNode().getLabel());
-
-
                     }
                 });
 

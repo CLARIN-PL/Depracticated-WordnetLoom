@@ -373,7 +373,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
 
                 ViWordNetService s = ServiceManager.getViWordNetService(workbench);
-                s.getActiveGraphView().getUI().releaseDataSetCache();
                 s.getActiveGraphView().getUI().clear();
                 listeners.notifyAllListeners(null);
                 listModel.remove(i);

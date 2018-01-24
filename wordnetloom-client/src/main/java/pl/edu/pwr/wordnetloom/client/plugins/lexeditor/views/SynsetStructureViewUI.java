@@ -326,11 +326,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             ViwnNodeSynset s = (ViwnNodeSynset)node;
             // pobieramy głowę synsetu, ponieważ jednostki na liście nie mają zaadowanej domeny, która jest potrzebna do stworzenia opisu węza
             Sense firstSense = RemoteService.senseRemote.findHeadSenseOfSynset(lastSynset.getId());
-            //TODO można jakoś całkowicie pominąć DataEntry.
-            DataEntry dataEntry = graphUI.getEntrySetFor(lastSynset.getId());
-            dataEntry.setName(firstSense.getWord().getWord());
-            dataEntry.setDomain(firstSense.getDomain().getName());
-            dataEntry.setVariant(String.valueOf(firstSense.getVariant()));
+            getViWordNetService().getSynsetData().changeLabel(lastSynset.getId(), firstSense);
             s.setLabel(null);
         }
         graphUI.graphChanged();
@@ -449,22 +445,10 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         unitsList.updateUI();
 
         //TODO zrobić rysowanie grafu. Być może będzie zrobić ładowanie całęgo grafu od nowa
-        addSynsetToGraph(newSynset, null);
+        getViWordNetService().getSynsetData().createData(newSynset);
         graphUI.refreshView(lastSynset); //TODO tutaj jakoś będzie trzeba chyba sprawdzić
         graphUI.recreateLayout();
         getViWordNetService().refreshViews();
-    }
-
-    private void addSynsetToGraph(Synset synset, RelationType relationType){
-        Sense headSense = RemoteService.senseRemote.findHeadSenseOfSynset(synset.getId());
-
-        DataEntry entry = new DataEntry();
-        entry.setSynset(synset);
-        entry.setName(headSense.getWord().getWord());
-        entry.setVariant(String.valueOf(headSense.getVariant()));
-        entry.setDomain(headSense.getDomain().getName());
-
-        graphUI.addToEntrySet(entry);
     }
 
     @Override

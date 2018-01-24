@@ -86,6 +86,12 @@ public class ViWordNetService extends AbstractService implements
     private Integer tagForReload;
     private final Map<String, PartOfSpeech> posMap = new HashMap<>();
 
+    SynsetData synsetData = new SynsetData();
+
+    public SynsetData getSynsetData(){
+        return synsetData;
+    }
+
     /**
      * @param workbench       <code>Workbench</code> of this
      * @param perspectiveName perspective name
@@ -363,31 +369,39 @@ public class ViWordNetService extends AbstractService implements
 
         @Override
         public Void doInBackground() {
-            // jeżeli jednostka nie ma synsetu, czyścimy graf i kończymy zadanie
+            // if unit does't have synset, clear a graph and finish a task
             if(unit.getSynset()==null){
                 getActiveGraphView().getUI().clear();
                 return null;
             }
             workbench.setBusy(true);
             Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getLexiconsIds());
-            getActiveGraphView().getUI().releaseDataSetCache();
+//            getActiveGraphView().getUI().releaseDataSetCache(); //TODO tutaj dorobić usuwanie cacha
+            getActiveGraphView().getUI().clearNodeCache();
             if (rootSynset != null) {
-                Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(rootSynset, LexiconManager.getInstance().getLexiconsIds(), NodeDirection.values());
-                if (entries != null) {
-                    getActiveGraphView().getUI().setEntrySets((HashMap<Long, DataEntry>) entries); //TODO zobaczyć, czy da rade zrobić to inaczej
-                }
-                //pobieranie synsetu z wcześniej pobranej mapy, aby otrzymać obiekt, który ma relacje (nie są leniwymi kolekcjami)
-                DataEntry dataEntry = entries.get(rootSynset.getId());
-                if (dataEntry != null) {
-                    rootSynset = dataEntry.getSynset();
-                }
-                new LoadSynsetTask(rootSynset, unit, my_tag).execute();
+                synsetData.load(rootSynset, LexiconManager.getInstance().getLexiconsIds());
+                // loading full object. Original rootSynset does't have partOfSpeech and other required data
+                rootSynset = synsetData.getSynsetById(rootSynset.getId());
+                loadGraph(rootSynset);
             }
             return null;
         }
 
+
+        private void loadGraph(Synset rootSynset) {
+            activeGraphView.loadSynset(rootSynset);
+            examplesView.load_examples(unit.getWord().getWord());
+            ((ViWordNetPerspective) workbench.getActivePerspective())
+                    .setTabTitle("<html><font color=green>" + unit.getWord()
+                            + "</font> #"
+                            + (my_tag == 0 ? unit.getVariant() : my_tag)
+                            + "</html>");
+            kpwrExamples.load_examples(unit);
+        }
+
         @Override
         public void done() {
+            workbench.setBusy(false);
         }
     }
 

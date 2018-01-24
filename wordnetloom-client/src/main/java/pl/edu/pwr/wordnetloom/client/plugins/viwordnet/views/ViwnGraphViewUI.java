@@ -18,6 +18,7 @@ import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.collections15.Transformer;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.SynsetData;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.GraphChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
@@ -31,7 +32,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.layout.Viwn
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.AstrideLabelRenderer;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexFillColor;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexRenderer;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
@@ -40,7 +40,6 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import se.datadosen.component.RiverLayout;
 
 import javax.imageio.ImageIO;
@@ -92,62 +91,64 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     // Graph mouse listener, handles mouse clicks at vertices
     private ViwnGraphMouseListener graphMouseListener = null;
 
+    private SynsetData synsetData;
+
     private static final float EDGE_PICK_SIZE = 10f;
     final int MAX_SYNSETS_SHOWN = 4;
     final int MIN_SYNSETS_IN_GROUP = 2;
 
     /* Transient cache for visualisation biulding */
-    private HashMap<Long, DataEntry> entrySets = new HashMap<>();
+//    private HashMap<Long, DataEntry> entrySets = new HashMap<>();
 
-    public void setEntrySets(HashMap<Long, DataEntry> entrySets) {
-        this.entrySets = entrySets;
-    }
-
-    public DataEntry getEntrySetFor(Long id) {
-        return entrySets.get(id); // if there is no cache returns null
-    }
+//    public void setEntrySets(HashMap<Long, DataEntry> entrySets) {
+//        this.entrySets = entrySets;
+//    }
+//
+//    public DataEntry getEntrySetFor(Long id) {
+//        return entrySets.get(id); // if there is no cache returns null
+//    }
 
     public void addSynsetToCash(Long synsetId, ViwnNodeSynset node) {
         cache.put(synsetId, node);
     }
 
-    public List<SynsetRelation> getRelationsFor(Long id) {
-        DataEntry e = getEntrySetFor(id);
-        if (e == null) {
-            return new ArrayList<>();
-        }
-
-        ArrayList<SynsetRelation> rels = new ArrayList<>();
-//        rels.addAll(e.getRelsFrom()); //TODO dorobić
-//        rels.addAll(e.getRelsTo());
-
-        return rels;
-    }
-
-    public Set<SynsetRelation> getUpperRelationsFor(Long id) {
-        DataEntry e = getEntrySetFor(id);
-        if (e == null) {
-            return null;
-        }
-
-//        return e.getRelsFrom();
-
-        return null; // TODO dorobić
-    }
-
-    public Set<SynsetRelation> getSubRelationsFor(Long id) {
-        DataEntry e = getEntrySetFor(id);
-        if (e == null) {
-            return null;
-        }
-
-//        return e.getRelsTo();
-        return null; //TODO dorobić
-    }
-
-    public void releaseDataSetCache() {
-        entrySets.clear();
-    }
+//    public List<SynsetRelation> getRelationsFor(Long id) {
+//        DataEntry e = getEntrySetFor(id);
+//        if (e == null) {
+//            return new ArrayList<>();
+//        }
+//
+//        ArrayList<SynsetRelation> rels = new ArrayList<>();
+////        rels.addAll(e.getRelsFrom()); //TODO dorobić
+////        rels.addAll(e.getRelsTo());
+//
+//        return rels;
+//    }
+//
+//    public Set<SynsetRelation> getUpperRelationsFor(Long id) {
+//        DataEntry e = getEntrySetFor(id);
+//        if (e == null) {
+//            return null;
+//        }
+//
+////        return e.getRelsFrom();
+//
+//        return null; // TODO dorobić
+//    }
+//
+//    public Set<SynsetRelation> getSubRelationsFor(Long id) {
+//        DataEntry e = getEntrySetFor(id);
+//        if (e == null) {
+//            return null;
+//        }
+//
+////        return e.getRelsTo();
+//        return null; //TODO dorobić
+//    }
+//
+//    public void releaseDataSetCache() {
+//        entrySets.clear();
+//    }
 
     /* End of transient cache for visualisation biulding */
     @Override
@@ -173,6 +174,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         } catch (IOException ex) {
             logger().error("IO exception", ex);
         }
+
+        synsetData = ServiceManager.getViWordNetService(workbench).getSynsetData();
 
     }
 
@@ -751,10 +754,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         if(synsets.isEmpty()) {
             return;
         }
-        DataEntry dataEntry;
         for(ViwnNodeSynset synset : synsets) {
-            dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(synset.getId(), LexiconManager.getInstance().getLexiconsIds());
-            addToEntrySet(dataEntry);
+            synsetData.load(synset.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds());
             synset.setup();
             addSynsetFromSet(synset);
         }
@@ -782,7 +783,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
     }
 
-
+    public void clearNodeCache() {
+        cache.clear();
+    }
 
     /**
      * @param synset
@@ -899,8 +902,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         // jeżeli relacje nie były pobrane wczesniej, zostaną pobrane
         if(!checkNodeWasExtended(synsetNode, dirs)) {
-            Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synsetNode.getSynset(), LexiconManager.getInstance().getLexiconsIds(), dirs);
-            addToEntrySet(entries); //TODO, sprawdzić, czy nie da rady zrobić tego bez dodawania elementów do entries
+            synsetData.load(synsetNode.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds(), dirs);
             synsetNode.setup(dirs);
             synsetNode.setFullLoadedRelation(dirs, true);
         }
@@ -931,13 +933,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         return true;
     }
 
-    public void addToEntrySet(Map<Long,DataEntry> entries)
-    {
-        entrySets.putAll(entries);
-    }
-
-    public void addToEntrySet(DataEntry dataEntry){
-        entrySets.put(dataEntry.getSynset().getId(), dataEntry);
+    public void addToEntrySet(DataEntry dataEntry) {
+        ServiceManager.getViWordNetService(workbench).getSynsetData().addData(dataEntry);
     }
 
     /**

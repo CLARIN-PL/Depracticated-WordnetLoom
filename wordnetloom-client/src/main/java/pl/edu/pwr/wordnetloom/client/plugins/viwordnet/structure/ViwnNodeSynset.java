@@ -1,10 +1,12 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.SynsetData;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
+import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -61,6 +63,8 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     protected State[] states = new State[NodeDirection.values().length];
 
+    private SynsetData synsetData;
+
     //TODO zrefaktorować to
     /** Określa, stronę z której zostały w pełni pobrane relacje */
     private boolean[] fullRelation = new boolean[NodeDirection.values().length];
@@ -98,6 +102,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         }
 
         units = null; //RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
+        synsetData = ServiceManager.getViWordNetService(ui.getWorkbench()).getSynsetData();
         setup();
     }
 
@@ -343,11 +348,11 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         relations[direction.ordinal()].add(edge);
     }
 
+    //TODO zmienić nazwę
     public void setup(NodeDirection[] directions)
     {
         edges_to_this_.clear();
         edges_from_this_.clear();
-
 
         // first - primary cache
 //        Set<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
@@ -356,12 +361,11 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         for(int i=0; i < directions.length; i++){
             relations[directions[i].ordinal()].clear();
         }
-
-        DataEntry dataEntry = ui.getEntrySetFor(synset.getId());
+        DataEntry dataEntry = synsetData.getById(synset.getId());
+        pos = PartOfSpeechManager.getInstance().getById(dataEntry.getPosID());
         if(dataEntry != null){
             addSynsetEdges(dataEntry, directions);
         }
-        getPos();
     }
 
     public void refresh(){
@@ -372,21 +376,8 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     }
 
     public void setup() {
-        edges_to_this_.clear();
-        edges_from_this_.clear();
-
-        // first - primary cache
-//        Set<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
-//        Set<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());
-
-        for(int i=0; i < relations.length; i++){
-            relations[i].clear();
-        }
-
-        DataEntry dataEntry = ui.getEntrySetFor(synset.getId());
-        if(dataEntry != null){
-            addSynsetEdges(dataEntry, NodeDirection.values());
-        }
+        setup(NodeDirection.values());
+        is_dirty_cache_ = false;
 
         // no cache? fetch from database
 //        if (relsUP == null) {
@@ -413,8 +404,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 //        }
 
         // fetching poses from temporary cache
-        getPos();
-        is_dirty_cache_ = false;
+
         // adding relations to appropiate groups
 //        construct();
     }
@@ -425,16 +415,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
      * @return Pos --- synset part of speech
      */
     public PartOfSpeech getPos() {
-        if (pos == null && !hadCheckedPOS) {
-            DataEntry dataEntry = ui.getEntrySetFor(getId());
-            if(dataEntry == null){
-                //TODO zlikwidować pobieranie DataEntry. DataEtry potrzebne jest tylko, aby pobrać część mowy
-                DataEntry entry = RemoteService.synsetRemote.findSynsetDataEntry(getId(), LexiconManager.getInstance().getUserChosenLexiconsIds());
-                ui.addToEntrySet(entry);
-                dataEntry = entry;
-            }
-            pos = PartOfSpeechManager.getInstance().getById(dataEntry.getPosID());
-        }
         return pos;
     }
 
@@ -493,9 +473,8 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
         if (ret == null) {
             ret = "";
-            DataEntry dataEntry = ui.getEntrySetFor(getId());
+            DataEntry dataEntry = synsetData.getById(getId());
             if(dataEntry != null){
-//                ret = dataEntry.getLabel();
                 Synset synset = dataEntry.getSynset();
                 if(synset.getSynsetAttributes() != null && synset.getSynsetAttributes().getIsAbstract()) {
                     ret = "S ";
