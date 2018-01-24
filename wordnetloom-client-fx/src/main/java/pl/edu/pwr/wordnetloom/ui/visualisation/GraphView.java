@@ -5,5 +5,4 @@ import de.felixroske.jfxsupport.FXMLView;
 
 @FXMLView
 public class GraphView extends AbstractFxmlView {
-
 }
