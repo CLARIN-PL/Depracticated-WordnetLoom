@@ -3,11 +3,15 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window;
 import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdgeSynset;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphView;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -33,11 +37,10 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
     private static final int HEIGHT = 160;
 
     private JLabel question;
-    private JComboBox relations;
+    private JComboBox<ViwnEdgeSynset> relations;
     private MButton delete;
     private MButton cancel;
 
-    private HashMap<Integer, ViwnEdgeSynset> toRemove;
     private Collection<ViwnEdge> removed;
 
     /**
@@ -71,12 +74,6 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
      *              delete
      */
     private void initialize(Collection<ViwnEdgeSynset> edges) {
-
-        toRemove = new HashMap<>();
-        Iterator<ViwnEdgeSynset> iter = edges.iterator();
-        for (int i = 0; i < edges.size(); ++i) {
-            toRemove.put(i, iter.next());
-        }
         removed = new HashSet<>();
 
         setResizable(false);
@@ -87,7 +84,7 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
         question = new JLabel(Labels.REMOVE_RELATION);
         add("hfill", question);
 
-        relations = new JComboBox(toRemove.keySet().toArray(new Integer[]{}));
+        relations = new JComboBox(edges.toArray());
         relations.setRenderer(new DeletionCellRenderer());
 
         add("br hfill vfill", relations);
@@ -103,140 +100,63 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
         add(cancel);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == delete) {
-            ViwnEdgeSynset ves = toRemove.get(relations.getSelectedItem());
-            SynsetRelation synsetRelation = ves.getSynsetRelation();
-            // deleting synset relation from database
-            RemoteService.synsetRelationRemote.delete(synsetRelation);
-            //TODO sprawdzenie, czy nie ma relacji odwrotnych, które też będzie trzeba usunąć
-            removed.add(ves);
 
-//
-//            RemoteUtils.synsetRelationRemote.dbDelete(ves.getSynsetRelation());
-//
-//            boolean autoreverse = false;
-//            // check if relation is autoreverse
-//            SynsetRelation sr_dto = ves.getSynsetRelation();
-//            IRelationType rType = RemoteUtils.relationTypeRemote.dbGet(sr_dto.getRelation().getId());
-//            Integer rev = null;
-//            if (rType.isAutoReverse()) {
-//                for (Integer t : toRemove.keySet()) {
-//                    SynsetRelation sr_dto_rev = toRemove.get(t).getSynsetRelation();
-//                    if (sr_dto_rev.getRelation() == rType.getReverse()) {
-//                        // remember reversed
-//                        rev = t;
-//                        autoreverse = true;
-//                    }
-//                }
-//            }
+    private void deleteRelation() {
+        ViwnEdgeSynset ves = (ViwnEdgeSynset) relations.getSelectedItem();
+        SynsetRelation synsetRelation = ves.getSynsetRelation();
 
-            /* if below is ugly, but those methods have to be invoked
-                 * in that order, better copy some code than repeat
-				 * if(autoreverse) three times */
-//            if (autoreverse) {
-//                // remember that this relation has been removed
-//                removed.add(ves);
-//                removed.add(toRemove.get(rev));
-//                // remove deleted
-//                Object i = relations.getSelectedItem();
-//                relations.removeItem(i);
-//                relations.removeItem(rev);
-//                toRemove.remove(i);
-//                toRemove.remove(rev);
-//                // relation removed successfully, display success message
-//                DialogBox.showInformation(Messages.SUCCESS_SELECTED_RELATION_WITH_REVERSED_DELETED);
-//            } else {
-//                // remember that this relation has been removed
-//                removed.add(ves);
-//                // remove deleted
-//                Object i = relations.getSelectedItem();
-//                relations.removeItem(i);
-//                toRemove.remove(i);
-//                // relation removed successfully, display success message
-//                DialogBox.showInformation(Messages.SUCCESS_SELECTED_RELATION_DELETED);
-//            }
-            if (toRemove.isEmpty()) {
-                setVisible(false);
+        removeRelation(synsetRelation);
+
+        RelationType relationType = RemoteService.relationTypeRemote.findById(synsetRelation.getRelationType().getId());
+        RelationType reverseRelationType = RemoteService.relationTypeRemote.findReverseByRelationType(relationType.getId());
+        SynsetRelation reverseSynsetRelation = RemoteService.synsetRelationRemote.findRelation(synsetRelation.getChild(), synsetRelation.getParent(), reverseRelationType);
+
+        if(relationType.isAutoReverse()) {
+            removeRelation(reverseSynsetRelation);
+        } else if(reverseSynsetRelation != null){
+            if(DialogBox.showYesNo(Messages.QUESTION_SURE_TO_REMOVE_RELATION) == DialogBox.YES){ //TODO poprawić komunikat
+                removeRelation(reverseSynsetRelation);
             }
-
-        } else if (e.getSource() == cancel) {
+        }
+        // refreshing combobox
+        relations.updateUI();
+        // if all relations were removed, we close a window
+        if(relations.getModel().getSize() == 0){
             setVisible(false);
         }
     }
 
-    private class DeletionCellRenderer extends JLabel implements ListCellRenderer {
+    private void removeRelation(SynsetRelation synsetRelation) {
+        // removing relation from database
+        RemoteService.synsetRelationRemote.delete(synsetRelation);
 
-        private static final long serialVersionUID = -4423464499504059166L;
-
-        private final HashMap<Long, String> synsetCache = new HashMap<>();
-
-        public DeletionCellRenderer() {
-            super();
-            setOpaque(true);
+        int relationIndex = getIndexOfRelation(synsetRelation);
+        // add deleted relation to result list
+        removed.add(relations.getItemAt(relationIndex));
+        // removing relation from combobox
+        if(relationIndex >= 0){
+            relations.removeItemAt(relationIndex);
         }
+    }
 
-        private String getSynsetLabel(Synset synset) {
-            String cached = synsetCache.get(synset.getId());
-            if (cached != null) {
-                return cached;
+    private int getIndexOfRelation(SynsetRelation synsetRelation) {
+        int relationsSize = relations.getModel().getSize();
+        ViwnEdgeSynset edge;
+        for(int i =0; i <relationsSize; i++){
+            edge = relations.getModel().getElementAt(i);
+            if(edge.getSynsetRelation().getId().equals(synsetRelation.getId())){
+                return i;
             }
-            Sense sense = RemoteService.senseRemote.findHeadSenseOfSynset(synset.getId());
-            String senseName = sense.getWord().getWord();
-            Integer variant = sense.getVariant();
-            String domain = LocalisationManager.getInstance().getLocalisedString(sense.getDomain().getName());
-            return senseName + " " + variant + "(" + domain + ")";
         }
+        return -1; // not found
+    }
 
-        @Override
-        public Component getListCellRendererComponent(JList list,
-                                                      Object value, int index, boolean isSelected,
-                                                      boolean cellHasFocus) {
-            if (value instanceof Integer) {
-                ViwnEdgeSynset ves = toRemove.get((Integer) value);
-                SynsetRelation sr = ves.getSynsetRelation();
-                String relationTypeText = LocalisationManager.getInstance().getLocalisedString(sr.getRelationType().getName());
-                String parentSynsetText = getSynsetLabel(sr.getParent());
-                String childSynsetText = getSynsetLabel(sr.getChild());
-                setText(String.format(Labels.RELATION_INFO, relationTypeText, parentSynsetText, childSynsetText));
-            }
-
-            Color background;
-            Color foreground;
-
-            // check if this cell represents the current DnD drop location
-            JList.DropLocation dropLocation = list.getDropLocation();
-            if (dropLocation != null
-                    && !dropLocation.isInsert()
-                    && dropLocation.getIndex() == index) {
-
-                background = Color.LIGHT_GRAY;
-                foreground = Color.BLACK;
-
-                // check if this cell is selected
-            } else if (isSelected) {
-                background = Color.DARK_GRAY;
-                foreground = Color.WHITE;
-
-                // unselected, and not the DnD drop location
-            } else if (value instanceof Integer) {
-                if (((Integer) value) % 2 == 0) {
-                    background = Color.getHSBColor(0f, 0f, .85f);
-                    foreground = Color.BLACK;
-                } else {
-                    background = Color.getHSBColor(0f, 0f, .95f);
-                    foreground = Color.BLACK;
-                }
-            } else {
-                background = Color.GRAY;
-                foreground = Color.BLACK;
-            }
-
-            setBackground(background);
-            setForeground(foreground);
-
-            return this;
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == delete) {
+            deleteRelation();
+        } else if (e.getSource() == cancel) {
+            setVisible(false);
         }
     }
 
@@ -266,4 +186,44 @@ public class DeleteRelationWindow extends DialogWindow implements ActionListener
         return drf.removed;
     }
 
+    private class DeletionCellRenderer extends JLabel implements ListCellRenderer {
+
+        DeletionCellRenderer(){
+            super();
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            assert value instanceof ViwnEdgeSynset;
+            ViwnEdgeSynset edge = (ViwnEdgeSynset)value;
+
+            String parentNodeLabel = edge.getSynset1().getLabel();
+            String childNodeLabel = edge.getSynset2().getLabel();
+            String relationTypeName = LocalisationManager.getInstance().getLocalisedString(edge.getRelationType().getName());
+            setText(String.format(Labels.RELATION_INFO, relationTypeName, parentNodeLabel, childNodeLabel));
+
+            setupColor(index);
+
+            return this;
+        }
+
+        private void setupColor(int index)
+        {
+            final Color FIRST_COLOR = Color.getHSBColor(0f, 0f, 0.85f);
+            final Color SECOND_COLOR = Color.getHSBColor(0f, 0f, 0.95f);
+            final Color FOREGROUND_COLOR = Color.BLACK;
+            // set background visible
+            setOpaque(true);
+            Color background;
+
+            if(index % 2 ==0){
+                background = FIRST_COLOR;
+            } else {
+                background = SECOND_COLOR;
+            }
+
+            setBackground(background);
+            setForeground(FOREGROUND_COLOR);
+        }
+    }
 }
