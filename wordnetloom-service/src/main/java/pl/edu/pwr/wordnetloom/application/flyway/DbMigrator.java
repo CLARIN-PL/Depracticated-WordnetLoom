@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.ui.application.flyway;
+package pl.edu.pwr.wordnetloom.application.flyway;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
@@ -7,7 +7,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,12 +34,5 @@ public class DbMigrator {
             log.log(Level.INFO, "Migrate task: {0} : {1} from file: {2}", new Object[]{i.getVersion(), i.getDescription(), i.getScript()});
         }
         flyway.migrate();
-
-        // aby ustawił kierunki relacji z pliku, odkomentować i ustawić ścieżkę do pliku disp_relations.cfg
-//        try {
-//            TempRelationsDirectionsUpdater.run("/home/rdyszlewski/Projekty/wordnetloom3/WordnetLoom/wordnetloom-client/src/main/resources/disp_relations.cfg", dataSource.getConnection());
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
     }
 }

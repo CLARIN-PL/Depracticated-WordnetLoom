@@ -56,7 +56,7 @@ public final class SenseCriteria extends CriteriaPanel {
         String lemma = getSearchTextField().getText();
         String comment = getComment().getText();
         String example = getExample().getText();
-        Long partOfSpeechId = getPartsOfSpeachComboBox().getEntity() == null ? null : getPartsOfSpeachComboBox().getEntity().getId();
+        Long partOfSpeechId = getPartsOfSpeechComboBox().getEntity() == null ? null : getPartsOfSpeechComboBox().getEntity().getId();
         Long domainId = getDomainComboBox().getEntity() == null ? null : getDomainComboBox().getEntity().getId();
         List<Long> lexicons = new ArrayList<>();
         Lexicon lexicon = getLexiconComboBox().getEntity();
@@ -83,7 +83,6 @@ public final class SenseCriteria extends CriteriaPanel {
         addRegister();
         addComment();
         addExample();
-        addLimit();
     }
 
     protected void addRegister() {
@@ -130,7 +129,7 @@ public final class SenseCriteria extends CriteriaPanel {
     public CriteriaDTO getCriteria() {
         crit.setLemma(getSearchTextField().getText());
         crit.setLexicon(getLexiconComboBox().getSelectedIndex());
-        crit.setPartOfSpeech(getPartsOfSpeachComboBox().getSelectedIndex());
+        crit.setPartOfSpeech(getPartsOfSpeechComboBox().getSelectedIndex());
         crit.setDomain(getDomainComboBox().getSelectedIndex());
         crit.setRelation(getSenseRelationTypeComboBox().getSelectedIndex());
         crit.setRegister(getRegisterComboBox().getSelectedIndex());
@@ -147,7 +146,7 @@ public final class SenseCriteria extends CriteriaPanel {
     public void restoreCriteria(CriteriaDTO criteria) {
         getSearchTextField().setText(criteria.getLemma());
         getLexiconComboBox().setSelectedIndex(criteria.getLexicon());
-        getPartsOfSpeachComboBox().setSelectedIndex(criteria.getPartOfSpeech());
+        getPartsOfSpeechComboBox().setSelectedIndex(criteria.getPartOfSpeech());
         getDomainComboBox().setSelectedIndex(criteria.getDomain());
         getSenseRelationTypeComboBox().setSelectedIndex(criteria.getRelation());
         getRegisterComboBox().setSelectedIndex(criteria.getRegister());

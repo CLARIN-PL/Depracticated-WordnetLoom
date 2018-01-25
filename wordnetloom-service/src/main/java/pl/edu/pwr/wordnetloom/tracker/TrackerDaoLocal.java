@@ -1,8 +1,8 @@
 package pl.edu.pwr.wordnetloom.tracker;
 
 import javax.ejb.Local;
-import pl.edu.pwr.wordnetloom.tracker.Tracker;
-import pl.edu.pwr.wordnetloom.tracker.Tracker.TABLE;
+import pl.edu.pwr.wordnetloom.tracker.model.Tracker;
+import pl.edu.pwr.wordnetloom.tracker.model.Tracker.TABLE;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 @Local

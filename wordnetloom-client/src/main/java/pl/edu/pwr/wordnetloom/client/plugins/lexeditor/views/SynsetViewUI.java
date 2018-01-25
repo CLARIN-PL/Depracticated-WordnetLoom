@@ -70,7 +70,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     private void initilizeComponents() {
         criteria = new SynsetCriteria();
         criteria.getDomainComboBox().addActionListener(this);
-        criteria.getPartsOfSpeachComboBox().addActionListener(this);
+        criteria.getPartsOfSpeechComboBox().addActionListener(this);
         synsetList = createSynsetList(senseListModel);
 
         infoLabel = new JLabel();
@@ -90,7 +90,6 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
 
     public void refreshData() {
 
-        int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
         String oldFilter = criteria.getSearchTextField().getText();
         Domain oldDomain = criteria.getDomainComboBox().getEntity();
         RelationType oldRelation = criteria.getSynsetRelationTypeComboBox().getEntity();
@@ -113,8 +112,8 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
                 }
                 List<Sense> sense = new ArrayList<>();
                 sense = LexicalDA.getSenseBySynsets(oldFilter, oldDomain, oldRelation,
-                        definition, comment, artificial, limitSize,
-                        criteria.getPartsOfSpeachComboBox().getEntity() == null ? null : criteria.getPartsOfSpeachComboBox().getEntity(), lexicons);
+                        definition, comment, artificial, 0,
+                        criteria.getPartsOfSpeechComboBox().getEntity() == null ? null : criteria.getPartsOfSpeechComboBox().getEntity(), lexicons);
                 if (lastSelectedValue == null && synsetList != null && !synsetList.isSelectionEmpty()) {
                     lastSelectedValue = senseListModel.getObjectAt(synsetList.getSelectedIndex());
                 }

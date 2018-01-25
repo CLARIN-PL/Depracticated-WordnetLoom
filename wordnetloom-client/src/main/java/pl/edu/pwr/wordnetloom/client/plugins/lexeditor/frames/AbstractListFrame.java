@@ -50,35 +50,25 @@ abstract public class AbstractListFrame<T, G> extends
     private final MButton buttonCancel;
     private final MButton buttonNew;
 
-    // model z danymi
     protected GenericListModel<T> listModel = null;
     protected G filterObject = null;
+
     protected Workbench workbench;
 
-    // wybrane elementy
     protected Collection<T> selectedElements = null;
 
-    /**
-     * konstruktor
-     *
-     * @param workbench      - środwisko
-     * @param title          - tytuł okienka
-     * @param itemsLabelText - tytuł listy z elementami
-     * @param x              - polozenie okna X
-     * @param y              - polozenie okna Y
-     * @param useButtonNew   - czy wyswietlic przycisk nowy
-     */
+
     protected AbstractListFrame(Workbench workbench, String title,
                                 String itemsLabelText, int x, int y, boolean useButtonNew) {
+
         super(workbench.getFrame(), title, x - WIDTH / 2, y, WIDTH, HEIGHT);
         this.workbench = workbench;
         listModel = new GenericListModel<>();
         setResizable(true);
-        //this.setAlwaysOnTop(true);
+
         setDefaultCloseOperation(HIDE_ON_CLOSE);
         addKeyListener(this);
 
-        // utworzenie elementow UI
         filterEdit = new JTextField(STANDARD_VALUE_FILTER);
         filterEdit.addKeyListener(this);
 
@@ -88,10 +78,8 @@ abstract public class AbstractListFrame<T, G> extends
         itemsList = new ToolTipList(workbench, listModel,
                 ToolTipGenerator.getGenerator());
 
-        // this.itemsList=new JList(this.listModel);
         itemsList.addListSelectionListener(this);
-        itemsList
-                .setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        itemsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         itemsList.addKeyListener(this);
         itemsList.addMouseListener(this);
 
@@ -130,7 +118,6 @@ abstract public class AbstractListFrame<T, G> extends
     }
 
     protected void addExtraControlsInSearchBox() {
-
     }
 
     /**
@@ -158,17 +145,13 @@ abstract public class AbstractListFrame<T, G> extends
         itemsList.clearSelection();
         filterEdit.setText("");
         filterEdit.grabFocus();
-        setVisible(true); // wyswietlenie okna
+        setVisible(true);
     }
 
-    /**
-     * odświeżenie danych w modelu
-     */
     protected void refreshListModel() {
-        Collection<T> collection = fillCollection(filterEdit.getText(),
-                filterObject); // wypelnienie kolekcji danymi
-        listModel.setCollection(collection); // ustawienie kolekji jako
-        // danych dla modelu
+        Collection<T> collection = fillCollection(filterEdit.getText(), filterObject);
+        listModel.setCollection(collection);
+
         if (itemsList != null) {
             itemsList.clearSelection();
             if (listModel.getSize() > 0) {
@@ -185,22 +168,26 @@ abstract public class AbstractListFrame<T, G> extends
     @Override
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == buttonSearch) {
-            refreshListModel(); // uruchomienie szukania
+            refreshListModel();
+
         } else if (event.getSource() == buttonCancel) {
-            setVisible(false); // uruchomienie szukania
+
+            setVisible(false);
             listModel.setCollection(null);
+
         } else if (event.getSource() == buttonNew) {
-            invokeNew(); // uruchomienie szukania
+            invokeNew();
+
         } else if (event.getSource() == buttonChoose) {
-            // odczytanie listy zaznaczonych pozycji
-            int[] indexs = itemsList.getSelectedIndices();
-            if (indexs == null || indexs.length == 0) {
+
+            int[] indexes = itemsList.getSelectedIndices();
+            if (indexes == null || indexes.length == 0) {
                 return;
             }
 
             selectedElements = new ArrayList<>();
 
-            for (int selectedIndex : indexs) {
+            for (int selectedIndex : indexes) {
                 T elem = listModel.getObjectAt(selectedIndex);
                 selectedElements.add(elem);
             }
@@ -251,12 +238,6 @@ abstract public class AbstractListFrame<T, G> extends
         }
     }
 
-    /**
-     * ustawienie trybu zaznaczania
-     *
-     * @param multiSelect - TRUE mozna zazaczyc wiele elementow, FALSE tylko
-     *                    jeden
-     */
     protected void setMultSelect(boolean multiSelect) {
         if (multiSelect) {
             itemsList

@@ -17,6 +17,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.tooltips;
 
+import com.alee.laf.list.WebList;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -45,9 +46,8 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 /**
  * List with tooltips and popup menu
  *
- * @author Max
  */
-public class ToolTipList extends JList {
+public class ToolTipList extends WebList {
 
     private static final long serialVersionUID = -6298109817976295515L;
     private ToolTipGeneratorInterface toolTipsGenerator = null;
@@ -93,9 +93,6 @@ public class ToolTipList extends JList {
         @Override
         public void onSuccess(final Object o) {
 
-            /**
-             * naprawione odświeżanie się tooltipów po załadowaniu
-             */
             final Point locationOnScreen = MouseInfo.getPointerInfo().getLocation();
             final Point locationOnComponent = new Point(locationOnScreen);
             SwingUtilities.convertPointFromScreen(locationOnComponent, component);
@@ -121,9 +118,7 @@ public class ToolTipList extends JList {
      * @param toolTipsGenerator
      * @param notepadSupport
      */
-    public ToolTipList(final Workbench workbench,
-//            final GenericListModel<?> model,
-                       final ListModel model,
+    public ToolTipList(final Workbench workbench,  final ListModel model,
             final ToolTipGeneratorInterface toolTipsGenerator,
             final boolean notepadSupport) {
         super(model);
@@ -173,15 +168,6 @@ public class ToolTipList extends JList {
         });
     }
 
-    /**
-     * @param workbench
-     * @param model
-     * @param toolTipsGenerator
-     */
-//    public ToolTipList(Workbench workbench, final GenericListModel<?> model,
-//            ToolTipGeneratorInterface toolTipsGenerator) {
-//        this(workbench, model, toolTipsGenerator, false);
-//    }
     public ToolTipList(Workbench workbench, final ListModel model, ToolTipGeneratorInterface toolTipsGenerator){
         this(workbench, model, toolTipsGenerator, false);
     }
@@ -219,13 +205,11 @@ public class ToolTipList extends JList {
         }
 
         Point point = event.getPoint();
-        int index = locationToIndex(point); // odczytanie indeksu
+        int index = locationToIndex(point);
 
-//        GenericListModel<?> model = (GenericListModel<?>) getModel(); // odczytanie modelu
         ListModel model = getModel();
 
         if (toolTipsGenerator != null && model != null && index != -1 && this.getCellBounds(index, index).contains(point)) { // czy jest cos na liscie
-//            final Object item = model.getObjectAt(index);
             final Object item = model.getElementAt(index);
             if (item == null) {
                 return null;
@@ -241,6 +225,6 @@ public class ToolTipList extends JList {
 //            }
 //            return get;
         }
-        return super.getToolTipText(event); // standardowy tooltip
+        return super.getToolTipText(event);
     }
 }

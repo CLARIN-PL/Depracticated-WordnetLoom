@@ -52,7 +52,6 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         addDefinition();
         addComment();
         addArificial();
-        addLimit();
     }
 
     public MTextField getDefinition() {
@@ -119,7 +118,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
     public CriteriaDTO getCriteria() {
         crit.setLemma(getSearchTextField().getText());
         crit.setLexicon(getLexiconComboBox().getSelectedIndex());
-        crit.setPartOfSpeech(getPartsOfSpeachComboBox().getSelectedIndex());
+        crit.setPartOfSpeech(getPartsOfSpeechComboBox().getSelectedIndex());
         crit.setDomain(getDomainComboBox().getSelectedIndex());
         crit.setRelation(getSynsetRelationTypeComboBox().getSelectedIndex());
         crit.setDefinition(getDefinition().getText());
@@ -136,7 +135,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
     public void restoreCriteria(CriteriaDTO criteria) {
         getSearchTextField().setText(criteria.getLemma());
         getLexiconComboBox().setSelectedIndex(criteria.getLexicon());
-        getPartsOfSpeachComboBox().setSelectedIndex(criteria.getPartOfSpeech());
+        getPartsOfSpeechComboBox().setSelectedIndex(criteria.getPartOfSpeech());
         getDomainComboBox().setSelectedIndex(criteria.getDomain());
         getSynsetRelationTypeComboBox().setSelectedIndex(criteria.getRelation());
         getDefinition().setText(criteria.getDefinition());

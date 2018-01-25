@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.ui.application.producers;
+package pl.edu.pwr.wordnetloom.application.producers;
 
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;

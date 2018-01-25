@@ -24,7 +24,6 @@ public abstract class CriteriaPanel extends WebPanel {
     private static final long serialVersionUID = 4649824763750406980L;
     public static final String STANDARD_VALUE_FILTER = "";
     private int SCROLL_PANE_HEIGHT = 400;
-    public static final int MAX_ITEMS_COUNT = 500;
     private final int DEFAULT_WIDTH = 150;
     private final int DEFAULT_HEIGHT = 20;
     protected final Dimension DEFAULT_DIMENSION = new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -32,10 +31,9 @@ public abstract class CriteriaPanel extends WebPanel {
     private WebTextField searchTextField;
     private LexiconComboBox lexiconComboBox;
     private DomainMComboBox domainComboBox;
-    private PartOfSpeechComboBox partsOfSpeachComboBox;
+    private PartOfSpeechComboBox partsOfSpeechComboBox;
     private MComboBox<RelationType> synsetRelationsComboBox;
     private MComboBox<RelationType> senseRelationsComboBox;
-    private WebCheckBox limitResultCheckBox;
 
     public CriteriaPanel(int scrollHeight) {
         SCROLL_PANE_HEIGHT = scrollHeight;
@@ -49,7 +47,7 @@ public abstract class CriteriaPanel extends WebPanel {
         setPreferredSize(new Dimension(0, SCROLL_PANE_HEIGHT));
 
         lexiconComboBox = initLexiconComboBox();
-        partsOfSpeachComboBox = initPartOfSpeechComboBox();
+        partsOfSpeechComboBox = initPartOfSpeechComboBox();
         searchTextField = new MTextField(STANDARD_VALUE_FILTER);
         domainComboBox = initDomainComboBox();
 
@@ -59,7 +57,6 @@ public abstract class CriteriaPanel extends WebPanel {
         senseRelationsComboBox = createSenseRelationsComboBox();
         senseRelationsComboBox.setPreferredSize(DEFAULT_DIMENSION);
 
-        limitResultCheckBox = createLimitResultSearch();
     }
 
     private LexiconComboBox initLexiconComboBox()
@@ -114,10 +111,6 @@ public abstract class CriteriaPanel extends WebPanel {
 
     public abstract void restoreCriteria(CriteriaDTO criteria);
 
-    protected void addLimit() {
-        add("br left", limitResultCheckBox);
-    }
-
     protected void addSynsetRelationTypes() {
         add("br", new MLabel(Labels.RELATIONS_COLON, 'r', synsetRelationsComboBox));
         add("br hfill", synsetRelationsComboBox);
@@ -136,8 +129,8 @@ public abstract class CriteriaPanel extends WebPanel {
     }
 
     protected void addPartsOfSpeach() {
-        add("br", new MLabel(Labels.PARTS_OF_SPEECH_COLON, 'm', partsOfSpeachComboBox));
-        add("br hfill", partsOfSpeachComboBox);
+        add("br", new MLabel(Labels.PARTS_OF_SPEECH_COLON, 'm', partsOfSpeechComboBox));
+        add("br hfill", partsOfSpeechComboBox);
     }
 
     protected void addLexicon() {
@@ -164,16 +157,10 @@ public abstract class CriteriaPanel extends WebPanel {
         return combo;
     }
 
-    private WebCheckBox createLimitResultSearch() {
-        WebCheckBox limitResult = new WebCheckBox(String.format(Labels.LIMIT_TO, "" + MAX_ITEMS_COUNT));
-        limitResult.setSelected(true);
-        return limitResult;
-    }
-
     public void refreshPartOfSpeech() {
-        int selected = partsOfSpeachComboBox.getSelectedIndex();
+        int selected = partsOfSpeechComboBox.getSelectedIndex();
         if (selected != -1) {
-            partsOfSpeachComboBox.setSelectedIndex(selected);
+            partsOfSpeechComboBox.setSelectedIndex(selected);
         }
     }
 
@@ -222,7 +209,7 @@ public abstract class CriteriaPanel extends WebPanel {
     public void resetFields() {
         searchTextField.setText("");
         domainComboBox.setSelectedIndex(0);
-        partsOfSpeachComboBox.setSelectedIndex(0);
+        partsOfSpeechComboBox.setSelectedIndex(0);
         synsetRelationsComboBox.setSelectedIndex(0);
         senseRelationsComboBox.setSelectedIndex(0);
         lexiconComboBox.setSelectedIndex(0);
@@ -244,16 +231,12 @@ public abstract class CriteriaPanel extends WebPanel {
         return senseRelationsComboBox;
     }
 
-    public JCheckBox getLimitResultCheckBox() {
-        return limitResultCheckBox;
-    }
-
     public LexiconComboBox getLexiconComboBox() {
         return lexiconComboBox;
     }
 
-    public PartOfSpeechComboBox getPartsOfSpeachComboBox() {
-        return partsOfSpeachComboBox;
+    public PartOfSpeechComboBox getPartsOfSpeechComboBox() {
+        return partsOfSpeechComboBox;
     }
 
 }

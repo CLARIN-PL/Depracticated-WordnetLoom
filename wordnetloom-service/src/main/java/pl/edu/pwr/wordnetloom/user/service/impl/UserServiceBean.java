@@ -12,6 +12,15 @@ import pl.edu.pwr.wordnetloom.user.repository.UserRepository;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceLocal;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
+
 @Stateless
 @Local(UserServiceLocal.class)
 @Remote(UserServiceRemote.class)
@@ -37,5 +46,11 @@ public class UserServiceBean implements UserServiceLocal {
         }
         return user;
     }
+
+    @Override
+    public User changePasswordByEmail(String email, String password) {
+        return userRepository.changeUserPassword(email, password);
+    }
+
 
 }

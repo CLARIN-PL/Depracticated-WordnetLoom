@@ -1,8 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import jiconfont.icons.FontAwesome;
-import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
@@ -36,9 +36,9 @@ import java.awt.event.*;
 import java.util.List;
 
 /**
- * klasa opisujacy wyglada okienka z jedn. leksykalnymi
  *
- * @author Max
+ * Lexical unit search panel
+ *
  */
 public class LexicalUnitsViewUI extends AbstractViewUI implements
         ActionListener, ListSelectionListener, KeyListener, MouseListener {
@@ -51,7 +51,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     private SenseCriteria criteria;
     private ToolTipList unitsList;
-    private JLabel infoLabel;
+    private WebLabel infoLabel;
     private SenseCriteriaDTO lastSenseCriteria;
     private int allUnitsCount;
 
@@ -68,7 +68,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     {
         SenseCriteria senseCriteria = new SenseCriteria();
         senseCriteria.getDomainComboBox().addActionListener(this);
-        senseCriteria.getPartsOfSpeachComboBox().addActionListener(this);
+        senseCriteria.getPartsOfSpeechComboBox().addActionListener(this);
         return senseCriteria;
     }
 
@@ -89,7 +89,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         unitsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         unitsList.getSelectionModel().addListSelectionListener(this);
 
-        infoLabel = new JLabel();
+        infoLabel = new WebLabel();
         infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "0"));
 
         btnNewWithSyns = new MButton(this)
@@ -129,6 +129,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         content.add("br center", btnSearch);
         content.add("center", btnReset);
         content.add("br left", new MLabel(Labels.LEXICAL_UNITS_COLON, 'j', unitsList));
+
         unitsListScrollPane = new LazyScrollPane(unitsList, LIMIT);
         unitsListScrollPane.setScrollListener((offset, limit) -> loadUnits());
 

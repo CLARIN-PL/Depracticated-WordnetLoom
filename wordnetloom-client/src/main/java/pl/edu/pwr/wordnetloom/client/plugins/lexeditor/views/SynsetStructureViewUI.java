@@ -29,7 +29,6 @@ import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
-import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
@@ -278,7 +277,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     }
 
     private void moveUnit(int sourceIndex, int destIndex, boolean moveUp){
-        int splitPosition = listModel.getSplitPosition();
+        int splitPosition = listModel.getLineSplitPosition();
         if(sourceIndex == splitPosition){
             setSplitPosition(destIndex);
         } else if(destIndex == splitPosition) {
@@ -626,10 +625,10 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         boolean singleSelection = unitsList.getSelectedIndices() == null
                 || unitsList.getSelectedIndices().length < 2;
         buttonUp.setEnabled(singleSelection && index > 0
-                && (listModel.getSplitPosition() != index || index > 1));
+                && (listModel.getLineSplitPosition() != index || index > 1));
         buttonDown.setEnabled(singleSelection && index != -1
                 && index + 1 < listModel.getSize()
-                && (index > 0 || index + 1 != listModel.getSplitPosition()));
+                && (index > 0 || index + 1 != listModel.getLineSplitPosition()));
         buttonToNew.setEnabled(null != lastSynset
                 && listModel.getCollection().size() > 1);
 
@@ -638,7 +637,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         buttonDelete.setEnabled(selectionSize > 0
                 && selectionSize < listModel.getSize());
         buttonSwitchToLexicalPerspective.setEnabled(singleSelection
-                && index != -1 && index != listModel.getSplitPosition());
+                && index != -1 && index != listModel.getLineSplitPosition());
 
         // powiadomienie zainteresowanych
         listeners.notifyAllListeners(listModel.getObjectAt(index), LIST_SELECTION_CHANGED);
@@ -723,7 +722,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             buttonRelations.setEnabled(listModel.getSize() > 1);
             // przywrocenie zaznaczenia
             Collection<Integer> indices = selectedUnits != null ? listModel
-                    .getIndices(selectedUnits) : null;
+                    .getIndexesOfSelectedElements(selectedUnits) : null;
             // zaznaczenie odpowiedniego elementu
             if (indices != null && indices.size() > 0) {
                 unitsList.setSelectedIndices(Tools.getInstance().collectionToArray(indices));
@@ -777,7 +776,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         int idx = unitsList.locationToIndex(e.getPoint());
 
         if (e.getButton() == MouseEvent.BUTTON3 && idx != -1
-                && idx != listModel.getSplitPosition()) {
+                && idx != listModel.getLineSplitPosition()) {
             Sense unit = listModel.getObjectAt(idx);
             unit = RemoteService.senseRemote.fetchSense(unit.getId());
 

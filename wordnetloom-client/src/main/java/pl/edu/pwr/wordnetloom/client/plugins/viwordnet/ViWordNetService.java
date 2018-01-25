@@ -1,7 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
 import com.alee.laf.menu.WebMenu;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitsView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetPropertiesView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetStructureView;
@@ -22,6 +21,8 @@ import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
@@ -30,13 +31,9 @@ import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -78,7 +75,7 @@ public class ViWordNetService extends AbstractService implements
 
     private ViwnLockerView lockerView = null;
 
-    private CandidatesView candView = null;
+   // private CandidatesView candView = null;
 
     private ViwnExamplesView examplesView = null;
     private ViwnExampleKPWrView kpwrExamples = null;
@@ -160,9 +157,9 @@ public class ViWordNetService extends AbstractService implements
         synsetView.addUnitChangeListener(this);
         workbench.installView(synsetView, ViWordNetPerspective.SPLIT_LEFT_VIEW, perspectiveName);
 
-        candView = new CandidatesView(workbench, Labels.CANDIDATES);
-        candView.addCandidateChangeListener(new SimpleListenerWrapper(this, "candidateSelection"));
-        workbench.installView(candView, ViWordNetPerspective.SPLIT_LEFT_VIEW, perspectiveName);
+       // candView = new CandidatesView(workbench, Labels.CANDIDATES);
+       //  candView.addCandidateChangeListener(new SimpleListenerWrapper(this, "candidateSelection"));
+       //  workbench.installView(candView, ViWordNetPerspective.SPLIT_LEFT_VIEW, perspectiveName);
 
         satelliteGraphView = new ViwnSatelliteGraphView(workbench, Labels.PREVIEW, graphUI);
         workbench.installView(satelliteGraphView, ViWordNetPerspective.SPLIT_RIGHT_TOP_VIEW, perspectiveName);
@@ -192,44 +189,8 @@ public class ViWordNetService extends AbstractService implements
         setActiveGraphView(graphUI.getContent());
     }
 
-    private void loadPosBackgroundColors() {
-        HashMap<PartOfSpeech, Color> pos_bg_colors = new HashMap<>();
-
-        InputStreamReader istrem = null;
-        try {
-            istrem = new InputStreamReader(ViWordNetService.class.getClassLoader().getResourceAsStream("pos_bg_color.cfg"), "UTF8");
-        } catch (UnsupportedEncodingException e) {
-            System.err.println(e.toString());
-        }
-
-        Properties conf = new Properties();
-        try {
-            if (istrem == null) {
-                throw new IOException();
-            }
-
-            conf.load(istrem);
-            Enumeration<Object> keys = conf.keys();
-
-            while (keys.hasMoreElements()) {
-                String pos = (String) keys.nextElement();
-                String val = (String) conf.get(pos);
-                Color col = null;
-                try {
-                    col = Color.decode(val.trim());
-                } catch (Exception e) {
-                    logger().warn(val + " is not a valid color");
-                }
-
-                PartOfSpeech posT = posMap.get(pos.replace("_", " "));
-                if (posT != null) {
-                    pos_bg_colors.put(posT, col);
-                }
-            }
-        } catch (IOException e) {
-            System.err.println(e.toString());
-        }
-        ViwnNodeSynset.PosBgColors = pos_bg_colors;
+    private void loadPartOfSpeechBackgroundColors() {
+        ViwnNodeSynset.PosBgColors = PartOfSpeechManager.getInstance().getBackgroundColors();
     }
 
     private void loadPosFrameColors() {
@@ -272,51 +233,8 @@ public class ViWordNetService extends AbstractService implements
         ViwnVertexRenderer.PosFrameColors = pos_frame_colors;
     }
 
-    private void loadRelsColors() {
-        HashMap<Long, Color> rel_colors = new HashMap<>();
-
-        InputStreamReader istrem = null;
-        try {
-            istrem = new InputStreamReader(ViWordNetService.class.getClassLoader().getResourceAsStream("relations_color.cfg"), "UTF8");
-        } catch (UnsupportedEncodingException e) {
-            System.err.println(e.toString());
-        }
-
-        Properties conf = new Properties();
-        try {
-            if (istrem == null) {
-                throw new IOException();
-            }
-
-            conf.load(istrem);
-            Enumeration<Object> keys = conf.keys();
-
-            while (keys.hasMoreElements()) {
-                String rel = (String) keys.nextElement();
-                String val = (String) conf.get(rel);
-                Color col = null;
-                try {
-                    col = Color.decode(val.trim());
-                } catch (Exception e) {
-                    logger().warn(val + " is not a valid color");
-                }
-
-                //RelationTypes rt = RelationTypeManager.getByName(rel);
-//                if (rt != null) {
-//                    Collection<RelationTypes> children = rt.getChildren();
-//                    if (children != null && !children.isEmpty()) {
-//                        for (RelationTypeManager r : children) {
-//                            rel_colors.put(r.Id(), col);
-//                        }
-//                    } else {
-//                        rel_colors.put(rt.Id(), col);
-//                    }
-//                }
-            }
-
-        } catch (IOException e) {
-        }
-        ViwnEdgeSynset.relsColors = rel_colors;
+    private void loadRelationsColors() {
+        ViwnEdgeSynset.relsColors =  RelationTypeManager.getInstance().getRelationsColors();
     }
 
     @Override
@@ -324,8 +242,8 @@ public class ViWordNetService extends AbstractService implements
 
         new Thread(() -> {
             //loadRelationsSides();
-            loadRelsColors();
-            loadPosBackgroundColors();
+            loadRelationsColors();
+            loadPartOfSpeechBackgroundColors();
             loadPosFrameColors();
             workbench.setBusy(false);
         }, "Starting").start();

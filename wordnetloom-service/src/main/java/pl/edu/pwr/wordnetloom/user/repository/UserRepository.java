@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.user.repository;
 
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
+import pl.edu.pwr.wordnetloom.common.utils.PasswordUtils;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.ejb.Stateless;
@@ -30,6 +31,13 @@ public class UserRepository extends GenericRepository<User> {
                 .getSingleResult();
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public User changeUserPassword(String email, String password){
+        User u = findUserByEmail(email);
+        u.setPassword(PasswordUtils.encryptPassword(password));
+        saveOrUpdate(u);
+        return u;
+    }
 
     @Override
     protected Class<User> getPersistentClass() {
