@@ -9,6 +9,7 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
 import javax.persistence.*;
+import javax.validation.Constraint;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class Sense extends GenericEntity {
     private Domain domain;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL) //TODO może będzie można zmienić na lazy
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "word_id", referencedColumnName = "id", nullable = false)
     private Word word;
 

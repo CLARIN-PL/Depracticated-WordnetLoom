@@ -5,6 +5,7 @@ import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import java.util.HashMap;
 import java.util.List;
@@ -111,4 +112,18 @@ public class SynsetData {
     public int getCount(){
         return data.size();
     }
+
+    public void removeRelation(SynsetRelation relation) {
+        DataEntry parentDataEntry = data.get(relation.getParent().getId());
+        NodeDirection direction = relation.getRelationType().getNodePosition();
+        parentDataEntry.getRelations(direction).remove(relation);
+    }
+
+    public void addRelation(SynsetRelation relation){
+        DataEntry parentDataEntry = data.get(relation.getParent().getId());
+        NodeDirection direction = relation.getRelationType().getNodePosition();
+        parentDataEntry.getRelations(direction).add(relation);
+    }
+
+    //TODO zrobić metody dodające i usuwające relacje do synsetu
 }

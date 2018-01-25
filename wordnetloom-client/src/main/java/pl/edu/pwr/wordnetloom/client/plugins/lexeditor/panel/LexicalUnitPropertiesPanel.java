@@ -333,6 +333,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         int variant = Integer.parseInt(getVariant().getText());
         unit.setVariant(variant);
         String registerText = getRegister().getSelectedItem().toString();
+
         Long registerId = RegisterManager.getInstance().getId(registerText);
         SenseAttributes attributes = unit.getSenseAttributes();
         String definition = getDefinition().getText();
@@ -356,7 +357,6 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
             }
         }
         return unit;
-
     }
 
     public Sense getSense() {

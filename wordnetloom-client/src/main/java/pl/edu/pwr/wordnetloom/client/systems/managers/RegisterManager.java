@@ -38,8 +38,7 @@ public class RegisterManager {
         return new ArrayList<>(registersMap.values());
     }
 
-    public Long getId(String name)
-    {
+    public Long getId(String name) {
         for(Map.Entry<Long, String> entry : registersMap.entrySet())
         {
             if(entry.getValue().equals(name))

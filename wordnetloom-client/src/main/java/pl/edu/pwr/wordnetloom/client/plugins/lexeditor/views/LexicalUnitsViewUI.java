@@ -9,6 +9,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
@@ -130,23 +131,36 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         content.add("br left", new MLabel(Labels.LEXICAL_UNITS_COLON, 'j', unitsList));
         unitsListScrollPane = new LazyScrollPane(unitsList, LIMIT);
         unitsListScrollPane.setScrollListener((offset, limit) -> loadUnits());
-        final Font listFont = new Font("Courier New", Font.PLAIN, 14);
-        unitsList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
-            JLabel label = new JLabel();
-            label.setFont(listFont);
-            Sense sense = (Sense) value;
-            StringBuilder nameBuilder = new StringBuilder();
-            nameBuilder.append(sense.getWord()).append(" ")
-                    .append(sense.getVariant())
-                    .append("(").append(sense.getDomain().getName()).append(") ") //TODO zamienić id domeny na tekst
-                    .append(sense.getLexicon().getIdentifier());
-            label.setText(nameBuilder.toString());
-            return label;
-        });
+
+        unitsList.setCellRenderer(new UnitListCellRenderer());
+
         content.add("br hfill vfill", unitsListScrollPane);
         content.add("br left", infoLabel);
 
         content.add("br center", buttons);
+    }
+
+    private class UnitListCellRenderer extends JLabel implements ListCellRenderer {
+
+        final Font listFont = new Font("Courier New", Font.PLAIN, 14);
+
+        private String name;
+        private String variant;
+        private String domain;
+        private String lexicon;
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            this.setFont(listFont);
+            Sense sense = (Sense) value;
+            name = sense.getWord().getWord();
+            variant = String.valueOf(sense.getVariant());
+            domain = LocalisationManager.getInstance().getLocalisedString(sense.getDomain().getName());
+            lexicon = sense.getLexicon().getIdentifier();
+
+            setText(String.format("%s %s(%s) %s", name, variant, domain, lexicon));
+            return this;
+        }
     }
 
     /**

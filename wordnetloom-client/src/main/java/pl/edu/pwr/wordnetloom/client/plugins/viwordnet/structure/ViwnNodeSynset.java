@@ -59,8 +59,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     private final ViwnGraphViewUI ui;
 
-    private final boolean hadCheckedPOS = false;
-
     protected State[] states = new State[NodeDirection.values().length];
 
     private SynsetData synsetData;
@@ -443,6 +441,10 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     public void mouseClick(MouseEvent me, ViwnGraphViewUI ui) {
         Point p = absToVertexRel(me.getPoint(), this,
                 ui.getVisualizationViewer());
+        // expansion of synset relations working only on left mouse button
+        if(me.getButton() != MouseEvent.BUTTON1){
+            return;
+        }
 
         for (NodeDirection rel : NodeDirection.values()) {
             Collection<ViwnEdgeSynset> edges = getRelation(rel);
@@ -559,11 +561,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     public String getUnitsStr() {
         if (getSynset() != null) {
-            if (unitsStr == null) {
-//                unitsStr = RemoteUtils.synsetRemote
-//                        .dbRebuildUnitsStr(getSynset(), LexiconManager
-//                                .getInstance().getLexicons());
-            }
             if(unitsStr == null || unitsStr.equals("")){
                 System.out.println();
             }

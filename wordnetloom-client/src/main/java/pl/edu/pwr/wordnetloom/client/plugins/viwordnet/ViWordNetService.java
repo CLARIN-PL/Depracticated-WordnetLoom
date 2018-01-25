@@ -36,6 +36,7 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -1083,6 +1084,15 @@ public class ViWordNetService extends AbstractService implements
             if (relations.iterator().next() instanceof ViwnEdgeSynset) {
                 Collection<ViwnEdge> c = DeleteRelationWindow
                         .showDeleteSynsetDialog(workbench.getFrame(), relations);
+                ViwnEdgeSynset edgeSynset;
+                for(ViwnEdge edge : c){
+                       edgeSynset  = (ViwnEdgeSynset) edge;
+                       synsetData.removeRelation(edgeSynset.getSynsetRelation());
+//                       edgeSynset.getSynset1().setup();
+
+                       // TODO będzie to trzeba zrobić dla każdego widoku
+                }
+
                 for (ViwnGraphView vgv : graphViews) {
                     vgv.getUI().relationDeleted(c);
                 }
