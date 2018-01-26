@@ -101,6 +101,10 @@ public class RemoteConnectionProvider implements Loggable {
         userSessionData = data;
     }
 
+    public  UserSessionData getUserSessionData(){
+        return userSessionData;
+    }
+
     public User getUser() {
         if (userSessionData != null && userSessionData.getUser() == null) {
             User u = lookupForService(UserServiceRemote.class).findUserByEmail(userSessionData.getUsername());

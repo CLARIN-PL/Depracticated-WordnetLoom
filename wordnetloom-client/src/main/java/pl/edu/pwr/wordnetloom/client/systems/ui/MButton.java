@@ -67,6 +67,11 @@ public class MButton extends WebButton implements KeyListener {
         return this;
     }
 
+    public MButton withWidth(int width){
+        setPreferredWidth(width);
+        return this;
+    }
+
     @Override
     public void keyTyped(KeyEvent arg0) {
     }

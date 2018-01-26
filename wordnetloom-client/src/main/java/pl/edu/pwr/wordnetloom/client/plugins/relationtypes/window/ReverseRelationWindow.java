@@ -1,7 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
 import com.alee.laf.rootpane.WebFrame;
-import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.RelationTypesIM;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
@@ -21,9 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * okienko do wybierania relacji odwrotnej
- *
- * @author Max
+ * Window for choosing revers relation
  */
 public class ReverseRelationWindow extends DialogWindow implements ActionListener, TreeSelectionListener {
 
@@ -51,9 +48,7 @@ public class ReverseRelationWindow extends DialogWindow implements ActionListene
 
         // ustawienie ikonek dla drzewa
         DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-        renderer.setOpenIcon(RelationTypesIM.getOpenImage());
-        renderer.setClosedIcon(RelationTypesIM.getClosedImage());
-        renderer.setLeafIcon(RelationTypesIM.getLeafImage());
+        tree.setCellRenderer(renderer);
         tree.setCellRenderer(renderer);
 
         buttonChoose = MButton.buildSelectButton()

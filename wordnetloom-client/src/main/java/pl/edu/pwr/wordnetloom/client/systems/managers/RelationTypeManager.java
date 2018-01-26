@@ -28,7 +28,7 @@ public class RelationTypeManager implements Loggable{
         return instance;
     }
 
-    public void loadRelationTypes(final List<RelationType> relationTypes) {
+    public void load(final List<RelationType> relationTypes) {
 
         this.relationTypes.clear();
         this.relationTypes.addAll(relationTypes);

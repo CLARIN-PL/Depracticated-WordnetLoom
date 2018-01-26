@@ -24,7 +24,6 @@ public class RegisterManager {
     private RegisterManager()
     {
         registersMap = RemoteService.localisedStringServiceRemote.findAllRegisterTypes(RemoteConnectionProvider.getInstance().getLanguage());
-        System.out.println(registersMap.values().size());
         //TODO załadować rejestry z bazy danych do mapy
     }
 

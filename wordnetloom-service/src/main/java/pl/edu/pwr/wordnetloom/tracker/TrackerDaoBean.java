@@ -1,13 +1,10 @@
 package pl.edu.pwr.wordnetloom.tracker;
 
-import java.util.Date;
 import javax.ejb.Stateless;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.tracker.model.Tracker;
 
 @Stateless
 public class TrackerDaoBean implements TrackerDaoLocal {
-
+/*
     @Override
     public Tracker insert(Tracker.TABLE table, Long tid, String user) {
         Tracker tracker = makeTracker(table, tid, user);
@@ -88,5 +85,5 @@ public class TrackerDaoBean implements TrackerDaoLocal {
         //   local.persistObject(tunit);
 
         update(Tracker.TABLE.LEXICALUNIT, tunit.getTid(), owner);
-    }
+    }*/
 }
