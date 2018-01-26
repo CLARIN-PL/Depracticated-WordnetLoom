@@ -35,7 +35,6 @@ import java.util.Collection;
 /**
  * klasa dostarczajace okno z lista jednostek leksykalnych
  *
- * @author Max
  */
 public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
 
@@ -46,13 +45,6 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
 
     private boolean unitWasCreated;
 
-    /**
-     * konsuktor
-     *
-     * @param workbench - srodowisko
-     * @param x         - położenie X
-     * @param y         - położenie Y
-     */
     protected UnitsListFrame(Workbench workbench, int x, int y) {
         super(workbench, Labels.LEXICAL_UNITS, Labels.LEXICAL_UNITS_COLON, x, y, true);
         unitWasCreated = false;
@@ -77,13 +69,6 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
         return true;
     }
 
-    /**
-     * wypełnienie kolekcji danymi
-     *
-     * @param filter - filtr tekstowy
-     * @param pos    - czesc mowy
-     * @return kolekcja z danymi
-     */
     @Override
     protected Collection<Sense> fillCollection(String filter, PartOfSpeech pos) {
         if (filterObject != null && filterUnitsInAnySynset.isSelected()) {
@@ -99,9 +84,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
         }
     }
 
-    /**
-     * uruchomienie dodania nowego elementu
-     */
+
     @Override
     protected void invokeNew() {
         // wyswiętlanie okienka z parametrami
@@ -110,7 +93,6 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
             RemoteService.senseRemote.persist(newUnit);
             filterEdit.setText(newUnit.getWord().getWord());
             unitWasCreated = true;
-            // odswieżenie listy
             refreshListModel();
         }
     }
@@ -122,18 +104,6 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
         }
     }
 
-    /**
-     * wyswietlenie okienka
-     *
-     * @param workbench      - srodowisko
-     * @param x              - położenie X
-     * @param y              - położenie Y
-     * @param multiSelect    - pozwala zaznaczyc wiecej niz jeden obiekt na liscie
-     * @param filterObject   - obiekt filtrujący
-     * @param unitWasCreated - parametr wyjsciowy, przechowuje informacje o tym
-     *                       czy nowa jednostka zostala stworzona
-     * @return zaznaczone elemty albo null gdy anulowano
-     */
     static public Collection<Sense> showModal(Workbench workbench,
                                               int x, int y,
                                               boolean multiSelect,

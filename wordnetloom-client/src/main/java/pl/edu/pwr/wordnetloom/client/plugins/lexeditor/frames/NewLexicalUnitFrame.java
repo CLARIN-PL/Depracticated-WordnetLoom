@@ -23,7 +23,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 /**
- * okienko do wprowadzania parametrow dla nowych jednostek
+ * New lexical unit parameter window
  *
  * @author Max
  */
@@ -37,11 +37,6 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     private static final long serialVersionUID = 1L;
     private boolean wasAddClicked = false;
 
-    /**
-     * konstruktor
-     *
-     * @param workbench - srodowisko
-     */
     private NewLexicalUnitFrame(Workbench workbench, WebFrame frame) {
         super(frame, Labels.UNIT_PARAMS, 625, 500);
         setResizable(true);

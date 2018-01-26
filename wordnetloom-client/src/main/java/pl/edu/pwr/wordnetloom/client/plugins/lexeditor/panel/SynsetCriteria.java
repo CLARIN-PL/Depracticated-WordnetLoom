@@ -57,7 +57,6 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         addDefinition();
         addComment();
         addArificial();
-        addLimit();
     }
 
     public MTextField getDefinition() {

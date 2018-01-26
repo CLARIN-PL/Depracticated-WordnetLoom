@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.ui.application;
+package pl.edu.pwr.wordnetloom.application;
 
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;

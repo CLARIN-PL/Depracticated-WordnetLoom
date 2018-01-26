@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.core.window;
 
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
@@ -13,7 +14,7 @@ import java.awt.event.ActionListener;
 
 public class AboutWindow extends DialogWindow implements ActionListener {
 
-    private static final String TEXT_COPYRIGHT = "Copyright 2005-2017, Wrocław University of Science and Technology";
+    private static final String TEXT_COPYRIGHT = "Copyright 2005-2018, Wrocław University of Science and Technology";
     private static final String TEXT_AUTHORS_1 = "Bartosz Broda, Łukasz Jastrzębski,";
     private static final String TEXT_AUTHORS_2 = "Paweł Koczan, Michał Marcińczuk,";
     private static final String TEXT_AUTHORS_3 = "Adam Musiał, Maciej Piasecki,";

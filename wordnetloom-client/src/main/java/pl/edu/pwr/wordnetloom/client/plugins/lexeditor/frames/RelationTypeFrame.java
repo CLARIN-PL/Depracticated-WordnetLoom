@@ -63,17 +63,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         }
     }
 
-    /**
-     * konstruktor
-     *
-     * @param frame             - srodowisko
-     * @param type              - typ relacji
-     * @param pos               - czesc mowy
-     * @param fixedRelationType - typ relacji ustawiony na sztywno
-     * @param parentUnits       - jednostki podzedne
-     * @param middleUnits       - jednostki pośrednie
-     * @param childUnits        - jednostki nadrzedne
-     */
+
     private RelationTypeFrame(WebFrame frame,
                               RelationArgument type,
                               PartOfSpeech pos,

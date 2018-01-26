@@ -52,7 +52,7 @@ public class RelationTypePanel extends WebPanel {
         tabsWrapper.setMargin(5);
 
         tabs.add("Synset relation", synsetRelationTreePanel);
-        tabs.add("Lexical units relations ", senseRelationTreePanel);
+        tabs.add("Sense relations ", senseRelationTreePanel);
 
         WebPanel propertiesWrapper = new WebPanel(propertiesPanel);
         propertiesWrapper.setMargin(10);

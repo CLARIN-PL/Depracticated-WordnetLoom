@@ -49,7 +49,6 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     private MTextField variant;
     private MTextField link;
     private MComboBox<Object> register;
-//    private PartOfSpeechComboBox partOfSpeech;
     private MComboBox<PartOfSpeech> partOfSpeech;
     private DomainMComboBox domain;
     private MTextPane comment;
@@ -468,8 +467,6 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         } else if (event.getSource() == link) {
             btnSave.setEnabled(true);
         } else if (event.getSource() == examplesList) {
-            btnSave.setEnabled(true);
-        } else if (event.getSource() == partOfSpeech) {
             btnSave.setEnabled(true);
         } else if (event.getSource() == partOfSpeech) {
             btnSave.setEnabled(true);

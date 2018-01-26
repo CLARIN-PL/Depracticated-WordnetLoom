@@ -63,14 +63,11 @@ public class ViWordNetPerspective extends AbstractPerspective implements
      */
     @Override
     public void init() {
+
         // When the perspective panel is fatched for the first time create the
         // panel.
         // Create top and bottom tabbed panel
         leftView = createPane();
-        // TODO: tab closing ability gives us great power,
-        // but with great power comes great responsibility,
-        // every change should be traced (tracked) ;-)
-        // but seriously it messes it all up
         graphView = new CloseableTabbedPane(true, true);
         rightTopView = createPane();
         rightBottomView = createPane();

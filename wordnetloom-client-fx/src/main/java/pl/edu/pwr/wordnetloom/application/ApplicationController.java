@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.ui.application;
+package pl.edu.pwr.wordnetloom.application;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;

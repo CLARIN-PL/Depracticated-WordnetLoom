@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.tracker;
 import java.util.Date;
 import javax.ejb.Stateless;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.tracker.model.Tracker;
 
 @Stateless
 public class TrackerDaoBean implements TrackerDaoLocal {

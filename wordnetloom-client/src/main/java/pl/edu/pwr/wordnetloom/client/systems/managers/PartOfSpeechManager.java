@@ -1,13 +1,16 @@
 package pl.edu.pwr.wordnetloom.client.systems.managers;
 
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
-public class PartOfSpeechManager {
+public class PartOfSpeechManager implements Loggable{
 
     private static PartOfSpeechManager instance;
 
@@ -60,6 +63,22 @@ public class PartOfSpeechManager {
 //            filtred.add(pos);
 //        });
         return filtred;
+    }
+
+    public HashMap<PartOfSpeech, Color> getBackgroundColors() {
+        HashMap<PartOfSpeech, Color> backgroundColors = new HashMap<>();
+        partOfSpeeches.forEach( p -> {
+            Color c;
+            try {
+                c = Color.decode(p.getColor());
+            } catch (Exception e) {
+                c = Color.decode("#000000");
+                logger().warn(p.getColor() + " is not a valid color falling back to #000000");
+            }
+
+            backgroundColors.put(p, c);
+        });
+        return  backgroundColors;
     }
 
     public List<PartOfSpeech> getAll() {

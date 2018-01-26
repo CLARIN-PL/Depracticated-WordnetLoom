@@ -654,6 +654,19 @@ public class SynsetRepository extends GenericRepository<Synset> {
     //TODO zmienić nazwę
     private Synset findSynsetWithRelationsAndSenseById(Long id) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Synset> cq = getSynsetCriteriaQuery(id, cb, 0);
+
+        TypedQuery<Synset> query = getEntityManager().createQuery(cq);
+        try {
+           return  query.getSingleResult();
+        } catch (NoResultException ex) {
+            cq = getSynsetCriteriaQuery(id, cb, 1);
+            query = getEntityManager().createQuery(cq);
+            return query.getSingleResult();
+        }
+    }
+
+    private CriteriaQuery<Synset> getSynsetCriteriaQuery(Long id, CriteriaBuilder cb, int pos) {
         CriteriaQuery<Synset> cq = cb.createQuery(Synset.class);
 
         Root<Synset> root = cq.from(Synset.class);
@@ -664,11 +677,10 @@ public class SynsetRepository extends GenericRepository<Synset> {
         List<Predicate> predicatesList = new ArrayList<>();
         Predicate idPredicate = cb.equal(root.get("id"), id);
         predicatesList.add(idPredicate);
-        Predicate sensePredicate = cb.equal(senseJoin.get("synsetPosition"), 0);
+        Predicate sensePredicate = cb.equal(senseJoin.get("synsetPosition"), pos);
         predicatesList.add(sensePredicate);
         cq.where(predicatesList.toArray(new Predicate[0]));
-        final TypedQuery<Synset> query = getEntityManager().createQuery(cq);
-        return query.getSingleResult();
+        return cq;
     }
 
     public Map<Long, DataEntry> prepareCacheForRootNode(final Long synsetId, final List<Long> lexicons, int numSynsetOnDirection, NodeDirection[] directions) {

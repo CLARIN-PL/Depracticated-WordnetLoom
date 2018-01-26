@@ -1,14 +1,17 @@
 package pl.edu.pwr.wordnetloom.client.systems.managers;
 
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RelationTypeManager {
+public class RelationTypeManager implements Loggable{
 
     private List<RelationType> relationTypes;
 
@@ -117,4 +120,22 @@ public class RelationTypeManager {
         return LocalisationManager.getInstance().getLocalisedString(relationType.getName());
     }
 
+    public HashMap<Long, Color> getRelationsColors(){
+
+        HashMap<Long, Color> relationColors = new HashMap<>();
+
+        relationTypes.forEach( rt -> {
+            Color c;
+            try {
+                c = Color.decode(rt.getColor());
+            } catch (Exception e) {
+                c = Color.decode("#000000");
+                logger().warn(rt.getColor() + " is not a valid color falling back to #000000");
+            }
+
+            relationColors.put(rt.getId(), c);
+        });
+
+        return relationColors;
+    }
 }
