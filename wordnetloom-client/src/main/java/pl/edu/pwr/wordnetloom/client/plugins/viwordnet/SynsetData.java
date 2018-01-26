@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -117,13 +118,17 @@ public class SynsetData {
         DataEntry parentDataEntry = data.get(relation.getParent().getId());
         NodeDirection direction = relation.getRelationType().getNodePosition();
         parentDataEntry.getRelations(direction).remove(relation);
+        DataEntry childDataEntry = data.get(relation.getChild().getId());
+        NodeDirection oppositeDirection = direction.getOpposite();
+        childDataEntry.getRelations(oppositeDirection).remove(relation);
     }
 
     public void addRelation(SynsetRelation relation){
         DataEntry parentDataEntry = data.get(relation.getParent().getId());
         NodeDirection direction = relation.getRelationType().getNodePosition();
         parentDataEntry.getRelations(direction).add(relation);
+        //TODO być może będzie tutaj trzeba dodać dodanie relacji odwrotnej dla dziecka (w usuwaniu byo trzeba)
     }
 
-    //TODO zrobić metody dodające i usuwające relacje do synsetu
+    //TODO dodać metodę usuwającą synset
 }

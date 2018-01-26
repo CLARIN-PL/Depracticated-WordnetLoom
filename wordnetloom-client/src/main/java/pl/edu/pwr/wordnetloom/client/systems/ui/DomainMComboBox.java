@@ -86,4 +86,13 @@ public class DomainMComboBox extends MComboBox<Domain> {
         String[] splited = name.split("_");
         return splited.length == 1 ? splited[0] : splited[1];
     }
+
+    @Override
+    public Domain getSelectedItem() {
+        int selectedIndex = getSelectedIndex();
+        if(selectedIndex == 0){
+            return null;
+        }
+        return all.get(selectedIndex - 1);
+    }
 }

@@ -388,7 +388,6 @@ public class ViWordNetService extends AbstractService implements
             return null;
         }
 
-
         private void loadGraph(Synset rootSynset) {
             activeGraphView.loadSynset(rootSynset);
             examplesView.load_examples(unit.getWord().getWord());

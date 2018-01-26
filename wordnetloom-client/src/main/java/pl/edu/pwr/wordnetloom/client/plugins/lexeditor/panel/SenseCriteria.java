@@ -10,6 +10,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,7 @@ public final class SenseCriteria extends CriteriaPanel {
         String lemma = getSearchTextField().getText();
         String comment = getComment().getText();
         String example = getExample().getText();
-        Long partOfSpeechId = getPartsOfSpeachComboBox().getEntity() == null ? null : getPartsOfSpeachComboBox().getEntity().getId();
+        Long partOfSpeechId = getPartsOfSpeechComboBox().getEntity() == null ? null : getPartsOfSpeechComboBox().getEntity().getId();
         Long domainId = getDomainComboBox().getEntity() == null ? null : getDomainComboBox().getEntity().getId();
         List<Long> lexicons = new ArrayList<>();
         Lexicon lexicon = getLexiconComboBox().getEntity();
@@ -130,7 +131,7 @@ public final class SenseCriteria extends CriteriaPanel {
     public CriteriaDTO getCriteria() {
         crit.setLemma(getSearchTextField().getText());
         crit.setLexicon(getLexiconComboBox().getSelectedIndex());
-        crit.setPartOfSpeech(getPartsOfSpeachComboBox().getSelectedIndex());
+        crit.setPartOfSpeech(getPartsOfSpeechComboBox().getSelectedIndex());
         crit.setDomain(getDomainComboBox().getSelectedIndex());
         crit.setRelation(getSenseRelationTypeComboBox().getSelectedIndex());
         crit.setRegister(getRegisterComboBox().getSelectedIndex());
@@ -147,7 +148,7 @@ public final class SenseCriteria extends CriteriaPanel {
     public void restoreCriteria(CriteriaDTO criteria) {
         getSearchTextField().setText(criteria.getLemma());
         getLexiconComboBox().setSelectedIndex(criteria.getLexicon());
-        getPartsOfSpeachComboBox().setSelectedIndex(criteria.getPartOfSpeech());
+        getPartsOfSpeechComboBox().setSelectedIndex(criteria.getPartOfSpeech());
         getDomainComboBox().setSelectedIndex(criteria.getDomain());
         getSenseRelationTypeComboBox().setSelectedIndex(criteria.getRelation());
         getRegisterComboBox().setSelectedIndex(criteria.getRegister());

@@ -1,6 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractView;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;

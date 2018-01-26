@@ -1,28 +1,27 @@
 package pl.edu.pwr.wordnetloom.synset.repository;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
-import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetCriteriaDTO;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository;
+import pl.edu.pwr.wordnetloom.word.model.Word;
 
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
-import java.rmi.server.RemoteServer;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Stateless
 public class SynsetRepository extends GenericRepository<Synset> {
@@ -841,6 +840,96 @@ public class SynsetRepository extends GenericRepository<Synset> {
         List<SynsetRelation> relationsTo = synsetRelationRepository.findSimpleRelationsWhereSynsetIsChild(newSynset, lexicons);
         relationsFrom.addAll(relationsTo);
         return buildDataEntry(newSynset, relationsFrom);
+    }
+
+    //TODO przetestować każdy z warunków
+    public List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria){
+        final String SENSES = "senses";
+        final String WORD = "word";
+        final String DOMAIN = "domain";
+        final String LEXICON = "lexicon";
+        final String PART_OF_SPEECH = "partOfSpeech";
+        final String INCOMING_RELATIONS = "incomingRelations";
+        final String OUTGOING_RELATIONS = "outgoingRelations";
+        final String RELATION_TYPE = "relationType";
+        final String SYNSET_ATTRIBUTE = "synsetAttributes"; //TODO sprawdzić czy dobra nazwa
+        final String COMMENT = "comment";
+        final String DEFINITION = "definition";
+        final String IS_ABSTRACT = "abstract"; // TODO sprawdzić nazwę
+        final String VARIANT = "variant";
+
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Synset> query = criteriaBuilder.createQuery(Synset.class);
+        Root<Synset> synsetRoot = query.from(Synset.class);
+        Join<Synset, Sense> senseJoin = synsetRoot.join(SENSES);
+        Join<Synset, Word> wordJoin = senseJoin.join(WORD);
+        Fetch<Synset, Sense> sensesFetch = synsetRoot.fetch(SENSES);
+        sensesFetch.fetch(WORD);
+        sensesFetch.fetch(DOMAIN);
+        sensesFetch.fetch(LEXICON);
+        List<Predicate> criteriaList = new ArrayList<>();
+        Predicate lemmaPredicate = criteriaBuilder.like(wordJoin.get(WORD), criteria.getLemma() + "%");
+        criteriaList.add(lemmaPredicate);
+        if(criteria.getLexiconId() != null){
+            Predicate lexiconPredicate = criteriaBuilder.equal(senseJoin.get(LEXICON),criteria.getLexiconId()); //TODO sprawdzić czy dobry warunek
+            criteriaList.add(lexiconPredicate);
+        }
+        if(criteria.getPartOfSpeechId() != null){
+            Predicate partOfSpeechPredicate = criteriaBuilder.equal(senseJoin.get(PART_OF_SPEECH), criteria.getPartOfSpeechId());
+            criteriaList.add(partOfSpeechPredicate);
+        }
+        if(criteria.getRelationTypeId() != null) {
+            Join<Synset, SynsetRelation> incomingRelationsJoin = synsetRoot.join(INCOMING_RELATIONS);
+            Join<Synset, SynsetRelation> outgoingRelationsJoin = synsetRoot.join(OUTGOING_RELATIONS);
+            Predicate[] relationsPredicates = new Predicate[2];
+            relationsPredicates[0] = criteriaBuilder.equal(incomingRelationsJoin.get(RELATION_TYPE), criteria.getRelationTypeId());
+            relationsPredicates[1] = criteriaBuilder.equal(outgoingRelationsJoin.get(RELATION_TYPE), criteria.getRelationTypeId());
+            criteriaList.add(criteriaBuilder.or(relationsPredicates));
+        }
+        if(criteria.getDomainId() != null){
+            Predicate domainPredicate = criteriaBuilder.equal(senseJoin.get(DOMAIN), criteria.getDomainId());
+            criteriaList.add(domainPredicate);
+        }
+        if(criteria.getComment() != null || criteria.getDefinition() != null || criteria.isAbstract() != null){
+            Join<Synset, SynsetAttributes> synsetAttributeJoin = synsetRoot.join(SYNSET_ATTRIBUTE);
+            if(criteria.getComment() != null){
+                Predicate commentPredicate = criteriaBuilder.like(synsetAttributeJoin.get(COMMENT), "%"+criteria.getComment()+"%");
+                criteriaList.add(commentPredicate);
+            }
+            if(criteria.getDefinition() != null){
+                Predicate definitionPredicate = criteriaBuilder.like(synsetAttributeJoin.get(DEFINITION), "%"+criteria.getDefinition()+"%");
+                criteriaList.add(definitionPredicate);
+            }
+            if(criteria.isAbstract() != null){
+                Predicate abstractPredicate = criteriaBuilder.equal(synsetAttributeJoin.get(IS_ABSTRACT), criteria.isAbstract());
+                criteriaList.add(abstractPredicate);
+            }
+        }
+
+        query.select(synsetRoot);
+//        query.distinct(true);
+        query.where(criteriaList.toArray(new Predicate[0]));
+
+        List<Order> orders = new ArrayList<>();
+        orders.add(criteriaBuilder.asc(wordJoin.get(WORD)));
+        orders.add(criteriaBuilder.asc(senseJoin.get(PART_OF_SPEECH)));
+        orders.add(criteriaBuilder.asc(senseJoin.get(VARIANT)));
+        orders.add(criteriaBuilder.asc(senseJoin.get(LEXICON)));
+        //TODO może byc problem z takim sortowaniem. Zobaczyć, czy synsety nie będa się pojawiały na liście kilkukrotnie
+
+        query.orderBy(orders);
+
+        Query selectQuery = getEntityManager().createQuery(query);
+        if(criteria.getLimit() > 0){
+            selectQuery.setMaxResults(criteria.getLimit());
+        }
+        if(criteria.getOffset() > 0){
+            selectQuery.setFirstResult(criteria.getOffset());
+        }
+
+        List<Synset> resultList = selectQuery.getResultList();
+        resultList=  resultList.stream().distinct().collect(Collectors.toList());
+        return resultList;
     }
 
     @Override

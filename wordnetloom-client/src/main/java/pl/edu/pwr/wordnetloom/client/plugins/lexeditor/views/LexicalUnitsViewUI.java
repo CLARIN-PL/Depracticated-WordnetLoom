@@ -2,10 +2,9 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
 import com.alee.laf.panel.WebPanel;
 import jiconfont.icons.FontAwesome;
-import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -68,7 +67,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     {
         SenseCriteria senseCriteria = new SenseCriteria();
         senseCriteria.getDomainComboBox().addActionListener(this);
-        senseCriteria.getPartsOfSpeachComboBox().addActionListener(this);
+        senseCriteria.getPartsOfSpeechComboBox().addActionListener(this);
         return senseCriteria;
     }
 
@@ -153,6 +152,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             this.setFont(listFont);
             Sense sense = (Sense) value;
+
             name = sense.getWord().getWord();
             variant = String.valueOf(sense.getVariant());
             domain = LocalisationManager.getInstance().getLocalisedString(sense.getDomain().getName());

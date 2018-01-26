@@ -12,6 +12,7 @@ import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -232,7 +233,7 @@ public abstract class CriteriaPanel extends WebPanel {
         return searchTextField;
     }
 
-    public MComboBox<Domain> getDomainComboBox() {
+    public DomainMComboBox getDomainComboBox() {
         return domainComboBox;
     }
 
@@ -252,7 +253,7 @@ public abstract class CriteriaPanel extends WebPanel {
         return lexiconComboBox;
     }
 
-    public PartOfSpeechComboBox getPartsOfSpeachComboBox() {
+    public PartOfSpeechComboBox getPartsOfSpeechComboBox() {
         return partsOfSpeachComboBox;
     }
 

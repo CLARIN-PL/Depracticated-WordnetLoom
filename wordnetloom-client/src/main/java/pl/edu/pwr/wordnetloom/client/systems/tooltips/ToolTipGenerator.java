@@ -6,18 +6,16 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.IObjectWrapper;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * klasa dostarcza metod zwracajacych tooltipy dla jednostki leksyklanej i
@@ -82,6 +80,159 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface, Loggable {
 
     final static String SYNSET_ITEM = DESC_STR;
     private boolean isEnabled = true;
+    private TooltipTextCache cache;
+
+    //TODO cache can store outdated data
+    private class TooltipTextCache {
+        private final int CAPACITY_LIMIT = 10;
+        private Map<Long, String> cache;
+        private Queue<Long> objectsIds;
+
+        public TooltipTextCache() {
+            cache = new HashMap<>(CAPACITY_LIMIT);
+            objectsIds = new ArrayDeque<>(CAPACITY_LIMIT);
+        }
+
+        public String find(Long id) {
+            return cache.get(id);
+        }
+
+        public void put(Long id, String text) {
+            if (cache.size() == CAPACITY_LIMIT && !cache.containsKey(id)) { //if reach limit size, search earliest inserted id and replace them
+                Long textId = objectsIds.poll();
+                cache.remove(textId);
+            }
+            cache.put(id, text);
+            objectsIds.add(id);
+        }
+    }
+
+    private class PopupTextBuilder {
+
+        private final String DEFINITION_LABEL = HTML_SPA + "<b>" + Labels.DEFINITION_COLON + "</b> " + DESC_STR + HTML_BR;
+        private final String ARTIFICIAL_LABEL = HTML_SPA + "<b>" + Labels.ARTIFICIAL_COLON + "</b> %s" + HTML_BR;
+        private final String STATUS_LABEL = HTML_SPA + "<b>" + Labels.STATUS_COLON + "</b> %s" + HTML_BR;
+        private final String DOMAIN_LABEL = HTML_SPA + "<b>" + Labels.DOMAIN_COLON + "</b> %s" + HTML_BR;
+        private final String OWNER_LABEL = HTML_SPA + "<b>" + Labels.OWNER_COLON + "</b> %s" + HTML_BR;
+        private final String SYNSET_COMMENT_LABEL = HTML_SPA + "<b>" + Labels.SYNSET_COMMENT_COLON + "</b> " + DESC_STR + HTML_BR;
+        private final String UNIT_COMMENT_LABEL = HTML_SPA + "<b>" + Labels.UNIT_COMMENT_COLON + "</b> " + DESC_STR + HTML_BR;
+        private final String LEXICON_LABEL = HTML_SPA + "<b>" + Labels.LEXICON_COLON + "</b> %s" + HTML_BR;
+        private final String PART_OF_SPEECH_LABEL = HTML_SPA + "<b>" + Labels.PARTS_OF_SPEECH_COLON + "</b> %s" + HTML_BR;
+        private final String REGISTER_LABEL = HTML_SPA + "<b>" + Labels.REGISTER_COLON + "</b> %s" + HTML_BR;
+        private final String USE_CASE_LABEL = HTML_SPA + "<b>" + Labels.USE_CASE_COLON + "</b>" + HTML_BR;
+        private final String RELATIONS_HEADER = HTML_SPA + "<font size=\"4\"><b><i>" + Labels.RELATIONS_COLON + "</i></b></font>" + HTML_BR;
+        private final static String DESC_STR = "<div style=\"text-align:left; margin-left:10px; width:250px;\">%s</div>";
+
+        private StringBuilder textBuilder = new StringBuilder();
+
+        public String createSenseText(Sense sense, List<SenseRelation> relations) {
+            textBuilder.setLength(0);
+            SenseAttributes attributes = sense.getSenseAttributes();
+            addLexicon(sense.getLexicon())
+                    .addDomain(sense.getDomain())
+                    .addPartOfSpeech(sense.getPartOfSpeech());
+            if (attributes != null) {
+                addRegister(attributes.getRegister())
+                        .addDefinition(attributes.getDefinition());
+            }
+            addExamples(sense.getExamples());
+            if (relations != null && !relations.isEmpty()) {
+                addSenseRelations(relations);
+            }
+            return buildText();
+        }
+
+        public String createSynsetText(Synset synset, List<SynsetRelation> relations) {
+            return null;
+        }
+
+        public String buildText() {
+            return HTML_HEADER + textBuilder.toString() + HTML_FOOTER;
+        }
+
+        public void clear() {
+            textBuilder.setLength(0);
+        }
+
+        private PopupTextBuilder addDefinition(String definition) {
+            if (definition != null) {
+                addString(DEFINITION_LABEL, definition);
+            }
+            return this;
+        }
+
+        private PopupTextBuilder addDomain(String domain) {
+            return addString(DOMAIN_LABEL, domain);
+        }
+
+        private PopupTextBuilder addDomain(Domain domain) {
+            Domain normalizedDomain = DomainManager.getInstance().getNormalized(domain);
+            String domainText = LocalisationManager.getInstance().getLocalisedString(normalizedDomain.getName()) + "=>" + normalizedDomain.getDescription().toString();
+            return addDomain(domainText);
+        }
+
+        private PopupTextBuilder addLexicon(Lexicon lexicon) {
+            return addLexicon(lexicon.getName());
+        }
+
+        private PopupTextBuilder addLexicon(String lexicon) {
+            return addString(LEXICON_LABEL, lexicon);
+        }
+
+        private PopupTextBuilder addPartOfSpeech(PartOfSpeech partOfSpeech) {
+            String partOfSpeechText = LocalisationManager.getInstance().getLocalisedString(partOfSpeech.getName());
+            return addString(PART_OF_SPEECH_LABEL, partOfSpeechText);
+        }
+
+        private PopupTextBuilder addRegister(Long register) {
+            String registerText = RegisterManager.getInstance().getName(register);
+            return addString(REGISTER_LABEL, registerText);
+        }
+
+        private PopupTextBuilder addExamples(Collection<SenseExample> examples) {
+            if (examples != null && !examples.isEmpty()) {
+                textBuilder.append(USE_CASE_LABEL);
+                for (SenseExample example : examples) {
+                    textBuilder.append(String.format(DESC_STR, example.getExample()));
+                }
+            }
+            return this;
+        }
+
+        private PopupTextBuilder addSenseRelations(List<SenseRelation> relations) {
+            textBuilder.append(getSenseRelationsText(relations));
+            return this;
+        }
+
+        private String getSenseRelationsText(List<SenseRelation> relations) {
+            Map<Long, List<String>> relationsMap = new HashMap<>();
+            Long relationTypeNameId;
+            for (SenseRelation relation : relations) {
+                relationTypeNameId = relation.getRelationType().getName();
+                if (!relationsMap.containsKey(relationTypeNameId)) {
+                    relationsMap.put(relationTypeNameId, new ArrayList<>());
+                }
+                relationsMap.get(relationTypeNameId).add(relation.getChild().toString());
+
+            }
+            String relationTypeText;
+            StringBuilder relationBuilder = new StringBuilder(RELATIONS_HEADER);
+            for (Map.Entry<Long, List<String>> entry : relationsMap.entrySet()) {
+                relationTypeText = LocalisationManager.getInstance().getLocalisedString(entry.getKey());
+                relationBuilder.append(String.format(RELATIONS_TYPE, relationTypeText));
+                for (String s : entry.getValue()) {
+                    relationBuilder.append(String.format(RELATIONS_ITEM, s));
+                }
+            }
+
+            return relationBuilder.toString();
+        }
+
+        private PopupTextBuilder addString(String label, String value) {
+            textBuilder.append(String.format(label, value));
+            return this;
+        }
+    }
 
     /**
      * konstrukor prywatny
@@ -90,6 +241,7 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface, Loggable {
         /**
          *
          */
+        cache = new TooltipTextCache();
     }
 
     /**
@@ -133,64 +285,17 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface, Loggable {
         if (!isEnabled) {
             return null;
         }
-
+        String text = cache.find(object.getId());
+        if (text != null) {
+            return text;
+        }
         Sense sense = RemoteService.senseRemote.fetchSense(object.getId());
-        String global = getGlobalSenseInfo(sense);
-        // odczytywanie relacji
-        List<SenseRelation> relations = RemoteService.senseRelationRemote.findRelations(sense,null, true, false);
-        String relationsText = getSenseRelationsText(relations);
-
-        //TODO wcześniej było jeszcze ustawianie synsetów
-        return HTML_HEADER + global + relationsText + HTML_FOOTER;
-    }
-
-    private String getGlobalSenseInfo(Sense sense){
-        Domain domain = DomainManager.getInstance().getNormalized(sense.getDomain());
-        String register = null;
-        String comment = null;
-
-        if(sense.getSenseAttributes() != null){
-            register = RegisterManager.getInstance().getName(sense.getSenseAttributes().getRegister());
-            comment = sense.getSenseAttributes().getComment();
-        }
-        StringBuilder exampleBuilder = new StringBuilder();
-        for(SenseExample example : sense.getExamples()){
-            exampleBuilder.append(String.format(DESC_STR, example.getExample()));
-        }
-        String global = String.format(LEXICALUNIT_TEMPLATE,
-                sense.toString(),
-                sense.getLexicon().getName(),
-                LocalisationManager.getInstance().getLocalisedString(domain.getName()) + " => " + domain.getDescription().toString(),
-                LocalisationManager.getInstance().getLocalisedString(sense.getPartOfSpeech().getName()),
-                register == null ? Labels.ND : register,
-                format(comment),
-                exampleBuilder.length() ==0 ? Labels.ND : exampleBuilder.toString());
-        return global;
-    }
-
-    private String getSenseRelationsText(List<SenseRelation> relations)
-    {
-        Map<Long, List<String>> relationsMap = new HashMap<>();
-        Long relationTypeNameId;
-        for(SenseRelation relation : relations){
-            relationTypeNameId = relation.getRelationType().getName();
-            if(!relationsMap.containsKey(relationTypeNameId)){
-                relationsMap.put(relationTypeNameId, new ArrayList<>());
-            }
-            relationsMap.get(relationTypeNameId).add(relation.getChild().toString());
-
-        }
-        String relationTypeText;
-        StringBuilder relationBuilder = new StringBuilder(RELATIONS_HEADER);
-        for(Map.Entry<Long, List<String>> entry : relationsMap.entrySet()){
-            relationTypeText = LocalisationManager.getInstance().getLocalisedString(entry.getKey());
-            relationBuilder.append(String.format(RELATIONS_TYPE, relationTypeText));
-            for(String s : entry.getValue()){
-                relationBuilder.append(String.format(RELATIONS_ITEM, s));
-            }
-        }
-
-        return relationBuilder.toString();
+        // we must get relations from database, because collections are lazy
+        List<SenseRelation> relations = RemoteService.senseRelationRemote.findRelations(sense, null, true, false);
+        text = new PopupTextBuilder().createSenseText(sense, relations);
+        cache.put(object.getId(), text);
+        return text;
+//        return new PopupTextBuilder().createSenseText(sense, relations);
     }
 
     /**
@@ -203,7 +308,7 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface, Loggable {
         if (!isEnabled) {
             return null;
         }
-
+        //TODO dorobić opis dla synsetu
 //        object = RemoteUtils.synsetRemote.dbGet(object.getId());
 //        String domain_str = "";
 //        Domain domain = RemoteUtils.synsetRemote.dbGetDomain(object, LexiconManager.getInstance().getLexicons());
