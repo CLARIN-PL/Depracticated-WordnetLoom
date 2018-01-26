@@ -10,6 +10,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
 
 import java.util.ArrayList;
 import java.util.List;

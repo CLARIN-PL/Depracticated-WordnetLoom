@@ -1,9 +1,10 @@
-package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
+package pl.edu.pwr.wordnetloom.synset.model;
 
+import java.io.Serializable;
 import java.util.List;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
-public class CriteriaDTO {
+public class CriteriaDTO implements Serializable{
 
     private String lemma;
     private int lexicon;
@@ -14,7 +15,13 @@ public class CriteriaDTO {
     private String definition;
     private String comment;
     private String example;
-    private String synsetType;
+
+    /** true - only abstract synsets
+     * false - only normal synsets
+     * null - all synsets
+     */
+    private Boolean abstractSynset;
+
     private List<Sense> sense;
 
     public String getLemma() {
@@ -89,12 +96,20 @@ public class CriteriaDTO {
         this.example = example;
     }
 
-    public String getSynsetType() {
-        return synsetType;
+//    public String getSynsetType() {
+//        return synsetType;
+//    }
+//
+//    public void setSynsetType(String synsetType) {
+//        this.synsetType = synsetType;
+//    }
+
+    public Boolean isAbstract(){
+        return abstractSynset;
     }
 
-    public void setSynsetType(String synsetType) {
-        this.synsetType = synsetType;
+    public void setAbstract(Boolean isAbstract){
+        abstractSynset = isAbstract;
     }
 
     public List<Sense> getSense() {

@@ -1,9 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
 import com.alee.laf.panel.WebPanel;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SynsetCriteria;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
@@ -16,6 +16,8 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetCriteriaDTO;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -90,12 +92,14 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
 
     public void refreshData() {
 
+        int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
         String oldFilter = criteria.getSearchTextField().getText();
         Domain oldDomain = criteria.getDomainComboBox().getEntity();
         RelationType oldRelation = criteria.getSynsetRelationTypeComboBox().getEntity();
         String definition = criteria.getDefinition().getText();
         String comment = criteria.getComment().getText();
-        String artificial = criteria.getIsArtificial();
+//        String artificial = criteria.getIsArtificial();
+
         List<Long> lexicons = new ArrayList<>();
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
@@ -110,17 +114,24 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
                 } else {
                     lexicons.addAll(LexiconManager.getInstance().getUserChosenLexiconsIds());
                 }
-                List<Sense> sense = new ArrayList<>();
-                sense = LexicalDA.getSenseBySynsets(oldFilter, oldDomain, oldRelation,
-                        definition, comment, artificial, 0,
-                        criteria.getPartsOfSpeechComboBox().getEntity() == null ? null : criteria.getPartsOfSpeechComboBox().getEntity(), lexicons);
+
+                SynsetCriteriaDTO dto = criteria.getSynsetCriteria();
+                List<Synset> synsets = RemoteService.synsetRemote.findSynsetsByCriteria(dto);
+//                List<Sense> sense = new ArrayList<>();
+//                sense = LexicalDA.getSenseBySynsets(oldFilter, oldDomain, oldRelation,
+//                        definition, comment, artificial, limitSize,
+//                        criteria.getPartsOfSpeechComboBox().getEntity() == null ? null : criteria.getPartsOfSpeechComboBox().getEntity(), lexicons);
                 if (lastSelectedValue == null && synsetList != null && !synsetList.isSelectionEmpty()) {
                     lastSelectedValue = senseListModel.getObjectAt(synsetList.getSelectedIndex());
                 }
-                if (sense.isEmpty()) {
+                if(synsets.isEmpty()){
                     workbench.setBusy(false);
                 }
-                senseListModel.setCollectionToSynsets(sense, oldFilter);
+                //TODO zrobić dodawnie synsetów do listy i ustalić sposób wyświetlania
+//                if (sense.isEmpty()) {
+//                    workbench.setBusy(false);
+//                }
+//                senseListModel.setCollectionToSynsets(sense, oldFilter);
                 criteria.setSensesToHold(new ArrayList<>(senseListModel.getCollection()));
                 return null;
             }

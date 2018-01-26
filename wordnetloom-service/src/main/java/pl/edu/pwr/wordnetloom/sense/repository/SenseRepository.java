@@ -91,7 +91,6 @@ public class SenseRepository extends GenericRepository<Sense> {
         return senses;
     }
 
-    //TODO sprawdzić, ta metoda jest jeszcze gdzieś uzywana
     private List<Sense> getSensesByCriteria(SenseCriteriaDTO dto){
         //TODO sprawdzić działanie wszystkich warunków
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();

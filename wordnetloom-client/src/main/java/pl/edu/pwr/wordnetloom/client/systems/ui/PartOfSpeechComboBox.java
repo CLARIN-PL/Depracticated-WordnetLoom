@@ -47,4 +47,14 @@ public class PartOfSpeechComboBox extends MComboBox<PartOfSpeech> {
         loadPartOfSpeech();
         loadItems();
     }
+
+    @Override
+    public PartOfSpeech getSelectedItem()
+    {
+        int selectedIndex = getSelectedIndex();
+        if(selectedIndex == 0){
+            return null;
+        }
+        return all.get(selectedIndex -1);
+    }
 }

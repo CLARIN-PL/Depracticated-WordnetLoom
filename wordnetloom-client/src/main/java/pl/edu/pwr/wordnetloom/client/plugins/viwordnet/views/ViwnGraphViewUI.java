@@ -17,7 +17,7 @@ import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.collections15.Transformer;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.SynsetData;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.GraphChangeListener;
@@ -1481,7 +1481,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         this.criteria.setComment(criteria.getComment());
         this.criteria.setExample(criteria.getExample());
         this.criteria.setRelation(criteria.getRelation());
-        this.criteria.setSynsetType(criteria.getSynsetType());
+//        this.criteria.setSynsetType(criteria.getSynsetType());
         this.criteria.setSense(criteria.getSense());
     }
 
