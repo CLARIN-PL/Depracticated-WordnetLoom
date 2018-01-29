@@ -8,9 +8,8 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 /**
- * lista jednostek leksykalnych
+ * Lexical units list
  *
- * @author Max
  */
 public class LexicalUnitsView extends AbstractView {
 
@@ -37,9 +36,8 @@ public class LexicalUnitsView extends AbstractView {
      * odświeżenie listy jednostek
      */
     public void refreshData() {
-        LexicalUnitsViewUI viewUI = (LexicalUnitsViewUI) getUI(); // odczytanie UI
-//        viewUI.refreshData(15, 0); //TODO będzie to rzeba jakoś ogarnąć
-        viewUI.loadUnits(15); //TODO gdzieś przechowywać ilość pobieranych danych
+        LexicalUnitsViewUI viewUI = (LexicalUnitsViewUI) getUI();
+        viewUI.loadUnits();
     }
 
     /**
@@ -48,7 +46,7 @@ public class LexicalUnitsView extends AbstractView {
      * @param unit - ostatnia jednostka
      */
     public void setSelectedUnit(Sense unit) {
-        LexicalUnitsViewUI viewUI = (LexicalUnitsViewUI) getUI(); // odczytanie UI
+        LexicalUnitsViewUI viewUI = (LexicalUnitsViewUI) getUI();
         viewUI.setSelectedUnit(unit);
     }
 

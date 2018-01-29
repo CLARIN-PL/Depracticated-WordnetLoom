@@ -14,12 +14,12 @@ public class TrackerServiceBean implements TrackerServiceRemote {
 
     @Override
     public void insertedLexicalUnit(Sense sense, String comment, String owner) {
-        local.insertedLexicalUnit(sense, comment, owner);
+       // local.insertedLexicalUnit(sense, comment, owner);
     }
 
     @Override
     public void updatedLexicalUnit(Sense sense, String comment, String owner) {
-        local.updatedLexicalUnit(sense, comment, owner);
+       // local.updatedLexicalUnit(sense, comment, owner);
     }
 
 }

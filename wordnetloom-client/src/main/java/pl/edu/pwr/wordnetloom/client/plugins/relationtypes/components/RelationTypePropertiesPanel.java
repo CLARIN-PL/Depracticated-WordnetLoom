@@ -9,10 +9,13 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebFormattedTextField;
 import com.google.common.eventbus.Subscribe;
 import pl.edu.pwr.wordnetloom.client.Application;
+import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.events.ShowRelationTypeEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window.PartOfSpeechWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -28,8 +31,8 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
 
@@ -100,30 +103,33 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         colorChooser.setColor(Color.decode(rt.getColor() != null ? rt.getColor() : "#FFFFFF"));
         multilingual.setSelected(rt.getMultilingual());
         reverseRelation.setText(rt.getReverse() != null ? LocalisationManager.getInstance().getLocalisedString(rt.getReverse().getName()) : "");
-        lexicon.setText(lexiconsToString(rt.getLexicons()));
-        allowedPartsOfSpeech.setText(partsOfSpeechToString(rt.getPartsOfSpeech()));
+        lexicon.setText(LexiconManager.getInstance().lexiconNamesToString(rt.getLexicons()));
+        allowedPartsOfSpeech.setText(PartOfSpeechManager.getInstance().partsOfSpeechToString(rt.getPartsOfSpeech()));
     }
-
-    private String lexiconsToString(Set<Lexicon> lexicons) {
-        return lexicons.stream()
-                .map(Lexicon::getName)
-                .collect(Collectors.joining(", "));
-    }
-
-    private String partsOfSpeechToString(Set<PartOfSpeech> pos) {
-        return pos.stream()
-                .map(p -> LocalisationManager.getInstance().getLocalisedString(p.getName()))
-                .collect(Collectors.joining(", "));
-    }
-
 
     private void openReverseRelationDialog() {
     }
 
     private void openPartOfSpeechDialog() {
-        final Set<PartOfSpeech> selected = PartOfSpeechWindow.showModal(parent, currentRelation.getPartsOfSpeech());
-        currentRelation.setPartsOfSpeech(selected);
-        allowedPartsOfSpeech.setText(partsOfSpeechToString(currentRelation.getPartsOfSpeech()));
+        Set<PartOfSpeech> current = currentRelation != null ? currentRelation.getPartsOfSpeech() : new HashSet<>();
+
+        final Set<PartOfSpeech> selected = PartOfSpeechWindow.showModal(parent, current);
+
+        if (currentRelation != null) {
+            currentRelation.setPartsOfSpeech(selected);
+            allowedPartsOfSpeech.setText(PartOfSpeechManager.getInstance().partsOfSpeechToString(currentRelation.getPartsOfSpeech()));
+        }
+    }
+
+    private void openLexiconDialog() {
+        Set<Lexicon> lexicons = currentRelation != null ? currentRelation.getLexicons() : new HashSet<>();
+
+        final Set<Lexicon> selected = LexiconsWindow.showModal(parent, lexicons);
+
+        if (currentRelation != null) {
+            currentRelation.setLexicons(selected);
+            lexicon.setText(LexiconManager.getInstance().lexiconNamesToString(currentRelation.getLexicons()));
+        }
     }
 
     private MaskFormatter createFormatter(String s) {
@@ -141,6 +147,7 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
     private final MTextField lexicon = new MTextField("");
 
     private final MButton lexiconBtn = new MButton()
+            .withActionListener(e -> openLexiconDialog())
             .withCaption("...");
 
     private final MTextField relationName = new MTextField("");

@@ -131,7 +131,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         content.add("br left", new MLabel(Labels.LEXICAL_UNITS_COLON, 'j', unitsList));
 
         unitsListScrollPane = new LazyScrollPane(unitsList, LIMIT);
-        unitsListScrollPane.setScrollListener((offset, limit) -> loadUnits());
+        unitsListScrollPane.setScrollListener((offset, limit) -> loadMoreUnits());
 
         unitsList.setCellRenderer(new UnitListCellRenderer());
 
@@ -209,21 +209,20 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     /** Metoda ładująca nową listę jednostek
      *  1. wyczyszczenie listy
      *  2. pobranie jednostek i umieszczenie ich na liście
-     * @param limit liczba jednostek, która będzie załadowana
      */
-    public void loadUnits(int limit) {
+    public void loadUnits() {
         //wyczyszczenie listy jednostek
         unitsListScrollPane.reset();
         listModel.clear();
 
         SenseCriteriaDTO dto = criteria.getSenseCriteriaDTO();
-        List<Sense> units = getSenses(dto, limit, 0);
+        List<Sense> units = getSenses(dto, LIMIT, 0);
         allUnitsCount = RemoteService.senseRemote.getCountUnitsByCriteria(dto);
         setInfoText(units.size(), allUnitsCount);
         for (Sense sense : units) {
             listModel.addElement(sense);
         }
-        unitsListScrollPane.setEnd(units.size()<limit);
+        unitsListScrollPane.setEnd(units.size()<LIMIT);
     }
 
     public void setInfoText(int loadedUnits, int allUnitsCount){
@@ -249,7 +248,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     /** Ładuje kolejne jednostki do listy
      *
      */
-    public void loadUnits() {
+    public void loadMoreUnits() {
         List<Sense> units = getSenses(lastSenseCriteria, lastSenseCriteria.getLimit(), listModel.getSize());
         for(Sense sense : units) {
             listModel.addElement(sense);
@@ -337,7 +336,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         }
         // wywolanie search
         if (event.getSource() == btnSearch) {
-            loadUnits(LIMIT);
+            loadUnits();
         } else if (event.getSource() == btnReset) {
             criteria.resetFields();
         } else if (event.getSource() == btnDelete) {
@@ -507,7 +506,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         super.keyPressed(event);
         if (!event.isConsumed() && event.getSource() == criteria.getSearchTextField() && event.getKeyChar() == KeyEvent.VK_ENTER) {
             event.consume();
-            loadUnits(LIMIT);
+            loadUnits();
         }
     }
 

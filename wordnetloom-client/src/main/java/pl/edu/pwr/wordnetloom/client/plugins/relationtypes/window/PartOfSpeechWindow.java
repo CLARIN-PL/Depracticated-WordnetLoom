@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
 import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
@@ -10,6 +11,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MButtonPanel;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -22,22 +24,28 @@ public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
     private static final long serialVersionUID = 1L;
 
     private final MButton btnOk = MButton.buildOkButton()
-            .withEnabled(true);
-
-    private final MButton btnCancel = MButton.buildCancelButton(this)
+            .withWidth(65)
+            .withActionListener(this)
             .withEnabled(true);
 
     private final Map<Long, WebCheckBox> checkboxes = new HashMap<>();
 
-    private PartOfSpeechWindow(WebFrame parent) {
-        super(parent, Labels.PARTS_OF_SPEECH, 190, 430);
+    private final WebPanel panel = new WebPanel();
+    private final GridLayout layout = new GridLayout(3,2, 3,5);
+
+    private PartOfSpeechWindow(WebFrame parent, Set<PartOfSpeech> pos) {
+        super(parent, Labels.PARTS_OF_SPEECH, 260, 140);
         setResizable(false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         buildCheckBoxesForAvailablePartsOfSpeech();
+
+        panel.setLayout(layout);
+        panel.setMargin(20,20,10,10);
+
         addPartOfSpeech();
         addButtonsPanel();
-        
+
     }
 
     private void buildCheckBoxesForAvailablePartsOfSpeech() {
@@ -54,12 +62,17 @@ public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
     }
 
     private void addPartOfSpeech() {
-        checkboxes.forEach((k, v) -> add("br", v));
+        add("center hfill vfill", panel);
+
+        checkboxes.forEach((k, v) -> {
+            panel.add(v);
+        });
+
     }
 
     public void addButtonsPanel() {
 
-        MButtonPanel buttonPanel = new MButtonPanel(btnOk, btnCancel)
+        MButtonPanel buttonPanel = new MButtonPanel(btnOk)
                 .withHorizontalLayout();
         add("br center", buttonPanel);
     }
@@ -77,10 +90,8 @@ public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
 
     static public Set<PartOfSpeech> showModal(WebFrame parent, Set<PartOfSpeech> pos) {
 
-        PartOfSpeechWindow frame = new PartOfSpeechWindow(parent);
-        frame.setPartsOfSpeech(pos);
+        PartOfSpeechWindow frame = new PartOfSpeechWindow(parent, pos);
         frame.setVisible(true);
-        frame.dispose();
 
         return frame.getSelected();
     }
@@ -88,12 +99,9 @@ public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent event) {
 
-        if (event.getSource() == btnCancel) {
+        if (event.getSource() == btnOk) {
             setVisible(false);
-
-        } else if (event.getSource() == btnOk) {
-            checkboxes.clear();
-            setVisible(false);
+            dispose();
         }
     }
 

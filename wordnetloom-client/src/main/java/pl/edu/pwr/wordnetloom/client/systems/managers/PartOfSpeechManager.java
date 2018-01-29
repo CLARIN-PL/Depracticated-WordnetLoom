@@ -5,10 +5,9 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PartOfSpeechManager implements Loggable{
 
@@ -64,6 +63,13 @@ public class PartOfSpeechManager implements Loggable{
 //        });
         return filtred;
     }
+
+    public String partsOfSpeechToString(Set<PartOfSpeech> pos) {
+        return pos.stream()
+                .map(p -> LocalisationManager.getInstance().getLocalisedString(p.getName()))
+                .collect(Collectors.joining(", "));
+    }
+
 
     public HashMap<PartOfSpeech, Color> getBackgroundColors() {
         HashMap<PartOfSpeech, Color> backgroundColors = new HashMap<>();

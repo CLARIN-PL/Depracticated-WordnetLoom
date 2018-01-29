@@ -15,7 +15,7 @@ public class RelationTypeManagerTest {
 
     @Test
     public void shouldReturnChildrenForRelationId() {
-        RelationTypeManager.getInstance().loadRelationTypes(RelationTypeForTestsRepository.allRelations());
+        RelationTypeManager.getInstance().load(RelationTypeForTestsRepository.allRelations());
 
         List<RelationType> list = RelationTypeManager.getInstance().getChildren(rola().getId());
         assertThat(list, is(notNullValue()));
@@ -27,7 +27,7 @@ public class RelationTypeManagerTest {
 
     @Test
     public void shouldReturnParentSenseRelations() {
-        RelationTypeManager.getInstance().loadRelationTypes(RelationTypeForTestsRepository.allRelations());
+        RelationTypeManager.getInstance().load(RelationTypeForTestsRepository.allRelations());
 
         List<RelationType> list = RelationTypeManager.getInstance().getParents(RelationArgument.SENSE_RELATION);
         assertThat(list, is(notNullValue()));
@@ -40,7 +40,7 @@ public class RelationTypeManagerTest {
 
     @Test
     public void shouldReturnParentSynsetRelations() {
-        RelationTypeManager.getInstance().loadRelationTypes(RelationTypeForTestsRepository.allRelations());
+        RelationTypeManager.getInstance().load(RelationTypeForTestsRepository.allRelations());
 
         List<RelationType> list = RelationTypeManager.getInstance().getParents(RelationArgument.SYNSET_RELATION);
         assertThat(list, is(notNullValue()));
@@ -53,7 +53,7 @@ public class RelationTypeManagerTest {
     @Test
     public void shouldReturnRelationsWithoutProxyParentRelations() {
 
-        RelationTypeManager.getInstance().loadRelationTypes(RelationTypeForTestsRepository.allRelations());
+        RelationTypeManager.getInstance().load(RelationTypeForTestsRepository.allRelations());
         List<RelationType> list = RelationTypeManager.getInstance().getRelationsWithoutProxyParent(RelationArgument.SENSE_RELATION);
         assertThat(list, is(notNullValue()));
         assertThat(list.size(), equalTo(5));

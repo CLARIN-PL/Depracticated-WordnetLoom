@@ -24,7 +24,6 @@ public class RelationType extends GenericEntity {
             joinColumns = @JoinColumn(name = "relation_type_id"),
             inverseJoinColumns = @JoinColumn(name = "lexicon_id")
     )
-
     @NotNull
     @Size(min = 1)
     private Set<Lexicon> lexicons = new HashSet<>();

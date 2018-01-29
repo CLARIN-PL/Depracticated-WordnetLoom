@@ -64,13 +64,12 @@ public class Application implements Loggable {
         Thread managers = new Thread(() -> {
 
             List<Lexicon> lexicons = RemoteService.lexiconServiceRemote.findAll();
-            LexiconManager.getInstance().loadLexicons(lexicons);
-//            LexiconManager.getInstance().loadLexicons(RemoteService.lexiconServiceRemote.findAll());
+            LexiconManager.getInstance().load(lexicons);
             PartOfSpeechManager.getInstance();
             DomainManager.getInstance();
             List<RelationType> relations = RemoteService.relationTypeRemote.findAll();
-            RelationTypeManager.getInstance().loadRelationTypes(relations);
-//            RelationTypeManager.getInstance().loadRelationTypes(RemoteService.relationTypeRemote.findAll());
+            RelationTypeManager.getInstance().load(relations);
+
             start();
         }, "Mangers Thread");
 
