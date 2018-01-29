@@ -13,7 +13,9 @@ import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+import pl.edu.pwr.wordnetloom.user.model.User;
 
 import java.util.*;
 
@@ -142,8 +144,32 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface, Loggable {
             return buildText();
         }
 
-        public String createSynsetText(Synset synset, List<SynsetRelation> relations) {
-            return null;
+        public String createSynsetText(Synset synset) {
+            textBuilder.setLength(0);
+            SynsetAttributes attributes = synset.getSynsetAttributes();
+            if(attributes != null) {
+                addDefinition(attributes.getDefinition())
+                        .addArtificial(attributes.getIsAbstract());
+            } else {
+                addArtificial(false);
+            }
+            addStatus(synset.getStatus());
+
+            Sense headSense = null;
+            if(!synset.getSenses().isEmpty()) {
+                headSense = synset.getSenses().get(0);
+                addDomain(headSense.getDomain());
+            }
+            if(attributes != null){
+                addOwner(attributes.getOwner())
+                        .addSynsetComment(attributes.getComment());
+            }
+            if(headSense != null){
+                SenseAttributes senseAttributes = headSense.getSenseAttributes();
+                addSenseComment(senseAttributes.getComment());
+            }
+
+            return buildText();
         }
 
         public String buildText() {
@@ -152,6 +178,42 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface, Loggable {
 
         public void clear() {
             textBuilder.setLength(0);
+        }
+
+        private PopupTextBuilder addSenseComment(String comment) {
+            if(comment != null) {
+                addString(UNIT_COMMENT_LABEL, comment);
+            }
+            return this;
+        }
+
+        private PopupTextBuilder addSynsetComment(String comment) {
+            if(comment != null){
+                addString(SYNSET_COMMENT_LABEL, comment);
+            }
+            return this;
+        }
+
+        private PopupTextBuilder addOwner(User user){
+            if(user != null) {
+                addString(OWNER_LABEL, user.getFullname());
+            }
+            return this;
+        }
+
+        private PopupTextBuilder addArtificial(Boolean artificial) {
+            if(artificial != null) {
+                addString(ARTIFICIAL_LABEL,artificial ? Labels.YES : Labels.NO);
+            }
+            return this;
+        }
+
+        private PopupTextBuilder addStatus(Integer status) {
+            if(status != null) {
+
+                addString(STATUS_LABEL, String.valueOf(status)); //TODO zobaczyć jakie wartości ma status
+            }
+            return this;
         }
 
         private PopupTextBuilder addDefinition(String definition) {
@@ -295,7 +357,6 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface, Loggable {
         text = new PopupTextBuilder().createSenseText(sense, relations);
         cache.put(object.getId(), text);
         return text;
-//        return new PopupTextBuilder().createSenseText(sense, relations);
     }
 
     /**
@@ -308,26 +369,17 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface, Loggable {
         if (!isEnabled) {
             return null;
         }
-        //TODO dorobić opis dla synsetu
-//        object = RemoteUtils.synsetRemote.dbGet(object.getId());
-//        String domain_str = "";
-//        Domain domain = RemoteUtils.synsetRemote.dbGetDomain(object, LexiconManager.getInstance().getLexicons());
-//        if (domain != null) {
-//            domain_str = domain.toString();
-//        }
-//
-//        Iterator<Sense> itr = RemoteUtils.lexicalUnitRemote.dbFullGetUnits(object, 999, LexiconManager.getInstance().getLexicons()).iterator();
-//
-//        String lu_comment = "brak";
-//        if (itr.hasNext()) {
-//            lu_comment = Common.getSenseAttribute(itr.next(), Sense.COMMENT);
-//        }
-//        String global = String.format(SYNSET_TEMPLATE,
-//                object.toString(),
-//                format(Common.getSynsetAttribute(object, Synset.DEFINITION)),
-//                Synset.isAbstract(Common.getSynsetAttribute(object, Synset.ISABSTRACT)) ? String.format(RED_FORMAT, "tak") : "nie",
-//                "OK", domain_str, "", format(Common.getSynsetAttribute(object, Synset.COMMENT)), format(lu_comment));
-//
+
+        String text = cache.find(object.getId());
+        if(text != null){
+            return text;
+        }
+        Synset synset = RemoteService.synsetRemote.fetchSynset(object.getId()); //TODO można wziąć synset z listy i pobrać tylko atrybuty, chyba będzie działać
+        //TODO dorobić relację dla jednostki
+        text = new PopupTextBuilder().createSynsetText(synset);
+        cache.put(object.getId(), text);
+        return text;
+
 //        // odczytanie relacji
 //        Collection<SynsetsRelationsDC> relations = SynsetsRelationsDC.dbFastGetRelations(object, SynsetsRelationsDC.IS_PARENT, false);
 //        StringBuilder relString = new StringBuilder();
@@ -353,7 +405,7 @@ public class ToolTipGenerator implements ToolTipGeneratorInterface, Loggable {
 //                }
 //            }
 //        }
-        return HTML_HEADER; //+ global + relString.toString() + HTML_FOOTER;
+//        return HTML_HEADER; //+ global + relString.toString() + HTML_FOOTER;
     }
 
     /**

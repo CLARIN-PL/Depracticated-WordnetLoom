@@ -883,7 +883,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         Predicate lemmaPredicate = criteriaBuilder.like(wordJoin.get(WORD), criteria.getLemma() + "%");
         criteriaList.add(lemmaPredicate);
         if(criteria.getLexiconId() != null){
-            Predicate lexiconPredicate = criteriaBuilder.equal(senseJoin.get(LEXICON),criteria.getLexiconId()); //TODO sprawdzić czy dobry warunek
+            Predicate lexiconPredicate = criteriaBuilder.equal(senseJoin.get(LEXICON),criteria.getLexiconId());
             criteriaList.add(lexiconPredicate);
         }
         if(criteria.getPartOfSpeechId() != null){
@@ -919,17 +919,8 @@ public class SynsetRepository extends GenericRepository<Synset> {
         }
 
         query.select(synsetRoot);
-//        query.distinct(true);
+        query.distinct(true);
         query.where(criteriaList.toArray(new Predicate[0]));
-
-        List<Order> orders = new ArrayList<>();
-        orders.add(criteriaBuilder.asc(wordJoin.get(WORD)));
-        orders.add(criteriaBuilder.asc(senseJoin.get(PART_OF_SPEECH)));
-        orders.add(criteriaBuilder.asc(senseJoin.get(VARIANT)));
-        orders.add(criteriaBuilder.asc(senseJoin.get(LEXICON)));
-        //TODO może byc problem z takim sortowaniem. Zobaczyć, czy synsety nie będa się pojawiały na liście kilkukrotnie
-
-        query.orderBy(orders);
 
         Query selectQuery = getEntityManager().createQuery(query);
         if(criteria.getLimit() > 0){
@@ -939,9 +930,28 @@ public class SynsetRepository extends GenericRepository<Synset> {
             selectQuery.setFirstResult(criteria.getOffset());
         }
 
-        List<Synset> resultList = selectQuery.getResultList();
-        resultList=  resultList.stream().distinct().collect(Collectors.toList());
-        return resultList;
+        //TODO can sort list
+        return selectQuery.getResultList();
+    }
+
+    public Synset fetchSynset(Long synsetId) {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Synset> query = criteriaBuilder.createQuery(Synset.class);
+        Root<Synset> synsetRoot = query.from(Synset.class);
+        Join<Synset, Sense> senseJoin = synsetRoot.join("senses");
+        Fetch<Synset, SynsetAttributes> attributesFetch = synsetRoot.fetch("synsetAttributes", JoinType.LEFT);
+        attributesFetch.fetch("owner", JoinType.LEFT);
+        Fetch<Synset, Sense> senseFetch = synsetRoot.fetch("senses", JoinType.LEFT);
+        senseFetch.fetch("domain");
+        senseFetch.fetch("senseAttributes");
+
+
+        Predicate[] predicates = new Predicate[2];
+        predicates[0] = criteriaBuilder.equal(synsetRoot.get("id"), synsetId);
+        predicates[1] = criteriaBuilder.equal(senseJoin.get("synsetPosition"), 0);
+        query.where(predicates);
+
+        return getEntityManager().createQuery(query).getSingleResult();
     }
 
     @Override

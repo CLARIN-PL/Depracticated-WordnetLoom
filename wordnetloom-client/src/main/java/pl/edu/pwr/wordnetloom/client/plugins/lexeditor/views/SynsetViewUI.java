@@ -5,6 +5,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.CriteriaPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SynsetCriteria;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
@@ -24,10 +25,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,8 +44,73 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
 
     private ToolTipList synsetList;
     private JLabel infoLabel;
-    private final GenericListModel<Sense> senseListModel = new GenericListModel<>(true);
+//    private final GenericListModel<Sense> senseListModel = new GenericListModel<>(true);
+    private DefaultListModel<Synset> synsetListModel = new DefaultListModel<>();
     private Sense lastSelectedValue;
+
+    private class SynsetListCellRenderer extends JLabel implements ListCellRenderer {
+        private final Font listFont = new Font("Courier New", Font.PLAIN, 14); //TODO można zrobić klasę nadrzędną, która będzie przechowywała części wspólne Z UnitsListCellRenderer
+        private final String DESCRIPTION_FORMAT = "%s %s(%s) %s";
+
+        private final static String HTML_HEADER = "<html><body style=\"font-weight:normal\">";
+        private final static String HTML_FOOTER = "</body></html>";
+        protected final static String DESC_STR = "<div style=\"text-align:left; margin-left:10px; width:250px;\">%s</div>";
+
+        private String name;
+        private String variant;
+        private String domain;
+        private String lexicon;
+
+        private int width = 250;
+
+        private StringBuilder synsetTextBuilder;
+
+        public SynsetListCellRenderer(){
+            synsetTextBuilder = new StringBuilder();
+
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            this.setFont(listFont);
+            synsetTextBuilder.setLength(0);
+            Synset synset = (Synset) value;
+            Sense sense;
+            //TODO zrobić auto rozmiar
+            synsetTextBuilder.append("<div style=\"text-align:left; margin-left:10px; width:"+synsetList.getWidth()+"px;\">");
+            for(int i=0; i<synset.getSenses().size(); i++){
+                sense = synset.getSenses().get(i);
+                if(i == 0){ // head synset
+                    synsetTextBuilder.append("<font color=\"blue\">");
+                    synsetTextBuilder.append(getSynsetDescritpion(sense));
+                    synsetTextBuilder.append("</font>");
+                }
+                else{
+                    synsetTextBuilder.append(getSynsetDescritpion(sense));
+                }
+
+                if(i != synset.getSenses().size() -1) {
+                    synsetTextBuilder.append(" | ");
+                } else {
+                    synsetTextBuilder.append(" ");
+                }
+            }
+            synsetTextBuilder.append("</div>");
+            setText(HTML_HEADER + synsetTextBuilder.toString() + HTML_FOOTER);
+            return this;
+        }
+
+
+
+        private String getSynsetDescritpion(Sense sense) {
+            name = sense.getWord().getWord();
+            variant = String.valueOf(sense.getVariant());
+            domain = LocalisationManager.getInstance().getLocalisedString(sense.getDomain().getName());
+            lexicon = sense.getLexicon().getIdentifier();
+
+            return String.format(DESCRIPTION_FORMAT, name, variant, domain, lexicon);
+        }
+    }
 
     @Override
     protected void initialize(WebPanel content) {
@@ -73,13 +136,23 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         criteria = new SynsetCriteria();
         criteria.getDomainComboBox().addActionListener(this);
         criteria.getPartsOfSpeechComboBox().addActionListener(this);
-        synsetList = createSynsetList(senseListModel);
+//        synsetList = createSynsetList(senseListModel);
+        synsetList = createSynsetList(synsetListModel);
+        synsetList.setCellRenderer(new SynsetListCellRenderer());
+        //TODO można ustawić minimalny rozmiar listy
 
         infoLabel = new JLabel();
         infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "0"));
     }
 
-    private ToolTipList createSynsetList(GenericListModel<Sense> model) {
+//    private ToolTipList createSynsetList(GenericListModel<Sense> model) {
+//        ToolTipList list = new ToolTipList(workbench, model, ToolTipGenerator.getGenerator());
+//        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//        list.getSelectionModel().addListSelectionListener(this);
+//        return list;
+//    }
+
+    private ToolTipList createSynsetList(DefaultListModel model) {
         ToolTipList list = new ToolTipList(workbench, model, ToolTipGenerator.getGenerator());
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.getSelectionModel().addListSelectionListener(this);
@@ -91,15 +164,6 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     }
 
     public void refreshData() {
-
-        int limitSize = criteria.getLimitResultCheckBox().isSelected() ? CriteriaPanel.MAX_ITEMS_COUNT : 0;
-        String oldFilter = criteria.getSearchTextField().getText();
-        Domain oldDomain = criteria.getDomainComboBox().getEntity();
-        RelationType oldRelation = criteria.getSynsetRelationTypeComboBox().getEntity();
-        String definition = criteria.getDefinition().getText();
-        String comment = criteria.getComment().getText();
-//        String artificial = criteria.getIsArtificial();
-
         List<Long> lexicons = new ArrayList<>();
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
@@ -121,33 +185,37 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
 //                sense = LexicalDA.getSenseBySynsets(oldFilter, oldDomain, oldRelation,
 //                        definition, comment, artificial, limitSize,
 //                        criteria.getPartsOfSpeechComboBox().getEntity() == null ? null : criteria.getPartsOfSpeechComboBox().getEntity(), lexicons);
-                if (lastSelectedValue == null && synsetList != null && !synsetList.isSelectionEmpty()) {
-                    lastSelectedValue = senseListModel.getObjectAt(synsetList.getSelectedIndex());
-                }
+
+//                if (lastSelectedValue == null && synsetList != null && !synsetList.isSelectionEmpty()) {
+//                    lastSelectedValue = senseListModel.getObjectAt(synsetList.getSelectedIndex());
+//                }
                 if(synsets.isEmpty()){
                     workbench.setBusy(false);
                 }
                 //TODO zrobić dodawnie synsetów do listy i ustalić sposób wyświetlania
-//                if (sense.isEmpty()) {
-//                    workbench.setBusy(false);
-//                }
 //                senseListModel.setCollectionToSynsets(sense, oldFilter);
-                criteria.setSensesToHold(new ArrayList<>(senseListModel.getCollection()));
+                for(Synset synset: synsets) {
+                    synsetListModel.addElement(synset);
+                }
+//                criteria.setSensesToHold(new ArrayList<>(senseListModel.getCollection()));
                 return null;
             }
 
             @Override
             protected void done() {
-                if (synsetList != null) {
-                    synsetList.clearSelection();
-                    if (senseListModel.getSize() != 0) {
-                        synsetList.grabFocus();
-                        synsetList.setSelectedIndex(0);
-                        synsetList.ensureIndexIsVisible(0);
-                    }
-                    infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "" + senseListModel.getSize()));
-                }
-                lastSelectedValue = null;
+                workbench.setBusy(false);
+                synsetList.updateUI();
+                System.out.println("Koniec pobierania synsetów");
+//                if (synsetList != null) {
+//                    synsetList.clearSelection();
+//                    if (senseListModel.getSize() != 0) {
+//                        synsetList.grabFocus();
+//                        synsetList.setSelectedIndex(0);
+//                        synsetList.ensureIndexIsVisible(0);
+//                    }
+//                    infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "" + senseListModel.getSize()));
+//                }
+//                lastSelectedValue = null;
             }
         };
         worker.execute();
@@ -155,22 +223,23 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
 
     @Override
     public void valueChanged(ListSelectionEvent event) {
-        if (event != null && event.getValueIsAdjusting()) {
-            return;
-        }
-        if (event == null) {
-            return;
-        }
-
-        int returnValue = synsetList.getSelectedIndex();
-        Sense unit = senseListModel.getObjectAt(returnValue);
-        synsetList.setEnabled(false);
-        listeners.notifyAllListeners(synsetList.getSelectedIndices().length == 1 ? unit : null);
-        synsetList.setEnabled(true);
-
-        SwingUtilities.invokeLater(() -> {
-            synsetList.grabFocus();
-        });
+        //TODO odkomencić to
+//        if (event != null && event.getValueIsAdjusting()) {
+//            return;
+//        }
+//        if (event == null) {
+//            return;
+//        }
+//
+//        int returnValue = synsetList.getSelectedIndex();
+//        Sense unit = senseListModel.getObjectAt(returnValue);
+//        synsetList.setEnabled(false);
+//        listeners.notifyAllListeners(synsetList.getSelectedIndices().length == 1 ? unit : null);
+//        synsetList.setEnabled(true);
+//
+//        SwingUtilities.invokeLater(() -> {
+//            synsetList.grabFocus();
+//        });
     }
 
     @Override

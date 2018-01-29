@@ -31,4 +31,6 @@ public interface SynsetServiceRemote {
     void deleteSensesFromSynset(Collection<Sense> senses, Synset synset);
 
     List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria);
+
+    Synset fetchSynset(Long synsetId);
 }

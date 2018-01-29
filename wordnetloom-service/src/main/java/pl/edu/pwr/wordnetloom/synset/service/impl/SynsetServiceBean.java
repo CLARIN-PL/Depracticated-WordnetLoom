@@ -85,4 +85,9 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     public List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria) {
         return synsetRepository.findSynsetsByCriteria(criteria);
     }
+
+    @Override
+    public Synset fetchSynset(Long synsetId){
+        return synsetRepository.fetchSynset(synsetId);
+    }
 }
