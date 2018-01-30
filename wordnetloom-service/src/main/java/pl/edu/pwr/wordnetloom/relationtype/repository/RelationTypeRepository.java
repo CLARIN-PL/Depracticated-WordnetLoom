@@ -47,6 +47,8 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         Root<RelationType> root = q.from(RelationType.class);
         root.fetch("parent", JoinType.LEFT);
         root.fetch("reverse", JoinType.LEFT);
+        root.fetch("lexicons", JoinType.LEFT);
+        root.fetch("partsOfSpeech", JoinType.LEFT);
 
         return em.createQuery(q).getResultList();
 
