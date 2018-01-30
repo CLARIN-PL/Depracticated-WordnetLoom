@@ -1,6 +1,7 @@
 # WordnetLoom
 
 Wordnet Visual Editor
+This branch contains only Princeton Wordent 3.1
 
 # Installation
 

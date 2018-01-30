@@ -79,7 +79,7 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
 
         lblLanguage.setText("Language:");
 
-        txtUsername.setText("admin@gmail.com");
+        txtUsername.setText("admin@example.com");
         txtUsername.setMinimumSize(new java.awt.Dimension(14, 25));
         txtUsername.setPreferredSize(new java.awt.Dimension(14, 25));
 

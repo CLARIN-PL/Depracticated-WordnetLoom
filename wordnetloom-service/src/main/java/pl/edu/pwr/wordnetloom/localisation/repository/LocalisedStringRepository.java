@@ -77,14 +77,14 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
 //        return resultMap;
         //TODO zlikwidować native query
         List<Object[]> list;
-        list = getEntityManager().createNativeQuery("SELECT T.id, L.value FROM register_types T JOIN application_localised_string L ON T.name_id = L.id WHERE language = :lang")
+  /*      list = getEntityManager().createNativeQuery("SELECT T.id, L.value FROM register_types T JOIN application_localised_string L ON T.name_id = L.id WHERE language = :lang")
                 .setParameter("lang", language)
                 .getResultList();
-        Map<Long, String> resultMap = new HashMap<>();
-        for(Object[] entry : list)
+  */      Map<Long, String> resultMap = new HashMap<>();
+/*        for(Object[] entry : list)
         {
             resultMap.put(Long.valueOf((Integer)entry[0]), String.valueOf(entry[1]));
-        }
+        }*/
         return resultMap;
     }
 

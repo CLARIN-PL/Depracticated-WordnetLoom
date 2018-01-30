@@ -16,11 +16,6 @@
             <type>ejb</type>
         </dependency>
         <dependency>
-            <groupId>pl.edu.pwr</groupId>
-            <artifactId>wordnetloom-download</artifactId>
-            <type>war</type>
-        </dependency>
-        <dependency>
             <groupId>net.sf.jung</groupId>
             <artifactId>jung-algorithms</artifactId>
             <version>2.0.1</version>
@@ -45,13 +40,6 @@
                             <groupId>pl.edu.pwr</groupId>
                             <artifactId>wordnetloom-service</artifactId>
                         </ejbModule>
-                        <webModule>
-                            <groupId>pl.edu.pwr</groupId>
-                            <artifactId>wordnetloom-download</artifactId>
-                            <uri>wordnetloom-download-2.0.war</uri>
-                            <bundleFileName>wordnetloom-download-2.0.war</bundleFileName>
-                            <contextRoot>/wordnetloom</contextRoot>
-                        </webModule>
                     </modules>
                 </configuration>
             </plugin>

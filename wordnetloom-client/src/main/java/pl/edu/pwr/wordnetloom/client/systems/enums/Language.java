@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Language {
-    Polski("pl"),
     English("en");
 
     private final String abbreviation;
@@ -27,7 +26,7 @@ public enum Language {
 
     public static Language get(String abbreviation) {
         if (abbreviation == null) {
-            return Polski;
+            return English;
         }
         return lookup.get(abbreviation);
     }
