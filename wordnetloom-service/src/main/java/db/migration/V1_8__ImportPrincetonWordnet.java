@@ -4,17 +4,16 @@ import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 import pl.edu.pwr.wordnetloom.application.importers.lmf.LmfResourceImporter;
 import pl.edu.pwr.wordnetloom.application.importers.lmf.model.LexicalResource;
 import pl.edu.pwr.wordnetloom.application.importers.lmf.model.Lexicon;
-import pl.edu.pwr.wordnetloom.application.importers.lmf.model.Synset;
-import pl.edu.pwr.wordnetloom.application.importers.lmf.model.SynsetRelation;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
+public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
 
 
     private Connection connection;
@@ -24,36 +23,36 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
     public void migrate(Connection connection) throws Exception {
         this.connection = connection;
 
-        LmfResourceImporter importer = new  LmfResourceImporter();
+        LmfResourceImporter importer = new LmfResourceImporter();
         LexicalResource lr = importer.getResourceFromFile("/opt/wn-eng-lmf.xml");
         Lexicon lexicon = lr.getLexicon().stream().findFirst().get();
 
         AtomicLong synsetId = new AtomicLong(1);
         AtomicLong senseId = new AtomicLong(1);
         AtomicLong wordId = new AtomicLong(1);
-        AtomicLong loclaizedStringsId = new AtomicLong(5);
+        AtomicLong loclaizedStringsId = new AtomicLong(7);
         AtomicLong relTypId = new AtomicLong(1);
 
-        pl.edu.pwr.wordnetloom.lexicon.model.Lexicon l =  new pl.edu.pwr.wordnetloom.lexicon.model.Lexicon();
+        pl.edu.pwr.wordnetloom.lexicon.model.Lexicon l = new pl.edu.pwr.wordnetloom.lexicon.model.Lexicon();
         l.setId(1l);
 
-        final List<Relation> synsetRelations = new ArrayList<>();
-        final List<SynsetRelation> synsetRelationList = new ArrayList<>();
+        List<Relation> synsetRelations = new ArrayList<>();
+        List<SynsetRelation> synsetRelationList = new ArrayList<>();
 
-        final Map<String, pl.edu.pwr.wordnetloom.synset.model.Synset> syn = new HashMap<>();
+        Map<String, pl.edu.pwr.wordnetloom.synset.model.Synset> syn = new HashMap<>();
 
-        final List<SynsetAttributes> synsetAttributes = new ArrayList<>();
+        List<SynsetAttributes> synsetAttributes = new ArrayList<>();
 
-        final List<Example> examples = new ArrayList<>();
-        final List<Sense> senses = new ArrayList<>();
-        final Set<Word> words = new HashSet<>();
+        List<Example> examples = new ArrayList<>();
+        List<Sense> senses = new ArrayList<>();
+        Set<Word> words = new HashSet<>();
 
-        final Set<String> relNames = new HashSet<>();
-        final Map<String, RelTyp> relTypes = new HashMap<>();
+        Set<String> relNames = new HashSet<>();
+        Map<String, RelTyp> relTypes = new HashMap<>();
 
-        final List<LocalizedString> strings = new ArrayList<>();
+        List<LocalizedString> strings = new ArrayList<>();
 
-        lexicon.getSynsets().forEach( s -> {
+        lexicon.getSynsets().forEach(s -> {
 
             pl.edu.pwr.wordnetloom.synset.model.Synset synset = new pl.edu.pwr.wordnetloom.synset.model.Synset();
             Long id = synsetId.getAndIncrement();
@@ -62,10 +61,11 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
             synset.setSplit(1);
 
             SynsetAttributes sa = new SynsetAttributes();
+            sa.setId(id);
             sa.setPrincetonId(s.getId());
             sa.setDefinition(s.getDefinition() != null ? s.getDefinition().getGloss() : "");
 
-            if(s.getDefinition() != null && s.getDefinition().getStatement() != null ) {
+            if (s.getDefinition() != null && s.getDefinition().getStatement() != null) {
                 s.getDefinition().getStatement().forEach(e -> {
                     Example ex = new Example(id, e.getExample());
                     examples.add(ex);
@@ -103,7 +103,7 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
 
             Long child = syn.get(sr.child).getId();
             Long relType = relTypes.get(sr.rel).id;
-            SynsetRelation r = new SynsetRelation(sr.parent,child, relType);
+            SynsetRelation r = new SynsetRelation(sr.parent, child, relType);
 
             synsetRelationList.add(r);
         }
@@ -113,23 +113,24 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
         saveExample(examples);
         saveLocalisedString(strings);
         saveRelType(new ArrayList<>(relTypes.values()));
+        saveAllowedLexicons(relTypes);
         saveSynsetRaltaion(synsetRelationList);
 
-        lexicon.getLexicalEntries().forEach( entry ->{
+        lexicon.getLexicalEntries().forEach(entry -> {
 
-           Long pos = getPos(entry.getLemma().getPartOfSpeech());
-           String lemma =  entry.getLemma().getWrittenForm();
+            Long pos = getPos(entry.getLemma().getPartOfSpeech());
+            String lemma = entry.getLemma().getWrittenForm();
 
-           Word w = new Word();
-           w.setId(wordId.getAndIncrement());
-           w.setWord(lemma);
+            Word w = new Word();
+            w.setId(wordId.getAndIncrement());
+            w.setWord(lemma);
 
-           words.add(w);
+            words.add(w);
 
-           entry.getSense().forEach(s -> {
-                Sense sen = new Sense(senseId.getAndIncrement(), pos, w.getId(),syn.get(s.getSynset()).getId(), 1,1);
+            entry.getSense().forEach(s -> {
+                Sense sen = new Sense(senseId.getAndIncrement(), pos, w.getId(), syn.get(s.getSynset()).getId(), 1, 1);
                 senses.add(sen);
-                });
+            });
 
         });
 
@@ -137,15 +138,19 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
         saveSense(senses);
     }
 
-    private Long getPos(String name){
-        switch (name){
-           case "n": return  2l;
-           case "v": return  1l;
-           case "a": return  4l;
-           case "r": return  3l;
+    private Long getPos(String name) {
+        switch (name) {
+            case "n":
+                return 2l;
+            case "v":
+                return 1l;
+            case "a":
+                return 4l;
+            case "r":
+                return 3l;
         }
         return 1l;
-    };
+    }
 
 
     private void saveSynsets(List<pl.edu.pwr.wordnetloom.synset.model.Synset> synsets) throws SQLException {
@@ -164,9 +169,20 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
         String INSERT_QUERY = "INSERT INTO wordnet.synset_examples (synset_attributes_id, example) VALUES(?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
-        for (Example e: examples) {
+        for (Example e : examples) {
             insert.setLong(1, e.id);
             insert.setString(2, e.example);
+            insert.executeUpdate();
+        }
+    }
+
+    private void saveAllowedLexicons(Map<String, RelTyp> relTypes) throws SQLException {
+        String INSERT_QUERY = "INSERT INTO wordnet.relation_type_allowed_lexicons (relation_type_id, lexicon_id) VALUES(?, ?)";
+        PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
+
+        for (RelTyp rt : relTypes.values()) {
+            insert.setLong(1, rt.id);
+            insert.setLong(2, 1l);
             insert.executeUpdate();
         }
     }
@@ -176,7 +192,7 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
         String INSERT_QUERY = "INSERT INTO wordnet.word (id, word) VALUES(?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
-        for (Word w: words) {
+        for (Word w : words) {
             insert.setLong(1, w.getId());
             insert.setString(2, w.getWord());
             insert.executeUpdate();
@@ -184,10 +200,10 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
     }
 
     private void saveSense(List<Sense> senses) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.sense (id, word_id, lexicon_id, part_of_speech_id, variant, synset_id, synset_position) VALUES(?, ?, ?, ?, ?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.sense (id, word_id, lexicon_id, part_of_speech_id, variant, synset_id, synset_position, domain_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
-        for (Sense se: senses) {
+        for (Sense se : senses) {
             insert.setLong(1, se.id);
             insert.setLong(2, se.wordId);
             insert.setLong(3, se.lexiconId);
@@ -195,6 +211,7 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
             insert.setInt(5, se.variant);
             insert.setLong(6, se.synsetId);
             insert.setInt(7, se.synset_position);
+            insert.setLong(8, 1l);
             insert.executeUpdate();
         }
     }
@@ -203,7 +220,7 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
         String INSERT_QUERY = "INSERT INTO wordnet.synset_relation (parent_synset_id, child_synset_id, synset_relation_type_id) VALUES(?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
-        for (SynsetRelation r: relations) {
+        for (SynsetRelation r : relations) {
             insert.setLong(1, r.parent);
             insert.setLong(2, r.child);
             insert.setLong(3, r.rel);
@@ -212,22 +229,22 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
     }
 
     private void saveSynsetAttributes(List<SynsetAttributes> attributes) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (synset_id, definition, princenton_id, abstract) VALUES(?, ?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (synset_id, definition, princeton_id, abstract) VALUES(?, ?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
-        for (SynsetAttributes a: attributes) {
+        for (SynsetAttributes a : attributes) {
             insert.setLong(1, a.getId());
             insert.setString(2, a.getDefinition());
-            insert.setString(3, a.getPrincetonId().replace("eng-10-",""));
+            insert.setString(3, a.getPrincetonId().replace("eng-10-", ""));
             insert.setBoolean(4, false);
             insert.executeUpdate();
         }
     }
 
     private void saveLocalisedString(List<LocalizedString> strings) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (id, value, language) VALUES(?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.application_localised_string (id, value, language) VALUES(?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
-        for (LocalizedString s: strings) {
+        for (LocalizedString s : strings) {
             insert.setLong(1, s.id);
             insert.setString(2, s.value);
             insert.setString(3, "en");
@@ -236,12 +253,10 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
     }
 
     private void saveRelType(List<RelTyp> relTyps) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.relation_type (" +
-                "id, auto_reverse, display_text_id, name_id, description_id" +
-                "relation_argument, short_display_text_id, color, node_position) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.relation_type (id, auto_reverse, display_text_id, name_id, description_id, relation_argument, short_display_text_id, color, node_position) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
-        for (RelTyp rt: relTyps) {
+        for (RelTyp rt : relTyps) {
             insert.setLong(1, rt.id);
             insert.setInt(2, rt.autoRevers);
             insert.setLong(3, rt.dispTextId);
@@ -256,8 +271,8 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
     }
 
     private class Example {
-         Long id;
-         String example;
+        Long id;
+        String example;
 
         public Example(Long id, String example) {
             this.id = id;
@@ -265,6 +280,15 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
         }
     }
 
+    private class Allowed {
+        Long id;
+        Long value;
+
+        public Allowed(Long id, Long value) {
+            this.id = id;
+            this.value = value;
+        }
+    }
 
     private class LocalizedString {
         Long id;
@@ -295,7 +319,7 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
         Long child;
         Long rel;
 
-        public SynsetRelation(Long parent,Long child, Long rel) {
+        public SynsetRelation(Long parent, Long child, Long rel) {
             this.parent = parent;
             this.child = child;
             this.rel = rel;
@@ -320,6 +344,7 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
             this.variant = variant;
         }
     }
+
     private class RelTyp {
         Long id;
         int autoRevers = 0;
@@ -328,7 +353,7 @@ public class V1_7__ImportPrincetonWordnet implements JdbcMigration {
         String relationArg = "SYNSET_RELATION";
         Long dispTextId;
         Long shortDispId;
-        String color = "#FFFFFF";
+        String color = "#000000";
         String node_position = "LEFT";
 
         public RelTyp(Long id, Long nameId, Long descId, Long dispTextId, Long shortDispId) {

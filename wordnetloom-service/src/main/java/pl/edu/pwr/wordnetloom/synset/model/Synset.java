@@ -8,7 +8,8 @@ import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "synset")
@@ -23,7 +24,7 @@ public class Synset extends GenericEntity {
     @OrderBy("synsetPosition")
     private List<Sense> senses = new ArrayList<>();
 
-//    @NotNull
+    //    @NotNull
     @Valid
     @OneToOne(mappedBy = "synset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private SynsetAttributes synsetAttributes;
@@ -75,15 +76,19 @@ public class Synset extends GenericEntity {
         this.lexicon = lexicon;
     }
 
-    public List<SynsetRelation> getIncomingRelations(){return incomingRelations;}
+    public List<SynsetRelation> getIncomingRelations() {
+        return incomingRelations;
+    }
 
-    public void setIncomingRelations(List<SynsetRelation> incomingRelations){
+    public void setIncomingRelations(List<SynsetRelation> incomingRelations) {
         this.incomingRelations = incomingRelations;
     }
 
-    public List<SynsetRelation> getOutgoingRelations() {return outgoingRelations;}
+    public List<SynsetRelation> getOutgoingRelations() {
+        return outgoingRelations;
+    }
 
-    public void setOutgoingRelations(List<SynsetRelation> outgoingRelations){
+    public void setOutgoingRelations(List<SynsetRelation> outgoingRelations) {
         this.outgoingRelations = outgoingRelations;
     }
 
