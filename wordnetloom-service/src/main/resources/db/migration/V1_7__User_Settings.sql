@@ -15,6 +15,6 @@ INSERT INTO users_settings (user_id, lexicon_marker, chosen_lexicons, show_tool_
   SELECT
     u.id,
     TRUE,
-    '1;',
+    '1;2;',
     TRUE
   FROM users u;

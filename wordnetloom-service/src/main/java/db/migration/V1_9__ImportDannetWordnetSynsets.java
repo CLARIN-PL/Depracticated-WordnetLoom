@@ -4,16 +4,18 @@ import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 import pl.edu.pwr.wordnetloom.application.importers.lmf.LmfResourceImporter;
 import pl.edu.pwr.wordnetloom.application.importers.lmf.model.LexicalResource;
 import pl.edu.pwr.wordnetloom.application.importers.lmf.model.Lexicon;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
+public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
 
 
     private Connection connection;
@@ -23,137 +25,115 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
     public void migrate(Connection connection) throws Exception {
         this.connection = connection;
 
-        LmfResourceImporter importer = new LmfResourceImporter();
-        LexicalResource lr = importer.getResourceFromFile("/opt/wn-eng-lmf.xml");
-        Lexicon lexicon = lr.getLexicon().stream().findFirst().get();
-
-        AtomicLong synsetId = new AtomicLong(1);
-        AtomicLong senseId = new AtomicLong(1);
-        AtomicLong wordId = new AtomicLong(1);
-        AtomicLong loclaizedStringsId = new AtomicLong(8);
-        AtomicLong relTypId = new AtomicLong(1);
-
-        pl.edu.pwr.wordnetloom.lexicon.model.Lexicon l = new pl.edu.pwr.wordnetloom.lexicon.model.Lexicon();
-        l.setId(1l);
-
-        List<Relation> synsetRelations = new ArrayList<>();
-        List<SynsetRelation> synsetRelationList = new ArrayList<>();
-
-        Map<String, pl.edu.pwr.wordnetloom.synset.model.Synset> syn = new HashMap<>();
-
         List<SynsetAttributes> synsetAttributes = new ArrayList<>();
 
         List<Example> examples = new ArrayList<>();
+
+        saveSynsets(getSynsets(connection, examples, synsetAttributes));
+        System.out.println("Saving synset done");
+        saveSynsetAttributes(synsetAttributes);
+        System.out.println("Saving synset attributes done");
+        saveExample(examples);
+        System.out.println("Saving synset examples done");
+
+        saveWord(getWords(connection));
+        System.out.println("Saving words done");
+
+    }
+
+    private List<Sense> getSenses(Connection connection) throws SQLException {
+        String QUERY = "SELECT s.word_id as id, s.syn_set_id as syn, w.pos_tag_id as pos FROM dannet.word_senses s JOIN dannet.words w ON w.id = s.word_id";
+        PreparedStatement statement = connection.prepareStatement(QUERY);
         List<Sense> senses = new ArrayList<>();
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()){
+
+            Long wid = rs.getLong("id");
+            Long syn = rs.getLong("syn");
+            Long pos = getPos(rs.getInt("pos"));
+
+             Sense sen = new  Sense(pos, wid, new Long("888"+syn), 0, 1);
+                senses.add(sen);
+
+        }
+        return senses;
+    }
+
+    private Set<Word> getWords(Connection connection) throws SQLException {
+        String QUERY = "SELECT w.id as id, w.lemma as lemma FROM dannet.words w";
+        PreparedStatement statement = connection.prepareStatement(QUERY);
         Set<Word> words = new HashSet<>();
 
-        Set<String> relNames = new HashSet<>();
-        Map<String, RelTyp> relTypes = new HashMap<>();
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()){
 
-        List<LocalizedString> strings = new ArrayList<>();
-
-        lexicon.getSynsets().forEach(s -> {
-
-            pl.edu.pwr.wordnetloom.synset.model.Synset synset = new pl.edu.pwr.wordnetloom.synset.model.Synset();
-            Long id = synsetId.getAndIncrement();
-            synset.setId(id);
-            synset.setLexicon(l);
-            synset.setSplit(1);
-
-            SynsetAttributes sa = new SynsetAttributes();
-            sa.setId(id);
-            sa.setPrincetonId(s.getId());
-            sa.setDefinition(s.getDefinition() != null ? s.getDefinition().getGloss() : "");
-
-            if (s.getDefinition() != null && s.getDefinition().getStatement() != null) {
-                s.getDefinition().getStatement().forEach(e -> {
-                    Example ex = new Example(id, e.getExample());
-                    examples.add(ex);
-                });
-            }
-
-            s.getSynsetRelations().getSynsetRelation().forEach(r -> {
-                Relation rs = new Relation(id, r.getTargets(), r.getRelType());
-                synsetRelations.add(rs);
-                relNames.add(r.getRelType());
-            });
-
-            synsetAttributes.add(sa);
-            syn.put(s.getId(), synset);
-
-        });
-
-        relNames.forEach(k -> {
-
-            LocalizedString name = new LocalizedString(loclaizedStringsId.getAndIncrement(), k);
-            LocalizedString shortDisp = new LocalizedString(loclaizedStringsId.getAndIncrement(), k);
-            LocalizedString disp = new LocalizedString(loclaizedStringsId.getAndIncrement(), k);
-            LocalizedString desc = new LocalizedString(loclaizedStringsId.getAndIncrement(), k);
-
-            strings.add(name);
-            strings.add(shortDisp);
-            strings.add(disp);
-            strings.add(desc);
-
-            RelTyp rt = new RelTyp(relTypId.getAndIncrement(), name.id, desc.id, disp.id, shortDisp.id);
-            relTypes.put(k, rt);
-        });
-
-        for (Relation sr : synsetRelations) {
-
-            Long child = syn.get(sr.child).getId();
-            Long relType = relTypes.get(sr.rel).id;
-            SynsetRelation r = new SynsetRelation(sr.parent, child, relType);
-
-            synsetRelationList.add(r);
-        }
-
-        saveSynsets(new ArrayList<>(syn.values()));
-        saveSynsetAttributes(synsetAttributes);
-        saveExample(examples);
-        saveLocalisedString(strings);
-        saveRelType(new ArrayList<>(relTypes.values()));
-        saveAllowedLexicons(relTypes);
-        saveSynsetRaltaion(synsetRelationList);
-
-        lexicon.getLexicalEntries().forEach(entry -> {
-
-            Long pos = getPos(entry.getLemma().getPartOfSpeech());
-            String lemma = entry.getLemma().getWrittenForm();
+            Long wid = rs.getLong("id");
+            String lemma = rs.getString("lemma");
 
             Word w = new Word();
-            w.setId(wordId.getAndIncrement());
+            w.setId(wid);
             w.setWord(lemma);
 
             words.add(w);
 
-            final Integer[] variant = {1};
-            entry.getSense().forEach(s -> {
-                Sense sen = new Sense(senseId.getAndIncrement(), pos, w.getId(), syn.get(s.getSynset()).getId(), 0, variant[0]);
-                variant[0]++;
-                senses.add(sen);
-            });
-
-        });
-
-        saveWord(words);
-        saveSense(senses);
-    }
-
-    private Long getPos(String name) {
-        switch (name) {
-            case "n":
-                return 2l;
-            case "v":
-                return 1l;
-            case "a":
-                return 4l;
-            case "r":
-                return 3l;
         }
-        return 1l;
+        return words;
     }
 
+    private List<Synset> getSynsets(Connection connection, final List<Example> examples, List<SynsetAttributes> synsetAttributes) throws SQLException {
+
+        String QUERY = "SELECT s.id as id, s.gloss as gloss, s.usage as usg FROM dannet.syn_sets s";
+        PreparedStatement statement = connection.prepareStatement(QUERY);
+
+        List<pl.edu.pwr.wordnetloom.synset.model.Synset> synsets = new ArrayList<>();
+
+        pl.edu.pwr.wordnetloom.lexicon.model.Lexicon l = new pl.edu.pwr.wordnetloom.lexicon.model.Lexicon();
+        l.setId(2l);
+
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()){
+            Long id = rs.getLong("id");
+            String def = rs.getString("gloss");
+            String usage = rs.getString("usg");
+
+            pl.edu.pwr.wordnetloom.synset.model.Synset synset = new pl.edu.pwr.wordnetloom.synset.model.Synset();
+            synset.setId(new Long("888"+id));
+            synset.setLexicon(l);
+            synset.setSplit(1);
+
+            SynsetAttributes sa = new SynsetAttributes();
+            sa.setId(new Long("888"+id));
+            sa.setDefinition(def);
+
+            if (usage != null) {
+                String[] usages = usage.split("||");
+
+                Arrays.asList(usages).forEach(e -> {
+                    Example ex = new Example(new Long("888"+id), e);
+                    examples.add(ex);
+                });
+            }
+
+            synsetAttributes.add(sa);
+            synsets.add(synset);
+        }
+
+        return synsets;
+    }
+
+    private Long getPos(int id) {
+        switch (id) {
+            case 29:
+                return 2l;
+            case 30:
+                return 1l;
+            case 31:
+                return 4l;
+            case 32:
+                return 5l;
+        }
+        return 5l;
+    }
 
     private void saveSynsets(List<pl.edu.pwr.wordnetloom.synset.model.Synset> synsets) throws SQLException {
         String INSERT_QUERY = "INSERT INTO wordnet.synset (id, split, lexicon_id) VALUES(?, ?, ?)";
@@ -202,18 +182,17 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
     }
 
     private void saveSense(List<Sense> senses) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.sense (id, word_id, lexicon_id, part_of_speech_id, variant, synset_id, synset_position, domain_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.sense (word_id, lexicon_id, part_of_speech_id, variant, synset_id, synset_position, domain_id) VALUES(?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
         for (Sense se : senses) {
-            insert.setLong(1, se.id);
-            insert.setLong(2, se.wordId);
-            insert.setLong(3, se.lexiconId);
-            insert.setLong(4, se.posId);
-            insert.setInt(5, se.variant);
-            insert.setLong(6, se.synsetId);
-            insert.setInt(7, se.synset_position);
-            insert.setLong(8, 1l);
+            insert.setLong(1, se.wordId);
+            insert.setLong(2, se.lexiconId);
+            insert.setLong(3, se.posId);
+            insert.setInt(4, se.variant);
+            insert.setLong(5, se.synsetId);
+            insert.setInt(6, se.synset_position);
+            insert.setLong(7, 1l);
             insert.executeUpdate();
         }
     }
@@ -231,14 +210,13 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
     }
 
     private void saveSynsetAttributes(List<SynsetAttributes> attributes) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (synset_id, definition, princeton_id, abstract) VALUES(?, ?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (synset_id, definition, abstract) VALUES(?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
         for (SynsetAttributes a : attributes) {
             insert.setLong(1, a.getId());
             insert.setString(2, a.getDefinition());
-            insert.setString(3, a.getPrincetonId().replace("eng-10-", ""));
-            insert.setBoolean(4, false);
+            insert.setBoolean(3, false);
             insert.executeUpdate();
         }
     }
@@ -329,7 +307,6 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
     }
 
     private class Sense {
-        Long id;
         Long posId;
         Long wordId;
         Long synsetId;
@@ -337,8 +314,7 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
         int synset_position = 0;
         int variant;
 
-        public Sense(Long id, Long posId, Long wordId, Long synsetId, int synset_position, int variant) {
-            this.id = id;
+        public Sense(Long posId, Long wordId, Long synsetId, int synset_position, int variant) {
             this.posId = posId;
             this.wordId = wordId;
             this.synsetId = synsetId;
