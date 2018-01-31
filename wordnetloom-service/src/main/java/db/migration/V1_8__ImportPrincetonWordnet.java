@@ -128,7 +128,7 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
             words.add(w);
 
             entry.getSense().forEach(s -> {
-                Sense sen = new Sense(senseId.getAndIncrement(), pos, w.getId(), syn.get(s.getSynset()).getId(), 1, 1);
+                Sense sen = new Sense(senseId.getAndIncrement(), pos, w.getId(), syn.get(s.getSynset()).getId(), 0, 1);
                 senses.add(sen);
             });
 
@@ -332,7 +332,7 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
         Long wordId;
         Long synsetId;
         Long lexiconId = 1l;
-        int synset_position;
+        int synset_position = 0;
         int variant;
 
         public Sense(Long id, Long posId, Long wordId, Long synsetId, int synset_position, int variant) {

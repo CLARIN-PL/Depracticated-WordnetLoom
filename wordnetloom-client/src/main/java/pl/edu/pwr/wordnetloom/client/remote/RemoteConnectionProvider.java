@@ -62,9 +62,11 @@ public class RemoteConnectionProvider implements Loggable {
 
     private Properties getEjbProperties() {
 
-        String host = System.getProperty("wordnetloom.server.host") != null ? System.getProperty("wordnetloom.server.host") : "127.0.0.1";
-        String port = System.getProperty("wordnetloom.server.port") != null ? System.getProperty("wordnetloom.server.host") : "8080";
+        String host = System.getenv("WORDNETLOOM_SERVER_HOST") != null ? System.getenv("WORDNETLOOM_SERVER_HOST") : "127.0.0.1";
+        String port = System.getenv("WORDNETLOOM_SERVER_PORT") != null ? System.getenv("WORDNETLOOM_SERVER_PORT") : "8080";
 
+        System.out.println(host);
+        System.out.println(port);
         Properties ejbProperties = new Properties();
         ejbProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
         ejbProperties.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
