@@ -1,7 +1,7 @@
 # WordnetLoom
 
 Wordnet Visual Editor
-This branch contains only Princeton Wordent 3.1
+This branch contains only Princeton Wordent 3.1 and Dannet
 
 # Installation
 
@@ -12,7 +12,15 @@ Application requirement's
 - installed MySql 5.7+
 - installed Wildfly 10.1.0+ (add necessary DB Drivers in this case MySql )
 
+## Files
+Load dannet.sql file to mysql
+mysql -u xxx -p dannet < dannet.sql
+
+Unzip and copy files from files folder to /opt on your linux machine
+
 ## Wildfly configuration
+Add line ``` JAVA_OPTS="$JAVA_OPTS -Djboss.as.management.blocking.timeout=3600" ```
+to standalone.conf file in you server bin directory required at initial import
 
 Security config
 
