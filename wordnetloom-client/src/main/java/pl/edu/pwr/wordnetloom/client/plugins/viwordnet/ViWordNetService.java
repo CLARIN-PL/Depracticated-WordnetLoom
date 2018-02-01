@@ -271,8 +271,87 @@ public class ViWordNetService extends AbstractService implements
     public void doAction(Object object, int tag) {
         if (object instanceof Sense) {
             getActiveGraphView().getUI().setCriteria(luView.getCriteria());
-            LoadGraphTask task = new LoadGraphTask((Sense) object, tag);
+//            LoadGraphTask task = new LoadGraphTask((Sense) object, tag);
+//            task.execute();
+            LoadSenseTask task = new LoadSenseTask((Sense)object);
             task.execute();
+        } else if(object instanceof Synset) {
+            getActiveGraphView().getUI().setCriteria(luView.getCriteria());
+            LoadSynsetTask task = new LoadSynsetTask((Synset)object);
+            task.execute();
+        }
+        System.out.println("Synset");
+    }
+
+    class LoadSynsetTask extends SwingWorker<Void, Void> {
+
+        protected Synset synset;
+
+        public LoadSynsetTask(Synset synset){
+            this.synset = synset;
+        }
+
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            if(synset == null){
+                getActiveGraphView().getUI().clear();
+                return null;
+            }
+            workbench.setBusy(true);
+            loadSynset(synset);
+            return null;
+        }
+
+        @Override
+        public void done() {
+            workbench.setBusy(false);
+        }
+
+        protected void loadSynset(Synset synset) {
+            getActiveGraphView().getUI().clearNodeCache();
+            if (synset != null) {
+                synsetData.load(synset, LexiconManager.getInstance().getLexiconsIds());
+                // loading full object. Original rootSynset does't have partOfSpeech and other required data
+                synset = synsetData.getSynsetById(synset.getId());
+                loadGraph(synset);
+            }
+        }
+
+        private void loadGraph(Synset rootSynset) {
+            activeGraphView.loadSynset(rootSynset);
+            Sense unit = rootSynset.getSenses().get(0);
+            examplesView.load_examples(unit.getWord().getWord());
+            ((ViWordNetPerspective) workbench.getActivePerspective())
+                    .setTabTitle("<html><font color=green>" + unit.getWord()
+                            + "</font> #"
+//                            + (my_tag == 0 ? unit.getVariant() : my_tag)
+                            + "</html>");
+            kpwrExamples.load_examples(unit);
+        }
+
+
+    }
+
+    class LoadSenseTask extends LoadSynsetTask {
+
+        private Sense sense;
+
+        public LoadSenseTask(Sense sense) {
+            super(null);
+            this.sense = sense;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            if(sense == null){
+                getActiveGraphView().getUI().clear();
+                return null;
+            }
+            workbench.setBusy(true);
+            synset = RemoteService.synsetRemote.findSynsetBySense(sense, LexiconManager.getInstance().getLexiconsIds());
+            loadSynset(synset);
+            return null;
         }
     }
 
@@ -315,38 +394,6 @@ public class ViWordNetService extends AbstractService implements
                             + (my_tag == 0 ? unit.getVariant() : my_tag)
                             + "</html>");
             kpwrExamples.load_examples(unit);
-        }
-
-        @Override
-        public void done() {
-            workbench.setBusy(false);
-        }
-    }
-
-    class LoadSynsetTask extends SwingWorker<Void, Void> {
-
-        private final Sense unit;
-        private final Integer my_tag;
-        private final Synset rootSynset;
-
-        public LoadSynsetTask(Synset rootSynset, Sense unit, Integer tag) {
-            this.unit = unit;
-            my_tag = tag;
-            this.rootSynset = rootSynset;
-        }
-
-        @Override
-        public Void doInBackground() {
-
-            activeGraphView.loadSynset(rootSynset);
-            examplesView.load_examples(unit.getWord().getWord());
-            ((ViWordNetPerspective) workbench.getActivePerspective())
-                    .setTabTitle("<html><font color=green>" + unit.getWord()
-                            + "</font> #"
-                            + (my_tag == 0 ? unit.getVariant() : my_tag)
-                            + "</html>");
-            kpwrExamples.load_examples(unit);
-            return null;
         }
 
         @Override

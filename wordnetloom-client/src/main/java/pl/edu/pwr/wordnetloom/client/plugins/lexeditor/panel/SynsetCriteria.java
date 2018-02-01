@@ -147,18 +147,19 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
     public SynsetCriteriaDTO getSynsetCriteria(){
         SynsetCriteriaDTO dto = new SynsetCriteriaDTO();
         dto.setLemma(getSearchTextField().getText());
-        if(getLexiconComboBox().getSelectedItem()!= null){
-            dto.setLexiconId(getLexiconComboBox().getSelectedItem().getId());
+        if(getLexiconComboBox().getSelectedLexicon()!= null){
+            dto.setLexiconId(getLexiconComboBox().getSelectedLexicon().getId());
         }
-        if(getPartsOfSpeechComboBox().getSelectedItem() != null){
-            dto.setPartOfSpeechId(getPartsOfSpeechComboBox().getSelectedItem().getId());
+        if(getPartsOfSpeechComboBox().getSelectedPartOfSpeech() != null){
+            dto.setPartOfSpeechId(getPartsOfSpeechComboBox().getSelectedPartOfSpeech().getId());
         }
-        if(getDomainComboBox().getSelectedItem() != null) {
-            dto.setDomainId(getDomainComboBox().getSelectedItem().getId());
+        if(getDomainComboBox().getSelectedDomain() != null) {
+            dto.setDomainId(getDomainComboBox().getSelectedDomain().getId());
         }
         dto.setDefinition(getDefinition().getText());
         dto.setComment(getComment().getText());
         dto.setAbstract(getIsArtificial());
+
         //TODO wstawić relację
         return dto;
     }

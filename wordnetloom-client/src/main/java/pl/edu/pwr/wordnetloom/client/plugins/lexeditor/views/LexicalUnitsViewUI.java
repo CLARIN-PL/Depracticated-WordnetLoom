@@ -5,13 +5,13 @@ import com.alee.laf.panel.WebPanel;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
+import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
 import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LazyScrollPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
@@ -84,11 +84,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         btnReset = MButton.buildClearButton()
                 .withActionListener(this);
 
-        unitsList = new ToolTipList(workbench, listModel, ToolTipGenerator.getGenerator());
-
-        unitsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        unitsList.getSelectionModel().addListSelectionListener(this);
-
         infoLabel = new WebLabel();
         infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "0"));
 
@@ -130,10 +125,13 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         content.add("center", btnReset);
         content.add("br left", new MLabel(Labels.LEXICAL_UNITS_COLON, 'j', unitsList));
 
+        unitsList = new ToolTipList(workbench, listModel, new SenseTooltipGenerator());
+        unitsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        unitsList.getSelectionModel().addListSelectionListener(this);
+        unitsList.setCellRenderer(new UnitListCellRenderer());
+
         unitsListScrollPane = new LazyScrollPane(unitsList, LIMIT);
         unitsListScrollPane.setScrollListener((offset, limit) -> loadMoreUnits());
-
-        unitsList.setCellRenderer(new UnitListCellRenderer());
 
         content.add("br hfill vfill", unitsListScrollPane);
         content.add("br left", infoLabel);
@@ -142,25 +140,17 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     }
 
     private class UnitListCellRenderer extends JLabel implements ListCellRenderer {
+        private final String FONT_NAME = "Courier New";
+        private final int FONT_SIZE = 14;
+        final Font FONT = new Font(FONT_NAME, Font.PLAIN, FONT_SIZE);
 
-        final Font listFont = new Font("Courier New", Font.PLAIN, 14);
-
-        private String name;
-        private String variant;
-        private String domain;
-        private String lexicon;
+        UnitListCellRenderer(){
+            this.setFont(FONT);
+        }
 
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            this.setFont(listFont);
-            Sense sense = (Sense) value;
-
-            name = sense.getWord().getWord();
-            variant = String.valueOf(sense.getVariant());
-            domain = LocalisationManager.getInstance().getLocalisedString(sense.getDomain().getName());
-            lexicon = sense.getLexicon().getIdentifier();
-
-            setText(String.format("%s %s(%s) %s", name, variant, domain, lexicon));
+            setText(SenseFormat.getTextWithLexicon((Sense)value));
             return this;
         }
     }

@@ -87,8 +87,7 @@ public class DomainMComboBox extends MComboBox<Domain> {
         return splited.length == 1 ? splited[0] : splited[1];
     }
 
-    @Override
-    public Domain getSelectedItem() {
+    public Domain getSelectedDomain() {
         int selectedIndex = getSelectedIndex();
         if(selectedIndex == 0){
             return null;

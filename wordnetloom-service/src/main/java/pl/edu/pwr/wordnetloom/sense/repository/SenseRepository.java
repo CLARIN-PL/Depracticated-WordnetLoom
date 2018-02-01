@@ -228,7 +228,6 @@ public class SenseRepository extends GenericRepository<Sense> {
         Predicate[] predicates = getPredicatesByCriteria(dto, senseRoot, wordJoin, criteriaBuilder);
         query.where(predicates);
         return Math.toIntExact(getEntityManager().createQuery(query).getSingleResult());
-
     }
 
     /** Zwraca komparator, który porównuje jednostki według nastepujących kryteriów

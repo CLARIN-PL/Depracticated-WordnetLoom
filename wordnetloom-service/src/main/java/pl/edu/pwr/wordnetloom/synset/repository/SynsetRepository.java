@@ -7,6 +7,7 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
@@ -856,6 +857,34 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
     //TODO przetestować każdy z warunków
     public List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria){
+//        CriteriaQuery<Synset> query = getSynsetCriteriaQuery(criteria);
+//        query.distinct(true);
+//        Query selectQuery = getEntityManager().createQuery(query);
+//        if(criteria.getLimit() > 0){
+//            selectQuery.setMaxResults(criteria.getLimit());
+//        }
+//        if(criteria.getOffset() > 0){
+//            selectQuery.setFirstResult(criteria.getOffset());
+//        }
+//        return selectQuery.getResultList();
+        CriteriaQuery<Synset> query = getSynsetCriteriaQuery(criteria, false);
+        query.distinct(true);
+        Query selectQuery = getEntityManager().createQuery(query);
+        if(criteria.getLimit() > 0){
+            selectQuery.setMaxResults(criteria.getLimit());
+        }
+        if(criteria.getOffset() > 0){
+            selectQuery.setFirstResult(criteria.getOffset());
+        }
+        return selectQuery.getResultList();
+    }
+
+    public int getCountSynsetsByCriteria(SynsetCriteriaDTO criteria) {
+        CriteriaQuery<Long> query = getSynsetCriteriaQuery(criteria, true);
+        return Math.toIntExact(getEntityManager().createQuery(query).getSingleResult());
+    }
+
+    private CriteriaQuery getSynsetCriteriaQuery(SynsetCriteriaDTO criteria, boolean countStatement) {
         final String SENSES = "senses";
         final String WORD = "word";
         final String DOMAIN = "domain";
@@ -871,14 +900,21 @@ public class SynsetRepository extends GenericRepository<Synset> {
         final String VARIANT = "variant";
 
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Synset> query = criteriaBuilder.createQuery(Synset.class);
+        CriteriaQuery query;
+        if(countStatement) {
+            query = criteriaBuilder.createQuery(Long.class);
+        } else {
+            query = criteriaBuilder.createQuery(Synset.class);
+        }
         Root<Synset> synsetRoot = query.from(Synset.class);
         Join<Synset, Sense> senseJoin = synsetRoot.join(SENSES);
         Join<Synset, Word> wordJoin = senseJoin.join(WORD);
-        Fetch<Synset, Sense> sensesFetch = synsetRoot.fetch(SENSES);
-        sensesFetch.fetch(WORD);
-        sensesFetch.fetch(DOMAIN);
-        sensesFetch.fetch(LEXICON);
+        if(!countStatement) {
+            Fetch<Synset, Sense> sensesFetch = synsetRoot.fetch(SENSES);
+            sensesFetch.fetch(WORD);
+            sensesFetch.fetch(DOMAIN);
+            sensesFetch.fetch(LEXICON);
+        }
         List<Predicate> criteriaList = new ArrayList<>();
         Predicate lemmaPredicate = criteriaBuilder.like(wordJoin.get(WORD), criteria.getLemma() + "%");
         criteriaList.add(lemmaPredicate);
@@ -917,21 +953,15 @@ public class SynsetRepository extends GenericRepository<Synset> {
                 criteriaList.add(abstractPredicate);
             }
         }
+        if(countStatement) {
+            query.select(criteriaBuilder.count(synsetRoot));
+        } else {
+            query.select(synsetRoot);
+        }
 
-        query.select(synsetRoot);
-        query.distinct(true);
         query.where(criteriaList.toArray(new Predicate[0]));
 
-        Query selectQuery = getEntityManager().createQuery(query);
-        if(criteria.getLimit() > 0){
-            selectQuery.setMaxResults(criteria.getLimit());
-        }
-        if(criteria.getOffset() > 0){
-            selectQuery.setFirstResult(criteria.getOffset());
-        }
-
-        //TODO can sort list
-        return selectQuery.getResultList();
+        return query;
     }
 
     public Synset fetchSynset(Long synsetId) {
@@ -943,7 +973,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         attributesFetch.fetch("owner", JoinType.LEFT);
         Fetch<Synset, Sense> senseFetch = synsetRoot.fetch("senses", JoinType.LEFT);
         senseFetch.fetch("domain");
-        senseFetch.fetch("senseAttributes");
+        senseFetch.fetch("senseAttributes", JoinType.LEFT);
 
 
         Predicate[] predicates = new Predicate[2];

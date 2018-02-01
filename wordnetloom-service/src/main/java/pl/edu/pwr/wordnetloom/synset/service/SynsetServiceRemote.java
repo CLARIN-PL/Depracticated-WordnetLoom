@@ -32,5 +32,7 @@ public interface SynsetServiceRemote {
 
     List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria);
 
+    int getCountSynsetsByCriteria(SynsetCriteriaDTO criteria);
+
     Synset fetchSynset(Long synsetId);
 }

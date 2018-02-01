@@ -6,7 +6,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeCand;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeCandExtension;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSet;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
-import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 
 /**
  * <p>
@@ -21,9 +20,9 @@ public class ViwnVertexToolTipTransformer implements Transformer<ViwnNode, Strin
     @Override
     public String transform(ViwnNode vn) {
         String ret = "";
-        if (!ToolTipGenerator.getGenerator().hasEnabledTooltips()) {
-            return ret;
-        }
+//        if (!ToolTipGenerator.getGenerator().hasEnabledTooltips()) {
+//            return ret;
+//        } //TODO sprawdzić
 
         if (vn instanceof ViwnNodeCandExtension) {
             ViwnNodeCandExtension cand = (ViwnNodeCandExtension) vn;
