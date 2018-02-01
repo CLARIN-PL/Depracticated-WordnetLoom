@@ -21,7 +21,6 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
 
     private MTextField definition;
     private MTextField comment;
-//    private String isArtificial;
     private Boolean isArtificial;
     private WebRadioButton all;
     private WebRadioButton artificial;

@@ -29,14 +29,14 @@ public abstract class CriteriaPanel extends WebPanel {
     private final int DEFAULT_WIDTH = 150;
     private final int DEFAULT_HEIGHT = 20;
     protected final Dimension DEFAULT_DIMENSION = new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    protected final Dimension DEFAULT_DIMENSION_COMBO = new Dimension(DEFAULT_WIDTH, 25);
 
     private WebTextField searchTextField;
     private LexiconComboBox lexiconComboBox;
     private DomainMComboBox domainComboBox;
-    private PartOfSpeechComboBox partsOfSpeachComboBox;
+    private PartOfSpeechComboBox partsOfSpeechComboBox;
     private MComboBox<RelationType> synsetRelationsComboBox;
     private MComboBox<RelationType> senseRelationsComboBox;
-    private WebCheckBox limitResultCheckBox;
 
     public CriteriaPanel(int scrollHeight) {
         SCROLL_PANE_HEIGHT = scrollHeight;
@@ -50,23 +50,22 @@ public abstract class CriteriaPanel extends WebPanel {
         setPreferredSize(new Dimension(0, SCROLL_PANE_HEIGHT));
 
         lexiconComboBox = initLexiconComboBox();
-        partsOfSpeachComboBox = initPartOfSpeechComboBox();
+        partsOfSpeechComboBox = initPartOfSpeechComboBox();
         searchTextField = new MTextField(STANDARD_VALUE_FILTER);
         domainComboBox = initDomainComboBox();
 
         synsetRelationsComboBox = createSynsetRelationsComboBox();
-        synsetRelationsComboBox.setPreferredSize(DEFAULT_DIMENSION);
+        synsetRelationsComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
 
         senseRelationsComboBox = createSenseRelationsComboBox();
-        senseRelationsComboBox.setPreferredSize(DEFAULT_DIMENSION);
+        senseRelationsComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
 
-        limitResultCheckBox = createLimitResultSearch();
     }
 
     private LexiconComboBox initLexiconComboBox()
     {
         LexiconComboBox resultComboBox = new LexiconComboBox(Labels.VALUE_ALL);
-        resultComboBox.setPreferredSize(DEFAULT_DIMENSION);
+        resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
         resultComboBox.addActionListener((ActionEvent e) -> {
             Lexicon lex = resultComboBox.getEntity();
             if (lex != null) {
@@ -83,7 +82,7 @@ public abstract class CriteriaPanel extends WebPanel {
     private PartOfSpeechComboBox initPartOfSpeechComboBox()
     {
         PartOfSpeechComboBox resultComboBox = new PartOfSpeechComboBox(Labels.VALUE_ALL);
-        resultComboBox.setPreferredSize(DEFAULT_DIMENSION);
+        resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
         resultComboBox.addItemListener((ItemEvent e) -> {
             PartOfSpeech pos = resultComboBox.getEntity();
             Lexicon lex = lexiconComboBox.getEntity();
@@ -105,7 +104,7 @@ public abstract class CriteriaPanel extends WebPanel {
     {
         DomainMComboBox resultComboBox = new DomainMComboBox(Labels.VALUE_ALL);
         resultComboBox.allDomains(true);
-        resultComboBox.setPreferredSize(DEFAULT_DIMENSION);
+        resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
         return resultComboBox;
     }
 
@@ -114,10 +113,6 @@ public abstract class CriteriaPanel extends WebPanel {
     public abstract CriteriaDTO getCriteria();
 
     public abstract void restoreCriteria(CriteriaDTO criteria);
-
-    protected void addLimit() {
-        add("br left", limitResultCheckBox);
-    }
 
     protected void addSynsetRelationTypes() {
         add("br", new MLabel(Labels.RELATIONS_COLON, 'r', synsetRelationsComboBox));
@@ -137,8 +132,8 @@ public abstract class CriteriaPanel extends WebPanel {
     }
 
     protected void addPartsOfSpeach() {
-        add("br", new MLabel(Labels.PARTS_OF_SPEECH_COLON, 'm', partsOfSpeachComboBox));
-        add("br hfill", partsOfSpeachComboBox);
+        add("br", new MLabel(Labels.PARTS_OF_SPEECH_COLON, 'm', partsOfSpeechComboBox));
+        add("br hfill", partsOfSpeechComboBox);
     }
 
     protected void addLexicon() {
@@ -172,9 +167,9 @@ public abstract class CriteriaPanel extends WebPanel {
     }
 
     public void refreshPartOfSpeech() {
-        int selected = partsOfSpeachComboBox.getSelectedIndex();
+        int selected = partsOfSpeechComboBox.getSelectedIndex();
         if (selected != -1) {
-            partsOfSpeachComboBox.setSelectedIndex(selected);
+            partsOfSpeechComboBox.setSelectedIndex(selected);
         }
     }
 
@@ -223,7 +218,7 @@ public abstract class CriteriaPanel extends WebPanel {
     public void resetFields() {
         searchTextField.setText("");
         domainComboBox.setSelectedIndex(0);
-        partsOfSpeachComboBox.setSelectedIndex(0);
+        partsOfSpeechComboBox.setSelectedIndex(0);
         synsetRelationsComboBox.setSelectedIndex(0);
         senseRelationsComboBox.setSelectedIndex(0);
         lexiconComboBox.setSelectedIndex(0);
@@ -245,16 +240,12 @@ public abstract class CriteriaPanel extends WebPanel {
         return senseRelationsComboBox;
     }
 
-    public JCheckBox getLimitResultCheckBox() {
-        return limitResultCheckBox;
-    }
-
     public LexiconComboBox getLexiconComboBox() {
         return lexiconComboBox;
     }
 
     public PartOfSpeechComboBox getPartsOfSpeechComboBox() {
-        return partsOfSpeachComboBox;
+        return partsOfSpeechComboBox;
     }
 
 }
