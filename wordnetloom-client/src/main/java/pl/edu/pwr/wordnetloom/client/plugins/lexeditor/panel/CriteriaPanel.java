@@ -154,6 +154,13 @@ public abstract class CriteriaPanel extends WebPanel {
         return combo;
     }
 
+    private MComboBox<RelationType> createRelationsComboBox() {
+        MComboBox<RelationType> comboBox = new MComboBox<>();
+        comboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
+        comboBox.setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+        return comboBox;
+    }
+
     public void refreshPartOfSpeech() {
         int selected = partsOfSpeechComboBox.getSelectedIndex();
         if (selected != -1) {
@@ -207,7 +214,6 @@ public abstract class CriteriaPanel extends WebPanel {
         int selected = senseRelationsComboBox.getSelectedIndex();
 
         senseRelationsComboBox.removeAllItems();
-
         senseRelationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
 
         if (lexiconComboBox.getEntity() != null) {

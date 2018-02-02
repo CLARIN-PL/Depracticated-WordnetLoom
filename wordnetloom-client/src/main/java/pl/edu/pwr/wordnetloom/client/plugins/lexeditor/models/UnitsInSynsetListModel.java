@@ -4,6 +4,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -70,7 +71,6 @@ public class UnitsInSynsetListModel extends GenericListModel<Sense> {
         String domain = LocalisationManager.getInstance().getLocalisedString(sense.getDomain().getName());
         return word + " " + variant + " (" + domain + ")";
     }
-
 
     @Override
     public Sense getObjectAt(int index) {

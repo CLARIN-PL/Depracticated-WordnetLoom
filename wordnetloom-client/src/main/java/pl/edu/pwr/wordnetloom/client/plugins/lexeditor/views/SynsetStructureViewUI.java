@@ -143,8 +143,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         refreshData(null);
 
         unitsList = new ToolTipList(workbench, listModel, new SenseTooltipGenerator());
-        unitsList
-                .setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        unitsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         unitsList.addListSelectionListener(this);
         unitsList.addMouseListener(this);
         unitsList.setEnabled(false);
@@ -396,6 +395,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 RemoteService.synsetRemote.delete(lastSynset);
                 listModel.setCollection(null);
 //                refreshData(lastSynset);
+                //TODO zrobić usunięcie synsetu z grafu
                 getViWordNetService().refreshViews();
             } else if(lastSynset.getSplit() > listModel.getSize()){
                 // jeżeli po usunięciu jednostek podział jest większy niż liczba elementów na liście, należy przesunąć podział na ostatnie miejsce

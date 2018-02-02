@@ -70,7 +70,6 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         } else {
             infoLabel.setText("");
         }
-
     }
 
     @Override

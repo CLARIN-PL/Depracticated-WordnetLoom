@@ -19,7 +19,6 @@ public class DataEntry implements Serializable {
     private Synset synset;
     private List[] relations;
 
-//    private String label;
     private String name;
     private String variant;
     private Long domain;
@@ -61,14 +60,6 @@ public class DataEntry implements Serializable {
             this.relations[direction.ordinal()].add(relation);
         }
     }
-
-//    public String getLabel() {
-//        return label;
-//    }
-//
-//    public void setLabel(String label) {
-//        this.label = label;
-//    }
 
     public String getName() {return name;}
     public void setName(String name) {

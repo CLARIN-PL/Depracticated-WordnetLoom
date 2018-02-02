@@ -8,8 +8,8 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 
 import java.util.ArrayList;
@@ -17,7 +17,6 @@ import java.util.List;
 
 public final class SenseCriteria extends CriteriaPanel {
 
-//    private MComboBox<RegisterTypes> registerComboBox;
     private MComboBox<String> registerComboBox;
     private MTextField comment;
     private MTextField example;
@@ -31,21 +30,17 @@ public final class SenseCriteria extends CriteriaPanel {
 
     private void init() {
         crit = new CriteriaDTO();
-
         registerComboBox = initRegisterComboBox();
         comment = new MTextField(STANDARD_VALUE_FILTER);
         example = new MTextField(STANDARD_VALUE_FILTER);
     }
 
-    private MComboBox initRegisterComboBox()
-    {
-        //TODO zastanowić się, czy ma to być string czy jakiś inny typ danych
+    private MComboBox initRegisterComboBox() {
         MComboBox<String> resultComboBox = new MComboBox<>();
         resultComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
         List<String> registerTypes = RegisterManager.getInstance().getAllRegisterNames();
 
-        for(String registerName : registerTypes)
-        {
+        for (String registerName : registerTypes) {
             resultComboBox.addItem(registerName);
         }
 
@@ -63,9 +58,9 @@ public final class SenseCriteria extends CriteriaPanel {
         Long domainId = getDomainComboBox().getEntity() == null ? null : getDomainComboBox().getEntity().getId();
         List<Long> lexicons = new ArrayList<>();
         Lexicon lexicon = getLexiconComboBox().getEntity();
-        Long relationType = getSenseRelationTypeComboBox().getEntity() == null? null : getSenseRelationTypeComboBox().getEntity().getId();
+        Long relationType = getSenseRelationTypeComboBox().getEntity() == null ? null : getSenseRelationTypeComboBox().getEntity().getId();
 
-        if(lexicon!=null){
+        if (lexicon != null) {
             lexicons.add(lexicon.getId());
         } else {
             lexicons.addAll(LexiconManager.getInstance().getUserChosenLexiconsIds());
@@ -75,9 +70,9 @@ public final class SenseCriteria extends CriteriaPanel {
         senseCriteria.setRelationTypeId(relationType);
         senseCriteria.setComment(comment);
         senseCriteria.setExample(example);
+        //senseCriteria.setRegisterId(relationTypeId);
 
         return senseCriteria;
-
     }
 
     @Override
@@ -106,11 +101,6 @@ public final class SenseCriteria extends CriteriaPanel {
         add("br", new MLabel(Labels.USE_CASE_COLON, 'd', example));
         add("br hfill", example);
     }
-
-//    public MComboBox<RegisterTypes> getRegisterComboBox() {
-//        return registerComboBox;
-//    }
-
 
     public MComboBox<String> getRegisterComboBox() {
         return registerComboBox;
