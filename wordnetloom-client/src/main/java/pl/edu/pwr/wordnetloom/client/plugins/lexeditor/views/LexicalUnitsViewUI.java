@@ -5,6 +5,7 @@ import com.alee.laf.panel.WebPanel;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.SynsetsFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
 import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
@@ -340,8 +341,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         }
     }
 
-    private void deleteSense()
-    {
+    private void deleteSense() {
         int[] returnValues = unitsList.getSelectedIndices();
         if (returnValues == null || returnValues.length == 0) {
             return;
@@ -377,50 +377,55 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 //            if (result == DialogBox.YES) {
 
 
-                ViWordNetService s = ServiceManager.getViWordNetService(workbench);
-                s.getActiveGraphView().getUI().clear();
-                listeners.notifyAllListeners(null);
-                listModel.remove(i);
-                RemoteService.senseRemote.delete(unit);
-                allUnitsCount--; // jeżeli usunięto
-                setInfoText(listModel.getSize(), allUnitsCount);
+            ViWordNetService s = ServiceManager.getViWordNetService(workbench);
+            s.getActiveGraphView().getUI().clear();
+            listeners.notifyAllListeners(null);
+            listModel.remove(i);
+            RemoteService.senseRemote.delete(unit);
+            allUnitsCount--; // jeżeli usunięto
+            setInfoText(listModel.getSize(), allUnitsCount);
 //            }
         }
     }
 
-    private void addToSynset()
-    {
+    private void addToSynset() {
         int i = unitsList.getSelectedIndex();
-//            Sense unit = listModel.getObjectAt(i);
-        Sense unit = listModel.get(i);
-        Synset savedSynset = createNewSynsetAndAddSense(unit);
-        unit.setSynset(savedSynset);
-        lastSelectedValue = null;
-        if (lastSelectedValue == null && unitsList != null
-                && !unitsList.isSelectionEmpty()) {
-//                lastSelectedValue = listModel.getObjectAt(unitsList
-//                        .getSelectedIndex());
-            lastSelectedValue = listModel.get(unitsList.getSelectedIndex());
-        }
+//        Sense unit = listModel.get(i);
+//        //TODO dodać sprawdzanie, czy jednosta zawiera już synset
+//        Synset savedSynset = createNewSynsetAndAddSense(unit);
+//        unit.setSynset(savedSynset);
+//        lastSelectedValue = null;
+//        if (lastSelectedValue == null && unitsList != null
+//                && !unitsList.isSelectionEmpty()) {
+////                lastSelectedValue = listModel.getObjectAt(unitsList
+////                        .getSelectedIndex());
+//            lastSelectedValue = listModel.get(unitsList.getSelectedIndex());
+//        }
+//
+//        // przywrocenie zaznaczenia
+//        if (unitsList != null) {
+//            SwingUtilities.invokeLater(() -> {
+//                unitsList.clearSelection();
+//                if (listModel.getSize() != 0) {
+//                    unitsList.grabFocus();
+//                    unitsList.clearSelection();
+//                    unitsList.ensureIndexIsVisible(0);
+//                }
+//                infoLabel.setText(String.format(
+//                        Labels.VALUE_COUNT_SIMPLE,
+//                        "" + listModel.getSize()));
+//            });
+//        }
 
-        // przywrocenie zaznaczenia
-        if (unitsList != null) {
-            SwingUtilities.invokeLater(() -> {
-                unitsList.clearSelection();
-                if (listModel.getSize() != 0) {
-                    unitsList.grabFocus();
-//                    unitsList.setSelectedIndex(0);
-                    unitsList.clearSelection();
-                    unitsList.ensureIndexIsVisible(0);
-                }
-                infoLabel.setText(String.format(
-                        Labels.VALUE_COUNT_SIMPLE,
-                        "" + listModel.getSize()));
-            });
+        Sense unit = listModel.get(i);
+        assert unit.getSynset() == null;
+        Synset synset = SynsetsFrame.showModal(workbench, unit);
+        if(synset != null) { // unit was move to other synset
+            listeners.notifyAllListeners(unit);
         }
     }
 
-    private Synset createNewSynsetAndAddSense(Sense sense){
+    private Synset createNewSynsetAndAddSense(Sense sense) {
         Synset synset = new Synset();
         synset.setLexicon(sense.getLexicon());
         synset.setSplit(1);
@@ -444,7 +449,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         return savedUnit;
     }
 
-    private void insertSenseToList(Sense sense){
+    private void insertSenseToList(Sense sense) {
         if(sense == null){
             return;
         }
@@ -458,9 +463,11 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     private void addNewSenseWithSynset() {
         Sense newUnit = NewLexicalUnitFrame.showModal(workbench, null);
-        Sense savedUnit = saveUnit(newUnit);
-        createNewSynsetAndAddSense(savedUnit);
-        insertSenseToList(savedUnit);
+        if(newUnit != null) {
+            Sense savedUnit = saveUnit(newUnit);
+            createNewSynsetAndAddSense(savedUnit);
+            insertSenseToList(savedUnit);
+        }
     }
 
     @Override

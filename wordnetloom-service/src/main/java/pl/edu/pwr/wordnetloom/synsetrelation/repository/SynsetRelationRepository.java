@@ -349,10 +349,10 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         }
 
         Query query = getEntityManager().createQuery("SELECT new SynsetRelation(sr.id,sr.relationType.id, sr.parent.id, sr.child.id, sr.relationType.nodePosition) FROM SynsetRelation sr " +
-                "WHERE sr." + synsetFetchColumn + ".id = :id " +
-                "AND sr." + synsetFetchColumn + ".lexicon.id IN  (:lexicons)")
-                .setParameter("id", synset.getId())
-                .setParameter("lexicons", lexicons);
+                "WHERE sr." + synsetFetchColumn + ".id = :id ")
+//                "AND sr." + synsetFetchColumn + ".lexicon.id IN  (:lexicons)")
+                .setParameter("id", synset.getId());
+//                .setParameter("lexicons", lexicons);
         return (List<SynsetRelation>) query.getResultList();
     }
 

@@ -8,6 +8,8 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
@@ -35,11 +37,10 @@ public final class SenseCriteria extends CriteriaPanel {
         registerComboBox = initRegisterComboBox();
         comment = new MTextField(STANDARD_VALUE_FILTER);
         example = new MTextField(STANDARD_VALUE_FILTER);
+        loadRelationsType(RelationArgument.SENSE_RELATION);
     }
 
-    private MComboBox initRegisterComboBox()
-    {
-        //TODO zastanowić się, czy ma to być string czy jakiś inny typ danych
+    private MComboBox initRegisterComboBox() {
         MComboBox<String> resultComboBox = new MComboBox<>();
         resultComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
         List<String> registerTypes = RegisterManager.getInstance().getAllRegisterNames();
@@ -66,12 +67,13 @@ public final class SenseCriteria extends CriteriaPanel {
         } else {
             lexicons.addAll(LexiconManager.getInstance().getUserChosenLexiconsIds());
         }
+        Long relationTypeId = getRelationsComboBox().getEntity() == null ? null : getRelationsComboBox().getEntity().getId();
         SenseCriteriaDTO senseCriteria = new SenseCriteriaDTO(partOfSpeechId, domainId, lemma, lexicons);
         senseCriteria.setComment(comment);
         senseCriteria.setExample(example);
+        senseCriteria.setRegisterId(relationTypeId);
 
         return senseCriteria;
-
     }
 
     @Override
@@ -80,7 +82,7 @@ public final class SenseCriteria extends CriteriaPanel {
         addLexicon();
         addPartsOfSpeach();
         addDomain();
-        addSenseRelationTypes();
+        addRelation();
         addRegister();
         addComment();
         addExample();
@@ -100,11 +102,6 @@ public final class SenseCriteria extends CriteriaPanel {
         add("br", new MLabel(Labels.USE_CASE_COLON, 'd', example));
         add("br hfill", example);
     }
-
-//    public MComboBox<RegisterTypes> getRegisterComboBox() {
-//        return registerComboBox;
-//    }
-
 
     public MComboBox<String> getRegisterComboBox() {
         return registerComboBox;
@@ -132,7 +129,7 @@ public final class SenseCriteria extends CriteriaPanel {
         crit.setLexicon(getLexiconComboBox().getSelectedIndex());
         crit.setPartOfSpeech(getPartsOfSpeechComboBox().getSelectedIndex());
         crit.setDomain(getDomainComboBox().getSelectedIndex());
-        crit.setRelation(getSenseRelationTypeComboBox().getSelectedIndex());
+        crit.setRelation(getRelationsComboBox().getSelectedIndex());
         crit.setRegister(getRegisterComboBox().getSelectedIndex());
         crit.setComment(getComment().getText());
         crit.setExample(getExample().getText());
@@ -149,7 +146,7 @@ public final class SenseCriteria extends CriteriaPanel {
         getLexiconComboBox().setSelectedIndex(criteria.getLexicon());
         getPartsOfSpeechComboBox().setSelectedIndex(criteria.getPartOfSpeech());
         getDomainComboBox().setSelectedIndex(criteria.getDomain());
-        getSenseRelationTypeComboBox().setSelectedIndex(criteria.getRelation());
+        getRelationsComboBox().setSelectedIndex(criteria.getRelation());
         getRegisterComboBox().setSelectedIndex(criteria.getRegister());
         getComment().setText(criteria.getComment());
         getExample().setText(criteria.getExample());

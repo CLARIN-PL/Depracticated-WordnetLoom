@@ -760,6 +760,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
                 List<SynsetRelation> allRelationsList = new ArrayList<>(relatedSynset.getOutgoingRelations());
                 allRelationsList.addAll(relatedSynset.getIncomingRelations());
                 dataEntry = getDataEntry(relatedSynset, sense, allRelationsList);
+
             } else {
                 dataEntry = getDataEntry(relatedSynset, sense, new ArrayList<>());
             }

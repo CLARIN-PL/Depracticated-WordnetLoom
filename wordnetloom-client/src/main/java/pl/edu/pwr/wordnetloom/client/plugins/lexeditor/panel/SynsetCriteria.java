@@ -6,6 +6,8 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetCriteriaDTO;
@@ -44,6 +46,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         artificial.addActionListener(this);
         notArtificial = new WebRadioButton(Labels.NORMAL, false);
         notArtificial.addActionListener(this);
+        loadRelationsType(RelationArgument.SYNSET_RELATION);
     }
 
     @Override
@@ -52,7 +55,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         addLexicon();
         addPartsOfSpeach();
         addDomain();
-        addSynsetRelationTypes();
+        addRelation();
         addDefinition();
         addComment();
         addArificial();
@@ -95,15 +98,6 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
 
     @Override
     public void actionPerformed(ActionEvent event) {
-//        if (event.getSource() == all) {
-//            isArtificial = "";
-//        }
-//        if (event.getSource() == artificial) {
-//            isArtificial = "1";
-//        }
-//        if (event.getSource() == notArtificial) {
-//            isArtificial = "0";
-//        }
         if(event.getSource() == all){
             isArtificial = null;
         } else if(event.getSource() == artificial) {
@@ -121,10 +115,6 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         all.setSelected(true);
     }
 
-//    public String getIsArtificial() {
-//        return isArtificial;
-//    }
-
     public Boolean getIsArtificial(){
         return isArtificial;
     }
@@ -135,10 +125,9 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         crit.setLexicon(getLexiconComboBox().getSelectedIndex());
         crit.setPartOfSpeech(getPartsOfSpeechComboBox().getSelectedIndex());
         crit.setDomain(getDomainComboBox().getSelectedIndex());
-        crit.setRelation(getSynsetRelationTypeComboBox().getSelectedIndex());
+        crit.setRelation(getRelationsComboBox().getSelectedIndex());
         crit.setDefinition(getDefinition().getText());
         crit.setComment(getComment().getText());
-//        crit.setSynsetType(getIsArtificial());
         crit.setAbstract(isArtificial);
         return crit;
     }
@@ -155,6 +144,9 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         if(getDomainComboBox().getSelectedDomain() != null) {
             dto.setDomainId(getDomainComboBox().getSelectedDomain().getId());
         }
+        if(getRelationsComboBox().getEntity() != null){
+            dto.setRelationTypeId(getRelationsComboBox().getEntity().getId());
+        }
         dto.setDefinition(getDefinition().getText());
         dto.setComment(getComment().getText());
         dto.setAbstract(getIsArtificial());
@@ -163,17 +155,13 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         return dto;
     }
 
-    public void setSensesToHold(List<Sense> sense) {
-        crit.setSense(new ArrayList<>(sense));
-    }
-
     @Override
     public void restoreCriteria(CriteriaDTO criteria) {
         getSearchTextField().setText(criteria.getLemma());
         getLexiconComboBox().setSelectedIndex(criteria.getLexicon());
         getPartsOfSpeechComboBox().setSelectedIndex(criteria.getPartOfSpeech());
         getDomainComboBox().setSelectedIndex(criteria.getDomain());
-        getSynsetRelationTypeComboBox().setSelectedIndex(criteria.getRelation());
+        getRelationsComboBox().setSelectedIndex(criteria.getRelation());
         getDefinition().setText(criteria.getDefinition());
         getComment().setText(criteria.getComment());
         if(criteria.isAbstract() == null) {
@@ -184,14 +172,5 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
             notArtificial.setSelected(true);
         }
         crit.setSense(criteria.getSense());
-//        if ("".equals(criteria.getSynsetType())) {
-//            all.setSelected(true);
-//        }
-//        if ("1".equals(criteria.getSynsetType())) {
-//            artificial.setSelected(true);
-//        }
-//        if ("0".equals(criteria.getSynsetType())) {
-//            notArtificial.setSelected(true);
-//        }
     }
 }

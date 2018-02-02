@@ -120,14 +120,6 @@ public class SenseCriteriaDTO implements Serializable {
 
     }
 
-//    public String getRegister() {
-//        return register;
-//    }
-//
-//    public void setRegister(String register) {
-//        this.register = register;
-//    }
-
     public Long getRegisterId(){
         return register;
     }

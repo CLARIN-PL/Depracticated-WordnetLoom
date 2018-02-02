@@ -8,7 +8,7 @@ public class SynsetCriteriaDTO implements Serializable {
     private Long lexiconId;
     private Long partOfSpeechId;
     private Long domainId;
-    private Long relationTypeId; //TODO ogarnąć o co tutaj chodzi
+    private Long relationTypeId;
     private String definition;
     private String comment;
     private Boolean abstractSynset;

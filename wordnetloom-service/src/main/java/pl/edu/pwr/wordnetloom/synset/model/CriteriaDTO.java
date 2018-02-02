@@ -96,14 +96,6 @@ public class CriteriaDTO implements Serializable{
         this.example = example;
     }
 
-//    public String getSynsetType() {
-//        return synsetType;
-//    }
-//
-//    public void setSynsetType(String synsetType) {
-//        this.synsetType = synsetType;
-//    }
-
     public Boolean isAbstract(){
         return abstractSynset;
     }

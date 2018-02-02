@@ -56,39 +56,48 @@ public class ViWordNetService extends AbstractService implements
         SynsetSelectionChangeListener, SimpleListenerInterface,
         LockerChangeListener, ActionListener, Loggable {
 
+    private final static int GRAPH_VIEWS_LIMIT = 6;
+    /**
+     *
+     */
+    private static final Cursor MAKE_RELATION_CURSOR = Cursor
+            .getPredefinedCursor(Cursor.HAND_CURSOR);
+    private static final Cursor MERGE_SYNSETS_CURSOR = Cursor
+            .getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    /**
+     *
+     */
+    private static final Cursor DEFAULT_CURSOR = Cursor
+            .getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+    private final List<ViwnGraphView> graphViews = new ArrayList<>(GRAPH_VIEWS_LIMIT);
+    private final Map<String, PartOfSpeech> posMap = new HashMap<>();
+    SynsetData synsetData = new SynsetData();
     private String perspectiveName = null;
     private ViWordNetPerspective perspective = null;
-
-    private final static int GRAPH_VIEWS_LIMIT = 6;
     private ViwnGraphView activeGraphView = null;
-    private final List<ViwnGraphView> graphViews = new ArrayList<>(GRAPH_VIEWS_LIMIT);
-
     private LexicalUnitsView luView = null;
     private SynsetView synsetView = null;
+
+    // private CandidatesView candView = null;
     private ViwnLexicalUnitRelationsView unitsRelationsView = null;
-
     private SynsetStructureView synsetStructureView = null;
-
     private SynsetPropertiesView synsetPropertiesView = null;
-
     private ViwnSatelliteGraphView satelliteGraphView = null;
-
     private ViwnLockerView lockerView = null;
-
-   // private CandidatesView candView = null;
-
     private ViwnExamplesView examplesView = null;
     private ViwnExampleKPWrView kpwrExamples = null;
-
     private Object objectForReload;
     private Integer tagForReload;
-    private final Map<String, PartOfSpeech> posMap = new HashMap<>();
-
-    SynsetData synsetData = new SynsetData();
-
-    public SynsetData getSynsetData(){
-        return synsetData;
-    }
+    /**
+     * in make relation mode user can make new relation value should be changed
+     * only by using of setMakeRelationMode(boolean) method
+     */
+    private boolean makeRelationMode = false;
+    private boolean mergeSynsetsMode = false;
+    /**
+     * first selected object which will be connected with other
+     */
+    private Object first = null;
 
     /**
      * @param workbench       <code>Workbench</code> of this
@@ -102,6 +111,10 @@ public class ViWordNetService extends AbstractService implements
         this.perspective = perspective;
 
 //        0
+    }
+
+    public SynsetData getSynsetData() {
+        return synsetData;
     }
 
     @Override
@@ -157,9 +170,9 @@ public class ViWordNetService extends AbstractService implements
         synsetView.addUnitChangeListener(this);
         workbench.installView(synsetView, ViWordNetPerspective.SPLIT_LEFT_VIEW, perspectiveName);
 
-       // candView = new CandidatesView(workbench, Labels.CANDIDATES);
-       //  candView.addCandidateChangeListener(new SimpleListenerWrapper(this, "candidateSelection"));
-       //  workbench.installView(candView, ViWordNetPerspective.SPLIT_LEFT_VIEW, perspectiveName);
+        // candView = new CandidatesView(workbench, Labels.CANDIDATES);
+        //  candView.addCandidateChangeListener(new SimpleListenerWrapper(this, "candidateSelection"));
+        //  workbench.installView(candView, ViWordNetPerspective.SPLIT_LEFT_VIEW, perspectiveName);
 
         satelliteGraphView = new ViwnSatelliteGraphView(workbench, Labels.PREVIEW, graphUI);
         workbench.installView(satelliteGraphView, ViWordNetPerspective.SPLIT_RIGHT_TOP_VIEW, perspectiveName);
@@ -234,7 +247,7 @@ public class ViWordNetService extends AbstractService implements
     }
 
     private void loadRelationsColors() {
-        ViwnEdgeSynset.relsColors =  RelationTypeManager.getInstance().getRelationsColors();
+        ViwnEdgeSynset.relsColors = RelationTypeManager.getInstance().getRelationsColors();
     }
 
     @Override
@@ -259,7 +272,7 @@ public class ViWordNetService extends AbstractService implements
     public void synsetSelectionChangeListener(ViwnNode node) {
         if (node != null && node instanceof ViwnNodeSynset) {
             ViwnNodeSynset synset = (ViwnNodeSynset) node;
-            if(getActiveGraphView().getUI().getSelectedNode() == null || !getActiveGraphView().getUI().getSelectedNode().equals(synset)){
+            if (getActiveGraphView().getUI().getSelectedNode() == null || !getActiveGraphView().getUI().getSelectedNode().equals(synset)) {
                 getActiveGraphView().getUI().setSelectedNode(synset); //TODO to powinno być trochę w innym miejscu
                 synsetStructureView.doAction(synset.getSynset(), 1);
                 synsetPropertiesView.doAction(synset.getSynset(), 1);
@@ -269,136 +282,11 @@ public class ViWordNetService extends AbstractService implements
 
     @Override
     public void doAction(Object object, int tag) {
+        getActiveGraphView().getUI().setCriteria(luView.getCriteria());
         if (object instanceof Sense) {
-            getActiveGraphView().getUI().setCriteria(luView.getCriteria());
-//            LoadGraphTask task = new LoadGraphTask((Sense) object, tag);
-//            task.execute();
-            LoadSenseTask task = new LoadSenseTask((Sense)object);
-            task.execute();
-        } else if(object instanceof Synset) {
-            getActiveGraphView().getUI().setCriteria(luView.getCriteria());
-            LoadSynsetTask task = new LoadSynsetTask((Synset)object);
-            task.execute();
-        }
-        System.out.println("Synset");
-    }
-
-    class LoadSynsetTask extends SwingWorker<Void, Void> {
-
-        protected Synset synset;
-
-        public LoadSynsetTask(Synset synset){
-            this.synset = synset;
-        }
-
-
-        @Override
-        protected Void doInBackground() throws Exception {
-            if(synset == null){
-                getActiveGraphView().getUI().clear();
-                return null;
-            }
-            workbench.setBusy(true);
-            loadSynset(synset);
-            return null;
-        }
-
-        @Override
-        public void done() {
-            workbench.setBusy(false);
-        }
-
-        protected void loadSynset(Synset synset) {
-            getActiveGraphView().getUI().clearNodeCache();
-            if (synset != null) {
-                synsetData.load(synset, LexiconManager.getInstance().getLexiconsIds());
-                // loading full object. Original rootSynset does't have partOfSpeech and other required data
-                synset = synsetData.getSynsetById(synset.getId());
-                loadGraph(synset);
-            }
-        }
-
-        private void loadGraph(Synset rootSynset) {
-            activeGraphView.loadSynset(rootSynset);
-            Sense unit = rootSynset.getSenses().get(0);
-            examplesView.load_examples(unit.getWord().getWord());
-            ((ViWordNetPerspective) workbench.getActivePerspective())
-                    .setTabTitle("<html><font color=green>" + unit.getWord()
-                            + "</font> #"
-//                            + (my_tag == 0 ? unit.getVariant() : my_tag)
-                            + "</html>");
-            kpwrExamples.load_examples(unit);
-        }
-
-
-    }
-
-    class LoadSenseTask extends LoadSynsetTask {
-
-        private Sense sense;
-
-        public LoadSenseTask(Sense sense) {
-            super(null);
-            this.sense = sense;
-        }
-
-        @Override
-        protected Void doInBackground() {
-            if(sense == null){
-                getActiveGraphView().getUI().clear();
-                return null;
-            }
-            workbench.setBusy(true);
-            synset = RemoteService.synsetRemote.findSynsetBySense(sense, LexiconManager.getInstance().getLexiconsIds());
-            loadSynset(synset);
-            return null;
-        }
-    }
-
-    class LoadGraphTask extends SwingWorker<Void, Void> {
-
-        private final Sense unit;
-        private final Integer my_tag;
-
-        public LoadGraphTask(Sense unit, int tag) {
-            this.unit = unit;
-            my_tag = tag;
-        }
-
-        @Override
-        public Void doInBackground() {
-            // if unit does't have synset, clear a graph and finish a task
-            if(unit.getSynset()==null){
-                getActiveGraphView().getUI().clear();
-                return null;
-            }
-            workbench.setBusy(true);
-            Synset rootSynset = RemoteService.synsetRemote.findSynsetBySense(unit, LexiconManager.getInstance().getLexiconsIds());
-//            getActiveGraphView().getUI().releaseDataSetCache(); //TODO tutaj dorobić usuwanie cacha
-            getActiveGraphView().getUI().clearNodeCache();
-            if (rootSynset != null) {
-                synsetData.load(rootSynset, LexiconManager.getInstance().getLexiconsIds());
-                // loading full object. Original rootSynset does't have partOfSpeech and other required data
-                rootSynset = synsetData.getSynsetById(rootSynset.getId());
-                loadGraph(rootSynset);
-            }
-            return null;
-        }
-
-        private void loadGraph(Synset rootSynset) {
-            activeGraphView.loadSynset(rootSynset);
-            examplesView.load_examples(unit.getWord().getWord());
-            ((ViWordNetPerspective) workbench.getActivePerspective())
-                    .setTabTitle("<html><font color=green>" + unit.getWord()
-                            + "</font> #"
-                            + (my_tag == 0 ? unit.getVariant() : my_tag)
-                            + "</html>");
-            kpwrExamples.load_examples(unit);
-        }
-
-        @Override
-        public void done() {
-            workbench.setBusy(false);
+            new LoadSenseTask((Sense) object).execute();
+        } else if (object instanceof Synset) {
+            new LoadSynsetTask((Synset) object).execute();
         }
     }
 
@@ -427,48 +315,6 @@ public class ViWordNetService extends AbstractService implements
         workbench.setBusy(true);
         CandidateTask worker = new CandidateTask(pair, tag);
         worker.execute();
-    }
-
-    class CandidateTask extends SwingWorker<Void, Void> {
-
-        Quadruple<ViwnNodeWord, ArrayList<TreeSet<ViwnNodeSynset>>, ArrayList<ViwnNodeCand>, ArrayList<ViwnNodeSynset>> result;
-        ArrayList<ViwnNodeCandExtension> extensionResult = new ArrayList<>();
-        final Pair<String, PartOfSpeech> p;
-        final Integer tag;
-
-        public CandidateTask(Object pair, Integer tag) {
-            p = (Pair<String, PartOfSpeech>) pair;
-            this.tag = tag;
-        }
-
-        @Override
-        protected Void doInBackground() throws Exception {
-            result = getActiveGraphView().loadCandidate(p.getA(), tag, p.getB());
-            examplesView.load_examples(p.getA());
-            kpwrExamples.load_examples(p.getA());
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-
-                @Override
-                protected Void doInBackground() throws Exception {
-                    ((ViWordNetPerspective) workbench.getActivePerspective())
-                            .setTabTitle("<html><font color=green>" + p.getA() + "</font> #" + tag + "</html>");
-                    extensionResult = getActiveGraphView().loadExtensions(p.getA(), tag, p.getB());
-                    getActiveGraphView().getUI().loadCandidate(result.getA(), result.getB(), result.getC(), result.getD(), extensionResult);
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    workbench.setBusy(false);
-                }
-            };
-            worker.execute();
-        }
     }
 
     /**
@@ -605,6 +451,9 @@ public class ViWordNetService extends AbstractService implements
         this.perspective = perspective;
     }
 
+    /* MAKE AND DELETE RELATION SECTION */
+    // //////////////////////////////////////////////////////////////
+
     /**
      * @return <code>ViwnGraphView</code> currently set as active
      */
@@ -634,35 +483,6 @@ public class ViWordNetService extends AbstractService implements
     public int graphViewsCount() {
         return graphViews.size();
     }
-
-    /* MAKE AND DELETE RELATION SECTION */
-    // //////////////////////////////////////////////////////////////
-    /**
-     * in make relation mode user can make new relation value should be changed
-     * only by using of setMakeRelationMode(boolean) method
-     */
-    private boolean makeRelationMode = false;
-
-    private boolean mergeSynsetsMode = false;
-
-    /**
-     * first selected object which will be connected with other
-     */
-    private Object first = null;
-    /**
-     *
-     */
-    private static final Cursor MAKE_RELATION_CURSOR = Cursor
-            .getPredefinedCursor(Cursor.HAND_CURSOR);
-
-    private static final Cursor MERGE_SYNSETS_CURSOR = Cursor
-            .getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
-
-    /**
-     *
-     */
-    private static final Cursor DEFAULT_CURSOR = Cursor
-            .getPredefinedCursor(Cursor.DEFAULT_CURSOR);
 
     /**
      * @return true if we are making relation, false otherwise
@@ -1049,12 +869,12 @@ public class ViWordNetService extends AbstractService implements
                 Collection<ViwnEdge> c = DeleteRelationWindow
                         .showDeleteSynsetDialog(workbench.getFrame(), relations);
                 ViwnEdgeSynset edgeSynset;
-                for(ViwnEdge edge : c){
-                       edgeSynset  = (ViwnEdgeSynset) edge;
-                       synsetData.removeRelation(edgeSynset.getSynsetRelation());
+                for (ViwnEdge edge : c) {
+                    edgeSynset = (ViwnEdgeSynset) edge;
+                    synsetData.removeRelation(edgeSynset.getSynsetRelation());
 //                       edgeSynset.getSynset1().setup();
 
-                       // TODO będzie to trzeba zrobić dla każdego widoku
+                    // TODO będzie to trzeba zrobić dla każdego widoku
                 }
 
                 for (ViwnGraphView vgv : graphViews) {
@@ -1105,5 +925,116 @@ public class ViWordNetService extends AbstractService implements
 
     public LexicalUnitsView getLexicalUnitsView() {
         return luView;
+    }
+
+    class LoadSynsetTask extends SwingWorker<Void, Void> {
+
+        protected Synset synset;
+
+        public LoadSynsetTask(Synset synset) {
+            this.synset = synset;
+        }
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            if (synset == null) {
+                getActiveGraphView().getUI().clear();
+                return null;
+            }
+            workbench.setBusy(true);
+            loadSynset(synset);
+            return null;
+        }
+
+        @Override
+        public void done() {
+            workbench.setBusy(false);
+        }
+
+        protected void loadSynset(Synset synset) {
+            getActiveGraphView().getUI().clearNodeCache();
+            if (synset != null) {
+                synsetData.load(synset, LexiconManager.getInstance().getLexiconsIds());
+                // loading full object. Original rootSynset does't have partOfSpeech and other required data
+                synset = synsetData.getSynsetById(synset.getId());
+                loadGraph(synset);
+            }
+        }
+
+        private void loadGraph(Synset rootSynset) {
+            activeGraphView.loadSynset(rootSynset);
+            Sense unit = rootSynset.getSenses().get(0);
+            examplesView.load_examples(unit.getWord().getWord());
+            ((ViWordNetPerspective) workbench.getActivePerspective())
+                    .setTabTitle("<html><font color=green>" + unit.getWord()
+                            + "</font> #"
+//                            + (my_tag == 0 ? unit.getVariant() : my_tag)
+                            + "</html>");
+            kpwrExamples.load_examples(unit);
+        }
+    }
+
+    class LoadSenseTask extends LoadSynsetTask {
+
+        private Sense sense;
+
+        public LoadSenseTask(Sense sense) {
+            super(null);
+            this.sense = sense;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            if (sense == null) {
+                getActiveGraphView().getUI().clear();
+                return null;
+            }
+            workbench.setBusy(true);
+            synset = RemoteService.synsetRemote.findSynsetBySense(sense, LexiconManager.getInstance().getLexiconsIds());
+            loadSynset(synset);
+            return null;
+        }
+    }
+
+    class CandidateTask extends SwingWorker<Void, Void> {
+
+        final Pair<String, PartOfSpeech> p;
+        final Integer tag;
+        Quadruple<ViwnNodeWord, ArrayList<TreeSet<ViwnNodeSynset>>, ArrayList<ViwnNodeCand>, ArrayList<ViwnNodeSynset>> result;
+        ArrayList<ViwnNodeCandExtension> extensionResult = new ArrayList<>();
+
+        public CandidateTask(Object pair, Integer tag) {
+            p = (Pair<String, PartOfSpeech>) pair;
+            this.tag = tag;
+        }
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            result = getActiveGraphView().loadCandidate(p.getA(), tag, p.getB());
+            examplesView.load_examples(p.getA());
+            kpwrExamples.load_examples(p.getA());
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+                @Override
+                protected Void doInBackground() throws Exception {
+                    ((ViWordNetPerspective) workbench.getActivePerspective())
+                            .setTabTitle("<html><font color=green>" + p.getA() + "</font> #" + tag + "</html>");
+                    extensionResult = getActiveGraphView().loadExtensions(p.getA(), tag, p.getB());
+                    getActiveGraphView().getUI().loadCandidate(result.getA(), result.getB(), result.getC(), result.getD(), extensionResult);
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    workbench.setBusy(false);
+                }
+            };
+            worker.execute();
+        }
     }
 }

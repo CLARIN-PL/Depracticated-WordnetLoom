@@ -35,8 +35,9 @@ public abstract class CriteriaPanel extends WebPanel {
     private LexiconComboBox lexiconComboBox;
     private DomainMComboBox domainComboBox;
     private PartOfSpeechComboBox partsOfSpeechComboBox;
-    private MComboBox<RelationType> synsetRelationsComboBox;
-    private MComboBox<RelationType> senseRelationsComboBox;
+//    private MComboBox<RelationType> synsetRelationsComboBox; //TODO zostawić tylko jedno combobox z relacjami
+//    private MComboBox<RelationType> senseRelationsComboBox;
+    private MComboBox<RelationType> relationsComboBox;
 
     public CriteriaPanel(int scrollHeight) {
         SCROLL_PANE_HEIGHT = scrollHeight;
@@ -54,11 +55,14 @@ public abstract class CriteriaPanel extends WebPanel {
         searchTextField = new MTextField(STANDARD_VALUE_FILTER);
         domainComboBox = initDomainComboBox();
 
-        synsetRelationsComboBox = createSynsetRelationsComboBox();
-        synsetRelationsComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
+//        synsetRelationsComboBox = createSynsetRelationsComboBox();
+//        synsetRelationsComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
+//
+//        senseRelationsComboBox = createSenseRelationsComboBox();
+//        senseRelationsComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
 
-        senseRelationsComboBox = createSenseRelationsComboBox();
-        senseRelationsComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
+        relationsComboBox = createRelationsComboBox();
+        relationsComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
 
     }
 
@@ -73,7 +77,7 @@ public abstract class CriteriaPanel extends WebPanel {
             } else {
                 domainComboBox.allDomains(true);
             }
-            refreshSenseRelations();
+//            refreshSenseRelations(); //TODO być może to będzie trzeba zostawić
         });
 
         return resultComboBox;
@@ -114,16 +118,21 @@ public abstract class CriteriaPanel extends WebPanel {
 
     public abstract void restoreCriteria(CriteriaDTO criteria);
 
-    protected void addSynsetRelationTypes() {
-        add("br", new MLabel(Labels.RELATIONS_COLON, 'r', synsetRelationsComboBox));
-        add("br hfill", synsetRelationsComboBox);
-        refreshSynsetRelations();
-    }
+//    protected void addSynsetRelationTypes() {
+//        add("br", new MLabel(Labels.RELATIONS_COLON, 'r', synsetRelationsComboBox));
+//        add("br hfill", synsetRelationsComboBox);
+////        refreshSynsetRelations();
+//    }
+//
+//    protected void addSenseRelationTypes() {
+//        add("br", new MLabel(Labels.RELATIONS_COLON, 'r', senseRelationsComboBox));
+//        add("br hfill", senseRelationsComboBox);
+//        refreshSenseRelations();
+//    }
 
-    protected void addSenseRelationTypes() {
-        add("br", new MLabel(Labels.RELATIONS_COLON, 'r', senseRelationsComboBox));
-        add("br hfill", senseRelationsComboBox);
-        refreshSenseRelations();
+    protected void addRelation() {
+        add("br", new MLabel(Labels.RELATIONS_COLON, 'r', relationsComboBox));
+        add("br hfill", relationsComboBox);
     }
 
     protected void addDomain() {
@@ -160,6 +169,13 @@ public abstract class CriteriaPanel extends WebPanel {
         return combo;
     }
 
+    private MComboBox<RelationType> createRelationsComboBox() {
+        MComboBox<RelationType> comboBox = new MComboBox<>();
+        comboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
+        comboBox.setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+        return comboBox;
+    }
+
     private WebCheckBox createLimitResultSearch() {
         WebCheckBox limitResult = new WebCheckBox(String.format(Labels.LIMIT_TO, "" + MAX_ITEMS_COUNT));
         limitResult.setSelected(true);
@@ -180,47 +196,60 @@ public abstract class CriteriaPanel extends WebPanel {
         }
     }
 
-    public void refreshSynsetRelations() {
-    }
-
-    public void refreshSenseRelations() {
-
-        int selected = senseRelationsComboBox.getSelectedIndex();
-
-        senseRelationsComboBox.removeAllItems();
-        senseRelationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
-
-        if (lexiconComboBox.getEntity() != null) {
-            RelationTypeManager
-                    .getInstance()
-                    .getRelationsWithoutProxyParent(RelationArgument.SENSE_RELATION, lexiconComboBox.getEntity())
-                    .forEach(r ->
-                            senseRelationsComboBox.addItem(new CustomDescription<>(
-                                    RelationTypeManager
-                                            .getInstance()
-                                            .getFullName(r.getId()), r)));
+    public void loadRelationsType(RelationArgument type) {
+        if(lexiconComboBox.getEntity() != null) {
+            RelationTypeManager.getInstance().getRelationsWithoutProxyParent(type, lexiconComboBox.getEntity())
+                    .forEach(r->relationsComboBox.addItem(
+                            new CustomDescription<>(RelationTypeManager.getInstance().getFullName(r.getId()),r)
+                    ));
         } else {
-            RelationTypeManager
-                    .getInstance()
-                    .getRelationsWithoutProxyParent(RelationArgument.SENSE_RELATION)
-                    .forEach(r ->
-                            senseRelationsComboBox.addItem(new CustomDescription<>(
-                                    RelationTypeManager
-                                            .getInstance()
-                                            .getFullName(r.getId()), r)));
+            RelationTypeManager.getInstance().getRelationsWithoutProxyParent(type)
+                    .forEach(r->relationsComboBox.addItem(
+                            new CustomDescription<>(RelationTypeManager.getInstance().getFullName(r.getId()), r)
+                    ));
         }
 
-        if (selected != -1) {
-            senseRelationsComboBox.setSelectedIndex(selected);
-        }
     }
+
+//    public void refreshSenseRelations() {
+//
+//        int selected = senseRelationsComboBox.getSelectedIndex();
+//
+//        senseRelationsComboBox.removeAllItems();
+//        senseRelationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
+//
+//        if (lexiconComboBox.getEntity() != null) {
+//            RelationTypeManager
+//                    .getInstance()
+//                    .getRelationsWithoutProxyParent(RelationArgument.SENSE_RELATION, lexiconComboBox.getEntity())
+//                    .forEach(r ->
+//                            senseRelationsComboBox.addItem(new CustomDescription<>(
+//                                    RelationTypeManager
+//                                            .getInstance()
+//                                            .getFullName(r.getId()), r)));
+//        } else {
+//            RelationTypeManager
+//                    .getInstance()
+//                    .getRelationsWithoutProxyParent(RelationArgument.SENSE_RELATION)
+//                    .forEach(r ->
+//                            senseRelationsComboBox.addItem(new CustomDescription<>(
+//                                    RelationTypeManager
+//                                            .getInstance()
+//                                            .getFullName(r.getId()), r)));
+//        }
+//
+//        if (selected != -1) {
+//            senseRelationsComboBox.setSelectedIndex(selected);
+//        }
+//    }
 
     public void resetFields() {
         searchTextField.setText("");
         domainComboBox.setSelectedIndex(0);
         partsOfSpeechComboBox.setSelectedIndex(0);
-        synsetRelationsComboBox.setSelectedIndex(0);
-        senseRelationsComboBox.setSelectedIndex(0);
+//        synsetRelationsComboBox.setSelectedIndex(0);
+//        senseRelationsComboBox.setSelectedIndex(0);
+        relationsComboBox.setSelectedItem(0);
         lexiconComboBox.setSelectedIndex(0);
     }
 
@@ -232,13 +261,18 @@ public abstract class CriteriaPanel extends WebPanel {
         return domainComboBox;
     }
 
-    public MComboBox<RelationType> getSynsetRelationTypeComboBox() {
-        return synsetRelationsComboBox;
+//    public MComboBox<RelationType> getSynsetRelationTypeComboBox() {
+//        return synsetRelationsComboBox;
+//    }
+//
+//    public MComboBox<RelationType> getSenseRelationTypeComboBox() {
+//        return senseRelationsComboBox;
+//    }
+
+    public MComboBox<RelationType> getRelationsComboBox(){
+        return relationsComboBox;
     }
 
-    public MComboBox<RelationType> getSenseRelationTypeComboBox() {
-        return senseRelationsComboBox;
-    }
 
     public LexiconComboBox getLexiconComboBox() {
         return lexiconComboBox;
