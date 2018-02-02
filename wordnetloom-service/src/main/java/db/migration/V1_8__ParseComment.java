@@ -97,7 +97,7 @@ public class V1_8__ParseComment implements JdbcMigration {
                     break;
                 case DEFINITION:
                     value = getDefinition(comment, currentPosition);
-                    attributeRef.setDefinition(value);
+                    attributeRef.setDefinition(value.trim());
                     break;
                 case EXAMPLE: //dodajemy w tym miejscu przykład, aby obsłużyć sytuacje w których przykład nie ma nawiasu otwierającego
                     serveExampleMarker(marker, comment, attributeRef);
@@ -116,7 +116,7 @@ public class V1_8__ParseComment implements JdbcMigration {
         }
     }
 
-    private void serveLinkMarker(String marker, String comment, Attribute attributeRef) {
+    private void saveLinkMarker(String marker, String comment, Attribute attributeRef) {
         String value;
         secondIndex = getIndex("}", comment, currentPosition);
         if (secondIndex > currentPosition) { // obsługa sytuacji niezamkniętego nawiasu na końcu lini
@@ -176,7 +176,7 @@ public class V1_8__ParseComment implements JdbcMigration {
                             serveExampleMarker(marker, comment, attribute);
                             break;
                         case LINK_MARKER:
-                            serveLinkMarker(marker, comment, attribute);
+                            saveLinkMarker(marker, comment, attribute);
                             break;
                         case UNKNOWN_MARKER:
                             serveUnknownMarker(comment, currentPosition, startMarker, stringBuilder);

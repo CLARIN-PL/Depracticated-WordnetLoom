@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class UnitsInSynsetListModel extends GenericListModel<Sense> {
 
-    private static final String VALUE_SPLIT_LINE = "───────────────────────────────";
+    private static final String VALUE_SPLIT_LINE = "─────────────────────────────────";
 
     private int splitPosition = 0;
 

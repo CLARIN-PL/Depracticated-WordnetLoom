@@ -9,8 +9,8 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
-import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +43,7 @@ public final class SenseCriteria extends CriteriaPanel {
         MComboBox<String> resultComboBox = new MComboBox<>();
         resultComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
         List<String> registerTypes = RegisterManager.getInstance().getAllRegisterNames();
+
         for(String registerName : registerTypes)
         {
             resultComboBox.addItem(registerName);
@@ -54,6 +55,7 @@ public final class SenseCriteria extends CriteriaPanel {
     }
 
     public SenseCriteriaDTO getSenseCriteriaDTO() {
+
         String lemma = getSearchTextField().getText();
         String comment = getComment().getText();
         String example = getExample().getText();
@@ -61,12 +63,16 @@ public final class SenseCriteria extends CriteriaPanel {
         Long domainId = getDomainComboBox().getEntity() == null ? null : getDomainComboBox().getEntity().getId();
         List<Long> lexicons = new ArrayList<>();
         Lexicon lexicon = getLexiconComboBox().getEntity();
+        Long relationType = getSenseRelationTypeComboBox().getEntity() == null? null : getSenseRelationTypeComboBox().getEntity().getId();
+
         if(lexicon!=null){
             lexicons.add(lexicon.getId());
         } else {
             lexicons.addAll(LexiconManager.getInstance().getUserChosenLexiconsIds());
         }
+
         SenseCriteriaDTO senseCriteria = new SenseCriteriaDTO(partOfSpeechId, domainId, lemma, lexicons);
+        senseCriteria.setRelationTypeId(relationType);
         senseCriteria.setComment(comment);
         senseCriteria.setExample(example);
 

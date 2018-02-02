@@ -1,18 +1,16 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
-import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
-import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -25,7 +23,6 @@ public abstract class CriteriaPanel extends WebPanel {
     private static final long serialVersionUID = 4649824763750406980L;
     public static final String STANDARD_VALUE_FILTER = "";
     private int SCROLL_PANE_HEIGHT = 400;
-    public static final int MAX_ITEMS_COUNT = 500;
     private final int DEFAULT_WIDTH = 150;
     private final int DEFAULT_HEIGHT = 20;
     protected final Dimension DEFAULT_DIMENSION = new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -62,8 +59,7 @@ public abstract class CriteriaPanel extends WebPanel {
 
     }
 
-    private LexiconComboBox initLexiconComboBox()
-    {
+    private LexiconComboBox initLexiconComboBox() {
         LexiconComboBox resultComboBox = new LexiconComboBox(Labels.VALUE_ALL);
         resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
         resultComboBox.addActionListener((ActionEvent e) -> {
@@ -79,8 +75,7 @@ public abstract class CriteriaPanel extends WebPanel {
         return resultComboBox;
     }
 
-    private PartOfSpeechComboBox initPartOfSpeechComboBox()
-    {
+    private PartOfSpeechComboBox initPartOfSpeechComboBox() {
         PartOfSpeechComboBox resultComboBox = new PartOfSpeechComboBox(Labels.VALUE_ALL);
         resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
         resultComboBox.addItemListener((ItemEvent e) -> {
@@ -100,8 +95,7 @@ public abstract class CriteriaPanel extends WebPanel {
         return resultComboBox;
     }
 
-    private DomainMComboBox initDomainComboBox()
-    {
+    private DomainMComboBox initDomainComboBox() {
         DomainMComboBox resultComboBox = new DomainMComboBox(Labels.VALUE_ALL);
         resultComboBox.allDomains(true);
         resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
@@ -160,12 +154,6 @@ public abstract class CriteriaPanel extends WebPanel {
         return combo;
     }
 
-    private WebCheckBox createLimitResultSearch() {
-        WebCheckBox limitResult = new WebCheckBox(String.format(Labels.LIMIT_TO, "" + MAX_ITEMS_COUNT));
-        limitResult.setSelected(true);
-        return limitResult;
-    }
-
     public void refreshPartOfSpeech() {
         int selected = partsOfSpeechComboBox.getSelectedIndex();
         if (selected != -1) {
@@ -181,6 +169,37 @@ public abstract class CriteriaPanel extends WebPanel {
     }
 
     public void refreshSynsetRelations() {
+
+        int selected = synsetRelationsComboBox.getSelectedIndex();
+
+        synsetRelationsComboBox.removeAllItems();
+
+        synsetRelationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
+
+        if (lexiconComboBox.getEntity() != null) {
+            RelationTypeManager
+                    .getInstance()
+                    .getRelationsWithoutProxyParent(RelationArgument.SYNSET_RELATION, lexiconComboBox.getEntity())
+                    .forEach(r ->
+                            synsetRelationsComboBox.addItem(new CustomDescription<>(
+                                    RelationTypeManager
+                                            .getInstance()
+                                            .getFullName(r.getId()), r)));
+        } else {
+            RelationTypeManager
+                    .getInstance()
+                    .getRelationsWithoutProxyParent(RelationArgument.SYNSET_RELATION)
+                    .forEach(r ->
+                            synsetRelationsComboBox.addItem(new CustomDescription<>(
+                                    RelationTypeManager
+                                            .getInstance()
+                                            .getFullName(r.getId()), r)));
+        }
+
+        if (selected != -1) {
+            synsetRelationsComboBox.setSelectedIndex(selected);
+        }
+
     }
 
     public void refreshSenseRelations() {
@@ -188,6 +207,7 @@ public abstract class CriteriaPanel extends WebPanel {
         int selected = senseRelationsComboBox.getSelectedIndex();
 
         senseRelationsComboBox.removeAllItems();
+
         senseRelationsComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
 
         if (lexiconComboBox.getEntity() != null) {

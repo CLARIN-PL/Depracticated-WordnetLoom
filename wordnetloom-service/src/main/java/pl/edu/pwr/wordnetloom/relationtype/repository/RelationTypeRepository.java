@@ -47,8 +47,10 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         Root<RelationType> root = q.from(RelationType.class);
         root.fetch("parent", JoinType.LEFT);
         root.fetch("reverse", JoinType.LEFT);
-        root.fetch("lexicons", JoinType.LEFT);
-        root.fetch("partsOfSpeech", JoinType.LEFT);
+        root.fetch("lexicons", JoinType.INNER);
+        root.fetch("partsOfSpeech", JoinType.INNER);
+
+        q.distinct(true);
 
         return em.createQuery(q).getResultList();
 
@@ -61,10 +63,11 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         Root<RelationType> root = q.from(RelationType.class);
         root.fetch("parent", JoinType.LEFT);
         root.fetch("reverse", JoinType.LEFT);
-        root.fetch("lexicons", JoinType.LEFT);
-        root.fetch("partsOfSpeech", JoinType.LEFT);
-        root.fetch("relationTests", JoinType.LEFT);
+        root.fetch("lexicons", JoinType.INNER);
+        root.fetch("partsOfSpeech", JoinType.INNER);
+        root.fetch("relationTests", JoinType.INNER);
 
+        q.distinct(true);
         q.where(cb.equal(root.get("id"), id));
 
         return em.createQuery(q).getSingleResult();
@@ -123,7 +126,7 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
                 .setParameter("name", name)
                 .getSingleResult();
         if(nameId != null){
-            return (RelationType) getEntityManager().createQuery("FROM RelationType r WHERE r.name = :nameId")
+            return (RelationType) getEntityManager().createQuery("SELECT r FROM RelationType r WHERE r.name = :nameId")
                     .setParameter("nameId", nameId)
                     .getSingleResult();
         }

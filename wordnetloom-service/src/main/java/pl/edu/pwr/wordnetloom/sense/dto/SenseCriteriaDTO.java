@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.sense.model;
+package pl.edu.pwr.wordnetloom.sense.dto;
 
 import java.io.Serializable;
 import java.util.List;
@@ -14,7 +14,6 @@ public class SenseCriteriaDTO implements Serializable {
     private Integer variant;
     private String comment;
     private String example;
-//    private String register;
     private Long register;
     private Long synsetId;
 
@@ -101,9 +100,9 @@ public class SenseCriteriaDTO implements Serializable {
 
     public void setComment(String comment) {
         if(comment != null && !comment.isEmpty()){
-            this.example = example;
+            this.comment = comment;
         } else {
-            this.example = null;
+            this.comment = null;
         }
     }
 
@@ -119,14 +118,6 @@ public class SenseCriteriaDTO implements Serializable {
         }
 
     }
-
-//    public String getRegister() {
-//        return register;
-//    }
-//
-//    public void setRegister(String register) {
-//        this.register = register;
-//    }
 
     public Long getRegisterId(){
         return register;

@@ -7,7 +7,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
-import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -24,7 +24,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import se.datadosen.component.RiverLayout;
 
@@ -47,7 +47,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     private static final String SUPER_MODE = "SuperMode";
     private final int DEFAULT_SCROLL_HEIGHT = 220;
     private final Dimension DEFAULT_SCROLL_DIMENSION = new Dimension(0, DEFAULT_SCROLL_HEIGHT);
-    private final int LIMIT = 15;
+    private final int LIMIT = 50;
 
     private SenseCriteria criteria;
     private ToolTipList unitsList;
@@ -74,7 +74,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     @Override
     protected void initialize(WebPanel content) {
-        // ustawienie layoutu
+
         content.setLayout(new RiverLayout());
         criteria = initSenseCriteria();
 
@@ -183,7 +183,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         btnAddToSyns.setEnabled(unit != null ? (superMode)
                 && !LexicalDA.checkIfInAnySynset(unit) : false);
 
-        // powiadomienie zainteresowanych
         unitsList.setEnabled(false);
         listeners.notifyAllListeners(unitsList.getSelectedIndices().length == 1 ? unit : null);
         unitsList.setEnabled(true);
@@ -324,7 +323,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         if (quietMode) {
             return;
         }
-        // wywolanie search
+
         if (event.getSource() == btnSearch) {
             loadUnits();
         } else if (event.getSource() == btnReset) {
@@ -333,7 +332,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
            deleteSense();
         } else if (event.getSource() == btnAddToSyns) {
             addToSynset();
-        } else if (event.getSource() == btnNew) { // dodanie nowej jednostki
+        } else if (event.getSource() == btnNew) {
             addNewSense();
         } else if (event.getSource() == btnNewWithSyns) {
             addNewSenseWithSynset();
@@ -346,7 +345,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         if (returnValues == null || returnValues.length == 0) {
             return;
         }
-        // warto sie zapytac
+
         if (returnValues.length == 1
                 && DialogBox.showYesNoCancel(Messages.QUESTION_REMOVE_UNIT) != DialogBox.YES) {
             return;
@@ -430,7 +429,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     }
 
     private void addNewSense() {
-        // wyswietlenie okienka
         Sense newUnit = NewLexicalUnitFrame.showModal(workbench, null);
         Sense savedUnit = saveUnit(newUnit);
         insertSenseToList(savedUnit);
@@ -509,11 +507,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         return unitsList;
     }
 
-    /**
-     * Odczytanie zaznaczonej jednostki
-     *
-     * @return zaznaczona jednostka lub NULL
-     */
+
     public Sense getSelectedUnit() {
         int returnValue = unitsList.getSelectedIndex();
         return listModel.get(returnValue);

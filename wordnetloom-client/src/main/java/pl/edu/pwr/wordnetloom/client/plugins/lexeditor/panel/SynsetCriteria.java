@@ -4,11 +4,9 @@ import com.alee.laf.radiobutton.WebRadioButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.domain.model.Domain;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
-import pl.edu.pwr.wordnetloom.synset.model.SynsetCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -149,17 +147,21 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         if(getLexiconComboBox().getSelectedLexicon()!= null){
             dto.setLexiconId(getLexiconComboBox().getSelectedLexicon().getId());
         }
+
         if(getPartsOfSpeechComboBox().getSelectedPartOfSpeech() != null){
             dto.setPartOfSpeechId(getPartsOfSpeechComboBox().getSelectedPartOfSpeech().getId());
         }
+
         if(getDomainComboBox().getSelectedDomain() != null) {
             dto.setDomainId(getDomainComboBox().getSelectedDomain().getId());
         }
+
+        Long relationType = getSynsetRelationTypeComboBox().getEntity() == null ? null : getSynsetRelationTypeComboBox().getEntity().getId();
         dto.setDefinition(getDefinition().getText());
         dto.setComment(getComment().getText());
         dto.setAbstract(getIsArtificial());
+        dto.setRelationTypeId(relationType);
 
-        //TODO wstawić relację
         return dto;
     }
 

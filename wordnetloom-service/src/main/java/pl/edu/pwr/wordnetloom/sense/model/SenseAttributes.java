@@ -28,8 +28,6 @@ public class SenseAttributes /*extends GenericEntity */ implements Serializable,
     @Lob
     private String comment;
 
-//    private String register;
-
     private Long register;
 
     private String link;
@@ -83,14 +81,6 @@ public class SenseAttributes /*extends GenericEntity */ implements Serializable,
     public void setComment(String comment) {
         this.comment = comment;
     }
-
-//    public String getRegister() {
-//        return register;
-//    }
-//
-//    public void setRegister(String register) {
-//        this.register = register;
-//    }
 
     public Long getRegister(){
         return register;

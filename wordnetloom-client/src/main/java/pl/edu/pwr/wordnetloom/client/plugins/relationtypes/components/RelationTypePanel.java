@@ -6,9 +6,12 @@ import com.alee.laf.tabbedpane.WebTabbedPane;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MSplitPane;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
+
 
 public class RelationTypePanel extends WebPanel {
 
@@ -29,7 +32,9 @@ public class RelationTypePanel extends WebPanel {
         synsetRelationTreePanel.setRelationsTypes(RelationTypeManager.getInstance().getParents(RelationArgument.SYNSET_RELATION));
 
         senseRelationTreePanel = new RelationTreePanel(RelationArgument.SENSE_RELATION);
-        senseRelationTreePanel.setRelationsTypes(RelationTypeManager.getInstance().getParents(RelationArgument.SENSE_RELATION));
+
+        List<RelationType> test = RelationTypeManager.getInstance().getParents(RelationArgument.SENSE_RELATION);
+        senseRelationTreePanel.setRelationsTypes(test);
 
         propertiesPanel = new RelationTypePropertiesPanel(parent);
         testsPanel = new RelationTypeTestsPanel();

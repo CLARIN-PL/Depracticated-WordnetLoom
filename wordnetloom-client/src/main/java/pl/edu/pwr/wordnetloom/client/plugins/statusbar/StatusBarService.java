@@ -20,7 +20,6 @@ public class StatusBarService extends AbstractService implements Runnable, Actio
 
     private Thread thread = null;
     private boolean stop = false;
-    private JMenuItem clearCache;
 
     public StatusBarService(Workbench workbench) {
         super(workbench);
@@ -28,14 +27,6 @@ public class StatusBarService extends AbstractService implements Runnable, Actio
 
     @Override
     public void installMenuItems() {
-        WebMenu other = workbench.getMenu(Labels.SETTINGS);
-        if (other == null) {
-            return;
-        }
-        clearCache = new MMenuItem(Labels.CLEAR_CACHE)
-                .withMnemonic(KeyEvent.VK_W)
-                .withActionListener(this);
-        other.add(clearCache);
     }
 
     @Override
@@ -77,11 +68,6 @@ public class StatusBarService extends AbstractService implements Runnable, Actio
 
     @Override
     public void actionPerformed(ActionEvent arg0) {
-        if (arg0.getSource() == clearCache) {
-            Runtime.getRuntime().gc();
-            DialogBox.showInformation(Messages.SUCCESS_CACHE_CLEANED);
-        }
-
     }
 
     @Override
