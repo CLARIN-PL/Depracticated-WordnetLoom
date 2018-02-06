@@ -27,19 +27,15 @@ import java.util.List;
 public class SynsetViewUI extends AbstractViewUI implements ActionListener, ListSelectionListener, KeyListener {
 
     private final int LIMIT = 50;
-
-    private SynsetCriteria criteria;
-    private SynsetCriteriaDTO lastCriteriaDTO;
-
     private final MButton btnSearch = MButton.buildSearchButton()
             .withActionListener(this)
             .withMnemonic(KeyEvent.VK_K);
-
     private final MButton btnReset = MButton.buildCancelButton()
             .withCaption(Labels.CLEAR)
             .withActionListener(this)
             .withMnemonic(KeyEvent.VK_C);
-
+    private SynsetCriteria criteria;
+    private SynsetCriteriaDTO lastCriteriaDTO;
     private ToolTipList synsetList;
     private LazyScrollPane scrollPane;
     private JLabel infoLabel;
@@ -47,26 +43,10 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     private DefaultListModel<Synset> synsetListModel = new DefaultListModel<>();
     private Sense lastSelectedValue;
 
-    private class SynsetListCellRenderer extends JLabel implements ListCellRenderer {
-        private final String FONT_NAME = "Courier New";
-        private final int FONT_SIZE = 14;
-        private final Font FONT = new Font(FONT_NAME, Font.PLAIN, FONT_SIZE);
-
-        SynsetListCellRenderer(){
-            this.setFont(FONT);
-        }
-
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            setText(SynsetFormat.getHtmlText((Synset)value, scrollPane.getWidth()));
-            return this;
-        }
-    }
-
     private void setInfoLabelText(int numLoadObjects, int numAllObjects) {
         final String INFO_LABEL_FORMAT = "%s %d/%d";
-        if(numAllObjects > 0){
-            infoLabel.setText(String.format(INFO_LABEL_FORMAT, Labels.NUMBER_COLON, numLoadObjects,numAllObjects));
+        if (numAllObjects > 0) {
+            infoLabel.setText(String.format(INFO_LABEL_FORMAT, Labels.NUMBER_COLON, numLoadObjects, numAllObjects));
         } else {
             infoLabel.setText("");
         }
@@ -106,7 +86,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     }
 
     private ToolTipList createSynsetList(DefaultListModel model) {
-        ToolTipList list = new ToolTipList(workbench,model, new SynsetTooltipGenerator());
+        ToolTipList list = new ToolTipList(workbench, model, new SynsetTooltipGenerator());
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.getSelectionModel().addListSelectionListener(this);
         list.setCellRenderer(new SynsetListCellRenderer());
@@ -133,7 +113,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
                 numMatchedSynsets = RemoteService.synsetRemote.getCountSynsetsByCriteria(dto);
                 lastCriteriaDTO = dto;
                 loadAndAddSynsets(dto);
-                if(!synsetListModel.isEmpty()) {
+                if (!synsetListModel.isEmpty()) {
                     scrollPane.setEnd(false);
                 }
                 return null;
@@ -151,10 +131,10 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     private void loadAndAddSynsets(SynsetCriteriaDTO criteriaDTO) {
         lastCriteriaDTO = criteriaDTO;
         List<Synset> synsets = RemoteService.synsetRemote.findSynsetsByCriteria(criteriaDTO);
-        for(Synset synset : synsets) {
+        for (Synset synset : synsets) {
             synsetListModel.addElement(synset);
         }
-        if(!synsets.isEmpty()) {
+        if (!synsets.isEmpty()) {
             synsetList.updateUI();
         }
         setInfoLabelText(synsetListModel.getSize(), numMatchedSynsets); //TODO wstawić tutaj liczbę wszystkich synsetów
@@ -170,7 +150,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     public void valueChanged(ListSelectionEvent event) {
         //TODO odkomencić to
         System.out.println("kliknięto synset");
-        if(event == null || event.getValueIsAdjusting()) {
+        if (event == null || event.getValueIsAdjusting()) {
             return;
         }
         int selectedIndex = synsetList.getSelectedIndex();
@@ -214,6 +194,22 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         if (!event.isConsumed() && event.getSource() == criteria.getSearchTextField() && event.getKeyChar() == KeyEvent.VK_ENTER) {
             event.consume();
             refreshData();
+        }
+    }
+
+    private class SynsetListCellRenderer extends JLabel implements ListCellRenderer {
+        private final String FONT_NAME = "Courier New";
+        private final int FONT_SIZE = 14;
+        private final Font FONT = new Font(FONT_NAME, Font.PLAIN, FONT_SIZE);
+
+        SynsetListCellRenderer() {
+            this.setFont(FONT);
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            setText(SynsetFormat.getHtmlText((Synset) value, scrollPane.getWidth()));
+            return this;
         }
     }
 }
