@@ -2,7 +2,7 @@ package pl.edu.pwr.wordnetloom.sense.repository;
 
 import pl.edu.pwr.wordnetloom.common.repository.Specification;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
 import javax.persistence.criteria.Predicate;

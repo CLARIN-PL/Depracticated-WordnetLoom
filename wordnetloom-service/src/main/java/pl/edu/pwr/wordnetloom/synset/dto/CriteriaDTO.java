@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.synset.model;
+package pl.edu.pwr.wordnetloom.synset.dto;
 
 import java.io.Serializable;
 import java.util.List;
@@ -95,14 +95,6 @@ public class CriteriaDTO implements Serializable{
     public void setExample(String example) {
         this.example = example;
     }
-
-//    public String getSynsetType() {
-//        return synsetType;
-//    }
-//
-//    public void setSynsetType(String synsetType) {
-//        this.synsetType = synsetType;
-//    }
 
     public Boolean isAbstract(){
         return abstractSynset;

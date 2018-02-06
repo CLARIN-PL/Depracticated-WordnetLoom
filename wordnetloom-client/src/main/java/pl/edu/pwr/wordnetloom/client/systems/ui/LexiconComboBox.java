@@ -35,8 +35,7 @@ public class LexiconComboBox extends MComboBox<Lexicon> {
         loadItems();
     }
 
-    @Override
-    public Lexicon getSelectedItem(){
+    public Lexicon getSelectedLexicon(){
         int selectedIndex = getSelectedIndex();
         if(selectedIndex == 0){ // if selected item is null representation
             return null;

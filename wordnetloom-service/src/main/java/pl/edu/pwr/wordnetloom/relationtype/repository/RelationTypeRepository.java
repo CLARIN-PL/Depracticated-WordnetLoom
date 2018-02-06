@@ -50,6 +50,8 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         root.fetch("lexicons", JoinType.LEFT);
         root.fetch("partsOfSpeech", JoinType.LEFT);
 
+        q.distinct(true);
+
         return em.createQuery(q).getResultList();
 
     }
@@ -65,6 +67,7 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         root.fetch("partsOfSpeech", JoinType.LEFT);
         root.fetch("relationTests", JoinType.LEFT);
 
+        q.distinct(true);
         q.where(cb.equal(root.get("id"), id));
 
         return em.createQuery(q).getSingleResult();
@@ -123,7 +126,7 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
                 .setParameter("name", name)
                 .getSingleResult();
         if(nameId != null){
-            return (RelationType) getEntityManager().createQuery("FROM RelationType r WHERE r.name = :nameId")
+            return (RelationType) getEntityManager().createQuery("SELECT r FROM RelationType r WHERE r.name = :nameId")
                     .setParameter("nameId", nameId)
                     .getSingleResult();
         }

@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure;
 
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.SynsetData;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
@@ -63,7 +64,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     private SynsetData synsetData;
 
-    //TODO zrefaktorować to
     /** Określa, stronę z której zostały w pełni pobrane relacje */
     private boolean[] fullRelation = new boolean[NodeDirection.values().length];
 
@@ -352,10 +352,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         edges_to_this_.clear();
         edges_from_this_.clear();
 
-        // first - primary cache
-//        Set<SynsetRelation> relsUP = ui.getUpperRelationsFor(synset.getId());
-//        Set<SynsetRelation> relsDW = ui.getSubRelationsFor(synset.getId());
-
         for(int i=0; i < directions.length; i++){
             relations[directions[i].ordinal()].clear();
         }
@@ -481,7 +477,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
                 if(synset.getSynsetAttributes() != null && synset.getSynsetAttributes().getIsAbstract()) {
                     ret = "S ";
                 }
-                ret += dataEntry.getName() + " " + dataEntry.getVariant() + " (" + LocalisationManager.getInstance().getLocalisedString(dataEntry.getDomain()) + ")";
+                ret += SenseFormat.getText(dataEntry);
             } else {
                 ret = "";
             }

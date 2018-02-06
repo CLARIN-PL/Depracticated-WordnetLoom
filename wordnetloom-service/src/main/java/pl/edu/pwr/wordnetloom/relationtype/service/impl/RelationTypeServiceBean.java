@@ -71,7 +71,11 @@ public class RelationTypeServiceBean implements RelationTypeServiceLocal {
     @Override
     public RelationType save(RelationType rel) {
         ValidationUtils.validateEntityFields(validator, rel);
-        return relationTypeRepository.persist(rel);
+        if(rel.getId() == null) {
+            return relationTypeRepository.persist(rel);
+        } else{
+            return relationTypeRepository.update(rel);
+        }
     }
 
     @Override

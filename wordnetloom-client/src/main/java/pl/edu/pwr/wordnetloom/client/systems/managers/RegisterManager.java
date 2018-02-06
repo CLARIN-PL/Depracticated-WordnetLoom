@@ -12,8 +12,7 @@ public class RegisterManager {
     private static RegisterManager instance;
     private Map<Long, String> registersMap;
 
-    public static RegisterManager getInstance()
-    {
+    public static RegisterManager getInstance() {
         if(instance == null)
         {
             instance = new RegisterManager();
@@ -21,19 +20,15 @@ public class RegisterManager {
         return instance;
     }
 
-    private RegisterManager()
-    {
+    private RegisterManager() {
         registersMap = RemoteService.localisedStringServiceRemote.findAllRegisterTypes(RemoteConnectionProvider.getInstance().getLanguage());
-        //TODO załadować rejestry z bazy danych do mapy
     }
 
-    public String getName(Long id)
-    {
+    public String getName(Long id) {
         return registersMap.get(id);
     }
 
-    public List<String> getAllRegisterNames()
-    {
+    public List<String> getAllRegisterNames() {
         return new ArrayList<>(registersMap.values());
     }
 

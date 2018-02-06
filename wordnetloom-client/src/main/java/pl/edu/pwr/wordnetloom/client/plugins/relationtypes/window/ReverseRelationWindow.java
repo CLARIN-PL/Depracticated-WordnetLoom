@@ -1,7 +1,12 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
 import com.alee.laf.rootpane.WebFrame;
+import com.alee.laf.tree.WebTree;
+import pl.edu.pwr.wordnetloom.client.Application;
+import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.events.ShowRelationTypeEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.models.RelationTypeNode;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
@@ -18,6 +23,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Window for choosing revers relation
@@ -25,6 +32,8 @@ import java.util.Collection;
 public class ReverseRelationWindow extends DialogWindow implements ActionListener, TreeSelectionListener {
 
     private static final long serialVersionUID = 1L;
+
+    private final RelationTypeNode root = new RelationTypeNode("Relations");
 
     private final MButton buttonChoose, buttonCancel, buttonNoReverse;
     private RelationType lastReverse = null;
@@ -35,18 +44,15 @@ public class ReverseRelationWindow extends DialogWindow implements ActionListene
     private ReverseRelationWindow(WebFrame owner) {
         super(owner, Labels.REVERSE_RELATION, 400, 450);
         setResizable(false);
-        //this.setAlwaysOnTop(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        // drzewo relacji
-        tree = new JTree();
-        tree.setExpandsSelectedPaths(true);
+        tree = new WebTree(root);
+        tree.setToggleClickCount(2);
         tree.setScrollsOnExpand(true);
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         tree.setRootVisible(true);
         tree.addTreeSelectionListener(this);
 
-        // ustawienie ikonek dla drzewa
         DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
         tree.setCellRenderer(renderer);
         tree.setCellRenderer(renderer);
@@ -62,11 +68,9 @@ public class ReverseRelationWindow extends DialogWindow implements ActionListene
 
         buttonCancel = MButton.buildCancelButton().withActionListener(this);
 
-        // automatyczna odwrotna
         autoReverse = new JCheckBox(Labels.AUTO_ADD_REVERSE);
         autoReverse.setSelected(false);
 
-        // dodanie do zawartości okna
         add("", new MLabel(Labels.RELATION_TYPES_COLON, 't', tree));
         add("br hfill vfill", new JScrollPane(tree));
         add("br left", autoReverse);
@@ -75,36 +79,25 @@ public class ReverseRelationWindow extends DialogWindow implements ActionListene
         add("", buttonCancel);
     }
 
-    /**
-     * odswiezenie danych w drzewie
-     */
-    private void refreshTree() {
-        Collection<RelationType> relations = new ArrayList<>(); //RelationTypesDA.getHighestRelations(null, null);
-        for (RelationType type : relations) {
-//            RelationTypesDA.getChildren(type);
-//            RelationTypesDA.getTests(type);
-        }
-        // tree.setModel(new RelationTreeModel(relations));
-        int count = tree.getRowCount();
-        for (int i = 0; i < count; i++) {
-            tree.expandRow(i);
-        }
-        tree.clearSelection();
+    private void buildTree(final List<RelationType> list) {
+        root.removeAllChildren();
+
+        list.forEach(e -> {
+            final RelationTypeNode parent = new RelationTypeNode(e);
+            List<RelationType> children = RelationTypeManager.getInstance().getChildren(e.getId());
+            children.forEach(child -> {
+                RelationTypeNode childNode = new RelationTypeNode(child);
+                parent.add(childNode);
+            });
+            root.add(parent);
+        });
     }
 
-    /**
-     * wyświetlenie okienka
-     *
-     * @param owner       - srodowisko
-     * @param lastReverse - aktualna relacja odwrotna
-     * @param autoReverse - czy relacja odwrotna ma byc automatycznie tworzona
-     * @return nowo wybrana relacja odwrotna
-     */
-    static public Pair<RelationType, Boolean> showModal(WebFrame owner, RelationType lastReverse, Boolean autoReverse) {
+    static public Pair<RelationType, Boolean> showModal(WebFrame owner, RelationType lastReverse, Boolean autoReverse, final List<RelationType> list) {
         ReverseRelationWindow frame = new ReverseRelationWindow(owner);
         frame.lastReverse = lastReverse;
         frame.autoReverse.setSelected(autoReverse);
-        frame.refreshTree();
+        frame.buildTree(list);
         frame.setVisible(true);
         Pair<RelationType, Boolean> result = new Pair<>(frame.lastReverse, frame.autoReverse.isSelected());
         frame.dispose();
@@ -118,7 +111,6 @@ public class ReverseRelationWindow extends DialogWindow implements ActionListene
             setVisible(false);
 
         } else if (event.getSource() == buttonChoose) {
-            lastReverse = selectedRelation;
             setVisible(false);
 
         } else if (event.getSource() == buttonNoReverse) {
@@ -128,16 +120,24 @@ public class ReverseRelationWindow extends DialogWindow implements ActionListene
     }
 
     @Override
-    public void valueChanged(TreeSelectionEvent arg0) {
-        RelationType rel = null;
-        if (arg0 != null && arg0.getNewLeadSelectionPath() != null) {
-            Object lastElem = arg0.getNewLeadSelectionPath().getLastPathComponent();
-            if (lastElem != null) {
-                rel = (RelationType) lastElem;
-            }
+    public void valueChanged(TreeSelectionEvent e) {
+        getSelectedRelationType()
+                .ifPresent(relation -> {
+                    lastReverse = relation;
+                    buttonChoose.setEnabled(true);
+                });
+    }
+
+    private Optional<RelationType> getSelectedRelationType() {
+        if (tree.getLastSelectedPathComponent() != null) {
+            return Optional.of(tree.getLastSelectedPathComponent())
+                    .filter(RelationTypeNode.class::isInstance)
+                    .map(RelationTypeNode.class::cast)
+                    .filter(node -> node.getUserObject() instanceof RelationType)
+                    .map(relation -> (RelationType) relation.getUserObject());
+
         }
-        // buttonChoose.setEnabled(rel != null && RemoteUtils.relationTypeRemote.dbGetChildren(rel, LexiconManager.getInstance().getLexicons()).isEmpty());
-        selectedRelation = rel;
+        return Optional.empty();
     }
 
 }

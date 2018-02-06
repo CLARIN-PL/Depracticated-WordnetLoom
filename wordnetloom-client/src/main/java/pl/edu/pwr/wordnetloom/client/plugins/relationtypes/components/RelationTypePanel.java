@@ -6,9 +6,12 @@ import com.alee.laf.tabbedpane.WebTabbedPane;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MSplitPane;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
+
 
 public class RelationTypePanel extends WebPanel {
 
