@@ -1,10 +1,12 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
+import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.panel.WebPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextArea;
@@ -14,6 +16,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -37,7 +40,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             .withEnabled(false)
             .withActionListener(this);
 
-    private JCheckBox abstractValue;
+    private WebCheckBox abstractValue;
 
     private Synset lastSynset = null;
     private boolean quiteMode = false;
@@ -60,7 +63,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         commentValue.addCaretListener(this);
         commentValue.setRows(3);
 
-        abstractValue = new JCheckBox(Labels.ARTIFICIAL);
+        abstractValue = new WebCheckBox(Labels.ARTIFICIAL);
         abstractValue.setSelected(false);
         abstractValue.addActionListener(this);
 
@@ -88,22 +91,33 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
      * @param synset - synset
      */
     public void refreshData(Synset synset) {
-        if (synset != null) {
-            synset = LexicalDA.refresh(synset);
-        }
-        lastSynset = synset;
-        quiteMode = true;
 
-        // ustawienie wartosci elementow
-//        definitionValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.DEFINITION)) : formatValue(null));
-//        statusValue.setSelectedItem(synset == null ? null : "");
-//        commentValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.COMMENT)) : formatValue(null));
-//        abstractValue.setSelected(synset != null && Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT)));
-        commentValue.setEnabled(synset != null);
-        definitionValue.setEnabled(synset != null);
-        abstractValue.setEnabled(synset != null);
-        buttonSave.setEnabled(false);
-        quiteMode = false;
+        definitionValue .setText(formatValue(null));
+        commentValue.setText(formatValue(null));
+        abstractValue.setSelected(false);
+
+        if (synset != null) {
+
+            SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
+
+            if(sa.getDefinition() != null) {
+                definitionValue.setText(synset.getSynsetAttributes().getDefinition());
+            }
+
+            if(sa.getComment() != null ) {
+                commentValue.setText(formatValue(synset.getSynsetAttributes().getComment()));
+            }
+
+            abstractValue.setSelected(sa.getIsAbstract());
+        }
+
+       lastSynset = synset;
+       quiteMode = true;
+       commentValue.setEnabled(synset != null);
+       definitionValue.setEnabled(synset != null);
+       abstractValue.setEnabled(synset != null);
+       buttonSave.setEnabled(false);
+       quiteMode = false;
     }
 
     /**

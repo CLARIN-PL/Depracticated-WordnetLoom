@@ -18,7 +18,7 @@ import java.util.Set;
 @Table(name = "relation_type")
 public class RelationType extends GenericEntity {
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "relation_type_allowed_lexicons",
             joinColumns = @JoinColumn(name = "relation_type_id"),
@@ -28,7 +28,7 @@ public class RelationType extends GenericEntity {
     @Size(min = 1)
     private Set<Lexicon> lexicons = new HashSet<>();
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "relation_type_allowed_parts_of_speech",
             joinColumns = @JoinColumn(name = "relation_type_id"),

@@ -112,7 +112,7 @@ public class V1_8__ParseComment implements JdbcMigration {
         String value;
         value = getExample(comment, currentPosition);
         if (!value.isEmpty() && !value.equals(" ")) {
-            attributeRef.addExample(new Example(marker, value));
+            attributeRef.addExample(new Example(marker, value.trim()));
         }
     }
 
@@ -124,7 +124,7 @@ public class V1_8__ParseComment implements JdbcMigration {
             if (!value.isEmpty() && !value.equals(" ")) {
                 // sprawdzamy, czy wartość rzeczywiście jest linkiem. Jeżeli nie jest prawdopodobnie jest to przykład
                 if (value.startsWith("http") || value.startsWith("www") || value.startsWith("pl")) {
-                    attributeRef.setLink(value);
+                    attributeRef.setLink(value.trim());
                     secondIndex++;
                 } else {
                     serveExampleMarker(marker, comment, attributeRef);

@@ -12,17 +12,22 @@ import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.events.ShowRelationTypeEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window.PartOfSpeechWindow;
+import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window.ReverseRelationWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import se.datadosen.component.RiverLayout;
 
@@ -107,7 +112,33 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         allowedPartsOfSpeech.setText(PartOfSpeechManager.getInstance().partsOfSpeechToString(rt.getPartsOfSpeech()));
     }
 
+    private void save(){
+        if(currentRelation != null){
+            LocalisationManager.getInstance().updateLocalisedString(currentRelation.getName(), relationName.getText());
+            LocalisationManager.getInstance().updateLocalisedString(currentRelation.getDisplayText(), relationDisplay.getText());
+            LocalisationManager.getInstance().updateLocalisedString(currentRelation.getShortDisplayText(), relationShortcut.getText());
+            LocalisationManager.getInstance().updateLocalisedString(currentRelation.getDescription(), relationDescription.getText());
+
+            String hex = "#"+Integer.toHexString(colorChooser.getColor().getRGB()).substring(2);
+            currentRelation.setColor(hex.toUpperCase());
+            currentRelation.setMultilingual(multilingual.isSelected());
+            currentRelation.setNodePosition(relationDirection.getEntity());
+
+            RemoteService.relationTypeRemote.save(currentRelation);
+        }
+    }
+
     private void openReverseRelationDialog() {
+
+        Pair<RelationType, Boolean> r = ReverseRelationWindow.showModal(
+                parent,
+                currentRelation.getReverse(),
+                currentRelation.isAutoReverse(),
+                RelationTypeManager.getInstance().getParents(currentRelation.getRelationArgument()));
+
+        currentRelation.setReverse(r.getA());
+        currentRelation.setAutoReverse(r.getB());
+        bind(currentRelation);
     }
 
     private void openPartOfSpeechDialog() {
@@ -142,7 +173,8 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         return formatter;
     }
 
-    private final MButton btnSave = MButton.buildSaveButton();
+    private final MButton btnSave = MButton.buildSaveButton()
+            .withActionListener(e -> save());
 
     private final MTextField lexicon = new MTextField("");
 

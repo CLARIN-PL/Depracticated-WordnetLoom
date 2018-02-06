@@ -5,6 +5,7 @@ import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,4 +34,6 @@ public interface SynsetServiceRemote {
     int getCountSynsetsByCriteria(SynsetCriteriaDTO criteria);
 
     Synset fetchSynset(Long synsetId);
+
+    SynsetAttributes fetchSynsetAttributes(Long synsetId);
 }
