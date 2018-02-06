@@ -503,7 +503,7 @@ public class LexicalDA {
      * @return Synset
      */
     public static Synset refresh(Synset synset) {
-        return null; //RemoteUtils.synsetRemote.dbGet(synset.getId());
+        return null;// RemoteUtils.synsetRemote.dbGet(synset.getId());
     }
 
     /**

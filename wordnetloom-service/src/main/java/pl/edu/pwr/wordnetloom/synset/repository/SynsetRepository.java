@@ -992,6 +992,21 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return getEntityManager().createQuery(query).getSingleResult();
     }
 
+    public SynsetAttributes fetchSynsetAttributes(Long synsetId){
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<SynsetAttributes> query = criteriaBuilder.createQuery(SynsetAttributes.class);
+
+        Root<SynsetAttributes> root = query.from(SynsetAttributes.class);
+        root.fetch("synset" , JoinType.LEFT);
+        root.fetch("owner", JoinType.LEFT);
+        root.fetch( "examples", JoinType.LEFT);
+
+        Predicate predicate =  criteriaBuilder.equal(root.get("synset").get("id"), synsetId);
+        query.where(predicate);
+
+        return getEntityManager().createQuery(query).getSingleResult();
+    }
+
     @Override
     protected Class<Synset> getPersistentClass() {
         return Synset.class;

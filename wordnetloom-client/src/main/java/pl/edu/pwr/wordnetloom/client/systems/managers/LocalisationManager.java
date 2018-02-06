@@ -2,6 +2,8 @@ package pl.edu.pwr.wordnetloom.client.systems.managers;
 
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
+import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
+import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -13,6 +15,7 @@ public class LocalisationManager {
 
     private final Map<String, String> labelsMap = new HashMap<>();
     private final Map<Long, String> localisedStringsMap = new HashMap<>();
+    private static Locale locale;
 
     private LocalisationManager() {
     }
@@ -27,7 +30,6 @@ public class LocalisationManager {
     }
 
     public void load(Language lang) {
-        Locale locale;
         if (lang == null) {
             locale = new Locale(Language.English.getAbbreviation());
         } else {
@@ -53,5 +55,12 @@ public class LocalisationManager {
             return localisedStringsMap.get(key);
         }
         return "";
+    }
+
+    public void updateLocalisedString(Long key, String value){
+        LocalisedString ls = RemoteService.localisedStringServiceRemote.findStringsByKey(new LocalisedKey(key, locale.getLanguage()));
+        ls.setValue(value);
+        RemoteService.localisedStringServiceRemote.update(ls);
+        localisedStringsMap.replace(key, value);
     }
 }
