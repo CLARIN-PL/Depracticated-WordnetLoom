@@ -55,6 +55,15 @@ INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, 
   FROM wordnet_work.lexicalunit L LEFT JOIN wordnet_work.unitandsynset U ON L.id = U.LEX_ID
     LEFT JOIN wordnet_work.synset S ON U.SYN_ID = S.id;
 
+# changing synset position in english lexicons
+UPDATE sense
+SET synset_position = synset_position -1
+WHERE lexicon_id = 3;
+
+UPDATE sense
+SET synset_position = 0
+WHERE synset_position < 0;
+
 # PRZERZUCANIE UŻYTKOWNIKÓW
 #podział na imię i nazwisko
 SELECT DISTINCT

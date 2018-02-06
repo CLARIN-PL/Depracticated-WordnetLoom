@@ -101,7 +101,10 @@ public class ViwnEdgeSynset extends ViwnEdge {
 
     @Override
     public String toString() {
-        return LocalisationManager.getInstance().getLocalisedString(getRelationType().getShortDisplayText());
+        if(getRelationType() != null && getRelationType().getShortDisplayText() != null){
+            return LocalisationManager.getInstance().getLocalisedString(getRelationType().getShortDisplayText());
+        }
+        return "";
     }
 
     @Override
