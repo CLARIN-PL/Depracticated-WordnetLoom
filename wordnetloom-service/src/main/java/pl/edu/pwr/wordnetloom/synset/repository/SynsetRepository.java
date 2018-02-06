@@ -60,12 +60,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
         getEntityManager().createQuery("DELETE FROM Synset WHERE id = :id")
                 .setParameter("id", synset.getId())
                 .executeUpdate();
-//        synset.getOutgoingRelations().clear();
-//        synset.getIncomingRelations().clear();
-//        if(!getEntityManager().contains(synset)) {
-//            loadedSynset = getEntityManager().merge(synset);
-//        }
-//        getEntityManager().remove(loadedSynset);
     }
 
     public List<Synset> findSynsetsByWord(String word, List<Long> lexicons) {
@@ -870,7 +864,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return buildDataEntry(newSynset, relationsFrom);
     }
 
-    //TODO przetestować każdy z warunków
     public List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria){
         CriteriaQuery<Synset> query = getSynsetCriteriaQuery(criteria, false);
         query.distinct(true);
@@ -885,6 +878,11 @@ public class SynsetRepository extends GenericRepository<Synset> {
         List<Synset> result = selectQuery.getResultList();
 
         //loading lazy objects. Loading objects for result in this moment is faster than fetching in query
+        fetchLazyObject(result);
+        return result;
+    }
+
+    private void fetchLazyObject(List<Synset> result) {
         for(Synset synset : result){
             Hibernate.initialize(synset.getSenses());
             for(Sense sense : synset.getSenses()){
@@ -893,7 +891,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
                 Hibernate.initialize(sense.getLexicon());
             }
         }
-        return result;
     }
 
     public int getCountSynsetsByCriteria(SynsetCriteriaDTO criteria) {
@@ -916,8 +913,9 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
         if(criteria.getLemma()!=null || criteria.getLexiconId() != null || criteria.getPartOfSpeechId() != null || criteria.getDomainId() != null){
             Join<Synset, Sense> senseJoin = synsetRoot.join(SENSES, JoinType.LEFT);
+
             if(criteria.getLemma() != null && !criteria.getLemma().isEmpty()) {
-                Join<Synset, Word> wordJoin = senseJoin.join(WORD, JoinType.LEFT);
+                Join<Sense, Word> wordJoin = senseJoin.join(WORD, JoinType.LEFT);
                 Predicate lemmaPredicate = criteriaBuilder.like(wordJoin.get(WORD), criteria.getLemma() + "%");
                 criteriaList.add(lemmaPredicate);
             }
