@@ -31,15 +31,11 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 
-import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
@@ -97,19 +93,16 @@ public class ToolTipList extends WebList {
             final Point locationOnComponent = new Point(locationOnScreen);
             SwingUtilities.convertPointFromScreen(locationOnComponent, component);
             if (component.contains(locationOnComponent)) {
-                SwingUtilities.invokeLater(() -> {
-                    ToolTipManager.sharedInstance().mouseMoved(
-                            new MouseEvent(component, -1, System.currentTimeMillis(),
-                                    0, locationOnComponent.x, locationOnComponent.y,
-                                    locationOnScreen.x, locationOnScreen.y, 0, false, 0));
-                });
+                SwingUtilities.invokeLater(() -> ToolTipManager.sharedInstance().mouseMoved(
+                        new MouseEvent(component, -1, System.currentTimeMillis(),
+                                0, locationOnComponent.x, locationOnComponent.y,
+                                locationOnScreen.x, locationOnScreen.y, 0, false, 0)));
             }
         }
 
         @Override
         public void onFailure(Throwable thrown) {
         }
-
     }
 
     /**
@@ -132,7 +125,6 @@ public class ToolTipList extends WebList {
         this.toolTipsGenerator = toolTipsGenerator;
 
         popupMenu = new JPopupMenu();
-
         // Add popup menu displayer
         this.addMouseListener(new MouseListener() {
 

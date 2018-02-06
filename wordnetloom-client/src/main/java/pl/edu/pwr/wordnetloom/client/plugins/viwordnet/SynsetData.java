@@ -8,6 +8,9 @@ import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +68,25 @@ public class SynsetData {
     {
         //TODO być może będzie można zmienić na synsetId
         Map<Long,DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synset, lexicons, directions);
+        ByteArrayOutputStream boas = new ByteArrayOutputStream();
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(boas);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            oos.writeObject(entries);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int size = boas.size();
+        System.out.println(size);
         data.putAll(entries);
     }
 

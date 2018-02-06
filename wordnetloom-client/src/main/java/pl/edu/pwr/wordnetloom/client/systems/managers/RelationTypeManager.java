@@ -110,10 +110,6 @@ public class RelationTypeManager implements Loggable{
                 .collect(Collectors.toList());
     }
 
-    public String getFullName(Long id, RelationArgument relationArgument) {
-        RelationType relationType = get(id, relationArgument);
-        return LocalisationManager.getInstance().getLocalisedString(relationType.getName());
-    }
 
     public String getFullName(Long id) {
         RelationType relationType = get(id);

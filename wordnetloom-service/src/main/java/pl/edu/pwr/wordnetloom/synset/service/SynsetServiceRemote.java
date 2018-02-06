@@ -3,10 +3,9 @@ package pl.edu.pwr.wordnetloom.synset.service;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
-import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synset.model.SynsetCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,5 +31,9 @@ public interface SynsetServiceRemote {
 
     List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria);
 
+    int getCountSynsetsByCriteria(SynsetCriteriaDTO criteria);
+
     Synset fetchSynset(Long synsetId);
+
+    SynsetAttributes fetchSynsetAttributes(Long synsetId);
 }

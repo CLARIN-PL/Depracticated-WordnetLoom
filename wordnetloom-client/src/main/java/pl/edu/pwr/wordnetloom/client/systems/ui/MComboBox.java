@@ -22,6 +22,7 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 public class MComboBox<T> extends WebComboBox {
 
@@ -66,9 +67,14 @@ public class MComboBox<T> extends WebComboBox {
     }
 
     public T getEntity() {
-        if (getSelectedIndex() > 0) {
-            CustomDescription<T> item = (CustomDescription<T>) getItemAt(getSelectedIndex());
-            return item.getObject();
+        if (getSelectedIndex() >= 0) {
+            if( getItemAt(getSelectedIndex()) instanceof  CustomDescription) {
+                CustomDescription<T> item = (CustomDescription<T>) getItemAt(getSelectedIndex());
+                return item.getObject();
+            } else {
+                return (T) getItemAt(getSelectedIndex());
+            }
+
         }
         return null;
     }

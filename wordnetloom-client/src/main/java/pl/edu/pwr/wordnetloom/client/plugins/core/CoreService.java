@@ -5,7 +5,6 @@ import com.alee.laf.menu.WebMenu;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.core.window.AboutWindow;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
@@ -56,10 +55,9 @@ public class CoreService extends AbstractService implements MenuListener {
         showTooltips.setMnemonic(KeyEvent.VK_D);
 
         showTooltips.addActionListener((ActionEvent e) -> {
-
             JCheckBoxMenuItem item = (JCheckBoxMenuItem) e.getSource();
             w.setParam(SHOW_TOOLTIPS_PARAM, item.isSelected() ? "1" : "0");
-            ToolTipGenerator.getGenerator().setEnabledTooltips(item.isSelected());
+//            ToolTipGenerator.getGenerator().setEnabledTooltips(item.isSelected()); //TODO jak wszystko będzie działać usunąć to
 
         });
 

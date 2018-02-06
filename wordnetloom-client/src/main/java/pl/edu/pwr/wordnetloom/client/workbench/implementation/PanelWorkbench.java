@@ -10,7 +10,6 @@ import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.systems.managers.ConfigurationManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.ui.BusyGlassPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
@@ -68,8 +67,8 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
         config.loadConfiguration();
 
         // wlaczenie albo wylaczenie tooltipow
-        ToolTipGenerator.getGenerator().setEnabledTooltips(
-                "1".equals(config.get(SHOW_TOOLTIPS_PARAM_NAME)));
+//        ToolTipGenerator.getGenerator().setEnabledTooltips(
+//                "1".equals(config.get(SHOW_TOOLTIPS_PARAM_NAME))); //TODO jesli wszystko bedzie działać usunąć to
 
         // utworzenie interfejsu
         createFrame();

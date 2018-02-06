@@ -19,7 +19,7 @@ import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.Tools;
-import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
+import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
@@ -141,10 +141,9 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         synsetID.setBorder(null); //remove the border
 
         refreshData(null);
-        unitsList = new ToolTipList(workbench, listModel,
-                ToolTipGenerator.getGenerator());
-        unitsList
-                .setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+        unitsList = new ToolTipList(workbench, listModel, new SenseTooltipGenerator());
+        unitsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         unitsList.addListSelectionListener(this);
         unitsList.addMouseListener(this);
         unitsList.setEnabled(false);
@@ -396,6 +395,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 RemoteService.synsetRemote.delete(lastSynset);
                 listModel.setCollection(null);
 //                refreshData(lastSynset);
+                //TODO zrobić usunięcie synsetu z grafu
                 getViWordNetService().refreshViews();
             } else if(lastSynset.getSplit() > listModel.getSize()){
                 // jeżeli po usunięciu jednostek podział jest większy niż liczba elementów na liście, należy przesunąć podział na ostatnie miejsce

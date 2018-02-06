@@ -4,10 +4,9 @@ import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
-import pl.edu.pwr.wordnetloom.synset.model.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synset.model.SynsetCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.synset.repository.SynsetRepository;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceLocal;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
@@ -87,7 +86,17 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     }
 
     @Override
+    public int getCountSynsetsByCriteria(SynsetCriteriaDTO criteria) {
+        return synsetRepository.getCountSynsetsByCriteria(criteria);
+    }
+
+    @Override
     public Synset fetchSynset(Long synsetId){
         return synsetRepository.fetchSynset(synsetId);
+    }
+
+    @Override
+    public SynsetAttributes fetchSynsetAttributes(Long synsetId) {
+        return synsetRepository.fetchSynsetAttributes(synsetId);
     }
 }

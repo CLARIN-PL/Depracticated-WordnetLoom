@@ -18,7 +18,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
-import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipGenerator;
+import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
@@ -75,8 +75,9 @@ abstract public class AbstractListFrame<T, G> extends
         buttonSearch = MButton.buildSearchButton(this)
                 .withKeyListener(this);
 
-        itemsList = new ToolTipList(workbench, listModel,
-                ToolTipGenerator.getGenerator());
+//        itemsList = new ToolTipList(workbench, listModel,
+//                ToolTipGenerator.getGenerator());
+        itemsList = new ToolTipList(workbench, listModel, new SenseTooltipGenerator()); //TODO zobaczyć, w jakich miejscach jest to używane i czy czegoś nie zepsuje
 
         itemsList.addListSelectionListener(this);
         itemsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

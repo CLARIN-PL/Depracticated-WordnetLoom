@@ -1,6 +1,5 @@
 package pl.edu.pwr.wordnetloom.sense.repository;
 
-import pl.edu.pwr.wordnetloom.common.dto.DataMap;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -8,7 +7,7 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
-import pl.edu.pwr.wordnetloom.sense.model.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
@@ -19,7 +18,6 @@ import pl.edu.pwr.wordnetloom.word.repository.WordRepository;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
@@ -91,70 +89,39 @@ public class SenseRepository extends GenericRepository<Sense> {
         return senses;
     }
 
+    private final String WORD = "word";
+    private final String DOMAIN = "domain";
+    private final String LEXICON = "lexicon";
+    private final String PART_OF_SPEECH = "partOfSpeech";
+    private final String VARIANT = "variant";
+    private final String INCOMING_RELATIONS = "incomingRelations";
+    private final String OUTGOING_RELATIONS = "outgoingRelations";
+    private final String RELATION_TYPE = "relationType";
+    private final String REGISTER = "register";
+    private final String COMMENT = "comment";
+    private final String EXAMPLES = "examples";
+    private final String SYNSET = "synset";
+    private final String SENSE_ATTRIBUTES = "senseAttributes";
+
     private List<Sense> getSensesByCriteria(SenseCriteriaDTO dto){
-        //TODO sprawdzić działanie wszystkich warunków
+
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Sense> query = criteriaBuilder.createQuery(Sense.class);
         Root<Sense> senseRoot = query.from(Sense.class);
-        Join<Sense, Word> wordJoin = senseRoot.join("word");
-        senseRoot.fetch("word");
-        senseRoot.fetch("domain");
-        senseRoot.fetch("lexicon");
-//        List<Predicate> criteriaList = new ArrayList<>();
-//        Predicate lemmaPredicate  = criteriaBuilder.like(wordJoin.get("word"), dto.getLemma()+"%");
-//        criteriaList.add(lemmaPredicate);
-//        Predicate lexiconPredicate = senseRoot.get("lexicon").in(dto.getLexicons());
-//        criteriaList.add(lexiconPredicate);
-//        if(dto.getPartOfSpeechId() != null){
-//            Predicate partOfSpeechPredicate = criteriaBuilder.equal(senseRoot.get("partOfSpeech"), dto.getPartOfSpeechId());
-//            criteriaBuilder.and(partOfSpeechPredicate);
-//        }
-//        if(dto.getDomainId() != null){
-//            Predicate domainPredicate = criteriaBuilder.equal(senseRoot.get("domain"), dto.getDomainId());
-//            criteriaBuilder.and(domainPredicate);
-//        }
-//        if(dto.getRelationTypeId() != null){
-//            Join<Sense, SenseRelation> incomingRelationsJoin = senseRoot.join("incomingRelations");
-//            Join<Sense, SenseRelation> outgoingRelationsJoin = senseRoot.join("outgoingRelations");
-//            Predicate[] relationPredicates = new Predicate[2];
-//            relationPredicates[0] = criteriaBuilder.equal(incomingRelationsJoin.get("relationType"), dto.getRelationTypeId());
-//            relationPredicates[1] = criteriaBuilder.equal(outgoingRelationsJoin.get("relationType"), dto.getRelationTypeId());
-//            criteriaList.add(criteriaBuilder.or(relationPredicates));
-//        }
-//        if(dto.getRegisterId() != null || dto.getComment() != null){
-//            Join<Sense,SenseAttributes> senseAttributesJoin = senseRoot.join("senseAttributes", JoinType.LEFT);
-//            if(dto.getRegisterId() != null){
-//                Predicate senseAttributesPredicate = criteriaBuilder.equal(senseAttributesJoin.get("register"), dto.getRegisterId());
-//                criteriaList.add(senseAttributesPredicate);
-//            }
-//            if(dto.getComment() !=null && !dto.getComment().isEmpty()){
-//                Predicate commentPredicate = criteriaBuilder.like(senseAttributesJoin.get("comment"), "%" + dto.getComment() + "%");
-//                criteriaList.add(commentPredicate);
-//            }
-//        }
-//        if(dto.getExample() != null && !dto.getExample().isEmpty()){
-//            Join<Sense, SenseExample> senseExample = senseRoot.join("examples");
-//            Predicate examplePredicate = criteriaBuilder.like(senseExample.get("examples"),dto.getExample());
-//            criteriaList.add(examplePredicate);
-//        }
-//        // nie wiem czy to tez jest wykorzystywane
-//        if(dto.getSynsetId() != null){
-//            Predicate synsetPredicate = criteriaBuilder.equal(senseRoot.get("synset"), dto.getSynsetId());
-//            criteriaList.add(synsetPredicate);
-//        }
-//        if(dto.getVariant() != null) {
-//            Predicate variantPredicate = criteriaBuilder.equal(senseRoot.get("variant"), dto.getVariant());
-//            criteriaList.add(variantPredicate);
-//        }
+        Join<Sense, Word> wordJoin = senseRoot.join(WORD);
+        senseRoot.fetch(WORD);
+        senseRoot.fetch(DOMAIN);
+        senseRoot.fetch(LEXICON);
+
         query.select(senseRoot);
-//        query.where(criteriaBuilder.and(criteriaList.toArray(new Predicate[0])));
+//        query.distinct(true);
         query.where(getPredicatesByCriteria(dto, senseRoot, wordJoin, criteriaBuilder));
 
         List<Order> orders = new ArrayList<>();
-        orders.add(criteriaBuilder.asc(wordJoin.get("word")));
-        orders.add(criteriaBuilder.asc(senseRoot.get("partOfSpeech")));
-        orders.add(criteriaBuilder.asc(senseRoot.get("variant")));
-        orders.add(criteriaBuilder.asc(senseRoot.get("lexicon")));
+        orders.add(criteriaBuilder.asc(wordJoin.get(WORD)));
+        orders.add(criteriaBuilder.asc(senseRoot.get(PART_OF_SPEECH)));
+        orders.add(criteriaBuilder.asc(senseRoot.get(VARIANT)));
+        orders.add(criteriaBuilder.asc(senseRoot.get(LEXICON)));
 
         query.orderBy(orders);
         Query selectQuery = em.createQuery(query);
@@ -165,54 +132,67 @@ public class SenseRepository extends GenericRepository<Sense> {
             selectQuery.setFirstResult(dto.getOffset());
         }
 
-        return selectQuery.getResultList();
+        // remove duplicates
+        List<Sense> result = selectQuery.getResultList();
+        Set<Sense> resultSet = new LinkedHashSet<>(result);
+        return new ArrayList<>(resultSet);
+
+//        return selectQuery.getResultList();
     }
 
     private Predicate[] getPredicatesByCriteria(SenseCriteriaDTO dto, Root senseRoot, Join wordJoin, CriteriaBuilder criteriaBuilder){
         List<Predicate> predicateList = new ArrayList<>();
-        Predicate lemmaPredicate = criteriaBuilder.like(wordJoin.get("word"), dto.getLemma()+"%");
-        predicateList.add(lemmaPredicate);
-        Predicate lexiconPredicate = senseRoot.get("lexicon").in(dto.getLexicons());
+
+        if(dto.getLemma() != null && !dto.getLemma().isEmpty()){
+            Predicate lemmaPredicate = criteriaBuilder.like(wordJoin.get(WORD), dto.getLemma()+"%");
+            predicateList.add(lemmaPredicate);
+        }
+
+        Predicate lexiconPredicate = senseRoot.get(LEXICON).in(dto.getLexicons());
         predicateList.add(lexiconPredicate);
+
         if(dto.getPartOfSpeechId() != null){
-            Predicate partOfSpeechPredicate = criteriaBuilder.equal(senseRoot.get("partOfSpeech"), dto.getPartOfSpeechId());
+            Predicate partOfSpeechPredicate = criteriaBuilder.equal(senseRoot.get(PART_OF_SPEECH), dto.getPartOfSpeechId());
             predicateList.add(partOfSpeechPredicate);
         }
+
         if(dto.getDomainId() != null){
-            Predicate domainPredicate = criteriaBuilder.equal(senseRoot.get("domain"), dto.getDomainId());
+            Predicate domainPredicate = criteriaBuilder.equal(senseRoot.get(DOMAIN), dto.getDomainId());
             predicateList.add(domainPredicate);
         }
+
         if(dto.getRelationTypeId() != null){
-            Join<Sense, SenseRelation> incomingRelationsJoin = senseRoot.join("incomingRelations");
-            Join<Sense, SenseRelation> outgoinRelation = senseRoot.join("outgoingRelations");
-            Predicate incomingRelationsPredicate = criteriaBuilder.equal(incomingRelationsJoin.get("relationType"), dto.getRelationTypeId());
-            Predicate outgoinRelationsPredicate = criteriaBuilder.equal(outgoinRelation.get("relationType"), dto.getRelationTypeId());
+            Join<Sense, SenseRelation> incomingRelationsJoin = senseRoot.join(INCOMING_RELATIONS, JoinType.LEFT);
+            Join<Sense, SenseRelation> outgoingRelation = senseRoot.join(OUTGOING_RELATIONS, JoinType.LEFT);
+            Predicate incomingRelationsPredicate = criteriaBuilder.equal(incomingRelationsJoin.get(RELATION_TYPE), dto.getRelationTypeId());
+            Predicate outgoinRelationsPredicate = criteriaBuilder.equal(outgoingRelation.get(RELATION_TYPE), dto.getRelationTypeId());
             predicateList.add(incomingRelationsPredicate);
             predicateList.add(outgoinRelationsPredicate);
         }
-        if(dto.getRelationTypeId() != null || dto.getComment() != null){
-            Join<Sense, SenseAttributes> senseSenseAttributesJoin = senseRoot.join("senseAttributes", JoinType.LEFT);
-            if(dto.getRelationTypeId() != null){
-                Predicate senseAttributesPredicate = criteriaBuilder.equal(senseSenseAttributesJoin.get("register"), dto.getRegisterId());
+
+        if(dto.getRegisterId() != null || dto.getComment() != null){
+            Join<Sense, SenseAttributes> senseSenseAttributesJoin = senseRoot.join(SENSE_ATTRIBUTES, JoinType.LEFT);
+            if(dto.getRegisterId() != null){
+                Predicate senseAttributesPredicate = criteriaBuilder.equal(senseSenseAttributesJoin.get(REGISTER), dto.getRegisterId());
                 predicateList.add(senseAttributesPredicate);
             }
             if(dto.getComment() != null && !dto.getComment().isEmpty()){
-                Predicate commentPredicate = criteriaBuilder.like(senseSenseAttributesJoin.get("comment"), "%"+dto.getComment()+"%");
+                Predicate commentPredicate = criteriaBuilder.like(senseSenseAttributesJoin.get(COMMENT), "%"+dto.getComment()+"%");
                 predicateList.add(commentPredicate);
             }
         }
 
         if(dto.getExample() != null){
-            Join<Sense, SenseExample> senseExampleJoin = senseRoot.join("examples");
-            Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get("examples"), dto.getExample());
+            Join<Sense, SenseExample> senseExampleJoin = senseRoot.join(EXAMPLES);
+            Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get(EXAMPLES), dto.getExample());
             predicateList.add(examplePredicate);
         }
         if(dto.getSynsetId() != null){
-            Predicate synsetPredicate  = criteriaBuilder.equal(senseRoot.get("synset"), dto.getSynsetId());
+            Predicate synsetPredicate  = criteriaBuilder.equal(senseRoot.get(SYNSET), dto.getSynsetId());
             predicateList.add(synsetPredicate);
         }
         if(dto.getVariant() != null){
-            Predicate variantPredicate = criteriaBuilder.equal(senseRoot.get("variant"), dto.getVariant());
+            Predicate variantPredicate = criteriaBuilder.equal(senseRoot.get(VARIANT), dto.getVariant());
             predicateList.add(variantPredicate);
         }
 
@@ -223,12 +203,11 @@ public class SenseRepository extends GenericRepository<Sense> {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
         Root<Sense> senseRoot = query.from(Sense.class);
-        Join<Sense, Word> wordJoin = senseRoot.join("word");
+        Join<Sense, Word> wordJoin = senseRoot.join(WORD);
         query.select(criteriaBuilder.count(senseRoot));
         Predicate[] predicates = getPredicatesByCriteria(dto, senseRoot, wordJoin, criteriaBuilder);
         query.where(predicates);
         return Math.toIntExact(getEntityManager().createQuery(query).getSingleResult());
-
     }
 
     /** Zwraca komparator, który porównuje jednostki według nastepujących kryteriów
