@@ -6,13 +6,16 @@ import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 public interface SenseServiceRemote {
 
     Sense clone(Sense sense);
 
-    Sense persist(Sense sense);
+    Sense save(Sense sense);
+
+    SenseAttributes save(final SenseAttributes attributes);
 
     void delete(Sense sense);
 
@@ -58,4 +61,5 @@ public interface SenseServiceRemote {
 
     Sense fetchSense(Long senseId);
 
+    SenseAttributes fetchSenseAttribute(Long senseId);
 }

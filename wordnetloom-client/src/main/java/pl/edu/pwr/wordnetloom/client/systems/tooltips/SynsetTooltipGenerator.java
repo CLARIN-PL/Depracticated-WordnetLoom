@@ -29,18 +29,19 @@ public class SynsetTooltipGenerator implements ToolTipGeneratorInterface{
         }
         Synset synset = (Synset)object;
         Synset fetchedSynset = RemoteService.synsetRemote.fetchSynset(synset.getId());
+        SynsetAttributes attributes = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
         //TODO sprawdzić, czy wystarczy pobrać tylko relację, gdzie synset jest relacja
         List<SynsetRelation> synsetRelations = RemoteService.synsetRelationRemote.findRelationsWhereSynsetIsParent(synset, LexiconManager.getInstance().getUserChosenLexiconsIds(), NodeDirection.values());
-        return getSenseToolTipText(fetchedSynset, synsetRelations);
+
+        return getSenseToolTipText(fetchedSynset,attributes, synsetRelations);
     }
 
-    private String getSenseToolTipText(Synset synset, List<SynsetRelation> relations) {
+    private String getSenseToolTipText(Synset synset, SynsetAttributes attributes, List<SynsetRelation> relations) {
         builder.clear();
-        //TODO zrobić dodawanie nazwy
-        SynsetAttributes attributes = null ;//synset.getSynsetAttributes();
+
         if(attributes != null) {
             builder.addDefinition(attributes.getDefinition())
-                    .addArtificial(attributes.getIsAbstract());
+                    .addArtificial(synset.getAbstract());
         } else {
             builder.addArtificial(false);
         }
@@ -52,7 +53,7 @@ public class SynsetTooltipGenerator implements ToolTipGeneratorInterface{
             builder.addOwner(attributes.getOwner())
                     .addSynsetComment(attributes.getComment());
         }
-        SenseAttributes senseAttributes = headSense.getSenseAttributes();
+        SenseAttributes senseAttributes = RemoteService.senseRemote.fetchSenseAttribute(headSense.getId());
         if(senseAttributes != null) {
             builder.addSenseComment(senseAttributes.getComment());
         }

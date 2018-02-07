@@ -1,21 +1,24 @@
 package pl.edu.pwr.wordnetloom.synset.model;
 
-import org.hibernate.annotations.LazyToOne;
-import org.hibernate.annotations.LazyToOneOption;
-import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "synset_attributes")
-public class SynsetAttributes {
+public class SynsetAttributes implements Serializable{
 
     private static final long serialVersionUID = -3305787239727633359L;
 
     @Id
     protected Long id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "synset_id")
+    @MapsId
+    private Synset synset;
 
     private String definition;
 
@@ -29,7 +32,7 @@ public class SynsetAttributes {
     @Column(name = "example")
     private List<String> examples;
 
-    @ManyToOne (fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
 
@@ -39,12 +42,6 @@ public class SynsetAttributes {
     @Column(name = "ili_id")
     private String iliId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "synset_id")
-    @MapsId
-    @LazyToOne(LazyToOneOption.NO_PROXY)
-    private Synset synset;
-
     public Long getId() {
         return id;
     }
@@ -53,9 +50,7 @@ public class SynsetAttributes {
         this.id = id;
     }
 
-    public SynsetAttributes() {
-        super();
-    }
+    public SynsetAttributes() {}
 
     public SynsetAttributes(String definition, String comment, User owner, String princetonId) {
         this.definition = definition;

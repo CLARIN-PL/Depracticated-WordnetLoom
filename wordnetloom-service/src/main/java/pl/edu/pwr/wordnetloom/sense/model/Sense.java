@@ -1,5 +1,7 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.dictionary.model.AspectDictionary;
 import pl.edu.pwr.wordnetloom.dictionary.model.StatusDictionary;
@@ -19,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Audited
 @Entity
 @Table(name = "sense")
 public class Sense extends GenericEntity {
@@ -59,8 +62,9 @@ public class Sense extends GenericEntity {
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final Set<SenseRelation> outgoingRelations = new HashSet<>();
 
+    @NotAudited
     @ManyToOne
-    @JoinColumn(name = "status_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "status_id", referencedColumnName = "id")
     private StatusDictionary status;
 
     public Sense() {

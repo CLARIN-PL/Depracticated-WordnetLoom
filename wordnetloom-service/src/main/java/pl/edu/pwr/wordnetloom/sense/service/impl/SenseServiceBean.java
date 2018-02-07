@@ -5,11 +5,15 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.validation.Validator;
 
+import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
+import pl.edu.pwr.wordnetloom.sense.repository.SenseAttributesRepository;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceRemote;
@@ -21,7 +25,14 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 public class SenseServiceBean implements SenseServiceLocal {
 
     @Inject
-    private SenseRepository senseRepository;
+    SenseRepository senseRepository;
+
+    @Inject
+    SenseAttributesRepository senseAttributesRepository;
+
+    @Inject
+    Validator validator;
+
 
     public Sense clone(Sense unit) {
         return senseRepository.clone(unit);
@@ -33,8 +44,27 @@ public class SenseServiceBean implements SenseServiceLocal {
     }
 
     @Override
-    public Sense persist(Sense sense) {
-        return senseRepository.persist(sense);
+    public Sense save(final Sense sense) {
+            ValidationUtils.validateEntityFields(validator, sense);
+            Sense s;
+            if (sense.getId() == null) {
+                sense.setVariant(senseRepository.findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech()));
+               s = senseRepository.persist(sense);
+            } else {
+               s = senseRepository.update(sense);
+            }
+        return s;
+    }
+
+    public SenseAttributes save(final SenseAttributes attributes) {
+        ValidationUtils.validateEntityFields(validator, attributes);
+        SenseAttributes sa;
+        if(attributes.getId() == null){
+            sa = senseAttributesRepository.persist(attributes);
+        }else{
+            sa = senseAttributesRepository.update(attributes);
+        }
+        return sa;
     }
 
     @Override
@@ -140,5 +170,10 @@ public class SenseServiceBean implements SenseServiceLocal {
     @Override
     public Sense fetchSense(Long senseId) {
         return senseRepository.fetchSense(senseId);
+    }
+
+    @Override
+    public SenseAttributes fetchSenseAttribute(Long senseId) {
+        return senseRepository.fetchSenseAttribute(senseId);
     }
 }

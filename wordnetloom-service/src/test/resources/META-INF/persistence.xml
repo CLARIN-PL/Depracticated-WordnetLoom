@@ -22,6 +22,9 @@
         <class>pl.edu.pwr.wordnetloom.relationtest.model.RelationTest</class>
         <class>pl.edu.pwr.wordnetloom.relationtype.model.RelationType</class>
         <class>pl.edu.pwr.wordnetloom.dictionary.model.Dictionary</class>
+        <class>pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary</class>
+        <class>pl.edu.pwr.wordnetloom.dictionary.model.StatusDictionary</class>
+        <class>pl.edu.pwr.wordnetloom.dictionary.model.AspectDictionary</class>
         <class>pl.edu.pwr.wordnetloom.user.model.User</class>
         <class>pl.edu.pwr.wordnetloom.user.model.UserSettings</class>
 
@@ -35,6 +38,11 @@
             <property name="hibernate.flushMode" value="FLUSH_AUTO"/>
             <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
 
+            <property name="org.hibernate.envers.audit_table_prefix" value="tracker_" />
+            <property name="org.hibernate.envers.audit_table_suffix" value="" />
+            <property
+                    name="org.hibernate.envers.audit_strategy"
+                    value="org.hibernate.envers.strategy.ValidityAuditStrategy"/>
         </properties>
     </persistence-unit>
 </persistence>
