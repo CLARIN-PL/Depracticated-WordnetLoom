@@ -52,6 +52,9 @@ public class SynsetRepository extends GenericRepository<Synset> {
     private final String OWNER = "owner";
     private final String SENSE_ATTRIBUTE = "senseAttributes";
     private final String SYNSET_POSITION = "synsetPosition";
+    private final String SYNSET = "synset";
+    private final String EXAMPLES = "examples";
+    private final String OUTGOING_RELATIONS = "outgoingRelations";
 
     @Override
     public void delete(Synset synset){
@@ -953,12 +956,19 @@ public class SynsetRepository extends GenericRepository<Synset> {
         }
 
         if(criteria.getRelationTypeId() != null) {
-            Subquery<Long> relationsSubquery = query.subquery(Long.class);
-            Root<SynsetRelation> relationsRoot = relationsSubquery.from(SynsetRelation.class);
-            relationsSubquery.distinct(true);
-            relationsSubquery.select(relationsRoot.get(RELATION_PARENT));
-            relationsSubquery.where(criteriaBuilder.equal(relationsRoot.get(RELATION_TYPE), criteria.getRelationTypeId()));
-            criteriaList.add(synsetRoot.get(ID).in(relationsSubquery));
+            if(criteria.getLemma() != null){
+                Join<Synset, SynsetRelation> relationsJoin = synsetRoot.join(OUTGOING_RELATIONS);
+                Predicate relationsPredicate = criteriaBuilder.equal(relationsJoin.get(RELATION_TYPE), criteria.getRelationTypeId());
+                criteriaList.add(relationsPredicate);
+
+            } else {
+                Subquery<Long> relationsSubquery = query.subquery(Long.class);
+                Root<SynsetRelation> relationsRoot = relationsSubquery.from(SynsetRelation.class);
+                relationsSubquery.distinct(true);
+                relationsSubquery.select(relationsRoot.get(RELATION_PARENT));
+                relationsSubquery.where(criteriaBuilder.equal(relationsRoot.get(RELATION_TYPE), criteria.getRelationTypeId()));
+                criteriaList.add(synsetRoot.get(ID).in(relationsSubquery));
+            }
         }
 
         if(countStatement) {
@@ -997,11 +1007,11 @@ public class SynsetRepository extends GenericRepository<Synset> {
         CriteriaQuery<SynsetAttributes> query = criteriaBuilder.createQuery(SynsetAttributes.class);
 
         Root<SynsetAttributes> root = query.from(SynsetAttributes.class);
-        root.fetch("synset" , JoinType.LEFT);
-        root.fetch("owner", JoinType.LEFT);
-        root.fetch( "examples", JoinType.LEFT);
+        root.fetch(SYNSET , JoinType.LEFT);
+        root.fetch(OWNER, JoinType.LEFT);
+        root.fetch( EXAMPLES, JoinType.LEFT);
 
-        Predicate predicate =  criteriaBuilder.equal(root.get("synset").get("id"), synsetId);
+        Predicate predicate =  criteriaBuilder.equal(root.get(SYNSET).get(ID), synsetId);
         query.where(predicate);
 
         return getEntityManager().createQuery(query).getSingleResult();

@@ -1,5 +1,7 @@
 package pl.edu.pwr.wordnetloom.synset.model;
 
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
@@ -38,6 +40,7 @@ public class SynsetAttributes extends GenericEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "synset_id")
     @MapsId
+    @LazyToOne(LazyToOneOption.NO_PROXY)
     private Synset synset;
 
     public SynsetAttributes() {
