@@ -639,9 +639,9 @@ public class SenseRepository extends GenericRepository<Sense> {
         CriteriaQuery<SenseAttributes> query = criteriaBuilder.createQuery(SenseAttributes.class);
 
         Root<SenseAttributes> root = query.from(SenseAttributes.class);
-        root.fetch( "examples", JoinType.LEFT);
+        root.fetch("examples", JoinType.LEFT);
 
-        Predicate predicate =  criteriaBuilder.equal(root.get("id"), senseId);
+        Predicate predicate = criteriaBuilder.equal(root.get("id"), senseId);
         query.where(predicate);
 
         return getEntityManager().createQuery(query).getSingleResult();
