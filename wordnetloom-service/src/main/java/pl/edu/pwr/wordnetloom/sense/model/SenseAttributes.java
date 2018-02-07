@@ -1,26 +1,31 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
-import org.hibernate.annotations.GenericGenerator;
+import pl.edu.pwr.wordnetloom.dictionary.model.AspectDictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "sense_attributes")
-public class SenseAttributes /*extends GenericEntity */ implements Serializable, Cloneable{
+public class SenseAttributes implements Serializable, Cloneable {
 
     @Id
-    @Column(name = "sense_id", unique = true, nullable = false)
-    @GenericGenerator(name = "foreigngen", strategy = "foreign", parameters = @org.hibernate.annotations.Parameter(name = "property", value = "sense"))
-    @GeneratedValue(generator = "foreigngen")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "sense_id")
     @MapsId
-    @PrimaryKeyJoinColumn
     private Sense sense;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "senseAttributes", orphanRemoval = true)
+    private List<SenseExample> examples;
+
+    @ManyToOne
+    @JoinColumn(name = "aspect_id", referencedColumnName = "id", nullable = false)
+    private AspectDictionary aspectDictionary;
 
     @Lob
     private String definition;
@@ -28,7 +33,9 @@ public class SenseAttributes /*extends GenericEntity */ implements Serializable,
     @Lob
     private String comment;
 
-    private Long register;
+    @ManyToOne
+    @JoinColumn(name = "register_id", referencedColumnName = "id", nullable = false)
+    private RegisterDictionary register;
 
     private String link;
 
@@ -43,7 +50,7 @@ public class SenseAttributes /*extends GenericEntity */ implements Serializable,
         super();
     }
 
-    public SenseAttributes(String definition, String comment, Long register, String link) {
+    public SenseAttributes(String definition, String comment, RegisterDictionary register, String link) {
         this.definition = definition;
         this.comment = comment;
         this.register = register;
@@ -58,11 +65,11 @@ public class SenseAttributes /*extends GenericEntity */ implements Serializable,
         owner = sa.owner;
     }
 
-    public Long getId(){
+    public Long getId() {
         return id;
     }
 
-    public void setId(Long id){
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -82,11 +89,11 @@ public class SenseAttributes /*extends GenericEntity */ implements Serializable,
         this.comment = comment;
     }
 
-    public Long getRegister(){
+    public RegisterDictionary getRegister() {
         return register;
     }
 
-    public void setRegister(Long register){
+    public void setRegister(RegisterDictionary register) {
         this.register = register;
     }
 
@@ -120,5 +127,21 @@ public class SenseAttributes /*extends GenericEntity */ implements Serializable,
 
     public void setErrorComment(String errorComment) {
         this.errorComment = errorComment;
+    }
+
+    public List<SenseExample> getExamples() {
+        return examples;
+    }
+
+    public void setExamples(List<SenseExample> examples) {
+        this.examples = examples;
+    }
+
+    public AspectDictionary getAspectDictionary() {
+        return aspectDictionary;
+    }
+
+    public void setAspectDictionary(AspectDictionary aspectDictionary) {
+        this.aspectDictionary = aspectDictionary;
     }
 }

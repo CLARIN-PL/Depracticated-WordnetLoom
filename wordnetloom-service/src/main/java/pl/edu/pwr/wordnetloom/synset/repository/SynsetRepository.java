@@ -77,32 +77,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
                 .getSingleResult();
     }
 
-    public List<Synset> findSynsets(List<Synset> synsets) {
-        if (synsets.isEmpty()) {
-            return synsets;
-        }
-
-        ArrayList<Long> ids = new ArrayList<>();
-        for (Synset s : synsets) {
-            ids.add(s.getId());
-        }
-
-        return findSynsetsByIds(ids);
-    }
-
-    public List<Synset> findSynsetsByIds(Collection<Long> iDs) {
-        if (iDs.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<Synset> list = getEntityManager().createQuery("SELECT s FROM Synset s JOIN FETCH s.senses JOIN FETCH s.synsetAttributes WHERE s.id IN ( :ids )", Synset.class)
-                .setParameter("ids", iDs)
-                .getResultList();
-        if (!list.isEmpty() && list.get(0) != null) {
-            list.get(0).getSynsetAttributes();
-        }
-        return list;
-    }
 
     public Integer findSynsetSenseCount(Synset synset) {
         return findById(synset.getId()).getSenses().size();

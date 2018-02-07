@@ -8,9 +8,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "synset_attributes")
-public class SynsetAttributes extends GenericEntity {
+public class SynsetAttributes {
 
     private static final long serialVersionUID = -3305787239727633359L;
+
+    @Id
+    protected Long id;
 
     private String definition;
 
@@ -24,10 +27,6 @@ public class SynsetAttributes extends GenericEntity {
     @Column(name = "example")
     private List<String> examples;
 
-    @Basic
-    @Column(name = "abstract")
-    private Boolean isAbstract = false;
-
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
@@ -35,19 +34,29 @@ public class SynsetAttributes extends GenericEntity {
     @Column(name = "princeton_id")
     private String princetonId;
 
+    @Column(name = "ili_id")
+    private String iliId;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "synset_id")
     @MapsId
     private Synset synset;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public SynsetAttributes() {
         super();
     }
 
-    public SynsetAttributes(String definition, String comment, boolean isAbstract, User owner, String princetonId) {
+    public SynsetAttributes(String definition, String comment, User owner, String princetonId) {
         this.definition = definition;
         this.comment = comment;
-        this.isAbstract = isAbstract;
         this.owner = owner;
         this.princetonId = princetonId;
     }
@@ -66,14 +75,6 @@ public class SynsetAttributes extends GenericEntity {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public Boolean getIsAbstract() {
-        return isAbstract;
-    }
-
-    public void setIsAbstract(Boolean isAbstract) {
-        this.isAbstract = isAbstract;
     }
 
     public User getOwner() {
@@ -108,4 +109,19 @@ public class SynsetAttributes extends GenericEntity {
         this.examples = examples;
     }
 
+    public String getErrorComment() {
+        return errorComment;
+    }
+
+    public void setErrorComment(String errorComment) {
+        this.errorComment = errorComment;
+    }
+
+    public String getIliId() {
+        return iliId;
+    }
+
+    public void setIliId(String iliId) {
+        this.iliId = iliId;
+    }
 }
