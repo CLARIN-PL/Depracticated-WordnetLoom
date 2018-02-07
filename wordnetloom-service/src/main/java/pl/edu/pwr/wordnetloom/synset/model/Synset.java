@@ -23,14 +23,14 @@ public class Synset extends GenericEntity {
     @OrderBy("synsetPosition")
     private List<Sense> senses = new ArrayList<>();
 
-    @Valid
-    @OneToOne(mappedBy = "synset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private SynsetAttributes synsetAttributes;
-
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lexicon_id", referencedColumnName = "id", nullable = false)
     private Lexicon lexicon;
+
+    @Basic
+    @Column(name = "abstract")
+    private Boolean isAbstract = false;
 
     private Integer status = 0;
 
@@ -54,14 +54,6 @@ public class Synset extends GenericEntity {
 
     public void setSenses(List<Sense> senses) {
         this.senses = senses;
-    }
-
-    public SynsetAttributes getSynsetAttributes() {
-        return synsetAttributes;
-    }
-
-    public void setSynsetAttributes(SynsetAttributes synsetAttributes) {
-        this.synsetAttributes = synsetAttributes;
     }
 
     public Lexicon getLexicon() {
@@ -92,4 +84,11 @@ public class Synset extends GenericEntity {
         this.status = status;
     }
 
+    public Boolean getAbstract() {
+        return isAbstract;
+    }
+
+    public void setAbstract(Boolean anAbstract) {
+        isAbstract = anAbstract;
+    }
 }

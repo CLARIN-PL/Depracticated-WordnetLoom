@@ -10,7 +10,7 @@ public class SenseExample extends GenericEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sense_id")
-    private Sense sense;
+    private SenseAttributes senseAttributes;
 
     @Column(name = "example")
     private String example;
@@ -18,12 +18,12 @@ public class SenseExample extends GenericEntity {
     @Column(name = "type")
     private String type;
 
-    public Sense getSense() {
-        return sense;
+    public SenseAttributes getSenseAttributes() {
+        return senseAttributes;
     }
 
-    public void setSense(Sense sense) {
-        this.sense = sense;
+    public void setSenseAttributes(SenseAttributes senseAttributes) {
+        this.senseAttributes = senseAttributes;
     }
 
     public String getExample() {

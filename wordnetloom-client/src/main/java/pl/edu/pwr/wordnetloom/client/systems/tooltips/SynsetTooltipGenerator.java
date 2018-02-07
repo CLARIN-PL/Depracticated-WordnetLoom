@@ -37,7 +37,7 @@ public class SynsetTooltipGenerator implements ToolTipGeneratorInterface{
     private String getSenseToolTipText(Synset synset, List<SynsetRelation> relations) {
         builder.clear();
         //TODO zrobić dodawanie nazwy
-        SynsetAttributes attributes = synset.getSynsetAttributes();
+        SynsetAttributes attributes = null ;//synset.getSynsetAttributes();
         if(attributes != null) {
             builder.addDefinition(attributes.getDefinition())
                     .addArtificial(attributes.getIsAbstract());

@@ -101,11 +101,11 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
 
             if(sa.getDefinition() != null) {
-                definitionValue.setText(synset.getSynsetAttributes().getDefinition());
+                //definitionValue.setText(synset.getSynsetAttributes().getDefinition());
             }
 
             if(sa.getComment() != null ) {
-                commentValue.setText(formatValue(synset.getSynsetAttributes().getComment()));
+               // commentValue.setText(formatValue(synset.getSynsetAttributes().getComment()));
             }
 
             abstractValue.setSelected(sa.getIsAbstract());
