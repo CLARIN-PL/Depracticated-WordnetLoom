@@ -65,6 +65,7 @@ CREATE PROCEDURE insert_dictionaries(IN valuesList VARCHAR(1000), IN typeName VA
         END WHILE;
     END $$
 DELIMITER ;
+CALL insert_dictionaries('og.,daw.,książk.,nienorm.,posp.,pot.,reg.,specj.,środ.,urz.,wulg.,', 'RegisterDictionary');
 CALL insert_dictionaries('Nieprzetworzony,Nowy,Błąd,Sprawdzony,Znaczenie,Częściowo przetworzony,', 'StatusDictionary');
 CALL insert_dictionaries('radość,zaufanie,cieszenie się na coś oczekiwanego, zaskoczenie czymś nieprzewidywanym, smutek, złość, strach, wstręt,', 'EmotionDictionary');
 CALL insert_dictionaries('użyteczność, dobro, prawda, wiedza, piękno, szczęście, nieużyteczność, krzywda, niewiedza, błąd, brzydota, nieszczęście,', 'ValuationDictionary');
@@ -73,12 +74,17 @@ CALL insert_dictionaries('jednostka nie jest czasownikiem;no,aspect dokonany;:pe
 
 DROP PROCEDURE IF EXISTS insert_localised_description;
 
+INSERT INTO dictionaries (dtype, id, name_id, tag, value)
+SELECT dtype, id, name_id, tag, markednessValue
+FROM temp_dictionaries;
+
 # przerzucenie synsetu
 # złączenia mają na celu pozbycie się synsetów pustych oraz połączeń synsetów z nieistniejącymi jednostkami
-INSERT INTO wordnet.synset (id, split, lexicon_id, status)
+INSERT INTO wordnet.synset (id, split,abstract, lexicon_id, status_id)
   SELECT DISTINCT
     S.id,
     S.split,
+    S.isabstract,
     (SELECT CASE WHEN pos <= 4
       THEN 1
             WHEN S.comment = '' AND S.owner = ''
@@ -94,7 +100,7 @@ INSERT INTO wordnet.synset (id, split, lexicon_id, status)
   WHERE U.SYN_ID IS NOT NULL AND L.id IS NOT NULL;
 
 # przerzucenie jednostek
-INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, part_of_speech_id, synset_id, word_id, status)
+INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, part_of_speech_id, synset_id, word_id, status_id)
   SELECT
     L.id,
     U.unitindex,
@@ -167,11 +173,10 @@ INSERT INTO wordnet.sense_attributes (sense_id, comment, user_id, error_comment)
 
 # wstawianie atrybótów synsetów
 # złączenia z synsetem dokonujemy aby wyeliminować atrybuty synsetów pustych, które nie zostały przeniesione do nowej bazy
-INSERT INTO wordnet.synset_attributes (synset_id, comment, abstract, owner_id, error_comment)
+INSERT INTO wordnet.synset_attributes (synset_id, comment, owner_id, error_comment)
   SELECT
     S.id,
     comment,
-    isabstract,
     (SELECT id
      FROM wordnet.users
      WHERE
@@ -328,45 +333,45 @@ CALL insertAllowedLexicons();
 DROP PROCEDURE IF EXISTS insertAllowedLexicons;
 
 # dodanie i wypełnienie tabeli register_types. Tabela będzie potrzebna do parsowania komentarzy
-CREATE TABLE wordnet.register_types
-(
-  id      INT PRIMARY KEY AUTO_INCREMENT,
-  name_id BIGINT NOT NULL UNIQUE
-);
+--CREATE TABLE wordnet.register_types
+--(
+--  id      INT PRIMARY KEY AUTO_INCREMENT,
+--  name_id BIGINT NOT NULL UNIQUE
+--);
 
-ALTER TABLE wordnet.register_types
-  ADD CONSTRAINT fk_register_types_localised
-FOREIGN KEY (name_id) REFERENCES wordnet.application_localised_string (id);
+--ALTER TABLE wordnet.register_types
+--  ADD CONSTRAINT fk_register_types_localised
+--FOREIGN KEY (name_id) REFERENCES wordnet.application_localised_string (id);
 
-DELIMITER $$
-DROP PROCEDURE IF EXISTS insert_register_types$$
-CREATE PROCEDURE insert_register_types()
-
-  BEGIN
-    SET @registers = 'og.,daw.,książk.,nienorm.,posp.,pot.,reg.,specj.,środ.,urz.,wulg.,';
-    WHILE (LOCATE(',', @registers) > 0) DO
-      SET @value = SUBSTRING(@registers, 1, LOCATE(',', @registers) - 1);
-      SET @last_insert_id = LAST_INSERT_ID();
-      INSERT INTO wordnet.application_localised_string (value, language)
-      VALUES (@value, 'pl');
-      SET @last_insert_id = LAST_INSERT_ID();
-      INSERT INTO wordnet.application_localised_string (id, value, language)
-      VALUES (@last_insert_id, @value, 'en');
-      INSERT INTO wordnet.register_types (name_id)
-      VALUES (@last_insert_id);
-      SET @registers = SUBSTRING(@registers, LOCATE(',', @registers) + 1);
-    END WHILE;
-  END $$
-
-DELIMITER ;
-
-CALL insert_register_types;
-
-DROP PROCEDURE insert_register_types;
+--DELIMITER $$
+--DROP PROCEDURE IF EXISTS insert_register_types$$
+--CREATE PROCEDURE insert_register_types()
+--
+--  BEGIN
+--    SET @registers = 'og.,daw.,książk.,nienorm.,posp.,pot.,reg.,specj.,środ.,urz.,wulg.,';
+--    WHILE (LOCATE(',', @registers) > 0) DO
+--      SET @value = SUBSTRING(@registers, 1, LOCATE(',', @registers) - 1);
+--      SET @last_insert_id = LAST_INSERT_ID();
+--      INSERT INTO wordnet.application_localised_string (value, language)
+--      VALUES (@value, 'pl');
+--      SET @last_insert_id = LAST_INSERT_ID();
+--      INSERT INTO wordnet.application_localised_string (id, value, language)
+--      VALUES (@last_insert_id, @value, 'en');
+--      INSERT INTO wordnet.register_types (name_id)
+--      VALUES (@last_insert_id);
+--      SET @registers = SUBSTRING(@registers, LOCATE(',', @registers) + 1);
+--    END WHILE;
+--  END $$
+--
+--DELIMITER ;
+--
+--CALL insert_register_types;
+--
+--DROP PROCEDURE insert_register_types;
 
 # dodanie kolumny proper_name, do atrybutów jednostek
 ALTER TABLE wordnet.sense_attributes
-  ADD COLUMN proper_name BIT DEFAULT 0 NOT NULL;
+ADD COLUMN proper_name BIT DEFAULT 0 NOT NULL;
 
 # wstawienie relacji jednostek i synsetów
 # wstawianie relacji jednostek. Sprawdzamy parent oraz child, ponieważ w bazie przechowywane sa relacje do nieistniejących jednostek
@@ -396,3 +401,5 @@ INSERT INTO wordnet.synset_relation (child_synset_id, parent_synset_id, synset_r
                       FROM wordnet.synset)
         AND CHILD_ID IN (SELECT id
                          FROM wordnet.synset);
+
+DROP TABLE temp_dictionaries;

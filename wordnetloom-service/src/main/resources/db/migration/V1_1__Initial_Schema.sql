@@ -38,7 +38,7 @@ CREATE TABLE dictionaries (
   id             BIGINT      NOT NULL AUTO_INCREMENT,
   description_id BIGINT COMMENT 'Dictionary description',
   name_id        BIGINT COMMENT 'Dictionary name',
-  tag           VARCHAR(10),
+  tag           VARCHAR(20),
   value         BIGINT,
   PRIMARY KEY (id)
 );
@@ -151,6 +151,7 @@ CREATE TABLE synset (
   split      INTEGER COMMENT 'Position of line splitting synset head',
   lexicon_id BIGINT NOT NULL,
   status_id  BIGINT,
+  abstract BOOLEAN COMMENT 'is synset abstract',
   PRIMARY KEY (id)
 );
 
@@ -158,7 +159,6 @@ CREATE TABLE synset_attributes (
   synset_id     BIGINT NOT NULL,
   comment       TEXT,
   definition    TEXT,
-  abstract      BOOLEAN COMMENT 'is synset abstract',
   princeton_id  VARCHAR(255) COMMENT 'External original Princeton Id',
   owner_id      BIGINT COMMENT 'Synset owner',
   error_comment TEXT,

@@ -6,6 +6,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RegisterManager;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.dictionary.model.StatusDictionary;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -85,12 +86,14 @@ public class ToolTipBuilder {
         return this;
     }
 
-    public ToolTipBuilder addStatus(Integer status) {
+    public ToolTipBuilder addStatus(StatusDictionary status) {
         if(status != null) {
-            addString(STATUS_LABEL, String.valueOf(status)); //TODO dodać status
+            String statusText = LocalisationManager.getInstance().getLocalisedString(status.getName());
+            addString(STATUS_LABEL, String.valueOf(statusText));
         }
         return this;
     }
+
 
     public ToolTipBuilder addDefinition(String definition) {
         if (definition != null) {

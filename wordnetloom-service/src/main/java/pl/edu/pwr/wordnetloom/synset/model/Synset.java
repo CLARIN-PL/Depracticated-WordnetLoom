@@ -1,7 +1,9 @@
 package pl.edu.pwr.wordnetloom.synset.model;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
+import pl.edu.pwr.wordnetloom.dictionary.model.StatusDictionary;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
@@ -34,7 +36,20 @@ public class Synset extends GenericEntity {
     @Column(name = "abstract")
     private Boolean isAbstract = false;
 
-    private Integer status = 0;
+//    private Integer status = 0;
+
+    public StatusDictionary getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusDictionary status) {
+        this.status = status;
+    }
+
+    @NotAudited
+    @ManyToOne
+    @JoinColumn(name = "status_id", referencedColumnName = "id")
+    private StatusDictionary status;
 
     @OneToMany(mappedBy = "child", fetch = FetchType.LAZY)
     private List<SynsetRelation> incomingRelations = new ArrayList<>();
@@ -78,13 +93,13 @@ public class Synset extends GenericEntity {
         this.outgoingRelations = outgoingRelations;
     }
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
+//    public Integer getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(Integer status) {
+//        this.status = status;
+//    }
 
     public Boolean getAbstract() {
         return isAbstract;

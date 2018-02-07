@@ -40,12 +40,12 @@ public class V1_8__ParseComment implements JdbcMigration {
                 " SET comment = ?, " +
                 "definition = ?," +
                 "link = ?," +
-                "register=?, " +
+                "register_id=?, " +
                 "proper_name=? " +
                 "WHERE sense_id = ?";
 
         String DELETE_QUERY = "DELETE FROM " + ATTRIBUTE_TABLE + " WHERE sense_id = ?";
-        String INSERT_EXAMPLE_QUERY = "INSERT INTO wordnet.sense_examples (sense_id, type, example) VALUES(?, ?, ?)";
+        String INSERT_EXAMPLE_QUERY = "INSERT INTO wordnet.sense_examples (sense_attribute_id, type, example) VALUES(?, ?, ?)";
         PreparedStatement updateStatement = connection.prepareStatement(UPDATE_QUERY);
         PreparedStatement deleteStatement = connection.prepareStatement(DELETE_QUERY);
         PreparedStatement insertExampleStatement = connection.prepareStatement(INSERT_EXAMPLE_QUERY);
@@ -315,7 +315,8 @@ public class V1_8__ParseComment implements JdbcMigration {
     }
 
     private Long getRegisterID(String registerName, Connection connection) throws SQLException {
-        String GET_ID_QUERY = "SELECT R.id FROM wordnet.register_types R LEFT JOIN wordnet.application_localised_string S ON R.name_id = S.id WHERE S.value = ?";
+//        String GET_ID_QUERY = "SELECT R.id FROM wordnet.register_types R LEFT JOIN wordnet.application_localised_string S ON R.name_id = S.id WHERE S.value = ?";
+        String GET_ID_QUERY = "SELECT D.id FROM wordnet.dictionaries D LEFT JOIN wordnet.application_localised_string S On D.name_id = S.id WHERE S.value = ?";
         PreparedStatement statement = connection.prepareStatement(GET_ID_QUERY);
         statement.setString(1, registerName);
         ResultSet resultSet = statement.executeQuery();
