@@ -971,11 +971,10 @@ public class SynsetRepository extends GenericRepository<Synset> {
         CriteriaQuery<SynsetAttributes> query = criteriaBuilder.createQuery(SynsetAttributes.class);
 
         Root<SynsetAttributes> root = query.from(SynsetAttributes.class);
-        root.fetch("synset" , JoinType.LEFT);
         root.fetch("owner", JoinType.LEFT);
         root.fetch( "examples", JoinType.LEFT);
 
-        Predicate predicate =  criteriaBuilder.equal(root.get("synset").get("id"), synsetId);
+        Predicate predicate =  criteriaBuilder.equal(root.get("id"), synsetId);
         query.where(predicate);
 
         return getEntityManager().createQuery(query).getSingleResult();

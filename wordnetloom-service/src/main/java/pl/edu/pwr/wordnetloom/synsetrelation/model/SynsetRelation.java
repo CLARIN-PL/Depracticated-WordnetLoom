@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.model;
 
+import org.hibernate.envers.Audited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
@@ -7,6 +8,7 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 import javax.persistence.*;
 
+@Audited
 @Entity
 @Table(name = "synset_relation")
 public class SynsetRelation extends GenericEntity {

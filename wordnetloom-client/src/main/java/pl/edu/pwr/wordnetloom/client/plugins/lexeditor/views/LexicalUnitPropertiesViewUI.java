@@ -108,7 +108,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
 //                    variant = LexicalDA.getAvaibleVariantNumber(lemma, pos, LexiconManager.getInstance().getUserChosenLexiconsIds());
 //                }
                 Sense sense = editPanel.updateAndGetSense();
-                RemoteService.senseRemote.persist(sense);
+                RemoteService.senseRemote.save(sense);
                 refreshData(sense);
 
 //                if (!LexicalDA.updateUnit(editPanel.getSense(), lemma,

@@ -308,8 +308,8 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         // zamiana  pozycji w synsecie oraz zapisanie zmian w bazie danych
         sense1.setSynsetPosition(sense2Position);
         sense2.setSynsetPosition(sense1Position);
-        RemoteService.senseRemote.persist(sense1);
-        RemoteService.senseRemote.persist(sense2);
+        RemoteService.senseRemote.save(sense1);
+        RemoteService.senseRemote.save(sense2);
         // zamiana jednostek na liście
         int indexOnList1 = senseIndex1 >= splitPosition ? senseIndex1 - 1  : senseIndex1;
         int indexOnList2 = senseIndex2 >= splitPosition ? senseIndex2 - 1  : senseIndex2;

@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.senserelation.model;
 
+import org.hibernate.envers.Audited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -9,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+@Audited
 @Entity
 @Table(name = "sense_relation")
 public class SenseRelation extends GenericEntity {

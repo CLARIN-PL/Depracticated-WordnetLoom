@@ -13,6 +13,7 @@ import com.jgoodies.forms.util.LayoutStyle;
 import jiconfont.icons.FontAwesome;
 import org.hibernate.mapping.Collection;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
@@ -239,12 +240,12 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         scrollPaneExamples.setViewportView(examplesList);
 
         btnNewExample = MButton.buildAddButton();
+
         btnNewExample.addActionListener((ActionEvent e) -> {
             String example = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
             if (example != null && !"".equals(example)) {
                 SenseExample senseExample = new SenseExample();
                 senseExample.setExample(example);
-                senseExample.setSense(unit);
                 senseExample.setType("W");
                 examplesModel.addElement(senseExample);
                 btnSave.setEnabled(true);
@@ -334,7 +335,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         String registerText = getRegister().getSelectedItem().toString();
 
         Long registerId = RegisterManager.getInstance().getId(registerText);
-        SenseAttributes attributes = unit.getSenseAttributes();
+        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
         String definition = getDefinition().getText();
         String link = getLink().getToolTipText();
         String comment = getComment().getText();
@@ -345,9 +346,10 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         attributes.setComment(comment);
         attributes.setLink(link);
         attributes.setDefinition(definition);
-        attributes.setRegister(registerId);
+        //attributes.setRegister(registerId);
 
-        java.util.List<SenseExample> examples = unit.getExamples();
+        java.util.List<SenseExample> examples = attributes.getExamples();
+
         examples.clear();
         if(!examplesModel.isEmpty()) {
             for(int i = 0; i < examplesModel.size(); i++)
@@ -380,9 +382,6 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     }
 
     public void refreshData() {
-//        if (unit != null) {
-//            LexicalDA.refresh(unit);
-//        }
 
         lemma.setText(formatValue(unit != null ? unit.getWord().getWord() : null));
         variant.setText(unit != null ? "" + unit.getVariant() : null);
@@ -397,17 +396,17 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         domain.setSelectedItem(domainText == null ? null
                 : new CustomDescription<>(domainText, unit.getDomain()));
 
-        SenseAttributes attributes = unit.getSenseAttributes();
+        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
         if(attributes != null){
             definition.setText(attributes.getDefinition());
             comment.setText(attributes.getComment());
-            register.setSelectedItem(RegisterManager.getInstance().getName(attributes.getRegister()));
+            //register.setSelectedItem(RegisterManager.getInstance().getName(attributes.getRegister()));
             link.setText(attributes.getLink());
         }
 
         examplesModel.clear();
-        if(unit.getExamples() != null){
-            for(SenseExample example : unit.getExamples()){
+        if(attributes.getExamples() != null){
+            for(SenseExample example : attributes.getExamples()){
                 examplesModel.addElement(example);
             }
             examplesList.setModel(examplesModel);

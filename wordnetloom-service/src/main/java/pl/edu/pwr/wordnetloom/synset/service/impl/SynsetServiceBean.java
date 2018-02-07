@@ -10,7 +10,6 @@ import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.synset.repository.SynsetRepository;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceLocal;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -45,7 +44,6 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     }
 
     public void delete(RelationType relation, List<Long> lexicons) {
-        throw new NotImplementedException();
         //Removes relation with subrelations
 //        Collection<SynsetRelationType> children = findChildren(relation);
 //        for (SynsetRelationType item : children) {

@@ -90,7 +90,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
         // wyswiętlanie okienka z parametrami
         Sense newUnit = NewLexicalUnitFrame.showModal(workbench, filterObject);
         if (newUnit != null) {
-            RemoteService.senseRemote.persist(newUnit);
+            RemoteService.senseRemote.save(newUnit);
             filterEdit.setText(newUnit.getWord().getWord());
             unitWasCreated = true;
             refreshListModel();

@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.word.model;
 
+import org.hibernate.envers.Audited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 
 import javax.persistence.Entity;
@@ -7,6 +8,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+@Audited
 @Entity
 @Table(name = "word")
 public class Word extends GenericEntity {

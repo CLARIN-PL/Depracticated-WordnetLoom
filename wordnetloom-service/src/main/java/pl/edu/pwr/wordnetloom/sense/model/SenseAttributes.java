@@ -24,7 +24,7 @@ public class SenseAttributes implements Serializable, Cloneable {
     private List<SenseExample> examples;
 
     @ManyToOne
-    @JoinColumn(name = "aspect_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "aspect_id", referencedColumnName = "id")
     private AspectDictionary aspectDictionary;
 
     @Lob
@@ -34,7 +34,7 @@ public class SenseAttributes implements Serializable, Cloneable {
     private String comment;
 
     @ManyToOne
-    @JoinColumn(name = "register_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "register_id", referencedColumnName = "id")
     private RegisterDictionary register;
 
     private String link;

@@ -108,7 +108,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
                // commentValue.setText(formatValue(synset.getSynsetAttributes().getComment()));
             }
 
-            abstractValue.setSelected(sa.getIsAbstract());
+            abstractValue.setSelected(synset.getAbstract());
         }
 
        lastSynset = synset;
