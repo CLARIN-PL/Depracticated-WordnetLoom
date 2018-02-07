@@ -11,6 +11,68 @@ INSERT INTO wordnet.word (word)
   UNION ALL
   SELECT 'm³';
 
+CREATE TABLE wordnet.temp_dictionaries(
+    id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    old_value INT NOT NULL,
+    name_id BIGINT NOT NULL,
+    dtype VARCHAR(31) NOT NULL,
+    tag VARCHAR(20),
+    markednessValue BIGINT
+);
+
+# dodawanie słowników
+DELIMITER $$
+DROP PROCEDURE IF EXISTS insert_dictionaries $$
+CREATE PROCEDURE insert_dictionaries(IN valuesList VARCHAR(1000), IN typeName VARCHAR(40))
+    BEGIN
+        SET @counter = 0;
+        SET @valuesList = valuesList;
+        SET @lastInsertedStringId = 0;
+        SET @lastInsertedValueId = null;
+        WHILE(LOCATE(',', @valuesList) > 0) DO
+            SET @value = SUBSTRING(@valuesList, 1, LOCATE(',', @valuesList) -1);
+            SET @optionalValue = null;
+            SET @tag = null;
+            IF(LOCATE(';', @value) > 0) THEN
+                SET @optionalValue = SUBSTRING(@value,LOCATE(';', @value)+1);
+                SET @value = SUBSTRING(@value, 1, LOCATE(';', @value) -1);
+
+                SELECT @optionalValue;
+            END IF;
+            INSERT INTO wordnet.application_localised_string (value, language)
+            VALUES (@value, 'pl');
+            SET @lastInsertedStringId = LAST_INSERT_ID();
+            INSERT INTO wordnet.application_localised_string(id, value, language)
+            VALUES (@lastInsertedStringId, @value, 'en');
+
+            IF(@optionalValue IS NOT NULL) THEN
+                IF(typeName = 'MarkednessDictionary') THEN
+                    INSERT INTO wordnet.application_localised_string(value, language)
+                    VALUES (@optionalValue, 'pl');
+                    SET @lastInsertedValueId = LAST_INSERT_ID();
+                    INSERT INTO wordnet.application_localised_string(id, value, language)
+                    VALUES (@lastInsertedValueId, @optionalValue, 'en');
+                END IF;
+                IF (typeName = 'AspectDictionary') THEN
+                    SET @tag = @optionalValue;
+				END IF;
+			END IF;
+            INSERT INTO wordnet.temp_dictionaries (old_value, name_id, dtype, tag, markednessValue)
+            VALUES(@counter, @lastInsertedStringId, typeName, @tag, @lastInsertedValueId);
+
+            SET @valuesList = SUBSTRING(@valuesList, LOCATE(',', @valuesList)+1);
+            SET @counter = @counter +1;
+        END WHILE;
+    END $$
+DELIMITER ;
+CALL insert_dictionaries('Nieprzetworzony,Nowy,Błąd,Sprawdzony,Znaczenie,Częściowo przetworzony,', 'StatusDictionary');
+CALL insert_dictionaries('radość,zaufanie,cieszenie się na coś oczekiwanego, zaskoczenie czymś nieprzewidywanym, smutek, złość, strach, wstręt,', 'EmotionDictionary');
+CALL insert_dictionaries('użyteczność, dobro, prawda, wiedza, piękno, szczęście, nieużyteczność, krzywda, niewiedza, błąd, brzydota, nieszczęście,', 'ValuationDictionary');
+CALL insert_dictionaries('Wybierz:, amb (niejednoznaczność pod względem nacechowania emocjonalnego;amb,+ m (mocne nacechowanie pozytywne jednostki);+ m, - m (mocne nacechowanie negatywne jednostki);- m,+ s (słabe nacechowanie pozytywne jednostki);+ s,- s (słabe nacechowanie negatywne jednostki);- s,', 'MarkednessDictionary');
+CALL insert_dictionaries('jednostka nie jest czasownikiem;no,aspect dokonany;:perf:,aspekt niedokonany;:imperf:,predykatyw;:pred:,czasownik dwuaspektowy;:imperf.perf;,', 'AspectDictionary');
+
+DROP PROCEDURE IF EXISTS insert_localised_description;
+
 # przerzucenie synsetu
 # złączenia mają na celu pozbycie się synsetów pustych oraz połączeń synsetów z nieistniejącymi jednostkami
 INSERT INTO wordnet.synset (id, split, lexicon_id, status)
@@ -26,7 +88,7 @@ INSERT INTO wordnet.synset (id, split, lexicon_id, status)
        LEFT JOIN wordnet_work.synset SS ON U.SYN_ID = SS.id
      WHERE SS.id = S.id
      LIMIT 1) AS lexicon,
-    S.status
+     (SELECT id FROM wordnet.temp_dictionaries WHERE old_value = S.status AND dtype = 'StatusDictionary')
   FROM wordnet_work.synset S LEFT JOIN wordnet_work.unitandsynset U ON S.id = U.SYN_ID
     LEFT JOIN wordnet_work.lexicalunit L ON U.LEX_ID = L.id
   WHERE U.SYN_ID IS NOT NULL AND L.id IS NOT NULL;
@@ -51,7 +113,7 @@ INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, 
      FROM wordnet.word
      WHERE word = L.lemma
      LIMIT 1)        AS word_id,
-    L.status
+     (SELECT id FROM wordnet.temp_dictionaries WHERE old_value = L.status AND dtype = 'StatusDictionary') AS status
   FROM wordnet_work.lexicalunit L LEFT JOIN wordnet_work.unitandsynset U ON L.id = U.LEX_ID
     LEFT JOIN wordnet_work.synset S ON U.SYN_ID = S.id;
 

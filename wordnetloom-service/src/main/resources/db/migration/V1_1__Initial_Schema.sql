@@ -38,6 +38,8 @@ CREATE TABLE dictionaries (
   id             BIGINT      NOT NULL AUTO_INCREMENT,
   description_id BIGINT COMMENT 'Dictionary description',
   name_id        BIGINT COMMENT 'Dictionary name',
+  tag           VARCHAR(10),
+  value         BIGINT,
   PRIMARY KEY (id)
 );
 
