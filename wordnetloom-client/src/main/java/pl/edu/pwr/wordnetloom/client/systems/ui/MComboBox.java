@@ -18,10 +18,13 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
 import com.alee.laf.combobox.WebComboBox;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
+import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class MComboBox<T> extends WebComboBox {
 
@@ -47,6 +50,17 @@ public class MComboBox<T> extends WebComboBox {
         return this;
     }
 
+    public <T> MComboBox withDictionaryItems(List<T> items, String nullRepresentation){
+        removeAllItems();
+        addItem(new CustomDescription<>(nullRepresentation, null));
+        items.forEach(i -> {
+            if(i instanceof Dictionary) {
+                addItem(new CustomDescription<>(LocalisationManager.getInstance().getLocalisedString(((Dictionary)i).getName()), i));
+            }
+        });
+        return this;
+    }
+
     @Override
     public void setSelectedIndex(int index) {
         if (super.getItemCount() > index) {
@@ -66,9 +80,14 @@ public class MComboBox<T> extends WebComboBox {
     }
 
     public T getEntity() {
-        if (getSelectedIndex() > 0) {
-            CustomDescription<T> item = (CustomDescription<T>) getItemAt(getSelectedIndex());
-            return item.getObject();
+        if (getSelectedIndex() >= 0) {
+            if( getItemAt(getSelectedIndex()) instanceof  CustomDescription) {
+                CustomDescription<T> item = (CustomDescription<T>) getItemAt(getSelectedIndex());
+                return item.getObject();
+            } else {
+                return (T) getItemAt(getSelectedIndex());
+            }
+
         }
         return null;
     }

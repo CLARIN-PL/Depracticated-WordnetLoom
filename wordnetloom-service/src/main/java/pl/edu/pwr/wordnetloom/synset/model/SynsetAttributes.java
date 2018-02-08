@@ -1,53 +1,71 @@
 package pl.edu.pwr.wordnetloom.synset.model;
 
-import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
+import org.hibernate.envers.Audited;
+import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+@Audited
 @Entity
 @Table(name = "synset_attributes")
-public class SynsetAttributes extends GenericEntity {
+public class SynsetAttributes implements Serializable, Cloneable{
 
     private static final long serialVersionUID = -3305787239727633359L;
 
-    private String definition;
-
-    private String comment;
-
-    @Column(name = "error_comment")
-    private String errorComment;
-
-    @ElementCollection
-    @CollectionTable(name = "synset_examples", joinColumns = @JoinColumn(name = "synset_attributes_id"))
-    @Column(name = "example")
-    private List<String> examples;
-
-    @Basic
-    @Column(name = "abstract")
-    private Boolean isAbstract = false;
-
-    @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", referencedColumnName = "id")
-    private User owner;
-
-    @Column(name = "princeton_id")
-    private String princetonId;
+    @Id
+    protected Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "synset_id")
     @MapsId
     private Synset synset;
 
-    public SynsetAttributes() {
-        super();
+    @Lob
+    private String definition;
+
+    @Lob
+    private String comment;
+
+    @Column(name = "error_comment")
+    private String errorComment;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "synsetAttributes", orphanRemoval = true)
+    private Set<SynsetExample> examples;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    private User owner;
+
+    @Column(name = "princeton_id")
+    private String princetonId;
+
+    @Column(name = "ili_id")
+    private String iliId;
+
+    public Long getId() {
+        return id;
     }
 
-    public SynsetAttributes(String definition, String comment, boolean isAbstract, User owner, String princetonId) {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public SynsetAttributes() {}
+
+    public SynsetAttributes(String definition, String comment, User owner) {
         this.definition = definition;
         this.comment = comment;
-        this.isAbstract = isAbstract;
+        this.owner = owner;
+    }
+
+    public SynsetAttributes(String definition, String comment, User owner, String princetonId) {
+        this.definition = definition;
+        this.comment = comment;
         this.owner = owner;
         this.princetonId = princetonId;
     }
@@ -66,14 +84,6 @@ public class SynsetAttributes extends GenericEntity {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public Boolean getIsAbstract() {
-        return isAbstract;
-    }
-
-    public void setIsAbstract(Boolean isAbstract) {
-        this.isAbstract = isAbstract;
     }
 
     public User getOwner() {
@@ -100,12 +110,33 @@ public class SynsetAttributes extends GenericEntity {
         this.princetonId = princetonId;
     }
 
-    public List<String> getExamples() {
+    public void addExample(SynsetExample example){
+        if(examples == null){
+            examples = new HashSet<>();
+        }
+        examples.add(example);
+    }
+    public Set<SynsetExample> getExamples() {
         return examples;
     }
 
-    public void setExamples(List<String> examples) {
+    public void setExamples(Set<SynsetExample> examples) {
         this.examples = examples;
     }
 
+    public String getErrorComment() {
+        return errorComment;
+    }
+
+    public void setErrorComment(String errorComment) {
+        this.errorComment = errorComment;
+    }
+
+    public String getIliId() {
+        return iliId;
+    }
+
+    public void setIliId(String iliId) {
+        this.iliId = iliId;
+    }
 }

@@ -1,19 +1,23 @@
 package pl.edu.pwr.wordnetloom.sense.service.impl;
 
-import java.util.List;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
+import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
+import pl.edu.pwr.wordnetloom.sense.repository.SenseAttributesRepository;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceRemote;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+
+import javax.ejb.Local;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.validation.Validator;
+import java.util.List;
 
 @Stateless
 @Remote(SenseServiceRemote.class)
@@ -21,8 +25,16 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 public class SenseServiceBean implements SenseServiceLocal {
 
     @Inject
-    private SenseRepository senseRepository;
+    SenseRepository senseRepository;
 
+    @Inject
+    SenseAttributesRepository senseAttributesRepository;
+
+    @Inject
+    Validator validator;
+
+
+    @Override
     public Sense clone(Sense unit) {
         return senseRepository.clone(unit);
     }
@@ -33,8 +45,25 @@ public class SenseServiceBean implements SenseServiceLocal {
     }
 
     @Override
-    public Sense persist(Sense sense) {
+    public Sense save(final Sense sense) {
+        ValidationUtils.validateEntityFields(validator, sense);
+        if (sense.getId() != null) {
+            return senseRepository.update(sense);
+        }
+        sense.setVariant(senseRepository.findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech()));
         return senseRepository.persist(sense);
+    }
+
+    @Override
+    public SenseAttributes addSenseAttribute(final Long senseId, final SenseAttributes attributes) {
+        ValidationUtils.validateEntityFields(validator, attributes);
+
+        if (attributes.getId() != null) {
+            return senseAttributesRepository.update(attributes);
+        }
+        Sense s = findById(senseId);
+        attributes.setSense(s);
+        return senseAttributesRepository.persist(attributes);
     }
 
     @Override
@@ -48,7 +77,7 @@ public class SenseServiceBean implements SenseServiceLocal {
     }
 
     @Override
-    public int getCountUnitsByCriteria(SenseCriteriaDTO dto){
+    public int getCountUnitsByCriteria(SenseCriteriaDTO dto) {
         return senseRepository.getCountUnitsByCriteria(dto);
     }
 
@@ -73,7 +102,7 @@ public class SenseServiceBean implements SenseServiceLocal {
     }
 
     @Override
-    public List<Sense> findBySynset(Long synsetId){
+    public List<Sense> findBySynset(Long synsetId) {
         return senseRepository.findBySynset(synsetId);
     }
 
@@ -133,12 +162,17 @@ public class SenseServiceBean implements SenseServiceLocal {
     }
 
     @Override
-    public Sense findHeadSenseOfSynset(Long synsetId){
+    public Sense findHeadSenseOfSynset(Long synsetId) {
         return senseRepository.findHeadSenseOfSynset(synsetId);
     }
 
     @Override
     public Sense fetchSense(Long senseId) {
         return senseRepository.fetchSense(senseId);
+    }
+
+    @Override
+    public SenseAttributes fetchSenseAttribute(Long senseId) {
+        return senseRepository.fetchSenseAttribute(senseId);
     }
 }

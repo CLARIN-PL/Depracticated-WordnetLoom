@@ -23,12 +23,36 @@ public class V1_8__ParseComment implements JdbcMigration {
     @Override
     public void migrate(Connection connection) throws Exception {
         this.connection = connection;
+        System.out.println("start parser");
+        System.out.println("getAttributesList()");
         List<Attribute> attributes = getAttributesList();
         if (attributes == null) {
             return;
         }
+        System.out.println("parse()");
         List<Attribute> parsedAttribute = parse(attributes);
+        System.out.println("saveAttributes()");
         saveAttributes(parsedAttribute);
+    }
+
+    private List<Attribute> getAttributesList() throws SQLException {
+        if (connection == null) {
+            return null;
+        }
+        int ID = 1;
+        int COMMENT = 2;
+        String query = "SELECT sense_id, comment FROM " + ATTRIBUTE_TABLE;
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+        List<Attribute> resultAttributes = new ArrayList<>();
+        Attribute attribute;
+        while (resultSet.next()) {
+            attribute = new Attribute();
+            attribute.setId(resultSet.getLong(ID));
+            attribute.setComment(resultSet.getString(COMMENT));
+            resultAttributes.add(attribute);
+        }
+        return resultAttributes;
     }
 
     public void saveAttributes(List<Attribute> attributes) throws SQLException {
@@ -40,12 +64,12 @@ public class V1_8__ParseComment implements JdbcMigration {
                 " SET comment = ?, " +
                 "definition = ?," +
                 "link = ?," +
-                "register=?, " +
+                "register_id=?, " +
                 "proper_name=? " +
                 "WHERE sense_id = ?";
 
         String DELETE_QUERY = "DELETE FROM " + ATTRIBUTE_TABLE + " WHERE sense_id = ?";
-        String INSERT_EXAMPLE_QUERY = "INSERT INTO wordnet.sense_examples (sense_id, type, example) VALUES(?, ?, ?)";
+        String INSERT_EXAMPLE_QUERY = "INSERT INTO wordnet.sense_examples (sense_attribute_id, type, example) VALUES(?, ?, ?)";
         PreparedStatement updateStatement = connection.prepareStatement(UPDATE_QUERY);
         PreparedStatement deleteStatement = connection.prepareStatement(DELETE_QUERY);
         PreparedStatement insertExampleStatement = connection.prepareStatement(INSERT_EXAMPLE_QUERY);
@@ -112,7 +136,7 @@ public class V1_8__ParseComment implements JdbcMigration {
         String value;
         value = getExample(comment, currentPosition);
         if (!value.isEmpty() && !value.equals(" ")) {
-            attributeRef.addExample(new Example(marker, value));
+            attributeRef.addExample(new Example(marker, value.trim()));
         }
     }
 
@@ -124,7 +148,7 @@ public class V1_8__ParseComment implements JdbcMigration {
             if (!value.isEmpty() && !value.equals(" ")) {
                 // sprawdzamy, czy wartość rzeczywiście jest linkiem. Jeżeli nie jest prawdopodobnie jest to przykład
                 if (value.startsWith("http") || value.startsWith("www") || value.startsWith("pl")) {
-                    attributeRef.setLink(value);
+                    attributeRef.setLink(value.trim());
                     secondIndex++;
                 } else {
                     serveExampleMarker(marker, comment, attributeRef);
@@ -161,6 +185,7 @@ public class V1_8__ParseComment implements JdbcMigration {
             while ((currentPosition = getNext(comment, currentPosition)) != -1) {
                 if (startMarker == 0 && currentPosition != 0) { // sprawdzamy czy nie ma nic przed pierwszym znacznikiem
                     stringBuilder.append(comment.substring(0, currentPosition)).append(" ");
+                    startMarker = currentPosition;
                 }
                 markerType = getMarkerType(comment, currentPosition);
                 marker = getMarker(currentPosition + 1, comment);
@@ -315,7 +340,8 @@ public class V1_8__ParseComment implements JdbcMigration {
     }
 
     private Long getRegisterID(String registerName, Connection connection) throws SQLException {
-        String GET_ID_QUERY = "SELECT R.id FROM wordnet.register_types R LEFT JOIN wordnet.application_localised_string S ON R.name_id = S.id WHERE S.value = ?";
+//        String GET_ID_QUERY = "SELECT R.id FROM wordnet.register_types R LEFT JOIN wordnet.application_localised_string S ON R.name_id = S.id WHERE S.value = ?";
+        String GET_ID_QUERY = "SELECT D.id FROM wordnet.dictionaries D LEFT JOIN wordnet.application_localised_string S On D.name_id = S.id WHERE S.value = ?";
         PreparedStatement statement = connection.prepareStatement(GET_ID_QUERY);
         statement.setString(1, registerName);
         ResultSet resultSet = statement.executeQuery();
@@ -323,26 +349,6 @@ public class V1_8__ParseComment implements JdbcMigration {
             return resultSet.getLong(1);
         }
         return -1L;
-    }
-
-    private List<Attribute> getAttributesList() throws SQLException {
-        if (connection == null) {
-            return null;
-        }
-        int ID = 1;
-        int COMMENT = 2;
-        String query = "SELECT sense_id, comment FROM " + ATTRIBUTE_TABLE;
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(query);
-        List<Attribute> resultAttributes = new ArrayList<>();
-        Attribute attribute;
-        while (resultSet.next()) {
-            attribute = new Attribute();
-            attribute.setId(resultSet.getLong(ID));
-            attribute.setComment(resultSet.getString(COMMENT));
-            resultAttributes.add(attribute);
-        }
-        return resultAttributes;
     }
 }
 

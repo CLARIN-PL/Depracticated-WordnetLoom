@@ -11,16 +11,17 @@ import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 import com.jgoodies.forms.util.LayoutStyle;
 import jiconfont.icons.FontAwesome;
-import org.hibernate.mapping.Collection;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.DictionaryManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RegisterManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -48,7 +49,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     private MTextField lemma;
     private MTextField variant;
     private MTextField link;
-    private MComboBox<Object> register;
+    private MComboBox<RegisterDictionary> register;
     private MComboBox<PartOfSpeech> partOfSpeech;
     private DomainMComboBox domain;
     private MTextPane comment;
@@ -181,8 +182,8 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lblRegister.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblRegister, "2, 11, left, fill");
 
-//        register = new MComboBox<>(RegisterTypes.values());
-        register = new MComboBox<>(RegisterManager.getInstance().getAllRegisterNames().toArray());
+        register = new MComboBox<>()
+                .withDictionaryItems(DictionaryManager.getInstance().getDictionaryByClassName(RegisterDictionary.class), Labels.NOT_CHOSEN);
         register.addActionListener(this);
         mainPanel.add(register, "4, 11, 3, 1, fill, fill");
 
@@ -239,12 +240,12 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         scrollPaneExamples.setViewportView(examplesList);
 
         btnNewExample = MButton.buildAddButton();
+
         btnNewExample.addActionListener((ActionEvent e) -> {
             String example = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
             if (example != null && !"".equals(example)) {
                 SenseExample senseExample = new SenseExample();
                 senseExample.setExample(example);
-                senseExample.setSense(unit);
                 senseExample.setType("W");
                 examplesModel.addElement(senseExample);
                 btnSave.setEnabled(true);
@@ -331,23 +332,23 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         unit.setDomain(getDomain().getEntity());
         int variant = Integer.parseInt(getVariant().getText());
         unit.setVariant(variant);
-        String registerText = getRegister().getSelectedItem().toString();
 
-        Long registerId = RegisterManager.getInstance().getId(registerText);
-        SenseAttributes attributes = unit.getSenseAttributes();
+        RegisterDictionary reg = register.getEntity();
+        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
         String definition = getDefinition().getText();
         String link = getLink().getToolTipText();
         String comment = getComment().getText();
-        if(attributes == null && (definition != null || link != null || comment != null || registerId > 0))
+        if(attributes == null && (definition != null || link != null || comment != null || register.getSelectedIndex() > 0))
         {
             attributes = new SenseAttributes();
         }
         attributes.setComment(comment);
         attributes.setLink(link);
         attributes.setDefinition(definition);
-        attributes.setRegister(registerId);
+        attributes.setRegister(reg);
 
-        java.util.List<SenseExample> examples = unit.getExamples();
+        java.util.Set<SenseExample> examples = attributes.getExamples();
+
         examples.clear();
         if(!examplesModel.isEmpty()) {
             for(int i = 0; i < examplesModel.size(); i++)
@@ -380,9 +381,6 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     }
 
     public void refreshData() {
-//        if (unit != null) {
-//            LexicalDA.refresh(unit);
-//        }
 
         lemma.setText(formatValue(unit != null ? unit.getWord().getWord() : null));
         variant.setText(unit != null ? "" + unit.getVariant() : null);
@@ -397,17 +395,17 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         domain.setSelectedItem(domainText == null ? null
                 : new CustomDescription<>(domainText, unit.getDomain()));
 
-        SenseAttributes attributes = unit.getSenseAttributes();
+        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
         if(attributes != null){
             definition.setText(attributes.getDefinition());
             comment.setText(attributes.getComment());
-            register.setSelectedItem(RegisterManager.getInstance().getName(attributes.getRegister()));
+            //register.setSelectedItem(RegisterManager.getInstance().getName(attributes.getRegister()));
             link.setText(attributes.getLink());
         }
 
         examplesModel.clear();
-        if(unit.getExamples() != null){
-            for(SenseExample example : unit.getExamples()){
+        if(attributes.getExamples() != null){
+            for(SenseExample example : attributes.getExamples()){
                 examplesModel.addElement(example);
             }
             examplesList.setModel(examplesModel);
@@ -489,7 +487,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         return link;
     }
 
-    public MComboBox<Object> getRegister() {
+    public MComboBox<RegisterDictionary> getRegister() {
         return register;
     }
 

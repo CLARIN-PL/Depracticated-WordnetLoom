@@ -19,12 +19,80 @@ INSERT INTO wordnet.word (word)
   UNION ALL
   SELECT 'm³';
 
+CREATE TABLE wordnet.temp_dictionaries(
+    id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    old_value INT NOT NULL,
+    name_id BIGINT NOT NULL,
+    dtype VARCHAR(31) NOT NULL,
+    tag VARCHAR(20),
+    markednessValue BIGINT
+);
+
+# dodawanie słowników
+DELIMITER $$
+DROP PROCEDURE IF EXISTS insert_dictionaries $$
+CREATE PROCEDURE insert_dictionaries(IN valuesList VARCHAR(1000), IN typeName VARCHAR(40))
+    BEGIN
+        SET @counter = 0;
+        SET @valuesList = valuesList;
+        SET @lastInsertedStringId = 0;
+        SET @lastInsertedValueId = null;
+        WHILE(LOCATE(',', @valuesList) > 0) DO
+            SET @value = SUBSTRING(@valuesList, 1, LOCATE(',', @valuesList) -1);
+            SET @optionalValue = null;
+            SET @tag = null;
+            IF(LOCATE(';', @value) > 0) THEN
+                SET @optionalValue = SUBSTRING(@value,LOCATE(';', @value)+1);
+                SET @value = SUBSTRING(@value, 1, LOCATE(';', @value) -1);
+
+                SELECT @optionalValue;
+            END IF;
+            INSERT INTO wordnet.application_localised_string (value, language)
+            VALUES (@value, 'pl');
+            SET @lastInsertedStringId = LAST_INSERT_ID();
+            INSERT INTO wordnet.application_localised_string(id, value, language)
+            VALUES (@lastInsertedStringId, @value, 'en');
+
+            IF(@optionalValue IS NOT NULL) THEN
+                IF(typeName = 'MarkednessDictionary') THEN
+                    INSERT INTO wordnet.application_localised_string(value, language)
+                    VALUES (@optionalValue, 'pl');
+                    SET @lastInsertedValueId = LAST_INSERT_ID();
+                    INSERT INTO wordnet.application_localised_string(id, value, language)
+                    VALUES (@lastInsertedValueId, @optionalValue, 'en');
+                END IF;
+                IF (typeName = 'AspectDictionary') THEN
+                    SET @tag = @optionalValue;
+				END IF;
+			END IF;
+            INSERT INTO wordnet.temp_dictionaries (old_value, name_id, dtype, tag, markednessValue)
+            VALUES(@counter, @lastInsertedStringId, typeName, @tag, @lastInsertedValueId);
+
+            SET @valuesList = SUBSTRING(@valuesList, LOCATE(',', @valuesList)+1);
+            SET @counter = @counter +1;
+        END WHILE;
+    END $$
+DELIMITER ;
+CALL insert_dictionaries('og.,daw.,książk.,nienorm.,posp.,pot.,reg.,specj.,środ.,urz.,wulg.,', 'RegisterDictionary');
+CALL insert_dictionaries('Nieprzetworzony,Nowy,Błąd,Sprawdzony,Znaczenie,Częściowo przetworzony,', 'StatusDictionary');
+CALL insert_dictionaries('radość,zaufanie,cieszenie się na coś oczekiwanego, zaskoczenie czymś nieprzewidywanym, smutek, złość, strach, wstręt,', 'EmotionDictionary');
+CALL insert_dictionaries('użyteczność, dobro, prawda, wiedza, piękno, szczęście, nieużyteczność, krzywda, niewiedza, błąd, brzydota, nieszczęście,', 'ValuationDictionary');
+CALL insert_dictionaries('Wybierz:, amb (niejednoznaczność pod względem nacechowania emocjonalnego;amb,+ m (mocne nacechowanie pozytywne jednostki);+ m, - m (mocne nacechowanie negatywne jednostki);- m,+ s (słabe nacechowanie pozytywne jednostki);+ s,- s (słabe nacechowanie negatywne jednostki);- s,', 'MarkednessDictionary');
+CALL insert_dictionaries('jednostka nie jest czasownikiem;no,aspect dokonany;:perf:,aspekt niedokonany;:imperf:,predykatyw;:pred:,czasownik dwuaspektowy;:imperf.perf;,', 'AspectDictionary');
+
+DROP PROCEDURE IF EXISTS insert_localised_description;
+
+INSERT INTO dictionaries (dtype, id, name_id, tag, value)
+SELECT dtype, id, name_id, tag, markednessValue
+FROM temp_dictionaries;
+
 # przerzucenie synsetu
 # złączenia mają na celu pozbycie się synsetów pustych oraz połączeń synsetów z nieistniejącymi jednostkami
-INSERT INTO wordnet.synset (id, split, lexicon_id, status)
+INSERT INTO wordnet.synset (id, split,abstract, lexicon_id, status_id)
   SELECT DISTINCT
     S.id,
     S.split,
+    S.isabstract,
     (SELECT CASE WHEN pos <= 4
       THEN 1
             WHEN S.comment = '' AND S.owner = ''
@@ -34,13 +102,13 @@ INSERT INTO wordnet.synset (id, split, lexicon_id, status)
        LEFT JOIN wordnet_work.synset SS ON U.SYN_ID = SS.id
      WHERE SS.id = S.id
      LIMIT 1) AS lexicon,
-    S.status
+     (SELECT id FROM wordnet.temp_dictionaries WHERE old_value = S.status AND dtype = 'StatusDictionary')
   FROM wordnet_work.synset S LEFT JOIN wordnet_work.unitandsynset U ON S.id = U.SYN_ID
     LEFT JOIN wordnet_work.lexicalunit L ON U.LEX_ID = L.id
   WHERE U.SYN_ID IS NOT NULL AND L.id IS NOT NULL;
 
 # przerzucenie jednostek
-INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, part_of_speech_id, synset_id, word_id, status)
+INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, part_of_speech_id, synset_id, word_id, status_id)
   SELECT
     L.id,
     U.unitindex,
@@ -59,9 +127,18 @@ INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, 
      FROM wordnet.word
      WHERE word = L.lemma
      LIMIT 1)        AS word_id,
-    L.status
+     (SELECT id FROM wordnet.temp_dictionaries WHERE old_value = L.status AND dtype = 'StatusDictionary') AS status
   FROM wordnet_work.lexicalunit L LEFT JOIN wordnet_work.unitandsynset U ON L.id = U.LEX_ID
     LEFT JOIN wordnet_work.synset S ON U.SYN_ID = S.id;
+
+# changing synset position in english lexicons
+UPDATE sense
+SET synset_position = synset_position -1
+WHERE lexicon_id = 3;
+
+UPDATE sense
+SET synset_position = 0
+WHERE synset_position < 0;
 
 # PRZERZUCANIE UŻYTKOWNIKÓW
 #podział na imię i nazwisko
@@ -104,11 +181,10 @@ INSERT INTO wordnet.sense_attributes (sense_id, comment, user_id, error_comment)
 
 # wstawianie atrybótów synsetów
 # złączenia z synsetem dokonujemy aby wyeliminować atrybuty synsetów pustych, które nie zostały przeniesione do nowej bazy
-INSERT INTO wordnet.synset_attributes (synset_id, comment, abstract, owner_id, error_comment)
+INSERT INTO wordnet.synset_attributes (synset_id, comment, owner_id, error_comment)
   SELECT
     S.id,
     comment,
-    isabstract,
     (SELECT id
      FROM wordnet.users
      WHERE
@@ -265,45 +341,45 @@ CALL insertAllowedLexicons();
 DROP PROCEDURE IF EXISTS insertAllowedLexicons;
 
 # dodanie i wypełnienie tabeli register_types. Tabela będzie potrzebna do parsowania komentarzy
-CREATE TABLE wordnet.register_types
-(
-  id      INT PRIMARY KEY AUTO_INCREMENT,
-  name_id BIGINT NOT NULL UNIQUE
-);
+--CREATE TABLE wordnet.register_types
+--(
+--  id      INT PRIMARY KEY AUTO_INCREMENT,
+--  name_id BIGINT NOT NULL UNIQUE
+--);
 
-ALTER TABLE wordnet.register_types
-  ADD CONSTRAINT fk_register_types_localised
-FOREIGN KEY (name_id) REFERENCES wordnet.application_localised_string (id);
+--ALTER TABLE wordnet.register_types
+--  ADD CONSTRAINT fk_register_types_localised
+--FOREIGN KEY (name_id) REFERENCES wordnet.application_localised_string (id);
 
-DELIMITER $$
-DROP PROCEDURE IF EXISTS insert_register_types$$
-CREATE PROCEDURE insert_register_types()
-
-  BEGIN
-    SET @registers = 'og.,daw.,książk.,nienorm.,posp.,pot.,reg.,specj.,środ.,urz.,wulg.,';
-    WHILE (LOCATE(',', @registers) > 0) DO
-      SET @value = SUBSTRING(@registers, 1, LOCATE(',', @registers) - 1);
-      SET @last_insert_id = LAST_INSERT_ID();
-      INSERT INTO wordnet.application_localised_string (value, language)
-      VALUES (@value, 'pl');
-      SET @last_insert_id = LAST_INSERT_ID();
-      INSERT INTO wordnet.application_localised_string (id, value, language)
-      VALUES (@last_insert_id, @value, 'en');
-      INSERT INTO wordnet.register_types (name_id)
-      VALUES (@last_insert_id);
-      SET @registers = SUBSTRING(@registers, LOCATE(',', @registers) + 1);
-    END WHILE;
-  END $$
-
-DELIMITER ;
-
-CALL insert_register_types;
-
-DROP PROCEDURE insert_register_types;
+--DELIMITER $$
+--DROP PROCEDURE IF EXISTS insert_register_types$$
+--CREATE PROCEDURE insert_register_types()
+--
+--  BEGIN
+--    SET @registers = 'og.,daw.,książk.,nienorm.,posp.,pot.,reg.,specj.,środ.,urz.,wulg.,';
+--    WHILE (LOCATE(',', @registers) > 0) DO
+--      SET @value = SUBSTRING(@registers, 1, LOCATE(',', @registers) - 1);
+--      SET @last_insert_id = LAST_INSERT_ID();
+--      INSERT INTO wordnet.application_localised_string (value, language)
+--      VALUES (@value, 'pl');
+--      SET @last_insert_id = LAST_INSERT_ID();
+--      INSERT INTO wordnet.application_localised_string (id, value, language)
+--      VALUES (@last_insert_id, @value, 'en');
+--      INSERT INTO wordnet.register_types (name_id)
+--      VALUES (@last_insert_id);
+--      SET @registers = SUBSTRING(@registers, LOCATE(',', @registers) + 1);
+--    END WHILE;
+--  END $$
+--
+--DELIMITER ;
+--
+--CALL insert_register_types;
+--
+--DROP PROCEDURE insert_register_types;
 
 # dodanie kolumny proper_name, do atrybutów jednostek
 ALTER TABLE wordnet.sense_attributes
-  ADD COLUMN proper_name BIT DEFAULT 0 NOT NULL;
+ADD COLUMN proper_name BIT DEFAULT 0 NOT NULL;
 
 # wstawienie relacji jednostek i synsetów
 # wstawianie relacji jednostek. Sprawdzamy parent oraz child, ponieważ w bazie przechowywane sa relacje do nieistniejących jednostek
@@ -333,3 +409,5 @@ INSERT INTO wordnet.synset_relation (child_synset_id, parent_synset_id, synset_r
                       FROM wordnet.synset)
         AND CHILD_ID IN (SELECT id
                          FROM wordnet.synset);
+
+DROP TABLE temp_dictionaries;

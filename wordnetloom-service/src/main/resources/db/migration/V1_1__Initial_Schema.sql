@@ -38,6 +38,8 @@ CREATE TABLE dictionaries (
   id             BIGINT      NOT NULL AUTO_INCREMENT,
   description_id BIGINT COMMENT 'Dictionary description',
   name_id        BIGINT COMMENT 'Dictionary name',
+  tag           VARCHAR(20),
+  value         BIGINT,
   PRIMARY KEY (id)
 );
 
@@ -82,7 +84,7 @@ CREATE TABLE sense (
   COMMENT 'Part of speech Id',
   synset_id         BIGINT COMMENT 'Synset Id',
   word_id           BIGINT        NOT NULL,
-  status            INT           NOT NULL DEFAULT 0,
+  status_id         BIGINT,
   PRIMARY KEY (id)
 );
 
@@ -91,7 +93,8 @@ CREATE TABLE sense_attributes (
   comment       TEXT,
   definition    TEXT,
   link          VARCHAR(255),
-  register      VARCHAR(255),
+  register_id   BIGINT,
+  aspect_id     BIGINT,
   user_id       BIGINT,
   error_comment TEXT,
   PRIMARY KEY (sense_id)
@@ -99,7 +102,7 @@ CREATE TABLE sense_attributes (
 
 CREATE TABLE sense_examples (
   id       BIGINT      NOT NULL AUTO_INCREMENT,
-  sense_id BIGINT      NOT NULL,
+  sense_attribute_id   BIGINT  NOT NULL,
   example  TEXT,
   type     VARCHAR(30) NOT NULL,
   PRIMARY KEY (id)
@@ -147,7 +150,8 @@ CREATE TABLE synset (
   id         BIGINT NOT NULL AUTO_INCREMENT,
   split      INTEGER COMMENT 'Position of line splitting synset head',
   lexicon_id BIGINT NOT NULL,
-  status     INT    NOT NULL DEFAULT 0,
+  status_id  BIGINT,
+  abstract BOOLEAN COMMENT 'is synset abstract',
   PRIMARY KEY (id)
 );
 
@@ -155,16 +159,18 @@ CREATE TABLE synset_attributes (
   synset_id     BIGINT NOT NULL,
   comment       TEXT,
   definition    TEXT,
-  abstract      BOOLEAN COMMENT 'is synset abstract',
   princeton_id  VARCHAR(255) COMMENT 'External original Princeton Id',
   owner_id      BIGINT COMMENT 'Synset owner',
   error_comment TEXT,
+  ili_id        VARCHAR(255) COMMENT 'OMW id',
   PRIMARY KEY (synset_id)
 );
 
 CREATE TABLE synset_examples (
+  id       BIGINT      NOT NULL AUTO_INCREMENT,
   synset_attributes_id BIGINT NOT NULL,
-  example              TEXT
+  example              TEXT,
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE synset_relation (
@@ -266,8 +272,8 @@ REFERENCES sense (id);
 
 ALTER TABLE sense_examples
   ADD CONSTRAINT FK8vf5o4pb6dmm3jmy1npt7snxe
-FOREIGN KEY (sense_id)
-REFERENCES sense (id);
+FOREIGN KEY (sense_attribute_id)
+REFERENCES sense_attributes (sense_id);
 
 ALTER TABLE sense_relation
   ADD CONSTRAINT FKk682ashm51g6a7u4unytrt1ic
@@ -338,6 +344,11 @@ ALTER TABLE synset
   ADD CONSTRAINT FKfxflmrbnq64hax2r7gs1gbeuj
 FOREIGN KEY (lexicon_id)
 REFERENCES lexicon (id);
+
+ALTER TABLE synset
+  ADD CONSTRAINT FKfxflmrbnq64hax2r7gs1gzxcc
+FOREIGN KEY (status_id)
+REFERENCES dictionaries (id);
 
 ALTER TABLE synset_attributes
   ADD CONSTRAINT FKd4daq7s6mjs49n2flpjndk0ob

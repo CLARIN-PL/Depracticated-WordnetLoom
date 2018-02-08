@@ -47,8 +47,8 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         Root<RelationType> root = q.from(RelationType.class);
         root.fetch("parent", JoinType.LEFT);
         root.fetch("reverse", JoinType.LEFT);
-        root.fetch("lexicons", JoinType.INNER);
-        root.fetch("partsOfSpeech", JoinType.INNER);
+        root.fetch("lexicons", JoinType.LEFT);
+        root.fetch("partsOfSpeech", JoinType.LEFT);
 
         q.distinct(true);
 
@@ -63,9 +63,9 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         Root<RelationType> root = q.from(RelationType.class);
         root.fetch("parent", JoinType.LEFT);
         root.fetch("reverse", JoinType.LEFT);
-        root.fetch("lexicons", JoinType.INNER);
-        root.fetch("partsOfSpeech", JoinType.INNER);
-        root.fetch("relationTests", JoinType.INNER);
+        root.fetch("lexicons", JoinType.LEFT);
+        root.fetch("partsOfSpeech", JoinType.LEFT);
+        root.fetch("relationTests", JoinType.LEFT);
 
         q.distinct(true);
         q.where(cb.equal(root.get("id"), id));

@@ -474,9 +474,9 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
             DataEntry dataEntry = synsetData.getById(getId());
             if(dataEntry != null){
                 Synset synset = dataEntry.getSynset();
-                if(synset.getSynsetAttributes() != null && synset.getSynsetAttributes().getIsAbstract()) {
-                    ret = "S ";
-                }
+                //if(synset.getSynsetAttributes() != null && synset.getSynsetAttributes().getIsAbstract()) {
+                //    ret = "S ";
+               // }
                 ret += SenseFormat.getText(dataEntry);
             } else {
                 ret = "";

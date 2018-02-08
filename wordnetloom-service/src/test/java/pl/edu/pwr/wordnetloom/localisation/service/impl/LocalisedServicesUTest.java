@@ -23,10 +23,9 @@ import static pl.edu.pwr.wordnetloom.commontests.localisation.LocalistaionForTes
 
 public class LocalisedServicesUTest {
 
-    private LocalisedStringServiceBean service;
     private LocalisedStringRepository repository;
     private Validator validator;
-
+    private LocalisedStringServiceBean service;
     @Before
     public void initTestCase() {
         validator = Validation.buildDefaultValidatorFactory().getValidator();

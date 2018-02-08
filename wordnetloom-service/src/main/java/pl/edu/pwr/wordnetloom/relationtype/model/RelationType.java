@@ -1,5 +1,7 @@
 package pl.edu.pwr.wordnetloom.relationtype.model;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -14,11 +16,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Audited
 @Entity
 @Table(name = "relation_type")
 public class RelationType extends GenericEntity {
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "relation_type_allowed_lexicons",
             joinColumns = @JoinColumn(name = "relation_type_id"),
@@ -28,7 +31,7 @@ public class RelationType extends GenericEntity {
     @Size(min = 1)
     private Set<Lexicon> lexicons = new HashSet<>();
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "relation_type_allowed_parts_of_speech",
             joinColumns = @JoinColumn(name = "relation_type_id"),
@@ -52,6 +55,7 @@ public class RelationType extends GenericEntity {
     @Column(name = "short_display_text_id")
     private Long shortDisplayText;
 
+    @NotAudited
     @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RelationTest> relationTests = new ArrayList<>();
 

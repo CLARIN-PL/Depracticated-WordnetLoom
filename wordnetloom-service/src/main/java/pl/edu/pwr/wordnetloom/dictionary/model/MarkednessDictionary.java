@@ -6,5 +6,5 @@ import javax.persistence.Entity;
 
 @Audited
 @Entity
-public class RegisterDictionary extends Dictionary {
+public class MarkednessDictionary extends Dictionary{
 }
