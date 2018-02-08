@@ -263,7 +263,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
     private void setSplitPosition(int newSplitPosition){
         lastSynset.setSplit(newSplitPosition);
-        lastSynset = RemoteService.synsetRemote.updateSynset(lastSynset);
+        lastSynset = RemoteService.synsetRemote.save(lastSynset);
         listModel.setSplitPosition(newSplitPosition);
     }
 
@@ -408,7 +408,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     private void updateSplitPosition(int newSplitPosition){
         lastSynset.setSplit(newSplitPosition);
         listModel.setSplitPosition(newSplitPosition);
-        RemoteService.synsetRemote.updateSynset(lastSynset);
+        RemoteService.synsetRemote.save(lastSynset);
     }
 
     private void moveToNewSynset() {
@@ -422,22 +422,29 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         }
         // wyświetlenie okienka do ustalenia relacji między starym i nowym synsetem
         PartOfSpeech partOfSpeech = listModel.getObjectAt(0).getPartOfSpeech();
+
         final RelationType relationType = RelationTypeFrame.showModal(workbench, RelationArgument.SYNSET_RELATION, partOfSpeech,lastSynset.getSenses() , selectedUnits);
+
         if(relationType == null){
             return;
         }
+
         Synset synsetToSave = new Synset();
         Lexicon lexicon = selectedUnits.iterator().next().getLexicon();
         synsetToSave.setLexicon(lexicon);
-        Synset newSynset = RemoteService.synsetRemote.updateSynset(synsetToSave);
+
+        Synset newSynset = RemoteService.synsetRemote.save(synsetToSave);
+
         for(Sense sense : selectedUnits){
             RemoteService.synsetRemote.addSenseToSynset(sense, newSynset);
         }
+
         RemoteService.synsetRelationRemote.makeRelation(lastSynset, newSynset, relationType);
         // usunięcie przeniesionych jednostek z listy
         Collection<Sense> unitsInSynset = listModel.getCollection();
         unitsInSynset.removeAll(selectedUnits);
         listModel.setCollection(unitsInSynset);
+
         if(lastSynset.getSplit() > listModel.getSize()){
             updateSplitPosition(listModel.getSize());
         }

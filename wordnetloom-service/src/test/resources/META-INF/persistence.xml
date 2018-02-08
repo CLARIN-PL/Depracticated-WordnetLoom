@@ -15,6 +15,7 @@
         <class>pl.edu.pwr.wordnetloom.sense.model.SenseAttributes</class>
         <class>pl.edu.pwr.wordnetloom.sense.model.SenseExample</class>
         <class>pl.edu.pwr.wordnetloom.synset.model.Synset</class>
+        <class>pl.edu.pwr.wordnetloom.synset.model.SynsetExample</class>
         <class>pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes</class>
         <class>pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation</class>
         <class>pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation</class>

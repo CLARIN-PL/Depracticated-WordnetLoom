@@ -11,17 +11,17 @@ import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 import com.jgoodies.forms.util.LayoutStyle;
 import jiconfont.icons.FontAwesome;
-import org.hibernate.mapping.Collection;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.DictionaryManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RegisterManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -49,7 +49,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     private MTextField lemma;
     private MTextField variant;
     private MTextField link;
-    private MComboBox<Object> register;
+    private MComboBox<RegisterDictionary> register;
     private MComboBox<PartOfSpeech> partOfSpeech;
     private DomainMComboBox domain;
     private MTextPane comment;
@@ -182,8 +182,8 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lblRegister.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblRegister, "2, 11, left, fill");
 
-//        register = new MComboBox<>(RegisterTypes.values());
-        register = new MComboBox<>(RegisterManager.getInstance().getAllRegisterNames().toArray());
+        register = new MComboBox<>()
+                .withDictionaryItems(DictionaryManager.getInstance().getDictionaryByClassName(RegisterDictionary.class), Labels.NOT_CHOSEN);
         register.addActionListener(this);
         mainPanel.add(register, "4, 11, 3, 1, fill, fill");
 
@@ -332,23 +332,22 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         unit.setDomain(getDomain().getEntity());
         int variant = Integer.parseInt(getVariant().getText());
         unit.setVariant(variant);
-        String registerText = getRegister().getSelectedItem().toString();
 
-        Long registerId = RegisterManager.getInstance().getId(registerText);
+        RegisterDictionary reg = register.getEntity();
         SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
         String definition = getDefinition().getText();
         String link = getLink().getToolTipText();
         String comment = getComment().getText();
-        if(attributes == null && (definition != null || link != null || comment != null || registerId > 0))
+        if(attributes == null && (definition != null || link != null || comment != null || register.getSelectedIndex() > 0))
         {
             attributes = new SenseAttributes();
         }
         attributes.setComment(comment);
         attributes.setLink(link);
         attributes.setDefinition(definition);
-        //attributes.setRegister(registerId);
+        attributes.setRegister(reg);
 
-        java.util.List<SenseExample> examples = attributes.getExamples();
+        java.util.Set<SenseExample> examples = attributes.getExamples();
 
         examples.clear();
         if(!examplesModel.isEmpty()) {
@@ -488,7 +487,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         return link;
     }
 
-    public MComboBox<Object> getRegister() {
+    public MComboBox<RegisterDictionary> getRegister() {
         return register;
     }
 

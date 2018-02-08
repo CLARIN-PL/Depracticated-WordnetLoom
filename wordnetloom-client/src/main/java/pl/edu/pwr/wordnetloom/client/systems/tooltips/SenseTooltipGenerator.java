@@ -35,8 +35,8 @@ public class SenseTooltipGenerator implements ToolTipGeneratorInterface {
                 .addPartOfSpeech(sense.getPartOfSpeech());
         SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(sense.getId());
         if (attributes != null) {
-           // builder.addRegister(attributes.getRegister())
-           //         .addDefinition(attributes.getDefinition());
+            builder.addRegister(attributes.getRegister())
+                   .addDefinition(attributes.getDefinition());
         }
         builder.addExamples(attributes.getExamples());
         if (relations != null && !relations.isEmpty()) {

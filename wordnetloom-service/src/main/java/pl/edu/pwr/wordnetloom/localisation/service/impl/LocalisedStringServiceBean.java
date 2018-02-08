@@ -56,15 +56,8 @@ public class LocalisedStringServiceBean implements LocalisedStringServiceRemote 
         return repository.findAllByLanguageAsMap(language);
     }
 
-    @Override
-    public Map<Long, String> findAllRegisterTypes(String language)
-    {
-        return repository.findAllRegisterTypes(language);
-    }
-
     public LocalisedString add(LocalisedString entity) {
         ValidationUtils.validateEntityFields(validator, entity);
-
         return repository.persist(entity);
     }
 

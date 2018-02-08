@@ -1,12 +1,12 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
+import pl.edu.pwr.wordnetloom.client.systems.managers.DictionaryManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RegisterManager;
-import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -17,10 +17,10 @@ import java.util.List;
 
 public final class SenseCriteria extends CriteriaPanel {
 
-    private MComboBox<String> registerComboBox;
+    private MComboBox<RegisterDictionary> registerComboBox;
     private MTextField comment;
     private MTextField example;
-    private CriteriaDTO crit;
+    private CriteriaDTO criteria;
 
     public SenseCriteria() {
         super(420);
@@ -29,20 +29,16 @@ public final class SenseCriteria extends CriteriaPanel {
     }
 
     private void init() {
-        crit = new CriteriaDTO();
+        criteria = new CriteriaDTO();
         registerComboBox = initRegisterComboBox();
         comment = new MTextField(STANDARD_VALUE_FILTER);
         example = new MTextField(STANDARD_VALUE_FILTER);
     }
 
     private MComboBox initRegisterComboBox() {
-        MComboBox<String> resultComboBox = new MComboBox<>();
-        resultComboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
-        List<String> registerTypes = RegisterManager.getInstance().getAllRegisterNames();
-
-        for (String registerName : registerTypes) {
-            resultComboBox.addItem(registerName);
-        }
+        List<RegisterDictionary> list = DictionaryManager.getInstance().getDictionaryByClassName(RegisterDictionary.class);
+        MComboBox<RegisterDictionary> resultComboBox = new MComboBox<>()
+                .withDictionaryItems(list, Labels.VALUE_ALL);
 
         resultComboBox.setPreferredSize(DEFAULT_DIMENSION);
 
@@ -102,7 +98,7 @@ public final class SenseCriteria extends CriteriaPanel {
         add("br hfill", example);
     }
 
-    public MComboBox<String> getRegisterComboBox() {
+    public MComboBox<RegisterDictionary> getRegisterComboBox() {
         return registerComboBox;
     }
 
@@ -124,19 +120,19 @@ public final class SenseCriteria extends CriteriaPanel {
 
     @Override
     public CriteriaDTO getCriteria() {
-        crit.setLemma(getSearchTextField().getText());
-        crit.setLexicon(getLexiconComboBox().getSelectedIndex());
-        crit.setPartOfSpeech(getPartsOfSpeechComboBox().getSelectedIndex());
-        crit.setDomain(getDomainComboBox().getSelectedIndex());
-        crit.setRelation(getSenseRelationTypeComboBox().getSelectedIndex());
-        crit.setRegister(getRegisterComboBox().getSelectedIndex());
-        crit.setComment(getComment().getText());
-        crit.setExample(getExample().getText());
-        return crit;
+        criteria.setLemma(getSearchTextField().getText());
+        criteria.setLexicon(getLexiconComboBox().getSelectedIndex());
+        criteria.setPartOfSpeech(getPartsOfSpeechComboBox().getSelectedIndex());
+        criteria.setDomain(getDomainComboBox().getSelectedIndex());
+        criteria.setRelation(getSenseRelationTypeComboBox().getSelectedIndex());
+        criteria.setRegister(getRegisterComboBox().getSelectedIndex());
+        criteria.setComment(getComment().getText());
+        criteria.setExample(getExample().getText());
+        return criteria;
     }
 
     public void setSensesToHold(List<Sense> sense) {
-        crit.setSense(new ArrayList<>(sense));
+        criteria.setSense(new ArrayList<>(sense));
     }
 
     @Override
@@ -149,6 +145,6 @@ public final class SenseCriteria extends CriteriaPanel {
         getRegisterComboBox().setSelectedIndex(criteria.getRegister());
         getComment().setText(criteria.getComment());
         getExample().setText(criteria.getExample());
-        crit.setSense(criteria.getSense());
+        this.criteria.setSense(criteria.getSense());
     }
 }

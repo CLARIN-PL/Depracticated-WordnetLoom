@@ -32,9 +32,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
     @Inject
     SynsetRelationRepository synsetRelationRepository;
 
-    @Inject
-    SenseRepository senseRepository;
-
     private final int FIRST_SYNSET_POSITION = 0;
 
     private final String SENSES = "senses";
@@ -499,55 +496,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return true;
     }
 
-    public Synset updateSynset(Synset synset){
-        if(getEntityManager().contains(synset)){
-            getEntityManager().persist(synset);
-            return synset;
-        } else {
-            return getEntityManager().merge(synset);
-        }
-    }
-
-    public void addSenseToSynset(Sense unit, Synset synset) {
-        // pobranie wszystkich elementow synsetu
-        List<Sense> sensesInSynset = senseRepository.findBySynset(synset.getId());
-        if(sensesInSynset.contains(unit)){
-            return;
-        }
-//        int index = 0;
-//        for(Sense sense :  sensesInSynset){
-//            //TODO tutaj było jakieś sprawdzenie, czy nie sa identyczne
-//            sense.setSynsetPosition(index++);
-//            getEntityManager().merge(sense);
-//        }
-        //adding unit to synset
-        unit.setSynset(synset);
-        unit.setSynsetPosition(sensesInSynset.size());
-        getEntityManager().merge(unit);
-    }
-
-    public void deleteSensesFromSynset(Collection<Sense> senses, Synset synset) {
-        // usunięcie jednostek z synsetu
-        for(Sense sense : senses){
-            sense.setSynset(null);
-            sense.setSynsetPosition(null);
-            getEntityManager().merge(sense);
-        }
-        reindexSensesInSynset(synset);
-    }
-
-    private int reindexSensesInSynset(Synset synset){
-        //TODO można dodać jeszcze sprawdzenie, czy indeksowanie jest potrzebne
-        List<Sense> sensesInSynset = senseRepository.findBySynset(synset.getId());
-        int index = 0;
-        for(Sense sense : sensesInSynset) {
-            sense.setSynsetPosition(index++);
-            getEntityManager().merge(sense);
-        }
-        return index;
-    }
-
-    public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain,
+     public List<Sense> dbFastGetSenseBySynset(String filter, Domain domain,
                                               RelationType relationType, String definition, String comment,
                                               String artificial, int limitSize, List<Long> lexicons) {
 

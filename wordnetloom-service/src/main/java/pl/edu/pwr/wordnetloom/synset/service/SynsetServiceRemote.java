@@ -23,7 +23,9 @@ public interface SynsetServiceRemote {
 
     DataEntry findSynsetDataEntry(Long synsetId, List<Long> lexicons);
 
-    Synset updateSynset(Synset synset);
+    Synset save(Synset synset);
+
+    SynsetAttributes save(SynsetAttributes attributes);
 
     void addSenseToSynset(Sense unit, Synset synset);
 

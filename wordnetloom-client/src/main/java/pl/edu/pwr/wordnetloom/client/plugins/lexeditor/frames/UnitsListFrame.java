@@ -19,6 +19,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
@@ -28,6 +29,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 
 import javax.swing.*;
 import java.util.Collection;
@@ -87,11 +89,13 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
 
     @Override
     protected void invokeNew() {
-        // wyswiętlanie okienka z parametrami
-        Sense newUnit = NewLexicalUnitFrame.showModal(workbench, filterObject);
+
+        Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, filterObject);
         if (newUnit != null) {
-            RemoteService.senseRemote.save(newUnit);
-            filterEdit.setText(newUnit.getWord().getWord());
+            Sense sense = RemoteService.senseRemote.save(newUnit.getA());
+            newUnit.getB().setSense(sense);
+            RemoteService.senseRemote.save(newUnit.getB());
+            filterEdit.setText(sense.getWord().getWord());
             unitWasCreated = true;
             refreshListModel();
         }

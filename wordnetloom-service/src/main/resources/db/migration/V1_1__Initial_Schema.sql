@@ -167,8 +167,10 @@ CREATE TABLE synset_attributes (
 );
 
 CREATE TABLE synset_examples (
+  id       BIGINT      NOT NULL AUTO_INCREMENT,
   synset_attributes_id BIGINT NOT NULL,
-  example              TEXT
+  example              TEXT,
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE synset_relation (
@@ -345,6 +347,11 @@ ALTER TABLE synset
   ADD CONSTRAINT FKfxflmrbnq64hax2r7gs1gbeuj
 FOREIGN KEY (lexicon_id)
 REFERENCES lexicon (id);
+
+ALTER TABLE synset
+  ADD CONSTRAINT FKfxflmrbnq64hax2r7gs1gzxcc
+FOREIGN KEY (status_id)
+REFERENCES dictionaries (id);
 
 ALTER TABLE synset_attributes
   ADD CONSTRAINT FKd4daq7s6mjs49n2flpjndk0ob

@@ -1,13 +1,17 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
+import org.hibernate.envers.Audited;
 import pl.edu.pwr.wordnetloom.dictionary.model.AspectDictionary;
 import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+@Audited
 @Entity
 @Table(name = "sense_attributes")
 public class SenseAttributes implements Serializable, Cloneable {
@@ -21,7 +25,7 @@ public class SenseAttributes implements Serializable, Cloneable {
     private Sense sense;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "senseAttributes", orphanRemoval = true)
-    private List<SenseExample> examples;
+    private Set<SenseExample> examples;
 
     @ManyToOne
     @JoinColumn(name = "aspect_id", referencedColumnName = "id")
@@ -42,6 +46,7 @@ public class SenseAttributes implements Serializable, Cloneable {
     @Column(name = "error_comment")
     private String errorComment;
 
+    @Audited
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User owner;
@@ -129,12 +134,19 @@ public class SenseAttributes implements Serializable, Cloneable {
         this.errorComment = errorComment;
     }
 
-    public List<SenseExample> getExamples() {
+    public Set<SenseExample> getExamples() {
         return examples;
     }
 
-    public void setExamples(List<SenseExample> examples) {
+    public void setExamples(Set<SenseExample> examples) {
         this.examples = examples;
+    }
+
+    public void addExample(SenseExample e){
+        if( examples == null){
+            examples = new HashSet<>();
+        }
+        examples.add(e);
     }
 
     public AspectDictionary getAspectDictionary() {

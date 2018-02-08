@@ -104,7 +104,7 @@ public class SynsetsFrame extends DialogWindow implements ActionListener {
     private void addSenseToNewSynset() {
         assert sense != null;
         Synset synset = new Synset();
-        selectedSynset = RemoteService.synsetRemote.updateSynset(synset);
+        selectedSynset = RemoteService.synsetRemote.save(synset);
         RemoteService.synsetRemote.addSenseToSynset(sense,selectedSynset);
         setVisible(false);
     }
