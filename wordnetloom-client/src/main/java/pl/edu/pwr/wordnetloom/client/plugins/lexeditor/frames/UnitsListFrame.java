@@ -93,8 +93,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
         Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, filterObject);
         if (newUnit != null) {
             Sense sense = RemoteService.senseRemote.save(newUnit.getA());
-            newUnit.getB().setSense(sense);
-            RemoteService.senseRemote.save(newUnit.getB());
+            RemoteService.senseRemote.addSenseAttribute(sense.getId(), newUnit.getB());
             filterEdit.setText(sense.getWord().getWord());
             unitWasCreated = true;
             refreshListModel();

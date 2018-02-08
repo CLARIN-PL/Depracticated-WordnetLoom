@@ -25,9 +25,9 @@ public interface SynsetServiceRemote {
 
     Synset save(Synset synset);
 
-    SynsetAttributes save(SynsetAttributes attributes);
+    SynsetAttributes addSynsetAttribute(final Long synsetId, final SynsetAttributes attributes);
 
-    void addSenseToSynset(Sense unit, Synset synset);
+    Synset addSenseToSynset(Sense unit, Synset synset);
 
     void deleteSensesFromSynset(Collection<Sense> senses, Synset synset);
 
@@ -36,6 +36,8 @@ public interface SynsetServiceRemote {
     int getCountSynsetsByCriteria(SynsetCriteriaDTO criteria);
 
     Synset fetchSynset(Long synsetId);
+
+    Synset findById(Long id);
 
     SynsetAttributes fetchSynsetAttributes(Long synsetId);
 }

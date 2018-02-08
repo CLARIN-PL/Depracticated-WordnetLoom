@@ -1,11 +1,11 @@
 package pl.edu.pwr.wordnetloom.synset.service.impl;
 
+import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
@@ -14,7 +14,13 @@ import pl.edu.pwr.wordnetloom.synset.repository.SynsetAttributesRepository;
 import pl.edu.pwr.wordnetloom.synset.repository.SynsetRepository;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceLocal;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
+import pl.edu.pwr.wordnetloom.user.model.User;
+import pl.edu.pwr.wordnetloom.user.service.UserServiceLocal;
 
+import javax.annotation.Resource;
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJBContext;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -25,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 @Stateless
+@SecurityDomain("wordnetloom")
+@DeclareRoles({"USER", "ADMIN"})
 @Remote(SynsetServiceRemote.class)
 @Local(SynsetServiceLocal.class)
 public class SynsetServiceBean implements SynsetServiceLocal {
@@ -37,6 +45,12 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @Inject
     SenseServiceLocal senseService;
+
+    @Inject
+    UserServiceLocal userService;
+
+    @Resource
+    EJBContext context;
 
     @Inject
     Validator validator;
@@ -55,6 +69,11 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @Override
     public Synset findSynsetBySense(Sense sense, List<Long> lexicons) {
         return synsetRepository.findSynsetBySense(sense, lexicons);
+    }
+
+    @Override
+    public Synset findById(Long id){
+        return synsetRepository.findById(id);
     }
 
     public void delete(RelationType relation, List<Long> lexicons) {
@@ -82,8 +101,17 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     }
 
     @Override
-    public SynsetAttributes save(SynsetAttributes attributes) {
-        return  synsetAttributesRepository.update(attributes);
+    public SynsetAttributes addSynsetAttribute(final Long synsetId, final SynsetAttributes attributes) {
+        ValidationUtils.validateEntityFields(validator, attributes);
+
+        if (attributes.getId() != null) {
+            return synsetAttributesRepository.update(attributes);
+        }
+
+        Synset s = findById(synsetId);
+        attributes.setSynset(s);
+
+        return synsetAttributesRepository.persist(attributes);
     }
 
     @Override
@@ -91,17 +119,35 @@ public class SynsetServiceBean implements SynsetServiceLocal {
         return synsetRepository.prepareCacheForRootNode(synset.getId(), lexicons, 4, directions);
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
-    public void addSenseToSynset(final Sense sense, final Synset synset){
+    public Synset addSenseToSynset(final Sense sense, final Synset synset){
+
+        Synset saved = synset;
+
+        if(synset.getId() == null){
+
+            saved = save(synset);
+
+            SynsetAttributes synsetAttributes = new SynsetAttributes();
+            String email = context.getCallerPrincipal().getName();
+            User user = userService.findUserByEmail(email);
+            synsetAttributes.setOwner(user);
+            synsetAttributes.setSynset(synset);
+
+        }
 
         List<Sense> sensesInSynset = senseService.findBySynset(synset.getId());
+
         if(sensesInSynset.contains(sense)){
-            return;
+            return saved;
         }
-        sense.setSynset(synset);
+
+        sense.setSynset(saved);
         sense.setSynsetPosition(sensesInSynset.size());
         senseService.save(sense);
 
+        return saved;
     }
 
     private int reindexSensesInSynset(Synset synset){

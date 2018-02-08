@@ -68,7 +68,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
     }
 
     public Synset findSynset(Synset synset, List<Long> lexicons) {
-        return getEntityManager().createQuery("SELECT s FROM Synset s JOIN FETCH s.senses JOIN FETCH s.synsetAttributes WHERE s.lexicon.id IN ( :lexicons ) AND  s.id = :id", Synset.class)
+        return getEntityManager().createQuery("SELECT s FROM Synset s JOIN FETCH s.senses WHERE s.lexicon.id IN ( :lexicons ) AND  s.id = :id", Synset.class)
                 .setParameter("id", synset.getId())
                 .setParameter("lexicons", lexicons)
                 .getSingleResult();
@@ -467,16 +467,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
 //        }
 //        return unitsstr;
 //    }
-    public Long fastGetPOSID(Synset synset) {
-//        List<Long> ids = getEM().createNamedQuery("Synset.fastGetPOSID", Long.class)
-//                .setParameter("idSynset", synset.getId())
-//                .getResultList();
-//
-//        if (ids != null && ids.size() > 0 && ids.get(0) != null) {
-//            return ids.get(0);
-//        }
-        return null;
-    }
 
     public boolean exchangeSenses(Synset synset, Sense firstUnit, Sense secondUnit) {
         // pobranie wszystkich elementow dla synsetu
@@ -896,16 +886,15 @@ public class SynsetRepository extends GenericRepository<Synset> {
     }
 
     public Synset fetchSynset(Long synsetId) {
+
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Synset> query = criteriaBuilder.createQuery(Synset.class);
+
         Root<Synset> synsetRoot = query.from(Synset.class);
         Join<Synset, Sense> senseJoin = synsetRoot.join(SENSES);
-        Fetch<Synset, SynsetAttributes> attributesFetch = synsetRoot.fetch(SYNSET_ATTRIBUTE, JoinType.LEFT);
-        attributesFetch.fetch(OWNER, JoinType.LEFT);
+
         Fetch<Synset, Sense> senseFetch = synsetRoot.fetch(SENSES, JoinType.LEFT);
         senseFetch.fetch(DOMAIN);
-        senseFetch.fetch(SENSE_ATTRIBUTE, JoinType.LEFT);
-
 
         Predicate[] predicates = new Predicate[2];
         predicates[0] = criteriaBuilder.equal(synsetRoot.get(ID), synsetId);

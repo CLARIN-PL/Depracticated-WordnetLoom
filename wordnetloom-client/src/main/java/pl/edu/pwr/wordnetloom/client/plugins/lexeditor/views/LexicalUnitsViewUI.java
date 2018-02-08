@@ -429,34 +429,26 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     }
 
     private Synset createNewSynsetAndAddSense(Sense sense) {
+
         Synset synset = new Synset();
         synset.setLexicon(sense.getLexicon());
         synset.setSplit(1);
-        Synset savedSynset = RemoteService.synsetRemote.save(synset);
 
-        SynsetAttributes synsetAttributes = new SynsetAttributes();
-        synsetAttributes.setOwner(RemoteConnectionProvider.getInstance().getUser());
-        synsetAttributes.setSynset(synset);
-
-        RemoteService.synsetRemote.save(synsetAttributes);
-        RemoteService.synsetRemote.addSenseToSynset(sense, savedSynset);
-
-        return savedSynset;
+        return RemoteService.synsetRemote.addSenseToSynset(sense, synset);
     }
 
     private void addNewSense() {
         Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, null);
-        Sense savedUnit = saveUnit(newUnit.getA());
-        newUnit.getB().setSense(savedUnit);
-        RemoteService.senseRemote.save(newUnit.getB());
-        insertSenseToList(savedUnit);
+        if(newUnit != null){
+            Sense savedUnit = save(newUnit);
+            insertSenseToList(savedUnit);
+        }
     }
 
-    private Sense saveUnit(Sense newUnit){
-        Sense savedUnit = null;
-        if (newUnit != null) {
-            savedUnit = RemoteService.senseRemote.save(newUnit);
-        }
+    private Sense save(Pair<Sense, SenseAttributes> swa){
+        Sense savedUnit = RemoteService.senseRemote.save(swa.getA());
+        swa.getB().setSense(savedUnit);
+        RemoteService.senseRemote.addSenseAttribute(savedUnit.getId(), swa.getB());
         return savedUnit;
     }
 
@@ -475,9 +467,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     private void addNewSenseWithSynset() {
         Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, null);
         if(newUnit != null) {
-            Sense savedUnit = saveUnit(newUnit.getA());
-            newUnit.getB().setSense(savedUnit);
-            RemoteService.senseRemote.save(newUnit.getB());
+            Sense savedUnit = save(newUnit);
             createNewSynsetAndAddSense(savedUnit);
             insertSenseToList(savedUnit);
         }
@@ -592,8 +582,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     public void setCriteria(CriteriaDTO crit) {
         criteria.restoreCriteria(crit);
-//        listModel.setCollection(crit.getSense());
-//        listModel.clear();
         if (crit != null && crit.getSense() != null) {
             for (Sense sense : crit.getSense()) {
                 listModel.addElement(sense);
