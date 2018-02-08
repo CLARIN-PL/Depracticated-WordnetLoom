@@ -23,12 +23,36 @@ public class V1_8__ParseComment implements JdbcMigration {
     @Override
     public void migrate(Connection connection) throws Exception {
         this.connection = connection;
+        System.out.println("start parser");
+        System.out.println("getAttributesList()");
         List<Attribute> attributes = getAttributesList();
         if (attributes == null) {
             return;
         }
+        System.out.println("parse()");
         List<Attribute> parsedAttribute = parse(attributes);
+        System.out.println("saveAttributes()");
         saveAttributes(parsedAttribute);
+    }
+
+    private List<Attribute> getAttributesList() throws SQLException {
+        if (connection == null) {
+            return null;
+        }
+        int ID = 1;
+        int COMMENT = 2;
+        String query = "SELECT sense_id, comment FROM " + ATTRIBUTE_TABLE;
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+        List<Attribute> resultAttributes = new ArrayList<>();
+        Attribute attribute;
+        while (resultSet.next()) {
+            attribute = new Attribute();
+            attribute.setId(resultSet.getLong(ID));
+            attribute.setComment(resultSet.getString(COMMENT));
+            resultAttributes.add(attribute);
+        }
+        return resultAttributes;
     }
 
     public void saveAttributes(List<Attribute> attributes) throws SQLException {
@@ -161,6 +185,7 @@ public class V1_8__ParseComment implements JdbcMigration {
             while ((currentPosition = getNext(comment, currentPosition)) != -1) {
                 if (startMarker == 0 && currentPosition != 0) { // sprawdzamy czy nie ma nic przed pierwszym znacznikiem
                     stringBuilder.append(comment.substring(0, currentPosition)).append(" ");
+                    startMarker = currentPosition;
                 }
                 markerType = getMarkerType(comment, currentPosition);
                 marker = getMarker(currentPosition + 1, comment);
@@ -324,26 +349,6 @@ public class V1_8__ParseComment implements JdbcMigration {
             return resultSet.getLong(1);
         }
         return -1L;
-    }
-
-    private List<Attribute> getAttributesList() throws SQLException {
-        if (connection == null) {
-            return null;
-        }
-        int ID = 1;
-        int COMMENT = 2;
-        String query = "SELECT sense_id, comment FROM " + ATTRIBUTE_TABLE;
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(query);
-        List<Attribute> resultAttributes = new ArrayList<>();
-        Attribute attribute;
-        while (resultSet.next()) {
-            attribute = new Attribute();
-            attribute.setId(resultSet.getLong(ID));
-            attribute.setComment(resultSet.getString(COMMENT));
-            resultAttributes.add(attribute);
-        }
-        return resultAttributes;
     }
 }
 
