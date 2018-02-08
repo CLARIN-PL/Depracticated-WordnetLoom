@@ -7,8 +7,8 @@ import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
-import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.synset.repository.SynsetAttributesRepository;
 import pl.edu.pwr.wordnetloom.synset.repository.SynsetRepository;
@@ -19,6 +19,7 @@ import pl.edu.pwr.wordnetloom.user.service.UserServiceLocal;
 
 import javax.annotation.Resource;
 import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJBContext;
 import javax.ejb.Local;
@@ -60,22 +61,26 @@ public class SynsetServiceBean implements SynsetServiceLocal {
         //add sense cloning
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
     public boolean delete(Synset synset) {
         synsetRepository.delete(synset);
         return true;
     }
 
+    @PermitAll
     @Override
     public Synset findSynsetBySense(Sense sense, List<Long> lexicons) {
         return synsetRepository.findSynsetBySense(sense, lexicons);
     }
 
+    @PermitAll
     @Override
-    public Synset findById(Long id){
+    public Synset findById(Long id) {
         return synsetRepository.findById(id);
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     public void delete(RelationType relation, List<Long> lexicons) {
         //Removes relation with subrelations
 //        Collection<SynsetRelationType> children = findChildren(relation);
@@ -86,22 +91,25 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 //        delete(relation);
     }
 
+    @PermitAll
     @Override
-    public DataEntry findSynsetDataEntry(Long synsetId, List<Long> lexicons){
+    public DataEntry findSynsetDataEntry(Long synsetId, List<Long> lexicons) {
         return synsetRepository.findSynsetDataEntry(synsetId, lexicons);
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
-    public Synset save(Synset synset){
+    public Synset save(Synset synset) {
         ValidationUtils.validateEntityFields(validator, synset);
-        if(synset.getId() == null){
+        if (synset.getId() == null) {
             return synsetRepository.persist(synset);
         }
         return synsetRepository.update(synset);
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
-    public SynsetAttributes addSynsetAttribute(final Long synsetId, final SynsetAttributes attributes) {
+    public SynsetAttributes addSynsetAttribute(Long synsetId, SynsetAttributes attributes) {
         ValidationUtils.validateEntityFields(validator, attributes);
 
         if (attributes.getId() != null) {
@@ -114,6 +122,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
         return synsetAttributesRepository.persist(attributes);
     }
 
+    @PermitAll
     @Override
     public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
         return synsetRepository.prepareCacheForRootNode(synset.getId(), lexicons, 4, directions);
@@ -121,11 +130,11 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @RolesAllowed({"USER", "ADMIN"})
     @Override
-    public Synset addSenseToSynset(final Sense sense, final Synset synset){
+    public Synset addSenseToSynset(Sense sense, Synset synset) {
 
         Synset saved = synset;
 
-        if(synset.getId() == null){
+        if (synset.getId() == null) {
 
             saved = save(synset);
 
@@ -139,7 +148,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
         List<Sense> sensesInSynset = senseService.findBySynset(synset.getId());
 
-        if(sensesInSynset.contains(sense)){
+        if (sensesInSynset.contains(sense)) {
             return saved;
         }
 
@@ -150,20 +159,21 @@ public class SynsetServiceBean implements SynsetServiceLocal {
         return saved;
     }
 
-    private int reindexSensesInSynset(Synset synset){
+    private int reindexSensesInSynset(Synset synset) {
 
         List<Sense> sensesInSynset = senseService.findBySynset(synset.getId());
         int index = 0;
-        for(Sense sense : sensesInSynset) {
+        for (Sense sense : sensesInSynset) {
             sense.setSynsetPosition(index++);
             senseService.save(sense);
         }
         return index;
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
-    public void deleteSensesFromSynset(Collection<Sense> senses, Synset synset){
-        for(Sense sense : senses){
+    public void deleteSensesFromSynset(Collection<Sense> senses, Synset synset) {
+        for (Sense sense : senses) {
             sense.setSynset(null);
             sense.setSynsetPosition(null);
             senseService.save(sense);
@@ -171,21 +181,25 @@ public class SynsetServiceBean implements SynsetServiceLocal {
         reindexSensesInSynset(synset);
     }
 
+    @PermitAll
     @Override
     public List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria) {
         return synsetRepository.findSynsetsByCriteria(criteria);
     }
 
+    @PermitAll
     @Override
     public int getCountSynsetsByCriteria(SynsetCriteriaDTO criteria) {
         return synsetRepository.getCountSynsetsByCriteria(criteria);
     }
 
+    @PermitAll
     @Override
-    public Synset fetchSynset(Long synsetId){
+    public Synset fetchSynset(Long synsetId) {
         return synsetRepository.fetchSynset(synsetId);
     }
 
+    @PermitAll
     @Override
     public SynsetAttributes fetchSynsetAttributes(Long synsetId) {
         return synsetRepository.fetchSynsetAttributes(synsetId);
