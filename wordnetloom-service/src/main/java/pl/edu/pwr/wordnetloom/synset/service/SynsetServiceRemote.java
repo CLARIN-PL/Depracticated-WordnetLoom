@@ -17,7 +17,15 @@ public interface SynsetServiceRemote {
 
     boolean delete(Synset synset);
 
+    void deleteSensesFromSynset(Collection<Sense> senses, Synset synset);
+
     Synset findSynsetBySense(Sense sense, List<Long> lexicons);
+
+    Synset fetchSynset(Long synsetId);
+
+    Synset findById(Long id);
+
+    List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria);
 
     Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons, NodeDirection[] directions);
 
@@ -25,19 +33,13 @@ public interface SynsetServiceRemote {
 
     Synset save(Synset synset);
 
-    SynsetAttributes addSynsetAttribute(Long synsetId, SynsetAttributes attributes);
-
     Synset addSenseToSynset(Sense unit, Synset synset);
-
-    void deleteSensesFromSynset(Collection<Sense> senses, Synset synset);
-
-    List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria);
 
     int getCountSynsetsByCriteria(SynsetCriteriaDTO criteria);
 
-    Synset fetchSynset(Long synsetId);
+    SynsetAttributes save(SynsetAttributes attributes);
 
-    Synset findById(Long id);
+    SynsetAttributes addSynsetAttribute(Long synsetId, SynsetAttributes attributes);
 
     SynsetAttributes fetchSynsetAttributes(Long synsetId);
 }

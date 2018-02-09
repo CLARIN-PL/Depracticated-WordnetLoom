@@ -1,7 +1,8 @@
-create table REVINFO (
-  REV integer  NOT NULL AUTO_INCREMENT,
-  REVTSTMP bigint,
-  primary key (REV)
+create table tracker_rev_info (
+  id integer  NOT NULL AUTO_INCREMENT,
+  timestamp bigint,
+  username varchar(255),
+  primary key (id)
 );
 
 create table tracker_dictionaries (
@@ -206,154 +207,154 @@ create table tracker_word (
 alter table tracker_dictionaries
   add constraint FK6i6p4bbfsy06tmi2e7j7ylm3r
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_dictionaries
   add constraint FKf2cve2ha4ugdo8ixdy4385g6x
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_domain
   add constraint FKnt6sndy6khd9no3dhjktqi59y
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_domain
   add constraint FK4gecdehc64qaxt9w3es3ug4t4
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_lexicon
   add constraint FKmhxlbs3hwmjisuc8yej1pd9ei
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_lexicon
   add constraint FKny5yqbp681v0kwrcj9ydf3ra3
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_part_of_speech
   add constraint FKgm5vtes85590hcgp4b6uyi59f
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_part_of_speech
   add constraint FKdhqh2050fotkj23drtda8ajul
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_relation_type
   add constraint FKalxuxhcudxqx2rp0m8l5s2ngf
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_relation_type
   add constraint FKq9vved38e4qagt7w3h1yw9rpg
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_relation_type_allowed_lexicons
   add constraint FKededrfamajkwtt7w9d5a599wg
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_relation_type_allowed_lexicons
   add constraint FKig74q4lve0ku9rx59mps4qeh3
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_relation_type_allowed_parts_of_speech
   add constraint FKb1xvmr0r2npb90g6g39cou8h6
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_relation_type_allowed_parts_of_speech
   add constraint FKcllplaw90f6gqu59k92pu1j53
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_sense
   add constraint FKb3ucdyys4lu93clokjmhjrptq
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_sense
   add constraint FKj6mp679d0c5hj0c58nnhs1kx9
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_sense_attributes
   add constraint FK9c7fscejfmwpsqqt7i86tu6mp
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_sense_attributes
   add constraint FKkwap3fks8fvnb0l7if6palmwg
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_sense_examples
   add constraint FKqwa0mawyvljkuylsw3jkdjigp
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_sense_examples
   add constraint FK7nj8dqmd27fa9pu9yfo59uf55
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_sense_relation
   add constraint FKqvleynwpmvu26pklqxyx9jxqs
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_sense_relation
   add constraint FKobohk2lwfltkbdgoyqdx8fkc3
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info(id);
 
 alter table tracker_synset
   add constraint FK90mwt2pgoad0ci1qacl849ndd
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_synset
   add constraint FKahoaah0fadhf6fu05sh9r3w8t
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_synset_relation
   add constraint FKmr7e4u61lgkyfj1ahyqu2plm5
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_synset_relation
   add constraint FKqvxad592194m0x6y80xr3234k
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_users
   add constraint FK19jg2m1fslgl7bnk4ldo2avx0
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_users
   add constraint FK1r41ohhhyy0tx30vlx43spoft
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_word
   add constraint FKx8a182a6i7djvjn4mvgjofbx
 foreign key (REV)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_word
   add constraint FKnott61u5l21aqb7k10lv6xsk9
   foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);
 
 alter table tracker_synset_examples
   add constraint FKap91opmqd9na1kut4uetkdb4n
 foreign key (REVEND)
-references REVINFO(REV);
+references tracker_rev_info (id);

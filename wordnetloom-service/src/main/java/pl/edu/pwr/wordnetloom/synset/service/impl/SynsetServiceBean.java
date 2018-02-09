@@ -27,6 +27,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.validation.Validator;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +51,9 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @Inject
     UserServiceLocal userService;
 
-    @Resource
-    EJBContext context;
+
+    @Inject
+    Principal principal;
 
     @Inject
     Validator validator;
@@ -109,6 +111,16 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @RolesAllowed({"USER", "ADMIN"})
     @Override
+    public SynsetAttributes save(SynsetAttributes attributes) {
+        ValidationUtils.validateEntityFields(validator, attributes);
+        if (attributes.getId() == null) {
+            return synsetAttributesRepository.persist(attributes);
+        }
+        return synsetAttributesRepository.update(attributes);
+    }
+
+    @RolesAllowed({"USER", "ADMIN"})
+    @Override
     public SynsetAttributes addSynsetAttribute(Long synsetId, SynsetAttributes attributes) {
         ValidationUtils.validateEntityFields(validator, attributes);
 
@@ -139,10 +151,11 @@ public class SynsetServiceBean implements SynsetServiceLocal {
             saved = save(synset);
 
             SynsetAttributes synsetAttributes = new SynsetAttributes();
-            String email = context.getCallerPrincipal().getName();
+            String email = principal.getName();
             User user = userService.findUserByEmail(email);
             synsetAttributes.setOwner(user);
-            synsetAttributes.setSynset(synset);
+            synsetAttributes.setSynset(saved);
+            save(synsetAttributes);
 
         }
 

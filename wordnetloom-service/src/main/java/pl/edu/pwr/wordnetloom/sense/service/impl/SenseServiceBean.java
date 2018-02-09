@@ -72,6 +72,7 @@ public class SenseServiceBean implements SenseServiceLocal {
         if (attributes.getId() != null) {
             return senseAttributesRepository.update(attributes);
         }
+
         Sense s = findById(senseId);
         attributes.setSense(s);
         return senseAttributesRepository.persist(attributes);

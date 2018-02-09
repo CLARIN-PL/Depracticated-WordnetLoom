@@ -447,7 +447,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     private Sense save(Pair<Sense, SenseAttributes> swa){
         Sense savedUnit = RemoteService.senseRemote.save(swa.getA());
-        swa.getB().setSense(savedUnit);
         RemoteService.senseRemote.addSenseAttribute(savedUnit.getId(), swa.getB());
         return savedUnit;
     }

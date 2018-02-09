@@ -33,9 +33,6 @@ public class LexiconServiceBean implements LexiconServiceLocal {
     @Inject
     Validator validator;
 
-    @Resource
-    private EJBContext context;
-
     @Override
     public Lexicon findById(Long id) {
         Lexicon lexicon = lexiconRepository.findById(id);
@@ -71,13 +68,4 @@ public class LexiconServiceBean implements LexiconServiceLocal {
         return lexiconRepository.findAllLexiconIds();
     }
 
-    @PermitAll
-    @Override
-    public String testUser() {
-        if (context != null) {
-            System.out.println("USER:" + context.getCallerPrincipal().getName());
-            return context.getCallerPrincipal().getName();
-        }
-        return null;
-    }
 }

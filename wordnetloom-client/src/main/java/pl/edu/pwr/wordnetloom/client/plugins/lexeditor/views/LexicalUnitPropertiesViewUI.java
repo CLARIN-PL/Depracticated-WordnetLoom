@@ -20,7 +20,6 @@ import java.awt.event.ActionListener;
 /**
  * klasa opisujacy wyglada okienka z własciwoścami danej jednostki leksykalnej
  *
- * @author Max
  */
 public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Loggable {
 
@@ -133,16 +132,6 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
                 DialogBox.showError(Messages.ERROR_WRONG_NUMBER_FORMAT);
             }
         }
-    }
-
-    protected String transformExamplesToString() {
-        Object[] examples = editPanel.getExamplesModel().toArray();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < examples.length; i++) {
-            sb.append(examples[i]);
-            sb.append("|");
-        }
-        return sb.toString();
     }
 
     @Override

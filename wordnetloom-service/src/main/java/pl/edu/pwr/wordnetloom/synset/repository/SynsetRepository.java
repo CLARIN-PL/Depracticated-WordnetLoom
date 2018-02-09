@@ -52,8 +52,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
     @Override
     public void delete(Synset synset){
-        Synset loadedSynset = synset;
-        synsetRelationRepository.deleteConnection(synset);
         getEntityManager().createQuery("DELETE FROM Synset WHERE id = :id")
                 .setParameter("id", synset.getId())
                 .executeUpdate();
