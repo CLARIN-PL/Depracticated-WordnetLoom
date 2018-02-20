@@ -173,10 +173,11 @@ INSERT INTO wordnet.sense_attributes (sense_id, comment, user_id, error_comment)
 
 # wstawianie atrybótów synsetów
 # złączenia z synsetem dokonujemy aby wyeliminować atrybuty synsetów pustych, które nie zostały przeniesione do nowej bazy
-INSERT INTO wordnet.synset_attributes (synset_id, comment, owner_id, error_comment)
+INSERT INTO wordnet.synset_attributes (synset_id, comment,definition, owner_id, error_comment)
   SELECT
     S.id,
-    comment,
+    S.comment,
+    S.definition,
     (SELECT id
      FROM wordnet.users
      WHERE

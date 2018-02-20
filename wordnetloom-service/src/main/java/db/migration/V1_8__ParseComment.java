@@ -1,6 +1,10 @@
 package db.migration;
 
+import com.oracle.util.Checksums;
+import db.migration.commentParser.CommentParser;
+import db.migration.commentParser.ParserResult;
 import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.w3c.dom.Attr;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,334 +14,162 @@ public class V1_8__ParseComment implements JdbcMigration {
 
     private final String ATTRIBUTE_TABLE = "wordnet.sense_attributes";
 
-    private final int NORMAL_MARKER = 0;
-    private final int EXAMPLE_MARKER = 1;
-    private final int LINK_MARKER = 2;
-    private final int UNKNOWN_MARKER = 3;
+    private CommentParser parser = new CommentParser();
 
-    private int currentPosition;
-    private int secondIndex;
-
-    private Connection connection;
+    private final String UPDATE_QUERY = "UPDATE " + ATTRIBUTE_TABLE +
+            " SET comment = ?, " +
+            "definition = ?," +
+            "link = ?," +
+            "register_id=?, " +
+            "proper_name=? " +
+            "WHERE sense_id = ?";
+    final String INSERT_QUERY = "INSERT INTO wordnet.sense_examples (sense_attribute_id, type, example) VALUES (?,?,?)";
+    private PreparedStatement updateAttributeStatement;
+    private PreparedStatement insertExampleStatement;
 
     @Override
-    public void migrate(Connection connection) throws Exception {
-        this.connection = connection;
-        System.out.println("start parser");
-        System.out.println("getAttributesList()");
-        List<Attribute> attributes = getAttributesList();
-        if (attributes == null) {
-            return;
+    public void migrate(Connection connection) throws SQLException {
+        updateAttributeStatement = connection.prepareStatement(UPDATE_QUERY);
+        insertExampleStatement = connection.prepareStatement(INSERT_QUERY);
+
+        List<Attribute> attributes = getAttributesList(connection);
+        List<ParserResult> results;
+        Attribute fixedAttribute;
+        for(Attribute attribute : attributes){
+            System.out.println("Atrybut" + attribute.getId());
+            results = parser.parse(attribute.getComment());
+            fixedAttribute = setAttributes(attribute, results, connection);
+            updateAttributes(fixedAttribute, connection);
+            //TODO zapisanie
         }
-        System.out.println("parse()");
-        List<Attribute> parsedAttribute = parse(attributes);
-        System.out.println("saveAttributes()");
-        saveAttributes(parsedAttribute);
     }
 
-    private List<Attribute> getAttributesList() throws SQLException {
+    private Attribute setAttributes(Attribute attribute, List<ParserResult> results, Connection connection) throws SQLException {
+        StringBuilder unknown= new StringBuilder();
+        attribute.setComment(null);
+        for(ParserResult result : results){
+            switch (result.getType()){
+                case COMMENT:
+                    attribute.setComment(result.getValue());
+                    break;
+                case REGISTER:
+                    Long registerId = getRegisterID(result.getValue(), connection);
+                    attribute.setRegister(registerId);
+                    break;
+                case LINK:
+                    attribute.setLink(result.getValue());
+                    break;
+                case DEFINITION:
+                    attribute.setDefinition(result.getValue());
+                    break;
+                case EXAMPLE:
+                    attribute.addExample(new Example(result.getSecondValue(), result.getValue()));
+                    break;
+                case UNKNOWN:
+                    unknown.append(result.getValue()).append(" ");
+                    break;
+            }
+        }
+        if(unknown.length() > 0){
+            attribute.setComment(unknown.toString()); //TODO zobaczyć, czy tutaj sie nic nie straci
+        }
+        return attribute;
+    }
+
+
+    private List<Attribute> getAttributesList(Connection connection) throws SQLException {
         if (connection == null) {
             return null;
         }
         int ID = 1;
         int COMMENT = 2;
-        String query = "SELECT sense_id, comment FROM " + ATTRIBUTE_TABLE;
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(query);
+//        String query = "SELECT sense_id, comment FROM " + ATTRIBUTE_TABLE;
+//        Statement statement = connection.createStatement();
+//        ResultSet resultSet = statement.executeQuery(query);
+        ResultSet resultSet;
         List<Attribute> resultAttributes = new ArrayList<>();
         Attribute attribute;
-        while (resultSet.next()) {
-            attribute = new Attribute();
-            attribute.setId(resultSet.getLong(ID));
-            attribute.setComment(resultSet.getString(COMMENT));
-            resultAttributes.add(attribute);
-        }
+        int offset = 0;
+        do{
+            System.out.println("Pobieranie " + offset);
+            resultSet = getAttributesResultSet(connection, 1000, offset);
+            while (resultSet.next()) {
+                attribute = new Attribute();
+                attribute.setId(resultSet.getLong(ID));
+                attribute.setComment(resultSet.getString(COMMENT));
+                resultAttributes.add(attribute);
+                offset++;
+            }
+        }while (resultSet.first());
+//        List<Attribute> resultAttributes = new ArrayList<>();
+//        Attribute attribute;
+
         return resultAttributes;
     }
 
-    public void saveAttributes(List<Attribute> attributes) throws SQLException {
-        if (connection == null) {
-            return;
-        }
+    private ResultSet getAttributesResultSet(Connection connection, int limit, int offset) throws SQLException{
+        String query = "SELECT sense_id, comment FROM " + ATTRIBUTE_TABLE + " LIMIT " + limit + " OFFSET " + offset;
+        Statement statement = connection.createStatement();
+        return statement.executeQuery(query);
+    }
 
-        String UPDATE_QUERY = "UPDATE " + ATTRIBUTE_TABLE +
-                " SET comment = ?, " +
-                "definition = ?," +
-                "link = ?," +
-                "register_id=?, " +
-                "proper_name=? " +
-                "WHERE sense_id = ?";
-
-        String DELETE_QUERY = "DELETE FROM " + ATTRIBUTE_TABLE + " WHERE sense_id = ?";
-        String INSERT_EXAMPLE_QUERY = "INSERT INTO wordnet.sense_examples (sense_attribute_id, type, example) VALUES(?, ?, ?)";
-        PreparedStatement updateStatement = connection.prepareStatement(UPDATE_QUERY);
-        PreparedStatement deleteStatement = connection.prepareStatement(DELETE_QUERY);
-        PreparedStatement insertExampleStatement = connection.prepareStatement(INSERT_EXAMPLE_QUERY);
-        for (Attribute attribute : attributes) {
-            // sprawdzamy, czy atrybut posiada jakiekolwiek informacje. Jeżeli nie, usuwamy go
-            if (attribute.getComment() == null && attribute.getDefinition() == null && attribute.getLink() == null && attribute.getRegister() == null && (attribute.getExamples() == null || attribute.getExamples().isEmpty())) {
-                deleteStatement.setLong(1, attribute.getId());
-                deleteStatement.executeUpdate();
-
-            } else { // aktualizacja komentarza
-                updateStatement.setString(1, attribute.getComment());
-                updateStatement.setString(2, attribute.getDefinition());
-                updateStatement.setString(3, attribute.getLink());
-                if (attribute.getRegister() != null) {
-                    updateStatement.setLong(4, attribute.getRegister());
-                } else {
-                    updateStatement.setNull(4, Types.INTEGER);
-                }
-                updateStatement.setBoolean(5, attribute.isProperName());
-                updateStatement.setLong(6, attribute.getId());
-                updateStatement.executeUpdate();
-            }
-
-            for (Example example : attribute.getExamples()) {
-                insertExampleStatement.setLong(1, attribute.getId());
-                insertExampleStatement.setString(2, example.getType());
-                insertExampleStatement.setString(3, example.getContent());
-                insertExampleStatement.executeUpdate();
-            }
+    public void updateAttributes(Attribute attribute, Connection connection) throws SQLException {
+        final int COMMENT = 1;
+        final int DEFINITION = 2;
+        final int LINK = 3;
+        final int REGISTER = 4;
+        final int PROPER_NAME = 5;
+        final int ATTRIBUTE_ID = 6;
+        assert  connection != null;
+        updateAttributeStatement.clearParameters();
+        setStringToStatement(COMMENT, attribute.getComment(), updateAttributeStatement);
+        setStringToStatement(DEFINITION, attribute.getDefinition(), updateAttributeStatement);
+        setStringToStatement(LINK, attribute.getLink(), updateAttributeStatement);
+        setLongToStatement(REGISTER, attribute.getRegister(), updateAttributeStatement);
+        setBooleanToStatement(PROPER_NAME, attribute.isProperName(), updateAttributeStatement);
+        setLongToStatement(ATTRIBUTE_ID, attribute.getId(), updateAttributeStatement);
+        updateAttributeStatement.executeUpdate();
+        for(Example example : attribute.getExamples()){
+            insertExample(example,attribute.getId(), connection);
         }
     }
 
-    private void serveNormalMarker(String marker, String comment, int currentIndex, Attribute attributeRef, int startMarker, StringBuilder commentBuilderRef) throws SQLException {
-        final String REGISTER = "K";
-        final String DEFINITION = "D";
-        final String EXAMPLE = "P";
-
-        String value;
-        if (marker.contains("A") || marker.equals("3")) {
-            secondIndex = getIndex("#", comment, currentPosition) - 1;
+    private void setBooleanToStatement(int position, Boolean value, PreparedStatement statement) throws SQLException {
+        if(value != null){
+            statement.setBoolean(position, value);
         } else {
-            switch (marker) {
-                case REGISTER:
-                    value = getRegister(comment, currentPosition);
-                    if (!value.isEmpty()) {
-                        Long registerId = getRegisterID(value, connection);
-                        attributeRef.setRegister(registerId);
-                    }
-                    break;
-                case DEFINITION:
-                    value = getDefinition(comment, currentPosition);
-                    attributeRef.setDefinition(value.trim());
-                    break;
-                case EXAMPLE: //dodajemy w tym miejscu przykład, aby obsłużyć sytuacje w których przykład nie ma nawiasu otwierającego
-                    serveExampleMarker(marker, comment, attributeRef);
-                    break;
-                default:
-                    serveUnknownMarker(comment, currentIndex, startMarker, commentBuilderRef);
-            }
+            statement.setNull(position, Types.BIT);
         }
     }
 
-    private void serveExampleMarker(String marker, String comment, Attribute attributeRef) {
-        String value;
-        value = getExample(comment, currentPosition);
-        if (!value.isEmpty() && !value.equals(" ")) {
-            attributeRef.addExample(new Example(marker, value.trim()));
+    private void setStringToStatement(int position, String value, PreparedStatement statement) throws SQLException {
+        if(value != null){
+            statement.setString(position, value);
+        } else {
+            statement.setNull(position, Types.VARCHAR);
         }
     }
 
-    private void saveLinkMarker(String marker, String comment, Attribute attributeRef) {
-        String value;
-        secondIndex = getIndex("}", comment, currentPosition);
-        if (secondIndex > currentPosition) { // obsługa sytuacji niezamkniętego nawiasu na końcu lini
-            value = comment.substring(currentPosition, secondIndex).replaceAll("^\\s+", ""); // usunięcie spacji z lewej strony
-            if (!value.isEmpty() && !value.equals(" ")) {
-                // sprawdzamy, czy wartość rzeczywiście jest linkiem. Jeżeli nie jest prawdopodobnie jest to przykład
-                if (value.startsWith("http") || value.startsWith("www") || value.startsWith("pl")) {
-                    attributeRef.setLink(value.trim());
-                    secondIndex++;
-                } else {
-                    serveExampleMarker(marker, comment, attributeRef);
-                }
-            } else {
-                secondIndex++;
-            }
+    private void setLongToStatement(int position, Long value, PreparedStatement statement) throws SQLException {
+        if(value != null){
+            statement.setLong(position, value);
+        } else {
+            statement.setNull(position, Types.INTEGER);
         }
     }
 
-    private void serveUnknownMarker(String comment, int currentIndex, int startMarker, StringBuilder commentBuilderRef) {
-        String value = getUnknown(comment, currentIndex, startMarker);
-        commentBuilderRef.append(value).append(" ");
+    private void insertExample(Example example,Long attributeId,  Connection connection) throws SQLException {
+        final int ATTRIBUTE_ID = 1;
+        final int TYPE = 2;
+        final int EXAMPLE = 3;
+
+        insertExampleStatement.clearParameters();
+        setLongToStatement(ATTRIBUTE_ID, attributeId, insertExampleStatement);
+        setStringToStatement(TYPE, example.getType(), insertExampleStatement);
+        setStringToStatement(EXAMPLE, example.getContent(), insertExampleStatement);
+        insertExampleStatement.executeUpdate();
     }
 
-    private List<Attribute> parse(List<Attribute> attributes) throws SQLException {
-        if (connection == null) {
-            return null;
-        }
-        StringBuilder stringBuilder = new StringBuilder();
-        int markerType;
-        int startMarker;
-        String marker;
-        String comment;
-        for (Attribute attribute : attributes) {
-            comment = attribute.getComment().replace("\n", " "); // usuwanie znaku nowej lini
-            if (comment == null) {
-                continue;
-            }
-            // resetowanie liczników
-            startMarker = 0;
-            currentPosition = 0;
-            secondIndex = 0;
-            while ((currentPosition = getNext(comment, currentPosition)) != -1) {
-                if (startMarker == 0 && currentPosition != 0) { // sprawdzamy czy nie ma nic przed pierwszym znacznikiem
-                    stringBuilder.append(comment.substring(0, currentPosition)).append(" ");
-                    startMarker = currentPosition;
-                }
-                markerType = getMarkerType(comment, currentPosition);
-                marker = getMarker(currentPosition + 1, comment);
-                if (marker == null) {
-                    serveUnknownMarker(comment, currentPosition, startMarker, stringBuilder);
-                    secondIndex++;
-                } else
-                    switch (markerType) {
-                        case NORMAL_MARKER:
-                            serveNormalMarker(marker, comment, currentPosition, attribute, startMarker, stringBuilder);
-                            break;
-                        case EXAMPLE_MARKER:
-                            serveExampleMarker(marker, comment, attribute);
-                            break;
-                        case LINK_MARKER:
-                            saveLinkMarker(marker, comment, attribute);
-                            break;
-                        case UNKNOWN_MARKER:
-                            serveUnknownMarker(comment, currentPosition, startMarker, stringBuilder);
-                            break;
-                    }
-                startMarker = secondIndex;
-                currentPosition = secondIndex;
-            }
-
-            if (secondIndex < comment.length() - 1) {  // sprawdzamy, czy zostało coś niewyorzystanego na końcu lini
-                stringBuilder.append(comment.substring(secondIndex, comment.length()));
-            }
-
-            String remainingComment = stringBuilder.toString()
-                    .replaceAll("^\\s+", "") //usunięcie spacji z lewej strony
-                    .replace("\\s+$", ""); // usunięcie spacji z prawej strony
-            if (!remainingComment.isEmpty()) {
-                attribute.setComment(remainingComment);
-                //wprawdzenie, czy komentarz zawiera NP - nazwa wlasna
-                if (remainingComment.startsWith("NP")) {
-                    attribute.setProperName(true);
-                }
-            } else {
-                attribute.setComment(null);
-            }
-            stringBuilder.setLength(0);
-        }
-        return attributes;
-    }
-
-    private String getUnknown(String comment, int startIndex, int startMarkerIndex) {
-        secondIndex = getNext(comment, startIndex);
-        if (secondIndex == -1) {
-            secondIndex = comment.length();
-        }
-        return comment.substring(startMarkerIndex, secondIndex);
-    }
-
-    private String getRegister(String comment, int startIndex) {
-        secondIndex = getNext(comment, startIndex);
-        if (secondIndex == -1) {
-            secondIndex = comment.length();
-        }
-        String register = comment.substring(startIndex, secondIndex).replaceAll("\\s+", "");
-        secondIndex--;
-        return register;
-    }
-
-    private String getDefinition(String comment, int startIndex) {
-        secondIndex = getNext(comment, startIndex);
-        if (secondIndex == -1) {
-            secondIndex = comment.length();
-        }
-        return comment.substring(startIndex, secondIndex);
-    }
-
-    int getMarkerType(String text, int markerPosition) {
-        switch (text.charAt(markerPosition)) {
-            case '#':
-                return NORMAL_MARKER;
-            case '[':
-                return EXAMPLE_MARKER;
-            case '{':
-                return LINK_MARKER;
-            case '<':
-                return UNKNOWN_MARKER;
-            default:
-                return -1;
-        }
-    }
-
-    // szuka rozpoczęcia następnego elementu
-    private int getNext(String text, int startIndex) {
-        int index = startIndex;
-        char currentChar = ' ';
-        boolean foundFirst = false;
-        while (index < text.length()) {
-            currentChar = text.charAt(index);
-
-            switch (currentChar) {
-                case '#':
-                    if (foundFirst) {
-                        return index - 1; // zwracamy indeks do początku znacznika, czyli do pierwszego znalezionego znaku
-                    }
-                case '{':
-                case '[':
-                case '<':
-                    foundFirst = true;
-                    break;
-                default:
-                    foundFirst = false;
-
-            }
-            index++;
-        }
-        return -1;
-    }
-
-    private String getExample(String comment, int startExampleIndex) {
-        secondIndex = getIndex("]", comment, startExampleIndex);
-        String value = comment.substring(startExampleIndex, secondIndex);
-        secondIndex++;
-        return value;
-    }
-
-    private int getIndex(String pattern, String comment, int startIndex) {
-        int index = comment.indexOf(pattern, startIndex);
-        if (index == -1) {
-            index = comment.length();
-        }
-        return index;
-    }
-
-    private String getMarker(int startIndex, String comment) {
-        char[] delimiters = {':', ';', ' ', '>'};
-        int index = startIndex;
-        StringBuilder markerBuilder = new StringBuilder();
-        char currentChar;
-        while (index < comment.length()) {
-            currentChar = comment.charAt(index);
-            if (currentChar != '#') {
-                for (char delimiter : delimiters) {
-                    if (delimiter == currentChar) {
-                        if (delimiter != ' ' || markerBuilder.length() != 0) { // sprawdzamy czy spacja poprzedza znacznik
-                            currentPosition = index + 1;
-                            return markerBuilder.toString();
-                        }
-                    }
-                }
-                if (currentChar != ' ')
-                    markerBuilder.append(currentChar);
-            }
-            index++;
-        }
-        return null;
-    }
 
     private Long getRegisterID(String registerName, Connection connection) throws SQLException {
 //        String GET_ID_QUERY = "SELECT R.id FROM wordnet.register_types R LEFT JOIN wordnet.application_localised_string S ON R.name_id = S.id WHERE S.value = ?";

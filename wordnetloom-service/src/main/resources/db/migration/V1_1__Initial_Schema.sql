@@ -167,8 +167,10 @@ CREATE TABLE synset_attributes (
 );
 
 CREATE TABLE synset_examples (
+  id                    BIGINT PRIMARY KEY AUTO_INCREMENT,
   synset_attributes_id BIGINT NOT NULL,
-  example              TEXT
+  example              TEXT,
+  type     VARCHAR(30)
 );
 
 CREATE TABLE synset_relation (

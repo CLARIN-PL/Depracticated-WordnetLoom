@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class V2_2__Adding_Missing_Attributes implements JdbcMigration {
+public class V2_3__Adding_Missing_Attributes implements JdbcMigration {
 
     @Override
     public void migrate(Connection connection) throws Exception {

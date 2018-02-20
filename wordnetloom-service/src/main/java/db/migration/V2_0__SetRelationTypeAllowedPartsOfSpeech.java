@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class V1_9__SetRelationTypeAllowedPartsOfSpeech implements JdbcMigration {
+public class V2_0__SetRelationTypeAllowedPartsOfSpeech implements JdbcMigration {
 
     @Override
     public void migrate(Connection connection) throws Exception {
