@@ -1,10 +1,12 @@
 package pl.edu.pwr.wordnetloom.dictionary.model;
 
+import org.hibernate.envers.Audited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+@Audited
 @Entity
 @Table(name = "dictionaries")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

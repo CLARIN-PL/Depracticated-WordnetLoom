@@ -1,14 +1,19 @@
 package pl.edu.pwr.wordnetloom.synset.model;
 
+import org.hibernate.envers.Audited;
+import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+@Audited
 @Entity
 @Table(name = "synset_attributes")
-public class SynsetAttributes implements Serializable{
+public class SynsetAttributes implements Serializable, Cloneable{
 
     private static final long serialVersionUID = -3305787239727633359L;
 
@@ -20,17 +25,17 @@ public class SynsetAttributes implements Serializable{
     @MapsId
     private Synset synset;
 
+    @Lob
     private String definition;
 
+    @Lob
     private String comment;
 
     @Column(name = "error_comment")
     private String errorComment;
 
-    @ElementCollection
-    @CollectionTable(name = "synset_examples", joinColumns = @JoinColumn(name = "synset_attributes_id"))
-    @Column(name = "example")
-    private List<String> examples;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "synsetAttributes", orphanRemoval = true)
+    private Set<SynsetExample> examples;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
@@ -51,6 +56,12 @@ public class SynsetAttributes implements Serializable{
     }
 
     public SynsetAttributes() {}
+
+    public SynsetAttributes(String definition, String comment, User owner) {
+        this.definition = definition;
+        this.comment = comment;
+        this.owner = owner;
+    }
 
     public SynsetAttributes(String definition, String comment, User owner, String princetonId) {
         this.definition = definition;
@@ -99,11 +110,17 @@ public class SynsetAttributes implements Serializable{
         this.princetonId = princetonId;
     }
 
-    public List<String> getExamples() {
+    public void addExample(SynsetExample example){
+        if(examples == null){
+            examples = new HashSet<>();
+        }
+        examples.add(example);
+    }
+    public Set<SynsetExample> getExamples() {
         return examples;
     }
 
-    public void setExamples(List<String> examples) {
+    public void setExamples(Set<SynsetExample> examples) {
         this.examples = examples;
     }
 

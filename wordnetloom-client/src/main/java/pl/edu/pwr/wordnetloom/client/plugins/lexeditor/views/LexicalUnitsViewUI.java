@@ -7,7 +7,10 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.SynsetsFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
@@ -27,6 +30,7 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -425,25 +429,25 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     }
 
     private Synset createNewSynsetAndAddSense(Sense sense) {
+
         Synset synset = new Synset();
         synset.setLexicon(sense.getLexicon());
         synset.setSplit(1);
-        Synset savedSynset = RemoteService.synsetRemote.updateSynset(synset);
-        RemoteService.synsetRemote.addSenseToSynset(sense, savedSynset);
-        return savedSynset;
+
+        return RemoteService.synsetRemote.addSenseToSynset(sense, synset);
     }
 
     private void addNewSense() {
-        Sense newUnit = NewLexicalUnitFrame.showModal(workbench, null);
-        Sense savedUnit = saveUnit(newUnit);
-        insertSenseToList(savedUnit);
+        Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, null);
+        if(newUnit != null){
+            Sense savedUnit = save(newUnit);
+            insertSenseToList(savedUnit);
+        }
     }
 
-    private Sense saveUnit(Sense newUnit){
-        Sense savedUnit = null;
-        if (newUnit != null) {
-            savedUnit = RemoteService.senseRemote.save(newUnit);
-        }
+    private Sense save(Pair<Sense, SenseAttributes> swa){
+        Sense savedUnit = RemoteService.senseRemote.save(swa.getA());
+        RemoteService.senseRemote.addSenseAttribute(savedUnit.getId(), swa.getB());
         return savedUnit;
     }
 
@@ -460,9 +464,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     }
 
     private void addNewSenseWithSynset() {
-        Sense newUnit = NewLexicalUnitFrame.showModal(workbench, null);
+        Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, null);
         if(newUnit != null) {
-            Sense savedUnit = saveUnit(newUnit);
+            Sense savedUnit = save(newUnit);
             createNewSynsetAndAddSense(savedUnit);
             insertSenseToList(savedUnit);
         }
@@ -577,8 +581,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     public void setCriteria(CriteriaDTO crit) {
         criteria.restoreCriteria(crit);
-//        listModel.setCollection(crit.getSense());
-//        listModel.clear();
         if (crit != null && crit.getSense() != null) {
             for (Sense sense : crit.getSense()) {
                 listModel.addElement(sense);

@@ -36,17 +36,6 @@ public class Synset extends GenericEntity {
     @Column(name = "abstract")
     private Boolean isAbstract = false;
 
-//    private Integer status = 0;
-
-    public StatusDictionary getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusDictionary status) {
-        this.status = status;
-    }
-
-    @NotAudited
     @ManyToOne
     @JoinColumn(name = "status_id", referencedColumnName = "id")
     private StatusDictionary status;
@@ -56,6 +45,14 @@ public class Synset extends GenericEntity {
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<SynsetRelation> outgoingRelations = new ArrayList<>();
+
+    public StatusDictionary getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusDictionary status) {
+        this.status = status;
+    }
 
     public Integer getSplit() {
         return split;
@@ -92,14 +89,6 @@ public class Synset extends GenericEntity {
     public void setOutgoingRelations(List<SynsetRelation> outgoingRelations){
         this.outgoingRelations = outgoingRelations;
     }
-
-//    public Integer getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(Integer status) {
-//        this.status = status;
-//    }
 
     public Boolean getAbstract() {
         return isAbstract;

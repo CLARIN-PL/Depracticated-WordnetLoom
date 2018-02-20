@@ -35,6 +35,7 @@ import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -263,7 +264,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
     private void setSplitPosition(int newSplitPosition){
         lastSynset.setSplit(newSplitPosition);
-        lastSynset = RemoteService.synsetRemote.updateSynset(lastSynset);
+        lastSynset = RemoteService.synsetRemote.save(lastSynset);
         listModel.setSplitPosition(newSplitPosition);
     }
 
@@ -408,7 +409,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     private void updateSplitPosition(int newSplitPosition){
         lastSynset.setSplit(newSplitPosition);
         listModel.setSplitPosition(newSplitPosition);
-        RemoteService.synsetRemote.updateSynset(lastSynset);
+        RemoteService.synsetRemote.save(lastSynset);
     }
 
     private void moveToNewSynset() {
@@ -422,22 +423,29 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         }
         // wyświetlenie okienka do ustalenia relacji między starym i nowym synsetem
         PartOfSpeech partOfSpeech = listModel.getObjectAt(0).getPartOfSpeech();
+
         final RelationType relationType = RelationTypeFrame.showModal(workbench, RelationArgument.SYNSET_RELATION, partOfSpeech,lastSynset.getSenses() , selectedUnits);
+
         if(relationType == null){
             return;
         }
+
         Synset synsetToSave = new Synset();
         Lexicon lexicon = selectedUnits.iterator().next().getLexicon();
         synsetToSave.setLexicon(lexicon);
-        Synset newSynset = RemoteService.synsetRemote.updateSynset(synsetToSave);
+
+        Synset newSynset = RemoteService.synsetRemote.save(synsetToSave);
+
         for(Sense sense : selectedUnits){
             RemoteService.synsetRemote.addSenseToSynset(sense, newSynset);
         }
+
         RemoteService.synsetRelationRemote.makeRelation(lastSynset, newSynset, relationType);
         // usunięcie przeniesionych jednostek z listy
         Collection<Sense> unitsInSynset = listModel.getCollection();
         unitsInSynset.removeAll(selectedUnits);
         listModel.setCollection(unitsInSynset);
+
         if(lastSynset.getSplit() > listModel.getSize()){
             updateSplitPosition(listModel.getSize());
         }
@@ -687,18 +695,17 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             newSplitPoint = synset.getSplit();
             // odczytanie jednostek
             units = RemoteService.senseRemote.findBySynset(synset, LexiconManager.getInstance().getLexiconsIds());
-//            units = RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
-//            if (units == null) {
-//                units = LexicalDA.getLexicalUnits(synset, LexiconManager.getInstance().getLexicons());
-//            }
-//            commentValue.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.COMMENT)) : formatValue(null));
-//            if (Synset.isAbstract(Common.getSynsetAttribute(synset, Synset.ISABSTRACT))) {
-//                isAbstract.setText(String.format("<html><font color=red>%s</font></html>", Labels.SYNSET_ARTIFICIAL));
-//            } else {
-//                isAbstract.setText("");
-//            }
+            SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
+
+            commentValue.setText(sa.getComment() !=null ?  sa.getComment(): "");
+            if (synset.getAbstract()) {
+                isAbstract.setText(String.format("<html><font color=red>%s</font></html>", Labels.SYNSET_ARTIFICIAL));
+            } else {
+                isAbstract.setText("");
+            }
             synsetID.setText(Long.toString(synset.getId()));
-            //  synsetOwner.setText(synset != null ? formatValue(Common.getSynsetAttribute(synset, Synset.OWNER)) : formatValue(null));
+
+            synsetOwner.setText(sa.getOwner() != null ? sa.getOwner().getFullname() : "");
         }
 
 
@@ -777,13 +784,16 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
         if (e.getButton() == MouseEvent.BUTTON3 && idx != -1
                 && idx != listModel.getLineSplitPosition()) {
+
             Sense unit = listModel.getObjectAt(idx);
             unit = RemoteService.senseRemote.fetchSense(unit.getId());
 
             LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(graphUI);
             lui.init(workbench);
+
             DialogWindow dia = new DialogWindow(workbench.getFrame(), Labels.UNIT_PROPERTIES, 585, 520);
             WebPanel pan = new WebPanel();
+
             lui.initialize(pan);
             lui.refreshData(unit);
             lui.closeWindow((ActionEvent e1) -> {

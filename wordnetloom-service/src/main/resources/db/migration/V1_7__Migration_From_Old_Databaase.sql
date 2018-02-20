@@ -2,9 +2,21 @@
 CREATE INDEX word_index
   ON wordnet.word (word);
 
+ALTER TABLE wordnet_work.lexicalunit
+  CONVERT TO CHARACTER SET utf8
+  COLLATE utf8_polish_ci;
+
+ALTER TABLE wordnet_work.synset
+  CONVERT TO CHARACTER SET utf8
+  COLLATE utf8_polish_ci;
+
+ALTER TABLE wordnet_work.relationtype
+  CONVERT TO CHARACTER SET utf8
+  COLLATE utf8_polish_ci;
+
 #przeniesienie słów. m^2 oraz m^3 nalezy dodać odzielnie, ponieważ DISTINCT traktuje m^2 tak samo jak M2 i wstawia tylko jedną z tych wartości
 INSERT INTO wordnet.word (word)
-  SELECT DISTINCT lemma COLLATE utf8_general_ci
+  SELECT DISTINCT lemma COLLATE utf8_polish_ci
   FROM wordnet_work.lexicalunit
   UNION ALL
   SELECT 'm²'
@@ -232,19 +244,19 @@ INSERT INTO wordnet.relation_type (id, auto_reverse, multilingual, description_i
   SELECT
     ID,
     autoreverse,
-    0                         AS multilingual,
+    0                          AS multilingual,
     (SELECT id
      FROM wordnet.application_localised_string
      WHERE value = R.description
-     LIMIT 1)                 AS description,
+     LIMIT 1)                  AS description,
     (SELECT id
      FROM wordnet.application_localised_string
      WHERE value = R.display
-     LIMIT 1)                 AS display,
+     LIMIT 1)                  AS display,
     (SELECT id
      FROM wordnet.application_localised_string
      WHERE value = R.name
-     LIMIT 1)                 AS name,
+     LIMIT 1)                  AS name,
     PARENT_ID,
     CASE WHEN
       CASE WHEN PARENT_ID IS NOT NULL
@@ -257,7 +269,7 @@ INSERT INTO wordnet.relation_type (id, auto_reverse, multilingual, description_i
     (SELECT id
      FROM wordnet.application_localised_string
      WHERE value = R.shortcut
-     LIMIT 1)                 AS short,
+     LIMIT 1)                  AS short,
     'IGNORE'
   FROM wordnet_work.relationtype R
   WHERE objecttype != 2

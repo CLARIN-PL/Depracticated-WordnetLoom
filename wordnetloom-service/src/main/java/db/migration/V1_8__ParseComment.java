@@ -201,16 +201,34 @@ class Attribute {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getComment() {
         return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public String getDefinition() {
         return definition;
     }
 
+    public void setDefinition(String definition) {
+        if (!definition.isEmpty() && !definition.replaceAll("\\s+", "").equals(".")) {
+            this.definition = definition;
+        }
+    }
+
     public String getLink() {
         return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 
     public List<Example> getExamples() {
@@ -221,40 +239,22 @@ class Attribute {
         return register;
     }
 
-    boolean isProperName() {
-        return properName;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public void setDefinition(String definition) {
-        if (!definition.isEmpty() && !definition.replaceAll("\\s+", "").equals(".")) {
-            this.definition = definition;
-        }
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
     public void setRegister(Long register) {
         if (register != -1) {
             this.register = register;
         }
     }
 
-    void addExample(Example example) {
-        examples.add(example);
+    boolean isProperName() {
+        return properName;
     }
 
     void setProperName(boolean isProperName) {
         properName = isProperName;
+    }
+
+    void addExample(Example example) {
+        examples.add(example);
     }
 }
 
@@ -263,20 +263,20 @@ class Example {
     private String content;
 
     public Example(String type, String content) {
-        this.type = type;
-        this.content = content;
+        this.type = type.trim();
+        this.content = content.trim();
     }
 
     public String getType() {
         return type;
     }
 
-    public String getContent() {
-        return content;
-    }
-
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getContent() {
+        return content;
     }
 
     public void setContent(String content) {

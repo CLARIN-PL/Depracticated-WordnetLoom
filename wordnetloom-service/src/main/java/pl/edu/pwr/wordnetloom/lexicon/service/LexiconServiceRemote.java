@@ -15,6 +15,4 @@ public interface LexiconServiceRemote {
 
     Lexicon add(Lexicon lexicon);
 
-    String testUser();
-    
 }

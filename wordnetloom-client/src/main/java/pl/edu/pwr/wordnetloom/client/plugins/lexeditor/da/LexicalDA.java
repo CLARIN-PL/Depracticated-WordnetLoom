@@ -10,6 +10,7 @@ import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
 import java.util.ArrayList;
@@ -200,47 +201,22 @@ public class LexicalDA {
         return true;
     }
 
-    /**
-     * uaktualnienie synsetu
-     *
-     * @param synset     - synset
-     * @param definition - definicja
-     * @param comment    - komentarz
-     * @param isAbstract - abstrakcyjnosc synsetu
-     * @return true jesli mozna bylo ustawic, false jesli sa bledne relacji
-     */
+
     public static boolean updateSynset(Synset synset, String definition, String comment, boolean isAbstract) {
         boolean result = true;
         if (synset != null) {
 
-            //   String oldComment = Common.getSynsetAttribute(synset, Synset.COMMENT);
-//            if (oldComment == null || oldComment.equals("")) {
-//                oldComment = "brak danych";
-//            }
-//       //     String oldDefinition = Common.getSynsetAttribute(synset, Synset.DEFINITION);
-//            if (oldDefinition == null || oldDefinition.equals("")) {
-//                oldDefinition = "brak danych";
-//            }
-//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(synset, Synset.COMMENT, comment);
-//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(synset, Synset.ISABSTRACT, Synset.isAbstract(isAbstract));
-//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(synset, Synset.DEFINITION, definition);
-            //   RemoteUtils.synsetRemote.updateSynset(synset);
+            if(isAbstract != synset.getAbstract()) {
+                synset.setAbstract(isAbstract);
+                RemoteService.synsetRemote.save(synset);
+            }
+
+            SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
+            sa.setDefinition(definition);
+            sa.setComment(comment);
+            RemoteService.synsetRemote.save(sa);
         }
         return result;
-    }
-
-    /**
-     * uaktualnienie synsetu
-     *
-     * @param synset - synset
-     * @param status - status
-     * @return true jesli mozna bylo ustawic, false jesli sa bledne relacji
-     */
-    public static boolean updateSynset(Synset synset) {
-        if (synset != null) {
-            //  RemoteUtils.synsetRemote.updateSynset(synset);
-        }
-        return true;
     }
 
     /**
