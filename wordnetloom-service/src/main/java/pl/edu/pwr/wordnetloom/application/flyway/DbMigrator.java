@@ -36,6 +36,5 @@ public class DbMigrator {
             log.log(Level.INFO, "Migrate task: {0} : {1} from file: {2}", new Object[]{i.getVersion(), i.getDescription(), i.getScript()});
         }
         flyway.migrate();
-        
     }
 }

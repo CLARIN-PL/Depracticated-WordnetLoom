@@ -6,13 +6,16 @@ ALTER TABLE wordnet_work.lexicalunit
   CONVERT TO CHARACTER SET utf8
   COLLATE utf8_polish_ci;
 
+
 ALTER TABLE wordnet_work.synset
   CONVERT TO CHARACTER SET utf8
   COLLATE utf8_polish_ci;
 
+
 ALTER TABLE wordnet_work.relationtype
   CONVERT TO CHARACTER SET utf8
   COLLATE utf8_polish_ci;
+
 
 #przeniesienie słów. m^2 oraz m^3 nalezy dodać odzielnie, ponieważ DISTINCT traktuje m^2 tak samo jak M2 i wstawia tylko jedną z tych wartości
 INSERT INTO wordnet.word (word)

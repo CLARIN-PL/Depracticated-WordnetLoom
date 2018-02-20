@@ -8,6 +8,7 @@ import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class V1_9__ParseSynsetDefinition implements JdbcMigration {
 
@@ -19,31 +20,25 @@ public class V1_9__ParseSynsetDefinition implements JdbcMigration {
         Attribute fixedAttribute;
         for(Attribute attribute : attributes) {
             fixedAttribute = null;
-            try{
-                System.out.println(attribute.getId());
-                if(attribute.getId() == 47402) {
-                    System.out.println();
-                }
+            if(Objects.equals(attribute.getDefinition(), "brak danych")) {
+                fixedAttribute = attribute;
+                fixedAttribute.setDefinition(null);
+            } else {
                 if(attribute.isPrinston()){
                     if(isInHashFormat(attribute.getDefinition())){
-//                    parseWithPrinstonFormat(attribute);
                         fixedAttribute = serveWithNormalFormat(attribute);
                     } else {
                         fixedAttribute = serveWithPrincetonFormat(attribute);
                     }
                 } else {
                     if(isInHashFormat(attribute.getDefinition())){
-//                    parseWithNormalFormat(attribute);
                         fixedAttribute = serveWithNormalFormat(attribute);
                     }
                 }
-                if(fixedAttribute != null){
-                    updateAttribute(fixedAttribute, connection);
-                }
-            }catch (Exception e) {
-                System.out.println(e);
             }
-
+            if(fixedAttribute != null){
+                updateAttribute(fixedAttribute, connection);
+            }
         }
     }
 
