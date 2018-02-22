@@ -26,7 +26,7 @@ public class V2_1__ImportDannetWordnetSynsetRelations implements JdbcMigration {
         saveAllowedLexicons(rels);
         System.out.println("Saving allowed lexicons done");
 
-        saveSynsetRaltaion(getSynsetRelation(connection));
+        saveSynsetRelation(getSynsetRelation(connection));
 
     }
 
@@ -105,7 +105,7 @@ public class V2_1__ImportDannetWordnetSynsetRelations implements JdbcMigration {
     }
 
 
-    private void saveSynsetRaltaion(List<SynsetRelation> relations) throws SQLException {
+    private void saveSynsetRelation(List<SynsetRelation> relations) throws SQLException {
         String INSERT_QUERY = "INSERT INTO wordnet.synset_relation (parent_synset_id, child_synset_id, synset_relation_type_id) VALUES(?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 

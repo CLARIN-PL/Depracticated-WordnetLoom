@@ -35,7 +35,6 @@ public class V2_0__ImportDannetWordnetSenses implements JdbcMigration {
         saveRelType(rels);
         System.out.println("Saving relation types done");
 
-
     }
 
     private List<Sense> getSenses(Connection connection) throws SQLException {
@@ -49,8 +48,8 @@ public class V2_0__ImportDannetWordnetSenses implements JdbcMigration {
             Long syn = rs.getLong("syn");
             Long pos = getPos(rs.getInt("pos"));
 
-             Sense sen = new  Sense(pos, wid, new Long("888"+syn), 0, 1);
-                senses.add(sen);
+            Sense sen = new Sense(pos, wid, new Long("888"+syn), 0, 1);
+            senses.add(sen);
 
         }
         return senses;

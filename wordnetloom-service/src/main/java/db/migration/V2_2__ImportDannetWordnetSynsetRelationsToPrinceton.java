@@ -64,7 +64,7 @@ public class V2_2__ImportDannetWordnetSynsetRelationsToPrinceton implements Jdbc
 
     private Set<SynsetRelation> getRelations(Map<String,Long> relations,  Map<String,String> mappings ) throws SQLException {
         Set<SynsetRelation> synsetRelations = new HashSet<>();
-        String QUERY = "SELECT r.key as keyId, r.syn_set_id as synset, r.relation_type_name as rel FROM dannet.alignments r";
+        String QUERY = "SELECT r.key as keyId, r.syn_set_id as synset, r.relation_type_name as rel FROM dannet.alignments r WHERE r.source_id = 'wordnet30'";
         PreparedStatement statement = connection.prepareStatement(QUERY);
 
         Map<String,Long> prince = findAllSynsetPrinceton();
