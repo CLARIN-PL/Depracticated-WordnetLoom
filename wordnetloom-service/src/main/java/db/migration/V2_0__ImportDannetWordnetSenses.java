@@ -48,30 +48,11 @@ public class V2_0__ImportDannetWordnetSenses implements JdbcMigration {
             Long syn = rs.getLong("syn");
             Long pos = getPos(rs.getInt("pos"));
 
-            Sense sen = new Sense(pos, wid, new Long("888"+syn), 0, 1);
+            Sense sen = new Sense(pos, wid, new Long("888"+syn), 0, 1); //TODO: synset_position
             senses.add(sen);
 
         }
         return senses;
-    }
-
-    private List<SynsetRelation> getSynsetRelation(Connection connection) throws SQLException {
-
-        List<SynsetRelation> synsetRelations = new ArrayList<>();
-        String QUERY = "SELECT r.relation_type_id as rt_id, r.syn_set_id as parent, r.target_syn_set_id as child FROM dannet.relations r";
-        PreparedStatement statement = connection.prepareStatement(QUERY);
-
-        ResultSet rs = statement.executeQuery();
-        while (rs.next()){
-
-            Long tid = rs.getLong("rt_id");
-            Long parent = rs.getLong("parent");
-            Long child = rs.getLong("child");
-
-            SynsetRelation rt = new SynsetRelation(parent,child, tid);
-            synsetRelations.add(rt);
-        }
-        return synsetRelations;
     }
 
     private List<RelTyp> getRelationTypes(Connection connection, final List<LocalizedString> strings) throws SQLException {
