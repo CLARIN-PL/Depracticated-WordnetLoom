@@ -247,8 +247,9 @@ public class V2_2__ImportDannetWordnetSynsetRelationsToPrinceton implements Jdbc
         Long dispTextId;
         Long shortDispId;
         Long rev;
-        String color = "#000000";
+        String color = "#000000";  //TODO: Set defined colour for Equivalence Relations 
         String node_position = "RIGHT";
+        String multilingual = true;
 
         public RelTyp(Long id, Long nameId, Long descId, Long dispTextId, Long shortDispId) {
             this.id = id;
