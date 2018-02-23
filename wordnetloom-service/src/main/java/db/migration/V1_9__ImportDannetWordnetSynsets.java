@@ -57,7 +57,7 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
             Long syn_set_id = rs.getLong("syn_set_id");
 
             Feature f = new Feature(syn_set_id, name);
-            features.add(w);
+            features.add(f);
 
         }
 
@@ -113,7 +113,7 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
                 if (id == f.syn_set_id) {
                     String comment = sa.getComment();
 
-                    if (comment != undefined && comment.length() > 0)
+                    if (typeof(comment)=="undefined" && comment.length() > 0)
                         sa.setComment(comment + '+' + f.ontological_type);
                     else
                         sa.setComment(f.ontological_type);
