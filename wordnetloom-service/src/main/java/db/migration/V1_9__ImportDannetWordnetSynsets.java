@@ -46,7 +46,7 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
     }
 
     private ArrayList<Feature> getFeatures(Connection connection) throws SQLException {
-        String QUERY = "SELECT ft.name as name, f.syn_set_id as syn_set_id FROM dannet.features f JOIN dannet.feature_types ft ON f.feature_type_id = ft.id ";
+        String QUERY = "SELECT ft.name as name, f.syn_set_id as synsetId FROM dannet.features f JOIN dannet.feature_types ft ON f.feature_type_id = ft.id";
         PreparedStatement statement = connection.prepareStatement(QUERY);
         ArrayList<Feature> features = new ArrayList<Feature>();
 
@@ -54,7 +54,7 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
         while (rs.next()){
 
             String name = rs.getString("name");
-            Long syn_set_id = rs.getLong("syn_set_id");
+            Long syn_set_id = rs.getLong("synsetId");
 
             Feature f = new Feature(syn_set_id, name);
             features.add(f);
@@ -85,7 +85,7 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
         return words;
     }
 
-    private List<Synset> getSynsets(Connection connection, final List<Example> examples, final List<Feature> features, List<SynsetAttributes> synsetAttributes) throws SQLException {
+    private List<Synset> getSynsets(Connection connection, final List<Example> examples, List<Feature> features, List<SynsetAttributes> synsetAttributes) throws SQLException {
         String QUERY = "SELECT s.id as id, s.gloss as gloss, s.usage as usg FROM dannet.syn_sets s";
         PreparedStatement statement = connection.prepareStatement(QUERY);
 
@@ -110,7 +110,7 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
             sa.setDefinition(def);
 
             for (Feature f : features) {
-                if (id == f.syn_set_id) {
+                if (id.equals(f.syn_set_id)) {
                     String comment = sa.getComment();
 
                     if (comment != null && comment.length() > 0)
@@ -171,13 +171,13 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
     }
 
     private void saveSynsetAttributes(List<SynsetAttributes> attributes) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (synset_id, definition, comment, abstract) VALUES(?, ?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (synset_id, comment, definition, abstract) VALUES(?, ?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
         for (SynsetAttributes a : attributes) {
             insert.setLong(1, a.getId());
-            insert.setString(2, a.getDefinition());
-            insert.setString(3, a.getComment());
+            insert.setString(2, a.getComment());
+            insert.setString(3, a.getDefinition());
             insert.setBoolean(4, false);
             insert.executeUpdate();
         }
