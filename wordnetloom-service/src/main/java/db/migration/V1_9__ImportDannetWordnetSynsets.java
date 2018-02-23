@@ -177,8 +177,8 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
         for (SynsetAttributes a : attributes) {
             insert.setLong(1, a.getId());
             insert.setString(2, a.getDefinition());
-            insert.setString(2, a.getComment());
-            insert.setBoolean(3, false);
+            insert.setString(3, a.getComment());
+            insert.setBoolean(4, false);
             insert.executeUpdate();
         }
     }
