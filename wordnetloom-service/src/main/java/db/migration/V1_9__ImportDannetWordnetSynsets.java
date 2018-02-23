@@ -86,7 +86,7 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
     }
 
     private List<Synset> getSynsets(Connection connection, final List<Example> examples, final List<Feature> features, List<SynsetAttributes> synsetAttributes) throws SQLException {
-        String QUERY = "SELECT s.id as id, s.gloss as gloss, s.usage, as usg FROM dannet.syn_sets s";
+        String QUERY = "SELECT s.id as id, s.gloss as gloss, s.usage as usg FROM dannet.syn_sets s";
         PreparedStatement statement = connection.prepareStatement(QUERY);
 
         List<Synset> synsets = new ArrayList<>();
