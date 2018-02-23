@@ -115,7 +115,7 @@ public class V2_2__ImportDannetWordnetSynsetRelationsToPrinceton implements Jdbc
             insert.setLong(7, rt.shortDispId);
             insert.setString(8, rt.color);
             insert.setString(9, rt.node_position);
-            insert.setBoolean(10, rt.multilingual)
+            insert.setBoolean(10, rt.multilingual);
             insert.executeUpdate();
         }
         connection.commit();
