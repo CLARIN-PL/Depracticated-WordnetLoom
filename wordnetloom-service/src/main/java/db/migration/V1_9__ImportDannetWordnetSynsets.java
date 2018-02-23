@@ -113,7 +113,7 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
                 if (id == f.syn_set_id) {
                     String comment = sa.getComment();
 
-                    if (typeof(comment)=="undefined" && comment.length() > 0)
+                    if (comment != null && comment.length() > 0)
                         sa.setComment(comment + '+' + f.ontological_type);
                     else
                         sa.setComment(f.ontological_type);
