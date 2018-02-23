@@ -195,11 +195,11 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
 
     private class Feature {
         Long syn_set_id;
-        String ontological_feature;
+        String ontological_type;
 
-        public Feature(Long syn_set_id, String ontological_feature) {
+        public Feature(Long syn_set_id, String ontological_type) {
             this.syn_set_id = syn_set_id;
-            this.ontological_feature = ontological_feature;
+            this.ontological_type = ontological_type;
         }
     }
 
