@@ -1,13 +1,16 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
 import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
+import pl.edu.pwr.wordnetloom.client.systems.ui.ExampleCellRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextArea;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
@@ -15,18 +18,21 @@ import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
+import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetExample;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * klasa opisujacy wyglada okienka z wlasciwoscami synsetu
+ * Synset properties panel
  *
  * @author Max
  */
@@ -34,6 +40,13 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
     private MTextArea definitionValue;
     private MTextArea commentValue;
+
+    private JScrollPane scrollPaneExamples;
+    private MButton btnNewExample;
+    private MButton btnEditExample;
+    private MButton btnRemoveExample;
+    private WebList examplesList;
+    private DefaultListModel examplesModel;
 
     private final MButton buttonSave = MButton.buildSaveButton()
             .withToolTip(Hints.SAVE_CHANGES_IN_SYNSET)
@@ -67,11 +80,94 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         abstractValue.setSelected(false);
         abstractValue.addActionListener(this);
 
+        scrollPaneExamples = new JScrollPane();
+
+        examplesList = new WebList() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public boolean getScrollableTracksViewportWidth() {
+                return true;
+            }
+        };
+        examplesList.setCellRenderer(new ExampleCellRenderer());
+
+        ComponentListener l = new ComponentAdapter() {
+
+            @Override
+            public void componentResized(ComponentEvent e) {
+                examplesList.setFixedCellHeight(10);
+                examplesList.setFixedCellHeight(-1);
+            }
+
+        };
+
+        examplesList.addComponentListener(l);
+        examplesList.setVisibleRowCount(3);
+        examplesModel = new DefaultListModel();
+        examplesList.setModel(examplesModel);
+
+        scrollPaneExamples.setViewportView(examplesList);
+
+        btnNewExample = MButton.buildAddButton();
+
+        btnNewExample.addActionListener((ActionEvent e) -> {
+            String example = ExampleFrame.showModal(null, Labels.NEW_EXAMPLE, "", false);
+            if (example != null && !"".equals(example)) {
+                SynsetExample exp = new SynsetExample();
+                exp.setExample(example);
+                examplesModel.addElement(exp);
+                buttonSave.setEnabled(true);
+                examplesList.updateUI();
+            }
+        });
+
+        JLabel lblExample = new JLabel(Labels.USE_CASE_COLON);
+        lblExample.setVerticalAlignment(SwingConstants.TOP);
+        lblExample.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        btnEditExample = MButton.buildEditButton();
+        btnEditExample.addActionListener((ActionEvent e) -> {
+            int idx = examplesList.getSelectedIndex();
+            SynsetExample example = (SynsetExample) examplesModel.get(idx);
+            if (idx >= 0) {
+                String modified = ExampleFrame.showModal(null,
+                        Labels.EDIT_EXAMPLE,
+                        example.getExample(), true);
+                String old = example.getExample();
+                if (modified != null && !old.equals(modified)) {
+                    example.setExample(modified);
+                    examplesList.updateUI();
+                    buttonSave.setEnabled(true);
+                }
+            }
+        });
+
+        btnRemoveExample = MButton.buildDeleteButton();
+        btnRemoveExample.addActionListener((ActionEvent e) -> {
+            int idx = examplesList.getSelectedIndex();
+            if (idx >= 0) {
+                examplesModel.remove(idx);
+                buttonSave.setEnabled(true);
+            }
+        });
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new RiverLayout(0, 0));
+        buttonsPanel.add("br", btnNewExample);
+        buttonsPanel.add("br", btnEditExample);
+        buttonsPanel.add("br", btnRemoveExample);
+
+        content.setMargin(5,1,5,1);
         content.add("vtop", new JLabel(Labels.DEFINITION_COLON));
-        content.add("tab hfill", new JScrollPane(definitionValue));
+        content.add("br hfill", new JScrollPane(definitionValue));
         content.add("br vtop", new JLabel(Labels.COMMENT_COLON));
-        content.add("tab hfill", new JScrollPane(commentValue));
-        content.add("br", abstractValue);
+        content.add("br hfill", new JScrollPane(commentValue));
+        content.add("br vtop", new JLabel(Labels.EXAMPLES));
+        content.add("br hfill",  scrollPaneExamples);
+        content.add("", buttonsPanel);
+        content.add("br hfill", abstractValue);
         content.add("br center", buttonSave);
 
         // ustawienie akywnosci
@@ -106,6 +202,11 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
             if(sa.getComment() != null ) {
                commentValue.setText(sa.getComment());
+            }
+
+            if(sa.getExamples() != null){
+                examplesModel.clear();
+                sa.getExamples().forEach(e -> examplesModel.addElement(e));
             }
 
             abstractValue.setSelected(synset.getAbstract());
@@ -149,7 +250,16 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             String comment = commentValue.getText();
             boolean isAbstract = abstractValue.isSelected();
 
-            if (!LexicalDA.updateSynset(lastSynset, definition, comment, isAbstract)) {
+            Set<SynsetExample> examples = new HashSet<>();
+
+            if(!examplesModel.isEmpty()) {
+                for(int i = 0; i < examplesModel.size(); i++)
+                {
+                    examples.add((SynsetExample)examplesModel.getElementAt(i));
+                }
+            }
+
+            if (!LexicalDA.updateSynset(lastSynset, definition, comment, isAbstract, examples)) {
                 refreshData(lastSynset); // nieudana zmiana statusu
                 DialogBox.showError(Messages.ERROR_NO_STATUS_CHANGE_BECAUSE_OF_RELATIONS_IN_SYNSETS);
             }

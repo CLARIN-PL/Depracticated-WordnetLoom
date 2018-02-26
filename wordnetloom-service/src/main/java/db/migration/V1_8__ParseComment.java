@@ -1,10 +1,8 @@
 package db.migration;
 
-import com.oracle.util.Checksums;
 import db.migration.commentParser.CommentParser;
 import db.migration.commentParser.ParserResult;
 import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
-import org.w3c.dom.Attr;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -35,7 +33,7 @@ public class V1_8__ParseComment implements JdbcMigration {
         List<Attribute> attributes = getAttributesList(connection);
         List<ParserResult> results;
         Attribute fixedAttribute;
-        for(Attribute attribute : attributes){
+        for (Attribute attribute : attributes) {
             System.out.println("Atrybut" + attribute.getId());
             results = parser.parse(attribute.getComment());
             fixedAttribute = setAttributes(attribute, results, connection);
@@ -45,10 +43,10 @@ public class V1_8__ParseComment implements JdbcMigration {
     }
 
     private Attribute setAttributes(Attribute attribute, List<ParserResult> results, Connection connection) throws SQLException {
-        StringBuilder unknown= new StringBuilder();
+        StringBuilder unknown = new StringBuilder();
         attribute.setComment(null);
-        for(ParserResult result : results){
-            switch (result.getType()){
+        for (ParserResult result : results) {
+            switch (result.getType()) {
                 case COMMENT:
                     attribute.setComment(result.getValue());
                     break;
@@ -70,7 +68,7 @@ public class V1_8__ParseComment implements JdbcMigration {
                     break;
             }
         }
-        if(unknown.length() > 0){
+        if (unknown.length() > 0) {
             attribute.setComment(unknown.toString()); //TODO zobaczyć, czy tutaj sie nic nie straci
         }
         return attribute;
@@ -90,7 +88,7 @@ public class V1_8__ParseComment implements JdbcMigration {
         List<Attribute> resultAttributes = new ArrayList<>();
         Attribute attribute;
         int offset = 0;
-        do{
+        do {
             System.out.println("Pobieranie " + offset);
             resultSet = getAttributesResultSet(connection, 1000, offset);
             while (resultSet.next()) {
@@ -100,14 +98,14 @@ public class V1_8__ParseComment implements JdbcMigration {
                 resultAttributes.add(attribute);
                 offset++;
             }
-        }while (resultSet.first());
+        } while (resultSet.first());
 //        List<Attribute> resultAttributes = new ArrayList<>();
 //        Attribute attribute;
 
         return resultAttributes;
     }
 
-    private ResultSet getAttributesResultSet(Connection connection, int limit, int offset) throws SQLException{
+    private ResultSet getAttributesResultSet(Connection connection, int limit, int offset) throws SQLException {
         String query = "SELECT sense_id, comment FROM " + ATTRIBUTE_TABLE + " LIMIT " + limit + " OFFSET " + offset;
         Statement statement = connection.createStatement();
         return statement.executeQuery(query);
@@ -120,7 +118,7 @@ public class V1_8__ParseComment implements JdbcMigration {
         final int REGISTER = 4;
         final int PROPER_NAME = 5;
         final int ATTRIBUTE_ID = 6;
-        assert  connection != null;
+        assert connection != null;
         updateAttributeStatement.clearParameters();
         setStringToStatement(COMMENT, attribute.getComment(), updateAttributeStatement);
         setStringToStatement(DEFINITION, attribute.getDefinition(), updateAttributeStatement);
@@ -129,13 +127,13 @@ public class V1_8__ParseComment implements JdbcMigration {
         setBooleanToStatement(PROPER_NAME, attribute.isProperName(), updateAttributeStatement);
         setLongToStatement(ATTRIBUTE_ID, attribute.getId(), updateAttributeStatement);
         updateAttributeStatement.executeUpdate();
-        for(Example example : attribute.getExamples()){
-            insertExample(example,attribute.getId(), connection);
+        for (Example example : attribute.getExamples()) {
+            insertExample(example, attribute.getId(), connection);
         }
     }
 
     private void setBooleanToStatement(int position, Boolean value, PreparedStatement statement) throws SQLException {
-        if(value != null){
+        if (value != null) {
             statement.setBoolean(position, value);
         } else {
             statement.setNull(position, Types.BIT);
@@ -143,7 +141,7 @@ public class V1_8__ParseComment implements JdbcMigration {
     }
 
     private void setStringToStatement(int position, String value, PreparedStatement statement) throws SQLException {
-        if(value != null){
+        if (value != null) {
             statement.setString(position, value);
         } else {
             statement.setNull(position, Types.VARCHAR);
@@ -151,14 +149,14 @@ public class V1_8__ParseComment implements JdbcMigration {
     }
 
     private void setLongToStatement(int position, Long value, PreparedStatement statement) throws SQLException {
-        if(value != null){
+        if (value != null) {
             statement.setLong(position, value);
         } else {
             statement.setNull(position, Types.INTEGER);
         }
     }
 
-    private void insertExample(Example example,Long attributeId,  Connection connection) throws SQLException {
+    private void insertExample(Example example, Long attributeId, Connection connection) throws SQLException {
         final int ATTRIBUTE_ID = 1;
         final int TYPE = 2;
         final int EXAMPLE = 3;
@@ -173,7 +171,7 @@ public class V1_8__ParseComment implements JdbcMigration {
 
     private Long getRegisterID(String registerName, Connection connection) throws SQLException {
 //        String GET_ID_QUERY = "SELECT R.id FROM wordnet.register_types R LEFT JOIN wordnet.application_localised_string S ON R.name_id = S.id WHERE S.value = ?";
-        String GET_ID_QUERY = "SELECT D.id FROM wordnet.dictionaries D LEFT JOIN wordnet.application_localised_string S On D.name_id = S.id WHERE S.value = ?";
+        String GET_ID_QUERY = "SELECT D.id FROM wordnet.dictionaries D LEFT JOIN wordnet.application_localised_string S ON D.name_id = S.id WHERE S.value = ?";
         PreparedStatement statement = connection.prepareStatement(GET_ID_QUERY);
         statement.setString(1, registerName);
         ResultSet resultSet = statement.executeQuery();

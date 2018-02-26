@@ -16,7 +16,7 @@
             <property name="org.hibernate.envers.audit_table_suffix" value="" />
             <property
                     name="org.hibernate.envers.audit_strategy"
-                    value="org.hibernate.envers.strategy.ValidityAuditStrategy"/>
+                    value="org.hibernate.envers.strategy.DefaultAuditStrategy"/>
         </properties>
     </persistence-unit>
 </persistence>

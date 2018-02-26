@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.systems.ui;
 
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetExample;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +32,12 @@ public class ExampleCellRenderer implements ListCellRenderer {
             {
                 return null;
             }
-            textArea.setText(((SenseExample) value).getExample());
+            if(( value instanceof SenseExample)) {
+                textArea.setText(((SenseExample) value).getExample());
+            }
+            if(( value instanceof SynsetExample)) {
+                textArea.setText(((SynsetExample) value).getExample());
+            }
             if (isSelected) {
                 textArea.setBackground(new Color(135, 206, 250));
             } else if (index % 2 == 0) {

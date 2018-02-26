@@ -10,7 +10,6 @@ create table tracker_dictionaries (
   REV integer not null,
   dtype varchar(31) not null,
   REVTYPE tinyint,
-  REVEND integer,
   description_id bigint,
   name_id bigint,
   primary key (id, REV)
@@ -20,7 +19,6 @@ create table tracker_domain (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   description_id bigint,
   name_id bigint,
   primary key (id, REV)
@@ -30,7 +28,6 @@ create table tracker_lexicon (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   identifier varchar(255),
   language_name varchar(255),
   lexicon_version varchar(255),
@@ -42,7 +39,6 @@ create table tracker_part_of_speech (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   color varchar(255),
   name_id bigint,
   primary key (id, REV)
@@ -52,7 +48,6 @@ create table tracker_relation_type (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   auto_reverse bit default 0,
   color varchar(255),
   description_id bigint,
@@ -72,7 +67,6 @@ create table tracker_relation_type_allowed_lexicons (
   relation_type_id bigint not null,
   lexicon_id bigint not null,
   REVTYPE tinyint,
-  REVEND integer,
   primary key (REV, relation_type_id, lexicon_id)
 );
 
@@ -81,7 +75,6 @@ create table tracker_relation_type_allowed_parts_of_speech (
   relation_type_id bigint not null,
   part_of_speech_id bigint not null,
   REVTYPE tinyint,
-  REVEND integer,
   primary key (REV, relation_type_id, part_of_speech_id)
 );
 
@@ -89,7 +82,6 @@ create table tracker_sense (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   synset_position int default 0,
   variant int default 1,
   domain_id bigint,
@@ -104,7 +96,6 @@ create table tracker_sense_attributes (
   sense_id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   comment text,
   definition text,
   error_comment varchar(255),
@@ -119,7 +110,6 @@ create table tracker_sense_examples (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   example varchar(255),
   type varchar(255),
   sense_attribute_id bigint,
@@ -130,7 +120,6 @@ create table tracker_sense_relation (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   child_sense_id bigint,
   parent_sense_id bigint,
   relation_type_id bigint,
@@ -141,7 +130,6 @@ create table tracker_synset (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   abstract boolean,
   split integer,
   lexicon_id bigint,
@@ -153,7 +141,6 @@ create table tracker_synset_attributes (
   synset_id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   comment text,
   definition text,
   error_comment text,
@@ -167,7 +154,6 @@ create table tracker_synset_examples (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   example varchar(255),
   synset_attribute_id bigint,
   primary key (id, REV)
@@ -177,7 +163,6 @@ create table tracker_synset_relation (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   child_synset_id bigint,
   parent_synset_id bigint,
   synset_relation_type_id bigint,
@@ -188,7 +173,6 @@ create table tracker_users (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   email varchar(255),
   firstname varchar(255),
   lastname varchar(255),
@@ -199,7 +183,6 @@ create table tracker_word (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  REVEND integer,
   word varchar(255),
   primary key (id, REV)
 );
@@ -209,19 +192,9 @@ alter table tracker_dictionaries
 foreign key (REV)
 references tracker_rev_info (id);
 
-alter table tracker_dictionaries
-  add constraint FKf2cve2ha4ugdo8ixdy4385g6x
-foreign key (REVEND)
-references tracker_rev_info (id);
-
 alter table tracker_domain
   add constraint FKnt6sndy6khd9no3dhjktqi59y
 foreign key (REV)
-references tracker_rev_info (id);
-
-alter table tracker_domain
-  add constraint FK4gecdehc64qaxt9w3es3ug4t4
-foreign key (REVEND)
 references tracker_rev_info (id);
 
 alter table tracker_lexicon
@@ -229,19 +202,9 @@ alter table tracker_lexicon
 foreign key (REV)
 references tracker_rev_info (id);
 
-alter table tracker_lexicon
-  add constraint FKny5yqbp681v0kwrcj9ydf3ra3
-foreign key (REVEND)
-references tracker_rev_info (id);
-
 alter table tracker_part_of_speech
   add constraint FKgm5vtes85590hcgp4b6uyi59f
 foreign key (REV)
-references tracker_rev_info (id);
-
-alter table tracker_part_of_speech
-  add constraint FKdhqh2050fotkj23drtda8ajul
-foreign key (REVEND)
 references tracker_rev_info (id);
 
 alter table tracker_relation_type
@@ -249,19 +212,9 @@ alter table tracker_relation_type
 foreign key (REV)
 references tracker_rev_info (id);
 
-alter table tracker_relation_type
-  add constraint FKq9vved38e4qagt7w3h1yw9rpg
-foreign key (REVEND)
-references tracker_rev_info (id);
-
 alter table tracker_relation_type_allowed_lexicons
   add constraint FKededrfamajkwtt7w9d5a599wg
 foreign key (REV)
-references tracker_rev_info (id);
-
-alter table tracker_relation_type_allowed_lexicons
-  add constraint FKig74q4lve0ku9rx59mps4qeh3
-foreign key (REVEND)
 references tracker_rev_info (id);
 
 alter table tracker_relation_type_allowed_parts_of_speech
@@ -269,19 +222,9 @@ alter table tracker_relation_type_allowed_parts_of_speech
 foreign key (REV)
 references tracker_rev_info (id);
 
-alter table tracker_relation_type_allowed_parts_of_speech
-  add constraint FKcllplaw90f6gqu59k92pu1j53
-foreign key (REVEND)
-references tracker_rev_info (id);
-
 alter table tracker_sense
   add constraint FKb3ucdyys4lu93clokjmhjrptq
 foreign key (REV)
-references tracker_rev_info (id);
-
-alter table tracker_sense
-  add constraint FKj6mp679d0c5hj0c58nnhs1kx9
-foreign key (REVEND)
 references tracker_rev_info (id);
 
 alter table tracker_sense_attributes
@@ -289,19 +232,9 @@ alter table tracker_sense_attributes
 foreign key (REV)
 references tracker_rev_info (id);
 
-alter table tracker_sense_attributes
-  add constraint FKkwap3fks8fvnb0l7if6palmwg
-foreign key (REVEND)
-references tracker_rev_info (id);
-
 alter table tracker_sense_examples
   add constraint FKqwa0mawyvljkuylsw3jkdjigp
 foreign key (REV)
-references tracker_rev_info (id);
-
-alter table tracker_sense_examples
-  add constraint FK7nj8dqmd27fa9pu9yfo59uf55
-foreign key (REVEND)
 references tracker_rev_info (id);
 
 alter table tracker_sense_relation
@@ -309,19 +242,9 @@ alter table tracker_sense_relation
 foreign key (REV)
 references tracker_rev_info (id);
 
-alter table tracker_sense_relation
-  add constraint FKobohk2lwfltkbdgoyqdx8fkc3
-foreign key (REVEND)
-references tracker_rev_info(id);
-
 alter table tracker_synset
   add constraint FK90mwt2pgoad0ci1qacl849ndd
 foreign key (REV)
-references tracker_rev_info (id);
-
-alter table tracker_synset
-  add constraint FKahoaah0fadhf6fu05sh9r3w8t
-foreign key (REVEND)
 references tracker_rev_info (id);
 
 alter table tracker_synset_relation
@@ -329,19 +252,9 @@ alter table tracker_synset_relation
 foreign key (REV)
 references tracker_rev_info (id);
 
-alter table tracker_synset_relation
-  add constraint FKqvxad592194m0x6y80xr3234k
-foreign key (REVEND)
-references tracker_rev_info (id);
-
 alter table tracker_users
   add constraint FK19jg2m1fslgl7bnk4ldo2avx0
 foreign key (REV)
-references tracker_rev_info (id);
-
-alter table tracker_users
-  add constraint FK1r41ohhhyy0tx30vlx43spoft
-foreign key (REVEND)
 references tracker_rev_info (id);
 
 alter table tracker_word
@@ -349,12 +262,7 @@ alter table tracker_word
 foreign key (REV)
 references tracker_rev_info (id);
 
-alter table tracker_word
-  add constraint FKnott61u5l21aqb7k10lv6xsk9
-  foreign key (REVEND)
-references tracker_rev_info (id);
-
 alter table tracker_synset_examples
   add constraint FKap91opmqd9na1kut4uetkdb4n
-foreign key (REVEND)
+foreign key (REV)
 references tracker_rev_info (id);

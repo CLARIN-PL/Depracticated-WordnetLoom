@@ -11,12 +11,10 @@ import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetExample;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class LexicalDA {
 
@@ -202,7 +200,7 @@ public class LexicalDA {
     }
 
 
-    public static boolean updateSynset(Synset synset, String definition, String comment, boolean isAbstract) {
+    public static boolean updateSynset(Synset synset, String definition, String comment, boolean isAbstract, Set<SynsetExample> examples) {
         boolean result = true;
         if (synset != null) {
 
@@ -214,6 +212,8 @@ public class LexicalDA {
             SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
             sa.setDefinition(definition);
             sa.setComment(comment);
+            examples.forEach( e-> e.setSynsetAttributes(sa));
+            //sa.setExamples(examples);
             RemoteService.synsetRemote.save(sa);
         }
         return result;
