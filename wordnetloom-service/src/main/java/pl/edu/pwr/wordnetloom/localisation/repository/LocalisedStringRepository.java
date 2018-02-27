@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.localisation.repository;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.dto.DataMap;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
+import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 import pl.edu.pwr.wordnetloom.localisation.model.RegisterType;
@@ -66,25 +67,13 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
                 .getResultList().size() > 0;
     }
 
-    public Map<Long, String> findAllRegisterTypes(String language)
-    {
-//        List<DataMap> list;
-//        list =  getEntityManager().createQuery("SELECT new DataMap(t.id, name.value) FROM RegisterType t JOIN t.name AS name WHERE t.language = :lang")
-//                .setParameter("lang", language)
-//                .getResultList();
-//        Map<Long, String> resultMap = new HashMap<>();
-//        list.forEach(e->resultMap.put(e.getId(), e.getText()));
-//        return resultMap;
-        //TODO zlikwidować native query
-        List<Object[]> list;
-  /*      list = getEntityManager().createNativeQuery("SELECT T.id, L.value FROM register_types T JOIN application_localised_string L ON T.name_id = L.id WHERE language = :lang")
-                .setParameter("lang", language)
-                .getResultList();
-  */      Map<Long, String> resultMap = new HashMap<>();
-/*        for(Object[] entry : list)
-        {
-            resultMap.put(Long.valueOf((Integer)entry[0]), String.valueOf(entry[1]));
-        }*/
+    public Map<Long, String> findAllRegisterTypes(String language) {
+
+        List<RegisterDictionary> list = getEntityManager().createQuery("FROM RegisterDictionary").getResultList();
+        Map<Long, String> resultMap = new HashMap<>();
+        for(RegisterDictionary register : list){
+            resultMap.put(register.getId(), String.valueOf(register.getName())); //TODO zmienić tekst
+        }
         return resultMap;
     }
 

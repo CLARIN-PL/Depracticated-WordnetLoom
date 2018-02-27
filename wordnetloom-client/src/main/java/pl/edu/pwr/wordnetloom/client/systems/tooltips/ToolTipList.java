@@ -18,6 +18,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 package pl.edu.pwr.wordnetloom.client.systems.tooltips;
 
 import com.alee.laf.list.WebList;
+import com.alee.laf.menu.WebPopupMenu;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -41,13 +42,12 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
 /**
  * List with tooltips and popup menu
- *
  */
 public class ToolTipList extends WebList {
 
     private static final long serialVersionUID = -6298109817976295515L;
     private ToolTipGeneratorInterface toolTipsGenerator = null;
-    final JPopupMenu popupMenu;
+    final WebPopupMenu popupMenu;
 
     private LoadingCache<Object, String> cache;
 
@@ -109,11 +109,9 @@ public class ToolTipList extends WebList {
      * @param workbench
      * @param model
      * @param toolTipsGenerator
-     * @param notepadSupport
      */
     public ToolTipList(final Workbench workbench,  final ListModel model,
-            final ToolTipGeneratorInterface toolTipsGenerator,
-            final boolean notepadSupport) {
+            final ToolTipGeneratorInterface toolTipsGenerator) {
         super(model);
 
         /* customise me when needed */
@@ -124,7 +122,7 @@ public class ToolTipList extends WebList {
 
         this.toolTipsGenerator = toolTipsGenerator;
 
-        popupMenu = new JPopupMenu();
+        popupMenu = new WebPopupMenu();
         // Add popup menu displayer
         this.addMouseListener(new MouseListener() {
 
@@ -160,10 +158,6 @@ public class ToolTipList extends WebList {
         });
     }
 
-    public ToolTipList(Workbench workbench, final ListModel model, ToolTipGeneratorInterface toolTipsGenerator){
-        this(workbench, model, toolTipsGenerator, false);
-    }
-
     /**
      * Add menu item to standard popup menu
      *
@@ -185,10 +179,6 @@ public class ToolTipList extends WebList {
         addPopupItem(new JPopupMenu.Separator());
     }
 
-    /*
-	 * (non-Javadoc)
-	 * @see javax.swing.JComponent#getToolTipText(java.awt.event.MouseEvent)
-     */
     @Override
     public String getToolTipText(MouseEvent event) {
         // fast check
@@ -208,14 +198,6 @@ public class ToolTipList extends WebList {
             }
 
             return toolTipsGenerator.getToolTipText(item);
-//            if (get == null) {
-//                try {
-//                    return cache.get(item);
-//                } catch (ExecutionException ex) {
-//                    Logger.getLogger(ToolTipList.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-//            return get;
         }
         return super.getToolTipText(event);
     }

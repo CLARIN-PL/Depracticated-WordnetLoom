@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.partofspeech.model;
 
+import org.hibernate.envers.Audited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 
 import javax.persistence.Column;
@@ -7,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+@Audited
 @Entity
 @Table(name = "part_of_speech")
 public class PartOfSpeech extends GenericEntity {

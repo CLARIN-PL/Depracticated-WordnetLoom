@@ -10,7 +10,7 @@ import java.util.List;
 
 public class SenseTooltipGenerator implements ToolTipGeneratorInterface {
 
-    private ToolTipBuilder builder;
+    private final ToolTipBuilder builder;
 
     public SenseTooltipGenerator() {
         builder = new ToolTipBuilder();
@@ -33,12 +33,14 @@ public class SenseTooltipGenerator implements ToolTipGeneratorInterface {
         builder.addLexicon(sense.getLexicon())
                 .addDomain(sense.getDomain())
                 .addPartOfSpeech(sense.getPartOfSpeech());
-        SenseAttributes attributes = sense.getSenseAttributes();
+        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(sense.getId());
         if (attributes != null) {
-            builder.addRegister(attributes.getRegister())
-                    .addDefinition(attributes.getDefinition());
+            if (attributes.getRegister() != null) {
+                builder.addRegister(attributes.getRegister());
+            }
+            builder.addDefinition(attributes.getDefinition());
         }
-        builder.addExamples(sense.getExamples());
+        builder.addExamples(attributes.getExamples());
         if (relations != null && !relations.isEmpty()) {
             builder.addSenseRelations(relations);
         }

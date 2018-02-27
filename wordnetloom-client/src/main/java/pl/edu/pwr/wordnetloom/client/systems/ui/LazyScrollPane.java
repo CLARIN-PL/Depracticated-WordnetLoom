@@ -72,10 +72,10 @@ public class LazyScrollPane extends JScrollPane{
     }
 
     public void reset(){
+        loadMoreButton.setVisible(false);
         list.clearSelection();
         end = false;
         offset = 0;
-        loadMoreButton.setVisible(false);
     }
 
     public void setHorizontalScrolling(boolean scrolling) {

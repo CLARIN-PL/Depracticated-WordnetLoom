@@ -21,6 +21,4 @@ public interface RelationTestServiceRemote {
 
     RelationTest save(RelationTest test);
 
-    RelationTest update(RelationTest test);
-
 }

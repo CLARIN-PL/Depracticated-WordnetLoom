@@ -12,6 +12,7 @@ import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 import pl.edu.pwr.wordnetloom.word.repository.WordRepository;
 
@@ -35,46 +36,18 @@ public class SenseRepository extends GenericRepository<Sense> {
     @Inject
     EntityManager em;
 
-    @Inject
-    SenseRelationRepository senseRelationRepository;
-
-    @Inject
-    WordRepository wordRepository;
-
     public Sense clone(Sense sense) {
         return persist(new Sense(sense));
-    }
-
-    @Override
-    public Sense persist(Sense sense) {
-        if (sense.getId() == null) {
-            sense.setVariant(findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech()));
-        }
-        if(em.contains(sense))
-        {
-//            return super.persist(sense);
-             getEntityManager().persist(sense.getSenseAttributes());
-             return sense.getSenseAttributes().getSense();
-
-        } else {
-            if(sense.getId() != null){ // jeżeli aktualizujemy obiekt
-                return getEntityManager().merge(sense);
-            } else { // w przypadku zapisu nowego obiektu, należy zapisać atrybut. W innym przypadku zostanie zgłoszony wyjątek. Może da się to jakoś obejść
-                SenseAttributes attributes = getEntityManager().merge(sense.getSenseAttributes());
-                return attributes.getSense();
-            }
-        }
-
     }
 
     @Override
     public void delete(Sense sense) {
         Sense s = findById(sense.getId());
 
-        // Remove relations between senses
-        // w sense incomingRelations i outgoinRelations zaznaczono cascade.ALL, więc nie ma potrzeby dodatkowo usuwać relacji
-//        senseRelationRepository.deleteConnection(sense);
-        getEntityManager().remove(s.getSenseAttributes());
+        if(s != null) {
+            SenseAttributes senseAttributes = getEntityManager().find(SenseAttributes.class, s.getId());
+            getEntityManager().remove(senseAttributes);
+        }
         super.delete(s);
     }
 
@@ -645,9 +618,6 @@ public class SenseRepository extends GenericRepository<Sense> {
         senseRoot.fetch("domain", JoinType.LEFT);
         senseRoot.fetch("lexicon", JoinType.LEFT);
         senseRoot.fetch("partOfSpeech", JoinType.LEFT);
-        senseRoot.fetch("senseAttributes", JoinType.LEFT);
-        senseRoot.fetch("examples", JoinType.LEFT);
-
         query.where(criteriaBuilder.equal(senseRoot.get("id"), senseId));
 
         return getEntityManager().createQuery(query).getSingleResult();
@@ -664,4 +634,16 @@ public class SenseRepository extends GenericRepository<Sense> {
         return em;
     }
 
+    public SenseAttributes fetchSenseAttribute(Long senseId) {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<SenseAttributes> query = criteriaBuilder.createQuery(SenseAttributes.class);
+
+        Root<SenseAttributes> root = query.from(SenseAttributes.class);
+        root.fetch("examples", JoinType.LEFT);
+
+        Predicate predicate = criteriaBuilder.equal(root.get("id"), senseId);
+        query.where(predicate);
+
+        return getEntityManager().createQuery(query).getSingleResult();
+    }
 }

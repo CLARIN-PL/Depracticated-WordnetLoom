@@ -4,17 +4,14 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SynsetFormat;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RegisterManager;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.StatusDictionary;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
-import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
@@ -56,7 +53,7 @@ public class ToolTipBuilder {
     }
 
     public ToolTipBuilder addSenseComment(String comment) {
-        if(comment != null) {
+        if (comment != null) {
             String finalComment = comment.replaceAll("<", "&lt");
             addString(UNIT_COMMENT_LABEL, finalComment);
         }
@@ -64,30 +61,31 @@ public class ToolTipBuilder {
     }
 
     public ToolTipBuilder addSynsetComment(String comment) {
-        if(comment != null){
+        if (comment != null) {
             String finalComment = comment.replaceAll("<", "&lt");
             addString(SYNSET_COMMENT_LABEL, finalComment);
         }
         return this;
     }
 
-    public ToolTipBuilder addOwner(User user){
-        if(user != null) {
+    public ToolTipBuilder addOwner(User user) {
+        if (user != null) {
             addString(OWNER_LABEL, user.getFullname());
         }
         return this;
     }
 
     public ToolTipBuilder addArtificial(Boolean artificial) {
-        if(artificial != null) {
-            addString(ARTIFICIAL_LABEL,artificial ? Labels.YES : Labels.NO);
+        if (artificial != null) {
+            addString(ARTIFICIAL_LABEL, artificial ? Labels.YES : Labels.NO);
         }
         return this;
     }
 
-    public ToolTipBuilder addStatus(Integer status) {
-        if(status != null) {
-            addString(STATUS_LABEL, String.valueOf(status)); //TODO dodać status
+    public ToolTipBuilder addStatus(StatusDictionary status) {
+        if (status != null) {
+            String statusText = LocalisationManager.getInstance().getLocalisedString(status.getName());
+            addString(STATUS_LABEL, String.valueOf(statusText));
         }
         return this;
     }
@@ -105,7 +103,8 @@ public class ToolTipBuilder {
 
     public ToolTipBuilder addDomain(Domain domain) {
         Domain normalizedDomain = DomainManager.getInstance().getNormalized(domain);
-        String domainText = LocalisationManager.getInstance().getLocalisedString(normalizedDomain.getName()) + "=>" + normalizedDomain.getDescription().toString();
+        String domainText = String.format("%s => %s", LocalisationManager.getInstance().getLocalisedString(normalizedDomain.getName()),
+                LocalisationManager.getInstance().getLocalisedString(normalizedDomain.getDescription()));
         return addDomain(domainText);
     }
 
@@ -122,8 +121,8 @@ public class ToolTipBuilder {
         return addString(PART_OF_SPEECH_LABEL, partOfSpeechText);
     }
 
-    public ToolTipBuilder addRegister(Long register) {
-        String registerText = RegisterManager.getInstance().getName(register);
+    public ToolTipBuilder addRegister(RegisterDictionary register) {
+        String registerText = LocalisationManager.getInstance().getLocalisedString(register.getName());
         return addString(REGISTER_LABEL, registerText);
     }
 
@@ -159,10 +158,10 @@ public class ToolTipBuilder {
     private String buildRelationText(Map<Long, List<String>> relationsMap) {
         String relationTypeText;
         StringBuilder relationBuilder = new StringBuilder(RELATIONS_HEADER);
-        for(Map.Entry<Long, List<String>> entry : relationsMap.entrySet()) {
+        for (Map.Entry<Long, List<String>> entry : relationsMap.entrySet()) {
             relationTypeText = LocalisationManager.getInstance().getLocalisedString(entry.getKey());
             relationBuilder.append(String.format(RELATIONS_TYPE, relationTypeText));
-            for(String s : entry.getValue()){
+            for (String s : entry.getValue()) {
                 relationBuilder.append(String.format(RELATIONS_ITEM, s));
             }
         }
@@ -178,9 +177,9 @@ public class ToolTipBuilder {
         Map<Long, List<String>> relationsMap = new HashMap<>();
         Long relationTypeNameId;
 
-        for(SynsetRelation relation : relations) {
+        for (SynsetRelation relation : relations) {
             relationTypeNameId = relation.getRelationType().getName();
-            if(!relationsMap.containsKey(relationTypeNameId)) {
+            if (!relationsMap.containsKey(relationTypeNameId)) {
                 relationsMap.put(relationTypeNameId, new ArrayList<>());
             }
             relationsMap.get(relationTypeNameId).add(SynsetFormat.getText(relation.getChild()));

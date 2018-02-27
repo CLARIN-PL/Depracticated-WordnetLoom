@@ -1,6 +1,6 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.service.impl;
 
-import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
+import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -9,6 +9,9 @@ import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository
 import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceLocal;
 import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceRemote;
 
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -16,6 +19,8 @@ import javax.inject.Inject;
 import java.util.List;
 
 @Stateless
+@SecurityDomain("wordnetloom")
+@DeclareRoles({"USER", "ADMIN"})
 @Local(SynsetRelationServiceLocal.class)
 @Remote(SynsetRelationServiceRemote.class)
 public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
@@ -23,6 +28,7 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     @Inject
     private SynsetRelationRepository synsetRelationRepository;
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
     public boolean makeRelation(Synset parent, Synset child, RelationType rel) {
         SynsetRelation s = new SynsetRelation();
@@ -33,11 +39,13 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
         return true;
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
     public boolean delete(Synset parent, Synset child, RelationType relationType) {
         return synsetRelationRepository.delete(parent, child, relationType);
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
     public void delete(RelationType relationType) {
         synsetRelationRepository.delete(relationType);
@@ -56,108 +64,123 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
 //        synsetRelationRepository.dbDelete(rel);
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
     public void delete(SynsetRelation relation) {
         synsetRelationRepository.delete(relation);
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
     public void deleteAll() {
         synsetRelationRepository.deleteAll();
     }
 
+    @PermitAll
     @Override
     public List<SynsetRelation> findSubRelations(Synset synset, RelationType relationType) {
         return synsetRelationRepository.findSubRelations(synset, relationType);
     }
 
+    @PermitAll
     @Override
     public List<SynsetRelation> findUpperRelations(Synset synset, RelationType relationType) {
         return synsetRelationRepository.findUpperRelations(synset, relationType);
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
     public void deleteConnection(Synset synset) {
         synsetRelationRepository.deleteConnection(synset);
     }
 
+    @PermitAll
     @Override
     public Long findAllRelationsCount() {
         return synsetRelationRepository.findAllRelationsCount();
     }
 
+    @PermitAll
     @Override
     public Long findRelationTypeUseCount(RelationType relation) {
         return synsetRelationRepository.findRelationTypeUseCount(relation);
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
     public void move(RelationType oldRelation, RelationType newRelation) {
         synsetRelationRepository.move(oldRelation, newRelation);
     }
 
+    @PermitAll
     @Override
     public boolean checkRelationExists(Synset parent, Synset child, RelationType relation) {
         return synsetRelationRepository.checkRelationExists(parent, child, relation);
     }
 
+    @PermitAll
     @Override
-    public List<RelationType> findtRelationTypesBySynset(Synset synset) {
+    public List<RelationType> findRelationTypesBySynset(Synset synset) {
         return synsetRelationRepository.findtRelationTypesBySynset(synset);
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
     @Override
     public int deleteImproper() {
         return synsetRelationRepository.deleteImproper();
     }
 
+    @PermitAll
     @Override
     public List<SynsetRelation> findRelations(Synset parent, Synset child, RelationType relation) {
         return synsetRelationRepository.findRelations(parent, child, relation);
     }
 
+    @PermitAll
     @Override
     public SynsetRelation findRelation(Synset parent, Synset child, RelationType relation) {
         return synsetRelationRepository.findRelation(parent, child, relation);
     }
 
+    @PermitAll
     @Override
     public Long findRelationCountBySynset(Synset synset) {
         return synsetRelationRepository.findRelationCountBySynset(synset);
     }
 
+    @PermitAll
     @Override
     public List<Long> findTopPath(Synset synset, Long rtype) {
         return synsetRelationRepository.findTopPath(synset, rtype);
     }
 
+    @PermitAll
     @Override
     public List<Synset> findTopPathInSynsets(Synset synset, Long rtype) {
         return synsetRelationRepository.findTopPathInSynsets(synset, rtype);
     }
 
-//    @Override
-//    public List<DataEntry> findTopPathInSynsets(Synset synset, Long rtype){
-//        return synsetRelationRepository.findTopPathInSynsets(synset, rtype);
-//    }
-
+    @PermitAll
     @Override
     public List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
         return synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons, directions);
     }
 
+    @PermitAll
     @Override
     public List<SynsetRelation> findRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
-        return synsetRelationRepository.findRelationsWhereSynsetIsParent(synset,lexicons, directions);
+        return synsetRelationRepository.findRelationsWhereSynsetIsParent(synset, lexicons, directions);
     }
 
+    @PermitAll
     @Override
-    public List<SynsetRelation> findSimpleRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons){
+    public List<SynsetRelation> findSimpleRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons) {
         return synsetRelationRepository.findSimpleRelationsWhereSynsetIsParent(synset, lexicons);
     }
 
+    @PermitAll
     @Override
-    public List<SynsetRelation> findSimpleRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons){
+    public List<SynsetRelation> findSimpleRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons) {
         return synsetRelationRepository.findSimpleRelationsWhereSynsetIsChild(synset, lexicons);
     }
 }

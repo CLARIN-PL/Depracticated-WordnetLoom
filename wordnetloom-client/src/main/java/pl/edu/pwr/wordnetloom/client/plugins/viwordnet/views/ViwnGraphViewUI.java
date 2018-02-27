@@ -28,7 +28,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.control.ViwnGraphViewModalGraphMouse;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.ViwnEdgeStrokeTransformer;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.ViwnVertexToolTipTransformer;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.layout.ViwnLayout2;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.layout.ViwnLayout;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.AstrideLabelRenderer;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexFillColor;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexRenderer;
@@ -68,7 +68,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
     private final HashMap<Long, ViwnNodeSynset> cache = new HashMap<>();
 
-    private final ViwnLayout2 layout = new ViwnLayout2(forest);
+    private final ViwnLayout layout = new ViwnLayout(forest);
 
     private VisualizationViewer<ViwnNode, ViwnEdge> vv = null;
 

@@ -70,7 +70,7 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
 
     public List<SenseRelation> findRelations(Sense parent, Sense child, RelationType relationType) {
         if (relationType == null) {
-            return getEntityManager().createQuery("FROM SenseRelation s WHERE s.child = :child AND s.parent = :parent", SenseRelation.class)
+            return getEntityManager().createQuery("SELECT s FROM SenseRelation s WHERE s.child = :child AND s.parent = :parent", SenseRelation.class)
                     .setParameter("parent", parent)
                     .setParameter("child", child)
                     .getResultList();
@@ -84,7 +84,7 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
 
     public SenseRelation findRelation(Sense parent, Sense child, RelationType relationType) {
         if (relationType == null) {
-            return getEntityManager().createQuery("FROM SenseRelation s WHERE s.child = :child AND s.parent = :parent", SenseRelation.class)
+            return getEntityManager().createQuery("SELECT s FROM SenseRelation s WHERE s.child = :child AND s.parent = :parent", SenseRelation.class)
                     .setParameter("parent", parent)
                     .setParameter("child", child)
                     .getSingleResult();

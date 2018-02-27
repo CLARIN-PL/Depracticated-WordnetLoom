@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.dictionary.servcie;
+package pl.edu.pwr.wordnetloom.dictionary.service;
 
 public interface DictionaryServiceLocal extends DictionaryServiceRemote {
 }

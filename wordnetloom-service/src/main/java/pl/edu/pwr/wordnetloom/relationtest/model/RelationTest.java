@@ -32,6 +32,13 @@ public class RelationTest extends GenericEntity {
     @JoinColumn(name = "relation_type_id", nullable = false)
     private RelationType relationType;
 
+    public RelationTest() {
+    }
+
+    public RelationTest(RelationType relationType) {
+        this.relationType = relationType;
+    }
+
     public String getTest() {
         return test;
     }
@@ -70,5 +77,10 @@ public class RelationTest extends GenericEntity {
 
     public void setRelationType(RelationType relationType) {
         this.relationType = relationType;
+    }
+
+    @Override
+    public String toString() {
+        return  test;
     }
 }

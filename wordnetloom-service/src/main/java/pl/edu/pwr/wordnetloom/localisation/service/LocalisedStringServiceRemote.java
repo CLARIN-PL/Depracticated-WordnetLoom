@@ -16,7 +16,5 @@ public interface LocalisedStringServiceRemote {
 
     Map<Long, String> findAllByLanguageAsMap(String language);
 
-    Map<Long, String> findAllRegisterTypes(String language);
-
     void update(LocalisedString ls);
 }

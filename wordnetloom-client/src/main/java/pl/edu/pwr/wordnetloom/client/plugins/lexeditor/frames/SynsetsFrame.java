@@ -21,24 +21,21 @@ import java.awt.event.ActionListener;
 
 public class SynsetsFrame extends DialogWindow implements ActionListener {
 
-    private SynsetCriteria criteriaPanel;
-    private LazyScrollPane synsetsScrollPane;
-    private ToolTipList synsetsList;
-    private DefaultListModel<Synset> listModel;
+    private static Sense sense;
+    private final SynsetCriteria criteriaPanel;
+    private final LazyScrollPane synsetsScrollPane;
+    private final ToolTipList synsetsList;
 
     //TODO zrobić listę synsetów jako odzielny obiekt
-
-    private MButton searchButton;
-
-    private MButton addToNewSynsetButton;
-    private MButton addToSelectedButton;
-    private MButton cancelButton;
-
+    private final DefaultListModel<Synset> listModel;
+    private final MButton searchButton;
+    private final MButton addToNewSynsetButton;
+    private final MButton addToSelectedButton;
+    private final MButton cancelButton;
     private Synset selectedSynset;
-    private static Sense sense;
 
 
-    public SynsetsFrame(Workbench workbench, WebFrame webFrame, Sense sense){
+    public SynsetsFrame(Workbench workbench, WebFrame webFrame, Sense sense) {
         super(webFrame, "Wybieranie synsetu", 600, 500); //TODO dorobić etykietę
         this.sense = sense;
 
@@ -90,13 +87,13 @@ public class SynsetsFrame extends DialogWindow implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == addToNewSynsetButton) {
+        if (e.getSource() == addToNewSynsetButton) {
             addSenseToNewSynset();
-        } else if(e.getSource() == addToSelectedButton) {
+        } else if (e.getSource() == addToSelectedButton) {
             addSenseToSelectedSynset();
-        } else if(e.getSource() == cancelButton) {
+        } else if (e.getSource() == cancelButton) {
             setVisible(false);
-        } else if(e.getSource() == searchButton) {
+        } else if (e.getSource() == searchButton) {
             search();
         }
     }
@@ -104,8 +101,10 @@ public class SynsetsFrame extends DialogWindow implements ActionListener {
     private void addSenseToNewSynset() {
         assert sense != null;
         Synset synset = new Synset();
-        selectedSynset = RemoteService.synsetRemote.updateSynset(synset);
-        RemoteService.synsetRemote.addSenseToSynset(sense,selectedSynset);
+
+        selectedSynset = RemoteService.synsetRemote.save(synset);
+        RemoteService.synsetRemote.addSenseToSynset(sense, selectedSynset);
+
         setVisible(false);
     }
 
@@ -125,7 +124,7 @@ public class SynsetsFrame extends DialogWindow implements ActionListener {
                 listModel.clear();
                 SynsetCriteriaDTO dto = criteriaPanel.getSynsetCriteria();
                 java.util.List<Synset> synsets = RemoteService.synsetRemote.findSynsetsByCriteria(dto);
-                for(Synset synset : synsets) {
+                for (Synset synset : synsets) {
                     listModel.addElement(synset);
                 }
                 synsetsList.updateUI();
