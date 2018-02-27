@@ -42,13 +42,24 @@ public class V2_0__ImportDannetWordnetSenses implements JdbcMigration {
         PreparedStatement statement = connection.prepareStatement(QUERY);
         List<Sense> senses = new ArrayList<>();
         ResultSet rs = statement.executeQuery();
+
+        Map<String, Integer> variants = new HashMap<>();
+
         while (rs.next()){
 
             Long wid = rs.getLong("id");
             Long syn = rs.getLong("syn");
             Long pos = getPos(rs.getInt("pos"));
+            int variant = 1;
 
-            Sense sen = new Sense(pos, wid, new Long("888"+syn), 0, 1); //TODO: synset_position
+            if(variants.containsKey(wid+"-"+pos)){
+                variant = variants.get(wid+"-"+pos) + 1;
+                variants.replace(wid+"-"+pos, variant);
+            }else{
+                variants.put(wid+"-"+pos, variant);
+            }
+
+            Sense sen = new Sense(pos, wid, new Long("888"+syn), 0, variant); //TODO: synset_position
             senses.add(sen);
 
         }

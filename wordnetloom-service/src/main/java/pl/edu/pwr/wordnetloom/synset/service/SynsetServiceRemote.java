@@ -3,8 +3,8 @@ package pl.edu.pwr.wordnetloom.synset.service;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 
 import java.util.Collection;
@@ -17,23 +17,29 @@ public interface SynsetServiceRemote {
 
     boolean delete(Synset synset);
 
+    void deleteSensesFromSynset(Collection<Sense> senses, Synset synset);
+
     Synset findSynsetBySense(Sense sense, List<Long> lexicons);
+
+    Synset fetchSynset(Long synsetId);
+
+    Synset findById(Long id);
+
+    List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria);
 
     Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons, NodeDirection[] directions);
 
     DataEntry findSynsetDataEntry(Long synsetId, List<Long> lexicons);
 
-    Synset updateSynset(Synset synset);
+    Synset save(Synset synset);
 
-    void addSenseToSynset(Sense unit, Synset synset);
-
-    void deleteSensesFromSynset(Collection<Sense> senses, Synset synset);
-
-    List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria);
+    Synset addSenseToSynset(Sense unit, Synset synset);
 
     int getCountSynsetsByCriteria(SynsetCriteriaDTO criteria);
 
-    Synset fetchSynset(Long synsetId);
+    SynsetAttributes save(SynsetAttributes attributes);
+
+    SynsetAttributes addSynsetAttribute(Long synsetId, SynsetAttributes attributes);
 
     SynsetAttributes fetchSynsetAttributes(Long synsetId);
 }

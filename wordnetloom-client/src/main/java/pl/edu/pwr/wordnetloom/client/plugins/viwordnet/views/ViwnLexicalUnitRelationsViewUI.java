@@ -111,7 +111,6 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
             @Override
             protected String doInBackground() throws Exception {
-//                relations = RemoteService.senseRelationRemote.findFullRelations((Sense)object);
                 root_from.removeAllChildren();
                 root_to.removeAllChildren();
                 List<SenseRelation> relationsFrom =  RemoteService.senseRelationRemote.findRelations((Sense)object, null, true, false);

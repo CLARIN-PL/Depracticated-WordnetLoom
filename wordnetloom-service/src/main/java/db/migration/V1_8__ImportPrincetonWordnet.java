@@ -30,6 +30,7 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
         AtomicLong synsetId = new AtomicLong(1);
         AtomicLong senseId = new AtomicLong(1);
         AtomicLong wordId = new AtomicLong(1);
+
         AtomicLong loclaizedStringsId = new AtomicLong(8);
         AtomicLong relTypId = new AtomicLong(1);
 
@@ -156,13 +157,14 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
 
 
     private void saveSynsets(List<pl.edu.pwr.wordnetloom.synset.model.Synset> synsets) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.synset (id, split, lexicon_id) VALUES(?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.synset (id, split, lexicon_id, abstract) VALUES(?, ?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
         for (pl.edu.pwr.wordnetloom.synset.model.Synset synset : synsets) {
             insert.setLong(1, synset.getId());
             insert.setInt(2, synset.getSplit());
             insert.setLong(3, synset.getLexicon().getId());
+            insert.setBoolean(4, false);
             insert.executeUpdate();
         }
     }
@@ -203,7 +205,9 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
 
     private void saveSense(List<Sense> senses) throws SQLException {
         String INSERT_QUERY = "INSERT INTO wordnet.sense (id, word_id, lexicon_id, part_of_speech_id, variant, synset_id, synset_position, domain_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+        String INSERT_QUERY_SA = "INSERT INTO wordnet.sense_attributes (sense_id) VALUES(?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
+        PreparedStatement insertSa = connection.prepareStatement(INSERT_QUERY_SA);
 
         for (Sense se : senses) {
             insert.setLong(1, se.id);
@@ -215,6 +219,9 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
             insert.setInt(7, se.synset_position);
             insert.setLong(8, 1l);
             insert.executeUpdate();
+
+            insertSa.setLong(1, se.id);
+            insertSa.executeUpdate();
         }
     }
 
@@ -231,14 +238,13 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
     }
 
     private void saveSynsetAttributes(List<SynsetAttributes> attributes) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (synset_id, definition, princeton_id, abstract) VALUES(?, ?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (synset_id, definition, princeton_id) VALUES(?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
         for (SynsetAttributes a : attributes) {
             insert.setLong(1, a.getId());
             insert.setString(2, a.getDefinition());
             insert.setString(3, a.getPrincetonId().replace("eng-10-", ""));
-            insert.setBoolean(4, false);
             insert.executeUpdate();
         }
     }

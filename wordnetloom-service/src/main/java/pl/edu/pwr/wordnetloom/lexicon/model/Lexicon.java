@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.lexicon.model;
 
+import org.hibernate.envers.Audited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 
 import javax.persistence.Column;
@@ -8,6 +9,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+@Audited
 @Entity
 @Table(name = "lexicon")
 public class Lexicon extends GenericEntity {

@@ -1,5 +1,7 @@
 package pl.edu.pwr.wordnetloom.user.model;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.validator.constraints.Email;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 
@@ -7,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+@Audited
 @Entity
 @Table(name = "users")
 public class User extends GenericEntity {
@@ -22,14 +25,17 @@ public class User extends GenericEntity {
     @NotNull
     private String email;
 
+    @NotAudited
     @NotNull
     @Size(min = 8, max = 64)
     private String password;
 
+    @NotAudited
     @NotNull
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @NotAudited
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserSettings settings;
 

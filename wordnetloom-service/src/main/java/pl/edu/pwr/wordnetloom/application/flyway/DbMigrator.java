@@ -2,11 +2,13 @@ package pl.edu.pwr.wordnetloom.application.flyway;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
+import org.hibernate.envers.configuration.internal.metadata.EntityXmlMappingData;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SynsetCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SynsetFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -11,7 +13,6 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
 import se.datadosen.component.RiverLayout;
@@ -21,27 +22,28 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SynsetViewUI extends AbstractViewUI implements ActionListener, ListSelectionListener, KeyListener {
 
     private final int LIMIT = 50;
+
     private final MButton btnSearch = MButton.buildSearchButton()
             .withActionListener(this)
             .withMnemonic(KeyEvent.VK_K);
+
     private final MButton btnReset = MButton.buildCancelButton()
             .withCaption(Labels.CLEAR)
             .withActionListener(this)
             .withMnemonic(KeyEvent.VK_C);
+
     private SynsetCriteria criteria;
     private SynsetCriteriaDTO lastCriteriaDTO;
     private ToolTipList synsetList;
     private LazyScrollPane scrollPane;
-    private JLabel infoLabel;
-    private int numMatchedSynsets = -1;
+    private WebLabel infoLabel;
+    private int allMatchedSynsetCount = -1;
     private DefaultListModel<Synset> synsetListModel = new DefaultListModel<>();
-    private Sense lastSelectedValue;
 
     private void setInfoLabelText(int numLoadObjects, int numAllObjects) {
         final String INFO_LABEL_FORMAT = "%s %d/%d";
@@ -54,11 +56,11 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
 
     @Override
     protected void initialize(WebPanel content) {
-        initilizeComponents();
+        initializeComponents();
         content.setLayout(new RiverLayout());
 
         int scrollHeight = 220;
-        JScrollPane scroll = new JScrollPane(criteria);
+        WebScrollPane scroll = new WebScrollPane(criteria);
         scroll.setMaximumSize(new Dimension(0, scrollHeight));
         scroll.setMinimumSize(new Dimension(0, scrollHeight));
         scroll.setPreferredSize(new Dimension(0, scrollHeight));
@@ -72,7 +74,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         content.add("br left", infoLabel);
     }
 
-    private void initilizeComponents() {
+    private void initializeComponents() {
         criteria = new SynsetCriteria();
         criteria.getDomainComboBox().addActionListener(this);
         criteria.getPartsOfSpeechComboBox().addActionListener(this);
@@ -81,7 +83,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         scrollPane.setHorizontalScrolling(false);
         scrollPane.setScrollListener((offset, limit) -> loadMoreSynsets());
 
-        infoLabel = new JLabel();
+        infoLabel = new WebLabel();
         infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "0"));
     }
 
@@ -98,80 +100,27 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     }
 
     public void refreshData() {
-        List<Long> lexicons = new ArrayList<>();
-
-        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-
-            @Override
-            protected Void doInBackground() throws Exception {
-                workbench.setBusy(true);
-                synsetListModel.clear();
-                scrollPane.reset();
-                SynsetCriteriaDTO dto = criteria.getSynsetCriteria();
-                dto.setLimit(LIMIT);
-                dto.setOffset(synsetListModel.getSize());
-                numMatchedSynsets = RemoteService.synsetRemote.getCountSynsetsByCriteria(dto);
-                lastCriteriaDTO = dto;
-                loadAndAddSynsets(dto);
-                if (!synsetListModel.isEmpty()) {
-                    scrollPane.setEnd(false);
-                }
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                workbench.setBusy(false);
-                synsetList.updateUI();
-            }
-        };
-        worker.execute();
-    }
-
-    private void loadAndAddSynsets(SynsetCriteriaDTO criteriaDTO) {
-        lastCriteriaDTO = criteriaDTO;
-        List<Synset> synsets = RemoteService.synsetRemote.findSynsetsByCriteria(criteriaDTO);
-        for (Synset synset : synsets) {
-            synsetListModel.addElement(synset);
-        }
-        if (!synsets.isEmpty()) {
-            synsetList.updateUI();
-        }
-        setInfoLabelText(synsetListModel.getSize(), numMatchedSynsets); //TODO wstawić tutaj liczbę wszystkich synsetów
+        new SynsetDownloaderWorker(true).execute();
     }
 
     public void loadMoreSynsets() {
-        //TODO zrobić pobieranie synsetów i dodawanie
-        lastCriteriaDTO.setOffset(synsetListModel.getSize());
-        loadAndAddSynsets(lastCriteriaDTO);
+        new SynsetDownloaderWorker(false).execute();
     }
 
     @Override
     public void valueChanged(ListSelectionEvent event) {
-        //TODO odkomencić to
-        System.out.println("kliknięto synset");
         if (event == null || event.getValueIsAdjusting()) {
             return;
         }
         int selectedIndex = synsetList.getSelectedIndex();
-        Synset synset = synsetListModel.getElementAt(selectedIndex);
-        listeners.notifyAllListeners(synsetList.getSelectedIndices().length == 1 ? synset : null);
-//        if (event != null && event.getValueIsAdjusting()) {
-//            return;
-//        }
-//        if (event == null) {
-//            return;
-//        }
-//
-//        int returnValue = synsetList.getSelectedIndex();
-//        Sense unit = senseListModel.getObjectAt(returnValue);
-//        synsetList.setEnabled(false);
-//        listeners.notifyAllListeners(synsetList.getSelectedIndices().length == 1 ? unit : null);
-//        synsetList.setEnabled(true);
-//
-//        SwingUtilities.invokeLater(() -> {
-//            synsetList.grabFocus();
-//        });
+        if(isCorrectSelectedIndex(selectedIndex)){
+            Synset synset = synsetListModel.getElementAt(selectedIndex);
+            listeners.notifyAllListeners(synsetList.getSelectedIndices().length == 1 ? synset : null);
+        }
+    }
+
+    private boolean isCorrectSelectedIndex(int selectedIndex) {
+        return selectedIndex >= 0 && selectedIndex < synsetListModel.size();
     }
 
     @Override
@@ -197,13 +146,65 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         }
     }
 
-    private class SynsetListCellRenderer extends JLabel implements ListCellRenderer {
+    private class SynsetDownloaderWorker extends SwingWorker<Void, Void> {
+
+        private boolean isNewCriteria;
+
+        SynsetDownloaderWorker(boolean isNewCriteria) {
+            this.isNewCriteria = isNewCriteria;
+        }
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            workbench.setBusy(true);
+
+            if(isNewCriteria){
+                resetSynsetList();
+                lastCriteriaDTO = criteria.getSynsetCriteria();
+                lastCriteriaDTO.setLimit(LIMIT);
+                // get number of all synsets matched to criteria
+                allMatchedSynsetCount = RemoteService.synsetRemote.getCountSynsetsByCriteria(lastCriteriaDTO);
+            }
+            lastCriteriaDTO.setOffset(synsetListModel.getSize());
+            loadAndAddSynsets(lastCriteriaDTO);
+            return null;
+        }
+
+        private void resetSynsetList() {
+            synsetListModel.clear();
+            scrollPane.reset();
+        }
+
+        private void loadAndAddSynsets(SynsetCriteriaDTO criteriaDTO) {
+            lastCriteriaDTO = criteriaDTO;
+            List<Synset> synsets = RemoteService.synsetRemote.findSynsetsByCriteria(criteriaDTO);
+            addElementsToList(synsets);
+            scrollPane.setEnd(synsets.isEmpty() || synsets.size() < criteriaDTO.getLimit());
+        }
+
+        private void addElementsToList(List<Synset> synsets) {
+            for (Synset synset : synsets) {
+                synsetListModel.addElement(synset);
+            }
+        }
+
+        @Override
+        protected void done(){
+            synsetList.updateUI();
+            setInfoLabelText(synsetListModel.getSize(), allMatchedSynsetCount);
+            workbench.setBusy(false);
+        }
+    }
+
+    private class SynsetListCellRenderer extends WebLabel implements ListCellRenderer {
         private final String FONT_NAME = "Courier New";
         private final int FONT_SIZE = 14;
         private final Font FONT = new Font(FONT_NAME, Font.PLAIN, FONT_SIZE);
 
         SynsetListCellRenderer() {
+            this.setDrawShade(false);
             this.setFont(FONT);
+            this.setMargin(1,2,1,2);
         }
 
         @Override

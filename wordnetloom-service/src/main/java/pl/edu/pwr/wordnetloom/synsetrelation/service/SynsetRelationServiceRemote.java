@@ -1,6 +1,5 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.service;
 
-import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -34,7 +33,7 @@ public interface SynsetRelationServiceRemote {
 
     boolean checkRelationExists(Synset parent, Synset child, RelationType relation);
 
-    List<RelationType> findtRelationTypesBySynset(Synset synset);
+    List<RelationType> findRelationTypesBySynset(Synset synset);
 
     int deleteImproper();
 

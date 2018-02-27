@@ -9,6 +9,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 @Stateless
 public class UserRepository extends GenericRepository<User> {
@@ -26,9 +27,13 @@ public class UserRepository extends GenericRepository<User> {
     }
 
     public User findUserByEmail(String email) {
-        return em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
-                .setParameter("email", email)
-                .getSingleResult();
+       try {
+           return em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
+                   .setParameter("email", email)
+                   .getSingleResult();
+       } catch (NoResultException ex){
+           return null;
+       }
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)

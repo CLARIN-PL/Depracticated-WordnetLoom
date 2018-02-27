@@ -10,6 +10,7 @@ import com.alee.laf.text.WebFormattedTextField;
 import com.google.common.eventbus.Subscribe;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
+import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.events.ShowRelationTestsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.events.ShowRelationTypeEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window.PartOfSpeechWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window.ReverseRelationWindow;
@@ -96,6 +97,7 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
     @Subscribe
     public void onShowRelationType(ShowRelationTypeEvent event) {
         currentRelation = RemoteService.relationTypeRemote.findByIdWithDependencies(event.getRelationType().getId());
+        Application.eventBus.post(new ShowRelationTestsEvent(currentRelation));
         bind(currentRelation);
     }
 

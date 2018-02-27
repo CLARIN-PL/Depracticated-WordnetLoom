@@ -1,11 +1,13 @@
 package pl.edu.pwr.wordnetloom.domain.model;
 
+import org.hibernate.envers.Audited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+@Audited
 @Entity
 @Table(name = "domain")
 public class Domain extends GenericEntity {

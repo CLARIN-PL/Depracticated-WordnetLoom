@@ -1,23 +1,16 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
 import com.alee.laf.panel.WebPanel;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RegisterManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
-import pl.edu.pwr.wordnetloom.domain.model.Domain;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -27,7 +20,6 @@ import java.awt.event.ActionListener;
 /**
  * klasa opisujacy wyglada okienka z własciwoścami danej jednostki leksykalnej
  *
- * @author Max
  */
 public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Loggable {
 
@@ -108,7 +100,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
 //                    variant = LexicalDA.getAvaibleVariantNumber(lemma, pos, LexiconManager.getInstance().getUserChosenLexiconsIds());
 //                }
                 Sense sense = editPanel.updateAndGetSense();
-                RemoteService.senseRemote.persist(sense);
+                RemoteService.senseRemote.save(sense);
                 refreshData(sense);
 
 //                if (!LexicalDA.updateUnit(editPanel.getSense(), lemma,
@@ -140,16 +132,6 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
                 DialogBox.showError(Messages.ERROR_WRONG_NUMBER_FORMAT);
             }
         }
-    }
-
-    protected String transformExamplesToString() {
-        Object[] examples = editPanel.getExamplesModel().toArray();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < examples.length; i++) {
-            sb.append(examples[i]);
-            sb.append("|");
-        }
-        return sb.toString();
     }
 
     @Override

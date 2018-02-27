@@ -16,16 +16,16 @@ public class DictionaryRepository extends GenericRepository<Dictionary> {
     EntityManager em;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void saveOrUpdate(Dictionary dic) {
+    public Dictionary save(Dictionary dic) {
         if (null != dic.getId()) {
-            em.merge(dic);
-        } else {
-            em.persist(dic);
+           return  em.merge(dic);
         }
+        em.persist(dic);
+        return  dic;
     }
 
     public <T> List<T> findDictionaryByClass(Class<T> clazz) {
-        return null;
+        return getEntityManager().createQuery("FROM "+ clazz.getName()).getResultList();
     }
 
     public List<String> findAllDictionaryNames() {

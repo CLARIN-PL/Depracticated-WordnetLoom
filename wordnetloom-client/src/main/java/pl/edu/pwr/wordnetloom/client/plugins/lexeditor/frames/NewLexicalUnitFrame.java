@@ -3,6 +3,8 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
@@ -16,8 +18,11 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
+import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
+import javax.ejb.Remote;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -49,7 +54,8 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         pack();
     }
 
-    public Sense saveAndReturnNewSense() {
+    public Pair<Sense,SenseAttributes> saveAndReturnNewSense() {
+
         Sense newUnit = new Sense();
 
         newUnit.setWord(new Word(editPanel.getLemma().getText()));
@@ -61,47 +67,36 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         Domain domain = editPanel.getDomain().getEntity();
         newUnit.setDomain(domain);
 
-//        int variant = RemoteUtils.lexicalUnitRemote.dbGetNextVariant(editPanel.getLemma().getText(), pos);
-//        newUnit.setSenseNumber(variant);
-//
-//        newUnit = LexicalDA.saveUnitRefreshID(newUnit);
-//
-//        if (editPanel.getDefinition().getText() != null && !editPanel.getDefinition().getText().isEmpty()) {
-//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.DEFINITION, editPanel.getDefinition().getText());
-//        }
-//        if (editPanel.getComment().getText() != null && !editPanel.getComment().getText().isEmpty()) {
-//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.COMMENT, editPanel.getComment().getText());
-//        }
-//        if (editPanel.getRegister().getSelectedItem().toString() != null) {
-//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.REGISTER, editPanel.getRegister().getSelectedItem().toString());
-//        }
-//        String examples = trasfotmExamplesToString(editPanel.getExamplesModel().toArray());
-//        if (examples != null && !examples.isEmpty()) {
-//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.USE_CASES, examples);
-//        }
-//        if (editPanel.getLink().getText() != null && !editPanel.getLink().getText().isEmpty()) {
-//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSenseAttribute(newUnit, Sense.LINK, editPanel.getLink().getText());
-//        }
-//        if (editPanel.getComment().getText() != null && !editPanel.getComment().getText().isEmpty()) {
-//            RemoteUtils.trackerRemote.insertedLexicalUnit(newUnit, editPanel.getComment().getText(), PanelWorkbench.getOwnerFromConfigManager());
-//        }
-        return newUnit;
-    }
+        SenseAttributes senseAttributes = new SenseAttributes();
+        senseAttributes.setOwner(RemoteConnectionProvider.getInstance().getUser());
 
-    private String trasfotmExamplesToString(final Object[] examples) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < examples.length; i++) {
-            sb.append(examples[i]);
-            sb.append("|");
+        if (editPanel.getDefinition().getText() != null && !editPanel.getDefinition().getText().isEmpty()) {
+            senseAttributes.setDefinition(editPanel.getDefinition().getText());
         }
-        return sb.toString();
+
+        if (editPanel.getComment().getText() != null && !editPanel.getComment().getText().isEmpty()) {
+            senseAttributes.setComment(editPanel.getComment().getText());
+        }
+
+        if (editPanel.getRegister().getEntity() != null) {
+           senseAttributes.setRegister(editPanel.getRegister().getEntity());
+        }
+
+        for(Object example : editPanel.getExamplesModel().toArray()){
+            senseAttributes.addExample((SenseExample) example);
+        }
+
+        if (editPanel.getLink().getText() != null && !editPanel.getLink().getText().isEmpty()) {
+            senseAttributes.setLink(editPanel.getLink().getText());
+        }
+        return new Pair<>(newUnit, senseAttributes);
     }
 
-    static public Sense showModal(Workbench workbench, PartOfSpeech newPos) {
+    static public Pair<Sense, SenseAttributes> showModal(Workbench workbench, PartOfSpeech newPos) {
         return showModal(workbench, workbench.getFrame(), null, newPos, DomainManager.getInstance().getById(0));
     }
 
-    static public Sense showModal(Workbench workbench, String word, PartOfSpeech newPos) {
+    static public Pair<Sense, SenseAttributes> showModal(Workbench workbench, String word, PartOfSpeech newPos) {
         return showModal(workbench, workbench.getFrame(), word, newPos, DomainManager.getInstance().getById(0));
     }
 
@@ -115,11 +110,10 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
      * @param domain
      * @return nowa jednostka lub null gdy anulowano
      */
-    static public Sense showModal(Workbench workbench, WebFrame frame,
+    static public Pair<Sense, SenseAttributes> showModal(Workbench workbench, WebFrame frame,
                                   String word, PartOfSpeech newPos, Domain domain) {
 
         NewLexicalUnitFrame modalFrame = new NewLexicalUnitFrame(workbench, frame);
-//        modalFrame.editPanel.refreshData();
 
         modalFrame.editPanel.getLexicon().setSelectedIndex(1);
         if (word != null) {
@@ -143,13 +137,13 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         modalFrame.editPanel.getRegister().setSelectedItem(RegisterTypes.OG);
 
         modalFrame.setVisible(true);
-        Sense newUnit = null;
+        Pair<Sense, SenseAttributes> newUnit = null;
+
         if (modalFrame.wasAddClicked) {
             newUnit = modalFrame.saveAndReturnNewSense();
         }
 
         modalFrame.dispose();
-        modalFrame = null;
         return newUnit;
     }
 

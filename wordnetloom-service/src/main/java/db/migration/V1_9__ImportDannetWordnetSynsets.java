@@ -104,6 +104,7 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
             synset.setId(new Long("888"+id));
             synset.setLexicon(l);
             synset.setSplit(1);
+            synset.setAbstract(false);
 
             SynsetAttributes sa = new SynsetAttributes();
             sa.setId(new Long("888"+id));
@@ -137,13 +138,14 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
     }
     
     private void saveSynsets(List<Synset> synsets) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.synset (id, split, lexicon_id) VALUES(?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.synset (id, split, lexicon_id, abstract) VALUES(?, ?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
         for (Synset synset : synsets) {
             insert.setLong(1, synset.getId());
             insert.setInt(2, synset.getSplit());
             insert.setLong(3, synset.getLexicon().getId());
+            insert.setBoolean(4, synset.getAbstract());
             insert.executeUpdate();
         }
     }
@@ -171,14 +173,13 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
     }
 
     private void saveSynsetAttributes(List<SynsetAttributes> attributes) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (synset_id, comment, definition, abstract) VALUES(?, ?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (synset_id, comment, definition) VALUES(?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
         for (SynsetAttributes a : attributes) {
             insert.setLong(1, a.getId());
             insert.setString(2, a.getComment());
             insert.setString(3, a.getDefinition());
-            insert.setBoolean(4, false);
             insert.executeUpdate();
         }
     }
@@ -200,26 +201,6 @@ public class V1_9__ImportDannetWordnetSynsets implements JdbcMigration {
         public Feature(Long syn_set_id, String ontological_type) {
             this.syn_set_id = syn_set_id;
             this.ontological_type = ontological_type;
-        }
-    }
-
-    private class Allowed {
-        Long id;
-        Long value;
-
-        public Allowed(Long id, Long value) {
-            this.id = id;
-            this.value = value;
-        }
-    }
-
-    private class LocalizedString {
-        Long id;
-        String value;
-
-        public LocalizedString(Long id, String value) {
-            this.id = id;
-            this.value = value;
         }
     }
 }
