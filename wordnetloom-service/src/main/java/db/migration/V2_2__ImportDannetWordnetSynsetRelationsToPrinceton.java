@@ -64,7 +64,7 @@ public class V2_2__ImportDannetWordnetSynsetRelationsToPrinceton implements Jdbc
 
     private Set<SynsetRelation> getRelations(Map<String,Long> relations,  Map<String,String> mappings ) throws SQLException {
         Set<SynsetRelation> synsetRelations = new HashSet<>();
-        String QUERY = "SELECT r.key as keyId, r.syn_set_id as synset, r.relation_type_name as rel FROM dannet.alignments r";
+        String QUERY = "SELECT r.key as keyId, r.syn_set_id as synset, r.relation_type_name as rel FROM dannet.alignments r WHERE r.source_id = 'wordnet30'";
         PreparedStatement statement = connection.prepareStatement(QUERY);
 
         Map<String,Long> prince = findAllSynsetPrinceton();
@@ -102,7 +102,7 @@ public class V2_2__ImportDannetWordnetSynsetRelationsToPrinceton implements Jdbc
     }
 
     private void saveRelType(List<RelTyp> relTyps) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.relation_type (id, auto_reverse, display_text_id, name_id, description_id, relation_argument, short_display_text_id, color, node_position) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.relation_type (id, auto_reverse, display_text_id, name_id, description_id, relation_argument, short_display_text_id, color, node_position, multilingual) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
         for (RelTyp rt : relTyps) {
@@ -115,6 +115,7 @@ public class V2_2__ImportDannetWordnetSynsetRelationsToPrinceton implements Jdbc
             insert.setLong(7, rt.shortDispId);
             insert.setString(8, rt.color);
             insert.setString(9, rt.node_position);
+            insert.setBoolean(10, rt.multilingual);
             insert.executeUpdate();
         }
         connection.commit();
@@ -247,8 +248,9 @@ public class V2_2__ImportDannetWordnetSynsetRelationsToPrinceton implements Jdbc
         Long dispTextId;
         Long shortDispId;
         Long rev;
-        String color = "#000000";
+        String color = "#000000";  //TODO: Set defined colour for Equivalence Relations 
         String node_position = "RIGHT";
+        Boolean multilingual = true;
 
         public RelTyp(Long id, Long nameId, Long descId, Long dispTextId, Long shortDispId) {
             this.id = id;
