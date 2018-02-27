@@ -155,7 +155,7 @@ create table tracker_synset_examples (
   REV integer not null,
   REVTYPE tinyint,
   example varchar(255),
-  synset_attribute_id bigint,
+  synset_attributes_id bigint,
   primary key (id, REV)
 );
 

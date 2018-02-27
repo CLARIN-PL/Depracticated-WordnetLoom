@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
 import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -37,12 +38,6 @@ public class TestEditorWindow extends DialogWindow implements ActionListener {
 
         lastAPos = test.getSenseApartOfSpeech();
         lastBPos = test.getSenseBpartOfSpeech();
-        /*if(lastAPos == null){
-            lastAPos = PartOfSpeechManager.getInstance().getById(1L);
-        }
-        if(lastBPos == null){
-            lastBPos = PartOfSpeechManager.getInstance().getById(1L);
-        }*/
         lastText = test.getTest();
 
         setResizable(false);
@@ -146,16 +141,14 @@ public class TestEditorWindow extends DialogWindow implements ActionListener {
 
 class PartOfSpeechCellRenderer implements ListCellRenderer {
     protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-    private final String locale;
 
     public PartOfSpeechCellRenderer() {
         super();
-        locale = RemoteConnectionProvider.getInstance().getLanguage();
     }
 
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        //  defaultRenderer.setText(((PartOfSpeech) value).getName(locale));
+        defaultRenderer.setText(LocalisationManager.getInstance().getLocalisedString(((PartOfSpeech) value).getName()));
         return defaultRenderer;
     }
 }

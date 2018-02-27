@@ -68,11 +68,11 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         content.setLayout(new RiverLayout());
 
-        definitionValue = new MTextArea(Labels.VALUE_UNKNOWN);
+        definitionValue = new MTextArea("");
         definitionValue.addCaretListener(this);
         definitionValue.setRows(3);
 
-        commentValue = new MTextArea(Labels.VALUE_UNKNOWN);
+        commentValue = new MTextArea("");
         commentValue.addCaretListener(this);
         commentValue.setRows(3);
 
@@ -104,9 +104,18 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         };
 
         examplesList.addComponentListener(l);
-        examplesList.setVisibleRowCount(3);
+        examplesList.setVisibleRowCount(4);
+
         examplesModel = new DefaultListModel();
         examplesList.setModel(examplesModel);
+        examplesList.addListSelectionListener( sl -> {
+            if(examplesList.isSelectionEmpty()){
+                adjustButtons(false);
+            } else {
+                adjustButtons(true);
+            }
+
+        });
 
         scrollPaneExamples.setViewportView(examplesList);
 
@@ -118,7 +127,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
                 SynsetExample exp = new SynsetExample();
                 exp.setExample(example);
                 examplesModel.addElement(exp);
-                buttonSave.setEnabled(true);
+                saveChanges();
                 examplesList.updateUI();
             }
         });
@@ -139,7 +148,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
                 if (modified != null && !old.equals(modified)) {
                     example.setExample(modified);
                     examplesList.updateUI();
-                    buttonSave.setEnabled(true);
+                    saveChanges();
                 }
             }
         });
@@ -149,7 +158,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             int idx = examplesList.getSelectedIndex();
             if (idx >= 0) {
                 examplesModel.remove(idx);
-                buttonSave.setEnabled(true);
+                saveChanges();
             }
         });
 
@@ -170,7 +179,6 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         content.add("br hfill", abstractValue);
         content.add("br center", buttonSave);
 
-        // ustawienie akywnosci
         commentValue.setEnabled(false);
         definitionValue.setEnabled(false);
         abstractValue.setEnabled(false);
@@ -181,11 +189,11 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         return definitionValue;
     }
 
-    /**
-     * odswiezenie informacji o synsecie
-     *
-     * @param synset - synset
-     */
+    private void adjustButtons(boolean active){
+        btnEditExample.setEnabled(active);
+        btnRemoveExample.setEnabled(active);
+    }
+
     public void refreshData(Synset synset) {
 
         definitionValue .setText(formatValue(null));
@@ -246,43 +254,46 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             buttonSave.setEnabled(true);
             // zapisanie zmian
         } else if (event.getSource() == buttonSave) { // zapisanie zmian
-            String definition = definitionValue.getText();
-            String comment = commentValue.getText();
-            boolean isAbstract = abstractValue.isSelected();
+            saveChanges();
+        }
+    }
 
-            Set<SynsetExample> examples = new HashSet<>();
+    private void saveChanges() {
+        String definition = definitionValue.getText();
+        String comment = commentValue.getText();
+        boolean isAbstract = abstractValue.isSelected();
 
-            if(!examplesModel.isEmpty()) {
-                for(int i = 0; i < examplesModel.size(); i++)
-                {
-                    examples.add((SynsetExample)examplesModel.getElementAt(i));
-                }
+        Set<SynsetExample> examples = new HashSet<>();
+
+        if(!examplesModel.isEmpty()) {
+            for(int i = 0; i < examplesModel.size(); i++)
+            {
+                examples.add((SynsetExample)examplesModel.getElementAt(i));
             }
+        }
 
-            if (!LexicalDA.updateSynset(lastSynset, definition, comment, isAbstract, examples)) {
-                refreshData(lastSynset); // nieudana zmiana statusu
-                DialogBox.showError(Messages.ERROR_NO_STATUS_CHANGE_BECAUSE_OF_RELATIONS_IN_SYNSETS);
-            }
+        if (!LexicalDA.updateSynset(lastSynset, definition, comment, isAbstract, examples)) {
+            refreshData(lastSynset); // nieudana zmiana statusu
+            DialogBox.showError(Messages.ERROR_NO_STATUS_CHANGE_BECAUSE_OF_RELATIONS_IN_SYNSETS);
+        }
 
-            buttonSave.setEnabled(false);
-            if (definitionValue.isEnabled()) { // zwrocenie focusu
-                definitionValue.grabFocus();
-            } else {
-                commentValue.grabFocus();
-            }
-            // poinformowanie o zmianie parametrow
-            listeners.notifyAllListeners(lastSynset);
+        buttonSave.setEnabled(false);
+        if (definitionValue.isEnabled()) { // zwrocenie focusu
+            definitionValue.grabFocus();
+        } else {
+            commentValue.grabFocus();
+        }
+        // poinformowanie o zmianie parametrow
+        listeners.notifyAllListeners(lastSynset);
 
-            ViwnNode node = graphUI.getSelectedNode();
-            if (node != null && node instanceof ViwnNodeSynset) {
-                ViwnNodeSynset s = (ViwnNodeSynset) node;
-                s.setLabel(null);
-                graphUI.graphChanged();
-            } else {
-                // dodano nowy synset, nie istnieje on nigdzie w grafie
-                graphUI.graphChanged();
-            }
-
+        ViwnNode node = graphUI.getSelectedNode();
+        if (node != null && node instanceof ViwnNodeSynset) {
+            ViwnNodeSynset s = (ViwnNodeSynset) node;
+            s.setLabel(null);
+            graphUI.graphChanged();
+        } else {
+            // dodano nowy synset, nie istnieje on nigdzie w grafie
+            graphUI.graphChanged();
         }
     }
 

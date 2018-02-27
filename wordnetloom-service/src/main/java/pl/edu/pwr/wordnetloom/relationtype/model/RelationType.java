@@ -56,7 +56,8 @@ public class RelationType extends GenericEntity {
     private Long shortDisplayText;
 
     @NotAudited
-    @OneToMany(mappedBy = "relationType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "relationType", fetch = FetchType.LAZY)
+    @OrderBy("position")
     private List<RelationTest> relationTests = new ArrayList<>();
 
     @NotNull

@@ -90,7 +90,6 @@ public class ToolTipBuilder {
         return this;
     }
 
-
     public ToolTipBuilder addDefinition(String definition) {
         if (definition != null) {
             addString(DEFINITION_LABEL, definition);
@@ -104,7 +103,8 @@ public class ToolTipBuilder {
 
     public ToolTipBuilder addDomain(Domain domain) {
         Domain normalizedDomain = DomainManager.getInstance().getNormalized(domain);
-        String domainText = LocalisationManager.getInstance().getLocalisedString(normalizedDomain.getName()) + "=>" + normalizedDomain.getDescription().toString();
+        String domainText = String.format("%s => %s", LocalisationManager.getInstance().getLocalisedString(normalizedDomain.getName()),
+                LocalisationManager.getInstance().getLocalisedString(normalizedDomain.getDescription()));
         return addDomain(domainText);
     }
 

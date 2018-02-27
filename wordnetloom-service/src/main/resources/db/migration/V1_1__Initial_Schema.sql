@@ -61,7 +61,6 @@ CREATE TABLE users (
 );
 
 CREATE TABLE relation_tests (
-  dtype                       VARCHAR(31)   NOT NULL,
   id                          BIGINT        NOT NULL AUTO_INCREMENT,
   position                    INT DEFAULT 0 NOT NULL,
   test                        TEXT,
@@ -167,10 +166,11 @@ CREATE TABLE synset_attributes (
 );
 
 CREATE TABLE synset_examples (
-  id                    BIGINT PRIMARY KEY AUTO_INCREMENT,
+  id                   BIGINT NOT NULL AUTO_INCREMENT,
   synset_attributes_id BIGINT NOT NULL,
   example              TEXT,
-  type     VARCHAR(30)
+  type     VARCHAR(30),
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE synset_relation (

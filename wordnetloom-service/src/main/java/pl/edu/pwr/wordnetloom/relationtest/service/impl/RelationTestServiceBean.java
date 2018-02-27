@@ -29,7 +29,7 @@ public class RelationTestServiceBean implements RelationTestServiceLocal {
     @RolesAllowed("ADMIN")
     @Override
     public void delete(RelationTest relationTest) {
-        relationTestRepository.delete(relationTest);
+         relationTestRepository.delete(relationTest);
     }
 
     @RolesAllowed("ADMIN")
@@ -53,12 +53,8 @@ public class RelationTestServiceBean implements RelationTestServiceLocal {
     @RolesAllowed("ADMIN")
     @Override
     public RelationTest save(RelationTest test) {
-        return relationTestRepository.persist(test);
-    }
-
-    @RolesAllowed("ADMIN")
-    @Override
-    public RelationTest update(RelationTest test) {
+        if(test.getId() == null)
+            return relationTestRepository.persist(test);
         return relationTestRepository.update(test);
     }
 

@@ -213,7 +213,8 @@ public class LexicalDA {
             sa.setDefinition(definition);
             sa.setComment(comment);
             examples.forEach( e-> e.setSynsetAttributes(sa));
-            //sa.setExamples(examples);
+            sa.setExamples(examples);
+
             RemoteService.synsetRemote.save(sa);
         }
         return result;

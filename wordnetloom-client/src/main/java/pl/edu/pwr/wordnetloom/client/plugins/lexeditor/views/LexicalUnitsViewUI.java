@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
@@ -69,8 +70,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     LazyScrollPane unitsListScrollPane;
 
-    private SenseCriteria initSenseCriteria()
-    {
+    private SenseCriteria initSenseCriteria(){
         SenseCriteria senseCriteria = new SenseCriteria();
         senseCriteria.getDomainComboBox().addActionListener(this);
         senseCriteria.getPartsOfSpeechComboBox().addActionListener(this);
@@ -115,10 +115,10 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 .withToolTip(Hints.ADD_TO_NEW_SYNSET)
                 .withEnabled(false);
 
-        JPanel buttons = new MButtonPanel(btnNewWithSyns, btnNew, btnDelete, btnAddToSyns)
+        WebPanel buttons = new MButtonPanel(btnNewWithSyns, btnNew, btnDelete, btnAddToSyns)
                 .withHorizontalLayout();
 
-        JScrollPane scroll = new JScrollPane(criteria);
+        WebScrollPane scroll = new WebScrollPane(criteria);
         scroll.setMaximumSize(DEFAULT_SCROLL_DIMENSION);
         scroll.setMinimumSize(DEFAULT_SCROLL_DIMENSION);
         scroll.setPreferredSize(DEFAULT_SCROLL_DIMENSION);
@@ -134,7 +134,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         unitsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         unitsList.getSelectionModel().addListSelectionListener(this);
         unitsList.setCellRenderer(new UnitListCellRenderer());
-
         unitsListScrollPane = new LazyScrollPane(unitsList, LIMIT);
         unitsListScrollPane.setScrollListener((offset, limit) -> loadMoreUnits());
 
@@ -144,27 +143,24 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         content.add("br center", buttons);
     }
 
-    private class UnitListCellRenderer extends JLabel implements ListCellRenderer {
+    private class UnitListCellRenderer extends WebLabel implements ListCellRenderer {
         private final String FONT_NAME = "Courier New";
         private final int FONT_SIZE = 14;
         final Font FONT = new Font(FONT_NAME, Font.PLAIN, FONT_SIZE);
 
         UnitListCellRenderer(){
+            this.setDrawShade(false);
             this.setFont(FONT);
+            this.setMargin(1,2,1,2);
         }
 
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            setText(SenseFormat.getTextWithLexicon((Sense)value));
+            this.setText(SenseFormat.getTextWithLexicon((Sense)value));
             return this;
         }
     }
 
-    /**
-     * zaznaczenie w tabeli zostalo zmienione
-     *
-     * @param event
-     */
     @Override
     public void valueChanged(ListSelectionEvent event) {
         if (unitsList == null) {
@@ -308,7 +304,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                             }
                             workbench.setBusy(false);
                         }
-//                        infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "" + listModel.getSize()));
                         setInfoText(0,0); //TODO to może będzie można wyrzucić
                     });
                 }
@@ -318,11 +313,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         worker.execute();
     }
 
-    /**
-     * wciśnięto przycisk szukaj
-     *
-     * @param event
-     */
     @Override
     public void actionPerformed(ActionEvent event) {
         if (quietMode) {

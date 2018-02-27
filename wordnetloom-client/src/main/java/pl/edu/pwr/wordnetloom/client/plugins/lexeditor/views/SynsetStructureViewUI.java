@@ -58,9 +58,6 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
     private ViWordNetService viWordNetService;
 
-    private static final String SUPER_MODE = "SuperMode";
-    private static final String SUPER_MODE_VALUE = "1";
-
     /**
      * relacja dla synsetow
      */
@@ -149,14 +146,13 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         unitsList.addMouseListener(this);
         unitsList.setEnabled(false);
 
-        commentValue = new MTextArea(Labels.VALUE_UNKNOWN);
+        commentValue = new MTextArea("");
         commentValue.addCaretListener(this);
         commentValue.setRows(3);
         commentValue.setEnabled(false);
 
         isAbstract = new JLabel();
 
-        // dodanie przyciskow
         buttonUp = MButton.buildUpButton()
                 .withToolTip(Hints.MOVE_UNIT_UP)
                 .withEnabled(false)

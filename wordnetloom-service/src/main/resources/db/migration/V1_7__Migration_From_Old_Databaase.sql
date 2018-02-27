@@ -286,9 +286,8 @@ SET SQL_SAFE_UPDATES = 1;
 
 # dodawanie testów , sprawdzić, czy numery id się zgadzają
 # TODO będzie trzeba wyrzucić dtype
-INSERT INTO wordnet.relation_tests (dtype, test, element_A_part_of_speech_id, element_B_part_of_speech_id, relation_type_id, position)
+INSERT INTO wordnet.relation_tests (test, element_A_part_of_speech_id, element_B_part_of_speech_id, relation_type_id, position)
   SELECT
-    '',
     `text`,
     CASE WHEN posA <= 4
       THEN posA
@@ -419,3 +418,4 @@ INSERT INTO wordnet.synset_relation (child_synset_id, parent_synset_id, synset_r
                          FROM wordnet.synset);
 
 DROP TABLE temp_dictionaries;
+DROP PROCEDURE IF EXISTS insert_dictionaries;
