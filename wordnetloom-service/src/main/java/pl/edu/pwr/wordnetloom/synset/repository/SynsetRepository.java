@@ -8,6 +8,8 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
+import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
@@ -847,20 +849,28 @@ public class SynsetRepository extends GenericRepository<Synset> {
             }
         }
 
-        if(criteria.getComment() != null || criteria.getDefinition() != null || criteria.isAbstract() != null){
-            Join<Synset, SynsetAttributes> synsetAttributeJoin = synsetRoot.join(SYNSET_ATTRIBUTE, JoinType.LEFT);
-            if(criteria.getComment() != null){
-                Predicate commentPredicate = criteriaBuilder.like(synsetAttributeJoin.get(COMMENT), "%"+criteria.getComment()+"%");
-                criteriaList.add(commentPredicate);
+        if(criteria.getComment() != null || criteria.getDefinition() != null){
+
+            CriteriaQuery<Long> q = criteriaBuilder.createQuery(Long.class);
+            Subquery<Long> subquery = q.subquery(Long.class);
+            Root<SynsetAttributes> attributesRoot = subquery.from(SynsetAttributes.class);
+            subquery.select(attributesRoot.get("synset").get("id"));
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if(criteria.getComment() != null && ! criteria.getComment().isEmpty()){
+               Predicate commentPredicate = criteriaBuilder.like(attributesRoot.get(COMMENT), "%"+criteria.getComment()+"%");
+               predicates.add(commentPredicate);
             }
-            if(criteria.getDefinition() != null){
-                Predicate definitionPredicate = criteriaBuilder.like(synsetAttributeJoin.get(DEFINITION), "%"+criteria.getDefinition()+"%");
-                criteriaList.add(definitionPredicate);
+
+            if(criteria.getDefinition() != null && ! criteria.getDefinition().isEmpty()){
+                Predicate definitionPredicate = criteriaBuilder.like(attributesRoot.get(DEFINITION), "%"+criteria.getDefinition()+"%");
+                predicates.add(definitionPredicate);
             }
-            if(criteria.isAbstract() != null){
-                Predicate abstractPredicate = criteriaBuilder.equal(synsetAttributeJoin.get(IS_ABSTRACT), criteria.isAbstract());
-                criteriaList.add(abstractPredicate);
-            }
+
+            subquery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+            Predicate subquery_predicate = criteriaBuilder.in(synsetRoot.get("id")).value(subquery);
+            criteriaList.add(subquery_predicate);
         }
 
         if(criteria.getRelationTypeId() != null) {
@@ -870,6 +880,11 @@ public class SynsetRepository extends GenericRepository<Synset> {
             relationsSubquery.select(relationsRoot.get(RELATION_PARENT));
             relationsSubquery.where(criteriaBuilder.equal(relationsRoot.get(RELATION_TYPE), criteria.getRelationTypeId()));
             criteriaList.add(synsetRoot.get(ID).in(relationsSubquery));
+        }
+
+        if(criteria.isAbstract() != null){
+            Predicate abstractPredicate = criteriaBuilder.equal(synsetRoot.get(IS_ABSTRACT), criteria.isAbstract());
+            criteriaList.add(abstractPredicate);
         }
 
         if(countStatement) {

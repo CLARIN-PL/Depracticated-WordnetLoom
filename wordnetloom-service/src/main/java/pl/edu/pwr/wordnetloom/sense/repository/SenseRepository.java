@@ -143,23 +143,36 @@ public class SenseRepository extends GenericRepository<Sense> {
             predicateList.add(outgoinRelationsPredicate);
         }
 
-        if(dto.getRegisterId() != null || dto.getComment() != null){
-            Join<Sense, SenseAttributes> senseSenseAttributesJoin = senseRoot.join(SENSE_ATTRIBUTES, JoinType.LEFT);
+        if(dto.getRegisterId() != null || dto.getComment() != null || dto.getExample() != null){
+
+            CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
+            Subquery<Long> subquery = query.subquery(Long.class);
+            Root<SenseAttributes> senseAttributesRoot = subquery.from(SenseAttributes.class);
+            subquery.select(senseAttributesRoot.get("sense").get("id"));
+
+            List<Predicate> predicates = new ArrayList<>();
+
             if(dto.getRegisterId() != null){
-                Predicate senseAttributesPredicate = criteriaBuilder.equal(senseSenseAttributesJoin.get(REGISTER), dto.getRegisterId());
-                predicateList.add(senseAttributesPredicate);
+                Predicate senseAttributesPredicate = criteriaBuilder.equal(senseAttributesRoot.get(REGISTER), dto.getRegisterId());
+                predicates.add(senseAttributesPredicate);
             }
+
             if(dto.getComment() != null && !dto.getComment().isEmpty()){
-                Predicate commentPredicate = criteriaBuilder.like(senseSenseAttributesJoin.get(COMMENT), "%"+dto.getComment()+"%");
-                predicateList.add(commentPredicate);
+                Predicate commentPredicate = criteriaBuilder.like(senseAttributesRoot.get(COMMENT), "%"+dto.getComment()+"%");
+                predicates.add(commentPredicate);
             }
+
+            if(dto.getExample() != null){
+                Join<SenseAttributes, SenseExample> senseExampleJoin = senseAttributesRoot.join(EXAMPLES);
+                Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get(EXAMPLES), dto.getExample());
+                predicates.add(examplePredicate);
+            }
+
+            subquery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+            Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get("id")).value(subquery);
+            predicateList.add(subquery_predicate);
         }
 
-        if(dto.getExample() != null){
-            Join<Sense, SenseExample> senseExampleJoin = senseRoot.join(EXAMPLES);
-            Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get(EXAMPLES), dto.getExample());
-            predicateList.add(examplePredicate);
-        }
         if(dto.getSynsetId() != null){
             Predicate synsetPredicate  = criteriaBuilder.equal(senseRoot.get(SYNSET), dto.getSynsetId());
             predicateList.add(synsetPredicate);
