@@ -78,6 +78,10 @@ public class LazyScrollPane extends JScrollPane{
         offset = 0;
     }
 
+    public void hideLoadMoreButton(){
+        loadMoreButton.setVisible(false);
+    }
+
     public void setHorizontalScrolling(boolean scrolling) {
         setHorizontalScrollBarPolicy(scrolling ? JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED : JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }

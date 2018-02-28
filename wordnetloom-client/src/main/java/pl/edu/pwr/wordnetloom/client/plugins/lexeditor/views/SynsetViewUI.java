@@ -3,7 +3,10 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
+import com.google.common.eventbus.Subscribe;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SynsetCriteria;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.event.SearchRandomSynsetEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SynsetFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SynsetTooltipGenerator;
@@ -22,6 +25,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SynsetViewUI extends AbstractViewUI implements ActionListener, ListSelectionListener, KeyListener {
@@ -56,6 +60,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
 
     @Override
     protected void initialize(WebPanel content) {
+        Application.eventBus.register(this);
         initializeComponents();
         content.setLayout(new RiverLayout());
 
@@ -95,16 +100,21 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         return list;
     }
 
+    @Subscribe
+    public void onSearchRandomSynset(SearchRandomSynsetEvent event){
+        new SynsetDownloaderWorker(true, true).execute();
+    }
+
     public void refreshLexicons() {
         criteria.getLexiconComboBox().refreshLexicons();
     }
 
     public void refreshData() {
-        new SynsetDownloaderWorker(true).execute();
+        new SynsetDownloaderWorker(true, false).execute();
     }
 
     public void loadMoreSynsets() {
-        new SynsetDownloaderWorker(false).execute();
+        new SynsetDownloaderWorker(false, false).execute();
     }
 
     @Override
@@ -149,9 +159,11 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     private class SynsetDownloaderWorker extends SwingWorker<Void, Void> {
 
         private boolean isNewCriteria;
+        private boolean randomSearch;
 
-        SynsetDownloaderWorker(boolean isNewCriteria) {
+        SynsetDownloaderWorker(boolean isNewCriteria, boolean randomSearch) {
             this.isNewCriteria = isNewCriteria;
+            this.randomSearch = randomSearch;
         }
 
         @Override
@@ -163,7 +175,12 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
                 lastCriteriaDTO = criteria.getSynsetCriteria();
                 lastCriteriaDTO.setLimit(LIMIT);
                 // get number of all synsets matched to criteria
-                allMatchedSynsetCount = RemoteService.synsetRemote.getCountSynsetsByCriteria(lastCriteriaDTO);
+                if(randomSearch){
+                    lastCriteriaDTO.setLimit(1);
+                    allMatchedSynsetCount = RemoteService.synsetRemote.getCountSynsetRandomByCriteria(lastCriteriaDTO);
+                }else {
+                    allMatchedSynsetCount = RemoteService.synsetRemote.getCountSynsetsByCriteria(lastCriteriaDTO);
+                }
             }
             lastCriteriaDTO.setOffset(synsetListModel.getSize());
             loadAndAddSynsets(lastCriteriaDTO);
@@ -177,9 +194,18 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
 
         private void loadAndAddSynsets(SynsetCriteriaDTO criteriaDTO) {
             lastCriteriaDTO = criteriaDTO;
-            List<Synset> synsets = RemoteService.synsetRemote.findSynsetsByCriteria(criteriaDTO);
+            List<Synset> synsets;
+            if(randomSearch){
+               synsets = RemoteService.synsetRemote.findSynsetRandomByCriteria(criteriaDTO);
+            } else {
+               synsets = RemoteService.synsetRemote.findSynsetsByCriteria(criteriaDTO);
+            }
             addElementsToList(synsets);
             scrollPane.setEnd(synsets.isEmpty() || synsets.size() < criteriaDTO.getLimit());
+            if(randomSearch){
+                scrollPane.hideLoadMoreButton();
+                synsetList.setSelectedIndex(0);
+            }
         }
 
         private void addElementsToList(List<Synset> synsets) {

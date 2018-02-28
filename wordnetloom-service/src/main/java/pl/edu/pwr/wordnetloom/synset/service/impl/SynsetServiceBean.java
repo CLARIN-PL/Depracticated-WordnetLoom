@@ -216,5 +216,18 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @Override
     public SynsetAttributes fetchSynsetAttributes(Long synsetId) {
         return synsetRepository.fetchSynsetAttributes(synsetId);
+
+    }
+
+    @PermitAll
+    @Override
+    public List<Synset> findSynsetRandomByCriteria(SynsetCriteriaDTO criteria) {
+        return synsetRepository.findSynsetRandomByCriteria(criteria);
+    }
+
+    @PermitAll
+    @Override
+    public int getCountSynsetRandomByCriteria(SynsetCriteriaDTO criteria) {
+        return synsetRepository.getCountSynsetRandomByCriteria(criteria);
     }
 }

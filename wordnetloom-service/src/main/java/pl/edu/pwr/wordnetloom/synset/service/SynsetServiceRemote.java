@@ -42,4 +42,8 @@ public interface SynsetServiceRemote {
     SynsetAttributes addSynsetAttribute(Long synsetId, SynsetAttributes attributes);
 
     SynsetAttributes fetchSynsetAttributes(Long synsetId);
+
+    List<Synset> findSynsetRandomByCriteria(SynsetCriteriaDTO criteriaDTO);
+
+    int getCountSynsetRandomByCriteria(SynsetCriteriaDTO lastCriteriaDTO);
 }

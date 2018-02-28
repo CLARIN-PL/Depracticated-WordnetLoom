@@ -1,12 +1,14 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
 import com.alee.laf.menu.WebMenu;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitsView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetPropertiesView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetStructureView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetView;
 import pl.edu.pwr.wordnetloom.client.plugins.relations.da.RelationsDA;
 import pl.edu.pwr.wordnetloom.client.plugins.relations.views.ToolbarViewUI;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.event.SearchRandomSynsetEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.LockerChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
@@ -109,8 +111,6 @@ public class ViWordNetService extends AbstractService implements
         super(workbench);
         this.perspectiveName = perspectiveName;
         this.perspective = perspective;
-
-//        0
     }
 
     public SynsetData getSynsetData() {
@@ -131,6 +131,17 @@ public class ViWordNetService extends AbstractService implements
                     }
                     return false;
                 });
+
+        KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                .addKeyEventDispatcher((KeyEvent e) -> {
+                    if (e.getID() == KeyEvent.KEY_PRESSED
+                            && e.isControlDown()
+                            && e.getKeyCode() == KeyEvent.VK_S) {
+                        Application.eventBus.post(new SearchRandomSynsetEvent());
+                    }
+                    return false;
+                });
+
 
         WebMenu other = workbench.getMenu(Labels.SETTINGS);
         if (other == null) {

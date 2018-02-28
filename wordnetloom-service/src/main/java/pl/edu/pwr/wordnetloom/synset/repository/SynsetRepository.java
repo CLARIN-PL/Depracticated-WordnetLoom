@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.synset.repository;
 
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.Restrictions;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
@@ -596,9 +597,12 @@ public class SynsetRepository extends GenericRepository<Synset> {
         Fetch<Synset, Sense> senseFetch = root.fetch("senses");
         senseFetch.fetch("word");
         senseFetch.fetch("partOfSpeech");
+
         List<Predicate> predicatesList = new ArrayList<>();
+
         Predicate idPredicate = cb.equal(root.get("id"), id);
         predicatesList.add(idPredicate);
+
         Predicate sensePredicate = cb.equal(senseJoin.get("synsetPosition"), pos);
         predicatesList.add(sensePredicate);
         cq.where(predicatesList.toArray(new Predicate[0]));
@@ -778,7 +782,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
     }
 
     public List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria){
-        CriteriaQuery<Synset> query = getSynsetCriteriaQuery(criteria, false);
+        CriteriaQuery<Synset> query = getSynsetCriteriaQuery(criteria, false, false);
         query.distinct(true);
         Query selectQuery = getEntityManager().createQuery(query);
         if(criteria.getLimit() > 0){
@@ -807,11 +811,40 @@ public class SynsetRepository extends GenericRepository<Synset> {
     }
 
     public int getCountSynsetsByCriteria(SynsetCriteriaDTO criteria) {
-        CriteriaQuery<Long> query = getSynsetCriteriaQuery(criteria, true);
+        CriteriaQuery<Long> query = getSynsetCriteriaQuery(criteria, true, false);
         return Math.toIntExact(getEntityManager().createQuery(query).getSingleResult());
     }
 
-    private CriteriaQuery getSynsetCriteriaQuery(SynsetCriteriaDTO criteria, boolean countStatement) {
+    public List<Synset> findSynsetRandomByCriteria(SynsetCriteriaDTO criteria) {
+        CriteriaQuery<Synset> query = getSynsetCriteriaQuery(criteria, false, true);
+        query.distinct(true);
+        Query selectQuery = getEntityManager().createQuery(query);
+        if(criteria.getLimit() > 0){
+            selectQuery.setMaxResults(1000);
+        }
+        if(criteria.getOffset() > 0){
+            selectQuery.setFirstResult(criteria.getOffset());
+        }
+
+        List<Synset> result = selectQuery.getResultList();
+        Collections.shuffle(result);
+
+        List<Synset> r = new ArrayList<>();
+        if(result.size() > 0){
+            r.add(result.stream().findFirst().get());
+        }
+
+        //loading lazy objects. Loading objects for result in this moment is faster than fetching in query
+        fetchLazyObject(r);
+        return r;
+    }
+
+    public int getCountSynsetRandomByCriteria(SynsetCriteriaDTO criteria) {
+        CriteriaQuery<Long> query = getSynsetCriteriaQuery(criteria, true, true);
+        return Math.toIntExact(getEntityManager().createQuery(query).getSingleResult());
+    }
+
+    private CriteriaQuery getSynsetCriteriaQuery(SynsetCriteriaDTO criteria, boolean countStatement, boolean multiligual) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery query;
 
@@ -874,12 +907,25 @@ public class SynsetRepository extends GenericRepository<Synset> {
         }
 
         if(criteria.getRelationTypeId() != null) {
+
             Subquery<Long> relationsSubquery = query.subquery(Long.class);
             Root<SynsetRelation> relationsRoot = relationsSubquery.from(SynsetRelation.class);
             relationsSubquery.distinct(true);
             relationsSubquery.select(relationsRoot.get(RELATION_PARENT));
             relationsSubquery.where(criteriaBuilder.equal(relationsRoot.get(RELATION_TYPE), criteria.getRelationTypeId()));
             criteriaList.add(synsetRoot.get(ID).in(relationsSubquery));
+        }
+
+        if(multiligual){
+            List<Long> mulitLingualRels = em.createQuery("SELECT rt.id FROM RelationType rt WHERE rt.multilingual = true")
+                    .getResultList();
+            Subquery<Long> relationsSubquery = query.subquery(Long.class);
+            Root<SynsetRelation> relationsRoot = relationsSubquery.from(SynsetRelation.class);
+            relationsSubquery.distinct(true);
+            relationsSubquery.select(relationsRoot.get(RELATION_PARENT));
+            relationsSubquery.where(relationsRoot.get(RELATION_TYPE).in(mulitLingualRels));
+            criteriaList.add(criteriaBuilder.not(synsetRoot.get(ID).in(relationsSubquery)));
+
         }
 
         if(criteria.isAbstract() != null){

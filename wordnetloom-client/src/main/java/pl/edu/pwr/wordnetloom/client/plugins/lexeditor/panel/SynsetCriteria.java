@@ -50,7 +50,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         addSynsetRelationTypes();
         addDefinition();
         addComment();
-        addArificial();
+        addArtificial();
     }
 
     public MTextField getDefinition() {
@@ -71,12 +71,12 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         add("br hfill", comment);
     }
 
-    protected void addArificial() {
+    protected void addArtificial() {
 
-        ButtonGroup aritificialGroup = new ButtonGroup();
-        aritificialGroup.add(all);
-        aritificialGroup.add(artificial);
-        aritificialGroup.add(notArtificial);
+        ButtonGroup artificialGroup = new ButtonGroup();
+        artificialGroup.add(all);
+        artificialGroup.add(artificial);
+        artificialGroup.add(notArtificial);
 
         JPanel panel = new JPanel();
         panel.setLayout(new RiverLayout());

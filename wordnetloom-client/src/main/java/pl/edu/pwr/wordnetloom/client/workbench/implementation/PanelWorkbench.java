@@ -99,8 +99,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
             }
         }
 
-        // wybranie ostatnio używanej perspektywy
-//        choosePerspective(getParam(ACTIVE_PERSPECTIVE_NAME)); //TODO jeżeli to odkomentujemy, aplikacja nie uruchomi się
         choosePerspective(Labels.WORDNET_VISUALIZATION);
     }
 
@@ -246,15 +244,12 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
             }
         }
 
-        // zapisanie konfiguracji
         config.saveConfiguration();
 
-        // zerowanie zmiennych
         mainPane = null;
         services = null;
         perspectives = null;
 
-        // sprzątanie
         try {
             frame.setVisible(false);
             frame.dispose();
@@ -384,7 +379,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
 
     @Override
     public Perspective getActivePerspective() {
-//        return perspectives.get("Wordnet Visualization");
         return perspectives.get(Labels.WORDNET_VISUALIZATION);
     }
 

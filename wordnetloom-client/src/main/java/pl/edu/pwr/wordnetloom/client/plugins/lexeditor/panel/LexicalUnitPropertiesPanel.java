@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class LexicalUnitPropertiesPanel extends JPanel implements
+public class LexicalUnitPropertiesPanel extends WebPanel implements
         CaretListener, ActionListener {
 
     private static final long serialVersionUID = 8598891792812358941L;
@@ -113,7 +113,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                         RowSpec.decode("fill:max(14dlu;default)"),
                         RowSpec.decode("max(10dlu;default):grow"),}));
 
-        JLabel lblLemma = new JLabel(Labels.LEMMA_COLON);
+        WebLabel lblLemma = new WebLabel(Labels.LEMMA_COLON);
         lblLemma.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblLemma, "2, 3, left, default");
 
@@ -122,7 +122,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         mainPanel.add(lemma, "4, 3, 4, 1, fill, fill");
         lemma.setColumns(10);
 
-        JLabel lblVariant = new JLabel(Labels.NUMBER_COLON);
+        WebLabel lblVariant = new WebLabel(Labels.NUMBER_COLON);
         lblVariant.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblVariant, "8, 3, 3, 1, fill, fill");
 
@@ -132,7 +132,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         mainPanel.add(variant, "12, 3, left, fill");
         variant.setColumns(10);
 
-        JLabel lblLexicon = new JLabel(Labels.LEXICON_COLON);
+        WebLabel lblLexicon = new WebLabel(Labels.LEXICON_COLON);
         lblLexicon.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblLexicon, "2, 5, left, fill");
         lexicon = new LexiconComboBox(Labels.NOT_CHOSEN);
@@ -146,7 +146,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         });
         mainPanel.add(lexicon, "4, 5, 3, 1, fill, fill");
 
-        JLabel lblPoS = new JLabel(Labels.PARTS_OF_SPEECH_COLON);
+        WebLabel lblPoS = new WebLabel(Labels.PARTS_OF_SPEECH_COLON);
         lblPoS.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblPoS, "2, 7, left, default");
 
@@ -171,7 +171,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         });
         mainPanel.add(partOfSpeech, "4, 7, 3, 1, fill, fill");
 
-        JLabel lblDomain = new JLabel(Labels.DOMAIN_COLON);
+        WebLabel lblDomain = new WebLabel(Labels.DOMAIN_COLON);
         lblDomain.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblDomain, "2, 9, left, fill");
 
@@ -180,7 +180,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         domain.addActionListener(this);
         mainPanel.add(domain, "4, 9, 3, 1, fill, fill");
 
-        JLabel lblRegister = new JLabel(Labels.REGISTER_COLON);
+        WebLabel lblRegister = new WebLabel(Labels.REGISTER_COLON);
         lblRegister.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblRegister, "2, 11, left, fill");
 
@@ -204,7 +204,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         definition.addCaretListener(this);
         definitionScrollPane.setViewportView(definition);
 
-        JLabel lblComment = new JLabel(Labels.COMMENT_COLON);
+        WebLabel lblComment = new WebLabel(Labels.COMMENT_COLON);
         lblComment.setVerticalAlignment(SwingConstants.TOP);
         lblComment.setHorizontalAlignment(SwingConstants.LEFT);
         mainPanel.add(lblComment, "2, 15, left, default");
@@ -258,7 +258,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
             }
         });
 
-        JLabel lblExample = new JLabel(Labels.USE_CASE_COLON);
+        WebLabel lblExample = new WebLabel(Labels.USE_CASE_COLON);
         lblExample.setVerticalAlignment(SwingConstants.TOP);
         lblExample.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblExample, "2, 17, left, fill");
@@ -320,7 +320,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         add(tabs, BorderLayout.CENTER);
         tabs.addTab("Main", mainPanel);
 
-        JPanel buttons = new JPanel();
+        WebPanel buttons = new WebPanel();
         buttons.setLayout(new FlowLayout());
         btnCancel = MButton.buildCancelButton();
         buttons.add(btnCancel);
