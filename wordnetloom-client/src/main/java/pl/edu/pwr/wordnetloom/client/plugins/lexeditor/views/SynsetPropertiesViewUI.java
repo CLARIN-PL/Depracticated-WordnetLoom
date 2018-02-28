@@ -196,8 +196,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
     public void refreshData(Synset synset) {
 
-        definitionValue .setText(formatValue(null));
-        commentValue.setText(formatValue(null));
+        definitionValue .setText("");
+        commentValue.setText("");
         abstractValue.setSelected(false);
 
         if (synset != null) {

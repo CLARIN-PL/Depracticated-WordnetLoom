@@ -24,7 +24,7 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
         this.connection = connection;
 
         LmfResourceImporter importer = new LmfResourceImporter();
-        LexicalResource lr = importer.getResourceFromFile("/opt/wn-eng-lmf.xml");
+        LexicalResource lr = importer.getResourceFromFile("/opt/wn31.xml");
         Lexicon lexicon = lr.getLexicon().stream().findFirst().get();
 
         AtomicLong synsetId = new AtomicLong(1);
@@ -64,21 +64,34 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
             SynsetAttributes sa = new SynsetAttributes();
             sa.setId(id);
             sa.setPrincetonId(s.getId());
-            sa.setDefinition(s.getDefinition() != null ? s.getDefinition().getGloss() : "");
+            sa.setIliId(s.getIli());
+            String[] defs = s.getDefinition() != null ? s.getDefinition()
+                    .getGloss()
+                    .replace("&quot;","\"")
+                    .replace("&apos;","'")
+                    .split(";") : null;
 
-            if (s.getDefinition() != null && s.getDefinition().getStatement() != null) {
-                s.getDefinition().getStatement().forEach(e -> {
-                    Example ex = new Example(id, e.getExample());
-                    examples.add(ex);
+            StringBuffer definition = new StringBuffer();
+
+            if(defs != null) {
+                Arrays.asList(defs).forEach(z -> {
+                    if (!z.startsWith("\"")) {
+                        definition.append(z.trim()).append(";");
+                    } else {
+                        Example example = new Example(id, z.replace("\"", ""));
+                        examples.add(example);
+                    }
                 });
             }
+            sa.setDefinition(definition.toString());
 
-            s.getSynsetRelations().getSynsetRelation().forEach(r -> {
-                Relation rs = new Relation(id, r.getTargets(), r.getRelType());
-                synsetRelations.add(rs);
-                relNames.add(r.getRelType());
-            });
-
+           if(s.getSynsetRelation() != null) {
+               s.getSynsetRelation().forEach(r -> {
+                   Relation rs = new Relation(id, r.getTarget(), r.getRelType());
+                   synsetRelations.add(rs);
+                   relNames.add(r.getRelType());
+               });
+           }
             synsetAttributes.add(sa);
             syn.put(s.getId(), synset);
 
@@ -238,13 +251,14 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
     }
 
     private void saveSynsetAttributes(List<SynsetAttributes> attributes) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (synset_id, definition, princeton_id) VALUES(?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.synset_attributes (synset_id, definition, princeton_id, ili_id) VALUES(?, ?, ?, ?)";
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
 
         for (SynsetAttributes a : attributes) {
             insert.setLong(1, a.getId());
             insert.setString(2, a.getDefinition());
-            insert.setString(3, a.getPrincetonId().replace("eng-10-", ""));
+            insert.setString(3, a.getPrincetonId().replace("pwn31-", ""));
+            insert.setString(4, a.getIliId());
             insert.executeUpdate();
         }
     }
@@ -285,16 +299,6 @@ public class V1_8__ImportPrincetonWordnet implements JdbcMigration {
         public Example(Long id, String example) {
             this.id = id;
             this.example = example;
-        }
-    }
-
-    private class Allowed {
-        Long id;
-        Long value;
-
-        public Allowed(Long id, Long value) {
-            this.id = id;
-            this.value = value;
         }
     }
 

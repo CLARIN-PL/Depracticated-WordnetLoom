@@ -10,18 +10,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class SynsetRelation {
 
     @XmlAttribute
-    private String targets;
+    private String target;
 
     @XmlAttribute
     private String relType;
 
 
-    public String getTargets() {
-        return targets;
+    public String getTarget() {
+        return target;
     }
 
-    public void setTargets(String targets) {
-        this.targets = targets;
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     public String getRelType() {

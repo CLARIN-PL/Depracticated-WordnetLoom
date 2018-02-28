@@ -128,19 +128,6 @@ public class V2_1__ImportDannetWordnetSynsetRelations implements JdbcMigration {
         }
     }
 
-    private class Relation {
-
-        Long parent;
-        String child;
-        String rel;
-
-        public Relation(Long parent, String child, String rel) {
-            this.parent = parent;
-            this.child = child;
-            this.rel = rel;
-        }
-    }
-
     private class SynsetRelation {
 
         Long parent;
@@ -151,23 +138,6 @@ public class V2_1__ImportDannetWordnetSynsetRelations implements JdbcMigration {
             this.parent = parent;
             this.child = child;
             this.rel = rel;
-        }
-    }
-
-    private class Sense {
-        Long posId;
-        Long wordId;
-        Long synsetId;
-        Long lexiconId = 2l;
-        int synset_position = 0;
-        int variant;
-
-        public Sense(Long posId, Long wordId, Long synsetId, int synset_position, int variant) {
-            this.posId = posId;
-            this.wordId = wordId;
-            this.synsetId = synsetId;
-            this.synset_position = synset_position;
-            this.variant = variant;
         }
     }
 

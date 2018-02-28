@@ -4,6 +4,7 @@ import pl.edu.pwr.wordnetloom.application.importers.lmf.model.LexicalResource;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -22,6 +23,7 @@ public class LmfResourceImporter {
         XMLStreamReader xsr = xif.createXMLStreamReader(new StreamSource(filename));
 
         Unmarshaller unmarshaller = jc.createUnmarshaller();
+
         return (LexicalResource) unmarshaller.unmarshal(xsr);
 
     }

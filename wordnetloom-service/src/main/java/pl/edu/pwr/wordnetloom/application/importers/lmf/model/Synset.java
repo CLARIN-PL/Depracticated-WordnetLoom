@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.application.importers.lmf.model;
 
 import javax.xml.bind.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @XmlRootElement(name = "Synset")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -12,11 +14,14 @@ public class Synset {
     @XmlAttribute
     private String baseConcept;
 
+    @XmlAttribute
+    private String ili;
+
     @XmlElement(name = "Definition")
     private Definition definition;
 
-    @XmlElement(name = "SynsetRelations")
-    private SynsetRelations synsetRelations;
+    @XmlElement(name = "SynsetRelation")
+    private List<SynsetRelation> synsetRelation = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -42,11 +47,19 @@ public class Synset {
         this.definition = definition;
     }
 
-    public SynsetRelations getSynsetRelations() {
-        return synsetRelations;
+    public List<SynsetRelation> getSynsetRelation() {
+        return synsetRelation;
     }
 
-    public void setSynsetRelations(SynsetRelations synsetRelations) {
-        this.synsetRelations = synsetRelations;
+    public void setSynsetRelation(List<SynsetRelation> synsetRelation) {
+        this.synsetRelation = synsetRelation;
+    }
+
+    public String getIli() {
+        return ili;
+    }
+
+    public void setIli(String ili) {
+        this.ili = ili;
     }
 }

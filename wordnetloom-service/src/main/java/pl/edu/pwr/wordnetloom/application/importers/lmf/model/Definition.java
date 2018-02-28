@@ -8,11 +8,8 @@ import java.util.Set;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Definition {
 
-    @XmlAttribute(name = "gloss")
+    @XmlValue
     private String gloss;
-
-    @XmlElement(name = "Statement")
-    private Set<Statement> statement = new HashSet<>();
 
     public String getGloss() {
         return gloss;
@@ -22,11 +19,4 @@ public class Definition {
         this.gloss = gloss;
     }
 
-    public Set<Statement> getStatement() {
-        return statement;
-    }
-
-    public void setStatement(Set<Statement> statement) {
-        this.statement = statement;
-    }
 }

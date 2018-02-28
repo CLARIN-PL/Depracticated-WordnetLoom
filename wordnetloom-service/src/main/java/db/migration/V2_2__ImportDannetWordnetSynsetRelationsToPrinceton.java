@@ -24,7 +24,7 @@ public class V2_2__ImportDannetWordnetSynsetRelationsToPrinceton implements Jdbc
         this.connection = connection;
 
         Map<String,String> mappings = new HashMap<>();
-        String in = "/opt/ski-pwn-3.0.txt";
+        String in = "/opt/ski-pwn-3.1.txt";
 
         try (Stream<String> stream = Files.lines(Paths.get(in))) {
 

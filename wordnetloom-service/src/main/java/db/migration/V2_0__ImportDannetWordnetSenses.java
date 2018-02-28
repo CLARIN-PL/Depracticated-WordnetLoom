@@ -123,18 +123,35 @@ public class V2_0__ImportDannetWordnetSenses implements JdbcMigration {
     }
 
     private void saveSense(List<Sense> senses) throws SQLException {
-        String INSERT_QUERY = "INSERT INTO wordnet.sense (word_id, lexicon_id, part_of_speech_id, variant, synset_id, synset_position, domain_id) VALUES(?, ?, ?, ?, ?, ?, ?)";
+        String INSERT_QUERY = "INSERT INTO wordnet.sense (id, word_id, lexicon_id, part_of_speech_id, variant, synset_id, synset_position, domain_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+        String INSERT_QUERY_SA = "INSERT INTO wordnet.sense_attributes (sense_id) VALUES(?)";
+        String SELECT_COUNT = "SELECT max(id) as id FROM wordnet.sense";
+
+        PreparedStatement stm = connection.prepareStatement(SELECT_COUNT);
+        ResultSet rs2 = stm.executeQuery();
+        AtomicLong count = null;
+        if(rs2.first()){
+           long c = rs2.getLong("id");
+           count = new AtomicLong(c+1);
+        }
+
         PreparedStatement insert = connection.prepareStatement(INSERT_QUERY);
+        PreparedStatement insertSa = connection.prepareStatement(INSERT_QUERY_SA);
 
         for (Sense se : senses) {
-            insert.setLong(1, se.wordId);
-            insert.setLong(2, se.lexiconId);
-            insert.setLong(3, se.posId);
-            insert.setInt(4, se.variant);
-            insert.setLong(5, se.synsetId);
-            insert.setInt(6, se.synset_position);
-            insert.setLong(7, 1l);
+            Long id =  count.getAndIncrement();
+            insert.setLong(1, id);
+            insert.setLong(2, se.wordId);
+            insert.setLong(3, se.lexiconId);
+            insert.setLong(4, se.posId);
+            insert.setInt(5, se.variant);
+            insert.setLong(6, se.synsetId);
+            insert.setInt(7, se.synset_position);
+            insert.setLong(8, 1l);
             insert.executeUpdate();
+
+            insertSa.setLong(1, id);
+            insertSa.executeUpdate();
         }
     }
 
@@ -176,32 +193,6 @@ public class V2_0__ImportDannetWordnetSenses implements JdbcMigration {
         public LocalizedString(Long id, String value) {
             this.id = id;
             this.value = value;
-        }
-    }
-
-    private class Relation {
-
-        Long parent;
-        String child;
-        String rel;
-
-        public Relation(Long parent, String child, String rel) {
-            this.parent = parent;
-            this.child = child;
-            this.rel = rel;
-        }
-    }
-
-    private class SynsetRelation {
-
-        Long parent;
-        Long child;
-        Long rel;
-
-        public SynsetRelation(Long parent, Long child, Long rel) {
-            this.parent = parent;
-            this.child = child;
-            this.rel = rel;
         }
     }
 
