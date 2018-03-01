@@ -34,10 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class PanelWorkbench implements WindowListener, Workbench, Loggable {
 
-    public static final String WORKBENCH_CONFIG_FILE = "workbench.cfg";
     private static final String PLUGIN_CONFIG_FILE = "plugins.cfg";
-    private static final String SHOW_TOOLTIPS_PARAM_NAME = "ShowTooltips";
-    private static final String ACTIVE_PERSPECTIVE_NAME = "ActivePerspective";
     private static final int STANDARD_WIDTH = 1000;
     private static final int STANDARD_HEIGHT = 700;
 
@@ -57,20 +54,10 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
     private static final AtomicBoolean BUSY_LOCK = new AtomicBoolean(false);
 
     private final String version;
-    public static ConfigurationManager config;
 
     public PanelWorkbench(String title) {
         version = title;
 
-        // załadowanie konfiguracji
-        config = new ConfigurationManager(WORKBENCH_CONFIG_FILE);
-        config.loadConfiguration();
-
-        // wlaczenie albo wylaczenie tooltipow
-//        ToolTipGenerator.getGenerator().setEnabledTooltips(
-//                "1".equals(config.get(SHOW_TOOLTIPS_PARAM_NAME))); //TODO jesli wszystko bedzie działać usunąć to
-
-        // utworzenie interfejsu
         createFrame();
 
         // przygotowanie kontenerów dla usług i perspektyw
@@ -100,7 +87,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
         }
 
         // wybranie ostatnio używanej perspektywy
-//        choosePerspective(getParam(ACTIVE_PERSPECTIVE_NAME)); //TODO jeżeli to odkomentujemy, aplikacja nie uruchomi się
         choosePerspective(Labels.WORDNET_VISUALIZATION);
     }
 
@@ -199,19 +185,12 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
             // odczytanie perspektywy o podanej nazwie
             Perspective perspective = perspectives.get(perspectiveName);
             if (perspective != null) { // czy perspektywa istnieje
-                // odczytanie ostatniego stanu
-                Perspective oldPerspective = perspectives
-                        .get(getParam(ACTIVE_PERSPECTIVE_NAME));
-                Object state = oldPerspective != null ? oldPerspective
-                        .getState() : null;
 
                 ArrayList<ShortCut> shortCuts = new ArrayList<>();
                 shortCuts.addAll(perspective.getShortCuts());
                 shortCuts.addAll(globalShortCuts);
                 menuHolder.setShortCuts(shortCuts); // ładowanie skrótów
 
-                // ustawienie parametru aktualna perspektywa
-                setParam(ACTIVE_PERSPECTIVE_NAME, perspectiveName);
 
                 mainPane.add(perspective.getContent(), BorderLayout.CENTER);
                 mainPane.add(statusPanel, BorderLayout.SOUTH);
@@ -220,10 +199,7 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
 
                 // czy mozna uruchomić komunikat o wyświetleniu
                 if (frame.isVisible()) {
-                    // czy ustawienie state coś dało
-                    if (!perspective.setState(state)) {
-                        perspective.refreshViews();
-                    }
+                    perspective.refreshViews();
                 }
             }
         };
@@ -245,9 +221,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
                 return;
             }
         }
-
-        // zapisanie konfiguracji
-        config.saveConfiguration();
 
         // zerowanie zmiennych
         mainPane = null;
@@ -342,22 +315,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
     }
 
     @Override
-    public String getParam(String paramName) {
-        return config.get(paramName);
-    }
-
-    @Override
-    public void setParam(String paramName, String value) {
-        config.set(paramName, value);
-        config.saveConfiguration();
-    }
-
-    @Override
-    public void removeParam(String paramName) {
-        config.remove(paramName);
-    }
-
-    @Override
     public String getVersion() {
         return version;
     }
@@ -384,7 +341,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
 
     @Override
     public Perspective getActivePerspective() {
-//        return perspectives.get("Wordnet Visualization");
         return perspectives.get(Labels.WORDNET_VISUALIZATION);
     }
 
@@ -420,7 +376,7 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
                 }
             }
         } catch (IOException ex) {
-            logger().error("While openning file:", ex);
+            logger().error("While opening file:", ex);
         }
         return list;
     }

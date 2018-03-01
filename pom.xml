@@ -80,11 +80,6 @@
             </dependency>
             <dependency>
                 <groupId>pl.edu.pwr</groupId>
-                <artifactId>wordnetloom-client-fx</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>pl.edu.pwr</groupId>
                 <artifactId>wordnetloom-download</artifactId>
                 <version>${project.version}</version>
                 <type>war</type>
@@ -134,6 +129,5 @@
         <module>wordnetloom-client</module>
         <module>wordnetloom-server</module>
         <module>wordnetloom-download</module>
-        <module>wordnetloom-client-fx</module>
     </modules>
 </project>

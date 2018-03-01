@@ -178,11 +178,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             return;
         }
         Sense unit = listModel.get(returnValue);
-        boolean superMode = workbench.getParam(SUPER_MODE) != null
-                && workbench.getParam(SUPER_MODE).equals(SUPER_MODE_VALUE);
-        btnDelete.setEnabled(unit != null ? superMode : false);
-        btnAddToSyns.setEnabled(unit != null ? (superMode)
-                && !LexicalDA.checkIfInAnySynset(unit) : false);
+
+        btnDelete.setEnabled(unit != null);
+        btnAddToSyns.setEnabled(unit != null  && !LexicalDA.checkIfInAnySynset(unit));
 
         unitsList.setEnabled(false);
         listeners.notifyAllListeners(unitsList.getSelectedIndices().length == 1 ? unit : null);

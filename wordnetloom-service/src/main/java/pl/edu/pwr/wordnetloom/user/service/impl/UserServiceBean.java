@@ -4,7 +4,9 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.user.exception.UserNotFoundException;
 import pl.edu.pwr.wordnetloom.user.model.User;
+import pl.edu.pwr.wordnetloom.user.model.UserSettings;
 import pl.edu.pwr.wordnetloom.user.repository.UserRepository;
+import pl.edu.pwr.wordnetloom.user.repository.UserSettingsRepository;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceLocal;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
 
@@ -28,13 +30,23 @@ public class UserServiceBean implements UserServiceLocal {
     UserRepository userRepository;
 
     @Inject
+    UserSettingsRepository userSettingsRepository;
+
+    @Inject
     Validator validator;
 
     @RolesAllowed({"ADMIN", "USER"})
     @Override
-    public void saveOrUpdate(User user) {
+    public void save(User user) {
         ValidationUtils.validateEntityFields(validator, user);
-        userRepository.saveOrUpdate(user);
+        userRepository.save(user);
+    }
+
+    @RolesAllowed({"ADMIN", "USER"})
+    @Override
+    public void update(UserSettings userSettings) {
+        ValidationUtils.validateEntityFields(validator, userSettings);
+        userSettingsRepository.update(userSettings);
     }
 
     @PermitAll

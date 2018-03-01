@@ -404,7 +404,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         for (int i = 0; i < groups.size(); ++i) {
             for (ViwnNodeSynset s : groups.get(i)) {
-                ArrayList<ViwnNodeSynset> list = map.get((ViwnNodeRoot) s
+                ArrayList<ViwnNodeSynset> list = map.get(s
                         .getSpawner());
                 if (list == null) {
                     list = new ArrayList<>();

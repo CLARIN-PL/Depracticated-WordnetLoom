@@ -18,7 +18,7 @@ public class UserRepository extends GenericRepository<User> {
     EntityManager em;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void saveOrUpdate(User user) {
+    public void save(User user) {
         if (null != user.getId()) {
             em.merge(user);
         } else {
@@ -40,7 +40,6 @@ public class UserRepository extends GenericRepository<User> {
     public User changeUserPassword(String email, String password){
         User u = findUserByEmail(email);
         u.setPassword(PasswordUtils.encryptPassword(password));
-        saveOrUpdate(u);
         return u;
     }
 

@@ -4,6 +4,8 @@ import com.alee.laf.menu.WebCheckBoxMenuItem;
 import com.alee.laf.menu.WebMenu;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.core.window.AboutWindow;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -21,7 +23,6 @@ import java.awt.event.KeyEvent;
  */
 public class CoreService extends AbstractService implements MenuListener {
 
-    private static final String SHOW_TOOLTIPS_PARAM = "ShowTooltips";
     private WebMenu settings;
     private WebCheckBoxMenuItem showTooltips;
 
@@ -54,11 +55,10 @@ public class CoreService extends AbstractService implements MenuListener {
         showTooltips = new WebCheckBoxMenuItem(Labels.SHOW_TOOLTIPS);
         showTooltips.setMnemonic(KeyEvent.VK_D);
 
-        showTooltips.addActionListener((ActionEvent e) -> {
+        showTooltips.addChangeListener( e -> {
             JCheckBoxMenuItem item = (JCheckBoxMenuItem) e.getSource();
-            w.setParam(SHOW_TOOLTIPS_PARAM, item.isSelected() ? "1" : "0");
-//            ToolTipGenerator.getGenerator().setEnabledTooltips(item.isSelected()); //TODO jak wszystko będzie działać usunąć to
-
+            RemoteConnectionProvider.getInstance().getUser().getSettings().setShowToolTips(item.isSelected());
+            RemoteService.userServiceRemote.update(RemoteConnectionProvider.getInstance().getUser().getSettings());
         });
 
         settings = new WebMenu(Labels.SETTINGS);

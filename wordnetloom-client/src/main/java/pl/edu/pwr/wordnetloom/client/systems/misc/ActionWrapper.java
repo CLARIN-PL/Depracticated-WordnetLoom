@@ -49,7 +49,7 @@ public class ActionWrapper implements ActionListener, SimpleListenerInterface, L
         this.owner = owner;
         this.methodName = methodName;
         try {
-            method = owner.getClass().getMethod(methodName, new Class[0]);
+            method = owner.getClass().getMethod(methodName);
         } catch (NoSuchMethodException | SecurityException e) {
             logger().error("Trying to call method", e);
         }

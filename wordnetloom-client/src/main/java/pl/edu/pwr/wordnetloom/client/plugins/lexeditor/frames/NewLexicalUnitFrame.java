@@ -5,7 +5,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
-import pl.edu.pwr.wordnetloom.client.systems.enums.RegisterTypes;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
@@ -22,7 +21,6 @@ import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
-import javax.ejb.Remote;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -30,7 +28,6 @@ import java.util.List;
 /**
  * New lexical unit parameter window
  *
- * @author Max
  */
 public class NewLexicalUnitFrame extends DialogWindow implements ActionListener {
 
@@ -54,7 +51,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         pack();
     }
 
-    public Pair<Sense,SenseAttributes> saveAndReturnNewSense() {
+    public Pair<Sense, SenseAttributes> saveAndReturnNewSense() {
 
         Sense newUnit = new Sense();
 
@@ -79,10 +76,10 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         }
 
         if (editPanel.getRegister().getEntity() != null) {
-           senseAttributes.setRegister(editPanel.getRegister().getEntity());
+            senseAttributes.setRegister(editPanel.getRegister().getEntity());
         }
 
-        for(Object example : editPanel.getExamplesModel().toArray()){
+        for (Object example : editPanel.getExamplesModel().toArray()) {
             senseAttributes.addExample((SenseExample) example);
         }
 
@@ -111,7 +108,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
      * @return nowa jednostka lub null gdy anulowano
      */
     static public Pair<Sense, SenseAttributes> showModal(Workbench workbench, WebFrame frame,
-                                  String word, PartOfSpeech newPos, Domain domain) {
+                                                         String word, PartOfSpeech newPos, Domain domain) {
 
         NewLexicalUnitFrame modalFrame = new NewLexicalUnitFrame(workbench, frame);
 
@@ -133,8 +130,6 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
             modalFrame.editPanel.getDomain().setSelectedItem(
                     new CustomDescription<>(DomainMComboBox.nameWithoutPrefix(lastPickDomain.toString()), lastPickDomain));
         }
-
-        modalFrame.editPanel.getRegister().setSelectedItem(RegisterTypes.OG);
 
         modalFrame.setVisible(true);
         Pair<Sense, SenseAttributes> newUnit = null;

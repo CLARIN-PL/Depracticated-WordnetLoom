@@ -572,7 +572,7 @@ public class ViWordNetService extends AbstractService implements
 
     private ViwnNodeSynset findProposed(ViwnNodeSynset s, Long[] depth) {
         if (s instanceof ViwnNodeCand) {
-            return (ViwnNodeCand) s;
+            return s;
         }
         ViwnNode spawner = s.getSpawner();
         if (spawner == null || !(spawner instanceof ViwnNodeSynset)) {

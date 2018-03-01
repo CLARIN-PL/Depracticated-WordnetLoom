@@ -881,7 +881,7 @@ public class CloseableTabbedPane extends WebTabbedPane implements MouseListener,
                 tabPane.putClientProperty("html", v);
             }
 
-            SwingUtilities.layoutCompoundLabel((JComponent) tabPane, metrics,
+            SwingUtilities.layoutCompoundLabel(tabPane, metrics,
                     title, icon, SwingUtilities.CENTER, SwingUtilities.CENTER,
                     SwingUtilities.CENTER,
                     // SwingUtilities.TRAILING,
@@ -950,7 +950,7 @@ public class CloseableTabbedPane extends WebTabbedPane implements MouseListener,
                 tabPane.putClientProperty("html", v);
             }
 
-            SwingUtilities.layoutCompoundLabel((JComponent) tabPane, metrics,
+            SwingUtilities.layoutCompoundLabel(tabPane, metrics,
                     title, icon, SwingUtilities.CENTER, SwingUtilities.CENTER,
                     SwingUtilities.CENTER,
                     // SwingUtilities.TRAILING,

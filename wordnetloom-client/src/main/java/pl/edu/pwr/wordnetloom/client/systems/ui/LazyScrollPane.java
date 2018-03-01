@@ -25,12 +25,11 @@ public class LazyScrollPane extends JScrollPane{
     private int offset;
     private boolean end;
     private ScrollListener scrollListener;
-    private WebPanel panel;
     private WebButton loadMoreButton;
 
     public LazyScrollPane(WebList list, int limit){
 
-        panel = new WebPanel(new BorderLayout());
+        WebPanel panel = new WebPanel(new BorderLayout());
         panel.add(list, BorderLayout.NORTH);
 
         loadMoreButton = new WebButton("Ładuj"); //TODO dorobić etykietę

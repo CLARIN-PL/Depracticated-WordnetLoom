@@ -44,7 +44,7 @@ public class CandidatesViewUI extends AbstractViewUI
     private final SimpleListenersContainer candidateChanged_ = new SimpleListenersContainer();
 
     //Choose noun as default
-    private final PartOfSpeech pos_default = PartOfSpeechManager.getInstance().getById(2l);
+    private final PartOfSpeech pos_default = PartOfSpeechManager.getInstance().getById(2L);
     private int packageNo = 1;
     private int currentMaxPkg = 0;
     private SpinnerListModel packageNoModel = null;

@@ -23,7 +23,6 @@ public class SynsetsFrame extends DialogWindow implements ActionListener {
 
     private static Sense sense;
     private final SynsetCriteria criteriaPanel;
-    private final LazyScrollPane synsetsScrollPane;
     private final ToolTipList synsetsList;
 
     //TODO zrobić listę synsetów jako odzielny obiekt
@@ -37,7 +36,7 @@ public class SynsetsFrame extends DialogWindow implements ActionListener {
 
     public SynsetsFrame(Workbench workbench, WebFrame webFrame, Sense sense) {
         super(webFrame, "Wybieranie synsetu", 600, 500); //TODO dorobić etykietę
-        this.sense = sense;
+        SynsetsFrame.sense = sense;
 
         setLayout(new BorderLayout());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -50,7 +49,7 @@ public class SynsetsFrame extends DialogWindow implements ActionListener {
         listModel = new DefaultListModel<>();
         synsetsList = new ToolTipList(workbench, listModel, new SynsetTooltipGenerator());
         synsetsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        synsetsScrollPane = new LazyScrollPane(synsetsList, 15); //TODO dorobić limit jako stałą, albo zmienić
+        LazyScrollPane synsetsScrollPane = new LazyScrollPane(synsetsList, 15);
         synsetsList.setCellRenderer(new SynsetListCellRenderer(synsetsScrollPane));
 
         addToNewSynsetButton = MButton.buildOkButton()

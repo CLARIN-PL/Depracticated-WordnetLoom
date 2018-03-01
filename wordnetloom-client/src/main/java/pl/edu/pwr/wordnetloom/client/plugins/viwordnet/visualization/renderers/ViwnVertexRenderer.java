@@ -53,7 +53,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
     public void paintVertex(RenderContext<ViwnNode, ViwnEdge> rc,
                             Layout<ViwnNode, ViwnEdge> layout, ViwnNode v) {
         Graph<ViwnNode, ViwnEdge> graph = layout.getGraph();
-        if (rc.getVertexIncludePredicate().evaluate(Context.<Graph<ViwnNode, ViwnEdge>, ViwnNode>getInstance(graph, v))) {
+        if (rc.getVertexIncludePredicate().evaluate(Context.getInstance(graph, v))) {
             paintVertex(rc, v, layout);
         }
     }
