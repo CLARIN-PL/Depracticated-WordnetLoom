@@ -33,7 +33,6 @@ public class GenericListModel<T> implements ListModel {
     protected String markName = null;
     protected Object tag = null;
 
-    // lista sluchaczy
     private EventListenerList listeners = new EventListenerList();
 
     /**
@@ -81,7 +80,7 @@ public class GenericListModel<T> implements ListModel {
         } else {
             itemsCollection = collection;
         }
-        notifyAllListeners(); // powiadomienie słuchaczy o zmianie
+        notifyAllListeners();
     }
 
     /**

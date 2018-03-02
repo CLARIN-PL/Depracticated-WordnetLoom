@@ -19,7 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 /**
- * klasa dostarczająca podsawową usługę - menu
+ *  Class is handling basic menu interactions
  */
 public class CoreService extends AbstractService implements MenuListener {
 
@@ -51,7 +51,6 @@ public class CoreService extends AbstractService implements MenuListener {
                 .withMnemonic(KeyEvent.VK_O)
                 .withActionListener(e -> AboutWindow.showModal(w)));
 
-        // wyswietlanie tooltipow
         showTooltips = new WebCheckBoxMenuItem(Labels.SHOW_TOOLTIPS);
         showTooltips.setMnemonic(KeyEvent.VK_D);
 
@@ -70,7 +69,6 @@ public class CoreService extends AbstractService implements MenuListener {
 
         settings.addMenuListener(this);
         settings.add(showTooltips);
-
         workbench.installMenu(file);
         workbench.installMenu(settings);
         workbench.installMenu(help);

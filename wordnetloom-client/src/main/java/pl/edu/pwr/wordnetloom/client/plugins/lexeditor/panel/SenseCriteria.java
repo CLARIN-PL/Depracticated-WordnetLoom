@@ -36,13 +36,11 @@ public final class SenseCriteria extends CriteriaPanel {
     }
 
     private MComboBox initRegisterComboBox() {
-        List<RegisterDictionary> list = DictionaryManager.getInstance().getDictionaryByClassName(RegisterDictionary.class);
-        MComboBox<RegisterDictionary> resultComboBox = new MComboBox<>()
-                .withDictionaryItems(list, Labels.VALUE_ALL);
-
-        resultComboBox.setPreferredSize(DEFAULT_DIMENSION);
-
-        return resultComboBox;
+        return  new MComboBox<RegisterDictionary>()
+                .withSize(DEFAULT_DIMENSION)
+                .withDictionaryItems(
+                        DictionaryManager.getInstance().getDictionaryByClassName(RegisterDictionary.class),
+                        Labels.VALUE_ALL);
     }
 
     public SenseCriteriaDTO getSenseCriteriaDTO() {
@@ -55,6 +53,7 @@ public final class SenseCriteria extends CriteriaPanel {
         List<Long> lexicons = new ArrayList<>();
         Lexicon lexicon = getLexiconComboBox().getEntity();
         Long relationType = getSenseRelationTypeComboBox().getEntity() == null ? null : getSenseRelationTypeComboBox().getEntity().getId();
+        Long register = registerComboBox.getEntity() == null ? null : registerComboBox.getEntity().getId();
 
         if (lexicon != null) {
             lexicons.add(lexicon.getId());
@@ -66,7 +65,7 @@ public final class SenseCriteria extends CriteriaPanel {
         senseCriteria.setRelationTypeId(relationType);
         senseCriteria.setComment(comment);
         senseCriteria.setExample(example);
-        //senseCriteria.setRegisterId(relationTypeId);
+        senseCriteria.setRegisterId(register);
 
         return senseCriteria;
     }
