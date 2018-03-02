@@ -1481,7 +1481,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         this.criteria.setComment(criteria.getComment());
         this.criteria.setExample(criteria.getExample());
         this.criteria.setRelation(criteria.getRelation());
-//        this.criteria.setSynsetType(criteria.getSynsetType());
         this.criteria.setSense(criteria.getSense());
     }
 

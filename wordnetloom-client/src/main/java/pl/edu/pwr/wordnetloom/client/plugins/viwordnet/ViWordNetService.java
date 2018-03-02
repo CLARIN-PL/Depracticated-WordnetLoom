@@ -56,18 +56,16 @@ public class ViWordNetService extends AbstractService implements
         LockerChangeListener, ActionListener, Loggable {
 
     private final static int GRAPH_VIEWS_LIMIT = 6;
-    /**
-     *
-     */
+
     private static final Cursor MAKE_RELATION_CURSOR = Cursor
             .getPredefinedCursor(Cursor.HAND_CURSOR);
+
     private static final Cursor MERGE_SYNSETS_CURSOR = Cursor
             .getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
-    /**
-     *
-     */
+
     private static final Cursor DEFAULT_CURSOR = Cursor
             .getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+
     private final List<ViwnGraphView> graphViews = new ArrayList<>(GRAPH_VIEWS_LIMIT);
     private final Map<String, PartOfSpeech> posMap = new HashMap<>();
     SynsetData synsetData = new SynsetData();

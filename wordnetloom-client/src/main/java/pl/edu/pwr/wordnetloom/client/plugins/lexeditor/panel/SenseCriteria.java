@@ -23,7 +23,6 @@ public final class SenseCriteria extends CriteriaPanel {
     private CriteriaDTO criteria;
 
     public SenseCriteria() {
-        super(420);
         init();
         initializeFormPanel();
     }
@@ -37,7 +36,7 @@ public final class SenseCriteria extends CriteriaPanel {
 
     private MComboBox initRegisterComboBox() {
         return  new MComboBox<RegisterDictionary>()
-                .withSize(DEFAULT_DIMENSION)
+                .withSize(DEFAULT_DIMENSION_COMBO)
                 .withDictionaryItems(
                         DictionaryManager.getInstance().getDictionaryByClassName(RegisterDictionary.class),
                         Labels.VALUE_ALL);

@@ -1,10 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.statusbar;
 
-import com.alee.laf.menu.WebMenu;
-import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -12,7 +8,6 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 
 public class StatusBarService extends AbstractService implements Runnable, ActionListener, Loggable {
 

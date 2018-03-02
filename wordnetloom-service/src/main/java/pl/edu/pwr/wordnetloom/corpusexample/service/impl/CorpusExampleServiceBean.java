@@ -20,7 +20,7 @@ public class CorpusExampleServiceBean implements CorpusExampleServiceLocal {
     CorpusExampleRepository corpusExampleRepository;
 
     @Override
-    public List<CorpusExample> findCorpusExamplesByWord(Word word) {
+    public List<CorpusExample> findCorpusExamplesByWord(String word) {
         return corpusExampleRepository.findCorpusExamplesByWord(word);
     }
 

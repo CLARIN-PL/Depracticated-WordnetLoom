@@ -18,6 +18,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.text.WebTextPane;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import se.datadosen.component.RiverLayout;
@@ -27,8 +29,8 @@ import java.lang.reflect.InvocationTargetException;
 
 public class ViwnExamplesViewUI extends AbstractViewUI {
 
-    private JScrollPane scroll;
-    private JTextPane ta;
+    private WebScrollPane scroll;
+    private WebTextPane ta;
 
     @Override
     public JComponent getRootComponent() {
@@ -38,14 +40,14 @@ public class ViwnExamplesViewUI extends AbstractViewUI {
     @Override
     protected void initialize(WebPanel content) {
         getContent().setLayout(new RiverLayout());
-        ta = new JTextPane();
+        ta = new WebTextPane();
         ta.setContentType("text/html");
         ta.setEditable(false);
-        scroll = new JScrollPane(ta);
+        scroll = new WebScrollPane(ta);
         getContent().add(scroll, "hfill vfill");
     }
 
-    public void make_tree(final String text) {
+    public void load(final String text) {
         Runnable run = () -> {
             ta.setText(text);
             ta.setCaretPosition(0);
