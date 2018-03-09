@@ -102,9 +102,9 @@ INSERT INTO wordnet.synset (id, split,abstract, lexicon_id, status_id)
     S.isabstract,
     (SELECT CASE WHEN pos <= 4
       THEN 1
-            WHEN S.comment = '' AND S.owner = ''
-              THEN 3
-            ELSE 2 END AS lexicon
+            WHEN LL.project=-1
+              THEN 2
+            ELSE 3 END AS lexicon
      FROM wordnet_work.lexicalunit LL LEFT JOIN wordnet_work.unitandsynset U ON LL.id = U.LEX_ID
        LEFT JOIN wordnet_work.synset SS ON U.SYN_ID = SS.id
      WHERE SS.id = S.id
@@ -123,9 +123,9 @@ INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, 
     L.domain,
     CASE WHEN pos <= 4
       THEN 1
-    WHEN S.comment = '' AND S.owner = ''
-      THEN 3
-    ELSE 2 END       AS lexicon,
+    WHEN L.project = -1
+      THEN 2
+    ELSE 3 END       AS lexicon,
     CASE WHEN pos <= 4
       THEN pos
     ELSE pos - 4 END AS part_of_speech,
@@ -141,7 +141,7 @@ INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, 
 # changing synset position in english lexicons
 UPDATE sense
 SET synset_position = synset_position -1
-WHERE lexicon_id = 3;
+WHERE lexicon_id = 2;
 
 UPDATE sense
 SET synset_position = 0
@@ -188,7 +188,7 @@ INSERT INTO wordnet.sense_attributes (sense_id, comment, user_id, error_comment)
 
 # wstawianie atrybótów synsetów
 # złączenia z synsetem dokonujemy aby wyeliminować atrybuty synsetów pustych, które nie zostały przeniesione do nowej bazy
-INSERT INTO wordnet.synset_attributes (synset_id, comment,definition, owner_id, error_comment)
+INSERT INTO wordnet.synset_attributes (synset_id, comment, definition, owner_id, error_comment)
   SELECT
     S.id,
     S.comment,
@@ -201,8 +201,8 @@ INSERT INTO wordnet.synset_attributes (synset_id, comment,definition, owner_id, 
      LIMIT 1) AS user,
     error_comment
   FROM wordnet_work.synset S
-    JOIN wordnet.synset SY ON S.id = SY.id
-  WHERE comment != '' AND comment IS NOT NULL;
+  JOIN wordnet.synset SY ON S.id = SY.id;
+
 
 # dodawanie tekstów opisu
 DELIMITER $$

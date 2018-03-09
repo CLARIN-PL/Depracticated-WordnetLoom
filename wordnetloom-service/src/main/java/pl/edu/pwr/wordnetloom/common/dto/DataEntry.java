@@ -6,9 +6,8 @@ import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 public class DataEntry implements Serializable {
 
@@ -27,7 +26,7 @@ public class DataEntry implements Serializable {
 
     public DataEntry() {
         relations = new List[DIRECTIONS_NUMBER];
-        for(int i=0; i<DIRECTIONS_NUMBER; i++) {
+        for (int i = 0; i < DIRECTIONS_NUMBER; i++) {
             relations[i] = new ArrayList();
         }
     }
@@ -40,39 +39,44 @@ public class DataEntry implements Serializable {
         this.synset = synset;
     }
 
-    public List<SynsetRelation> getRelations(NodeDirection direction)
-    {
-        if(direction != NodeDirection.IGNORE){
+    public List<SynsetRelation> getRelations(NodeDirection direction) {
+        if (direction != NodeDirection.IGNORE) {
             return relations[direction.ordinal()];
         }
         return new ArrayList<>();
     }
 
-    public void setRelations(List<SynsetRelation> relations, NodeDirection direction)
-    {
-        if(direction != NodeDirection.IGNORE){
+    public void setRelations(List<SynsetRelation> relations, NodeDirection direction) {
+        if (direction != NodeDirection.IGNORE) {
             this.relations[direction.ordinal()] = relations;
         }
     }
 
     public void addRelation(SynsetRelation relation, NodeDirection direction) {
-        if(direction != NodeDirection.IGNORE){
-            this.relations[direction.ordinal()].add(relation);
+        if (direction != NodeDirection.IGNORE) {
+            relations[direction.ordinal()].add(relation);
         }
     }
 
-    public String getName() {return name;}
+    public String getName() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getVariant() {return variant;}
+    public String getVariant() {
+        return variant;
+    }
 
-    public void setVariant(String variant){
+    public void setVariant(String variant) {
         this.variant = variant;
     }
 
-    public Long getDomain(){return domain;}
+    public Long getDomain() {
+        return domain;
+    }
 
     public void setDomain(Long domain) {
         this.domain = domain;

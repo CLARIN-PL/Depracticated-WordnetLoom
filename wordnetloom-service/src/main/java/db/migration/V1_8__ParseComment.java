@@ -34,7 +34,6 @@ public class V1_8__ParseComment implements JdbcMigration {
         List<ParserResult> results;
         Attribute fixedAttribute;
         for (Attribute attribute : attributes) {
-            System.out.println("Atrybut" + attribute.getId());
             results = parser.parse(attribute.getComment());
             fixedAttribute = setAttributes(attribute, results, connection);
             updateAttributes(fixedAttribute, connection);
@@ -89,7 +88,6 @@ public class V1_8__ParseComment implements JdbcMigration {
         Attribute attribute;
         int offset = 0;
         do {
-            System.out.println("Pobieranie " + offset);
             resultSet = getAttributesResultSet(connection, 1000, offset);
             while (resultSet.next()) {
                 attribute = new Attribute();
@@ -170,7 +168,6 @@ public class V1_8__ParseComment implements JdbcMigration {
 
 
     private Long getRegisterID(String registerName, Connection connection) throws SQLException {
-//        String GET_ID_QUERY = "SELECT R.id FROM wordnet.register_types R LEFT JOIN wordnet.application_localised_string S ON R.name_id = S.id WHERE S.value = ?";
         String GET_ID_QUERY = "SELECT D.id FROM wordnet.dictionaries D LEFT JOIN wordnet.application_localised_string S ON D.name_id = S.id WHERE S.value = ?";
         PreparedStatement statement = connection.prepareStatement(GET_ID_QUERY);
         statement.setString(1, registerName);

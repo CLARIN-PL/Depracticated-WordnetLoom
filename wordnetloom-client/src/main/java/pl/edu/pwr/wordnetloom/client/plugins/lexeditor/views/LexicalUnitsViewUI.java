@@ -49,8 +49,6 @@ import java.util.List;
 public class LexicalUnitsViewUI extends AbstractViewUI implements
         ActionListener, ListSelectionListener, KeyListener, MouseListener {
 
-    private static final String SUPER_MODE_VALUE = "1";
-    private static final String SUPER_MODE = "SuperMode";
     private final int DEFAULT_SCROLL_HEIGHT = 220;
     private final Dimension DEFAULT_SCROLL_DIMENSION = new Dimension(0, DEFAULT_SCROLL_HEIGHT);
     private final int LIMIT = 50;

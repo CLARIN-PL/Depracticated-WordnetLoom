@@ -1,6 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.text.WebTextField;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
@@ -80,14 +83,17 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
      */
     public static final int UNIT_CREATED = 4;
 
-    private JList unitsList;
-    private JTextField synsetID;
-    private JLabel synsetOwner;
-    private JLabel isAbstract;
+    private WebList unitsList;
+    private WebTextField synsetID;
+    private WebTextField princentonID;
+    private WebTextField iliID;
+    private WebLabel synsetOwner;
+    private WebLabel isAbstract;
     private MButton buttonUp, buttonDown, buttonAdd, buttonDelete,
             buttonRelations, buttonSwitchToLexicalPerspective, buttonToNew;
     private Collection<Sense> lastUnits = null;
     private MTextArea commentValue = null;
+
     ArrayList<Sense> lastSelectedUnits = new ArrayList<>();
 
     private final SimpleListenersContainer clickListeners = new SimpleListenersContainer();
@@ -131,13 +137,26 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         // ustawienie layoutu
         content.setLayout(new RiverLayout());
 
-        synsetOwner = new JLabel("");
+        synsetOwner = new WebLabel("");
 
         // synset id
-        synsetID = new JTextField("");
+        synsetID = new WebTextField("");
         synsetID.setEditable(false);
-        synsetID.setBackground(null); //this is the same as a JLabel
-        synsetID.setBorder(null); //remove the border
+        synsetID.setDrawBackground(false);
+        synsetID.setDrawBorder(false);
+        synsetID.setDrawShade(false);
+
+        princentonID = new WebTextField("");
+        princentonID.setEditable(false);
+        princentonID.setDrawBackground(false);
+        princentonID.setDrawBorder(false);
+        princentonID.setDrawShade(false);
+
+        iliID = new WebTextField("");
+        iliID.setEditable(false);
+        iliID.setDrawBorder(false);
+        iliID.setDrawBackground(false);
+        iliID.setDrawShade(false);
 
         refreshData(null);
 
@@ -152,7 +171,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         commentValue.setRows(3);
         commentValue.setEnabled(false);
 
-        isAbstract = new JLabel();
+        isAbstract = new WebLabel();
 
         buttonUp = MButton.buildUpButton()
                 .withToolTip(Hints.MOVE_UNIT_UP)
@@ -245,13 +264,21 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             content.add("br", commentValue);
 
         }
+
         content.add("br", isAbstract);
 
-        content.add("br", new JLabel("Synset Id:"));
+        content.add("br", new WebLabel("Synset Id:"));
         content.add("", synsetID);
 
-        content.add("br", new JLabel(Labels.OWNER_COLON));
+        content.add("br", new WebLabel("Princeton Id:"));
+        content.add("", princentonID);
+
+        content.add("br", new WebLabel("ILI Id:"));
+        content.add("", iliID);
+
+        content.add("br", new WebLabel(Labels.OWNER_COLON));
         content.add("", synsetOwner);
+
         if (bottomButtons) {
             content.add("br vtop", new JLabel(Labels.COMMENT_COLON));
             content.add("", commentValue);
@@ -701,6 +728,8 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 isAbstract.setText("");
             }
             synsetID.setText(Long.toString(synset.getId()));
+            princentonID.setText(sa.getPrincetonId());
+            iliID.setText(sa.getIliId());
 
             synsetOwner.setText(sa.getOwner() != null ? sa.getOwner().getFullname() : "");
         }

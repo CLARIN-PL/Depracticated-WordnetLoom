@@ -16,23 +16,26 @@ public class V1_9__ParseSynsetDefinition implements JdbcMigration {
     private PrincetonDefinitionParser princetonParser = new PrincetonDefinitionParser();
 
     public void migrate(Connection connection) throws SQLException {
+
         List<Attribute> attributes = getAttributesList(connection);
+
         Attribute fixedAttribute;
+
         for(Attribute attribute : attributes) {
             fixedAttribute = null;
             if(Objects.equals(attribute.getDefinition(), "brak danych")) {
                 fixedAttribute = attribute;
                 fixedAttribute.setDefinition(null);
             } else {
-                if(attribute.isPrinston()){
+                if(attribute.isPrinceton()){
                     if(isInHashFormat(attribute.getDefinition())){
-                        fixedAttribute = serveWithNormalFormat(attribute);
+                        fixedAttribute = saveWithNormalFormat(attribute);
                     } else {
-                        fixedAttribute = serveWithPrincetonFormat(attribute);
+                        fixedAttribute = saveWithPrincetonFormat(attribute);
                     }
                 } else {
                     if(isInHashFormat(attribute.getDefinition())){
-                        fixedAttribute = serveWithNormalFormat(attribute);
+                        fixedAttribute = saveWithNormalFormat(attribute);
                     }
                 }
             }
@@ -42,13 +45,13 @@ public class V1_9__ParseSynsetDefinition implements JdbcMigration {
         }
     }
 
-    private Attribute serveWithNormalFormat(Attribute attribute) {
+    private Attribute saveWithNormalFormat(Attribute attribute) {
         List<ParserResult> results = parser.parse(attribute.getDefinition());
         attribute.setDefinition(null);
         return setAttributes(attribute, results);
     }
 
-    private Attribute serveWithPrincetonFormat(Attribute attribute) {
+    private Attribute saveWithPrincetonFormat(Attribute attribute) {
         List<ParserResult> results = princetonParser.parse(attribute.getDefinition());
         attribute.setDefinition(null);
         return setAttributes(attribute, results);
@@ -65,26 +68,27 @@ public class V1_9__ParseSynsetDefinition implements JdbcMigration {
                     attribute.addExample(new Example(result.getValue(), result.getSecondValue()));
                     break;
                 case UNKNOWN:
-                    System.out.println("Nieznane " + attribute.getId());
-                    //TODO dodać nieznane
+                    break;
+                default:
             }
         }
         return attribute;
     }
 
     private void updateAttribute(Attribute attribute, Connection connection) throws SQLException {
-        final int ID_INDEX = 2;
         final int DEFINITION_INDEX = 1;
+        final int ID_INDEX = 2;
         final String UPDATE_QUERY = "UPDATE synset_attributes SET definition = ? WHERE synset_id = ?";
 
         PreparedStatement updateAttributeStatement = connection.prepareStatement(UPDATE_QUERY);
         if(attribute.getDefinition() != null){
-            updateAttributeStatement.setString(DEFINITION_INDEX, attribute.getDefinition());
+            updateAttributeStatement.setString(DEFINITION_INDEX, attribute.getDefinition().trim());
         } else {
             updateAttributeStatement.setNull(DEFINITION_INDEX, Types.VARCHAR);
         }
         updateAttributeStatement.setLong(ID_INDEX, attribute.getId());
         updateAttributeStatement.executeUpdate();
+
         for(Example example : attribute.getExamples()){
             saveExample(example,attribute.getId(), connection);
         }
@@ -107,18 +111,24 @@ public class V1_9__ParseSynsetDefinition implements JdbcMigration {
 
 
     private List<Attribute> getAttributesList (Connection connection) throws SQLException {
-        final String SELECT_ATTRIBUTES_QUERY = "SELECT A.synset_id, A.definition, S.lexicon_id FROM wordnet.synset_attributes A JOIN wordnet.synset S ON A.synset_id = S.id " +
-                "WHERE definition IS NOT NULL AND definition != '' AND DEFINITION != 'brak danych'" ;
-        final int PRINSTON_ID = 2;
+
+        final String SELECT_ATTRIBUTES_QUERY = "SELECT A.synset_id, A.definition, S.lexicon_id " +
+                "FROM wordnet.synset_attributes A " +
+                "JOIN wordnet.synset S ON A.synset_id = S.id " +
+                "WHERE A.definition IS NOT NULL AND A.definition != '' AND A.definition != 'brak danych'" ;
+
+        final long PRINCETON_ID = 2L;
+
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(SELECT_ATTRIBUTES_QUERY);
         List<Attribute> result = new ArrayList<>();
         Attribute attribute;
+
         while(resultSet.next()){
             attribute = new Attribute();
             attribute.setId(resultSet.getLong(1));
             attribute.setDefinition(resultSet.getString(2));
-            attribute.setPrinston(resultSet.getInt(3) == PRINSTON_ID);
+            attribute.setPrinceton(resultSet.getLong(3) == PRINCETON_ID);
             result.add(attribute);
         }
         return result;
@@ -132,7 +142,7 @@ public class V1_9__ParseSynsetDefinition implements JdbcMigration {
 
         private long id;
         private String definition;
-        private boolean prinston;
+        private boolean princeton;
         private List<Example> examples;
 
         public Attribute(){
@@ -155,12 +165,12 @@ public class V1_9__ParseSynsetDefinition implements JdbcMigration {
             this.definition = definition;
         }
 
-        public boolean isPrinston(){
-            return prinston;
+        public boolean isPrinceton() {
+            return princeton;
         }
 
-        public void setPrinston(boolean prinston){
-            this.prinston = prinston;
+        public void setPrinceton(boolean princeton) {
+            this.princeton = princeton;
         }
 
         public void addExample(Example example){

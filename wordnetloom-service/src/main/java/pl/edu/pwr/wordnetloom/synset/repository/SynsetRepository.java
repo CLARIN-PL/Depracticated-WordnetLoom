@@ -99,6 +99,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return getEntityManager().createQuery("SELECT s FROM Synset s WHERE s.id IN ( :synsetsID )", Synset.class)
                 .setParameter("synsetsID", Arrays.asList(synsetIds))
                 .getResultList();
+
     }
 
 
@@ -288,19 +289,23 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
         for (int i = 0; i < synsetsList.size(); i++) {
             int direction = synsetsList.get(i).getRelationType().getNodePosition().ordinal();
-            if(synsetsList.get(i).getChild().getId().equals(synsetId))
-            {
+
+            if(synsetsList.get(i).getChild().getId().equals(synsetId)) {
                 direction = synsetsList.get(i).getRelationType().getNodePosition().getOpposite().ordinal();
             }
+
             if(direction == NodeDirection.IGNORE.ordinal()){
                 continue;
             }
+
             if (directionCounter[direction] != numRelationsOnDirection) {
                 resultList.add(i);
                 directionCounter[direction]++;
+
                 if (directionCounter[direction] == numRelationsOnDirection) {
                     filledDirectionsCounter++;
                 }
+
                 if (filledDirectionsCounter == NUM_DIRECTION) {
                     return resultList;
                 }

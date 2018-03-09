@@ -5,8 +5,7 @@ public class DataMap {
     private Long id;
     private String text;
 
-    public DataMap(Long id, String text)
-    {
+    public DataMap(Long id, String text){
         this.id = id;
         this.text = text;
     }
