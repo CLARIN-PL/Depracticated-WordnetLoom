@@ -92,30 +92,6 @@ public interface Workbench {
     Service getService(String name);
 
     /**
-     * Odczytanie określonego parametru z listy przechowywanej przez środowisko.
-     * Parametry sa ładowane z pliku konfiguracyjnego podczas startu aplikacji.
-     *
-     * @param paramName - nazwa parametru
-     * @return przechowywana wartość
-     */
-    String getParam(String paramName);
-
-    /**
-     * Zapisanie określonego parametru do środowiska
-     *
-     * @param paramName - nazwa parametru
-     * @param value     - nowa wartość
-     */
-    void setParam(String paramName, String value);
-
-    /**
-     * Usuniecie parametru z konfiguracji
-     *
-     * @param paramName - nazwa parametru
-     */
-    void removeParam(String paramName);
-
-    /**
      * Odczytanie wersji programu
      *
      * @return wersja programu
@@ -131,13 +107,6 @@ public interface Workbench {
     void choosePerspective(String perspectiveName);
 
     /**
-     * Ustawienie tekstu dla paska statusu
-     *
-     * @param text - tekst dla statusu
-     */
-    void setStatusText(String text);
-
-    /**
      * Odczytanie głównego kontenera okna na którym wszystko bazuje. Jest to
      * wykorzystywane przy oknach dialogowych
      *
@@ -146,7 +115,5 @@ public interface Workbench {
     WebFrame getFrame();
 
     void setBusy(boolean busy);
-
-    void refreshUserBar(User user);
 
 }

@@ -1,11 +1,14 @@
 package pl.edu.pwr.wordnetloom.user.service;
 
 import pl.edu.pwr.wordnetloom.user.model.User;
+import pl.edu.pwr.wordnetloom.user.model.UserSettings;
 
 
 public interface UserServiceRemote {
 
-    void saveOrUpdate(User user);
+    void save(User user);
+
+    void update(UserSettings userSettings);
 
     User findUserByEmail(String email);
 

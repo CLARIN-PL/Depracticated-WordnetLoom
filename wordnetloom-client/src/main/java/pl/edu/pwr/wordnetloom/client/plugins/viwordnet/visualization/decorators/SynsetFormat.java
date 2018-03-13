@@ -20,7 +20,7 @@ public class SynsetFormat {
         StringBuilder nameBuilder = new StringBuilder();
         Sense sense;
         if(htmlFormat) {
-            nameBuilder.append("<div style=\"text-align:left; margin-left:10px; width:"+width+"px;\">");
+            nameBuilder.append("<div style=\"text-align:left; margin-left:10px; width:").append(width).append("px;\">");
         }
         nameBuilder.append("[");
         for(int i=0; i < synset.getSenses().size(); i++) {

@@ -67,9 +67,6 @@ public class DialogBox {
     private static JFrame parentWindow = null;
 
     private DialogBox() {
-        /**
-         *
-         */
     }
 
     /**

@@ -56,12 +56,12 @@ public class AstrideLabelRenderer<V, E> implements Renderer.EdgeLabel<V, E> {
             return;
         }
 
-        if (!rc.getEdgeIncludePredicate().evaluate(Context.<Graph<V, E>, E>getInstance(graph, e))) {
+        if (!rc.getEdgeIncludePredicate().evaluate(Context.getInstance(graph, e))) {
             return;
         }
 
-        if (!rc.getVertexIncludePredicate().evaluate(Context.<Graph<V, E>, V>getInstance(graph, v1))
-                || !rc.getVertexIncludePredicate().evaluate(Context.<Graph<V, E>, V>getInstance(graph, v2))) {
+        if (!rc.getVertexIncludePredicate().evaluate(Context.getInstance(graph, v1))
+                || !rc.getVertexIncludePredicate().evaluate(Context.getInstance(graph, v2))) {
             return;
         }
 
@@ -82,7 +82,7 @@ public class AstrideLabelRenderer<V, E> implements Renderer.EdgeLabel<V, E> {
         Shape destVertexShape
                 = rc.getVertexShapeTransformer().transform(v2);
 
-        Shape edgeShape = rc.getEdgeShapeTransformer().transform(Context.<Graph<V, E>, E>getInstance(graph, e));
+        Shape edgeShape = rc.getEdgeShapeTransformer().transform(Context.getInstance(graph, e));
 
         BasicEdgeRenderer<V, E> ber = new BasicEdgeRenderer<>();
 

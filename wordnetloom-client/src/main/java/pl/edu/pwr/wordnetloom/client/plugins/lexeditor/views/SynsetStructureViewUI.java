@@ -1,6 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.text.WebTextField;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
@@ -18,7 +21,6 @@ import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
-import pl.edu.pwr.wordnetloom.client.systems.misc.Tools;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
@@ -45,7 +47,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -79,14 +83,17 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
      */
     public static final int UNIT_CREATED = 4;
 
-    private JList unitsList;
-    private JTextField synsetID;
-    private JLabel synsetOwner;
-    private JLabel isAbstract;
+    private WebList unitsList;
+    private WebTextField synsetID;
+    private WebTextField princentonID;
+    private WebTextField iliID;
+    private WebLabel synsetOwner;
+    private WebLabel isAbstract;
     private MButton buttonUp, buttonDown, buttonAdd, buttonDelete,
             buttonRelations, buttonSwitchToLexicalPerspective, buttonToNew;
     private Collection<Sense> lastUnits = null;
     private MTextArea commentValue = null;
+
     ArrayList<Sense> lastSelectedUnits = new ArrayList<>();
 
     private final SimpleListenersContainer clickListeners = new SimpleListenersContainer();
@@ -130,13 +137,26 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         // ustawienie layoutu
         content.setLayout(new RiverLayout());
 
-        synsetOwner = new JLabel("");
+        synsetOwner = new WebLabel("");
 
         // synset id
-        synsetID = new JTextField("");
+        synsetID = new WebTextField("");
         synsetID.setEditable(false);
-        synsetID.setBackground(null); //this is the same as a JLabel
-        synsetID.setBorder(null); //remove the border
+        synsetID.setDrawBackground(false);
+        synsetID.setDrawBorder(false);
+        synsetID.setDrawShade(false);
+
+        princentonID = new WebTextField("");
+        princentonID.setEditable(false);
+        princentonID.setDrawBackground(false);
+        princentonID.setDrawBorder(false);
+        princentonID.setDrawShade(false);
+
+        iliID = new WebTextField("");
+        iliID.setEditable(false);
+        iliID.setDrawBorder(false);
+        iliID.setDrawBackground(false);
+        iliID.setDrawShade(false);
 
         refreshData(null);
 
@@ -151,7 +171,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         commentValue.setRows(3);
         commentValue.setEnabled(false);
 
-        isAbstract = new JLabel();
+        isAbstract = new WebLabel();
 
         buttonUp = MButton.buildUpButton()
                 .withToolTip(Hints.MOVE_UNIT_UP)
@@ -244,13 +264,21 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             content.add("br", commentValue);
 
         }
+
         content.add("br", isAbstract);
 
-        content.add("br", new JLabel("Synset Id:"));
+        content.add("br", new WebLabel("Synset Id:"));
         content.add("", synsetID);
 
-        content.add("br", new JLabel(Labels.OWNER_COLON));
+        content.add("br", new WebLabel("Princeton Id:"));
+        content.add("", princentonID);
+
+        content.add("br", new WebLabel("ILI Id:"));
+        content.add("", iliID);
+
+        content.add("br", new WebLabel(Labels.OWNER_COLON));
         content.add("", synsetOwner);
+
         if (bottomButtons) {
             content.add("br vtop", new JLabel(Labels.COMMENT_COLON));
             content.add("", commentValue);
@@ -258,41 +286,41 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         }
     }
 
-    private void setSplitPosition(int newSplitPosition){
+    private void setSplitPosition(int newSplitPosition) {
         lastSynset.setSplit(newSplitPosition);
         lastSynset = RemoteService.synsetRemote.save(lastSynset);
         listModel.setSplitPosition(newSplitPosition);
     }
 
-    private void moveUnitUp(int senseIndex){
-        moveUnit(senseIndex, senseIndex -1, true);
+    private void moveUnitUp(int senseIndex) {
+        moveUnit(senseIndex, senseIndex - 1, true);
     }
 
-    private void moveUnitDown(int senseIndex){
+    private void moveUnitDown(int senseIndex) {
         moveUnit(senseIndex, senseIndex + 1, false);
     }
 
-    private void moveUnit(int sourceIndex, int destIndex, boolean moveUp){
+    private void moveUnit(int sourceIndex, int destIndex, boolean moveUp) {
         int splitPosition = listModel.getLineSplitPosition();
-        if(sourceIndex == splitPosition){
+        if (sourceIndex == splitPosition) {
             setSplitPosition(destIndex);
-        } else if(destIndex == splitPosition) {
+        } else if (destIndex == splitPosition) {
             int newSplitPosition = moveUp ? destIndex + 1 : destIndex - 1;
             setSplitPosition(newSplitPosition);
         } else {
-            exchangeUnitsInSynset(sourceIndex, destIndex,splitPosition, listModel);
+            exchangeUnitsInSynset(sourceIndex, destIndex, splitPosition, listModel);
         }
 
         unitsList.updateUI();
-        int newSelectedPosition = moveUp ? sourceIndex -1 : sourceIndex + 1;
+        int newSelectedPosition = moveUp ? sourceIndex - 1 : sourceIndex + 1;
         unitsList.setSelectedIndex(newSelectedPosition);
         // jeżeli przesunięto pierwszą pozycję należy zaktualizować synset na grafie (zmiana etykiety)
-        if(sourceIndex == 0 || destIndex == 0){
+        if (sourceIndex == 0 || destIndex == 0) {
             updateNodeNameOnGraph();
         }
     }
 
-    private void exchangeUnitsInSynset(int senseIndex1, int senseIndex2, int splitPosition, UnitsInSynsetListModel listModel){
+    private void exchangeUnitsInSynset(int senseIndex1, int senseIndex2, int splitPosition, UnitsInSynsetListModel listModel) {
         assert senseIndex1 > 0 && senseIndex2 > 0;
         assert senseIndex1 < listModel.getSize() && senseIndex2 < listModel.getSize();
 
@@ -308,17 +336,17 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         RemoteService.senseRemote.save(sense1);
         RemoteService.senseRemote.save(sense2);
         // zamiana jednostek na liście
-        int indexOnList1 = senseIndex1 >= splitPosition ? senseIndex1 - 1  : senseIndex1;
-        int indexOnList2 = senseIndex2 >= splitPosition ? senseIndex2 - 1  : senseIndex2;
+        int indexOnList1 = senseIndex1 >= splitPosition ? senseIndex1 - 1 : senseIndex1;
+        int indexOnList2 = senseIndex2 >= splitPosition ? senseIndex2 - 1 : senseIndex2;
         List<Sense> sensesList = new ArrayList<>(listModel.getCollection());
         Collections.swap(sensesList, indexOnList1, indexOnList2);
         listModel.setCollection(sensesList);
     }
 
-    private void updateNodeNameOnGraph(){
+    private void updateNodeNameOnGraph() {
         ViwnNode node = graphUI.getSelectedNode();
-        if(node != null && node instanceof ViwnNodeSynset){
-            ViwnNodeSynset s = (ViwnNodeSynset)node;
+        if (node != null && node instanceof ViwnNodeSynset) {
+            ViwnNodeSynset s = (ViwnNodeSynset) node;
             // pobieramy głowę synsetu, ponieważ jednostki na liście nie mają zaadowanej domeny, która jest potrzebna do stworzenia opisu węza
             Sense firstSense = RemoteService.senseRemote.findHeadSenseOfSynset(lastSynset.getId());
             getViWordNetService().getSynsetData().changeLabel(lastSynset.getId(), firstSense);
@@ -373,7 +401,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         int answer;
         int unitsCount = lastSynset.getSenses().size();
         boolean deleteSynset;
-        if(selectedUnits.size() == unitsCount){
+        if (selectedUnits.size() == unitsCount) {
             answer = DialogBox.showYesNo(Messages.QUESTION_DELETE_SYNSET);
             deleteSynset = true;
         } else {
@@ -381,20 +409,20 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             deleteSynset = false;
         }
 
-        if(answer == DialogBox.YES){
+        if (answer == DialogBox.YES) {
             RemoteService.synsetRemote.deleteSensesFromSynset(selectedUnits, lastSynset);
             // usunięcie jednostki z listy
             Collection<Sense> sensesOnList = listModel.getCollection();
             sensesOnList.removeAll(selectedUnits);
             listModel.setCollection(sensesOnList);
-            if(deleteSynset){
+            if (deleteSynset) {
                 //
                 RemoteService.synsetRemote.delete(lastSynset);
                 listModel.setCollection(null);
 //                refreshData(lastSynset);
                 //TODO zrobić usunięcie synsetu z grafu
                 getViWordNetService().refreshViews();
-            } else if(lastSynset.getSplit() > listModel.getSize()){
+            } else if (lastSynset.getSplit() > listModel.getSize()) {
                 // jeżeli po usunięciu jednostek podział jest większy niż liczba elementów na liście, należy przesunąć podział na ostatnie miejsce
                 updateSplitPosition(listModel.getSize());
             }
@@ -402,7 +430,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         }
     }
 
-    private void updateSplitPosition(int newSplitPosition){
+    private void updateSplitPosition(int newSplitPosition) {
         lastSynset.setSplit(newSplitPosition);
         listModel.setSplitPosition(newSplitPosition);
         RemoteService.synsetRemote.save(lastSynset);
@@ -413,16 +441,16 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         int unitsInSynsetCount = listModel.getSize();
         Collection<Sense> selectedUnits = getSelectedUnits();
         // nie można przenieść wszystkich jednostek z synsetu
-        if(selectedUnits.size() == unitsInSynsetCount) {
+        if (selectedUnits.size() == unitsInSynsetCount) {
             DialogBox.showError(Messages.ERROR_CANNOT_MOVE_ALL_UNITS_FROM_SYNSET);
             return;
         }
         // wyświetlenie okienka do ustalenia relacji między starym i nowym synsetem
         PartOfSpeech partOfSpeech = listModel.getObjectAt(0).getPartOfSpeech();
 
-        final RelationType relationType = RelationTypeFrame.showModal(workbench, RelationArgument.SYNSET_RELATION, partOfSpeech,lastSynset.getSenses() , selectedUnits);
+        final RelationType relationType = RelationTypeFrame.showModal(workbench, RelationArgument.SYNSET_RELATION, partOfSpeech, lastSynset.getSenses(), selectedUnits);
 
-        if(relationType == null){
+        if (relationType == null) {
             return;
         }
 
@@ -432,7 +460,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
         Synset newSynset = RemoteService.synsetRemote.save(synsetToSave);
 
-        for(Sense sense : selectedUnits){
+        for (Sense sense : selectedUnits) {
             RemoteService.synsetRemote.addSenseToSynset(sense, newSynset);
         }
 
@@ -442,7 +470,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         unitsInSynset.removeAll(selectedUnits);
         listModel.setCollection(unitsInSynset);
 
-        if(lastSynset.getSplit() > listModel.getSize()){
+        if (lastSynset.getSplit() > listModel.getSize()) {
             updateSplitPosition(listModel.getSize());
         }
         unitsList.updateUI();
@@ -458,18 +486,18 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     public void actionPerformed(ActionEvent event) {
         int index = unitsList.getSelectedIndex(); // odczytanie zaznaczenia
         if (event.getSource() == buttonUp) { // czy przycisk W GÓRE
-           moveUnitUp(index);
+            moveUnitUp(index);
         } else if (event.getSource() == buttonDown) { // czy przycos W DÓŁ
             moveUnitDown(index);
         } else if (event.getSource() == buttonAdd) { // dodanie nowego leksemu
             addUnitToSynset();
-        } else if(event.getSource() == buttonDelete) {
+        } else if (event.getSource() == buttonDelete) {
             deleteUnitFromSynset();
-        } else if(event.getSource() == buttonToNew){
+        } else if (event.getSource() == buttonToNew) {
             moveToNewSynset();
         }
         //TODO sprawdzić czy zostały jeszcze jakieś przyciski do obsłużenia
-            // odswiezenie danych
+        // odswiezenie danych
 
 //                refreshData(lastSynset);
 //                getViWordNetService().refreshViews();
@@ -693,13 +721,15 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             units = RemoteService.senseRemote.findBySynset(synset, LexiconManager.getInstance().getLexiconsIds());
             SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
 
-            commentValue.setText(sa.getComment() !=null ?  sa.getComment(): "");
+            commentValue.setText(sa.getComment() != null ? sa.getComment() : "");
             if (synset.getAbstract()) {
                 isAbstract.setText(String.format("<html><font color=red>%s</font></html>", Labels.SYNSET_ARTIFICIAL));
             } else {
                 isAbstract.setText("");
             }
             synsetID.setText(Long.toString(synset.getId()));
+            princentonID.setText(sa.getPrincetonId());
+            iliID.setText(sa.getIliId());
 
             synsetOwner.setText(sa.getOwner() != null ? sa.getOwner().getFullname() : "");
         }
@@ -728,7 +758,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                     .getIndexesOfSelectedElements(selectedUnits) : null;
             // zaznaczenie odpowiedniego elementu
             if (indices != null && indices.size() > 0) {
-                unitsList.setSelectedIndices(Tools.getInstance().collectionToArray(indices));
+                unitsList.setSelectedIndices(indices.stream().mapToInt(Integer::intValue).toArray());
                 valueChanged(new ListSelectionEvent(
                         synset == null ? new Object() : synset, 0, 0, false));
             } else if (listModel.getSize() > 0) {

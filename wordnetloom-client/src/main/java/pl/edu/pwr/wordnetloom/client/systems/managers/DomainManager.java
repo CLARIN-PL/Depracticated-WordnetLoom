@@ -97,7 +97,7 @@ public class DomainManager {
         Arrays.fill(toReturn, cache.get(0));
 
         cache.stream().forEach((d) -> {
-            toReturn[(int) (d.getId() + 0)] = d;
+            toReturn[Math.toIntExact(d.getId())] = d;
         });
 
         return toReturn;

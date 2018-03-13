@@ -31,11 +31,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 
     public static HashMap<PartOfSpeech, Color> PosBgColors;
 
-    public final static Color vertexBackgroundColorVerbStroke = new Color(239, 224, 52);
-    public final static Color vertexBackgroundColorNounStroke = new Color(27, 221, 27);
-    public final static Color vertexBackgroundColorAdjStroke = new Color(28, 193, 177);
-    public final static Color vertexBackgroundColorAdvStroke = new Color(81, 115, 193);
-
     public final static Color vertexBackgroundColorSelected = Color.yellow;
     public final static Color vertexBackgroundColorRoot = new Color(255, 178, 178);
     public final static Color vertexBackgroundColorMarked = new Color(255, 195, 195);
@@ -509,11 +504,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     }
 
     public String getLexiconLabel() {
-//        if (units != null && !units.isEmpty()) {
-//            Sense unit = ((Sense) units.iterator().next());
-//            return unit.getLexicon().getLexiconIdentifier().getText();
-//        }
-        return "";
+        return synsetData.getById(getId()).getLexicon();
     }
 
     public ViwnNodeSynset setLabel(String s) {

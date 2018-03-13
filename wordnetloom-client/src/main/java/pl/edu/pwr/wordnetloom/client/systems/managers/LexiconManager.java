@@ -28,6 +28,7 @@ public final class LexiconManager implements Loggable {
         if (instance == null) {
             synchronized (LexiconManager.class) {
                 instance = new LexiconManager();
+                instance.loadLexiconMarker();
             }
         }
         return instance;

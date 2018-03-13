@@ -11,36 +11,36 @@ public class DomainForTestsRepository {
 
     public static Domain bhp() {
         Domain d = new Domain();
-        d.setName(1l);
-        d.setDescription(2l);
+        d.setName(1L);
+        d.setDescription(2L);
         return d;
     }
 
     public static Domain rsl() {
         Domain d = new Domain();
-        d.setName(3l);
-        d.setDescription(4l);
+        d.setName(3L);
+        d.setDescription(4L);
         return d;
     }
 
     public static Domain zdarz() {
         Domain d = new Domain();
-        d.setName(5l);
-        d.setDescription(6l);
+        d.setName(5L);
+        d.setDescription(6L);
         return d;
     }
 
     public static Domain cczuj() {
         Domain d = new Domain();
-        d.setName(7l);
-        d.setDescription(8l);
+        d.setName(7L);
+        d.setDescription(8L);
         return d;
     }
 
     public static Domain jak() {
         Domain d = new Domain();
-        d.setName(9l);
-        d.setDescription(10l);
+        d.setName(9L);
+        d.setDescription(10L);
         return d;
     }
 

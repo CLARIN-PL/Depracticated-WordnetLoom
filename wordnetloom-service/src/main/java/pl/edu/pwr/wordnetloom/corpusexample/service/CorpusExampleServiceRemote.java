@@ -6,6 +6,6 @@ import pl.edu.pwr.wordnetloom.word.model.Word;
 
 public interface CorpusExampleServiceRemote {
 
-    List<CorpusExample> findCorpusExamplesByWord(Word word);
+    List<CorpusExample> findCorpusExamplesByWord(String word);
 
 }

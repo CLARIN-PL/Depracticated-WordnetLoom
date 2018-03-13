@@ -24,9 +24,9 @@ public class CorpusExampleRepository extends GenericRepository<CorpusExample> {
         return em;
     }
 
-    public List<CorpusExample> findCorpusExamplesByWord(Word word) {
-        return em.createQuery("SELECT c FROM CorpusExample c WHERE c.word.word = :word", CorpusExample.class)
-                .setParameter("word", word.getWord())
+    public List<CorpusExample> findCorpusExamplesByWord(String word) {
+        return em.createQuery("SELECT c FROM CorpusExample c WHERE c.word = :word", CorpusExample.class)
+                .setParameter("word", word)
                 .getResultList();
     }
 

@@ -41,7 +41,7 @@ public class RelationTypeRepositoryUTest extends TestBaseRepository {
     public void shouldSaveRelationtype() {
 
         RelationType ant = createAntonimia();
-        RelationType expect = relationTypeRepository.findById(1l);
+        RelationType expect = relationTypeRepository.findById(1L);
 
         assertThat(ant.getId(), equalTo(expect.getId()));
     }
@@ -135,7 +135,7 @@ public class RelationTypeRepositoryUTest extends TestBaseRepository {
 
         createAntonimia();
 
-        RelationType ant = relationTypeRepository.findById(1l);
+        RelationType ant = relationTypeRepository.findById(1L);
         RelationType expect = relationTypeRepository.findByIdWithDependencies(ant.getId());
 
         assertThat(ant.getId(), equalTo(expect.getId()));

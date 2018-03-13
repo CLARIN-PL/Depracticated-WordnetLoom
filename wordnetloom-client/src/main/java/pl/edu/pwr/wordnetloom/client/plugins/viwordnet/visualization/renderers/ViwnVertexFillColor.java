@@ -61,7 +61,7 @@ public final class ViwnVertexFillColor implements Transformer<ViwnNode, Paint> {
             if (ViwnNodeSynset.PosBgColors.containsKey(pos)) {
                 return ViwnNodeSynset.PosBgColors.get(pos);
             } else {
-                return ViwnNodeSynset.PosBgColors.get(PartOfSpeechManager.getInstance().getById(1l));
+                return ViwnNodeSynset.PosBgColors.get(PartOfSpeechManager.getInstance().getById(1L));
             }
 
         } else if (v instanceof ViwnNodeSet) {

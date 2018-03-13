@@ -21,6 +21,7 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
 import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -391,6 +392,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         lemma.setText(formatValue(unit != null ? unit.getWord().getWord() : null));
         variant.setText(unit != null ? "" + unit.getVariant() : null);
         lexicon.setSelectedItem(unit != null ? new CustomDescription<>(unit.getLexicon().toString(), unit.getLexicon()) : null);
+
         String partOfSpeechText = LocalisationManager.getInstance().getLocalisedString(unit.getPartOfSpeech().getId());
         partOfSpeech.setSelectedItem(unit != null ? new CustomDescription<>(
                 partOfSpeechText, unit.getPartOfSpeech()): null);
@@ -406,7 +408,8 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         if(attributes != null){
             definition.setText(attributes.getDefinition());
             comment.setText(attributes.getComment());
-            register.setSelectedItem(attributes.getRegister());
+            register.setSelectedItem(attributes.getRegister() == null ? null :
+                    new CustomDescription<>(LocalisationManager.getInstance().getLocalisedString(attributes.getRegister().getName()), attributes.getRegister()));
             link.setText(attributes.getLink());
         }
 

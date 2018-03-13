@@ -51,7 +51,6 @@ public class Application implements Loggable {
         try {
 
             Workbench workbench = new PanelWorkbench(PROGRAM_NAME_VERSION);
-            workbench.refreshUserBar(RemoteConnectionProvider.getInstance().getUser());
             workbench.setVisible(true);
 
         } catch (Exception ex) {

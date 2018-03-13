@@ -335,7 +335,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 DefaultListModel model = new DefaultListModel();
 
                 ArrayList<ViwnNodeSynset> col = new ArrayList<>(set.getSynsets());
-                Collections.sort(col, new ViwnNodeAlphabeticComparator());
+                col.sort(new ViwnNodeAlphabeticComparator());
                 for (ViwnNodeSynset syns : col) {
                     model.addElement(syns);
                 }

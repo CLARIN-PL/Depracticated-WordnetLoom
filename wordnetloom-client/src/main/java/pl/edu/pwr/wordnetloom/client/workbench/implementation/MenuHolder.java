@@ -33,16 +33,11 @@ import java.util.Collection;
  */
 public class MenuHolder {
 
-    private static final String SHORTCUTS = "Shortcuts";
-
     private final WebMenuBar menuBar;
-    // private final WebMenu shortCutsMenu;
 
     public MenuHolder() {
         menuBar = new WebMenuBar();
-        //  shortCutsMenu = new WebMenu(SHORTCUTS);
-        // shortCutsMenu.setVisible(false);
-        //menuBar.add(shortCutsMenu);
+        //menuBar.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
     }
 
     /**
@@ -117,7 +112,6 @@ public class MenuHolder {
                         shortCut.doAction();
                     }
             );
-            //    shortCutsMenu.add(newItem);
         }
     }
 

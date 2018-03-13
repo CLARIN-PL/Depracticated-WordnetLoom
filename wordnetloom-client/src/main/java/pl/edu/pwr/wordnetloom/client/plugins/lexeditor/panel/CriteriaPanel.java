@@ -22,10 +22,8 @@ public abstract class CriteriaPanel extends WebPanel {
 
     private static final long serialVersionUID = 4649824763750406980L;
     public static final String STANDARD_VALUE_FILTER = "";
-    private int SCROLL_PANE_HEIGHT = 400;
     private final int DEFAULT_WIDTH = 150;
     private final int DEFAULT_HEIGHT = 20;
-    protected final Dimension DEFAULT_DIMENSION = new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     protected final Dimension DEFAULT_DIMENSION_COMBO = new Dimension(DEFAULT_WIDTH, 25);
 
     private WebTextField searchTextField;
@@ -35,16 +33,13 @@ public abstract class CriteriaPanel extends WebPanel {
     private MComboBox<RelationType> synsetRelationsComboBox;
     private MComboBox<RelationType> senseRelationsComboBox;
 
-    public CriteriaPanel(int scrollHeight) {
-        SCROLL_PANE_HEIGHT = scrollHeight;
+    public CriteriaPanel() {
         initialize();
     }
 
     private void initialize() {
         setLayout(new RiverLayout());
-        setMaximumSize(new Dimension(0, SCROLL_PANE_HEIGHT));
-        setMinimumSize(new Dimension(0, SCROLL_PANE_HEIGHT));
-        setPreferredSize(new Dimension(0, SCROLL_PANE_HEIGHT));
+
 
         lexiconComboBox = initLexiconComboBox();
         partsOfSpeechComboBox = initPartOfSpeechComboBox();
