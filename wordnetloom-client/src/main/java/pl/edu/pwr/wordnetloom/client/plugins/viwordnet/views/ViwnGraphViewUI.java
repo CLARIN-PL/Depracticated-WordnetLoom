@@ -404,7 +404,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         for (int i = 0; i < groups.size(); ++i) {
             for (ViwnNodeSynset s : groups.get(i)) {
-                ArrayList<ViwnNodeSynset> list = map.get((ViwnNodeRoot) s
+                ArrayList<ViwnNodeSynset> list = map.get(s
                         .getSpawner());
                 if (list == null) {
                     list = new ArrayList<>();
@@ -1481,7 +1481,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         this.criteria.setComment(criteria.getComment());
         this.criteria.setExample(criteria.getExample());
         this.criteria.setRelation(criteria.getRelation());
-//        this.criteria.setSynsetType(criteria.getSynsetType());
         this.criteria.setSense(criteria.getSense());
     }
 

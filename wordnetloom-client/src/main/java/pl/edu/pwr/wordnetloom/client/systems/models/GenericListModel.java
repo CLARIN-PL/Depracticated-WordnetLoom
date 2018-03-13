@@ -32,10 +32,7 @@ public class GenericListModel<T> implements ListModel {
     protected int lastIndex = -1;
     protected String markName = null;
     protected Object tag = null;
-    private boolean synsetMode;
-    private Map<Long, String> synsetTags = new HashedMap<>();
 
-    // lista sluchaczy
     private EventListenerList listeners = new EventListenerList();
 
     /**
@@ -48,7 +45,7 @@ public class GenericListModel<T> implements ListModel {
     }
 
     public GenericListModel(boolean synsetMode) {
-        this.synsetMode = synsetMode;
+        boolean synsetMode1 = synsetMode;
         setCollection(null);
     }
 
@@ -83,7 +80,7 @@ public class GenericListModel<T> implements ListModel {
         } else {
             itemsCollection = collection;
         }
-        notifyAllListeners(); // powiadomienie słuchaczy o zmianie
+        notifyAllListeners();
     }
 
     /**
@@ -329,36 +326,33 @@ public class GenericListModel<T> implements ListModel {
 
         final Collator myFavouriteCollator = collator;
 
-        Comparator<Sense> senseComparator = new Comparator<Sense>() {
-            @Override
-            public int compare(Sense a, Sense b) {
-                String aa = a.getWord().getWord().toLowerCase();
-                String bb = b.getWord().getWord().toLowerCase();
+        Comparator<Sense> senseComparator = (a, b) -> {
+            String aa = a.getWord().getWord().toLowerCase();
+            String bb = b.getWord().getWord().toLowerCase();
 
-                int c = myFavouriteCollator.compare(aa, bb);
-                if (c == 0) {
-                    aa = a.getPartOfSpeech().getId().toString();
-                    bb = b.getPartOfSpeech().getId().toString();
-                    c = myFavouriteCollator.compare(aa, bb);
-                }
-                if (c == 0) {
-                    if (a.getVariant() == b.getVariant()) {
-                        c = 0;
-                    }
-                    if (a.getVariant() > b.getVariant()) {
-                        c = 1;
-                    }
-                    if (a.getVariant() < b.getVariant()) {
-                        c = -1;
-                    }
-                }
-                if (c == 0) {
-                    aa = a.getLexicon().getId().toString();
-                    bb = b.getLexicon().getId().toString();
-                    c = myFavouriteCollator.compare(aa, bb);
-                }
-                return c;
+            int c = myFavouriteCollator.compare(aa, bb);
+            if (c == 0) {
+                aa = a.getPartOfSpeech().getId().toString();
+                bb = b.getPartOfSpeech().getId().toString();
+                c = myFavouriteCollator.compare(aa, bb);
             }
+            if (c == 0) {
+                if (a.getVariant() == b.getVariant()) {
+                    c = 0;
+                }
+                if (a.getVariant() > b.getVariant()) {
+                    c = 1;
+                }
+                if (a.getVariant() < b.getVariant()) {
+                    c = -1;
+                }
+            }
+            if (c == 0) {
+                aa = a.getLexicon().getId().toString();
+                bb = b.getLexicon().getId().toString();
+                c = myFavouriteCollator.compare(aa, bb);
+            }
+            return c;
         };
 
         //Items starting with frase
@@ -373,8 +367,8 @@ public class GenericListModel<T> implements ListModel {
                 other.add(se);
             }
         }
-        Collections.sort(withFraseOnBegining, senseComparator);
-        Collections.sort(other, senseComparator);
+        withFraseOnBegining.sort(senseComparator);
+        other.sort(senseComparator);
         withFraseOnBegining.addAll(other);
         return withFraseOnBegining;
     }
@@ -404,7 +398,7 @@ public class GenericListModel<T> implements ListModel {
 
     @SuppressWarnings("unchecked")
     public void setCollectionToSynsets(List<Sense> sense, String sortFrase) {
-        synsetTags = buildSynsetNameWithContainedUnits(sense);
+        Map<Long, String> synsetTags = buildSynsetNameWithContainedUnits(sense);
         setCollection((Collection<T>) buildSenseCollectionAsSynstes(sense, sortFrase), null);
     }
 

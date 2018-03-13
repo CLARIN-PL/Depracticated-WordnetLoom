@@ -27,8 +27,6 @@ public class ViWordNetPlugin implements Plugin {
 
     public void install(Workbench workbench) {
 
-        //Service vimgr = new ViWordNetConfService(workbench);
-        //workbench.installService(vimgr);
         ViWordNetPerspective vwnp = new ViWordNetPerspective(Labels.WORDNET_VISUALIZATION, workbench);
         workbench.installPerspective(vwnp);
 

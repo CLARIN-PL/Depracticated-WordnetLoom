@@ -11,28 +11,28 @@ public class PartOfSpeechForTestsRepository {
 
     public static PartOfSpeech verb() {
         PartOfSpeech p = new PartOfSpeech();
-        p.setName(1l);
+        p.setName(1L);
         p.setColor("#001100");
         return p;
     }
 
     public static PartOfSpeech adverb() {
         PartOfSpeech p = new PartOfSpeech();
-        p.setName(2l);
+        p.setName(2L);
         p.setColor("#002200");
         return p;
     }
 
     public static PartOfSpeech adjective() {
         PartOfSpeech p = new PartOfSpeech();
-        p.setName(3l);
+        p.setName(3L);
         p.setColor("#003300");
         return p;
     }
 
     public static PartOfSpeech noun() {
         PartOfSpeech p = new PartOfSpeech();
-        p.setName(4l);
+        p.setName(4L);
         p.setColor("#004400");
         return p;
     }

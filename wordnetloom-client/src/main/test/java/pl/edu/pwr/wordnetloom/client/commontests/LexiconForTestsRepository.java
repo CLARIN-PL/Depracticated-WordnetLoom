@@ -31,6 +31,6 @@ public class LexiconForTestsRepository {
     }
 
     public static List<Lexicon> allLexicons() {
-        return Arrays.asList(lexiconWithId(princenton(), 2l), lexiconWithId(slowosiec(), 1l), lexiconWithId(germanet(), 3l), lexiconWithId(yiddish(), 4l));
+        return Arrays.asList(lexiconWithId(princenton(), 2L), lexiconWithId(slowosiec(), 1L), lexiconWithId(germanet(), 3L), lexiconWithId(yiddish(), 4L));
     }
 }

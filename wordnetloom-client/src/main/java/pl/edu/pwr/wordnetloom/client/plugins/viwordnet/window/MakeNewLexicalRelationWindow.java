@@ -224,8 +224,8 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
                                                        Sense from, Sense to) {
         Sense[] from1 = new Sense[]{from};
         Sense[] to1 = new Sense[]{to};
-        Sense sf = (Sense) from1[0];
-        Sense st = (Sense) to1[0];
+        Sense sf = from1[0];
+        Sense st = to1[0];
         // check if parent and child are different lexical units
         if (sf.getId().equals(st.getId())) {
             DialogBox.showInformation(Messages.FAILURE_SOURCE_UNIT_SAME_AS_TARGET);

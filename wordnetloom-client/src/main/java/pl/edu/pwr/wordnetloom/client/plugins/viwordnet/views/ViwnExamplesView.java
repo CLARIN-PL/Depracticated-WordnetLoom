@@ -1,12 +1,13 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractView;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.corpusexample.model.CorpusExample;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ViwnExamplesView extends AbstractView {
 
@@ -14,8 +15,9 @@ public class ViwnExamplesView extends AbstractView {
         super(workbench, title, new ViwnExamplesViewUI());
     }
 
+
     public void load_examples(String lemma) {
-        List<CorpusExample> examples = new ArrayList<>();// RemoteUtils.testRemote.getCorpusExamplesFor(new Word(lemma));
+        List<CorpusExample> examples = RemoteService.corpusExampleServiceRemote.findCorpusExamplesByWord(lemma);
 
         ViwnExamplesViewUI ui = (ViwnExamplesViewUI) getUI();
         StringBuilder b = new StringBuilder();
@@ -23,6 +25,7 @@ public class ViwnExamplesView extends AbstractView {
         b.append("<html>");
         String[] colors = new String[]{"#F5F5F5", "#DCDCDC"};
         int count = 0;
+
         for (CorpusExample ex : examples) {
             String text = ex.getText();
             if (!text.contains(ViwnExampleKPWrView.KPWR_TAG)) {
@@ -46,6 +49,6 @@ public class ViwnExamplesView extends AbstractView {
         }
         b.append("</html>");
 
-        ui.make_tree(b.toString());
+        ui.load(b.toString());
     }
 }

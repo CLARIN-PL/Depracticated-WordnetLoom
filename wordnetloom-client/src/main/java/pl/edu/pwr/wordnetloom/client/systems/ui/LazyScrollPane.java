@@ -3,11 +3,12 @@ package pl.edu.pwr.wordnetloom.client.systems.ui;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class LazyScrollPane extends JScrollPane{
+public class LazyScrollPane extends WebScrollPane {
 
     public interface ScrollListener
     {
@@ -20,17 +21,18 @@ public class LazyScrollPane extends JScrollPane{
         void onBottomScroll(int offset, int limit);
     }
     //TODO sprawdzić to
+
     private WebList list;
     private int limit;
     private int offset;
     private boolean end;
+
     private ScrollListener scrollListener;
-    private WebPanel panel;
     private WebButton loadMoreButton;
 
     public LazyScrollPane(WebList list, int limit){
-
-        panel = new WebPanel(new BorderLayout());
+        super(list);
+        WebPanel panel = new WebPanel(new BorderLayout());
         panel.add(list, BorderLayout.NORTH);
 
         loadMoreButton = new WebButton("Ładuj"); //TODO dorobić etykietę

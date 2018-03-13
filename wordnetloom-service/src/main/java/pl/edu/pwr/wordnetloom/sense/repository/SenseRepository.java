@@ -5,16 +5,13 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
-import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
-import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.word.model.Word;
-import pl.edu.pwr.wordnetloom.word.repository.WordRepository;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -44,7 +41,7 @@ public class SenseRepository extends GenericRepository<Sense> {
     public void delete(Sense sense) {
         Sense s = findById(sense.getId());
 
-        if(s != null) {
+        if (s != null) {
             SenseAttributes senseAttributes = getEntityManager().find(SenseAttributes.class, s.getId());
             getEntityManager().remove(senseAttributes);
         }
@@ -76,7 +73,7 @@ public class SenseRepository extends GenericRepository<Sense> {
     private final String SYNSET = "synset";
     private final String SENSE_ATTRIBUTES = "senseAttributes";
 
-    private List<Sense> getSensesByCriteria(SenseCriteriaDTO dto){
+    private List<Sense> getSensesByCriteria(SenseCriteriaDTO dto) {
 
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Sense> query = criteriaBuilder.createQuery(Sense.class);
@@ -98,10 +95,10 @@ public class SenseRepository extends GenericRepository<Sense> {
 
         query.orderBy(orders);
         Query selectQuery = em.createQuery(query);
-        if(dto.getLimit() > 0){
+        if (dto.getLimit() > 0) {
             selectQuery.setMaxResults(dto.getLimit());
         }
-        if(dto.getOffset() > 0){
+        if (dto.getOffset() > 0) {
             selectQuery.setFirstResult(dto.getOffset());
         }
 
@@ -109,32 +106,30 @@ public class SenseRepository extends GenericRepository<Sense> {
         List<Sense> result = selectQuery.getResultList();
         Set<Sense> resultSet = new LinkedHashSet<>(result);
         return new ArrayList<>(resultSet);
-
-//        return selectQuery.getResultList();
     }
 
-    private Predicate[] getPredicatesByCriteria(SenseCriteriaDTO dto, Root senseRoot, Join wordJoin, CriteriaBuilder criteriaBuilder){
+    private Predicate[] getPredicatesByCriteria(SenseCriteriaDTO dto, Root senseRoot, Join wordJoin, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicateList = new ArrayList<>();
 
-        if(dto.getLemma() != null && !dto.getLemma().isEmpty()){
-            Predicate lemmaPredicate = criteriaBuilder.like(wordJoin.get(WORD), dto.getLemma()+"%");
+        if (dto.getLemma() != null && !dto.getLemma().isEmpty()) {
+            Predicate lemmaPredicate = criteriaBuilder.like(wordJoin.get(WORD), dto.getLemma() + "%");
             predicateList.add(lemmaPredicate);
         }
 
         Predicate lexiconPredicate = senseRoot.get(LEXICON).in(dto.getLexicons());
         predicateList.add(lexiconPredicate);
 
-        if(dto.getPartOfSpeechId() != null){
+        if (dto.getPartOfSpeechId() != null) {
             Predicate partOfSpeechPredicate = criteriaBuilder.equal(senseRoot.get(PART_OF_SPEECH), dto.getPartOfSpeechId());
             predicateList.add(partOfSpeechPredicate);
         }
 
-        if(dto.getDomainId() != null){
+        if (dto.getDomainId() != null) {
             Predicate domainPredicate = criteriaBuilder.equal(senseRoot.get(DOMAIN), dto.getDomainId());
             predicateList.add(domainPredicate);
         }
 
-        if(dto.getRelationTypeId() != null){
+        if (dto.getRelationTypeId() != null) {
             Join<Sense, SenseRelation> incomingRelationsJoin = senseRoot.join(INCOMING_RELATIONS, JoinType.LEFT);
             Join<Sense, SenseRelation> outgoingRelation = senseRoot.join(OUTGOING_RELATIONS, JoinType.LEFT);
             Predicate incomingRelationsPredicate = criteriaBuilder.equal(incomingRelationsJoin.get(RELATION_TYPE), dto.getRelationTypeId());
@@ -152,6 +147,7 @@ public class SenseRepository extends GenericRepository<Sense> {
 
             List<Predicate> predicates = new ArrayList<>();
 
+
             if(dto.getRegisterId() != null){
                 Predicate senseAttributesPredicate = criteriaBuilder.equal(senseAttributesRoot.get(REGISTER), dto.getRegisterId());
                 predicates.add(senseAttributesPredicate);
@@ -163,6 +159,7 @@ public class SenseRepository extends GenericRepository<Sense> {
             }
 
             if(dto.getExample() != null){
+
                 Join<SenseAttributes, SenseExample> senseExampleJoin = senseAttributesRoot.join(EXAMPLES);
                 Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get(EXAMPLES), dto.getExample());
                 predicates.add(examplePredicate);
@@ -175,9 +172,10 @@ public class SenseRepository extends GenericRepository<Sense> {
 
         if(dto.getSynsetId() != null){
             Predicate synsetPredicate  = criteriaBuilder.equal(senseRoot.get(SYNSET), dto.getSynsetId());
+
             predicateList.add(synsetPredicate);
         }
-        if(dto.getVariant() != null){
+        if (dto.getVariant() != null) {
             Predicate variantPredicate = criteriaBuilder.equal(senseRoot.get(VARIANT), dto.getVariant());
             predicateList.add(variantPredicate);
         }
@@ -185,7 +183,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         return predicateList.toArray(new Predicate[0]);
     }
 
-    public int getCountUnitsByCriteria(SenseCriteriaDTO dto){
+    public int getCountUnitsByCriteria(SenseCriteriaDTO dto) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
         Root<Sense> senseRoot = query.from(Sense.class);
@@ -196,11 +194,13 @@ public class SenseRepository extends GenericRepository<Sense> {
         return Math.toIntExact(getEntityManager().createQuery(query).getSingleResult());
     }
 
-    /** Zwraca komparator, który porównuje jednostki według nastepujących kryteriów
-     *  1. słówko
-     *  2. częśc mowy
-     *  3. numer jednostki - wariant
-     *  4. leksykon
+    /**
+     * Zwraca komparator, który porównuje jednostki według nastepujących kryteriów
+     * 1. słówko
+     * 2. częśc mowy
+     * 3. numer jednostki - wariant
+     * 4. leksykon
+     *
      * @return komparator porównujący jednostki
      */
     private Comparator<Sense> getSenseComparator(final String lemma) {
@@ -216,21 +216,21 @@ public class SenseRepository extends GenericRepository<Sense> {
 
         final Collator finalCollator = collator;
 
-        Comparator<Sense> senseComparator = (Sense a, Sense b) ->{
+        Comparator<Sense> senseComparator = (Sense a, Sense b) -> {
 
             String valueA = a.getWord().getWord().toLowerCase();
             String valueB = b.getWord().getWord().toLowerCase();
 
             int compareResult = finalCollator.compare(valueA, valueB);
-            if(compareResult == 0){
+            if (compareResult == 0) {
                 Long longValueA = a.getPartOfSpeech().getId();
                 Long longValueB = b.getPartOfSpeech().getId();
                 compareResult = longValueA.compareTo(longValueB); //TODO sprawdzić czy kolejnośc jest dobra
             }
-            if(compareResult == 0){
+            if (compareResult == 0) {
                 compareResult = a.getVariant().compareTo(b.getVariant());
             }
-            if(compareResult == 0){
+            if (compareResult == 0) {
                 compareResult = a.getLexicon().getId().compareTo(b.getLexicon().getId());
             }
 
@@ -374,7 +374,7 @@ public class SenseRepository extends GenericRepository<Sense> {
                 }
 
                 List<Sense> senses = q.setMaxResults(limitSize).getResultList();
-                Collections.sort(senses, senseComparator);
+                senses.sort(senseComparator);
                 senses = filterSenseByLexicon(senses, lexicons);
                 return senses;
             }
@@ -432,7 +432,7 @@ public class SenseRepository extends GenericRepository<Sense> {
                     }
                 }
             }
-            Collections.sort(senses, senseComparator);
+            senses.sort(senseComparator);
 
             if (limitSize != 0 && senses.size() > limitSize) {
                 senses = senses.subList(0, limitSize);
@@ -480,7 +480,7 @@ public class SenseRepository extends GenericRepository<Sense> {
             lastQuery.setMaxResults(limitSize);
         }
         List<Sense> senses = lastQuery.getResultList();
-        Collections.sort(senses, senseComparator);
+        senses.sort(senseComparator);
         senses = filterSenseByLexicon(senses, lexicons);
         return senses;
     }
@@ -514,7 +514,7 @@ public class SenseRepository extends GenericRepository<Sense> {
                 .getResultList();
     }
 
-    public List<Sense> findBySynset(Long synsetId){
+    public List<Sense> findBySynset(Long synsetId) {
         return getEntityManager().createQuery("FROM Sense s WHERE s.synset.id = :synsetId")
                 .setParameter("synsetId", synsetId)
                 .getResultList();
@@ -614,18 +614,18 @@ public class SenseRepository extends GenericRepository<Sense> {
         return query.getResultList();
     }
 
-    public Sense findHeadSenseOfSynset(Long synsetId){
+    public Sense findHeadSenseOfSynset(Long synsetId) {
         Query query = getEntityManager().createQuery("FROM Sense s JOIN FETCH s.domain JOIN FETCH s.lexicon WHERE s.synset.id = :id AND s.synsetPosition = 0")
                 .setParameter("id", synsetId);
         List<Sense> resultList = query.getResultList();
-        if(!resultList.isEmpty()){
+        if (!resultList.isEmpty()) {
             return resultList.get(0);
         }
         return null;
     }
 
     public Sense fetchSense(Long senseId) {
-        CriteriaBuilder  criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Sense> query = criteriaBuilder.createQuery(Sense.class);
         Root<Sense> senseRoot = query.from(Sense.class);
         senseRoot.fetch("domain", JoinType.LEFT);

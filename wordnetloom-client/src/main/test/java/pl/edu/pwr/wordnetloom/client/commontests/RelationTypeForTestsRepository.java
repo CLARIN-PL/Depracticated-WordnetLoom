@@ -12,11 +12,11 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType antonimia() {
         RelationType r = new RelationType();
-        r.setId(1l);
-        r.setName(1l);
-        r.setDisplayText(2l);
-        r.setDescription(3l);
-        r.setShortDisplayText(4l);
+        r.setId(1L);
+        r.setName(1L);
+        r.setDisplayText(2L);
+        r.setDescription(3L);
+        r.setShortDisplayText(4L);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -25,9 +25,9 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType rola() {
         RelationType r = new RelationType();
-        r.setId(2l);
-        r.setName(5l);
-        r.setShortDisplayText(6l);
+        r.setId(2L);
+        r.setName(5L);
+        r.setShortDisplayText(6L);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -36,8 +36,8 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType aspektowosc() {
         RelationType r = new RelationType();
-        r.setId(3l);
-        r.setName(7l);
+        r.setId(3L);
+        r.setName(7L);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -46,8 +46,8 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType aspektowosc_czysta_DK_NDK() {
         RelationType r = new RelationType();
-        r.setId(4l);
-        r.setName(8l);
+        r.setId(4L);
+        r.setName(8L);
         r.setParent(aspektowosc());
         r.setAutoReverse(Boolean.TRUE);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
@@ -58,8 +58,8 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType aspektowosc_czysta_NDK_DK() {
         RelationType r = new RelationType();
-        r.setId(4l);
-        r.setName(9l);
+        r.setId(4L);
+        r.setName(9L);
         r.setParent(aspektowosc());
         r.setAutoReverse(Boolean.TRUE);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
@@ -70,10 +70,10 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType rola_agens() {
         RelationType r = new RelationType();
-        r.setId(6l);
-        r.setName(10l);
+        r.setId(6L);
+        r.setName(10L);
         r.setParent(rola());
-        r.setDisplayText(11l);
+        r.setDisplayText(11L);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -82,10 +82,10 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType rola_pacjens() {
         RelationType r = new RelationType();
-        r.setId(7l);
-        r.setName(12l);
+        r.setId(7L);
+        r.setName(12L);
         r.setParent(rola());
-        r.setDisplayText(13l);
+        r.setDisplayText(13L);
         r.setRelationArgument(RelationArgument.SENSE_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -99,9 +99,9 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType hiperonimia() {
         RelationType r = new RelationType();
-        r.setId(8l);
-        r.setName(14l);
-        r.setDisplayText(15l);
+        r.setId(8L);
+        r.setName(14L);
+        r.setDisplayText(15L);
         r.setRelationArgument(RelationArgument.SYNSET_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -110,9 +110,9 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType holonimia() {
         RelationType r = new RelationType();
-        r.setId(9l);
-        r.setName(16l);
-        r.setDisplayText(17l);
+        r.setId(9L);
+        r.setName(16L);
+        r.setDisplayText(17L);
         r.setRelationArgument(RelationArgument.SYNSET_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -121,10 +121,10 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType holonimia_miejsce() {
         RelationType r = new RelationType();
-        r.setId(10l);
-        r.setName(18l);
+        r.setId(10L);
+        r.setName(18L);
         r.setParent(holonimia());
-        r.setDisplayText(19l);
+        r.setDisplayText(19L);
         r.setRelationArgument(RelationArgument.SYNSET_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -133,10 +133,10 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType holonimia_porcja() {
         RelationType r = new RelationType();
-        r.setId(11l);
-        r.setName(20l);
+        r.setId(11L);
+        r.setName(20L);
         r.setParent(holonimia());
-        r.setDisplayText(21l);
+        r.setDisplayText(21L);
         r.setRelationArgument(RelationArgument.SYNSET_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());
@@ -145,9 +145,9 @@ public class RelationTypeForTestsRepository {
 
     public static RelationType hiponimia() {
         RelationType r = new RelationType();
-        r.setId(12l);
-        r.setName(22l);
-        r.setDisplayText(23l);
+        r.setId(12L);
+        r.setName(22L);
+        r.setDisplayText(23L);
         r.setRelationArgument(RelationArgument.SYNSET_RELATION);
         r.addLexicon(LexiconForTestsRepository.slowosiec());
         r.addPartOfSpeech(PartOfSpeechForTestsRepository.verb());

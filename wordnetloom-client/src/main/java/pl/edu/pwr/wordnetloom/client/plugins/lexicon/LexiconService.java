@@ -62,7 +62,7 @@ public class LexiconService extends AbstractService {
         Set<Lexicon> lexicons = LexiconsWindow.showModal(workbench.getFrame(), LexiconManager.getInstance().getUserChosenLexicons());
         User user = RemoteConnectionProvider.getInstance().getUser();
         user.getSettings().setChosenLexicons(LexiconManager.getInstance().lexiconIdToString(lexicons));
-        RemoteService.userServiceRemote.saveOrUpdate(user);
+        RemoteService.userServiceRemote.save(user);
 
         UserSessionData data = RemoteConnectionProvider.getInstance().getUserSessionData();
         UserSessionData current = new UserSessionData(data.getUsername(), data.getPassword(), data.getLanguage() , user);

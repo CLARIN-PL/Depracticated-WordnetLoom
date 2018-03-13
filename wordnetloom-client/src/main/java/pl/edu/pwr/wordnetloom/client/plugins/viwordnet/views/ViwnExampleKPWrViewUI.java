@@ -1,6 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
+import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.text.WebTextArea;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitPropertiesViewUI;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
@@ -15,12 +18,14 @@ import java.awt.event.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import static pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnExampleKPWrView.KPWR_TAG;
+
 public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
         MouseListener {
 
-    private JScrollPane scroll;
+    private WebScrollPane scroll;
     private Sense unit;
-    private JList examples;
+    private WebList examples;
     private final DefaultListModel listModel = new DefaultListModel();
     private final ViwnGraphViewUI graphUI;
 
@@ -31,7 +36,7 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
     @Override
     protected void initialize(WebPanel content) {
         getContent().setLayout(new RiverLayout());
-        examples = new JList(listModel) {
+        examples = new WebList(listModel) {
 
             private static final long serialVersionUID = 1L;
 
@@ -55,7 +60,7 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
         examples.addComponentListener(l);
         examples.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         examples.addMouseListener(this);
-        scroll = new JScrollPane(examples);
+        scroll = new WebScrollPane(examples);
         getContent().add(scroll, "hfill vfill");
     }
 
@@ -70,7 +75,7 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
         Runnable run;
         run = () -> {
             exampleList.stream().map((item) -> {
-                listModel.addElement(item);
+                listModel.addElement(item.replace(KPWR_TAG, ""));
                 return item;
             }).forEachOrdered((_item) -> {
                 adjustSizeOfListItem(scroll.getWidth() - 50);
@@ -98,6 +103,7 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
 
             final DialogWindow dia = new DialogWindow(workbench.getFrame(),
                     Labels.UNIT_PROPERTIES, 585, 520);
+
             WebPanel pan = new WebPanel();
             lui.initialize(pan);
             lui.refreshData(unit);
@@ -131,15 +137,15 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
 
     public class ExampleCellRenderer implements ListCellRenderer {
 
-        private final JPanel p;
-        private final JTextArea ta;
+        private final WebPanel p;
+        private final WebTextArea ta;
 
         public ExampleCellRenderer() {
-            p = new JPanel();
+            p = new WebPanel();
             p.setLayout(new BorderLayout());
 
             // text
-            ta = new JTextArea();
+            ta = new WebTextArea();
 
             ta.setLineWrap(true);
             ta.setWrapStyleWord(true);

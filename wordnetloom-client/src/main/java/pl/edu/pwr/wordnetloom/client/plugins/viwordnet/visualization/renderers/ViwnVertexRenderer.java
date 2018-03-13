@@ -53,7 +53,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
     public void paintVertex(RenderContext<ViwnNode, ViwnEdge> rc,
                             Layout<ViwnNode, ViwnEdge> layout, ViwnNode v) {
         Graph<ViwnNode, ViwnEdge> graph = layout.getGraph();
-        if (rc.getVertexIncludePredicate().evaluate(Context.<Graph<ViwnNode, ViwnEdge>, ViwnNode>getInstance(graph, v))) {
+        if (rc.getVertexIncludePredicate().evaluate(Context.getInstance(graph, v))) {
             paintVertex(rc, v, layout);
         }
     }
@@ -228,9 +228,9 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
     private void renderLexiconMarker(ViwnNodeSynset node, Point2D.Float pos,
                                      GraphicsDecorator g) {
 
-        Shape lexicon = new Area(new RoundRectangle2D.Float(pos.x - 40, pos.y - 17, 23, 10, 12.5f, 5));
+        Shape lexicon = new Area(new RoundRectangle2D.Float(pos.x - 40, pos.y - 17, 24, 10, 12.5f, 5));
         g.setColor(ViwnNodeSynset.PosBgColors.get(node.getPos()));
-        g.fillRoundRect(Math.round(pos.x - 40), Math.round(pos.y - 17), 23, 10, 12, 5);
+        g.fillRoundRect(Math.round(pos.x - 40), Math.round(pos.y - 17), 24, 10, 12, 5);
         g.setColor(Color.black);
         g.draw(lexicon);
         Font smallFont = new Font("Tahoma", Font.BOLD, 6);

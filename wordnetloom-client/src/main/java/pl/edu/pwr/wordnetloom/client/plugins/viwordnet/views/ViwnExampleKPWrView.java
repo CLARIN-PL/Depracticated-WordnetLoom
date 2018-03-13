@@ -19,7 +19,7 @@ public class ViwnExampleKPWrView extends AbstractView {
     }
 
     public void load_examples(Sense unit) {
-        List<CorpusExample> examples = RemoteService.corpusExampleServiceRemote.findCorpusExamplesByWord(unit.getWord());
+        List<CorpusExample> examples = RemoteService.corpusExampleServiceRemote.findCorpusExamplesByWord(unit.getWord().getWord());
 
         List<String> exampleList = new ArrayList<>();
         for (CorpusExample ex : examples) {
@@ -32,9 +32,8 @@ public class ViwnExampleKPWrView extends AbstractView {
     }
 
     public void load_examples(String lemma) {
-        List<CorpusExample> examples = RemoteService.corpusExampleServiceRemote.findCorpusExamplesByWord(new Word(lemma));
+        List<CorpusExample> examples = RemoteService.corpusExampleServiceRemote.findCorpusExamplesByWord(lemma);
 
-        StringBuilder b = new StringBuilder();
         List<String> exampleList = new ArrayList<>();
         for (CorpusExample ex : examples) {
             exampleList.add(ex.getText());

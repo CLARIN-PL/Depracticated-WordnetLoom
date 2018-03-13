@@ -39,8 +39,8 @@ public class LocalisedServicesUTest {
 
     @Test
     public void findByKey() {
-        LocalisedKey key = new LocalisedKey(1l, "pl");
-        when(repository.findByKey(key)).thenReturn(withId(nameString(), 1l, "pl"));
+        LocalisedKey key = new LocalisedKey(1L, "pl");
+        when(repository.findByKey(key)).thenReturn(withId(nameString(), 1L, "pl"));
 
         LocalisedString string = service.findStringsByKey(key);
         assertThat(string, is(notNullValue()));
@@ -50,7 +50,7 @@ public class LocalisedServicesUTest {
 
     @Test(expected = LocalisedStringNotFoundException.class)
     public void LexiconByIdNotFound() {
-        LocalisedKey key = new LocalisedKey(1l, "pl");
+        LocalisedKey key = new LocalisedKey(1L, "pl");
         when(repository.findByKey(key)).thenReturn(null);
         service.findStringsByKey(key);
     }
@@ -58,7 +58,7 @@ public class LocalisedServicesUTest {
     @Test
     public void findAllByLanguage() {
         when(repository.findAllByLanguage("pl")).thenReturn(
-                Arrays.asList(withId(nameString(), 1l, "pl"), withId(descriptionString(), 1l, "pl")));
+                Arrays.asList(withId(nameString(), 1L, "pl"), withId(descriptionString(), 1L, "pl")));
 
         List<LocalisedString> pl = service.findAllStringsByLanguage("pl");
 
@@ -78,7 +78,7 @@ public class LocalisedServicesUTest {
     @Test
     public void addStringWithNullLanguage() {
         try {
-            service.add(new LocalisedString(1l, null, "nazwa"));
+            service.add(new LocalisedString(1L, null, "nazwa"));
             fail("An error should have been thrown");
         } catch (FieldNotValidException e) {
             assertThat(e.getFieldName(), is(equalTo("key.language")));

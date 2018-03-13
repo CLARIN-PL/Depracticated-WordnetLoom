@@ -17,6 +17,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
+import com.alee.laf.panel.WebPanel;
 import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
@@ -75,8 +76,6 @@ abstract public class AbstractListFrame<T, G> extends
         buttonSearch = MButton.buildSearchButton(this)
                 .withKeyListener(this);
 
-//        itemsList = new ToolTipList(workbench, listModel,
-//                ToolTipGenerator.getGenerator());
         itemsList = new ToolTipList(workbench, listModel, new SenseTooltipGenerator()); //TODO zobaczyć, w jakich miejscach jest to używane i czy czegoś nie zepsuje
 
         itemsList.addListSelectionListener(this);
@@ -101,7 +100,7 @@ abstract public class AbstractListFrame<T, G> extends
                 .withEnabled(true);
 
         // panel dolny z przyciskami
-        JPanel buttonsPanel = new JPanel();
+        WebPanel buttonsPanel = new WebPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
         buttonsPanel.add(buttonChoose);
         buttonsPanel.add(buttonCancel);

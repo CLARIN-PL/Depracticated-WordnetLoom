@@ -107,7 +107,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
 
         MSplitPane splitSearch = new MSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, leftView, splitMainVertical);
-        splitSearch.setStartDividerLocation(200);
+        splitSearch.setStartDividerLocation(210);
         splitSearch.setResizeWeight(0.0f);
 
         addSplitter(splitSearch);

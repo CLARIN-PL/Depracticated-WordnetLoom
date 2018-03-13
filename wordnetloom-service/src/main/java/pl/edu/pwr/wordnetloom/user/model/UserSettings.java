@@ -34,6 +34,10 @@ public class UserSettings extends GenericEntity {
         return lexionMarker;
     }
 
+    public void setLexionMarker(Boolean lexionMarker) {
+        this.lexionMarker = lexionMarker;
+    }
+
     public String getChosenLexicons() {
         return chosenLexicons;
     }
@@ -44,5 +48,9 @@ public class UserSettings extends GenericEntity {
 
     public Boolean getShowToolTips() {
         return showToolTips;
+    }
+
+    public void setShowToolTips(Boolean showToolTips) {
+        this.showToolTips = showToolTips;
     }
 }

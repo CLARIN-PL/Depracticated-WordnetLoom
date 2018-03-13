@@ -87,14 +87,13 @@ public class RemoteConnectionProvider implements Loggable {
         String appName = "wordnetloom-server-2.0";
         String moduleName = "wordnetloom-service-2.0";
         String distinctName = "";
-        StringBuilder name = new StringBuilder();
-        name.append("ejb:")
-                .append(appName).append(slash)
-                .append(moduleName).append(slash)
-                .append(distinctName).append(slash)
-                .append(localBeanName).append("!")
-                .append(interfaceName);
-        return name.toString();
+        String name = "ejb:" +
+                appName + slash +
+                moduleName + slash +
+                distinctName + slash +
+                localBeanName + "!" +
+                interfaceName;
+        return name;
     }
 
     public void setUserSessionData(UserSessionData data) {

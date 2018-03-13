@@ -7,7 +7,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetPropertiesVie
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetStructureView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetView;
 import pl.edu.pwr.wordnetloom.client.plugins.relations.da.RelationsDA;
-import pl.edu.pwr.wordnetloom.client.plugins.relations.views.ToolbarViewUI;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.event.SearchRandomSynsetEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.LockerChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
@@ -27,7 +26,6 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
@@ -59,18 +57,16 @@ public class ViWordNetService extends AbstractService implements
         LockerChangeListener, ActionListener, Loggable {
 
     private final static int GRAPH_VIEWS_LIMIT = 6;
-    /**
-     *
-     */
+
     private static final Cursor MAKE_RELATION_CURSOR = Cursor
             .getPredefinedCursor(Cursor.HAND_CURSOR);
+
     private static final Cursor MERGE_SYNSETS_CURSOR = Cursor
             .getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
-    /**
-     *
-     */
+
     private static final Cursor DEFAULT_CURSOR = Cursor
             .getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+
     private final List<ViwnGraphView> graphViews = new ArrayList<>(GRAPH_VIEWS_LIMIT);
     private final Map<String, PartOfSpeech> posMap = new HashMap<>();
     SynsetData synsetData = new SynsetData();
@@ -147,10 +143,6 @@ public class ViWordNetService extends AbstractService implements
         if (other == null) {
             return;
         }
-        other.add(new MMenuItem(Labels.SAVE_CANDIDATES_GRAPH)
-                .withMnemonic(KeyEvent.VK_Z)
-                .withActionListener(this));
-
         other.addSeparator();
     }
 
@@ -583,7 +575,7 @@ public class ViWordNetService extends AbstractService implements
 
     private ViwnNodeSynset findProposed(ViwnNodeSynset s, Long[] depth) {
         if (s instanceof ViwnNodeCand) {
-            return (ViwnNodeCand) s;
+            return s;
         }
         ViwnNode spawner = s.getSpawner();
         if (spawner == null || !(spawner instanceof ViwnNodeSynset)) {
@@ -785,7 +777,11 @@ public class ViWordNetService extends AbstractService implements
                 return;
             }
 
-            if (DialogBox.showYesNo(String.format(ToolbarViewUI.MERGE_SYNSETS,
+            String MERGE_SYNSETS = "<html>Czy na pewno chcesz połączyć synsety:<br>"
+                    + "1. <font color=\"blue\">%s</font><br>"
+                    + "2. <font color=\"blue\">%s</font> ?</html>";
+
+            if (DialogBox.showYesNo(String.format(MERGE_SYNSETS,
                     src.getUnitsStr(), dst.getUnitsStr())) == DialogBox.YES) {
                 RelationsDA.mergeSynsets(src.getSynset(), dst.getSynset(),
                         LexiconManager.getInstance().getLexiconsIds());

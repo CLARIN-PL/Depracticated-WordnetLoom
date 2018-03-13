@@ -281,10 +281,10 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
             }
 
             // sort children alphabetically
-            Collections.sort(bottom, new ViwnNodeAlphabeticComparator());
-            Collections.sort(top, new ViwnNodeAlphabeticComparator());
-            Collections.sort(right, new ViwnNodeAlphabeticComparator());
-            Collections.sort(left, new ViwnNodeAlphabeticComparator());
+            bottom.sort(new ViwnNodeAlphabeticComparator());
+            top.sort(new ViwnNodeAlphabeticComparator());
+            right.sort(new ViwnNodeAlphabeticComparator());
+            left.sort(new ViwnNodeAlphabeticComparator());
 
             // place a node here ;-)
             Point p = new Point();

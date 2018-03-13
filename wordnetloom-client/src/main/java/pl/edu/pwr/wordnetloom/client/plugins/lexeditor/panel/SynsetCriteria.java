@@ -23,7 +23,6 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
     private CriteriaDTO crit;
 
     public SynsetCriteria() {
-        super(480);
         init();
         initializeFormPanel();
     }

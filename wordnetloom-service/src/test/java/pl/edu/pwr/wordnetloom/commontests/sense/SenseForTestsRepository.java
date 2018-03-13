@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.commontests.sense;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Ignore;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -18,6 +19,6 @@ public class SenseForTestsRepository {
     }
 
     public static List<Sense> allSenses() {
-        return Arrays.asList(zamek());
+        return Collections.singletonList(zamek());
     }
 }

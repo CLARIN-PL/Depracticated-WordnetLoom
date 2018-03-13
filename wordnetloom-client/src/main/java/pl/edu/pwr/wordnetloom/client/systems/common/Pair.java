@@ -56,9 +56,6 @@ public class Pair<TA, TB> implements Container {
         if (!Objects.equals(this.a, other.a)) {
             return false;
         }
-        if (!Objects.equals(this.b, other.b)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.b, other.b);
     }
 }

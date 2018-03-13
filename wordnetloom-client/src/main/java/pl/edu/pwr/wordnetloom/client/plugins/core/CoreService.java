@@ -3,30 +3,39 @@ package pl.edu.pwr.wordnetloom.client.plugins.core;
 import com.alee.laf.menu.WebCheckBoxMenuItem;
 import com.alee.laf.menu.WebMenu;
 import jiconfont.icons.FontAwesome;
+import jiconfont.swing.IconFontSwing;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.core.window.AboutWindow;
+import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
+import pl.edu.pwr.wordnetloom.client.plugins.login.window.ChangePasswordWindow;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 /**
- * klasa dostarczająca podsawową usługę - menu
+ * Class is handling basic menu interactions
  */
 public class CoreService extends AbstractService implements MenuListener {
 
-    private static final String SHOW_TOOLTIPS_PARAM = "ShowTooltips";
     private WebMenu settings;
+    private WebMenu user;
     private WebCheckBoxMenuItem showTooltips;
 
     public CoreService(Workbench workbench) {
         super(workbench);
+        Application.eventBus.register(this);
         DialogBox.setParentWindow(workbench.getFrame());
     }
 
@@ -35,45 +44,71 @@ public class CoreService extends AbstractService implements MenuListener {
 
         final Workbench w = super.workbench;
 
-        WebMenu file = new WebMenu(Labels.FILE);
-        file.setMnemonic(KeyEvent.VK_P);
+        WebMenu help = new WebMenu(Labels.ABOUT_APP);
+        help.addMouseListener(new MouseListener() {
 
-        file.add(new MMenuItem(Labels.EXIT)
-                .withIcon(FontAwesome.SIGN_OUT)
-                .withMnemonic(KeyEvent.VK_W)
-                .withActionListener(e -> System.exit(0)));
+            @Override
+            public void mouseClicked(MouseEvent e) {
 
-        WebMenu help = new WebMenu(Labels.HELP);
-        help.setMnemonic(KeyEvent.VK_C);
+            }
 
-        help.add(new MMenuItem(Labels.ABOUT_APP)
-                .withMnemonic(KeyEvent.VK_O)
-                .withActionListener(e -> AboutWindow.showModal(w)));
+            @Override
+            public void mousePressed(MouseEvent e) {
+                AboutWindow.showModal(w);
+            }
 
-        // wyswietlanie tooltipow
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+        Icon helpIcon = IconFontSwing.buildIcon(FontAwesome.INFO_CIRCLE, 12);
+        help.setIcon(helpIcon);
+
         showTooltips = new WebCheckBoxMenuItem(Labels.SHOW_TOOLTIPS);
         showTooltips.setMnemonic(KeyEvent.VK_D);
 
-        showTooltips.addActionListener((ActionEvent e) -> {
+        showTooltips.addChangeListener(e -> {
             JCheckBoxMenuItem item = (JCheckBoxMenuItem) e.getSource();
-            w.setParam(SHOW_TOOLTIPS_PARAM, item.isSelected() ? "1" : "0");
-//            ToolTipGenerator.getGenerator().setEnabledTooltips(item.isSelected()); //TODO jak wszystko będzie działać usunąć to
-
+            RemoteConnectionProvider.getInstance().getUser().getSettings().setShowToolTips(item.isSelected());
+            RemoteService.userServiceRemote.update(RemoteConnectionProvider.getInstance().getUser().getSettings());
         });
 
         settings = new WebMenu(Labels.SETTINGS);
         settings.setMnemonic(KeyEvent.VK_S);
 
-        // standardowe ustawienia okna
+        Icon settingsIcon = IconFontSwing.buildIcon(FontAwesome.COGS, 12);
+        settings.setIcon(settingsIcon);
         settings.add(new MMenuItem(Labels.DEFAULT_SETTINGS)
                 .withMnemonic(KeyEvent.VK_S).withActionListener(e -> w.getActivePerspective().resetViews()));
 
         settings.addMenuListener(this);
         settings.add(showTooltips);
 
-        workbench.installMenu(file);
-        workbench.installMenu(settings);
+        user = new WebMenu(RemoteConnectionProvider.getInstance().getUser().getFullname());
+        Icon userIcon = IconFontSwing.buildIcon(FontAwesome.USER, 12);
+        user.setIcon(userIcon);
+        user.add(new MMenuItem("Change password")
+                .withMnemonic(KeyEvent.VK_P)
+                .withIcon(FontAwesome.EXCHANGE)
+                .withActionListener(e ->
+                    ChangePasswordWindow.showModal(workbench)
+                ));
+
         workbench.installMenu(help);
+        workbench.installMenu(settings);
+        workbench.installMenu(user);
+
     }
 
     @Override
