@@ -209,45 +209,6 @@ public class ViWordNetService extends AbstractService implements
         ViwnNodeSynset.PosBgColors = PartOfSpeechManager.getInstance().getBackgroundColors();
     }
 
-    private void loadPosFrameColors() {
-        HashMap<PartOfSpeech, Color> pos_frame_colors = new HashMap<>();
-
-        InputStreamReader istrem = null;
-        try {
-            istrem = new InputStreamReader(ViWordNetService.class.getClassLoader().getResourceAsStream("pos_frame_color.cfg"), "UTF8");
-        } catch (UnsupportedEncodingException e) {
-            System.err.println(e.toString());
-        }
-
-        Properties conf = new Properties();
-        try {
-            if (istrem == null) {
-                throw new IOException();
-            }
-
-            conf.load(istrem);
-            Enumeration<Object> keys = conf.keys();
-
-            while (keys.hasMoreElements()) {
-                String pos = (String) keys.nextElement();
-                String val = (String) conf.get(pos);
-                Color col = null;
-                try {
-                    col = Color.decode(val.trim());
-                } catch (Exception e) {
-                    logger().warn(val + " is not a valid color");
-                }
-
-                PartOfSpeech posT = posMap.get(pos.replace("_", " "));
-                if (posT != null) {
-                    pos_frame_colors.put(posT, col);
-                }
-            }
-        } catch (IOException e) {
-            System.err.println(e.toString());
-        }
-        ViwnVertexRenderer.PosFrameColors = pos_frame_colors;
-    }
 
     private void loadRelationsColors() {
         ViwnEdgeSynset.relsColors = RelationTypeManager.getInstance().getRelationsColors();
@@ -257,10 +218,8 @@ public class ViWordNetService extends AbstractService implements
     public void onStart() {
 
         new Thread(() -> {
-            //loadRelationsSides();
             loadRelationsColors();
             loadPartOfSpeechBackgroundColors();
-            loadPosFrameColors();
             workbench.setBusy(false);
         }, "Starting").start();
         workbench.setBusy(true);
