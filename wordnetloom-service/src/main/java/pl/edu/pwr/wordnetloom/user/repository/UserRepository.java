@@ -36,7 +36,6 @@ public class UserRepository extends GenericRepository<User> {
        }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public User changeUserPassword(String email, String password){
         User u = findUserByEmail(email);
         u.setPassword(PasswordUtils.encryptPassword(password));

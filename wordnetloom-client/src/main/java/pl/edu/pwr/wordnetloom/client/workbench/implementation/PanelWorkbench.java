@@ -45,8 +45,7 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
 
     protected WebFrame frame = null;
     private WebPanel mainPane;
-    protected WebLabel statusBar;
-    private WebLabel user;
+
     protected WebPanel statusPanel;
     private MenuHolder menuHolder;
     private static BusyGlassPane busyPanel;
@@ -107,25 +106,11 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
                 frame.setJMenuBar(menuHolder.getMenuBar());
                 frame.setGlassPane(busyPanel = new BusyGlassPane());
 
-                // ustawienie statusu
-                user = new WebLabel("");
-                Icon icon = IconFontSwing.buildIcon(FontAwesome.USER, 12);
-                user.setIcon(icon);
-
-                statusBar = new WebLabel("");
-
-                statusPanel = new WebPanel();
-                statusPanel.setBorder(BorderFactory.createEtchedBorder());
-                statusPanel.setLayout(new RiverLayout());
-                statusPanel.add(statusBar, "hfill left");
-                statusPanel.add(user, "right");
-
                 // ustawienie glownego panelu
                 mainPane = new WebPanel();
+                mainPane.setMargin(3);
                 mainPane.setLayout(new BorderLayout());
                 mainPane.add(new WebPanel(), BorderLayout.CENTER);
-                mainPane.add(statusPanel, BorderLayout.SOUTH);
-
                 frame.setContentPane(mainPane);
             });
 
@@ -239,11 +224,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
             System.gc();
             System.exit(0);
         }
-    }
-
-    @Override
-    public void setStatusText(String text) {
-        statusBar.setText(text);
     }
 
     @Override
@@ -379,12 +359,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
             logger().error("While opening file:", ex);
         }
         return list;
-    }
-
-    @Override
-    public void refreshUserBar(User u) {
-        user.setText(u.getFullname());
-        user.repaint();
     }
 
     @Override

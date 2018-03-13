@@ -107,13 +107,6 @@ public interface Workbench {
     void choosePerspective(String perspectiveName);
 
     /**
-     * Ustawienie tekstu dla paska statusu
-     *
-     * @param text - tekst dla statusu
-     */
-    void setStatusText(String text);
-
-    /**
      * Odczytanie głównego kontenera okna na którym wszystko bazuje. Jest to
      * wykorzystywane przy oknach dialogowych
      *
@@ -122,7 +115,5 @@ public interface Workbench {
     WebFrame getFrame();
 
     void setBusy(boolean busy);
-
-    void refreshUserBar(User user);
 
 }

@@ -106,8 +106,6 @@ public class ViWordNetService extends AbstractService implements
         super(workbench);
         this.perspectiveName = perspectiveName;
         this.perspective = perspective;
-
-//        0
     }
 
     public SynsetData getSynsetData() {
@@ -133,10 +131,6 @@ public class ViWordNetService extends AbstractService implements
         if (other == null) {
             return;
         }
-        other.add(new MMenuItem(Labels.SAVE_CANDIDATES_GRAPH)
-                .withMnemonic(KeyEvent.VK_Z)
-                .withActionListener(this));
-
         other.addSeparator();
     }
 
