@@ -152,14 +152,18 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
         Root<Synset> root = cq.from(Synset.class);
         Join<Synset, Sense> senseJoin = root.join("senses");
+
         Fetch<Synset, Sense> senseFetch = root.fetch("senses");
         senseFetch.fetch("word");
         senseFetch.fetch("partOfSpeech");
+
         List<Predicate> predicatesList = new ArrayList<>();
         Predicate idPredicate = cb.equal(root.get("id"), id);
         predicatesList.add(idPredicate);
+
         Predicate sensePredicate = cb.equal(senseJoin.get("synsetPosition"), pos);
         predicatesList.add(sensePredicate);
+
         cq.where(predicatesList.toArray(new Predicate[0]));
         return cq;
     }
@@ -168,22 +172,28 @@ public class SynsetRepository extends GenericRepository<Synset> {
         Map<Long, DataEntry> result = new HashMap<>();
         // łączenie synsetu z jednostką, aby uzyskać opis (wyraz, domene, wariant)
         Synset synset = findSynsetWithRelationsAndSenseById(synsetId);
+
         // pobranie relacji dla synsetu. Relacje pobierane są wraz z połączonymi synsetami oraz ich opisami (wyraz, domena, wariant)
         List<SynsetRelation> relationsFrom = synsetRelationRepository.findRelationsWhereSynsetIsParent(synset, lexicons, directions);
         List<SynsetRelation> relationsTo = synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons, directions);
+
         //szukanie i usuwanie relacji, które pojawiają się na liście relacji "od" i na liście relacji "do"
         deleteRepeatingRelations(relationsFrom, relationsTo);
         relationsFrom.addAll(relationsTo);
         // sortowanie listy alfabetycznie
         relationsFrom.sort(new RelationWordComparator(synsetId));
+
         // wyszukiwanie kilku pierwszych synsetów z każdego kierunku, które zostaną pokazane na grafie
         List<Integer> indexesRelationsFrom = getIndexRelationsToShow(relationsFrom, numSynsetOnDirection, synsetId);
+
         // pobranie relacji dla synsetów które zostaną pokazane
         fillRelations(relationsFrom, indexesRelationsFrom, synsetId, lexicons);
         // budowanie wyniku
+
         DataEntry dataEntry = buildDataEntry(synset, relationsFrom);
         result.put(synset.getId(), dataEntry);
         putDataEntryFromSynsetRelation(result, relationsFrom, synsetId);
+
         return result;
     }
 

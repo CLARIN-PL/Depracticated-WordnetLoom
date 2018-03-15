@@ -41,12 +41,7 @@ public interface SynsetRelationServiceRemote {
 
     SynsetRelation findRelation(Synset parent, Synset child, RelationType relation);
 
-    Long findRelationCountBySynset(Synset synset);
-
-    List<Long> findTopPath(Synset synset, Long rtype);
-
     List<Synset> findTopPathInSynsets(Synset synset, Long rtype);
-//    List<DataEntry> findTopPathInSynsets(Synset synset, Long rtype);
 
     List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons, NodeDirection[] directions);
 

@@ -24,7 +24,7 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
     }
 
     public void deleteRelationWithChilds(RelationType relation) {
-        deleteAllChilds(relation);
+        deleteAllChildren(relation);
         delete(relation);
     }
 
@@ -34,7 +34,7 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
                 .getResultList();
     }
 
-    public void deleteAllChilds(RelationType relationType) {
+    public void deleteAllChildren(RelationType relationType) {
         getEntityManager().createQuery("DELETE FROM RelationType rt WHERE rt.parent = :parent")
                 .setParameter("parent", relationType)
                 .executeUpdate();

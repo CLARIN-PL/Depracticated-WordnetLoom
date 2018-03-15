@@ -49,15 +49,18 @@ public class SynsetsFrame extends DialogWindow implements ActionListener {
         listModel = new DefaultListModel<>();
         synsetsList = new ToolTipList(workbench, listModel, new SynsetTooltipGenerator());
         synsetsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
         LazyScrollPane synsetsScrollPane = new LazyScrollPane(synsetsList, 15);
         synsetsList.setCellRenderer(new SynsetListCellRenderer(synsetsScrollPane));
 
         addToNewSynsetButton = MButton.buildOkButton()
                 .withCaption("Dodaj do nowego synsetu")
                 .withActionListener(this);
+
         addToSelectedButton = MButton.buildOkButton()
                 .withCaption("Dodaj do wybranego synsetu")
                 .withActionListener(this);
+
         cancelButton = MButton.buildCancelButton()
                 .withActionListener(this);
 

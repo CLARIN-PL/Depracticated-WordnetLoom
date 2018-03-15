@@ -97,16 +97,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     final int MAX_SYNSETS_SHOWN = 4;
     final int MIN_SYNSETS_IN_GROUP = 2;
 
-    /* Transient cache for visualisation biulding */
-//    private HashMap<Long, DataEntry> entrySets = new HashMap<>();
-
-//    public void setEntrySets(HashMap<Long, DataEntry> entrySets) {
-//        this.entrySets = entrySets;
-//    }
-//
-//    public DataEntry getEntrySetFor(Long id) {
-//        return entrySets.get(id); // if there is no cache returns null
-//    }
 
     public void addSynsetToCash(Long synsetId, ViwnNodeSynset node) {
         cache.put(synsetId, node);
@@ -308,9 +298,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         // Clear the visualisation.
         clear();
 
-//        selectedNode = rootNode = new ViwnNodeSynset(synset, this);
-//        rootNode = new ViwnNodeSynset(synset, this);
-//        ViwnNodeSynset rootNodeSynset = new ViwnNodeSynset(synset, this);
         ViwnNodeSynset rootNodeSynset;
         if(cache.containsKey(synset.getId())){
             rootNodeSynset = cache.get(synset.getId());
@@ -344,7 +331,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         recreateLayout();
         center();
         vv.setVisible(true);
-//        releaseDataSetCache();
     }
 
     /**
@@ -918,7 +904,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             recreateLayoutWithFix(synsetNode, synsetNode);
             recreateLayout();
             vv.repaint();
-
             workbench.setBusy(false);
             vv.setVisible(true);
         });
