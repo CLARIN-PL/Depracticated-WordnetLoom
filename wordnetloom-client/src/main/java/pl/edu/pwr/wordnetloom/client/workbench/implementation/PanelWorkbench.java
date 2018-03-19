@@ -255,8 +255,8 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
     }
 
     @Override
-    public void installMenu(WebMenu item) {
-        menuHolder.install(item);
+    public void installMenu(WebMenu item, String alignment) {
+        menuHolder.install(item, alignment);
     }
 
     @Override
