@@ -68,7 +68,6 @@ public class Application implements Loggable {
             DomainManager.getInstance();
             List<RelationType> relations = RemoteService.relationTypeRemote.findAll();
             RelationTypeManager.getInstance().load(relations);
-           // DictionaryManager.getInstance();
             start();
         }, "Mangers Thread");
 

@@ -162,20 +162,17 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
         Runnable run = () -> {
             // odczytanie perspektywy o podanej nazwie
             Perspective perspective = perspectives.get(perspectiveName);
-            if (perspective != null) { // czy perspektywa istnieje
+            if (perspective != null) {
 
                 ArrayList<ShortCut> shortCuts = new ArrayList<>();
                 shortCuts.addAll(perspective.getShortCuts());
                 shortCuts.addAll(globalShortCuts);
-                menuHolder.setShortCuts(shortCuts); // ładowanie skrótów
-
+                menuHolder.setShortCuts(shortCuts);
 
                 mainPane.add(perspective.getContent(), BorderLayout.CENTER);
-                mainPane.add(statusPanel, BorderLayout.SOUTH);
                 mainPane.invalidate();
                 frame.setContentPane(mainPane);
 
-                // czy mozna uruchomić komunikat o wyświetleniu
                 if (frame.isVisible()) {
                     perspective.refreshViews();
                 }
