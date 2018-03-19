@@ -104,10 +104,17 @@ public class CoreService extends AbstractService implements MenuListener {
                 .withActionListener(e ->
                     ChangePasswordWindow.showModal(workbench)
                 ));
+        user.addSeparator();
+        user.add(new MMenuItem("Sign out")
+                .withMnemonic(KeyEvent.VK_P)
+                .withIcon(FontAwesome.SIGN_OUT)
+                .withActionListener(e ->
+                        System.exit(0)
+                ));
 
-        workbench.installMenu(help);
-        workbench.installMenu(settings);
-        workbench.installMenu(user);
+        workbench.installMenu(help, "left");
+        workbench.installMenu(settings, "left");
+        workbench.installMenu(user, "right");
 
     }
 

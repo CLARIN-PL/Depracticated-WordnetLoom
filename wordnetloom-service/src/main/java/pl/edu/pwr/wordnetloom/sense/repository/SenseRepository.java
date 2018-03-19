@@ -55,7 +55,6 @@ public class SenseRepository extends GenericRepository<Sense> {
 
     public List<Sense> findByCriteria(SenseCriteriaDTO dto) {
         List<Sense> senses = getSensesByCriteria(dto);
-//        Collections.sort(senses, getSenseComparator());
         return senses;
     }
 
@@ -71,7 +70,6 @@ public class SenseRepository extends GenericRepository<Sense> {
     private final String COMMENT = "comment";
     private final String EXAMPLES = "examples";
     private final String SYNSET = "synset";
-    private final String SENSE_ATTRIBUTES = "senseAttributes";
 
     private List<Sense> getSensesByCriteria(SenseCriteriaDTO dto) {
 
@@ -84,7 +82,6 @@ public class SenseRepository extends GenericRepository<Sense> {
         senseRoot.fetch(LEXICON);
 
         query.select(senseRoot);
-//        query.distinct(true);
         query.where(getPredicatesByCriteria(dto, senseRoot, wordJoin, criteriaBuilder));
 
         List<Order> orders = new ArrayList<>();
@@ -108,6 +105,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         return new ArrayList<>(resultSet);
     }
 
+    //TODO Refactor to Specifications
     private Predicate[] getPredicatesByCriteria(SenseCriteriaDTO dto, Root senseRoot, Join wordJoin, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicateList = new ArrayList<>();
 
@@ -184,306 +182,21 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     public int getCountUnitsByCriteria(SenseCriteriaDTO dto) {
+
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
+
         Root<Sense> senseRoot = query.from(Sense.class);
         Join<Sense, Word> wordJoin = senseRoot.join(WORD);
         query.select(criteriaBuilder.count(senseRoot));
+
         Predicate[] predicates = getPredicatesByCriteria(dto, senseRoot, wordJoin, criteriaBuilder);
         query.where(predicates);
+
         return Math.toIntExact(getEntityManager().createQuery(query).getSingleResult());
     }
 
-    /**
-     * Zwraca komparator, który porównuje jednostki według nastepujących kryteriów
-     * 1. słówko
-     * 2. częśc mowy
-     * 3. numer jednostki - wariant
-     * 4. leksykon
-     *
-     * @return komparator porównujący jednostki
-     */
-    private Comparator<Sense> getSenseComparator(final String lemma) {
-        Collator collator = Collator.getInstance(Locale.US);
-        String rules = ((RuleBasedCollator) collator).getRules();
-        try {
-            collator = new RuleBasedCollator(rules.replaceAll("<'\u005f'", "<' '<'\u005f'"));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        collator.setStrength(Collator.PRIMARY);
-        collator.setDecomposition(Collator.NO_DECOMPOSITION);
 
-        final Collator finalCollator = collator;
-
-        Comparator<Sense> senseComparator = (Sense a, Sense b) -> {
-
-            String valueA = a.getWord().getWord().toLowerCase();
-            String valueB = b.getWord().getWord().toLowerCase();
-
-            int compareResult = finalCollator.compare(valueA, valueB);
-            if (compareResult == 0) {
-                Long longValueA = a.getPartOfSpeech().getId();
-                Long longValueB = b.getPartOfSpeech().getId();
-                compareResult = longValueA.compareTo(longValueB); //TODO sprawdzić czy kolejnośc jest dobra
-            }
-            if (compareResult == 0) {
-                compareResult = a.getVariant().compareTo(b.getVariant());
-            }
-            if (compareResult == 0) {
-                compareResult = a.getLexicon().getId().compareTo(b.getLexicon().getId());
-            }
-
-            return compareResult;
-        };
-
-        return senseComparator;
-    }
-
-    private List<Sense> getSenses(String filter, PartOfSpeech pos, Domain domain, RelationType relationType,
-                                  String register, String comment, String example, int limitSize, List<Long> lexicons) {
-
-        String wordQuery = "";
-        String senseQuery = "SELECT s FROM Sense s JOIN FETCH s.domain JOIN FETCH s.lemma JOIN FETCH s.partOfSpeech WHERE ";
-
-        boolean existFilter = filter != null && !filter.isEmpty();
-        boolean existCriteria = pos != null || domain != null || relationType != null
-                || (register != null && !register.isEmpty())
-                || (comment != null && !comment.isEmpty())
-                || (example != null && !example.isEmpty());
-
-        if (existFilter && !filter.endsWith("%")) {
-            filter += "%";
-        }
-
-        Collator collator = Collator.getInstance(Locale.US);
-        String rules = ((RuleBasedCollator) collator).getRules();
-        try {
-            RuleBasedCollator correctedCollator
-                    = new RuleBasedCollator(rules.replaceAll("<'\u005f'", "<' '<'\u005f'"));
-            collator = correctedCollator;
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        collator.setStrength(Collator.PRIMARY);
-        collator.setDecomposition(Collator.NO_DECOMPOSITION);
-
-        Collator myFavouriteCollator = collator;
-
-        Comparator<Sense> senseComparator = (Sense a, Sense b) -> {
-
-            String aa = a.getWord().getWord().toLowerCase();
-            String bb = b.getWord().getWord().toLowerCase();
-
-            int c = myFavouriteCollator.compare(aa, bb);
-            if (c == 0) {
-                aa = a.getPartOfSpeech().getId().toString();
-                bb = b.getPartOfSpeech().getId().toString();
-                c = myFavouriteCollator.compare(aa, bb);
-            }
-            if (c == 0) {
-                if (Objects.equals(a.getVariant(), b.getVariant())) {
-                    c = 0;
-                }
-                if (a.getVariant() > b.getVariant()) {
-                    c = 1;
-                }
-                if (a.getVariant() < b.getVariant()) {
-                    c = -1;
-                }
-            }
-            if (c == 0) {
-                aa = a.getLexicon().getId().toString();
-                bb = b.getLexicon().getId().toString();
-                c = myFavouriteCollator.compare(aa, bb);
-            }
-            return c;
-        };
-
-        if (existCriteria) {
-            Map<String, Object> parameters = new HashMap<>();
-
-            int critCounter = (domain == null ? 0 : 1) + (pos == null ? 0 : 1) + (relationType == null ? 0 : 1);
-
-            // TODO: better to find just COUNT of these ...
-            if (((existFilter && filter.length() > 3) && critCounter > 0)) {
-                // można przypuszczać, że słów jest relatywnie mało (/^?.*{3,}%/i) LUB kryteria szukania są bardziej szczegółowe
-                // dlatego najoptymalniej będzie fetchnąć najpierw same, posortowane już, słowa
-                if (existFilter) {
-                    // szukanie po wordach
-                    wordQuery = "SELECT w.id FROM Word w WHERE lower(w.word) LIKE :param ORDER BY w.word ASC";
-                } else {
-                    // szukanie po wszystkim
-                    wordQuery = "SELECT w.id FROM Word w ORDER BY w.word ASC";
-                }
-
-                TypedQuery<Long> wordIDQuery = getEntityManager().createQuery(wordQuery, Long.class);
-
-                if (existFilter) {
-                    wordIDQuery.setParameter("param", filter.toLowerCase());
-                }
-
-                if (limitSize != 0) {
-                    wordIDQuery.setMaxResults(limitSize);
-                }
-
-                List<Long> wordsIDs = wordIDQuery.getResultList();
-
-                if (wordsIDs.isEmpty()) {
-                    return new ArrayList<>();
-                }
-
-                senseQuery += "s.lemma.word.id IN (:wordsID) AND ";
-                parameters.put("wordsID", wordsIDs);
-
-                // to optimize
-                if (pos != null) {
-                    senseQuery += "s.partOfSpeech.id = :pos AND ";
-                    parameters.put("pos", pos.getId());
-                }
-                if (domain != null) {
-                    senseQuery += "s.domain.id = :domain AND ";
-                    parameters.put("domain", domain.getId());
-                }
-
-                if (relationType != null) {
-                    senseQuery += "s.id IN (SELECT r.sense_from FROM  SenseRelation r  WHERE r.relation.id = :relationTypeID)) AND ";
-                    parameters.put("relationTypeID", relationType.getId());
-                }
-                if (register != null) {
-                    senseQuery += "s.id IN( SELECT sa.sense.id FROM SenseAttribute sa WHERE sa.type = (SELECT att.id FROM AttributeType att WHERE att.typeName.text = 'register')"
-                            + " AND sa.value.text = :register) AND ";
-                    parameters.put("register", register);
-                }
-                if (comment != null && !comment.isEmpty()) {
-                    senseQuery += "s.id IN( SELECT sa.sense.id FROM SenseAttribute sa WHERE sa.type = (SELECT att.id FROM AttributeType att WHERE att.tableName='sense' AND att.typeName.text = 'comment')"
-                            + " AND sa.value.text LIKE :comment ) AND ";
-                    parameters.put("comment", "%" + comment + "%");
-                }
-                if (example != null && !example.isEmpty()) {
-                    senseQuery += "s.id IN( SELECT sa.sense.id FROM SenseAttribute sa WHERE sa.type = (SELECT att.id FROM AttributeType att WHERE att.typeName.text = 'use_cases')"
-                            + " AND sa.value.text LIKE :example ) AND ";
-                    parameters.put("example", "%" + example + "%");
-                }
-                senseQuery = senseQuery.substring(0, senseQuery.length() - 4);
-
-                TypedQuery<Sense> q = getEntityManager().createQuery(senseQuery, Sense.class);
-
-                for (Entry<String, Object> pair : parameters.entrySet()) {
-                    q.setParameter(pair.getKey(), pair.getValue());
-                }
-
-                List<Sense> senses = q.setMaxResults(limitSize).getResultList();
-                senses.sort(senseComparator);
-                senses = filterSenseByLexicon(senses, lexicons);
-                return senses;
-            }
-            // słów jest zdecydowanie za dużo by przekazać je jako parametr, trzeba najpierw szukać po kryteriach
-
-            if (pos != null) {
-                senseQuery += "s.partOfSpeech.id = :pos AND ";
-                parameters.put("pos", pos.getId());
-            }
-            if (domain != null) {
-                senseQuery += "s.domain.id = :domain AND ";
-                parameters.put("domain", domain.getId());
-            }
-
-            if (relationType != null) {
-                senseQuery += "s.id IN (SELECT r.sense_from FROM  SenseRelation r  WHERE r.relation.id = :relationTypeID)) AND ";
-                parameters.put("relationTypeID", relationType.getId());
-            }
-            if (register != null) {
-                senseQuery += "s.id IN( SELECT sa.sense.id FROM SenseAttribute sa WHERE sa.type = (SELECT att.id FROM AttributeType att WHERE att.typeName.text = 'register')"
-                        + " AND sa.value.text = :register) AND ";
-                parameters.put("register", register);
-            }
-            if (comment != null && !comment.isEmpty()) {
-                senseQuery += "s.id IN( SELECT sa.sense.id FROM SenseAttribute sa WHERE sa.type = (SELECT att.id FROM AttributeType att WHERE att.tableName='sense' AND att.typeName.text = 'comment')"
-                        + " AND sa.value.text LIKE :comment ) AND ";
-                parameters.put("comment", "%" + comment + "%");
-            }
-            if (example != null && !example.isEmpty()) {
-                senseQuery += "s.id IN( SELECT sa.sense.id FROM SenseAttribute sa WHERE sa.type = (SELECT att.id FROM AttributeType att WHERE att.typeName.text = 'use_cases')"
-                        + " AND sa.value.text LIKE :example ) AND ";
-                parameters.put("example", "%" + example + "%");
-            }
-            senseQuery = senseQuery.substring(0, senseQuery.length() - 4);
-
-            TypedQuery<Sense> q = getEntityManager().createQuery(senseQuery, Sense.class);
-
-            for (Entry<String, Object> pair : parameters.entrySet()) {
-                q.setParameter(pair.getKey(), pair.getValue());
-            }
-
-            List<Sense> senses = q.getResultList(); // nie można oznaczyć limitu dla nieposortowanej kolekcji!
-
-            if (existFilter) {
-                ListIterator<Sense> iterator = senses.listIterator();
-                Pattern p = Pattern.compile(filter.replaceAll("\\.", "\\\\.").replaceAll("\\[", "\\\\[").replaceAll("%", ".*?"),
-                        Pattern.CASE_INSENSITIVE);
-                while (iterator.hasNext()) {
-                    Sense s = iterator.next();
-                    String name = s.getWord().getWord();
-
-                    Matcher match = p.matcher(name);
-                    if (!match.matches()) {
-                        iterator.remove();
-                    }
-                }
-            }
-            senses.sort(senseComparator);
-
-            if (limitSize != 0 && senses.size() > limitSize) {
-                senses = senses.subList(0, limitSize);
-                senses = new ArrayList<>(senses);
-            }
-            senses = filterSenseByLexicon(senses, lexicons);
-            return senses;
-        }
-        // najpierw szukanie przez pobranie id-ków wordów
-        if (existFilter) {
-            // szukanie po wordach
-            wordQuery = "SELECT w.id FROM Word w WHERE lower(w.word) LIKE :param ORDER BY w.word ASC";
-        } else {
-            // szukanie po wszystkim
-            wordQuery = "SELECT w.id FROM Word w ORDER BY lower(w.word) ASC";
-        }
-
-        TypedQuery<Long> wordIDQuery = getEntityManager().createQuery(wordQuery, Long.class);
-
-        if (existFilter) {
-            wordIDQuery.setParameter("param", filter.toLowerCase());
-        }
-
-        if (limitSize == 0) {
-            wordIDQuery.setMaxResults(10000); // TODO: remove hard-limit
-        } else {
-            wordIDQuery.setMaxResults(limitSize);
-        }
-
-        List<Long> wordsIDs = wordIDQuery.getResultList(); // lista idków
-
-        if (wordsIDs.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        senseQuery += "s.lemma.word.id IN (:wordsID)";
-
-        TypedQuery<Sense> lastQuery = getEntityManager().createQuery(senseQuery, Sense.class);
-
-        lastQuery.setParameter("wordsID", wordsIDs);
-
-        if (limitSize == 0) {
-            lastQuery.setMaxResults(10000); // TODO: remove hard-limit
-        } else {
-            lastQuery.setMaxResults(limitSize);
-        }
-        List<Sense> senses = lastQuery.getResultList();
-        senses.sort(senseComparator);
-        senses = filterSenseByLexicon(senses, lexicons);
-        return senses;
-    }
 
     public List<Sense> filterSenseByLexicon(List<Sense> senses, List<Long> lexicons) {
         List<Sense> result = new ArrayList<>();

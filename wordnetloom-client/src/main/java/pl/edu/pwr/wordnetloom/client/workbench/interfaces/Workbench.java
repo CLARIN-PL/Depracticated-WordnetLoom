@@ -5,6 +5,8 @@ import com.alee.laf.menu.WebMenuItem;
 import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
+import java.awt.*;
+
 /**
  * Interfejs zapewniający dostęp do funkcji oferowanych przez workbench
  *
@@ -27,7 +29,7 @@ public interface Workbench {
      *
      * @param item - menu do zainstalowania
      */
-    void installMenu(WebMenu item);
+    void installMenu(WebMenu item,  String alignment);
 
     /**
      * Install menu on given position. If index is negative the position is

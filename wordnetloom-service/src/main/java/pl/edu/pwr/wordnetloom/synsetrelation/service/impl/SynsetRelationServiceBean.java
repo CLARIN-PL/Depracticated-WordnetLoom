@@ -144,18 +144,6 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
 
     @PermitAll
     @Override
-    public Long findRelationCountBySynset(Synset synset) {
-        return synsetRelationRepository.findRelationCountBySynset(synset);
-    }
-
-    @PermitAll
-    @Override
-    public List<Long> findTopPath(Synset synset, Long rtype) {
-        return synsetRelationRepository.findTopPath(synset, rtype);
-    }
-
-    @PermitAll
-    @Override
     public List<Synset> findTopPathInSynsets(Synset synset, Long rtype) {
         return synsetRelationRepository.findTopPathInSynsets(synset, rtype);
     }

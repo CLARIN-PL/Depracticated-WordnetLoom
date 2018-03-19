@@ -18,10 +18,9 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
+import pl.edu.pwr.wordnetloom.client.systems.renderers.ExampleCellRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
 import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -38,8 +37,6 @@ import java.awt.event.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public class LexicalUnitPropertiesPanel extends WebPanel implements
         CaretListener, ActionListener {

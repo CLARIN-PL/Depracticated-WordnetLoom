@@ -20,6 +20,7 @@ package pl.edu.pwr.wordnetloom.client.workbench.implementation;
 import com.alee.laf.menu.WebMenu;
 import com.alee.laf.menu.WebMenuBar;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
+import se.datadosen.component.RiverLayout;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -36,8 +37,9 @@ public class MenuHolder {
     private final WebMenuBar menuBar;
 
     public MenuHolder() {
+
         menuBar = new WebMenuBar();
-        //menuBar.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        menuBar.setLayout( new RiverLayout());
     }
 
     /**
@@ -54,9 +56,11 @@ public class MenuHolder {
      *
      * @param item - element do zainstalowania
      */
-    public void install(WebMenu item) {
-        menuBar.add(item);
+    public void install(WebMenu item, String alignment)
+    {
+        menuBar.add(alignment, item);
     }
+
 
     /**
      * Install menu on on given position. Negative index is counted from the

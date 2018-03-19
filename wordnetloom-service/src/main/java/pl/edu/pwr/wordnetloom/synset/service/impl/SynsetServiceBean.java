@@ -51,7 +51,6 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @Inject
     UserServiceLocal userService;
 
-
     @Inject
     Principal principal;
 

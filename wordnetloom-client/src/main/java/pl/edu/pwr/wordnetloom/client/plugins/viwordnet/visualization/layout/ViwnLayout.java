@@ -243,12 +243,6 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
             // now, time to place its neighbors
             // Divide neighbors according to relation type, and future place
             // in visualisation
-
-//            Set<ViwnNode> sbottom = new HashSet<>();
-//            Set<ViwnNode> stop = new HashSet<>();
-//            Set<ViwnNode> sright = new HashSet<>();
-//            Set<ViwnNode> sleft = new HashSet<>();
-
             List<ViwnNode> bottom = new ArrayList<>();
             List<ViwnNode> top = new ArrayList<>();
             List<ViwnNode> right = new ArrayList<>();

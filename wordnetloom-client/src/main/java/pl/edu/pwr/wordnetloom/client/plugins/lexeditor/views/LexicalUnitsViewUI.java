@@ -132,6 +132,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         unitsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         unitsList.getSelectionModel().addListSelectionListener(this);
         unitsList.setCellRenderer(new UnitListCellRenderer());
+
         unitsListScrollPane = new LazyScrollPane(unitsList, LIMIT);
         unitsListScrollPane.setScrollListener((offset, limit) -> loadMoreUnits());
 

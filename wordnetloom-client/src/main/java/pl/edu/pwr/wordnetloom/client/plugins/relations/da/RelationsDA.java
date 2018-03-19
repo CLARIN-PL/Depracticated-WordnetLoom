@@ -361,49 +361,6 @@ public class RelationsDA {
             return;
         }
 
-//        for (SynsetRelation rel : RemoteUtils.synsetRelationRemote.dbGetUpperRelations(src, null, LexiconManager.getInstance().getLexicons())) {
-//
-//            RemoteUtils.synsetRelationRemote.dbDelete(rel);
-//
-//            rel.setSynsetTo(dst);
-//
-//            if (!RelationsDA.checkIfRelationExists(rel.getSynsetFrom(), rel.getSynsetTo(), rel.getRelation())
-//                    && !(rel.getSynsetTo().equals(rel.getSynsetFrom()))) {
-//                RemoteUtils.synsetRelationRemote.dbMakeRelation(
-//                        rel.getSynsetFrom(),
-//                        rel.getSynsetTo(),
-//                        rel.getRelation());
-//            }
-//        }
-//
-//        for (SynsetRelation rel : RemoteUtils.synsetRelationRemote.dbGetSubRelations(src, null, LexiconManager.getInstance().getLexicons())) {
-//
-//            RemoteUtils.synsetRelationRemote.dbDelete(rel);
-//
-//            rel.setSynsetFrom(dst);
-//
-//            if (!RelationsDA.checkIfRelationExists(rel.getSynsetFrom(), rel.getSynsetTo(), rel.getRelation())
-//                    && !(rel.getSynsetTo().equals(rel.getSynsetFrom()))) {
-//                RemoteUtils.synsetRelationRemote.dbMakeRelation(
-//                        rel.getSynsetFrom(),
-//                        rel.getSynsetTo(),
-//                        rel.getRelation());
-//            }
-//        }
-//        String old_comment = Common.getSynsetAttribute(dst, Synset.COMMENT);
-//        if (old_comment == null) {
-//            old_comment = "";
-//        }
-//        String src_comment = Common.getSynsetAttribute(src, Synset.COMMENT);
-//        if (src_comment == null) {
-//            src_comment = "";
-//        }
-//        if (old_comment.isEmpty()) {
-//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(dst, Synset.COMMENT, src_comment);
-//        } else if (!src_comment.isEmpty()) {
-//            RemoteUtils.dynamicAttributesRemote.saveOrUpdateSynsetAttribute(dst, Synset.COMMENT, old_comment + "; " + src_comment);
-//        }
-        // RemoteUtils.synsetRemote.updateSynset(dst);
         HashMap<String, Sense> dst_lemma_to_str = new HashMap<>();
         for (Sense unit : RelationsDA.getUnits(dst, lexicons)) {
             dst_lemma_to_str.put(unit.getWord().getWord(), unit);
