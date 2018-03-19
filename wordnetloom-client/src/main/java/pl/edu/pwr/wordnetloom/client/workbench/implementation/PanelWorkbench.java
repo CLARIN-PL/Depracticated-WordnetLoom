@@ -1,22 +1,16 @@
 package pl.edu.pwr.wordnetloom.client.workbench.implementation;
 
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.menu.WebMenu;
 import com.alee.laf.menu.WebMenuItem;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
-import jiconfont.icons.FontAwesome;
-import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.Application;
-import pl.edu.pwr.wordnetloom.client.systems.managers.ConfigurationManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.BusyGlassPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.*;
-import pl.edu.pwr.wordnetloom.user.model.User;
-import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -261,8 +255,8 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
     }
 
     @Override
-    public void installMenu(WebMenu item) {
-        menuHolder.install(item);
+    public void installMenu(WebMenu item, String alignment) {
+        menuHolder.install(item, alignment);
     }
 
     @Override

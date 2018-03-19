@@ -112,6 +112,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
                                               boolean multiSelect,
                                               PartOfSpeech filterObject,
                                               ValueContainer<Boolean> unitWasCreated) {
+
         UnitsListFrame frame = new UnitsListFrame(workbench, x, y);
         frame.setFilterObject(filterObject);
         frame.setMultSelect(multiSelect);

@@ -730,12 +730,15 @@ public class ViWordNetService extends AbstractService implements
 
             if (DialogBox.showYesNo(String.format(MERGE_SYNSETS,
                     src.getUnitsStr(), dst.getUnitsStr())) == DialogBox.YES) {
+
                 RelationsDA.mergeSynsets(src.getSynset(), dst.getSynset(),
                         LexiconManager.getInstance().getLexiconsIds());
+
                 for (ViwnGraphView gv : new ArrayList<>(graphViews)) {
                     gv.getUI().removeSynset(src);
                     gv.getUI().updateSynset(dst);
                 }
+
                 ViWordNetService s = ServiceManager.getViWordNetService(workbench);
                 src.getSynset().setId((long) -1);
                 s.lockerView.refreshData();

@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.client.systems.ui;
+package pl.edu.pwr.wordnetloom.client.systems.renderers;
 
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetExample;
