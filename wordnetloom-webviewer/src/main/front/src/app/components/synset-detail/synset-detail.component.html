@@ -1,0 +1,69 @@
+<div class="form-right">
+  <ul class="nav nav-tabs">
+    <li *ngFor="let tab of tabs" class="nav active cursor-pointer" [ngClass]="{active:tab.active}">
+      <a (click)="selectTab(tab)">{{tab.name}}</a>
+    </li>
+  </ul>
+  <div class="form-right-content">
+  <div *ngFor="let tab of tabs">
+    <div *ngIf="tab.active">
+      <h4>{{tab.title}}</h4>
+    </div>
+  </div>
+  <div *ngIf="tabs[0].active">
+    <h5 *ngIf="senses.length > 0">Lexical units:</h5>
+    <ul>
+      <li class="cursor-pointer" *ngFor="let sense of senses" (click)="showSenseDetails(sense)">
+        {{sense.lemma.word}} ({{sense.senseNumber}})
+      </li>
+    </ul>
+    <div *ngIf="senseObject &&  realations.from &&  realations.to">
+      <h5>Relations <b><i>{{senseObject.lemma.word}}</i></b></h5>
+      <div *ngIf="realations.from">
+      <h5>From</h5>
+      <ul class="tree">
+        <li *ngFor="let relKey of realations.from | keyobject">
+          {{ relKey }}
+          <ul>
+            <li *ngFor="let rel of realations.from[relKey]">
+              {{rel.senseTo.lemma.word}}
+            </li>
+          </ul>
+        </li>
+      </ul>
+      </div>
+      <div *ngIf="realations.to">
+      <h5>To</h5>
+      <ul class="tree">
+        <li *ngFor="let relKey of realations.to | keyobject">
+          {{ relKey }}
+          <ul>
+            <li *ngFor="let rel of realations.to[relKey]">
+              {{rel.senseTo.lemma.word}}
+            </li>
+          </ul>
+        </li>
+      </ul>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="tabs[1].active">
+    <table class="table">
+      <thead>
+        <tr>
+          <td>Property</td>
+          <td>Value</td>
+        </tr>
+      </thead>
+      <tr *ngFor="let detail of synsetDetails">
+        <td>{{detail.type.typeName}}</td>
+        <td>{{detail | detailPipe:'content'}}</td>
+        <!--<td>{{detail.type.typeName}}</td>-->
+        <!--<td>{{detail.value | detail}}</td>-->
+      </tr>
+    </table>
+    <!--{{synsetDetails | json}}-->
+
+  </div>
+</div>
+</div>

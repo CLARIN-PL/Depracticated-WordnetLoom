@@ -2,7 +2,6 @@ package pl.edu.pwr.wordnetloom.synset.model;
 
 import org.hibernate.envers.Audited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
-import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 
 import javax.persistence.*;
 

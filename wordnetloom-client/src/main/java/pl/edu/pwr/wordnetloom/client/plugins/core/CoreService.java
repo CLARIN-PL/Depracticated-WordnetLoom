@@ -6,7 +6,6 @@ import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.core.window.AboutWindow;
-import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
 import pl.edu.pwr.wordnetloom.client.plugins.login.window.ChangePasswordWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -15,7 +14,6 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -102,7 +100,7 @@ public class CoreService extends AbstractService implements MenuListener {
                 .withMnemonic(KeyEvent.VK_P)
                 .withIcon(FontAwesome.EXCHANGE)
                 .withActionListener(e ->
-                    ChangePasswordWindow.showModal(workbench)
+                        ChangePasswordWindow.showModal(workbench)
                 ));
         user.addSeparator();
         user.add(new MMenuItem("Sign out")

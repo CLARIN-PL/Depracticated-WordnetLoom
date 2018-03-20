@@ -31,16 +31,7 @@ public interface Workbench {
      */
     void installMenu(WebMenu item,  String alignment);
 
-    /**
-     * Install menu on given position. If index is negative the position is
-     * counted from the end. -1 is the last position.
-     *
-     * @param item
-     * @param index
-     */
-    void installMenu(WebMenu item, int index);
-
-    void installMenu(String topMenu, String subMenu, WebMenuItem item);
+    void installMenuComponent(Component c,  String alignment);
 
     /**
      * Odczytanie menu o konkretnej nazwie. Przeszukiwana jest lista

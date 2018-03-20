@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Wordnet graph</title>
+  <!--<base href="http://plwordnet.pwr.wroc.pl/wordnet/graph/">-->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!--<script src="../node_modules/angular2/bundles/angular2-polyfills.js"></script>-->
+  <!--<script src="../node_modules/systemjs/dist/system.src.js"></script>-->
+  <!--<script src="../node_modules/rxjs/bundles/Rx.js"></script>-->
+
+  <!--bootstrap-->
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/ng2-bootstrap/x.x.x/ng2-bootstrap.min.js"></script>-->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+
+  <!--graph-->
+  <script src="graph-js/js/canvas-toBlob.js"></script>
+  <script src="graph-js/js/FileSaver.min.js"></script>
+  <script src="graph-js/js/d3.v4.min.js"></script>
+  <script src="graph-js/js/api-connector.js"></script>
+  <script src="graph-js/js/relations.js"></script>
+  <script src="graph-js/js/graph-node.js"></script>
+  <script src="graph-js/js/graph-creator.js"></script>
+
+  <script src="https://ctj.clarin-pl.eu/clarin_bar/script.min.js"></script>
+
+  <script>
+    window.onload = function() {
+      var clarinModule = new ClarinModule({
+        offset: {
+          'top': '0',
+          'right': null,
+          'bottom': null,
+          'left': 0
+        },
+        arrow: {
+          'initial-orientation': "right",// up || down || right || left
+          'rotation-hover': -180
+        },
+        horizontal: false,
+        themeColor: '#4a4a4a',
+        defaultLang: 'pl',
+        languageSelector: true
+      });
+      clarinModule.setFullHeightMode();
+      clarinModule.shrink();
+    }
+  </script>
+</head>
+<body>
+  <app-root>Loading...</app-root>
+</body>
+</html>

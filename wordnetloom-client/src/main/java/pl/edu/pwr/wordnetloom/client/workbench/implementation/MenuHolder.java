@@ -61,6 +61,10 @@ public class MenuHolder {
         menuBar.add(alignment, item);
     }
 
+    public void install(Component o, String alignment) {
+        menuBar.add(alignment, o);
+    }
+
 
     /**
      * Install menu on on given position. Negative index is counted from the

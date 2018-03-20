@@ -1,0 +1,62 @@
+/*https://jsfiddle.net/1fynun7a/1/*/
+ul.tree, ul.tree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+ul.tree ul {
+  margin-left: 10px;
+}
+ul.tree li {
+  margin: 0;
+  padding: 0 7px;
+  line-height: 20px;
+  font-weight: bold;
+  border-left:1px solid rgb(100,100,100);
+
+}
+ul.tree li:last-child {
+  border-left:none;
+}
+ul.tree li:before {
+  position:relative;
+  top:-0.3em;
+  height:1em;
+  width:12px;
+  color:white;
+  border-bottom:1px solid rgb(100,100,100);
+  content:"";
+  display:inline-block;
+  left:-7px;
+}
+ul.tree li:last-child:before {
+  border-left:1px solid rgb(100,100,100);
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.nav-tabs {
+  border-bottom: 2px solid #DDD;
+}
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+  border-width: 0;
+}
+.nav-tabs > li > a {
+  border: none; color: #666;
+}
+.nav-tabs > li.active > a, .nav-tabs > li > a:hover {
+  border: none; color: #ff3e3e !important; background: transparent;
+}
+.nav-tabs > li > a::after { content: ""; background: #ff3e3e; height: 2px; position: absolute; width: 100%; left: 0px; bottom: -1px; transition: all 250ms ease 0s; transform: scale(0); }
+.nav-tabs > li.active > a::after, .nav-tabs > li:hover > a::after { transform: scale(1); }
+.tab-nav > li > a::after { background: #ff3e3e none repeat scroll 0% 0%; color: #fff; }
+.tab-pane { padding: 15px 0; }
+.tab-content{padding:20px}
+
+.card {background: #FFF none repeat scroll 0% 0%; box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3); margin-bottom: 30px; }
+
+.form-right-content{
+  overflow-y: auto;
+  max-height: calc(100vh - 155px);
+  margin-bottom: 100px;
+}

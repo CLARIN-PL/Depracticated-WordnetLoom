@@ -102,44 +102,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         cache.put(synsetId, node);
     }
 
-//    public List<SynsetRelation> getRelationsFor(Long id) {
-//        DataEntry e = getEntrySetFor(id);
-//        if (e == null) {
-//            return new ArrayList<>();
-//        }
-//
-//        ArrayList<SynsetRelation> rels = new ArrayList<>();
-////        rels.addAll(e.getRelsFrom()); //TODO dorobić
-////        rels.addAll(e.getRelsTo());
-//
-//        return rels;
-//    }
-//
-//    public Set<SynsetRelation> getUpperRelationsFor(Long id) {
-//        DataEntry e = getEntrySetFor(id);
-//        if (e == null) {
-//            return null;
-//        }
-//
-////        return e.getRelsFrom();
-//
-//        return null; // TODO dorobić
-//    }
-//
-//    public Set<SynsetRelation> getSubRelationsFor(Long id) {
-//        DataEntry e = getEntrySetFor(id);
-//        if (e == null) {
-//            return null;
-//        }
-//
-////        return e.getRelsTo();
-//        return null; //TODO dorobić
-//    }
-//
-//    public void releaseDataSetCache() {
-//        entrySets.clear();
-//    }
-
     /* End of transient cache for visualisation biulding */
     @Override
     public JComponent getRootComponent() {
@@ -248,12 +210,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         return cache;
     }
 
-    /**
-     * clears cache
-     */
-    public void cleanCache() {
-        cache.clear();
-    }
 
     public void addSynsetNode(ViwnNodeSynset synset){
         clear();

@@ -1,0 +1,16 @@
+<div class="form-left">
+  <form #f="ngForm" (ngSubmit)="onSubmitLemma(f)">
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="Lemma..." name="lemma" ngModel required #lemma="ngModel">
+      <span class="input-group-btn">
+<button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+</span>
+    </div>
+  </form>
+
+  <ul class="possible-lemmas-list">
+    <li *ngFor="let lemma of possibleLemmas" (click)="selectSynset(lemma.id)">
+      {{lemma.lemma.word}} ({{lemma.senseNumber}})
+    </li>
+  </ul>
+</div>

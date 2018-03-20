@@ -3,7 +3,6 @@ package pl.edu.pwr.wordnetloom.sense.model;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
-import pl.edu.pwr.wordnetloom.dictionary.model.AspectDictionary;
 import pl.edu.pwr.wordnetloom.dictionary.model.StatusDictionary;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -13,12 +12,8 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
 import javax.persistence.*;
-import javax.validation.Constraint;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Audited

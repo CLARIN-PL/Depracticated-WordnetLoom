@@ -1,0 +1,236 @@
+/*body{*/
+/*margin: 0;*/
+/*padding: 0;*/
+/*overflow:hidden;*/
+/*}*/
+
+/*p{*/
+/*text-align: center;*/
+/*overflow: overlay;*/
+/*position: relative;*/
+/*}*/
+
+/*body{*/
+/*-webkit-touch-callout: none;*/
+/*-webkit-user-select: none;*/
+/*-khtml-user-select: none;*/
+/*-moz-user-select: none;*/
+/*-ms-user-select: none;*/
+/*user-select: none;*/
+/*}*/
+
+#toolbox{
+  position: absolute;
+  top: 0;
+  margin-left: 25%;
+  width: 50%;
+  border: 2px solid #EEEEEE;
+  border-radius: 5px;
+  z-index: 5;
+  transition: all 0.3s;
+  padding: 7px 20px 20px 20px;
+  margin-bottom: 10px;
+}
+#toolbox:hover{
+  background-color: #fff;
+}
+#toolbox input{
+  background-color: inherit;
+}
+#toolbox:hover input{
+  min-width: 300px;
+  opacity: 1;
+}
+#toolbox:hover{
+  opacity: 1;
+  cursor: pointer;
+  /*padding-bottom: 40px;*/
+}
+
+#inspected-word{
+  min-width: 200px;
+  min-height: 40px;
+  font-size: 16px;
+  color: #000;
+  padding: 10px;
+  border: none;
+  border-bottom: solid 3px #c9c9c9;
+  transition: min-width 0.3s;
+}
+
+#inspected-word-btn {
+  min-height: 40px;
+  background-color: white;
+  color: black;
+  border: 2px solid #555555;
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+}
+
+#inspected-word-btn:hover {
+  background-color: #555555; /* Green */
+  color: white;
+}
+
+#hidden-file-upload{
+  display: none;
+}
+
+#download-input{
+  margin: 0 0.5em;
+}
+
+#possible-senses{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  max-height: 400px;
+  overflow-y: scroll;
+}
+#possible-senses li{
+  padding: 5px;
+}
+#possible-senses li:hover{
+  background-color: #eee;
+}
+
+.conceptG text{
+  pointer-events: none;
+}
+
+marker{
+  fill: #333;
+}
+
+g.conceptG circle{
+  fill: #F6FBFF;
+  stroke: #333;
+  stroke-width: 2px;
+}
+
+g.conceptG:hover circle{
+  fill: rgb(200, 238, 241);
+}
+
+g.selected circle{
+  fill: rgb(250, 232, 255);
+}
+g.selected:hover circle{
+  fill: rgb(250, 232, 255);
+}
+
+path.link {
+  fill: none;
+  /*stroke: #000;*/
+  stroke-width: 2px;
+  cursor: default;
+}
+
+path.dotted {
+  stroke-dasharray: 6, 3;
+}
+
+path.link:hover{
+  stroke: rgb(94, 196, 204);
+}
+
+g.connect-node circle{
+  fill: #BEFFFF;
+}
+
+path.link.hidden{
+  stroke-width: 0;
+}
+
+path.link.selected {
+  stroke: rgb(229, 172, 247);
+}
+
+polyline.expanded {
+  fill: red;
+}
+
+/* marking selected nodes */
+g.node-selected polyline.inner-node {
+  fill: rgb(255,255,48);
+}
+
+text.relation-text{
+  font-size: .8em;
+}
+
+.hidden-list{
+  background-color: whitesmoke;
+  overflow-y: scroll;
+  min-width: 50px;
+  max-height: 200px;
+}
+.hidden-list ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.hidden-list ul li {
+  cursor: pointer;
+  padding: 5px;
+}
+.hidden-list ul li:hover {
+  background-color: #aaa;
+}
+
+#node-tooltip{
+  position: absolute;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  font: 12px sans-serif;
+  background: black;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+#node-tooltip::after {
+  content: " ";
+  opacity: inherit;
+  position: absolute;
+  top: 50%;
+  right: 100%; /* To the left of the tooltip */
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent black transparent transparent;
+}
+
+#loader {
+  border: 5px solid #f3f3f3;
+  -webkit-animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+  border-top: 5px solid #555;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#download-picture {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  border: none;
+  background-color: transparent;
+  background-image:  url('/src/assets/graph/download-icon.png');
+  background-size: 50px 50px;
+  height: 50px;
+  width: 55px;
+}
+
+#download-picture:hover{
+  background-size: 55px 55px;
+  height: 55px;
+  width: 60px;
+}

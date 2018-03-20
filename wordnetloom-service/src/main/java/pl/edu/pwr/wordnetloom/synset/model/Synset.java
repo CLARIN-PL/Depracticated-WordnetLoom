@@ -1,7 +1,6 @@
 package pl.edu.pwr.wordnetloom.synset.model;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.dictionary.model.StatusDictionary;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -9,7 +8,6 @@ import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import javax.persistence.*;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 
