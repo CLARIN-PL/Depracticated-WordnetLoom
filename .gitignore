@@ -18,10 +18,10 @@
 *.tar.gz
 *.rar
 
-target/
 bin/
 target/
 build/
+node_modules/
 .settings/
 .idea/
 .gradle/

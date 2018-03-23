@@ -17,7 +17,7 @@
         </dependency>
         <dependency>
             <groupId>pl.edu.pwr</groupId>
-            <artifactId>wordnetloom-webviewer</artifactId>
+            <artifactId>wordnetloom-rest</artifactId>
             <version>2.0</version>
             <type>war</type>
         </dependency>
@@ -48,9 +48,9 @@
                         </ejbModule>
                         <webModule>
                             <groupId>pl.edu.pwr</groupId>
-                            <artifactId>wordnetloom-webviewer</artifactId>
-                            <uri>wordnetloom-webviewer-2.0.war</uri>
-                            <bundleFileName>wordnetloom-webviewer-2.0.war</bundleFileName>
+                            <artifactId>wordnetloom-rest</artifactId>
+                            <uri>wordnetloom-rest-2.0.war</uri>
+                            <bundleFileName>wordnetloom-rest-2.0.war</bundleFileName>
                             <contextRoot>/wordnetloom</contextRoot>
                         </webModule>
                     </modules>

@@ -255,7 +255,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
      * @return wszystkie relację podanego synsetu
      */
     public List<SynsetRelation> findRelations(Synset synset) {
-        return getEntityManager().createQuery("SELECT sr.FROM SynsetRelation WHERE sr.parent.id =:id OR sr.child.id =:id", SynsetRelation.class)
+        return getEntityManager().createQuery("SELECT sr FROM SynsetRelation sr WHERE sr.parent.id =:id OR sr.child.id =:id", SynsetRelation.class)
                 .setParameter("id", synset.getId())
                 .getResultList();
     }

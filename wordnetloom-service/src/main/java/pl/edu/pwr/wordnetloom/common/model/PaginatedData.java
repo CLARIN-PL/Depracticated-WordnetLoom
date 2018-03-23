@@ -3,15 +3,15 @@ package pl.edu.pwr.wordnetloom.common.model;
 import java.util.List;
 
 public class PaginatedData<T> {
-    private final int numberOfRows;
+    private final long numberOfRows;
 	private final List<T> rows;
 
-	public PaginatedData(final int numberOfRows, final List<T> rows) {
+	public PaginatedData(final long numberOfRows, final List<T> rows) {
 		this.numberOfRows = numberOfRows;
 		this.rows = rows;
 	}
 
-	public int getNumberOfRows() {
+	public long getNumberOfRows() {
 		return numberOfRows;
 	}
 

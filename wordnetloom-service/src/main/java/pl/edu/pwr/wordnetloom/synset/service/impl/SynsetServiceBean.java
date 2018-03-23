@@ -2,7 +2,9 @@ package pl.edu.pwr.wordnetloom.synset.service.impl;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
+import pl.edu.pwr.wordnetloom.common.filter.SearchFilter;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
+import pl.edu.pwr.wordnetloom.common.model.PaginatedData;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -29,8 +31,11 @@ import javax.inject.Inject;
 import javax.validation.Validator;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 @Stateless
 @SecurityDomain("wordnetloom")
@@ -136,7 +141,12 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @PermitAll
     @Override
     public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
-        return synsetRepository.prepareCacheForRootNode(synset.getId(), lexicons, 4, directions);
+        try {
+            return synsetRepository.prepareCacheForRootNode(synset.getId(), lexicons, 4, directions);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new HashMap<>();
     }
 
     @RolesAllowed({"USER", "ADMIN"})
@@ -215,5 +225,10 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @Override
     public SynsetAttributes fetchSynsetAttributes(Long synsetId) {
         return synsetRepository.fetchSynsetAttributes(synsetId);
+    }
+
+    @Override
+    public PaginatedData<Synset> findByFilter(SearchFilter filter) {
+        return synsetRepository.findByFilter(filter);
     }
 }

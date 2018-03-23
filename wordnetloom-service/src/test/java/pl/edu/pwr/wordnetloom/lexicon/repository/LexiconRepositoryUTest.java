@@ -44,25 +44,6 @@ public class LexiconRepositoryUTest extends TestBaseRepository {
     }
 
     @Test
-    public void shouldFindLexiconByIdList() {
-
-        Long lexiconAddedId1 = dbCommandExecutor.executeCommand(() -> {
-            return lexiconRepository.persist(princenton()).getId();
-        });
-
-        Long lexiconAddedId2 = dbCommandExecutor.executeCommand(() -> {
-            return lexiconRepository.persist(slowosiec()).getId();
-        });
-
-        assertThat(lexiconAddedId1, is(notNullValue()));
-        assertThat(lexiconAddedId2, is(notNullValue()));
-
-        List<Lexicon> list = lexiconRepository.findByLexicons(Arrays.asList(lexiconAddedId1, lexiconAddedId2));
-
-        assertThat(list.size(), equalTo(2));
-    }
-
-    @Test
     public void findLexiconByIdNotFound() {
         Lexicon l = lexiconRepository.findById(999L);
         assertThat(l, is(nullValue()));

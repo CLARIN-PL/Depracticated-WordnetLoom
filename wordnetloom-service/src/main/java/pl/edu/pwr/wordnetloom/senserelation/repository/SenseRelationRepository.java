@@ -152,11 +152,14 @@ public class SenseRelationRepository extends GenericRepository<SenseRelation> {
     }
 
     public List<SenseRelation> findRelations(Sense unit, RelationType relationType, boolean asParent, boolean hideAutoReverse) {
+
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery query = criteriaBuilder.createQuery(SenseRelation.class);
+
         Root<SenseRelation> relationRoot = query.from(SenseRelation.class);
         Join<SenseRelation, RelationType> relationTypeJoin = relationRoot.join("relationType");
         String fetchColumn = asParent ? "child" : "parent";
+
         Fetch<SenseRelation, Sense> senseFetch = relationRoot.fetch(fetchColumn);
         senseFetch.fetch("domain");
 

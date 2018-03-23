@@ -1,48 +1,92 @@
 package pl.edu.pwr.wordnetloom.sense.repository;
 
 import pl.edu.pwr.wordnetloom.common.repository.Specification;
+import pl.edu.pwr.wordnetloom.common.filter.SearchFilter;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
+import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
+import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
-import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SenseSpecification {
 
-    public static Specification<Sense> filter(SenseCriteriaDTO dto) {
+    public static Specification<Sense> byFilter(final SearchFilter filter) {
 
         return (root, query, cb) -> {
 
             List<Predicate> criteria = new ArrayList<>();
 
-            if (dto.getLemma() != null && !dto.getLemma().isEmpty()) {
-                criteria.add(byLemma(dto.getLemma()).toPredicate(root, query, cb));
+            if (filter.getLemma() != null && !filter.getLemma().isEmpty()) {
+                criteria.add(byLemmaLike(filter.getLemma()).toPredicate(root, query, cb));
             }
 
-            if (dto.getVariant() != null) {
-                criteria.add(byVarinat(dto.getVariant()).toPredicate(root, query, cb));
+            if (filter.getPartOfSpeechId() != null) {
+                criteria.add(byPartOfSpeech(filter.getPartOfSpeechId()).toPredicate(root, query, cb));
             }
 
-            if (dto.getPartOfSpeechId() != null) {
-                criteria.add(byPartOfSpeech(dto.getPartOfSpeechId()).toPredicate(root, query, cb));
+            if (filter.getDomainId() != null) {
+                criteria.add(byDomain(filter.getDomainId()).toPredicate(root, query, cb));
             }
 
-            if (dto.getDomainId() != null) {
-                criteria.add(byDomain(dto.getDomainId()).toPredicate(root, query, cb));
+            if (filter.getLexicon() != null) {
+                criteria.add(byLexiconId(filter.getLexicon()).toPredicate(root, query, cb));
             }
 
-            if (dto.getSynsetId() != null) {
-                criteria.add(bySynsetId(dto.getSynsetId()).toPredicate(root, query, cb));
+            if (filter.getRelationTypeId() != null) {
+                criteria.addAll(byHasSenseRelationType(filter.getRelationTypeId(), root, cb));
             }
 
-            if (dto.getLexicons() != null && dto.getLexicons().size() > 0) {
-                criteria.add(byLexiconIds(dto.getLexicons()).toPredicate(root, query, cb));
-            }
+            Predicate attributes = filterSenseAttributes(filter, root, cb);
+            if(attributes != null) criteria.add(attributes);
 
             return cb.and(criteria.toArray(new Predicate[criteria.size()]));
         };
+    }
+
+    public static Predicate filterSenseAttributes(final SearchFilter filter, Root<Sense> root, CriteriaBuilder cb) {
+
+        if (filter.getRegisterId() != null || filter.getComment() != null || filter.getExample() != null) {
+
+            CriteriaQuery<Long> query = cb.createQuery(Long.class);
+            Subquery<Long> subquery = query.subquery(Long.class);
+            Root<SenseAttributes> senseAttributesRoot = subquery.from(SenseAttributes.class);
+            subquery.select(senseAttributesRoot.get("sense").get("id"));
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (filter.getRegisterId() != null) {
+                Predicate senseAttributesPredicate = cb.equal(senseAttributesRoot.get("register"), filter.getRegisterId());
+                predicates.add(senseAttributesPredicate);
+            }
+
+            if (filter.getComment() != null && !filter.getComment().isEmpty()) {
+                Predicate commentPredicate = cb.like(senseAttributesRoot.get("comment"), "%" + filter.getComment() + "%");
+                predicates.add(commentPredicate);
+            }
+
+            if (filter.getExample() != null) {
+                Join<SenseAttributes, SenseExample> senseExampleJoin = senseAttributesRoot.join("examples");
+                Predicate examplePredicate = cb.like(senseExampleJoin.get("examples"), filter.getExample());
+                predicates.add(examplePredicate);
+            }
+
+            subquery.where(cb.and(predicates.toArray(new Predicate[0])));
+            return  cb.in(root.get("id")).value(subquery);
+        }
+        return null;
+    }
+
+    public static List<Predicate> byHasSenseRelationType(Long rel, Root<Sense> root,  CriteriaBuilder cb) {
+            Join<Sense, SenseRelation> incoming = root.join("incomingRelations", JoinType.LEFT);
+            Join<Sense, SenseRelation> outgoing = root.join("outgoingRelations", JoinType.LEFT);
+            Predicate incomingRelationsPredicate = cb.equal(incoming.get("relationType"), rel);
+            Predicate outgoingRelationsPredicate = cb.equal(outgoing.get("relationType"), rel);
+            return Arrays.asList(incomingRelationsPredicate, outgoingRelationsPredicate);
     }
 
     public static Specification<Sense> byPartOfSpeech(Long posId) {
@@ -62,7 +106,7 @@ public class SenseSpecification {
     }
 
     public static Specification<Sense> byLemmaLike(String lemma) {
-        return (root, query, cb) -> cb.like(root.get("word").get("word"), lemma);
+        return (root, query, cb) -> cb.like(root.get("word").get("word"), lemma+"%");
     }
 
     public static Specification<Sense> byLemmaLikeContains(String lemma) {

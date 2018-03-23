@@ -41,4 +41,5 @@ public class DomainRepository extends GenericRepository<Domain> {
         return new ArrayList(lap.getDomain());
     }
 
+
 }
