@@ -2,9 +2,7 @@ package pl.edu.pwr.wordnetloom.synset.repository;
 
 import org.hibernate.Hibernate;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.common.filter.SearchFilter;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
-import pl.edu.pwr.wordnetloom.common.model.PaginatedData;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -389,10 +387,6 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return Math.toIntExact(getEntityManager().createQuery(query).getSingleResult());
     }
 
-
-    public PaginatedData<Synset> findByFilter(SearchFilter filter) {
-        return null;
-    }
 
     private CriteriaQuery getSynsetCriteriaQuery(SynsetCriteriaDTO criteria, boolean countStatement) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();

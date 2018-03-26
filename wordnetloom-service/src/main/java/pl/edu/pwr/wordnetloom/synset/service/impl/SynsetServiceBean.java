@@ -2,9 +2,7 @@ package pl.edu.pwr.wordnetloom.synset.service.impl;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.common.filter.SearchFilter;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
-import pl.edu.pwr.wordnetloom.common.model.PaginatedData;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -19,11 +17,10 @@ import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
 import pl.edu.pwr.wordnetloom.user.model.User;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceLocal;
 
-import javax.annotation.Resource;
+
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJBContext;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -227,8 +224,4 @@ public class SynsetServiceBean implements SynsetServiceLocal {
         return synsetRepository.fetchSynsetAttributes(synsetId);
     }
 
-    @Override
-    public PaginatedData<Synset> findByFilter(SearchFilter filter) {
-        return synsetRepository.findByFilter(filter);
-    }
 }

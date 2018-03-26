@@ -46,14 +46,7 @@
                             <groupId>pl.edu.pwr</groupId>
                             <artifactId>wordnetloom-service</artifactId>
                         </ejbModule>
-                        <webModule>
-                            <groupId>pl.edu.pwr</groupId>
-                            <artifactId>wordnetloom-rest</artifactId>
-                            <uri>wordnetloom-rest-2.0.war</uri>
-                            <bundleFileName>wordnetloom-rest-2.0.war</bundleFileName>
-                            <contextRoot>/wordnetloom</contextRoot>
-                        </webModule>
-                    </modules>
+                     </modules>
                 </configuration>
             </plugin>
         </plugins>

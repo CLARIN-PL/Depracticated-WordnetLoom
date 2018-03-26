@@ -5,8 +5,6 @@ import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
-import pl.edu.pwr.wordnetloom.common.filter.SearchFilter;
-import pl.edu.pwr.wordnetloom.sense.dto.SenseJson;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseAttributesRepository;
@@ -210,17 +208,5 @@ public class SenseServiceBean implements SenseServiceLocal {
     @Override
     public SenseAttributes fetchSenseAttribute(Long senseId) {
         return senseRepository.fetchSenseAttribute(senseId);
-    }
-
-    @PermitAll
-    @Override
-    public List<SenseJson> findByFilter(SearchFilter searchFilter) {
-        return senseRepository.findByFilter(searchFilter);
-    }
-
-    @PermitAll
-    @Override
-    public long countByFilter(SearchFilter searchFilter) {
-        return senseRepository.countWithFilter(searchFilter);
     }
 }

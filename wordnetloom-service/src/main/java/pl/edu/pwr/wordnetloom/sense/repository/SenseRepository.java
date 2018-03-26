@@ -4,8 +4,6 @@ import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
-import pl.edu.pwr.wordnetloom.common.filter.SearchFilter;
-import pl.edu.pwr.wordnetloom.sense.dto.SenseJson;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
@@ -100,54 +98,6 @@ public class SenseRepository extends GenericRepository<Sense> {
         Set<Sense> resultSet = new LinkedHashSet<>(result);
         return new ArrayList<>(resultSet);
     }
-
-    public List<SenseJson> findByFilter(SearchFilter filter) {
-
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<SenseJson> qc = cb.createQuery(SenseJson.class);
-
-        Root<Sense> sense = qc.from(Sense.class);
-
-        List<Predicate> predicates = new ArrayList<>();
-        predicates.add(SenseSpecification.byFilter(filter).toPredicate(sense, qc, cb));
-
-        List<Order> orders = new ArrayList<>();
-        orders.add(cb.asc(sense.get("word").get("word")));
-        orders.add(cb.asc(sense.get(PART_OF_SPEECH)));
-        orders.add(cb.asc(sense.get(VARIANT)));
-        orders.add(cb.asc(sense.get(LEXICON)));
-
-        qc.orderBy(orders);
-        qc.select(cb.construct(SenseJson.class,
-                sense.get("id"),
-                sense.get("word").get("word"),
-                sense.get("variant"),
-                sense.get("domain").get("name"),
-                sense.get("lexicon").get("identifier")
-                )).distinct(true);
-        qc.where(predicates.toArray(new Predicate[predicates.size()]));
-
-        TypedQuery<SenseJson> q = em.createQuery(qc);
-
-       return  q.setFirstResult(filter.getPaginationData().getFirstResult())
-                .setMaxResults(filter.getPaginationData().getMaxResults())
-                .getResultList();
-    }
-
-    public long countWithFilter(SearchFilter filter) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-
-        Root<Sense> sense = cq.from(Sense.class);
-
-        List<Predicate> predicates = new ArrayList<>();
-        predicates.add(SenseSpecification.byFilter(filter).toPredicate(sense, cq, cb));
-
-        cq.select(cb.count(sense.get("id")));
-        cq.where(predicates.toArray(new Predicate[predicates.size()]));
-        return em.createQuery(cq).getSingleResult();
-    }
-
 
     //TODO Refactor to Specifications
     private Predicate[] getPredicatesByCriteria(SenseCriteriaDTO dto, Root senseRoot, CriteriaBuilder criteriaBuilder) {

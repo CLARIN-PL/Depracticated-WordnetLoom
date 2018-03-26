@@ -1,7 +1,3 @@
-# utowrzenie indeksu na tabeli word
-CREATE INDEX word_index
-  ON wordnet.word (word);
-
 ALTER TABLE wordnet_work.lexicalunit
   CONVERT TO CHARACTER SET utf8
   COLLATE utf8_polish_ci;
