@@ -35,6 +35,7 @@ public class RelationTypePanel extends WebPanel {
         senseRelationTreePanel.setRelationsTypes(RelationTypeManager.getInstance().getParents(RelationArgument.SENSE_RELATION));
 
         propertiesPanel = new RelationTypePropertiesPanel(parent);
+        propertiesPanel.lock();
         testsPanel = new RelationTypeTestsPanel();
 
     }

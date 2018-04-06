@@ -68,6 +68,10 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         colorChooser.setPipetteEnabled(false);
         colorChooser.setFieldType(ColorChooserFieldType.hex);
 
+        lexicon.setFocusable(false);
+        allowedPartsOfSpeech.setFocusable(false);
+        reverseRelation.setFocusable(false);
+
         add(LINE_BREAK + " " + RIGHT, nameLabel);
         add(TAB_FILL, relationName);
         add(LINE_BREAK, displayLabel);
@@ -101,7 +105,32 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         bind(currentRelation);
     }
 
+    public void lock(){
+        setEnableComponents(false);
+    }
+
+    public void unlock(){
+        setEnableComponents(true);
+    }
+
+    private void setEnableComponents(boolean enable) {
+        relationName.setEnabled(enable);
+        relationDisplay.setEnabled(enable);
+        relationShortcut.setEnabled(enable);
+        relationDescription.setEnabled(enable);
+        lexicon.setEnabled(enable);
+        lexiconBtn.setEnabled(enable);
+        multilingual.setEnabled(enable);
+        allowedPartsOfSpeech.setEnabled(enable);
+        showAllowedPartsOfSpeechBtn.setEnabled(enable);
+        reverseRelation.setEnabled(enable);
+        reverseRelationBtn.setEnabled(enable);
+        colorChooser.setEnabled(enable);
+        relationDirection.setEnabled(enable);
+    }
+
     private void bind(RelationType rt) {
+        unlock();
         relationName.setText(LocalisationManager.getInstance().getLocalisedString(rt.getName()));
         relationDisplay.setText(LocalisationManager.getInstance().getLocalisedString(rt.getDisplayText()));
         relationShortcut.setText(LocalisationManager.getInstance().getLocalisedString(rt.getShortDisplayText()));

@@ -33,6 +33,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -223,7 +224,7 @@ public class ViWordNetService extends AbstractService implements
         if (node != null && node instanceof ViwnNodeSynset) {
             ViwnNodeSynset synset = (ViwnNodeSynset) node;
             if (getActiveGraphView().getUI().getSelectedNode() == null || !getActiveGraphView().getUI().getSelectedNode().equals(synset)) {
-                getActiveGraphView().getUI().setSelectedNode(synset); //TODO to powinno być trochę w innym miejscu
+                getActiveGraphView().getUI().setSelectedNode(synset);
                 synsetStructureView.doAction(synset.getSynset(), 1);
                 synsetPropertiesView.doAction(synset.getSynset(), 1);
             }
@@ -474,7 +475,6 @@ public class ViWordNetService extends AbstractService implements
 
     public void setFirstMergeSynsets(Object first) {
         this.first = first;
-
         setMergeSynsetsMode(true);
     }
 
@@ -482,42 +482,24 @@ public class ViWordNetService extends AbstractService implements
      * @param set true - switch to make relation mode, false - normal mode
      */
     private void setMakeRelationMode(boolean set) {
-        // set new value
         makeRelationMode = set;
-        // turned on
-        if (makeRelationMode) {
-            for (ViwnGraphView vgv : graphViews) {
-                vgv.getUI().setCursor(MAKE_RELATION_CURSOR);
-            }
-            lockerView.getViewUI().setCursor(MAKE_RELATION_CURSOR);
-        } // turned off
-        else {
-            for (ViwnGraphView vgv : graphViews) {
-                vgv.getUI().setCursor(DEFAULT_CURSOR);
-            }
-            lockerView.getViewUI().setCursor(DEFAULT_CURSOR);
+        setCursor(MAKE_RELATION_CURSOR, makeRelationMode);
+    }
+
+    private void setCursor(Cursor cursorType, boolean value){
+        Cursor cursor = value ? cursorType : DEFAULT_CURSOR;
+        for(ViwnGraphView viwnGraphView:graphViews){
+            viwnGraphView.getUI().setCursor(cursor);
         }
+        lockerView.getViewUI().setCursor(cursor);
     }
 
     /**
      * @param set true - switch to synsets merge mode, false - normal mode
      */
     private void setMergeSynsetsMode(boolean set) {
-        // set new value
         mergeSynsetsMode = set;
-        // turned on
-        if (mergeSynsetsMode) {
-            for (ViwnGraphView vgv : graphViews) {
-                vgv.getUI().setCursor(MERGE_SYNSETS_CURSOR);
-            }
-            lockerView.getViewUI().setCursor(MERGE_SYNSETS_CURSOR);
-        } // turned off
-        else {
-            for (ViwnGraphView vgv : graphViews) {
-                vgv.getUI().setCursor(DEFAULT_CURSOR);
-            }
-            lockerView.getViewUI().setCursor(DEFAULT_CURSOR);
-        }
+        setCursor(MERGE_SYNSETS_CURSOR, mergeSynsetsMode);
     }
 
     private ViwnNodeSynset findProposed(ViwnNodeSynset s, Long[] depth) {
@@ -533,184 +515,9 @@ public class ViWordNetService extends AbstractService implements
         }
     }
 
-    //    private boolean evaluateProposedConnection(Sense newUnit, IRelationType relationType, ViwnNodeSynset synset, ViwnNodeWord word) {
-//
-//        Synset assignedSynset = null;
-//        Long distance[] = new Long[]{new Long(1)};
-//        ViwnNodeSynset found = findProposed(synset, distance);
-//        @SuppressWarnings("unused")
-//        Synset proposedSynset = null;
-//        if (found != null) {
-//            proposedSynset = found.getSynset();
-//        }
-//
-//        if (relationType.getArgumentType() == RelationArgument.LEXICAL_SPECIAL) {
-//            assignedSynset = synset.getSynset();
-//        } else {
-//            assignedSynset = new Synset();
-//        }
-//
-//        // Dodane zamiast oceny
-//        // TODO: FIXME
-//        RemoteUtils.synsetRemote.persistObject(assignedSynset);
-//
-//        newUnit.setSenseNumber(RemoteUtils.lexicalUnitRemote
-//                .dbGetHighestVariant(word.getLabel(), LexiconManager
-//                        .getInstance().getLexicons()) + 1);
-//        RemoteUtils.lexicalUnitRemote.updateSense(newUnit);
-//
-//        if (relationType.getArgumentType() == RelationArgument.LEXICAL) {
-//            if (synset instanceof ViwnNodeCandExtension) {
-//                LexicalDA.addConnection(newUnit, assignedSynset);
-//                ViwnNodeCandExtension ext = (ViwnNodeCandExtension) synset;
-//                if (ext.getExtGraphExtension().getBase()) {
-//                    if (RemoteUtils.lexicalRelationRemote.dbMakeRelation(
-//                            newUnit, ext.getExtGraphExtension()
-//                            .getLexicalUnit(), relationType)) {
-//                        if (relationType.isAutoReverse()
-//                                || (RelationsDA
-//                                .getReverseRelation(relationType) != null && DialogBox
-//                                .showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION,
-//                                        LexicalDA.getRelationName(RelationsDA.getReverseRelation(relationType)))) == DialogBox.YES)) {
-//                            RemoteUtils.lexicalRelationRemote
-//                                    .dbMakeRelation(ext.getExtGraphExtension().getLexicalUnit(),
-//                                            newUnit,
-//                                            RelationsDA.getReverseRelation(relationType));
-//                        }
-//                        DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
-//                        reload();
-//                        return true;
-//                    } else {
-//                        DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
-//                    }
-//                } else if (RemoteUtils.lexicalRelationRemote.dbMakeRelation(ext
-//                        .getExtGraphExtension().getLexicalUnit(), newUnit,
-//                        relationType)) {
-//                    if (relationType.isAutoReverse()
-//                            || (RelationsDA
-//                            .getReverseRelation(relationType) != null && DialogBox
-//                            .showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION,
-//                                    LexicalDA.getRelationName(RelationsDA
-//                                            .getReverseRelation(relationType)))) == DialogBox.YES)) {
-//                        RemoteUtils.lexicalRelationRemote.dbMakeRelation(
-//                                newUnit, ext.getExtGraphExtension()
-//                                .getLexicalUnit(), RelationsDA
-//                                .getReverseRelation(relationType));
-//                    }
-//                    DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
-//                    reload();
-//                    return true;
-//                } else {
-//                    DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
-//                }
-//                RemoteUtils.lexicalRelationRemote.dbMakeRelation(newUnit, ext
-//                        .getExtGraphExtension().getLexicalUnit(), relationType);
-//            }
-//        } else if (relationType.getArgumentType() == RelationArgument.LEXICAL_SPECIAL) {
-//            // // New synonim relation
-//            LexicalDA.addConnection(newUnit, synset.getSynset());
-//
-//        } else {
-//
-//            LexicalDA.addConnection(newUnit, assignedSynset);
-//
-//            if (RelationsDA.checkIfRelationExists(assignedSynset,
-//                    synset.getSynset(), relationType)) {
-//                DialogBox.showInformation(Messages.FAILURE_RELATION_EXISTS);
-//            } else if (RemoteUtils.synsetRelationRemote.dbMakeRelation(
-//                    assignedSynset, synset.getSynset(), relationType)) {
-//                if (relationType.isAutoReverse()
-//                        || DialogBox.showYesNo(String
-//                                .format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION,
-//                                        LexicalDA.getRelationName(RelationsDA
-//                                                .getReverseRelation(relationType)))) == DialogBox.YES) {
-//                    RemoteUtils.synsetRelationRemote.dbMakeRelation(
-//                            synset.getSynset(), assignedSynset,
-//                            RelationsDA.getReverseRelation(relationType));
-//                }
-//                DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
-//                reload();
-//                return true;
-//            } else {
-//                DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
-//            }
-//        }
-//        reload();
-//
-//        return true;
-//    }
+
     private void newCandRelation(ViwnNodeSynset synset, ViwnNodeWord word) {
-//        ArrayList<Sense> parentUnits = new ArrayList<>();
-//        Synset s = synset.getSynset();
-//        Collection<Sense> units = RemoteUtils.lexicalUnitRemote.dbFullGetUnits(
-//                s, 1, LexiconManager.getInstance().getLexicons());
-//        if (units.isEmpty()) {
-//            System.err.println("Nie mozna przetwarzac pustego synsetu");
-//        }
-//        Sense lu = (Sense) units.toArray()[0];
-//        PartOfSpeech p = lu.getPartOfSpeech();
-//
-//        Sense toAdd = new Sense();
-//        toAdd.setLemma(new Word(word.getLabel()));
-//        toAdd.setPartOfSpeech(p);
-//        toAdd.setDomain(DomainManager.getInstance().getByID(0));
-//        parentUnits.add(toAdd);
-//
-//        ArrayList<Sense> childUnits = new ArrayList<>();
-//        for (Sense unit : RemoteUtils.lexicalUnitRemote.dbFullGetUnits(s, 0,
-//                LexiconManager.getInstance().getLexicons())) {
-//            childUnits.add(unit);
-//        }
-//        if (childUnits.isEmpty()) {
-//            DialogBox.showError("Synset docelowy nie zawiera jednostek.");
-//            return;
-//        }
-//
-//        RelationArgument objectType = null;
-//        IRelationType relType = null;
-//        IRelationType suggestedRelType = null;
-//        Sense suggestedUnit = null;
-//
-//        if (synset instanceof ViwnNodeCandExtension) {
-//            ViwnNodeCandExtension ext = (ViwnNodeCandExtension) synset;
-//            suggestedRelType = ext.getExtGraphExtension().getRelationType();
-//            suggestedUnit = ext.getExtGraphExtension().getLexicalUnit();
-//        }
-//
-//        Domain domain = DomainManager.getInstance().getByID(0);
-//        if (childUnits.size() > 0) {
-//            domain = childUnits.get(0).getDomain();
-//        }
-//
-//        // Changed to Pos of candidate instead of existing synset's
-//        PartOfSpeech rightPos = word.getPos();
-//
-//        // New lexical unit dialog
-//        Sense newUnit = NewLexicalUnitFrame.showModal(workbench,
-//                workbench.getFrame(), word.getLabel(), rightPos, domain);
-//        if (newUnit == null) {
-//            return;
-//        }
-//
-//        // New synset relation dialog
-//        if (synset instanceof ViwnNodeCandExtension) {
-//            if (!((ViwnNodeCandExtension) synset).getExtGraphExtension().getBase()) {
-//                ArrayList<Sense> temp = childUnits;
-//                childUnits = parentUnits;
-//                parentUnits = temp;
-//            }
-//        }
-//        IRelationType relationType = RelationTypeFrame.showModal(
-//                workbench.getFrame(), objectType, rightPos, relType,
-//                suggestedRelType, suggestedUnit, parentUnits, null, childUnits);
-//        if (relationType == null) {
-//            return;
-//        }
-//
-//        if (evaluateProposedConnection(newUnit, relationType, synset, word)) {
-//            getActiveGraphView().loadCandidate(word.getLabel(),
-//                    word.getPackageNo(), word.getPos());
-//        }
+        throw new NotImplementedException();
     }
 
     public void mergeSynsets(Object second) {
@@ -763,8 +570,10 @@ public class ViWordNetService extends AbstractService implements
             }
 
             if (MakeNewRelationWindow.showMakeSynsetRelationModal(workbench, src, dst)) {
+                dst.setup();
                 for (ViwnGraphView gv : graphViews) {
                     gv.getUI().relationAdded(src, dst);
+                    gv.getUI().recreateLayout();
                 }
             }
         } else if (first instanceof ViwnNodeSynset
@@ -843,7 +652,7 @@ public class ViWordNetService extends AbstractService implements
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String graph_export_dir = "graph_export";
+
 //        Collection<Integer> pkgs = RemoteUtils.extGraphRemote
 //                .GetPackages(PosManager.getInstance().decode("rzeczownik"));
 //
