@@ -217,7 +217,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         // TODO refaktor, część wspólna z metodą refreshView
         if(!cache.containsKey(synset.getSynset().getId())) {
             ViwnNodeSynset rootNodeSynset = synset;
-            rootNodeSynset.setup();
+            rootNodeSynset.construct();
 
             rootNode = rootNodeSynset;
             for (NodeDirection direction : NodeDirection.values()) {
@@ -698,7 +698,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
         for(ViwnNodeSynset synset : synsets) {
             synsetData.load(synset.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds());
-            synset.setup();
+            synset.construct();
             addSynsetFromSet(synset);
         }
         addMissingRelationInForest();
@@ -845,7 +845,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         // jeżeli relacje nie były pobrane wczesniej, zostaną pobrane
         if(!checkNodeWasExtended(synsetNode, dirs)) {
             synsetData.load(synsetNode.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds(), dirs);
-            synsetNode.setup(dirs);
+            synsetNode.construct(dirs);
             synsetNode.setFullLoadedRelation(dirs, true);
         }
 
@@ -964,7 +964,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             ViwnNodeSynset s = cache.get(synset.getId());
             if (s.isDirty()) {
 //                s.construct();
-                s.setup();
+                s.construct();
             }
             return s;
         }
@@ -1000,43 +1000,17 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     public void relationAdded(ViwnNodeSynset from, ViwnNodeSynset to) {
-//        from.construct();
-//        to.construct();
-//        from.setup();
-//        to.setup();
+        ViwnNodeSynset newSynset;
+        // if synset node not belong to forest, we create new copy of node
         if(!forest.containsVertex(from)){
-            insertNodeInForest(from, to);
+            newSynset = new ViwnNodeSynset(from.getSynset(), this);
+            insertNodeInForest(newSynset, to);
         } else if(!forest.containsVertex(to)){
-            insertNodeInForest(to, from);
+            newSynset = new ViwnNodeSynset(to.getSynset(), this);
+            insertNodeInForest(newSynset, from);
         }
         checkMissing();
         recreateLayoutWithFix(null,null);
-//
-//        ViwnNodeSynset first = new ViwnNodeSynset(from.getSynset(), this);
-//        ViwnNodeSynset second = new ViwnNodeSynset(to.getSynset(), this);
-//        if(!forest.containsVertex(first)){
-//            insertNodeInForest(second, first);
-//        } else if(!forest.containsVertex(second)){
-//            insertNodeInForest(first, second);
-//        }
-//        if (!forest.containsVertex(first)) {
-//
-//            NodeDirection cdir = findCommonRelationDir(second, first);
-//            if (cdir != null) {
-//                first.setSpawner(second, cdir);
-//                forest.addVertex(first);
-//            }
-//            checkMissing();
-//            recreateLayoutWithFix(null, null);
-//        } else if (!forest.containsVertex(second)) {
-//            NodeDirection cdir = findCommonRelationDir(first, second);
-//            if (cdir != null) {
-//                second.setSpawner(first, cdir);
-//                forest.addVertex(second);
-//            }
-//            checkMissing();
-//            recreateLayoutWithFix(null, null);
-//        }
     }
 
    private void insertNodeInForest(ViwnNodeSynset first, ViwnNodeSynset second){
@@ -1044,9 +1018,12 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
        if (cdir != null) {
            first.setSpawner(second, cdir);
            forest.addVertex(first);
+           if(!cache.containsKey(first.getId())){
+               cache.put(first.getId(), first);
+           }
        }
-//       checkMissing();
-//       recreateLayoutWithFix(null, null);
+       checkMissing();
+       recreateLayoutWithFix(null, null);
    }
 
     protected void checkMissing() {
@@ -1187,7 +1164,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                     continue;
                 }
 
-                node.rereadDB();
+                node.construct();
 
                 if (!forest.containsVertex(node)) {
                     continue;
@@ -1214,6 +1191,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                                 hideRelation(node, dir);
                             }
                             forest.removeVertex(node);
+                            cache.remove(node.getId());
                             if (first.equals(node)) {
                                 center = second;
                             } else {

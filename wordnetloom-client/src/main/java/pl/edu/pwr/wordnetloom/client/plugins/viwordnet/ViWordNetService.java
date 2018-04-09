@@ -11,7 +11,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelection
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerViewUI.LockerElementRenderer;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.renderers.ViwnVertexRenderer;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.DeleteRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewLexicalRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewRelationWindow;
@@ -24,7 +23,6 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
@@ -40,9 +38,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.List;
 
@@ -69,14 +64,13 @@ public class ViWordNetService extends AbstractService implements
 
     private final List<ViwnGraphView> graphViews = new ArrayList<>(GRAPH_VIEWS_LIMIT);
     private final Map<String, PartOfSpeech> posMap = new HashMap<>();
-    SynsetData synsetData = new SynsetData();
+    private SynsetData synsetData = new SynsetData();
     private String perspectiveName = null;
     private ViWordNetPerspective perspective = null;
     private ViwnGraphView activeGraphView = null;
     private LexicalUnitsView luView = null;
     private SynsetView synsetView = null;
 
-    // private CandidatesView candView = null;
     private ViwnLexicalUnitRelationsView unitsRelationsView = null;
     private SynsetStructureView synsetStructureView = null;
     private SynsetPropertiesView synsetPropertiesView = null;
@@ -215,10 +209,6 @@ public class ViWordNetService extends AbstractService implements
 
     }
 
-    public void reload() {
-        candidateSelection(objectForReload, tagForReload);
-    }
-
     @Override
     public void synsetSelectionChangeListener(ViwnNode node) {
         if (node != null && node instanceof ViwnNodeSynset) {
@@ -238,17 +228,6 @@ public class ViWordNetService extends AbstractService implements
             new LoadSenseTask((Sense) object).execute();
         } else if (object instanceof Synset) {
             new LoadSynsetTask((Synset) object).execute();
-        }
-    }
-
-    /**
-     * @param object
-     * @param tag
-     */
-    public void synsetUnitSelection(Object object, Integer tag) {
-        if (object instanceof Sense) {
-            Sense unit = (Sense) object;
-            unitsRelationsView.loadLexicalUnit(unit);
         }
     }
 
@@ -486,9 +465,9 @@ public class ViWordNetService extends AbstractService implements
         setCursor(MAKE_RELATION_CURSOR, makeRelationMode);
     }
 
-    private void setCursor(Cursor cursorType, boolean value){
+    private void setCursor(Cursor cursorType, boolean value) {
         Cursor cursor = value ? cursorType : DEFAULT_CURSOR;
-        for(ViwnGraphView viwnGraphView:graphViews){
+        for (ViwnGraphView viwnGraphView : graphViews) {
             viwnGraphView.getUI().setCursor(cursor);
         }
         lockerView.getViewUI().setCursor(cursor);
@@ -525,8 +504,7 @@ public class ViWordNetService extends AbstractService implements
             ViwnNodeSynset src = (ViwnNodeSynset) first;
             ViwnNodeSynset dst = (ViwnNodeSynset) second;
 
-            if (src == null || dst == null || src.getId() == -1
-                    || dst.getId() == -1) {
+            if (src.getId() == -1 || dst.getId() == -1) {
                 setMergeSynsetsMode(false);
                 return;
             }
@@ -555,45 +533,71 @@ public class ViWordNetService extends AbstractService implements
         setMergeSynsetsMode(false);
     }
 
+
     /**
      * @param second object to make relation with first turns off make relation
      *               mode after it
      */
     public void makeRelation(Object second) {
-        // make relation between synsets
         if (first instanceof ViwnNodeSynset && second instanceof ViwnNodeSynset) {
-            ViwnNodeSynset src = (ViwnNodeSynset) first;
-            ViwnNodeSynset dst = (ViwnNodeSynset) second;
-            if (src == null || dst == null || src.getId() == -1 || dst.getId() == -1) {
-                setMakeRelationMode(false);
-                return;
-            }
+            makeSynsetRelation((ViwnNodeSynset) second);
+        } else if (first instanceof ViwnNodeSynset && second instanceof ViwnNodeWord) {
+            makeCandidateRelation((ViwnNodeSynset) first, (ViwnNodeWord) second);
+        } else if (second instanceof ViwnNodeSynset && first instanceof ViwnNodeWord) {
+            makeCandidateRelation((ViwnNodeSynset) second, (ViwnNodeWord) first);
+        } // make relation between lexical units and one of lexical units from synset
+        else if (first instanceof Sense && second instanceof ViwnNodeSynset) {
+            makeUnitRelation((Sense) first, (ViwnNodeSynset) second);
+        } else if (first instanceof Sense && second instanceof Sense) {
+            makeUnitRelation((Sense) first, (Sense) second);
+        }
+        setMakeRelationMode(false);
+    }
 
-            if (MakeNewRelationWindow.showMakeSynsetRelationModal(workbench, src, dst)) {
-                dst.setup();
-                for (ViwnGraphView gv : graphViews) {
-                    gv.getUI().relationAdded(src, dst);
-                    gv.getUI().recreateLayout();
+    /**
+     * @param relations collection of edges of relations to remove
+     */
+    public void removeRelation(Collection relations) {
+        if (relations != null && !relations.isEmpty()) {
+            if (relations.iterator().next() instanceof ViwnEdgeSynset) {
+                Collection<ViwnEdge> c = DeleteRelationWindow
+                        .showDeleteSynsetDialog(workbench.getFrame(), relations);
+                ViwnEdgeSynset edgeSynset;
+                for (ViwnEdge edge : c) {
+                    edgeSynset = (ViwnEdgeSynset) edge;
+                    synsetData.removeRelation(edgeSynset.getSynsetRelation());
+                }
+
+                for (ViwnGraphView vgv : graphViews) {
+                    vgv.getUI().relationDeleted(c);
                 }
             }
-        } else if (first instanceof ViwnNodeSynset
-                && second instanceof ViwnNodeWord) {
-            ViwnNodeWord word = (ViwnNodeWord) second;
-            // if (tryLockMsg(word.getPackageNo(), word.getPartOfSpeach())) {
-            newCandRelation((ViwnNodeSynset) first, word);
-            // }
-        } else if (second instanceof ViwnNodeSynset
-                && first instanceof ViwnNodeWord) {
-            ViwnNodeWord word = (ViwnNodeWord) first;
-            // if (tryLockMsg(word.getPackageNo(), word.getPartOfSpeach())) {
-            newCandRelation((ViwnNodeSynset) second, word);
-            // }
-        } // make relation between lexical units and one of lexical units from
-        // synset
-        else if (first instanceof Sense && second instanceof ViwnNodeSynset) {
-            // show JPopupMenu with chose second lexical unit
-            Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
-            javax.swing.JPopupMenu jpm = new javax.swing.JPopupMenu();
+        }
+    }
+
+    private void makeSynsetRelation(ViwnNodeSynset second) {
+        ViwnNodeSynset src = (ViwnNodeSynset) first;
+        ViwnNodeSynset dst = second;
+        if (src == null || dst == null || src.getId() == -1 || dst.getId() == -1) {
+            setMakeRelationMode(false);
+            return;
+        }
+
+        if (MakeNewRelationWindow.showMakeSynsetRelationModal(workbench, src, dst)) {
+            for (ViwnGraphView gv : graphViews) {
+                gv.getUI().relationAdded(src, dst);
+            }
+        }
+    }
+
+    private void makeCandidateRelation(ViwnNodeSynset synset, ViwnNodeWord word) {
+        newCandRelation(synset, word);
+    }
+
+    private void makeUnitRelation(Sense sense, ViwnNodeSynset nodeSynset) {
+        // show JPopupMenu with chose second lexical unit
+        Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
+        javax.swing.JPopupMenu jpm = new javax.swing.JPopupMenu();
 //            List<Sense> senses = RemoteUtils.lexicalUnitRemote.dbFastGetUnits(
 //                    ((ViwnNodeSynset) second).getSynset(), LexiconManager
 //                    .getInstance().getLexicons());
@@ -612,47 +616,21 @@ public class ViWordNetService extends AbstractService implements
 //                    }
 //                }));
 //            }
-            jpm.show(workbench.getFrame(), mouseLoc.x
-                    - workbench.getFrame().getX(), mouseLoc.y
-                    - workbench.getFrame().getY());
-            // make relation between lexical units
-        } else if (first instanceof Sense && second instanceof Sense) {
-            if (MakeNewLexicalRelationWindow.showMakeLexicalRelationModal(
-                    workbench, (Sense) first, (Sense) second)) {
-                unitsRelationsView.refresh();
-            }
-        }
-        setMakeRelationMode(false);
+        jpm.show(workbench.getFrame(), mouseLoc.x
+                - workbench.getFrame().getX(), mouseLoc.y
+                - workbench.getFrame().getY());
+        // make relation between lexical units
     }
 
-    /**
-     * @param relations collection of edges of relations to remove
-     */
-    public void removeRelation(
-            Collection relations) {
-        if (relations != null && !relations.isEmpty()) {
-            if (relations.iterator().next() instanceof ViwnEdgeSynset) {
-                Collection<ViwnEdge> c = DeleteRelationWindow
-                        .showDeleteSynsetDialog(workbench.getFrame(), relations);
-                ViwnEdgeSynset edgeSynset;
-                for (ViwnEdge edge : c) {
-                    edgeSynset = (ViwnEdgeSynset) edge;
-                    synsetData.removeRelation(edgeSynset.getSynsetRelation());
-//                       edgeSynset.getSynset1().setup();
-
-                    // TODO będzie to trzeba zrobić dla każdego widoku
-                }
-
-                for (ViwnGraphView vgv : graphViews) {
-                    vgv.getUI().relationDeleted(c);
-                }
-            }
+    private void makeUnitRelation(Sense sense1, Sense sense2) {
+        if (MakeNewLexicalRelationWindow.showMakeLexicalRelationModal(
+                workbench, sense1, sense2)) {
+            unitsRelationsView.refresh();
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
 //        Collection<Integer> pkgs = RemoteUtils.extGraphRemote
 //                .GetPackages(PosManager.getInstance().decode("rzeczownik"));
 //
