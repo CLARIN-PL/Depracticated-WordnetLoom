@@ -5,8 +5,8 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
-import pl.edu.pwr.wordnetloom.dictionary.model.StatusDictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Register;
+import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -82,7 +82,7 @@ public class ToolTipBuilder {
         return this;
     }
 
-    public ToolTipBuilder addStatus(StatusDictionary status) {
+    public ToolTipBuilder addStatus(Status status) {
         if (status != null) {
             String statusText = LocalisationManager.getInstance().getLocalisedString(status.getName());
             addString(STATUS_LABEL, String.valueOf(statusText));
@@ -121,7 +121,7 @@ public class ToolTipBuilder {
         return addString(PART_OF_SPEECH_LABEL, partOfSpeechText);
     }
 
-    public ToolTipBuilder addRegister(RegisterDictionary register) {
+    public ToolTipBuilder addRegister(Register register) {
         String registerText = LocalisationManager.getInstance().getLocalisedString(register.getName());
         return addString(REGISTER_LABEL, registerText);
     }

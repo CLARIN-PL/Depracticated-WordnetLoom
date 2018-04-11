@@ -1,4 +1,4 @@
-CREATE TABLE sense_emotions (
+CREATE TABLE emotional_annotations (
   id       BIGINT       NOT NULL AUTO_INCREMENT,
   sense_id BIGINT       NOT NULL,
   has_emotional_characteristic BIT DEFAULT 0 NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE sense_emotions (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE sense_emotions
+ALTER TABLE emotional_annotations
   ADD CONSTRAINT FKj3d2urv1wi643wzxcvefrewfdsvc
 FOREIGN KEY (sense_id)
 REFERENCES sense (id);

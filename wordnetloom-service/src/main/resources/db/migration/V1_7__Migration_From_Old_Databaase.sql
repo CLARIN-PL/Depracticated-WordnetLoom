@@ -57,14 +57,14 @@ CREATE PROCEDURE insert_dictionaries(IN valuesList VARCHAR(1000), IN typeName VA
             VALUES (@lastInsertedStringId, @value, 'en');
 
             IF(@optionalValue IS NOT NULL) THEN
-                IF(typeName = 'MarkednessDictionary') THEN
+                IF(typeName = 'Markedness') THEN
                     INSERT INTO wordnet.application_localised_string(value, language)
                     VALUES (@optionalValue, 'pl');
                     SET @lastInsertedValueId = LAST_INSERT_ID();
                     INSERT INTO wordnet.application_localised_string(id, value, language)
                     VALUES (@lastInsertedValueId, @optionalValue, 'en');
                 END IF;
-                IF (typeName = 'AspectDictionary') THEN
+                IF (typeName = 'Aspect') THEN
                     SET @tag = @optionalValue;
 				END IF;
 			END IF;
@@ -76,12 +76,12 @@ CREATE PROCEDURE insert_dictionaries(IN valuesList VARCHAR(1000), IN typeName VA
         END WHILE;
     END $$
 DELIMITER ;
-CALL insert_dictionaries('og.,daw.,książk.,nienorm.,posp.,pot.,reg.,specj.,środ.,urz.,wulg.,', 'RegisterDictionary');
-CALL insert_dictionaries('Nieprzetworzony,Nowy,Błąd,Sprawdzony,Znaczenie,Częściowo przetworzony,', 'StatusDictionary');
-CALL insert_dictionaries('radość,zaufanie,cieszenie się na coś oczekiwanego, zaskoczenie czymś nieprzewidywanym, smutek, złość, strach, wstręt,', 'EmotionDictionary');
-CALL insert_dictionaries('użyteczność, dobro, prawda, wiedza, piękno, szczęście, nieużyteczność, krzywda, niewiedza, błąd, brzydota, nieszczęście,', 'ValuationDictionary');
-CALL insert_dictionaries('Wybierz:, amb (niejednoznaczność pod względem nacechowania emocjonalnego;amb,+ m (mocne nacechowanie pozytywne jednostki);+ m, - m (mocne nacechowanie negatywne jednostki);- m,+ s (słabe nacechowanie pozytywne jednostki);+ s,- s (słabe nacechowanie negatywne jednostki);- s,', 'MarkednessDictionary');
-CALL insert_dictionaries('jednostka nie jest czasownikiem;no,aspect dokonany;:perf:,aspekt niedokonany;:imperf:,predykatyw;:pred:,czasownik dwuaspektowy;:imperf.perf;,', 'AspectDictionary');
+CALL insert_dictionaries('og.,daw.,książk.,nienorm.,posp.,pot.,reg.,specj.,środ.,urz.,wulg.,', 'Register');
+CALL insert_dictionaries('Nieprzetworzony,Nowy,Błąd,Sprawdzony,Znaczenie,Częściowo przetworzony,', 'Status');
+CALL insert_dictionaries('radość,zaufanie,cieszenie się na coś oczekiwanego, zaskoczenie czymś nieprzewidywanym, smutek, złość, strach, wstręt,', 'Emotion');
+CALL insert_dictionaries('użyteczność, dobro, prawda, wiedza, piękno, szczęście, nieużyteczność, krzywda, niewiedza, błąd, brzydota, nieszczęście,', 'Valuation');
+CALL insert_dictionaries('Wybierz:, amb (niejednoznaczność pod względem nacechowania emocjonalnego;amb,+ m (mocne nacechowanie pozytywne jednostki);+ m, - m (mocne nacechowanie negatywne jednostki);- m,+ s (słabe nacechowanie pozytywne jednostki);+ s,- s (słabe nacechowanie negatywne jednostki);- s,', 'Markedness');
+CALL insert_dictionaries('jednostka nie jest czasownikiem;no,aspect dokonany;:perf:,aspekt niedokonany;:imperf:,predykatyw;:pred:,czasownik dwuaspektowy;:imperf.perf;,', 'Aspect');
 
 DROP PROCEDURE IF EXISTS insert_localised_description;
 
@@ -105,7 +105,7 @@ INSERT INTO wordnet.synset (id, split,abstract, lexicon_id, status_id)
        LEFT JOIN wordnet_work.synset SS ON U.SYN_ID = SS.id
      WHERE SS.id = S.id
      LIMIT 1) AS lexicon,
-     (SELECT id FROM wordnet.temp_dictionaries WHERE old_value = S.status AND dtype = 'StatusDictionary')
+     (SELECT id FROM wordnet.temp_dictionaries WHERE old_value = S.status AND dtype = 'Status')
   FROM wordnet_work.synset S LEFT JOIN wordnet_work.unitandsynset U ON S.id = U.SYN_ID
     LEFT JOIN wordnet_work.lexicalunit L ON U.LEX_ID = L.id
   WHERE U.SYN_ID IS NOT NULL AND L.id IS NOT NULL;
@@ -130,7 +130,7 @@ INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, 
      FROM wordnet.word
      WHERE word = L.lemma
      LIMIT 1)        AS word_id,
-     (SELECT id FROM wordnet.temp_dictionaries WHERE old_value = L.status AND dtype = 'StatusDictionary') AS status
+     (SELECT id FROM wordnet.temp_dictionaries WHERE old_value = L.status AND dtype = 'Status') AS status
   FROM wordnet_work.lexicalunit L LEFT JOIN wordnet_work.unitandsynset U ON L.id = U.LEX_ID
     LEFT JOIN wordnet_work.synset S ON U.SYN_ID = S.id;
 

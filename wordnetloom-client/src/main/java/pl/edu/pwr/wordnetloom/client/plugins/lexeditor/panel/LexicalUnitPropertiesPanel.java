@@ -21,7 +21,7 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.renderers.ExampleCellRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -47,7 +47,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     private MTextField lemma;
     private MTextField variant;
     private MTextField link;
-    private MComboBox<RegisterDictionary> register;
+    private MComboBox<Register> register;
     private MComboBox<PartOfSpeech> partOfSpeech;
     private DomainMComboBox domain;
     private MTextPane comment;
@@ -184,7 +184,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
 
         register = new MComboBox<>()
                 .withDictionaryItems(
-                        DictionaryManager.getInstance().getDictionaryByClassName(RegisterDictionary.class),
+                        DictionaryManager.getInstance().getDictionaryByClassName(Register.class),
                         Labels.NOT_CHOSEN);
 
         register.addActionListener(this);
@@ -337,7 +337,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         int variant = Integer.parseInt(getVariant().getText());
         unit.setVariant(variant);
 
-        RegisterDictionary reg = register.getEntity();
+        Register reg = register.getEntity();
         SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
         String definition = getDefinition().getText();
         String link = getLink().getToolTipText();
@@ -477,7 +477,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         return link;
     }
 
-    public MComboBox<RegisterDictionary> getRegister() {
+    public MComboBox<Register> getRegister() {
         return register;
     }
 

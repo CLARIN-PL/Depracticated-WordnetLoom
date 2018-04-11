@@ -6,5 +6,5 @@ import javax.persistence.Entity;
 
 @Audited
 @Entity
-public class AspectDictionary extends Dictionary{
+public class Register extends Dictionary {
 }

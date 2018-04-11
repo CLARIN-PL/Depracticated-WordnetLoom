@@ -4,8 +4,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "sense_emotions")
-public class SenseEmotions implements Serializable {
+@Table(name = "emotional_annotations")
+public class EmotionalAnnotation implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -6,5 +6,5 @@ import javax.persistence.Entity;
 
 @Audited
 @Entity
-public class EmotionDictionary extends Dictionary{
+public class Aspect extends Dictionary{
 }
