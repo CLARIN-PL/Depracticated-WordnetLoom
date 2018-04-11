@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.application.flyway;
 
+import db.migration.TempRelationTypePosition;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
 import org.hibernate.envers.configuration.internal.metadata.EntityXmlMappingData;
@@ -36,5 +37,13 @@ public class DbMigrator {
             log.log(Level.INFO, "Migrate task: {0} : {1} from file: {2}", new Object[]{i.getVersion(), i.getDescription(), i.getScript()});
         }
         flyway.migrate();
+
+        try{
+            TempRelationTypePosition tempRelationTypePosition = new TempRelationTypePosition();
+            tempRelationTypePosition.addPosition(dataSource.getConnection());
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -35,7 +35,10 @@ public class SynsetData {
     }
 
     public DataEntry getById(Long id){
-        return data.get(id);
+        if(data.containsKey(id)){
+            return data.get(id);
+        }
+        return null;
     }
 
     public boolean contains(Long id) {

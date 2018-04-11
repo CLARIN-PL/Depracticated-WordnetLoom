@@ -7,8 +7,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class RelationTypeNode extends DefaultMutableTreeNode {
 
+    private RelationType relationType;
+
     public RelationTypeNode(Object userObject) {
         super(userObject);
+        if (userObject instanceof RelationType) {
+            relationType = (RelationType) userObject;
+        }
     }
 
     @Override
@@ -18,5 +23,9 @@ public class RelationTypeNode extends DefaultMutableTreeNode {
             return LocalisationManager.getInstance().getLocalisedString(r.getName());
         }
         return super.toString();
+    }
+
+    public RelationType getRelationType(){
+        return relationType;
     }
 }

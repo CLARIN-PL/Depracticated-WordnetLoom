@@ -1,0 +1,1 @@
+ALTER TABLE relation_type ADD position DECIMAL(5,2)

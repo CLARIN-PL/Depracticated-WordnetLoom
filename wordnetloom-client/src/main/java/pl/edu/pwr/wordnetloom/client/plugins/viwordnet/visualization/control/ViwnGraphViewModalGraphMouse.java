@@ -25,6 +25,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnEdge;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
+import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Service;
 
 import javax.swing.*;
@@ -194,7 +195,8 @@ public final class ViwnGraphViewModalGraphMouse extends AbstractModalGraphMouse
         public void mouseReleased(MouseEvent e) {
             // TRANSLATING PART
             final VisualizationViewer<ViwnNode, ViwnEdge> vv = (VisualizationViewer<ViwnNode, ViwnEdge>) e.getSource();
-            if (down != null) {
+            ViWordNetService service = ServiceManager.getViWordNetService(vgvui.getWorkbench());
+            if (down != null && !service.isMakeRelationModeOn() && !service.isMergeSynsetsModeOn()) {
                 vv.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
             down = null;

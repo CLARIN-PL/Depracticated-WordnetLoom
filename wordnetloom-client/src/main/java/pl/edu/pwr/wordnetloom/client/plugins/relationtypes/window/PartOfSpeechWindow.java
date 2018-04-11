@@ -39,13 +39,13 @@ public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         buildCheckBoxesForAvailablePartsOfSpeech();
+        setPartsOfSpeech(pos);
 
         panel.setLayout(layout);
         panel.setMargin(20,20,10,10);
 
         addPartOfSpeech();
         addButtonsPanel();
-
     }
 
     private void buildCheckBoxesForAvailablePartsOfSpeech() {
