@@ -86,6 +86,7 @@ public class RelationType extends GenericEntity {
     @Enumerated(EnumType.STRING)
     private NodeDirection nodePosition = NodeDirection.IGNORE;
 
+    @NotAudited
     private Integer priority;
 
     @Column
