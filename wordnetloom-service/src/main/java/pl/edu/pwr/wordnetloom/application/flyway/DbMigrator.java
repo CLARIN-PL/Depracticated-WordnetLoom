@@ -38,12 +38,12 @@ public class DbMigrator {
         }
         flyway.migrate();
 
-//        try{
-//            TempRelationTypePosition tempRelationTypePosition = new TempRelationTypePosition();
-//            tempRelationTypePosition.addPosition(dataSource.getConnection());
-//        }catch (SQLException e) {
-//            e.printStackTrace();
-//        }
+        try{
+            TempRelationTypePosition tempRelationTypePosition = new TempRelationTypePosition();
+            tempRelationTypePosition.addPosition(dataSource.getConnection());
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 }
