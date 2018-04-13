@@ -53,10 +53,11 @@ public class TempRelationTypePosition {
             relationType.setPosition(counter);
             counter++;
             resultRelationTypes.add(relationType);
+            int childCounter = 1;
             for (RelationType child : relationType.getChildren()) {
-                child.setPosition(counter);
+                child.setPosition(childCounter);
                 resultRelationTypes.add(child);
-                counter++;
+                childCounter++;
             }
         }
         return resultRelationTypes;

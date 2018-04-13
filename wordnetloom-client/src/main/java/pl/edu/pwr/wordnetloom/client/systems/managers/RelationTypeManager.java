@@ -72,6 +72,16 @@ public class RelationTypeManager implements Loggable{
                 .collect(Collectors.toList());
     }
 
+    public List<RelationType> getMultilangualParents(final RelationArgument relationArgument){
+        return relationTypes
+                .stream()
+                .filter(r->relationArgument.equals(r.getRelationArgument()))
+                .filter(r->r.getParent() == null)
+                .filter(RelationType::getMultilingual)
+                .sorted(Comparator.comparingInt(RelationType::getOrder))
+                .collect(Collectors.toList());
+    }
+
     public List<RelationType> getRelationsWithoutProxyParent(final RelationArgument relationArgument) {
         return relationTypes
                 .stream()

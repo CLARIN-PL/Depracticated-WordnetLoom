@@ -117,7 +117,8 @@ public class RelationTreePanel extends WebPanel implements TreeSelectionListener
         getSelectedNode().ifPresent(node -> {
             RelationTypeNode parent = (RelationTypeNode) node.getParent();
             if (parent.getIndex(node) < parent.getIndex(parent.getLastChild())) {
-                moveWithChildren(node, (RelationTypeNode) parent.getChildAfter(node), parent, parent.getIndex(node));
+//                moveWithChildren(node, (RelationTypeNode) parent.getChildAfter(node), parent, parent.getIndex(node));
+                moveWithChildren(node, (RelationTypeNode)node.getNextSibling());
             }
         });
 
@@ -127,39 +128,50 @@ public class RelationTreePanel extends WebPanel implements TreeSelectionListener
         getSelectedNode().ifPresent(node -> {
             RelationTypeNode parent = (RelationTypeNode) node.getParent();
             if (parent.getIndex(node) > parent.getIndex(parent.getFirstChild())) {
-                moveWithChildren(node, (RelationTypeNode) node.getPreviousNode(), parent, parent.getIndex(node));
+//                moveWithChildren(node, (RelationTypeNode) node.getPreviousNode(), parent, parent.getIndex(node));
+                moveWithChildren(node, (RelationTypeNode)node.getPreviousSibling());
             }
         });
     }
 
-    private void moveWithChildren(RelationTypeNode node, RelationTypeNode siblingNode, RelationTypeNode parent, int index) {
-
+    private void moveWithChildren(RelationTypeNode node, RelationTypeNode siblingNode){
+        RelationTypeNode parent = (RelationTypeNode) node.getParent();
+        int index = parent.getIndex(node);
+        // save children of second element, and remove all children
         final List<RelationTypeNode> children = new ArrayList<>();
-
         if (siblingNode.getChildCount() > 0) {
-
             Enumeration en = siblingNode.breadthFirstEnumeration();
-
+            en.nextElement(); //first element in enumeration is siblingNode
             while (en.hasMoreElements()) {
-
                 RelationTypeNode item = (RelationTypeNode) en.nextElement();
                 children.add(item);
             }
-
             siblingNode.removeAllChildren();
         }
-
+        // save all expanded nodes in tree
+        List<RelationTypeNode> expandedNodes = new ArrayList<>();
+        Enumeration en = root.breadthFirstEnumeration();
+        while(en.hasMoreElements()){
+            RelationTypeNode item = (RelationTypeNode) en.nextElement();
+            if(tree.isExpanded(item)){
+                expandedNodes.add(item);
+            }
+        }
+        // swap items and insert children to seconds node
         parent.insert(siblingNode, index);
-
-        children.forEach(i -> siblingNode.add(i));
-
+        children.forEach(siblingNode::add);
         final DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
         model.reload(parent);
 
+        //restore expanding node
+        for(RelationTypeNode item:expandedNodes){
+            tree.expandNode(item);
+        }
+
         tree.setSelectedNode(node);
 
-        // update database
-
+        //save to database
+        //TODO zrobić odzielną metode na zapisywanie
         RelationType firstRelationType = node.getRelationType();
         RelationType secondRelationType = siblingNode.getRelationType();
         int firstPosition = firstRelationType.getPriority();
@@ -168,7 +180,23 @@ public class RelationTreePanel extends WebPanel implements TreeSelectionListener
         secondRelationType.setPriority(firstPosition);
         RemoteService.relationTypeRemote.save(firstRelationType);
         RemoteService.relationTypeRemote.save(secondRelationType);
-        //TODO zrobić obsługe przypadku, kiedy wyciągamy dziecko z rodzica
+    }
+
+    private void moveWithChildren(RelationTypeNode node, RelationTypeNode siblingNode, RelationTypeNode parent, int index) {
+
+
+
+        // update database
+        if(false){
+            RelationType firstRelationType = node.getRelationType();
+            RelationType secondRelationType = siblingNode.getRelationType();
+            int firstPosition = firstRelationType.getPriority();
+            int secondPosition = secondRelationType.getPriority();
+            firstRelationType.setPriority(secondPosition);
+            secondRelationType.setPriority(firstPosition);
+            RemoteService.relationTypeRemote.save(firstRelationType);
+            RemoteService.relationTypeRemote.save(secondRelationType);
+        }
     }
 
 

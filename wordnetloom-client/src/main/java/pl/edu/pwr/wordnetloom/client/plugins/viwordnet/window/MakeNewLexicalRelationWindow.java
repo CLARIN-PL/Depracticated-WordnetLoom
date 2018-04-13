@@ -11,6 +11,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
 
@@ -131,6 +132,8 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
         add("br hfill vfill", new JScrollPane(testsList));
         add("br center", buttonChoose);
         add("", buttonCancel);
+
+        loadParentRelation(RelationArgument.SENSE_RELATION);
     }
 
     @Override

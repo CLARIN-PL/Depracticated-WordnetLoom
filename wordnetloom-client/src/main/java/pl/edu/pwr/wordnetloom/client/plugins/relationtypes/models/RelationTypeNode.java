@@ -4,6 +4,9 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class RelationTypeNode extends DefaultMutableTreeNode {
 

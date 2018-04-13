@@ -9,6 +9,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
@@ -40,7 +41,6 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
     protected List<Long> lexicons;
     protected ViwnNode from[], to[];
 
-
     protected MakeNewRelationWindow(WebFrame frame, PartOfSpeech pos, ViwnNode[] from, ViwnNode[] to, Workbench workbench) {
         super(frame, "", pos, null);
 
@@ -50,95 +50,14 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         lexicons = LexiconManager.getInstance().getUserChosenLexiconsIds();
 
         init(RelationArgument.SYNSET_RELATION);
+        initView();
 
         ViwnNodeSynset fromNode = (ViwnNodeSynset)from[0];
         ViwnNodeSynset toNode = (ViwnNodeSynset)to[0];
-        //TODO zobaczyć, czy nie można przekazać coś innego i w jaki sposób później będzie zapisywana relacja
+        loadRelations(RelationArgument.SYNSET_RELATION, fromNode, toNode);
+
         parentItem.addItem(fromNode.getSynset().getSenses().get(0));
         childItem.addItem(toNode.getSynset().getSenses().get(0));
-
-
-//
-////        List<Sense> senses = RemoteUtils.synsetRemote
-////                .dbFastGetUnits(((ViwnNodeSynset) from[0]).getSynset(), lexicons);
-////        for (Sense parent : senses) {
-////            parentItem.addItem(parent.getLemma().getWord());
-////        }
-//
-//        // middle element
-//        middleItem = new MComboBox();
-//        middleItem.setEnabled(false);
-//
-//        // description of relation
-//        description = new MTextArea("");
-//        description.setRows(6);
-//        description.setEditable(false);
-//
-//        // list of tests
-//        testsList = new JList();
-//
-//        // relation subtype
-//        relationSubType = new MComboBox();
-//        relationSubType.addKeyListener(this);
-//        relationSubType.setEnabled(false);
-//
-//        // relation type
-//        relationType = new MComboBox();
-//        relationType.addKeyListener(this);
-//
-//        // show relations
-//
-//        mainRelations = RelationTypeManager.getInstance().getParents(RelationArgument.SYNSET_RELATION);
-//        for(RelationType relType : mainRelations){
-//            relationType.addItem(relType);
-//        }
-//        mainRelations = new ArrayList<>();
-//        List<RelationType> relationTypes = RelationTypeManager.getInstance().getParents(RelationArgument.SYNSET_RELATION);
-//        for(RelationType relType : relationTypes) {
-//            relationType.add(relType);
-//        }
-//        Collection<IRelationType> readRelations = LexicalDA.getHighestRelations(
-//                type, pos);
-//        for (IRelationType relType : readRelations) {
-//            if (fixedRelationType == null
-//                    || relType.getId().longValue() == fixedRelationType.getId()
-//                    .longValue()
-//                    || (fixedRelationType.getParent() != null && relType
-//                    .getId().longValue() == fixedRelationType
-//                    .getParent().getId())) {
-//                relationType.addItem(RelationTypes.getFullNameFor(relType
-//                        .getId()));
-//                mainRelations.add(relType);
-//            }
-//        }
-
-        // System.out.println("POS: "+PosManager.getInstance().getNormalized(pos).getName());
-        // for(IRelationType rt : mainRelations){
-        // System.out.println("ID: "+rt.getId()+"\t"+RelationTypes.getFullNameFor(rt.getId()));
-        // }
-        // event listeners
-//        middleItem = new MComboBox();
-//        parentItem.addKeyListener(this);
-//        parentItem.addActionListener(this);
-//        middleItem.addKeyListener(this);
-//        middleItem.addActionListener(this);
-//        childItem.addKeyListener(this);
-//        childItem.addActionListener(this);
-
-        // buttons
-//        buttonChoose = MButton.buildSelectButton()
-//                .withKeyListener(this)
-//                .withActionListener(this);
-//
-//        buttonCancel = MButton.buildCancelButton()
-//                .withKeyListener(this)
-//                .withActionListener(this);
-
-        buttonSwitch = new MButton(this)
-                .withIcon(FontAwesome.EXCHANGE)
-                .withMnemonic(KeyEvent.VK_Z)
-                .withKeyListener(this);
-
 
         // if there are any relations
         if (mainRelations.size() > 0) {
@@ -147,37 +66,22 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         } else {
             buttonChoose.setEnabled(false);
         }
+    }
 
-        initView();
-        // build interfaceTEST_LABEL
-//        add("",
-//                new MLabel(Labels.RELATION_TYPE_COLON, 't', relationType));
-//        add("tab hfill", relationType);
-//        add("br", new MLabel(Labels.RELATION_SUBTYPE_COLON, 'y',
-//                relationType));
-//        add("tab hfill", relationSubType);
-//        add("br", new MLabel(Labels.RELATION_DESC_COLON, '\0',
-//                description));
-//        add("br hfill", new JScrollPane(description));
-//
-//        jp = new WebPanel();
-//        jp.setLayout(new RiverLayout());
-//        jp.add("br", new MLabel(Labels.SOURCE_SYNSET_COLON, 'r', parentItem));
-//        jp.add("tab hfill", parentItem);
-//        jp.add("br", new MLabel(Labels.TARGET_SYNSET_COLON, 'd', childItem));
-//        jp.add("tab hfill", childItem);
-//
-//        add("br hfill", jp);
-//        add("", buttonSwitch);
-//
-//        add("br", new MLabel(Labels.TESTS_COLON, '\0', testsList));
-//        add("br hfill vfill", new JScrollPane(testsList));
-//        add("br center", buttonChoose);
-//        add("", buttonCancel);
+    private void loadRelations(RelationArgument type, ViwnNodeSynset fromNode, ViwnNodeSynset toNode){
+        if(fromNode.getSynset().getLexicon() != toNode.getSynset().getLexicon()){
+            loadParentRelation(type, MULTILINGUAL_RELATIONS);
+        } else {
+            loadParentRelation(type);
+        }
     }
 
     @Override
     protected void initView() {
+        buttonSwitch = new MButton(this)
+                .withIcon(FontAwesome.EXCHANGE)
+                .withMnemonic(KeyEvent.VK_Z)
+                .withKeyListener(this);
         add("",
                 new MLabel(Labels.RELATION_TYPE_COLON, 't', relationType));
         add("tab hfill", relationType);
@@ -206,32 +110,47 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-
         if (event.getSource() == buttonChoose) {
-            chosenType = getSelectedRelation();
-            setVisible(false);
-
+            choose();
         } else if (event.getSource() == buttonCancel) {
             setVisible(false);
-
         } else if (event.getSource() == buttonSwitch) {
-            // switch elements
-            ViwnNode pom = from[0];
-            from[0] = to[0];
-            to[0] = pom;
-            // switch combo boxes
-            ComboBoxModel cbm = parentItem.getModel();
-            parentItem.setModel(childItem.getModel());
-            childItem.setModel(cbm);
-
-            // refresh tests
+            switchSynset();
+        } else if (event.getSource() == relationSubType || event.getSource() == middleItem) {
             testsList.setListData(new String[]{});
 //            IRelationType relation = getSelectedRelation();
 //            if (relation != null) {
 //                loadTests(relation);
 //            }
+        } else {
+            super.actionPerformed(event);
+        }
+    }
 
-            // relation type changed
+    private void choose(){
+        chosenType = getSelectedRelation();
+        setVisible(false);
+    }
+
+    private void switchSynset(){
+        // switch elements
+        ViwnNode pom = from[0];
+        from[0] = to[0];
+        to[0] = pom;
+        // switch combo boxes
+        ComboBoxModel cbm = parentItem.getModel();
+        parentItem.setModel(childItem.getModel());
+        childItem.setModel(cbm);
+
+        // refresh tests
+        testsList.setListData(new String[]{});
+
+//            IRelationType relation = getSelectedRelation();
+//            if (relation != null) {
+//                loadTests(relation);
+//            }
+
+        // relation type changed
 //        } else if (event.getSource() == relationType) {
 //            relationSubType.removeAllItems();
 //            description.setText("");
@@ -264,29 +183,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
 //                    && subRelations.size() > 0);
 //
 //            // subtype changed
-        } else if (event.getSource() == relationSubType
-//                || event.getSource() == parentItem
-//                || event.getSource() == childItem
-                || event.getSource() == middleItem) {
-            testsList.setListData(new String[]{});
-//            IRelationType relation = getSelectedRelation();
-//            if (relation != null) {
-//                loadTests(relation);
-//            }
-        } else {
-            super.actionPerformed(event);
-        }
     }
-
-    @Override
-    public void keyReleased(KeyEvent arg0) {
-    }
-
-    @Override
-    public void keyTyped(KeyEvent arg0) {
-    }
-
-
 
     /**
      * @param workbench <code>Workbench</code> to get JFrame
@@ -303,7 +200,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
             DialogBox.showInformation(Messages.FAILURE_SOURCE_SYNSET_SAME_AS_TARGET);
             return false;
         }
-        //TODO przetestować to wszystko
+
         PartOfSpeech partOfSpeech = nodeFrom.getPos();
         ViwnNode[] nodeFromArray = {from};
         ViwnNode[] nodeToArray = {to};
