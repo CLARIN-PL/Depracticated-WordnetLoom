@@ -23,9 +23,9 @@
         <class>pl.edu.pwr.wordnetloom.relationtest.model.RelationTest</class>
         <class>pl.edu.pwr.wordnetloom.relationtype.model.RelationType</class>
         <class>pl.edu.pwr.wordnetloom.dictionary.model.Dictionary</class>
-        <class>pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary</class>
-        <class>pl.edu.pwr.wordnetloom.dictionary.model.StatusDictionary</class>
-        <class>pl.edu.pwr.wordnetloom.dictionary.model.AspectDictionary</class>
+        <class>pl.edu.pwr.wordnetloom.dictionary.model.Register</class>
+        <class>pl.edu.pwr.wordnetloom.dictionary.model.Status</class>
+        <class>pl.edu.pwr.wordnetloom.dictionary.model.Aspect</class>
         <class>pl.edu.pwr.wordnetloom.user.model.User</class>
         <class>pl.edu.pwr.wordnetloom.user.model.UserSettings</class>
 

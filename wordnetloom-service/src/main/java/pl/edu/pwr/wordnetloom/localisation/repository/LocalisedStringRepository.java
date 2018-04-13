@@ -1,7 +1,7 @@
 package pl.edu.pwr.wordnetloom.localisation.repository;
 
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 
@@ -79,9 +79,9 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
     }
 
     public Map<Long, String> findAllRegisterTypes(String language) {
-        List<RegisterDictionary> list = getEntityManager().createQuery("FROM RegisterDictionary").getResultList();
+        List<Register> list = getEntityManager().createQuery("FROM Register").getResultList();
         Map<Long, String> resultMap = new HashMap<>();
-        for (RegisterDictionary register : list) {
+        for (Register register : list) {
             resultMap.put(register.getId(), String.valueOf(register.getName())); //TODO zmienić tekst
         }
         return resultMap;

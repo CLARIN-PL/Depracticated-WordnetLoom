@@ -6,7 +6,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public final class SenseCriteria extends CriteriaPanel {
 
-    private MComboBox<RegisterDictionary> registerComboBox;
+    private MComboBox<Register> registerComboBox;
     private MTextField comment;
     private MTextField example;
     private CriteriaDTO criteria;
@@ -35,10 +35,10 @@ public final class SenseCriteria extends CriteriaPanel {
     }
 
     private MComboBox initRegisterComboBox() {
-        return  new MComboBox<RegisterDictionary>()
+        return  new MComboBox<Register>()
                 .withSize(DEFAULT_DIMENSION_COMBO)
                 .withDictionaryItems(
-                        DictionaryManager.getInstance().getDictionaryByClassName(RegisterDictionary.class),
+                        DictionaryManager.getInstance().getDictionaryByClassName(Register.class),
                         Labels.VALUE_ALL);
     }
 
@@ -96,7 +96,7 @@ public final class SenseCriteria extends CriteriaPanel {
         add("br hfill", example);
     }
 
-    public MComboBox<RegisterDictionary> getRegisterComboBox() {
+    public MComboBox<Register> getRegisterComboBox() {
         return registerComboBox;
     }
 
