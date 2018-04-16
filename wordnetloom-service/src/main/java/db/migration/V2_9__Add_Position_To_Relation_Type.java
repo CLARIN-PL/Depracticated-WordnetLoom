@@ -1,5 +1,7 @@
 package db.migration;
 
+import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TempRelationTypePosition {
+public class V2_9__Add_Position_To_Relation_Type implements JdbcMigration {
 
     public void addPosition(Connection connection) throws SQLException {
         final String SYNSET_RELATION = "SYNSET_RELATION";
@@ -73,6 +75,11 @@ public class TempRelationTypePosition {
             updateStatement.setLong(ID_POSITION, relationType.getId());
             updateStatement.executeUpdate();
         }
+    }
+
+    @Override
+    public void migrate(Connection connection) throws Exception {
+        addPosition(connection);
     }
 
     private class RelationType {

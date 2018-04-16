@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
 import com.alee.laf.rootpane.WebFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
@@ -40,9 +41,10 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
     protected RelationType chosenType = null;
     protected List<RelationType> mainRelations = null;
     protected static PartOfSpeech pos;
+    protected RelationArgument relationsType;
 
-    private Sense parentSense;
-    private Sense childSense;
+//    private Sense parentSense;
+//    private Sense childSense;
 
     private static boolean testsPositive;
 
@@ -56,6 +58,22 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
             if(value != null){
                 RelationType relationType = (RelationType)value;
                 String text = LocalisationManager.getInstance().getLocalisedString(relationType.getName());
+                renderer.setText(text);
+            }
+            return renderer;
+        }
+    }
+
+    private class SenseRenderer implements ListCellRenderer {
+
+        DefaultListCellRenderer defaultListCellRenderer = new DefaultListCellRenderer();
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            JLabel renderer = (JLabel) defaultListCellRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if(value != null){
+                Sense sense = (Sense)value;
+                String text = SenseFormat.getText(sense);
                 renderer.setText(text);
             }
             return renderer;
@@ -79,22 +97,13 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
 
         init(type);
 
-        // element nadrzedny
-//        parentItem = new MComboBox();
-        for (Sense parent : parentUnits) {
-            parentItem.addItem(parent.getWord().getWord());
-        }
+        parentUnits.forEach(parentItem::addItem);
+        childUnits.forEach(childItem::addItem);
 
-        // element podrzedny
-//        childItem = new MComboBox();
-        for (Sense child : childUnits) {
-            childItem.addItem(child.getWord().getWord());
-        }
         //Wybranie zaproponowanej jednostki
         if (suggestedUnit != null) {
-
-            childItem.setSelectedItem(suggestedUnit.getWord().getWord());
-            parentItem.setSelectedItem(suggestedUnit.getWord().getWord());
+            childItem.setSelectedItem(suggestedUnit);
+            parentItem.setSelectedItem(suggestedUnit);
         }
 
         // element posredni
@@ -106,7 +115,6 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
             middleItem.setEnabled(false);
         }
 
-        testsList = new JList();
         initView();
     }
 
@@ -118,15 +126,17 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      * @author amusial Constructor for derived classes
      */
     protected RelationTypeFrame(WebFrame frame,
-                                String type,
+                                RelationArgument type,
                                 PartOfSpeech pos,
                                 RelationType fixedRelationType) {
         super(frame, Labels.RELATION_PARAMS, 650, 500);
         RelationTypeFrame.pos = pos;
         this.fixedRelationType = fixedRelationType;
+        relationsType = type;
 
         setResizable(false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        init(relationsType);
     }
 
     protected static final int MULTILINGUAL_RELATIONS = 1;
@@ -152,6 +162,8 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
     }
 
     protected void init(RelationArgument type){
+        relationsType = type;
+
         relationType = new MComboBox();
         relationType.addKeyListener(this);
         relationType.addActionListener(this);
@@ -181,6 +193,9 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         parentItem = new MComboBox();
         childItem = new MComboBox();
         middleItem = new MComboBox();
+
+        parentItem.setRenderer(new SenseRenderer());
+        childItem.setRenderer(new SenseRenderer());
 
         parentItem.addKeyListener(this);
         parentItem.addActionListener(this);
@@ -311,25 +326,6 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      * @return zaznaczona relacja
      */
     protected RelationType getSelectedRelation() {
-//        if (subRelations != null && subRelations.size() > 0) {
-//            // jest pod typ
-//            int index = relationSubType.getSelectedIndex();
-//            for (RelationType type : subRelations) {
-//                if (index-- == 0) {
-//                    return type;
-//                }
-//            }
-//        } else {
-//            // brak podtypu
-//            int index = relationType.getSelectedIndex();
-//            for (RelationType type : mainRelations) {
-//                if (index-- == 0) {
-//                    return type;
-//                }
-//            }
-//        }
-//        return null;
-
         if(relationSubType.isEnabled()) { // relacja ma podtypy
            return (RelationType)relationSubType.getSelectedItem();
         } else {
@@ -337,49 +333,73 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         }
     }
 
+
+    protected void swapParentAndChildrenModels() {
+        ComboBoxModel cbm = parentItem.getModel();
+        parentItem.setModel(childItem.getModel());
+        childItem.setModel(cbm);
+        refreshTests();
+    }
+
     @Override
     public void actionPerformed(ActionEvent event) {
-
         if(event.getSource() == buttonChoose) {
             chosenType = getSelectedRelation();
             this.setVisible(false);
         } else if(event.getSource() == buttonCancel) {
             this.setVisible(false);
         } else if(event.getSource() == relationType) {
-            relationSubType.removeAllItems();
-            testsList.setListData(new String[]{});
-            RelationType parentRelation = (RelationType)relationType.getSelectedItem();
-            if(parentRelation == null){
-                relationSubType.setEnabled(false);
-                return;
-            }
-            List<RelationType> relationsSubType = RelationTypeManager.getInstance().getChildren(parentRelation.getId(), RelationArgument.SYNSET_RELATION);
-            if(!relationsSubType.isEmpty()) {
-                for(RelationType relType : relationsSubType){
-                    relationSubType.addItem(relType);
-                }
-                relationSubType.setEnabled(true);
-            } else {
-                relationSubType.setEnabled(false);
-            }
-
-            showDescription(parentRelation);
-//            setTests(parentRelation);
-            if(parentSense != null){
-//                Sense parentSense = (Sense) parentItem.getSelectedItem();
-//                Sense childSense = (Sense) childItem.getSelectedItem();
-                String parentSenseName = parentSense.getWord().getWord();
-                String childSenseName = childSense.getWord().getWord();
-                PartOfSpeech parentSensePos = parentSense.getPartOfSpeech();
-                PartOfSpeech childSensePos = childSense.getPartOfSpeech();
-                List<String> tests = getTests(parentRelation, parentSenseName, childSenseName, parentSensePos, childSensePos);
-                testsList.setListData(tests.toArray());
-            }
-
+            changeRelation();
         } else if(event.getSource() == parentItem){
-            parentSense = (Sense) parentItem.getSelectedItem();
+//            parentSense = (Sense) parentItem.getSelectedItem();
         } else if(event.getSource() == childItem) {
-            childSense = (Sense) childItem.getSelectedItem();
+//            childSense = (Sense) childItem.getSelectedItem();
+        }
+    }
+
+
+
+    private void changeRelation() {
+        relationSubType.removeAllItems();
+
+        RelationType parentRelation = (RelationType)relationType.getSelectedItem();
+        if(parentRelation == null){
+            relationSubType.setEnabled(false);
+            return;
+        }
+        loadSubtypeRelation(parentRelation);
+        showDescription(parentRelation);
+
+        Sense parentSense = (Sense) parentItem.getSelectedItem();
+        Sense childSense = (Sense) childItem.getSelectedItem();
+        if(parentSense != null){
+           refreshTests(parentRelation, parentSense, childSense);
+        }
+    }
+
+    protected void refreshTests(){
+        RelationType parentRelation = (RelationType)relationType.getSelectedItem();
+        refreshTests(parentRelation, (Sense)parentItem.getSelectedItem(), (Sense)childItem.getSelectedItem());
+    }
+
+    private void refreshTests(RelationType parentRelation, Sense parent, Sense child){
+        String parentName = parent.getWord().getWord();
+        String childName = child.getWord().getWord();
+        PartOfSpeech parentPos = parent.getPartOfSpeech();
+        PartOfSpeech childPos = child.getPartOfSpeech();
+        List<String> tests = getTests(parentRelation, parentName, childName, parentPos, childPos);
+        testsList.setListData(tests.toArray());
+    }
+
+    private void loadSubtypeRelation(RelationType parentRelation) {
+        List<RelationType> relationsSubType = RelationTypeManager.getInstance().getChildren(parentRelation.getId(), RelationArgument.SYNSET_RELATION);
+        if(!relationsSubType.isEmpty()) {
+            for(RelationType relType : relationsSubType){
+                relationSubType.addItem(relType);
+            }
+            relationSubType.setEnabled(true);
+        } else {
+            relationSubType.setEnabled(false);
         }
     }
 
@@ -420,7 +440,6 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
             } catch (Exception e){
                 System.out.println();
             }
-
 
             if(markerX != null) {
                 text = text.replace(markerX, "<font color=\"blue\">" + parent + "</font>");

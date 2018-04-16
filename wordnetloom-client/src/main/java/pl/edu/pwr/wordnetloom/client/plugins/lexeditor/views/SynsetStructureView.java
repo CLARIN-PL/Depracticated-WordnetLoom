@@ -47,7 +47,6 @@ public class SynsetStructureView extends AbstractView implements SimpleListenerI
         getViewUI().refreshData(getViewUI().getLastSynset());
     }
 
-
     private SynsetStructureViewUI getViewUI() {
         return (SynsetStructureViewUI) getUI();
     }
@@ -55,5 +54,4 @@ public class SynsetStructureView extends AbstractView implements SimpleListenerI
     public void addUnitChangeListener(SimpleListenerInterface newListener) {
         getUI().addActionListener(newListener);
     }
-
 }

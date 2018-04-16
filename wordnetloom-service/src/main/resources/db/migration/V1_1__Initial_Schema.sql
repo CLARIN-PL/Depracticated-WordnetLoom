@@ -130,6 +130,7 @@ CREATE TABLE relation_type (
   short_display_text_id    BIGINT COMMENT 'Text displayed on visualisation',
   color                    VARCHAR(255) COMMENT 'Color of displayed relation',
   node_position            VARCHAR(255) COMMENT 'Position in node LEFT,TOP,RIGHT,BOTTOM',
+  priority                 INT,
   PRIMARY KEY (id)
 );
 

@@ -9,16 +9,13 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relationtest.model.RelationTest;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -27,9 +24,6 @@ import se.datadosen.component.RiverLayout;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class MakeNewRelationWindow extends RelationTypeFrame {
@@ -41,8 +35,8 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
     protected List<Long> lexicons;
     protected ViwnNode from[], to[];
 
-    protected MakeNewRelationWindow(WebFrame frame, PartOfSpeech pos, ViwnNode[] from, ViwnNode[] to, Workbench workbench) {
-        super(frame, "", pos, null);
+    protected MakeNewRelationWindow(WebFrame frame, PartOfSpeech pos, ViwnNode[] from, ViwnNode[] to) {
+        super(frame, RelationArgument.SYNSET_RELATION, pos, null);
 
         this.from = from;
         this.to = to;
@@ -54,7 +48,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
 
         ViwnNodeSynset fromNode = (ViwnNodeSynset)from[0];
         ViwnNodeSynset toNode = (ViwnNodeSynset)to[0];
-        loadRelations(RelationArgument.SYNSET_RELATION, fromNode, toNode);
+        loadRelations(fromNode, toNode);
 
         parentItem.addItem(fromNode.getSynset().getSenses().get(0));
         childItem.addItem(toNode.getSynset().getSenses().get(0));
@@ -68,11 +62,11 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         }
     }
 
-    private void loadRelations(RelationArgument type, ViwnNodeSynset fromNode, ViwnNodeSynset toNode){
-        if(fromNode.getSynset().getLexicon() != toNode.getSynset().getLexicon()){
-            loadParentRelation(type, MULTILINGUAL_RELATIONS);
+    private void loadRelations(ViwnNodeSynset fromNode, ViwnNodeSynset toNode){
+        if(!fromNode.getSynset().getLexicon().equals(toNode.getSynset().getLexicon())){
+            loadParentRelation(relationsType, MULTILINGUAL_RELATIONS);
         } else {
-            loadParentRelation(type);
+            loadParentRelation(relationsType);
         }
     }
 
@@ -133,57 +127,13 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
     }
 
     private void switchSynset(){
-        // switch elements
         ViwnNode pom = from[0];
         from[0] = to[0];
         to[0] = pom;
-        // switch combo boxes
-        ComboBoxModel cbm = parentItem.getModel();
-        parentItem.setModel(childItem.getModel());
-        childItem.setModel(cbm);
 
-        // refresh tests
-        testsList.setListData(new String[]{});
-
-//            IRelationType relation = getSelectedRelation();
-//            if (relation != null) {
-//                loadTests(relation);
-//            }
-
-        // relation type changed
-//        } else if (event.getSource() == relationType) {
-//            relationSubType.removeAllItems();
-//            description.setText("");
-//            testsList.setListData(new String[]{});
-//            // read chosen function index
-//            int index = relationType.getSelectedIndex();
-////            for (IRelationType type : mainRelations) {
-////                if (index-- == 0) {
-////                    // refresh subrelation
-////                    subRelations = new ArrayList<>();
-////                    Collection<IRelationType> readRelations = LexicalDA
-////                            .getChildren(type);
-////                    for (IRelationType relType : readRelations) {
-////                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
-////                            relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
-////                            subRelations.add(relType);
-////                        }
-////                    }
-////                    if (subRelations.size() > 0) {
-////                        relationSubType.setSelectedIndex(0);
-////                    } else {
-////                        loadTests(type);
-////                    }
-////                    description.setText(RelationTypes.get(type.getId())
-////                            .getRelationType().getDescription().getText());
-////                    break;
-////                }
-////            }
-//            relationSubType.setEnabled(subRelations != null
-//                    && subRelations.size() > 0);
-//
-//            // subtype changed
+        swapParentAndChildrenModels();
     }
+
 
     /**
      * @param workbench <code>Workbench</code> to get JFrame
@@ -196,7 +146,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         boolean saveResult = false;
         ViwnNodeSynset nodeFrom = (ViwnNodeSynset) from;
         ViwnNodeSynset nodeTo = (ViwnNodeSynset) to;
-        if(nodeFrom.getId().equals(nodeTo.getId())){ // nie można stworzyć relacji z samym sobą
+        if(checkIsRelationWithHimself(nodeFrom, nodeTo)){
             DialogBox.showInformation(Messages.FAILURE_SOURCE_SYNSET_SAME_AS_TARGET);
             return false;
         }
@@ -205,101 +155,70 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         ViwnNode[] nodeFromArray = {from};
         ViwnNode[] nodeToArray = {to};
 
-        MakeNewRelationWindow relationWindow = new MakeNewRelationWindow(workbench.getFrame(), partOfSpeech, nodeFromArray, nodeToArray, workbench);
-        relationWindow.setVisible(true);
-        RelationType relationType = relationWindow.chosenType;
+        RelationType relationType = chooseRelationType(workbench, partOfSpeech, nodeFromArray, nodeToArray);
 
-        if(relationType != null) { // sprawdzanie, czy anulowano okno
+        if(relationType != null) { // if choose relation type
             Synset parent = nodeFrom.getSynset();
             Synset child = nodeTo.getSynset();
-            // sprawdzenie, czy taka relacja już istnieje w bazie danych
-            if(RemoteService.synsetRelationRemote.checkRelationExists(parent, child, relationType)){
+            if(checkRelationExist(relationType, parent, child)){
                 DialogBox.showInformation(Messages.FAILURE_RELATION_EXISTS);
                 return false;
             }
-            // zapisanie relacji w bazie danych
-            saveResult = RemoteService.synsetRelationRemote.makeRelation(parent, child, relationType);
-            if(!saveResult){
-                //TODO wyświetlić komunikat o niepowodzeniu zapisu
-                return false;
-            }
+            saveResult = saveRelationInDatabase(parent, child, relationType);
             if(saveResult){
-                // znalezienie relacji odwrotnej
-                RelationType reverseRelationType = RemoteService.relationTypeRemote.findReverseByRelationType(relationType.getId());
-                if(relationType.isAutoReverse() ) {
-                    saveResult = RemoteService.synsetRelationRemote.makeRelation(child, parent, reverseRelationType); // tworzenie relacji odwrotnej
-                } else if(reverseRelationType != null){
-                    String reverseRelationTypeName = LocalisationManager.getInstance().getLocalisedString(reverseRelationType.getName());
-                    if(DialogBox.showYesNo(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION + " " + reverseRelationTypeName) == DialogBox.YES) {
-                        saveResult = RemoteService.synsetRelationRemote.makeRelation(child, parent, reverseRelationType);
-                    }
-                }
+                saveResult = saveReverseRelation(saveResult, relationType, parent, child);
             }
-            if(saveResult){
-                DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
-                nodeFrom.refresh();
-                nodeTo.refresh();
-                //TODO w przypadku pomyślnego zapisania relacji w bazie danych, zaktualizować graf
-            } else {
-                DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
+            showRelationSavingResult(saveResult, nodeFrom, nodeTo);
+        }
+        return saveResult;
+    }
+
+    private static void showRelationSavingResult(boolean saveResult, ViwnNodeSynset nodeFrom, ViwnNodeSynset nodeTo) {
+        if(saveResult){
+            DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
+            nodeFrom.refresh();
+            nodeTo.refresh();
+            //TODO w przypadku pomyślnego zapisania relacji w bazie danych, zaktualizować graf
+        } else {
+            DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
+        }
+    }
+
+    private static boolean saveReverseRelation(boolean saveResult, RelationType relationType, Synset parent, Synset child) {
+        RelationType reverseRelationType = RemoteService.relationTypeRemote.findReverseByRelationType(relationType.getId());
+        if(relationType.isAutoReverse() ) {
+            saveResult = RemoteService.synsetRelationRemote.makeRelation(child, parent, reverseRelationType); // tworzenie relacji odwrotnej
+        } else if(reverseRelationType != null){
+            String reverseRelationTypeName = LocalisationManager.getInstance().getLocalisedString(reverseRelationType.getName());
+            if(DialogBox.showYesNo(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION + " " + reverseRelationTypeName) == DialogBox.YES) {
+                saveResult = RemoteService.synsetRelationRemote.makeRelation(child, parent, reverseRelationType);
             }
         }
         return saveResult;
-//        ViwnNode[] from1 = new ViwnNode[]{from};
-//        ViwnNode[] to1 = new ViwnNode[]{to};
-//        ViwnNodeSynset sf = (ViwnNodeSynset) from1[0];
-//        ViwnNodeSynset st = (ViwnNodeSynset) to1[0];
-//        // check if parent and child are different synsets
-//        if (sf.getId().equals(st.getId())) {
-//            DialogBox
-//                    .showInformation(Messages.FAILURE_SOURCE_SYNSET_SAME_AS_TARGET);
-//            return false;
-//        }
-//        MakeNewRelationFrame framew = null;
-//        framew = new MakeNewRelationFrame(
-//                workbench.getFrame(), RelationArgument.SYNSET,
-//                RemoteUtils.synsetRemote.dbGetPos(((ViwnNodeSynset) from)
-//                        .getSynset(), LexiconManager.getInstance().getLexicons()), from1, to1, workbench);
-//        framew.setVisible(true);
-//        if (framew.chosenType != null) {
-//            sf = (ViwnNodeSynset) from1[0];
-//            st = (ViwnNodeSynset) to1[0];
-//
-//            // check if such relation already exists
-//            if (RelationsDA.checkIfRelationExists(sf.getSynset(),
-//                    st.getSynset(), framew.chosenType)) {
-//                DialogBox.showInformation(Messages.FAILURE_RELATION_EXISTS);
-//            } // make relation
-//            else if (RemoteUtils.synsetRelationRemote.dbMakeRelation(
-//                    sf.getSynset(), st.getSynset(), framew.chosenType)) {
-//                // make reverse relation
-//                if (framew.chosenType.isAutoReverse()
-//                        || (RelationsDA.getReverseRelation(framew.chosenType) != null)) {
-//                    // Pobierz testy dla relacji odwrotnej
-//                    Collection<String> tests = LexicalDA.getTests(RelationsDA
-//                            .getReverseRelation(framew.chosenType),
-//                            (String) childItem.getItemAt(childItem
-//                                    .getSelectedIndex()), (String) parentItem
-//                            .getItemAt(parentItem.getSelectedIndex()),
-//                            pos);
-//                    String test = "\n\n";
-//                    test = tests.stream().map((i) -> i + "\n").reduce(test, String::concat);
-//                    boolean hasReversRelation = framew.chosenType.getReverse() != null;
-//
-//                    if (framew.chosenType.isAutoReverse()
-//                            || hasReversRelation && (DialogBox.showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION + test,
-//                                    LexicalDA.getRelationName(RelationsDA.getReverseRelation(framew.chosenType)))) == DialogBox.YES)) {
-//                        RemoteUtils.synsetRelationRemote.dbMakeRelation(st.getSynset(), sf.getSynset(), RelationsDA
-//                                .getReverseRelation(framew.chosenType));
-//                    }
-//                }
-//                DialogBox.showInformation(Messages.SUCCESS_RELATION_ADDED);
-//                return true;
-//            } else {
-//                DialogBox.showInformation(Messages.FAILURE_UNABLE_TO_ADD_RELATION);
-//            }
-//        }
-//        return false;
+    }
+
+    private static boolean checkRelationExist(RelationType relationType, Synset parent, Synset child) {
+        return RemoteService.synsetRelationRemote.checkRelationExists(parent, child, relationType);
+    }
+
+    private static RelationType chooseRelationType(Workbench workbench, PartOfSpeech partOfSpeech, ViwnNode[] nodeFromArray, ViwnNode[] nodeToArray) {
+        MakeNewRelationWindow relationWindow = new MakeNewRelationWindow(workbench.getFrame(), partOfSpeech, nodeFromArray, nodeToArray);
+        relationWindow.setVisible(true);
+        return relationWindow.chosenType;
+    }
+
+    private static boolean checkIsRelationWithHimself(ViwnNodeSynset nodeFrom, ViwnNodeSynset nodeTo) {
+        return nodeFrom.getId().equals(nodeTo.getId());
+    }
+
+    private static boolean saveRelationInDatabase(Synset parent, Synset child, RelationType relationType)
+    {
+        boolean saveResult = RemoteService.synsetRelationRemote.makeRelation(parent, child, relationType);
+        if(!saveResult){
+            //TODO wyświetlić komunikat o niepowodzeniu zapisu
+            return false;
+        }
+        return true;
     }
 
 }

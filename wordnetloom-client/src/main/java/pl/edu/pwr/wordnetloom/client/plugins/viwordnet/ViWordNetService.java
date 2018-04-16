@@ -659,6 +659,17 @@ public class ViWordNetService extends AbstractService implements
         });
     }
 
+    /**
+     * @param object
+     * @param tag
+     */
+    public void synsetUnitSelection(Object object, Integer tag) {
+        if (object instanceof Sense) {
+            Sense unit = (Sense) object;
+            unitsRelationsView.loadLexicalUnit(unit);
+        }
+    }
+
     public void reloadCurrentListSelection() {
         luView.refreshData();
     }

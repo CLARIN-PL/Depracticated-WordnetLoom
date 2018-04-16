@@ -16,7 +16,9 @@ ALTER TABLE emotional_annotations
 FOREIGN KEY (sense_id)
 REFERENCES sense (id);
 
+SET SQL_SAFE_UPDATES = 0;
 -- Clean up before import
 DELETE e FROM wordnet_work.emotion e
   LEFT JOIN wordnet_work.lexicalunit l on l.ID = lexicalunit_id
 WHERE l.ID is null;
+SET SQL_SAFE_UPDATES = 1;
