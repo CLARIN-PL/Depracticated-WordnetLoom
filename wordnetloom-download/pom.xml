@@ -12,7 +12,7 @@
     <organization>
         <name>Clarin PL</name>
     </organization>
-    <name>WordnetLoom</name>
+    <name>wordnetloom</name>
 
     <dependencies>
 
@@ -24,6 +24,12 @@
         </dependency>
 
     </dependencies>
+
+    <scm>
+        <!-- Replace the connection below with your project connection -->
+        <connection>scm:git:git://github.com/CLARIN_PL/WordnetLoom.git</connection>
+    </scm>
+
     <build>
         <finalName>${artifactId}</finalName>
 
@@ -43,15 +49,17 @@
                             <Implementation-Build-Time>${maven.build.timestamp}</Implementation-Build-Time>
                         </manifestEntries>
                     </archive>
-                    <warName>1.0</warName>
+                    <warName>${artifactId}</warName>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.1</version>
+                <version>1.4</version>
                 <configuration>
                     <shortRevisionLength>7</shortRevisionLength>
+                    <doCheck>true</doCheck>
+                    <doUpdate>true</doUpdate>
                 </configuration>
                 <executions>
                     <execution>
@@ -65,13 +73,6 @@
 
         </plugins>
     </build>
-
-    <scm>
-        <!-- Replace the connection below with your project connection -->
-        <connection>scm:git:git://github.com/CLARIN_PL/WordnetLoom.git</connection>
-    </scm>
-
-
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
