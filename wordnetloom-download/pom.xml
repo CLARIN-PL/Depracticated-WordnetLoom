@@ -27,7 +27,7 @@
 
     <scm>
         <!-- Replace the connection below with your project connection -->
-        <connection>scm:git:git://github.com/CLARIN_PL/WordnetLoom.git</connection>
+        <connection>scm:git:https://github.com/CLARIN-PL/WordnetLoom.git</connection>
     </scm>
 
     <build>
