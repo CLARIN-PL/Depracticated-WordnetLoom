@@ -64,7 +64,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>generate-resources</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>create</goal>
                         </goals>
