@@ -65,6 +65,7 @@
                         <manifestEntries>
                             <Implementation-Build>${buildNumber}</Implementation-Build>
                             <Implementation-Build-Time>${maven.build.timestamp}</Implementation-Build-Time>
+                            <Implementation-Build-Branch>${buildScmBranch}</Implementation-Build-Branch>
                         </manifestEntries>
                     </archive>
                     <warName>${project.artifactId}</warName>
