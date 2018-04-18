@@ -68,4 +68,4 @@ EXPOSE 8081 9991
 ## Deploying
 COPY ./wordnetloom-server/target/wordnetloom-server-2.0.ear ${DEPLOYMENT_DIR}
 
-ENTRYPOINT ${WILDFLY_HOME}/bin/standalone.sh -c standalone-full.xml -b=0.0.0.0 -bmanagment=0.0.0.0 -Djboss.http.port=8081 -Djboss.management.http.port=9991
+ENTRYPOINT ${WILDFLY_HOME}/bin/standalone.sh -c standalone-full.xml -b=0.0.0.0 -bmanagment=0.0.0.0 -Djboss.http.port=8081 -Djboss.management.http.port=9991 -Djboss.https.port=9433

@@ -29,7 +29,6 @@ public class DownloadResource {
                 .add("Implementation-Version", manifest.getMainAttributes().getValue("Implementation-Version"))
                 .add("Implementation-Jdk", manifest.getMainAttributes().getValue("Build-Jdk"))
                 .add("Implementation-Build", manifest.getMainAttributes().getValue("Implementation-Build"))
-                .add("Implementation-Build-Time", manifest.getMainAttributes().getValue("Implementation-Build-Time"))
                 .build();
     }
 
