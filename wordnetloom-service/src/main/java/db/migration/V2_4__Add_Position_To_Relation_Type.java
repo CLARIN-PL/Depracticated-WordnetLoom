@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class V2_9__Add_Position_To_Relation_Type implements JdbcMigration {
+public class V2_4__Add_Position_To_Relation_Type implements JdbcMigration {
 
     public void addPosition(Connection connection) throws SQLException {
         final String SYNSET_RELATION = "SYNSET_RELATION";
