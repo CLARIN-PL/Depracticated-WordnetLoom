@@ -44,7 +44,8 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         lexicons = LexiconManager.getInstance().getUserChosenLexiconsIds();
 
         init(RelationArgument.SYNSET_RELATION);
-        initView();
+        super.initView();
+
 
         ViwnNodeSynset fromNode = (ViwnNodeSynset)from[0];
         ViwnNodeSynset toNode = (ViwnNodeSynset)to[0];
@@ -71,38 +72,6 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
     }
 
     @Override
-    protected void initView() {
-        buttonSwitch = new MButton(this)
-                .withIcon(FontAwesome.EXCHANGE)
-                .withMnemonic(KeyEvent.VK_Z)
-                .withKeyListener(this);
-        add("",
-                new MLabel(Labels.RELATION_TYPE_COLON, 't', relationType));
-        add("tab hfill", relationType);
-        add("br", new MLabel(Labels.RELATION_SUBTYPE_COLON, 'y',
-                relationType));
-        add("tab hfill", relationSubType);
-        add("br", new MLabel(Labels.RELATION_DESC_COLON, '\0',
-                description));
-        add("br hfill", new JScrollPane(description));
-
-        jp = new WebPanel();
-        jp.setLayout(new RiverLayout());
-        jp.add("br", new MLabel(Labels.SOURCE_SYNSET_COLON, 'r', parentItem));
-        jp.add("tab hfill", parentItem);
-        jp.add("br", new MLabel(Labels.TARGET_SYNSET_COLON, 'd', childItem));
-        jp.add("tab hfill", childItem);
-
-        add("br hfill", jp);
-        add("", buttonSwitch);
-
-        add("br", new MLabel(Labels.TESTS_COLON, '\0', testsList));
-        add("br hfill vfill", new JScrollPane(testsList));
-        add("br center", buttonChoose);
-        add("", buttonCancel);
-    }
-
-    @Override
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == buttonChoose) {
             choose();
@@ -110,13 +79,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
             setVisible(false);
         } else if (event.getSource() == buttonSwitch) {
             switchSynset();
-        } else if (event.getSource() == relationSubType || event.getSource() == middleItem) {
-            testsList.setListData(new String[]{});
-//            IRelationType relation = getSelectedRelation();
-//            if (relation != null) {
-//                loadTests(relation);
-//            }
-        } else {
+        }  else {
             super.actionPerformed(event);
         }
     }
@@ -134,6 +97,14 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         swapParentAndChildrenModels();
     }
 
+    @Override
+    protected void swapParentAndChild() {
+        ViwnNode temp = from[0];
+        from[0] = to[0];
+        to[0] = temp;
+
+        swapParentAndChildrenModels();
+    }
 
     /**
      * @param workbench <code>Workbench</code> to get JFrame
