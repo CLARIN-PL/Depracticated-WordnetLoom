@@ -118,6 +118,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <testSourceDirectory>src/main/test/java</testSourceDirectory>
         <resources>
@@ -129,8 +130,18 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/version</include>
+                </includes>
             </resource>
-
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/version</exclude>
+                </excludes>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -139,20 +150,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
-                <configuration>
-                    <executable>java</executable>
-                    <mainClass>pl.edu.pwr.wordnetloom.client.Application</mainClass>
-                    <arguments>
-                        <argument>%classpath:src/main/resources</argument>
-                    </arguments>
-                    <workingDirectory>${project.build.directory}/WordnetLoom-Client</workingDirectory>
-                    <detail>false</detail>
                 </configuration>
             </plugin>
             <plugin>
@@ -170,7 +167,7 @@
                 <configuration>
                     <finalName>wordnetloom-client</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
-                    <outputDirectory>${project.build.directory}/WordnetLoom-Client</outputDirectory>
+                    <outputDirectory>${project.build.directory}/wordnetloom-client/</outputDirectory>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
@@ -183,9 +180,43 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/wordnetloom-client/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/target/classes/</directory>
+                                    <includes>
+                                        <include>version</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.0.2</version>
             </plugin>
         </plugins>
     </build>
+
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <buildNumber>v.${project.version} build ${maven.build.timestamp}</buildNumber>
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+    </properties>
 </project>
