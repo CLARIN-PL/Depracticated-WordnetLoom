@@ -27,7 +27,7 @@ public class Application implements Loggable {
 
     public static final EventBus eventBus = new EventBus();
 
-    public static void main(String[] args) {
+    public static void main(String...args) {
 
         WebLookAndFeel.install();
         IconFontSwing.register(FontAwesome.getIconFont());
@@ -79,6 +79,7 @@ public class Application implements Loggable {
             public void uncaughtException(Thread t, Throwable tt) {
                 if (first) {
                     SwingUtilities.invokeLater(() -> {
+                        tt.printStackTrace();
                         JOptionPane.showMessageDialog(null,
                                 Messages.ERROR_UNABLE_TO_CONNECT_TO_SERVER,
                                 Application.PROGRAM_NAME_VERSION,

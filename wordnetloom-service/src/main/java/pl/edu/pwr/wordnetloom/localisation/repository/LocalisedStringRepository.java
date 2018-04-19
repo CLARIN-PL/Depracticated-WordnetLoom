@@ -1,20 +1,14 @@
 package pl.edu.pwr.wordnetloom.localisation.repository;
 
-import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.common.dto.DataMap;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
-import pl.edu.pwr.wordnetloom.localisation.model.RegisterType;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +47,23 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
         return map;
     }
 
+    public Map<String, Map<Long, String>> findAll() {
+
+        final List<LocalisedString> list = em.createQuery("SELECT s FROM  LocalisedString s", LocalisedString.class)
+                .getResultList();
+
+        Map<String, Map<Long, String>> map = new HashMap<>();
+
+        list.forEach(i -> {
+            String locale = i.getKey().getLanguage();
+            if (!map.containsKey(locale)) {
+                map.put(i.getKey().getLanguage(), new HashMap<>());
+            }
+             map.get(locale).put(i.getKey().getId(), i.getValue());
+        });
+        return map;
+    }
+
     private Long findNextId() {
         Long next = (Long) em.createQuery("SELECT max(s.key.id) FROM LocalisedString s")
                 .getSingleResult();
@@ -68,10 +79,9 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
     }
 
     public Map<Long, String> findAllRegisterTypes(String language) {
-
-        List<RegisterDictionary> list = getEntityManager().createQuery("FROM RegisterDictionary").getResultList();
+        List<Register> list = getEntityManager().createQuery("FROM Register").getResultList();
         Map<Long, String> resultMap = new HashMap<>();
-        for(RegisterDictionary register : list){
+        for (Register register : list) {
             resultMap.put(register.getId(), String.valueOf(register.getName())); //TODO zmienić tekst
         }
         return resultMap;

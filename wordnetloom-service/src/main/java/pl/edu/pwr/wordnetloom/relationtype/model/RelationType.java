@@ -86,6 +86,9 @@ public class RelationType extends GenericEntity {
     @Enumerated(EnumType.STRING)
     private NodeDirection nodePosition = NodeDirection.IGNORE;
 
+    @NotAudited
+    private Integer priority;
+
     @Column
     private String color = "#ffffff";
 
@@ -228,4 +231,22 @@ public class RelationType extends GenericEntity {
         this.multilingual = multilingual;
     }
 
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public int getOrder(){
+        if(priority == null){
+            return 0;
+        } //TODO zlikwidowac ten warunkek. Został wstawiony, aby przechodziły testy. W testach należy do danych dodać pozycje
+        final int POSITION_FACTOR = 100;
+        if(getParent() != null){
+            return getParent().getOrder() + priority;
+        }
+        return priority * POSITION_FACTOR;
+    }
+
+    public void setPriority(Integer position){
+        this.priority = position;
+    }
 }

@@ -106,6 +106,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     private final boolean bottomButtons;
     private final ViwnGraphViewUI graphUI;
 
+
     /**
      * konstruktor
      *
@@ -314,7 +315,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         unitsList.updateUI();
         int newSelectedPosition = moveUp ? sourceIndex - 1 : sourceIndex + 1;
         unitsList.setSelectedIndex(newSelectedPosition);
-        // jeżeli przesunięto pierwszą pozycję należy zaktualizować synset na grafie (zmiana etykiety)
+        // if move element to first position, we must update synset name on the graph (replace label)
         if (sourceIndex == 0 || destIndex == 0) {
             updateNodeNameOnGraph();
         }
@@ -324,18 +325,17 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         assert senseIndex1 > 0 && senseIndex2 > 0;
         assert senseIndex1 < listModel.getSize() && senseIndex2 < listModel.getSize();
 
-        // określenie jednostek
         Sense sense1 = listModel.getObjectAt(senseIndex1);
         Sense sense2 = listModel.getObjectAt(senseIndex2);
-        // pobranie pozycj jednostek w synsecie
+
         int sense1Position = sense1.getSynsetPosition();
         int sense2Position = sense2.getSynsetPosition();
-        // zamiana  pozycji w synsecie oraz zapisanie zmian w bazie danych
+        // exchange position of units in synset and saving in database
         sense1.setSynsetPosition(sense2Position);
         sense2.setSynsetPosition(sense1Position);
         RemoteService.senseRemote.save(sense1);
         RemoteService.senseRemote.save(sense2);
-        // zamiana jednostek na liście
+        // exchange position on the list
         int indexOnList1 = senseIndex1 >= splitPosition ? senseIndex1 - 1 : senseIndex1;
         int indexOnList2 = senseIndex2 >= splitPosition ? senseIndex2 - 1 : senseIndex2;
         List<Sense> sensesList = new ArrayList<>(listModel.getCollection());
@@ -343,18 +343,18 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         listModel.setCollection(sensesList);
     }
 
+    /** Update synset label on the graph from name of first (head) unit in synset */
     private void updateNodeNameOnGraph() {
         ViwnNode node = graphUI.getSelectedNode();
         if (node != null && node instanceof ViwnNodeSynset) {
             ViwnNodeSynset s = (ViwnNodeSynset) node;
             // pobieramy głowę synsetu, ponieważ jednostki na liście nie mają zaadowanej domeny, która jest potrzebna do stworzenia opisu węza
+            // we get head of synset(first sense), because we need domain to create label. Senses in list haven't domain
             Sense firstSense = RemoteService.senseRemote.findHeadSenseOfSynset(lastSynset.getId());
             getViWordNetService().getSynsetData().changeLabel(lastSynset.getId(), firstSense);
             s.setLabel(null);
+            graphUI.updateSynset(s);
         }
-        graphUI.graphChanged();
-        //TODO zrobić tak, żeby zmieniał się tylko jeden węzeł, bez poprawiania grafu
-        graphUI.refreshView(lastSynset);
     }
 
     private void addUnitToSynset() {
@@ -416,7 +416,6 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             sensesOnList.removeAll(selectedUnits);
             listModel.setCollection(sensesOnList);
             if (deleteSynset) {
-                //
                 RemoteService.synsetRemote.delete(lastSynset);
                 listModel.setCollection(null);
 //                refreshData(lastSynset);

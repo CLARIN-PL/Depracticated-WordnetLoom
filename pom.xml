@@ -80,12 +80,6 @@
             </dependency>
             <dependency>
                 <groupId>pl.edu.pwr</groupId>
-                <artifactId>wordnetloom-download</artifactId>
-                <version>${project.version}</version>
-                <type>war</type>
-            </dependency>
-            <dependency>
-                <groupId>pl.edu.pwr</groupId>
                 <artifactId>wordnetloom-service</artifactId>
                 <version>${project.version}</version>
                 <type>ejb-client</type>

@@ -59,7 +59,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 ////            Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synset, LexiconManager.getInstance().getLexiconsIds(), NodeDirection.values());
 //            DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(node.getId(), LexiconManager.getInstance().getLexiconsIds());
 //            vgvui.addToEntrySet(dataEntry);
-//            node.setup();
+//            node.construct();
 //            vgvui.addSynsetFromSet(node);
 ////            vgvui.addSynsetFromSet((ViwnNodeSynset) obj);
 //            other = (ViwnNode) obj;

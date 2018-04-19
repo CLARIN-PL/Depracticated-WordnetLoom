@@ -6,5 +6,5 @@ import javax.persistence.Entity;
 
 @Audited
 @Entity
-public class StatusDictionary extends Dictionary {
+public class Status extends Dictionary {
 }

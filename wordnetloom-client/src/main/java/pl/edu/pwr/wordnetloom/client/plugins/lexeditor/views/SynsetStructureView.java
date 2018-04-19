@@ -18,6 +18,7 @@ public class SynsetStructureView extends AbstractView implements SimpleListenerI
 
     private static final Color colorOfSecond = new Color(220, 220, 255);
 
+    private SynsetStructureViewUI viewUI;
     /**
      * kontruktor dla klasy
      *
@@ -34,36 +35,16 @@ public class SynsetStructureView extends AbstractView implements SimpleListenerI
         if (viewNumber == 2) {
             getUI().setBackgroundColor(colorOfSecond); // kolor dla drugiego
         }
+        viewUI = (SynsetStructureViewUI)getUI();
     }
 
     @Override
     public void doAction(Object object, int tag) {
-        SynsetStructureViewUI view = (SynsetStructureViewUI) getUI();
-        view.refreshData((Synset) object);
+        viewUI.refreshData((Synset) object);
     }
 
     public void refreshData() {
         getViewUI().refreshData(getViewUI().getLastSynset());
-    }
-
-    public Synset getLastSynset() {
-        return getViewUI().getLastSynset();
-    }
-
-    public Collection<Sense> getSelectedUnits() {
-        return getViewUI().getSelectedUnits();
-    }
-
-    public void addSelectionListener(SimpleListenerInterface newListener) {
-        getUI().addActionListener(newListener);
-    }
-
-    public void addClickListener(SimpleListenerInterface newListener) {
-        getViewUI().addClickListener(newListener);
-    }
-
-    public void setLastUnits(Collection<Sense> units) {
-        getViewUI().setLastUnits(units);
     }
 
     private SynsetStructureViewUI getViewUI() {
@@ -72,9 +53,5 @@ public class SynsetStructureView extends AbstractView implements SimpleListenerI
 
     public void addUnitChangeListener(SimpleListenerInterface newListener) {
         getUI().addActionListener(newListener);
-    }
-
-    public void addSynsetUpdateListener(SimpleListenerInterface newListener) {
-        ((SynsetStructureViewUI) getUI()).addSynsetUpdateListener(newListener);
     }
 }

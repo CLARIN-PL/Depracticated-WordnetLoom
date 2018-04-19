@@ -23,9 +23,9 @@ import javax.inject.Inject;
 import javax.validation.Validator;
 import java.util.List;
 
+@Stateless
 @SecurityDomain("wordnetloom")
 @DeclareRoles({"USER", "ADMIN"})
-@Stateless
 @Remote(SenseServiceRemote.class)
 @Local(SenseServiceLocal.class)
 public class SenseServiceBean implements SenseServiceLocal {
@@ -38,7 +38,6 @@ public class SenseServiceBean implements SenseServiceLocal {
 
     @Inject
     Validator validator;
-
 
     @Override
     public Sense clone(Sense unit) {
@@ -95,7 +94,7 @@ public class SenseServiceBean implements SenseServiceLocal {
     public void delete(Sense sense) {
         senseRepository.delete(sense);
     }
-    
+
     @PermitAll
     @Override
     public List<Sense> findByCriteria(SenseCriteriaDTO dto) {

@@ -1,13 +1,11 @@
 package pl.edu.pwr.wordnetloom.synset.model;
 
 import org.hibernate.envers.Audited;
-import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Audited

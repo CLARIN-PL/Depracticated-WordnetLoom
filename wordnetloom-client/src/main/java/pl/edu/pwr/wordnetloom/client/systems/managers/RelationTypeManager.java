@@ -7,6 +7,7 @@ import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,6 +68,17 @@ public class RelationTypeManager implements Loggable{
                 .stream()
                 .filter(r -> relationArgument.equals(r.getRelationArgument()))
                 .filter(r -> r.getParent() == null)
+                .sorted(Comparator.comparingInt(RelationType::getOrder))
+                .collect(Collectors.toList());
+    }
+
+    public List<RelationType> getMultilangualParents(final RelationArgument relationArgument){
+        return relationTypes
+                .stream()
+                .filter(r->relationArgument.equals(r.getRelationArgument()))
+                .filter(r->r.getParent() == null)
+                .filter(RelationType::getMultilingual)
+                .sorted(Comparator.comparingInt(RelationType::getOrder))
                 .collect(Collectors.toList());
     }
 
@@ -107,6 +119,7 @@ public class RelationTypeManager implements Loggable{
         return relationTypes
                 .stream()
                 .filter(r -> r.getParent() != null && parentId.equals(r.getParent().getId()))
+                .sorted(Comparator.comparingLong(RelationType::getOrder))
                 .collect(Collectors.toList());
     }
 

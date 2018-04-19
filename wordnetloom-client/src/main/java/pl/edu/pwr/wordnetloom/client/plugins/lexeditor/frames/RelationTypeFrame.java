@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
 import com.alee.laf.rootpane.WebFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
@@ -12,6 +13,7 @@ import pl.edu.pwr.wordnetloom.relationtest.model.RelationTest;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,22 +36,23 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
     protected MTextArea description;
     protected JList testsList;
     protected static MComboBox parentItem;
-    protected MComboBox middleItem;
     protected static MComboBox childItem;
-    protected RelationType fixedRelationType;
+    private RelationType fixedRelationType;
     protected RelationType chosenType = null;
     protected List<RelationType> mainRelations = null;
-    protected Collection<RelationType> subRelations = null;
     protected static PartOfSpeech pos;
+    protected RelationArgument relationsType;
+    protected MButton buttonSwitch;
+    protected JPanel jp;
 
-    protected Sense parentSense;
-    protected Sense childSense;
+//    private Sense parentSense;
+//    private Sense childSense;
 
-    protected static boolean testsPositive; //TODO może nie będize konieczności, aby to było statyczne
+    private static boolean testsPositive;
 
     private class PartOfSpeechRenderer implements ListCellRenderer {
 
-        protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+        DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -63,6 +66,21 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         }
     }
 
+    private class SenseRenderer implements ListCellRenderer {
+
+        DefaultListCellRenderer defaultListCellRenderer = new DefaultListCellRenderer();
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            JLabel renderer = (JLabel) defaultListCellRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if(value != null){
+                Sense sense = (Sense)value;
+                String text = SenseFormat.getText(sense);
+                renderer.setText(text);
+            }
+            return renderer;
+        }
+    }
 
     private RelationTypeFrame(WebFrame frame,
                               RelationArgument type,
@@ -81,85 +99,14 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
 
         init(type);
 
-        // element nadrzedny
-//        parentItem = new MComboBox();
-        for (Sense parent : parentUnits) {
-            parentItem.addItem(parent.getWord().getWord());
-        }
+        parentUnits.forEach(parentItem::addItem);
+        childUnits.forEach(childItem::addItem);
 
-        // element podrzedny
-//        childItem = new MComboBox();
-        for (Sense child : childUnits) {
-            childItem.addItem(child.getWord().getWord());
-        }
         //Wybranie zaproponowanej jednostki
         if (suggestedUnit != null) {
-
-            childItem.setSelectedItem(suggestedUnit.getWord().getWord());
-            parentItem.setSelectedItem(suggestedUnit.getWord().getWord());
+            childItem.setSelectedItem(suggestedUnit);
+            parentItem.setSelectedItem(suggestedUnit);
         }
-
-        // element posredni
-//        middleItem = new MComboBox();
-        if (middleUnits != null && !middleUnits.isEmpty()) {
-            for (Sense middle : middleUnits) {
-                middleItem.addItem(middle.getWord());
-            }
-        } else {
-            middleItem.setEnabled(false);
-        }
-
-        // opis relacji
-
-
-        // lista testow
-        testsList = new JList();
-
-        // podtyp relacji
-
-//        Collection<IRelationType> readRelations = LexicalDA.getHighestRelations(type, pos);
-//        for (IRelationType relType : readRelations) {
-//            relType = LexicalDA.getEagerRelationTypeByID(relType);
-//            if (fixedRelationType == null
-//                    || relType.getId().longValue() == fixedRelationType.getId().longValue()
-//                    || (fixedRelationType.getParent() != null
-//                    && relType.getId().longValue() == fixedRelationType.getParent().getId())) {
-//                relationType.addItem(RelationTypeManager.getFullNameFor(relType.getId()));
-//                mainRelations.add(relType);
-//            }
-//        }
-
-        // przycisk wybierz
-
-//
-//        relationSubType.addActionListener(this);
-//        relationType.addActionListener(this);
-        // czy sa jakieś relacje
-//        if (mainRelations.size() > 0) {
-//            //Ustawienie na sugestię, jeśli istnieje
-//            if (suggestedRelationType != null) {
-//                if (suggestedRelationType.getParent() == null) { //TODO
-//                    relationType.setSelectedItem(RelationTypeManager.getInstance().getFullName(suggestedRelationType.getId(), RelationArgument.SENSE_RELATION));
-//                } else {
-//                    relationType.setSelectedItem(RelationTypeManager.getInstance().getFullName(suggestedRelationType.getParent().getId(), RelationArgument.SENSE_RELATION));
-//                    relationSubType.setSelectedItem(RelationTypeManager.getInstance().getFullName(suggestedRelationType.getId(), RelationArgument.SENSE_RELATION));
-//                }
-//            } else {
-//                relationType.setSelectedIndex(0);
-//            }
-//            buttonChoose.setEnabled(true);
-//        } else {
-//            buttonChoose.setEnabled(false);
-//        }
-
-        // dopisanie zdarzen
-//        parentItem.addKeyListener(this);
-//        parentItem.addActionListener(this);
-//        middleItem.addKeyListener(this);
-//        middleItem.addActionListener(this);
-//        childItem.addKeyListener(this);
-//        childItem.addActionListener(this);
-
         initView();
     }
 
@@ -171,38 +118,65 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      * @author amusial Constructor for derived classes
      */
     protected RelationTypeFrame(WebFrame frame,
-                                String type,
+                                RelationArgument type,
                                 PartOfSpeech pos,
                                 RelationType fixedRelationType) {
         super(frame, Labels.RELATION_PARAMS, 650, 500);
         RelationTypeFrame.pos = pos;
         this.fixedRelationType = fixedRelationType;
+        relationsType = type;
 
         setResizable(false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        init(relationsType);
+    }
+
+    protected static final int MULTILINGUAL_RELATIONS = 1;
+    protected static final int ALL_RELATIONS = 0;
+
+    protected void loadParentRelation(RelationArgument type, int filter){
+        switch (filter){
+            case ALL_RELATIONS:
+                mainRelations = RelationTypeManager.getInstance().getParents(type);
+                break;
+            case MULTILINGUAL_RELATIONS:
+                mainRelations = RelationTypeManager.getInstance().getMultilangualParents(type);
+                break;
+        }
+        relationType.removeAllItems();
+        for(RelationType relType : mainRelations){
+            relationType.addItem(relType);
+        }
+    }
+
+    protected void loadParentRelation(RelationArgument type){
+        loadParentRelation(type, ALL_RELATIONS);
     }
 
     protected void init(RelationArgument type){
+
+        PartOfSpeechRenderer posRenderer = new PartOfSpeechRenderer();
+        relationsType = type;
         relationType = new MComboBox();
         relationType.addKeyListener(this);
         relationType.addActionListener(this);
-        relationType.setRenderer(new PartOfSpeechRenderer());
+        relationType.setRenderer(posRenderer);
 
         relationSubType = new MComboBox();
         relationSubType.addKeyListener(this);
         relationSubType.addActionListener(this);
         relationSubType.setEnabled(false);
-        relationSubType.setRenderer(new PartOfSpeechRenderer());
+        relationSubType.setRenderer(posRenderer);
 
         description = new MTextArea("");
         description.setRows(6);
         description.setEditable(false);
         testsList = new JList();
 
-        mainRelations = RelationTypeManager.getInstance().getParents(type);
-        for(RelationType relType : mainRelations) {
-            relationType.addItem(relType);
-        }
+        buttonSwitch = new MButton(this)
+                .withCaption(Labels.SWITCH)
+                .withMnemonic(KeyEvent.VK_Z)
+                .withKeyListener(this);
 
         buttonChoose = MButton.buildSelectButton()
                 .withMnemonic(KeyEvent.VK_ENTER)
@@ -216,34 +190,38 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
 
         parentItem = new MComboBox();
         childItem = new MComboBox();
-        middleItem = new MComboBox();
+
+        SenseRenderer senseRenderer = new SenseRenderer();
+        parentItem.setRenderer(senseRenderer);
+        childItem.setRenderer(senseRenderer);
 
         parentItem.addKeyListener(this);
         parentItem.addActionListener(this);
         childItem.addKeyListener(this);
         childItem.addActionListener(this);
-        middleItem.addKeyListener(this);
-        middleItem.addActionListener(this);
     }
 
-
     protected void initView(){
-        add("", new MLabel(Labels.RELATION_TYPE_COLON, 't', relationType));
+        add("",
+                new MLabel(Labels.RELATION_TYPE_COLON, 't', relationType));
         add("tab hfill", relationType);
-        add("br", new MLabel(Labels.RELATION_SUBTYPE_COLON, 'y', relationType));
+        add("br", new MLabel(Labels.RELATION_SUBTYPE_COLON, 'y',
+                relationType));
         add("tab hfill", relationSubType);
-        add("br", new MLabel(Labels.RELATION_DESC_COLON, '\0', description));
+        add("br", new MLabel(Labels.RELATION_DESC_COLON, '\0',
+                description));
         add("br hfill", new JScrollPane(description));
 
-        add("br", new MLabel(Labels.SOURCE_UNIT_COLON, 'r', parentItem));
-        add("tab hfill", parentItem);
+        jp = new JPanel();
+        jp.setLayout(new RiverLayout());
+        jp.add("br", new MLabel(Labels.SOURCE_UNIT_COLON, 'r', parentItem));
+        jp.add("tab hfill", parentItem);
+        jp.add("br", new MLabel(Labels.TARGET_UNIT_COLON, 'd', childItem));
+        jp.add("tab hfill", childItem);
 
-        if (middleItem.isEnabled()) {
-            add("br", new MLabel(Labels.INTERMEDIATE_UNIT_COLON, 'p', parentItem));
-            add("tab hfill", middleItem);
-        }
-        add("br", new MLabel(Labels.TARGET_UNIT_COLON, 'd', childItem));
-        add("tab hfill", childItem);
+        add("br hfill", jp);
+        add("", buttonSwitch);
+
         add("br", new MLabel(Labels.TESTS_COLON, '\0', testsList));
         add("br hfill vfill", new JScrollPane(testsList));
         add("br center", buttonChoose);
@@ -347,25 +325,6 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
      * @return zaznaczona relacja
      */
     protected RelationType getSelectedRelation() {
-//        if (subRelations != null && subRelations.size() > 0) {
-//            // jest pod typ
-//            int index = relationSubType.getSelectedIndex();
-//            for (RelationType type : subRelations) {
-//                if (index-- == 0) {
-//                    return type;
-//                }
-//            }
-//        } else {
-//            // brak podtypu
-//            int index = relationType.getSelectedIndex();
-//            for (RelationType type : mainRelations) {
-//                if (index-- == 0) {
-//                    return type;
-//                }
-//            }
-//        }
-//        return null;
-
         if(relationSubType.isEnabled()) { // relacja ma podtypy
            return (RelationType)relationSubType.getSelectedItem();
         } else {
@@ -373,45 +332,100 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         }
     }
 
+
+    protected void swapParentAndChildrenModels() {
+        ComboBoxModel cbm = parentItem.getModel();
+        parentItem.setModel(childItem.getModel());
+        childItem.setModel(cbm);
+        refreshTests();
+    }
+
     @Override
     public void actionPerformed(ActionEvent event) {
-
         if(event.getSource() == buttonChoose) {
             chosenType = getSelectedRelation();
             this.setVisible(false);
         } else if(event.getSource() == buttonCancel) {
             this.setVisible(false);
         } else if(event.getSource() == relationType) {
-            relationSubType.removeAllItems();
-            testsList.setListData(new String[]{});
-            RelationType parentRelation = (RelationType)relationType.getSelectedItem();
-            List<RelationType> relationsSubType = RelationTypeManager.getInstance().getChildren(parentRelation.getId(), RelationArgument.SYNSET_RELATION);
-            if(!relationsSubType.isEmpty()) {
-                for(RelationType relType : relationsSubType){
-                    relationSubType.addItem(relType);
-                }
-                relationSubType.setEnabled(true);
-            } else {
-                relationSubType.setEnabled(false);
+            changeRelation();
+        }else if(event.getSource() == relationSubType) {
+            if (relationSubType.getItemCount() > 0) {
+                refreshTests((RelationType) relationSubType.getSelectedItem());
             }
-
-            showDescription(parentRelation);
-//            setTests(parentRelation);
-            if(parentSense != null){
-//                Sense parentSense = (Sense) parentItem.getSelectedItem();
-//                Sense childSense = (Sense) childItem.getSelectedItem();
-                String parentSenseName = parentSense.getWord().getWord();
-                String childSenseName = childSense.getWord().getWord();
-                PartOfSpeech parentSensePos = parentSense.getPartOfSpeech();
-                PartOfSpeech childSensePos = childSense.getPartOfSpeech();
-                List<String> tests = getTests(parentRelation, parentSenseName, childSenseName, parentSensePos, childSensePos);
-                testsList.setListData(tests.toArray());
-            }
-
+        } else if(event.getSource() == buttonSwitch){
+            swapParentAndChild();
         } else if(event.getSource() == parentItem){
-            parentSense = (Sense) parentItem.getSelectedItem();
-        } else if(event.getSource() == childItem) {
-            childSense = (Sense) childItem.getSelectedItem();
+//            refreshTests();
+//            parentSense = (Sense) parentItem.getSelectedItem();
+        } else //            childSense = (Sense) childItem.getSelectedItem();
+            if(event.getSource() == childItem){
+
+            }
+    }
+
+    protected void swapParentAndChild(){
+        //TODO
+    }
+
+    private void changeRelation() {
+        relationSubType.removeAllItems();
+
+        RelationType parentRelation = (RelationType)relationType.getSelectedItem();
+        if(parentRelation == null){
+            relationSubType.setEnabled(false);
+            return;
+        }
+        boolean hasSubrelation = loadSubtypeRelation(parentRelation);
+        relationSubType.setEnabled(hasSubrelation);
+        showDescription(parentRelation);
+
+        Sense parentSense = (Sense) parentItem.getSelectedItem();
+        Sense childSense = (Sense) childItem.getSelectedItem();
+        if(parentSense != null){
+            if(hasSubrelation){
+                RelationType childRelation = (RelationType)relationSubType.getSelectedItem();
+                refreshTests(childRelation, parentSense, childSense);
+            } else {
+                refreshTests(parentRelation, parentSense, childSense);
+            }
+        }
+    }
+
+    private void refreshTests(RelationType relation){
+        if(parentItem.getSelectedItem() != null){
+            refreshTests(relation, (Sense)parentItem.getSelectedItem(), (Sense)childItem.getSelectedItem());
+        }
+    }
+    //TODO przejrzeć to i pousuwać niepotrzebne rzeczy
+    private void refreshTests(){
+        RelationType relation;
+        if(relationSubType.getItemCount() > 0){
+            relation = (RelationType)relationSubType.getSelectedItem();
+        } else {
+            relation = (RelationType)relationType.getSelectedItem();
+        }
+        refreshTests(relation, (Sense)parentItem.getSelectedItem(), (Sense)childItem.getSelectedItem());
+    }
+
+    private void refreshTests(RelationType parentRelation, Sense parent, Sense child){
+        String parentName = parent.getWord().getWord();
+        String childName = child.getWord().getWord();
+        PartOfSpeech parentPos = parent.getPartOfSpeech();
+        PartOfSpeech childPos = child.getPartOfSpeech();
+        List<String> tests = getTests(parentRelation, parentName, childName, parentPos, childPos);
+        testsList.setListData(tests.toArray());
+    }
+
+    private boolean loadSubtypeRelation(RelationType parentRelation) {
+        List<RelationType> relationsSubType = RelationTypeManager.getInstance().getChildren(parentRelation.getId(), relationsType);
+        if(!relationsSubType.isEmpty()) {
+            for(RelationType relType : relationsSubType){
+                relationSubType.addItem(relType);
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -429,7 +443,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         return text.substring(startIndex, endIndex+1);
     }
 
-    protected static List<String> getTests(RelationType relation, String parent, String child, PartOfSpeech partOfSpeechA, PartOfSpeech partOfSpeechB) {
+    private static List<String> getTests(RelationType relation, String parent, String child, PartOfSpeech partOfSpeechA, PartOfSpeech partOfSpeechB) {
         List<String> result = new ArrayList<>();
         List<RelationTest> tests = RemoteService.relationTestRemote.findByRelationType(relation);
         String text;
@@ -452,7 +466,6 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
             } catch (Exception e){
                 System.out.println();
             }
-
 
             if(markerX != null) {
                 text = text.replace(markerX, "<font color=\"blue\">" + parent + "</font>");

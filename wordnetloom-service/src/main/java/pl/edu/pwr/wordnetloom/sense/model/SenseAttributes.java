@@ -1,14 +1,13 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
 import org.hibernate.envers.Audited;
-import pl.edu.pwr.wordnetloom.dictionary.model.AspectDictionary;
-import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Aspect;
+import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Audited
@@ -29,7 +28,7 @@ public class SenseAttributes implements Serializable, Cloneable {
 
     @ManyToOne
     @JoinColumn(name = "aspect_id", referencedColumnName = "id")
-    private AspectDictionary aspectDictionary;
+    private Aspect aspect;
 
     @Lob
     private String definition;
@@ -39,7 +38,7 @@ public class SenseAttributes implements Serializable, Cloneable {
 
     @ManyToOne
     @JoinColumn(name = "register_id", referencedColumnName = "id")
-    private RegisterDictionary register;
+    private Register register;
 
     private String link;
 
@@ -55,7 +54,7 @@ public class SenseAttributes implements Serializable, Cloneable {
         super();
     }
 
-    public SenseAttributes(String definition, String comment, RegisterDictionary register, String link) {
+    public SenseAttributes(String definition, String comment, Register register, String link) {
         this.definition = definition;
         this.comment = comment;
         this.register = register;
@@ -94,11 +93,11 @@ public class SenseAttributes implements Serializable, Cloneable {
         this.comment = comment;
     }
 
-    public RegisterDictionary getRegister() {
+    public Register getRegister() {
         return register;
     }
 
-    public void setRegister(RegisterDictionary register) {
+    public void setRegister(Register register) {
         this.register = register;
     }
 
@@ -149,11 +148,11 @@ public class SenseAttributes implements Serializable, Cloneable {
         examples.add(e);
     }
 
-    public AspectDictionary getAspectDictionary() {
-        return aspectDictionary;
+    public Aspect getAspect() {
+        return aspect;
     }
 
-    public void setAspectDictionary(AspectDictionary aspectDictionary) {
-        this.aspectDictionary = aspectDictionary;
+    public void setAspect(Aspect aspect) {
+        this.aspect = aspect;
     }
 }

@@ -17,11 +17,10 @@ import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
 import pl.edu.pwr.wordnetloom.user.model.User;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceLocal;
 
-import javax.annotation.Resource;
+
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJBContext;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -29,8 +28,11 @@ import javax.inject.Inject;
 import javax.validation.Validator;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 @Stateless
 @SecurityDomain("wordnetloom")
@@ -136,7 +138,12 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @PermitAll
     @Override
     public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
-        return synsetRepository.prepareCacheForRootNode(synset.getId(), lexicons, 4, directions);
+        try {
+            return synsetRepository.prepareCacheForRootNode(synset.getId(), lexicons, 4, directions);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new HashMap<>();
     }
 
     @RolesAllowed({"USER", "ADMIN"})
@@ -216,4 +223,5 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     public SynsetAttributes fetchSynsetAttributes(Long synsetId) {
         return synsetRepository.fetchSynsetAttributes(synsetId);
     }
+
 }

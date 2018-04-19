@@ -20,7 +20,7 @@ import java.util.Map;
 @Stateless
 @Remote(LocalisedStringServiceRemote.class)
 @Local(LocalisedStringServiceLocal.class)
-public class LocalisedStringServiceBean implements LocalisedStringServiceRemote {
+public class LocalisedStringServiceBean implements LocalisedStringServiceLocal {
 
     @Inject
     LocalisedStringRepository repository;
@@ -69,5 +69,10 @@ public class LocalisedStringServiceBean implements LocalisedStringServiceRemote 
         }
 
         repository.update(entity);
+    }
+
+    @Override
+    public Map<String, Map<Long, String>> finaAll() {
+        return repository.findAll();
     }
 }

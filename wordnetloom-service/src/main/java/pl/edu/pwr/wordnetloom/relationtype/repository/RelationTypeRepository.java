@@ -51,7 +51,6 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         root.fetch("partsOfSpeech", JoinType.LEFT);
 
         q.distinct(true);
-
         return em.createQuery(q).getResultList();
 
     }

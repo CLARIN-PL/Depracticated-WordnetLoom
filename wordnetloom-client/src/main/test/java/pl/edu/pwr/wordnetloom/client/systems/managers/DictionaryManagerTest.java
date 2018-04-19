@@ -3,8 +3,8 @@ package pl.edu.pwr.wordnetloom.client.systems.managers;
 import org.junit.Ignore;
 import org.junit.Test;
 import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
-import pl.edu.pwr.wordnetloom.dictionary.model.EmotionDictionary;
-import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Emotion;
+import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +21,13 @@ public class DictionaryManagerTest {
     public void findDictionaryByClass(){
 
         List<Dictionary> dics = new ArrayList();
-        dics.add(new RegisterDictionary());
-        dics.add(new RegisterDictionary());
-        dics.add(new EmotionDictionary());
+        dics.add(new Register());
+        dics.add(new Register());
+        dics.add(new Emotion());
 
         DictionaryManager.getInstance().dictionaries = dics;
 
-        List<RegisterDictionary> test = DictionaryManager.getInstance().getDictionaryByClassName(RegisterDictionary.class);
+        List<Register> test = DictionaryManager.getInstance().getDictionaryByClassName(Register.class);
 
         assertThat(test, is(notNullValue()));
         assertThat(test.size(), equalTo(2));

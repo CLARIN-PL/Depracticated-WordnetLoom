@@ -6,6 +6,7 @@ import com.alee.laf.tree.WebTree;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewLexicalRelationWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
@@ -273,8 +274,12 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                     return;
                 }
             }
-            RelationType relationType = RelationTypeFrame.showModal(workbench, RelationArgument.SENSE_RELATION, rootSense.getPartOfSpeech(),
-                    RelationTypeFrame.unitToList(rootSense), selectedUnits);
+//            RelationType relationType = MakeNewLexicalRelationWindow.showModal(workbench, RelationArgument.SENSE_RELATION, rootSense.getPartOfSpeech(),
+//                    RelationTypeFrame.unitToList(rootSense), selectedUnits);
+            MakeNewLexicalRelationWindow relationWindow = new MakeNewLexicalRelationWindow(workbench.getFrame(), rootSense.getPartOfSpeech(),
+                    rootSense, selectedUnits.iterator().next());
+            relationWindow.setVisible(true);
+            RelationType relationType = relationWindow.getChosenType();
             if(relationType == null){
                 return;
             }

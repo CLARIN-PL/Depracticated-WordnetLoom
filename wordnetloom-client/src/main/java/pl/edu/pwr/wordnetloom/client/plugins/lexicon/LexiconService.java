@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexicon;
 
 import com.alee.laf.menu.WebMenu;
+import pl.edu.pwr.wordnetloom.client.plugins.core.CoreService;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
@@ -16,6 +17,7 @@ import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Set;
 
@@ -42,13 +44,25 @@ public class LexiconService extends AbstractService {
 
     @Override
     public void installMenuItems() {
-        WebMenu help = workbench.getMenu(Labels.SETTINGS);
+        WebMenu user = workbench.getMenu(RemoteConnectionProvider.getInstance().getUser().getFullname());
+        WebMenu help = findMenu(CoreService.APP_SETTINGS, user);
         if (help == null) {
             return;
         }
         help.add(lexiconItem);
     }
 
+    public WebMenu findMenu(String name, WebMenu menu) {
+        Component[] components = menu.getMenuComponents();
+
+        for (Component component : components) {
+            if (component instanceof WebMenu
+                    && ((WebMenu) component).getText().equals(name)) {
+                return (WebMenu) component;
+            }
+        }
+        return null;
+    }
     @Override
     public boolean onClose() {
         return true;
