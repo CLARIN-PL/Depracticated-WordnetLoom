@@ -6,7 +6,6 @@ import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextArea;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
@@ -15,7 +14,6 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -25,8 +23,6 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
 
     private static final long serialVersionUID = 5479457915334417348L;
 
-    protected MButton buttonSwitch;
-    protected JPanel jp;
     protected Sense from, to;
 
     public MakeNewLexicalRelationWindow(WebFrame frame,
@@ -36,8 +32,21 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
         from = RemoteService.senseRemote.fetchSense(senseFrom.getId());
         to = RemoteService.senseRemote.fetchSense(senseTo.getId());
 
-        buildUI();
+//        buildUI();
+        init(RelationArgument.SENSE_RELATION);
+        super.initView();
+        addListeners();
         loadRelations(from, to);
+
+        parentItem.addItem(from);
+        childItem.addItem(to);
+
+        if(mainRelations.size() > 0){
+            relationType.setSelectedIndex(0);
+            buttonChoose.setEnabled(true);
+        } else {
+            buttonChoose.setEnabled(false);
+        }
     }
 
     private void loadRelations(Sense from, Sense to) {
@@ -48,22 +57,12 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
         }
     }
 
-    private void buildUI() {
-        createUIComponents();
-        addListeners();
-        addUIComponents();
-    }
-
     private void createUIComponents() {
         parentItem = new MComboBox();
         parentItem.addItem(from);
 
         childItem = new MComboBox();
         childItem.addItem(to);
-
-        // middle element
-        middleItem = new MComboBox();
-        middleItem.setEnabled(false);
 
         // description of relation
         description = new MTextArea("");
@@ -84,96 +83,37 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
         // event listeners
         parentItem.addKeyListener(this);
         parentItem.addActionListener(this);
-        middleItem.addKeyListener(this);
-        middleItem.addActionListener(this);
         childItem.addKeyListener(this);
         childItem.addActionListener(this);
 
-        relationSubType.addActionListener(this);
-        relationType.addActionListener(this);
-    }
-
-    private void addUIComponents() {
-        add("",
-                new MLabel(Labels.RELATION_TYPE_COLON, 't', relationType));
-        add("tab hfill", relationType);
-        add("br", new MLabel(Labels.RELATION_SUBTYPE_COLON, 'y',
-                relationType));
-        add("tab hfill", relationSubType);
-        add("br", new MLabel(Labels.RELATION_DESC_COLON, '\0',
-                description));
-        add("br hfill", new JScrollPane(description));
-
-        jp = new JPanel();
-        jp.setLayout(new RiverLayout());
-        jp.add("br", new MLabel(Labels.SOURCE_UNIT_COLON, 'r', parentItem));
-        jp.add("tab hfill", parentItem);
-        jp.add("br", new MLabel(Labels.TARGET_UNIT_COLON, 'd', childItem));
-        jp.add("tab hfill", childItem);
-
-        add("br hfill", jp);
-        add("", buttonSwitch);
-
-        add("br", new MLabel(Labels.TESTS_COLON, '\0', testsList));
-        add("br hfill vfill", new JScrollPane(testsList));
-        add("br center", buttonChoose);
-        add("", buttonCancel);
     }
 
     @Override
     public void actionPerformed(ActionEvent event) {
-
         if (event.getSource() == buttonChoose) {
-            //      chosenType = getSelectedRelation();
+            chosenType = getSelectedRelation();
             setVisible(false);
         } else if (event.getSource() == buttonCancel) {
             setVisible(false);
-
         } else if (event.getSource() == buttonSwitch) {
             switchSenses();
-        } else if (event.getSource() == relationType) {
+        } /*else if (event.getSource() == relationSubType) {
             testsList.setListData(new String[]{});
-
-            // read chosen function index
-//            for (IRelationType type : mainRelations) {
-//                if (index-- == 0) {
-//                    // refresh subrelation
-//                    subRelations = new ArrayList<>();
-//                    Collection<IRelationType> readRelations = LexicalDA
-//                            .getChildren(type);
-//                    for (IRelationType relType : readRelations) {
-//                        if (fixedRelationType == null || fixedRelationType.getId().longValue() == relType.getId().longValue()) {
-//                            relationSubType.addItem(RelationTypes.getFullNameFor(relType.getId()));
-//                            subRelations.add(relType);
-//                        }
-//                    }
-//                    if (subRelations.size() > 0) {
-//                        relationSubType.setSelectedIndex(0);
-//                    } else {
-//                        loadTests(type);
-//                    }
-//                    description.setText(RelationTypes.get(type.getId())
-//                            .getRelationType().getDescription().getText());
-//                    break;
-//                }
-//            }
-//            relationSubType.setEnabled(subRelations != null
-//                    && subRelations.size() > 0);
-//
-//            // subtype changed
-//        } else if (event.getSource() == relationSubType
-//                || event.getSource() == parentItem
-//                || event.getSource() == childItem
-//                || event.getSource() == middleItem) {
-//            testsList.setListData(new String[]{});
-//            IRelationType relation = getSelectedRelation();
-//            if (relation != null) {
-//                loadTests(relation);
-//            }
+        } */else {
+            super.actionPerformed(event);
         }
     }
 
     private void switchSenses() {
+        Sense temp = from;
+        from = to;
+        to = temp;
+
+        swapParentAndChildrenModels();
+    }
+
+    @Override
+    protected void swapParentAndChild() {
         Sense temp = from;
         from = to;
         to = temp;
@@ -206,6 +146,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
             DialogBox.showInformation(Messages.FAILURE_SOURCE_UNIT_SAME_AS_TARGET);
             return false;
         }
+
 //        MakeNewLexicalRelationFrame framew = new MakeNewLexicalRelationFrame(
 //                workbench.getFrame(), RelationArgument.LEXICAL,
 //                from1[0].getPartOfSpeech(), from1, to1);
