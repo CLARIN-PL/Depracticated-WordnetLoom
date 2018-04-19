@@ -91,7 +91,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
     @Override
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == buttonChoose) {
-            //      chosenType = getSelectedRelation();
+            chosenType = getSelectedRelation();
             setVisible(false);
         } else if (event.getSource() == buttonCancel) {
             setVisible(false);
@@ -146,6 +146,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
             DialogBox.showInformation(Messages.FAILURE_SOURCE_UNIT_SAME_AS_TARGET);
             return false;
         }
+
 //        MakeNewLexicalRelationFrame framew = new MakeNewLexicalRelationFrame(
 //                workbench.getFrame(), RelationArgument.LEXICAL,
 //                from1[0].getPartOfSpeech(), from1, to1);
