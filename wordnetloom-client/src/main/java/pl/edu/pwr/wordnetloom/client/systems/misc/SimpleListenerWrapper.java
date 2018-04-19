@@ -49,7 +49,9 @@ public class SimpleListenerWrapper implements SimpleListenerInterface, Loggable 
         try {
             args[0] = object;
             args[1] = tag;
-            method.invoke(owner, args); // wywołanie metody zastępczej
+            if(method != null){
+                method.invoke(owner, args); // wywołanie metody zastępczej
+            }
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             logger().error("Trying to call doAction", e);
         }

@@ -5,7 +5,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
@@ -85,7 +84,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     public ViwnNodeSynset(Synset synset, ViwnGraphViewUI ui) {
         this.synset = synset;
         this.ui = ui;
-        this.ui.addSynsetToCash(synset.getId(), this);
+//        this.ui.addSynsetToCash(synset.getId(), this);
         this.relations = new ArrayList[NodeDirection.values().length];
         for(int i = 0; i<relations.length; i++){
             relations[i] = new ArrayList<>();
@@ -93,10 +92,9 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         for(int i =0 ; i <states.length; i++){
             states[i] = State.NOT_EXPANDED;
         }
-
         units = null; //RemoteUtils.lexicalUnitRemote.dbFastGetUnits(synset, LexiconManager.getInstance().getLexicons());
         synsetData = ServiceManager.getViWordNetService(ui.getWorkbench()).getSynsetData();
-        setup();
+        construct();
     }
 
     static{
@@ -104,12 +102,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         geom = new SynsetNodeShape();
         relTypes = initializeRelTypes();
     }
-
-//    private static Set<RelationTypeManager>[] initializeRelTypes() {
-//        Set<RelationTypeManager>[] tempRelTypes = new Set[NodeDirection.values().length];
-//        Arrays.fill(tempRelTypes, new HashSet<>());
-//        return tempRelTypes;
-//    }
 
     private static Set<RelationType>[] initializeRelTypes(){
         Set<RelationType>[] tempRelTypes = new Set[NodeDirection.values().length];
@@ -220,93 +212,6 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         }
     }
 
-    public void construct() {
-        Set<ViwnEdgeSynset> relationsFrom = new HashSet<>(edges_from_this_);
-        Set<ViwnEdgeSynset> relationsTo = new HashSet<>(edges_to_this_);
-
-        for (NodeDirection dir : NodeDirection.values()) {
-            relations[dir.ordinal()].clear();
-        }
-
-        NodeDirection direction;
-
-        Set<ViwnEdgeSynset>[] edgesSet = new HashSet[4]; // set zapobiegający powstawaniu powtórzeń
-        for(int i = 0; i<edgesSet.length; i++){
-            edgesSet[i] = new HashSet<>();
-        }
-        for(ViwnEdgeSynset edge : relationsFrom){
-            direction = edge.getRelationType().getNodePosition();
-//            relations[direction.ordinal()].add(edge); //TODO sprawdzić, czy nie będzie potrzebne sprawdzanie, czy już dany typ relacji jest na liście
-            edgesSet[direction.ordinal()].add(edge);
-        }
-
-        for(ViwnEdgeSynset edge : relationsTo){
-            if(edge.getRelationType() != null){ //TODO po usunięciu błędnych relacji usunąć tego ifa
-                direction = edge.getRelationType().getNodePosition();
-
-//                relations[direction.ordinal()].add(edge);
-                edgesSet[direction.ordinal()].add(edge);
-            }
-        }
-
-        for(int i=0; i<edgesSet.length; i++){
-            relations[i] = new ArrayList<>(edgesSet[i]);
-        }
-//        Iterator<ViwnEdgeSynset> it = relationsFrom.iterator();
-//        while (it.hasNext()) {
-//            ViwnEdgeSynset e = it.next();
-//
-//            for (NodeDirection dir : NodeDirection.values()) {
-//
-//                if (relTypes[dir.ordinal()].contains(e.getRelationType())) {
-//                    relations[dir.ordinal()].add(e);
-//                    relationsFrom.remove(e);
-//
-//                    relationsTo.remove(e);
-//
-//                    ViwnEdgeSynset rev = e.createDummyReverse();
-//                    if (rev != null) {
-//                        relationsTo.remove(rev);
-//                    }
-//
-//                    it = relationsFrom.iterator();
-//                }
-//            }
-//        }
-//
-//        it = relationsFrom.iterator();
-//        while (it.hasNext()) {
-//            ViwnEdgeSynset e = it.next();
-//            if (skip(e)) {
-//                continue;
-//            }
-//            for (NodeDirection dir : NodeDirection.values()) {
-//                if (e.getRelationType() != null) {
-//                    // TODO odkomentować i przerobić tak, aby działało
-////                    if (relTypes[dir.ordinal()].contains(RelationTypeManager.get(e
-////                            .getRelationType().rev_id()))) {
-////                        if (skip(e)) {
-////                            continue;
-////                        }
-////                        relations[dir.ordinal()].add(e);
-////                        to.remove(e);
-////                        it = to.iterator();
-////                    } else if (relTypes[dir.getOpposite().ordinal()].contains(e
-////                            .getRelationType())) {
-////                        if (skip(e)) {
-////                            continue;
-////                        }
-////                        relations[dir.ordinal()].add(e);
-////                        to.remove(e);
-////                        it = to.iterator();
-////                    }
-//                }
-//            }
-//        }
-
-        is_dirty_cache_ = false;
-    }
-
     private boolean skip(ViwnEdgeSynset e) {
         String ee = e.toString();
         return ee.equals("fzn") || ee.equals("bzn") || ee.equals("Sim")
@@ -314,11 +219,10 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     }
 
     public void rereadDB() {
-        setup();
+        construct();
     }
 
-    private void addSynsetEdges(DataEntry dataEntry, NodeDirection[] directions)
-    {
+    private void addSynsetEdges(DataEntry dataEntry, NodeDirection[] directions) {
         for(NodeDirection direction : directions){
             if(direction != NodeDirection.IGNORE){
 //                for(SynsetRelation relation : dataEntry.getRelationsFrom(direction)){
@@ -327,13 +231,11 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
 //                for(SynsetRelation relation : dataEntry.getRelationsTo(direction)){
 //                    addEdgeSynsetToRelations(relation, direction);
 //                }
-                for(SynsetRelation relation : dataEntry.getRelations(direction))
-                {
+                for(SynsetRelation relation : dataEntry.getRelations(direction)) {
                     addEdgeSynsetToRelations(relation, direction);
                 }
             }
         }
-
     }
 
     private void addEdgeSynsetToRelations(SynsetRelation relation, NodeDirection direction) {
@@ -341,8 +243,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         relations[direction.ordinal()].add(edge);
     }
 
-    //TODO zmienić nazwę
-    public void setup(NodeDirection[] directions)
+    public void construct(NodeDirection[] directions)
     {
         edges_to_this_.clear();
         edges_from_this_.clear();
@@ -360,42 +261,13 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     public void refresh(){
         DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(getSynset().getId(), LexiconManager.getInstance().getUserChosenLexiconsIds());
         ui.addToEntrySet(dataEntry);
-        setup();
+        construct();
         ui.recreateLayout(); //TODO zmienić to na coś, co nie powoduje zmiany pozycji synsetów
     }
 
-    public void setup() {
-        setup(NodeDirection.values());
+    public void construct() {
+        construct(NodeDirection.values());
         is_dirty_cache_ = false;
-
-        // no cache? fetch from database
-//        if (relsUP == null) {
-//            relsUP = RemoteUtils.synsetRelationRemote.dbGetUpperRelations(
-//                    synset, null, LexiconManager.getInstance().getLexicons());
-//        }
-//        if (relsDW == null) {
-//            relsDW = RemoteUtils.synsetRelationRemote.dbGetSubRelations(synset,
-//                    null, LexiconManager.getInstance().getLexicons());
-//        }
-        // Get relations 'OTHER synset' -> 'THIS synset'
-
-//
-//        for (SynsetRelation rel : relsUP) {
-////            add_if_new(rel);
-//            addEdgeFromThis(rel);
-//        }
-//
-//
-//        // Get relations 'THIS synset' -> 'OTHER synset'
-//        for (SynsetRelation rel : relsDW) {
-////            add_if_new(rel);
-//            addEdgeToThis(rel);
-//        }
-
-        // fetching poses from temporary cache
-
-        // adding relations to appropiate groups
-//        construct();
     }
 
     /**

@@ -254,32 +254,8 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
     }
 
     @Override
-    public void installMenu(WebMenu item, int index) {
-        menuHolder.install(item, index);
-    }
-
-    @Override
-    public void installMenu(String topMenu, String subMenu, WebMenuItem item) {
-        WebMenu top = menuHolder.getMenu(topMenu);
-        if (top == null) {
-            top = new WebMenu(topMenu);
-            menuHolder.install(top, 0);
-        }
-
-        WebMenuItem sub = null;
-        for (int i = 0; i < top.getItemCount(); i++) {
-            WebMenuItem itemTemp = (WebMenuItem) top.getItem(i);
-            if (itemTemp != null && itemTemp.getText().equals(subMenu)) {
-                sub = itemTemp;
-                break;
-            }
-        }
-        if (sub == null) {
-            sub = new WebMenuItem(subMenu);
-            top.add(sub);
-        }
-
-        sub.add(item);
+    public void installMenuComponent(Component c, String alignment) {
+        menuHolder.install(c , alignment);
     }
 
     @Override

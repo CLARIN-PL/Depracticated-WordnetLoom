@@ -1,15 +1,13 @@
 package pl.edu.pwr.wordnetloom.synset.model;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
-import pl.edu.pwr.wordnetloom.dictionary.model.StatusDictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import javax.persistence.*;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +37,7 @@ public class Synset extends GenericEntity {
 
     @ManyToOne
     @JoinColumn(name = "status_id", referencedColumnName = "id")
-    private StatusDictionary status;
+    private Status status;
 
     @OneToMany(mappedBy = "child", fetch = FetchType.LAZY)
     private List<SynsetRelation> incomingRelations = new ArrayList<>();
@@ -47,11 +45,11 @@ public class Synset extends GenericEntity {
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<SynsetRelation> outgoingRelations = new ArrayList<>();
 
-    public StatusDictionary getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(StatusDictionary status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

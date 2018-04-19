@@ -6,7 +6,6 @@ import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.core.window.AboutWindow;
-import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
 import pl.edu.pwr.wordnetloom.client.plugins.login.window.ChangePasswordWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -15,7 +14,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.user.model.User;
+import pl.edu.pwr.wordnetloom.user.model.Role;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -32,6 +31,8 @@ public class CoreService extends AbstractService implements MenuListener {
     private WebMenu settings;
     private WebMenu user;
     private WebCheckBoxMenuItem showTooltips;
+    public static final String APP_SETTINGS ="Application settings";
+    public static final String ACC_SETTINGS ="Account settings";
 
     public CoreService(Workbench workbench) {
         super(workbench);
@@ -86,24 +87,35 @@ public class CoreService extends AbstractService implements MenuListener {
 
         settings = new WebMenu(Labels.SETTINGS);
         settings.setMnemonic(KeyEvent.VK_S);
-
         Icon settingsIcon = IconFontSwing.buildIcon(FontAwesome.COGS, 12);
         settings.setIcon(settingsIcon);
-        settings.add(new MMenuItem(Labels.DEFAULT_SETTINGS)
-                .withMnemonic(KeyEvent.VK_S).withActionListener(e -> w.getActivePerspective().resetViews()));
-
-        settings.addMenuListener(this);
-        settings.add(showTooltips);
 
         user = new WebMenu(RemoteConnectionProvider.getInstance().getUser().getFullname());
         Icon userIcon = IconFontSwing.buildIcon(FontAwesome.USER, 12);
         user.setIcon(userIcon);
-        user.add(new MMenuItem("Change password")
+
+        WebMenu account = new WebMenu(ACC_SETTINGS);
+        Icon accIcon = IconFontSwing.buildIcon(FontAwesome.ADDRESS_CARD, 12);
+        account.setIcon(accIcon);
+
+        account.add(new MMenuItem("Change password")
                 .withMnemonic(KeyEvent.VK_P)
                 .withIcon(FontAwesome.EXCHANGE)
                 .withActionListener(e ->
-                    ChangePasswordWindow.showModal(workbench)
+                        ChangePasswordWindow.showModal(workbench)
                 ));
+
+        WebMenu appSettings = new WebMenu(APP_SETTINGS);
+        Icon appIcon = IconFontSwing.buildIcon(FontAwesome.COG, 12);
+        appSettings.setIcon(appIcon);
+
+        appSettings.add(new MMenuItem(Labels.DEFAULT_SETTINGS)
+                .withMnemonic(KeyEvent.VK_S).withActionListener(e -> w.getActivePerspective().resetViews()));
+        appSettings.addMenuListener(this);
+        appSettings.add(showTooltips);
+
+        user.add(appSettings);
+        user.add(account);
         user.addSeparator();
         user.add(new MMenuItem("Sign out")
                 .withMnemonic(KeyEvent.VK_P)
@@ -113,7 +125,11 @@ public class CoreService extends AbstractService implements MenuListener {
                 ));
 
         workbench.installMenu(help, "left");
-        workbench.installMenu(settings, "left");
+        if(RemoteConnectionProvider
+                .getInstance()
+                .getUser().getRole().equals(Role.ADMIN)) {
+            workbench.installMenu(settings, "left");
+        }
         workbench.installMenu(user, "right");
 
     }

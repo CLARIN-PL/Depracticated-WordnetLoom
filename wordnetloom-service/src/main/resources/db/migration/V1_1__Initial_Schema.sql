@@ -130,6 +130,7 @@ CREATE TABLE relation_type (
   short_display_text_id    BIGINT COMMENT 'Text displayed on visualisation',
   color                    VARCHAR(255) COMMENT 'Color of displayed relation',
   node_position            VARCHAR(255) COMMENT 'Position in node LEFT,TOP,RIGHT,BOTTOM',
+  priority                 INT,
   PRIMARY KEY (id)
 );
 
@@ -195,8 +196,8 @@ CREATE TABLE word_form (
   PRIMARY KEY (id)
 );
 
-#ALTER TABLE relation_type_allowed_lexicons
-#ADD CONSTRAINT UK_7p9ttfi403pkoiua29qff7vwi UNIQUE (lexicon_id);
+CREATE INDEX word_index
+  ON wordnet.word (word);
 
 ALTER TABLE dictionaries
   ADD CONSTRAINT FKflyxm5y0r293f9s1sv4q7weix

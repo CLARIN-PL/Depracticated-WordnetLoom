@@ -2,11 +2,13 @@ package pl.edu.pwr.wordnetloom.lexicon.repository;
 
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Stateless
@@ -25,15 +27,9 @@ public class LexiconRepository extends GenericRepository<Lexicon> {
         return em;
     }
 
-    public List<Lexicon> findByLexicons(List<Long> lexiconsIds) {
-        Query query = em.createQuery("FROM Lexicon l WHERE l.id IN (:ids)");
-        return query
-                .setParameter("ids", lexiconsIds)
-                .getResultList();
-    }
-
     public List<Long> findAllLexiconIds() {
-        return em.createQuery("SELECT l.id FROM Lexicon l").getResultList();
+        TypedQuery<Long> query = getEntityManager().createQuery("SELECT l.id FROM Lexicon l", Long.class);
+        return query.getResultList();
     }
 
 

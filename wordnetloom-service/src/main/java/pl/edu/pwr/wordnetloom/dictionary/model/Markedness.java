@@ -6,5 +6,5 @@ import javax.persistence.Entity;
 
 @Audited
 @Entity
-public class ValuationDictionary extends Dictionary{
+public class Markedness extends Dictionary{
 }

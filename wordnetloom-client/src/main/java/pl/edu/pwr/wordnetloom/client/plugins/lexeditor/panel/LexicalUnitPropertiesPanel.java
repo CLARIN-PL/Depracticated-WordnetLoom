@@ -21,7 +21,7 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.renderers.ExampleCellRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.dictionary.model.RegisterDictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -42,12 +42,13 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         CaretListener, ActionListener {
 
     private static final long serialVersionUID = 8598891792812358941L;
+    private final String DEFAULT_VARIANT = "1";
     private Sense unit;
     private LexiconComboBox lexicon;
     private MTextField lemma;
     private MTextField variant;
     private MTextField link;
-    private MComboBox<RegisterDictionary> register;
+    private MComboBox<Register> register;
     private MComboBox<PartOfSpeech> partOfSpeech;
     private DomainMComboBox domain;
     private MTextPane comment;
@@ -124,7 +125,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         lblVariant.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblVariant, "8, 3, 3, 1, fill, fill");
 
-        variant = new MTextField(Labels.VALUE_UNKNOWN);
+        variant = new MTextField(DEFAULT_VARIANT);
         variant.addCaretListener(this);
         variant.setEditable(false);
         mainPanel.add(variant, "12, 3, left, fill");
@@ -184,7 +185,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
 
         register = new MComboBox<>()
                 .withDictionaryItems(
-                        DictionaryManager.getInstance().getDictionaryByClassName(RegisterDictionary.class),
+                        DictionaryManager.getInstance().getDictionaryByClassName(Register.class),
                         Labels.NOT_CHOSEN);
 
         register.addActionListener(this);
@@ -273,7 +274,6 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
                 String old = example.getExample();
                 if (modified != null && !old.equals(modified)) {
                     example.setExample(modified);
-//                    examplesModel.set(idx,example);
                     examplesList.updateUI();
                     btnSave.setEnabled(true);
                 }
@@ -295,7 +295,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         lblLink.setHorizontalAlignment(SwingConstants.RIGHT);
         mainPanel.add(lblLink, "2, 25, left, fill");
 
-        link = new MTextField(Labels.VALUE_UNKNOWN);
+        link = new MTextField("");
         link.addCaretListener(this);
         mainPanel.add(link, "4, 25, 7, 1, fill, fill");
         link.setColumns(10);
@@ -337,7 +337,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         int variant = Integer.parseInt(getVariant().getText());
         unit.setVariant(variant);
 
-        RegisterDictionary reg = register.getEntity();
+        Register reg = register.getEntity();
         SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
         String definition = getDefinition().getText();
         String link = getLink().getToolTipText();
@@ -394,8 +394,6 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         partOfSpeech.setSelectedItem(unit != null ? new CustomDescription<>(
                 partOfSpeechText, unit.getPartOfSpeech()): null);
 
-//        String domainToSet = isDomainCorrectPartOfSpeach();
-
         String domainText = LocalisationManager.getInstance().getLocalisedString(unit.getDomain().getName());
         domain.setSelectedItem(domainText == null ? null
                 : new CustomDescription<>(domainText, unit.getDomain()));
@@ -419,24 +417,6 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         }
 
         btnSave.setEnabled(false);
-    }
-
-    private String isDomainCorrectPartOfSpeach() {
-        String domainToSet = null;
-        if (unit != null) {
-            Domain goodDomain = DomainManager.getInstance().getNormalized(
-                    unit.getDomain());
-            PartOfSpeech goodPOS = unit.getPartOfSpeech();
-
-//            if (goodDomain != null && !goodPOS.contains(goodDomain)) {
-//                DialogBox.showError(String.format(
-//                        Messages.ERROR_INCORRECT_DOMAIN, goodDomain.toString(),
-//                        goodPOS));
-//            } else {
-//                domainToSet = unit != null && goodDomain != null ? goodDomain.toString() : null;
-//            }
-        }
-        return domainToSet;
     }
 
     private String formatValue(String value) {
@@ -477,7 +457,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         return link;
     }
 
-    public MComboBox<RegisterDictionary> getRegister() {
+    public MComboBox<Register> getRegister() {
         return register;
     }
 

@@ -3,8 +3,7 @@ package pl.edu.pwr.wordnetloom.sense.model;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
-import pl.edu.pwr.wordnetloom.dictionary.model.AspectDictionary;
-import pl.edu.pwr.wordnetloom.dictionary.model.StatusDictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -13,12 +12,8 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
 import javax.persistence.*;
-import javax.validation.Constraint;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Audited
@@ -65,7 +60,7 @@ public class Sense extends GenericEntity {
     @NotAudited
     @ManyToOne
     @JoinColumn(name = "status_id", referencedColumnName = "id")
-    private StatusDictionary status;
+    private Status status;
 
     public Sense() {
     }
@@ -142,11 +137,11 @@ public class Sense extends GenericEntity {
         return outgoingRelations;
     }
 
-    public StatusDictionary getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(StatusDictionary status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

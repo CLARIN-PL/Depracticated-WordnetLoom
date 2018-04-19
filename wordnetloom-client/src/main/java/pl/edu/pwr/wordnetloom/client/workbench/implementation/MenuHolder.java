@@ -17,14 +17,18 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.workbench.implementation;
 
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.menu.WebMenu;
 import com.alee.laf.menu.WebMenuBar;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import se.datadosen.component.RiverLayout;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
+
+import static com.alee.managers.notification.NotificationIcon.image;
 
 /**
  * Klasa będąca kontenerem na menu zawierająca metody do dodawania i
@@ -40,6 +44,13 @@ public class MenuHolder {
 
         menuBar = new WebMenuBar();
         menuBar.setLayout( new RiverLayout());
+        WebLabel label = new WebLabel("WordnetLoom 2.0");
+        label.setBoldFont();
+        ImageIcon icon = new ImageIcon(Toolkit.getDefaultToolkit().getImage("/icons/wordnet.gif"));
+        label.setIcon(icon);
+        label.setBackground(Color.GRAY);
+
+        menuBar.add("tab left hfill", label);
     }
 
     /**
@@ -59,6 +70,10 @@ public class MenuHolder {
     public void install(WebMenu item, String alignment)
     {
         menuBar.add(alignment, item);
+    }
+
+    public void install(Component o, String alignment) {
+        menuBar.add(alignment, o);
     }
 
 

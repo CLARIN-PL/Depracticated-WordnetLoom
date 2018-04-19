@@ -1,10 +1,8 @@
 package pl.edu.pwr.wordnetloom.sense.repository;
 
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
-import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
@@ -19,19 +17,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import java.text.Collator;
-import java.text.ParseException;
-import java.text.RuleBasedCollator;
 import java.util.*;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.logging.Logger;
 
 @Stateless
 public class SenseRepository extends GenericRepository<Sense> {
 
     @Inject
     EntityManager em;
+
+    @Inject
+    Logger logger;
 
     public Sense clone(Sense sense) {
         return persist(new Sense(sense));
@@ -76,16 +72,14 @@ public class SenseRepository extends GenericRepository<Sense> {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Sense> query = criteriaBuilder.createQuery(Sense.class);
         Root<Sense> senseRoot = query.from(Sense.class);
-        Join<Sense, Word> wordJoin = senseRoot.join(WORD);
-        senseRoot.fetch(WORD);
         senseRoot.fetch(DOMAIN);
         senseRoot.fetch(LEXICON);
 
         query.select(senseRoot);
-        query.where(getPredicatesByCriteria(dto, senseRoot, wordJoin, criteriaBuilder));
+        query.where(getPredicatesByCriteria(dto, senseRoot, criteriaBuilder));
 
         List<Order> orders = new ArrayList<>();
-        orders.add(criteriaBuilder.asc(wordJoin.get(WORD)));
+        orders.add(criteriaBuilder.asc(senseRoot.get(WORD).get(WORD)));
         orders.add(criteriaBuilder.asc(senseRoot.get(PART_OF_SPEECH)));
         orders.add(criteriaBuilder.asc(senseRoot.get(VARIANT)));
         orders.add(criteriaBuilder.asc(senseRoot.get(LEXICON)));
@@ -106,11 +100,11 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     //TODO Refactor to Specifications
-    private Predicate[] getPredicatesByCriteria(SenseCriteriaDTO dto, Root senseRoot, Join wordJoin, CriteriaBuilder criteriaBuilder) {
+    private Predicate[] getPredicatesByCriteria(SenseCriteriaDTO dto, Root senseRoot, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicateList = new ArrayList<>();
 
         if (dto.getLemma() != null && !dto.getLemma().isEmpty()) {
-            Predicate lemmaPredicate = criteriaBuilder.like(wordJoin.get(WORD), dto.getLemma() + "%");
+            Predicate lemmaPredicate = criteriaBuilder.like(senseRoot.get(WORD).get(WORD), dto.getLemma() + "%");
             predicateList.add(lemmaPredicate);
         }
 
@@ -190,7 +184,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         Join<Sense, Word> wordJoin = senseRoot.join(WORD);
         query.select(criteriaBuilder.count(senseRoot));
 
-        Predicate[] predicates = getPredicatesByCriteria(dto, senseRoot, wordJoin, criteriaBuilder);
+        Predicate[] predicates = getPredicatesByCriteria(dto, senseRoot, criteriaBuilder);
         query.where(predicates);
 
         return Math.toIntExact(getEntityManager().createQuery(query).getSingleResult());
@@ -220,7 +214,7 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     public List<Sense> findBySynset(Synset synset, List<Long> lexicons) {
-        return getEntityManager().createQuery("FROM Sense s LEFT JOIN FETCH s.domain " +
+        return getEntityManager().createQuery("SELECT s FROM Sense s LEFT JOIN FETCH s.domain " +
                 "WHERE s.synset.id = :synsetId AND s.lexicon.id IN (:lexicons)", Sense.class)
                 .setParameter("synsetId", synset.getId())
                 .setParameter("lexicons", lexicons)
@@ -228,7 +222,7 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     public List<Sense> findBySynset(Long synsetId) {
-        return getEntityManager().createQuery("FROM Sense s WHERE s.synset.id = :synsetId")
+        return getEntityManager().createQuery("SELECT s FROM Sense s WHERE s.synset.id = :synsetId")
                 .setParameter("synsetId", synsetId)
                 .getResultList();
     }
@@ -236,7 +230,7 @@ public class SenseRepository extends GenericRepository<Sense> {
     public int findCountBySynset(Synset synset, List<Long> lexicons) {
         return getEntityManager().createQuery("SELECT COUNT(s) FROM Sense s WHERE s.synset.id = :synsetId AND s.lexicon.id IN (:lexicons)")
                 .setParameter("synsetId", synset.getId())
-                .setParameter("lexicon", lexicons)
+                .setParameter("lexicons", lexicons)
                 .getMaxResults();
     }
 
@@ -321,14 +315,14 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     public List<Sense> findSensesByWordId(Long id, Long lexicon) {
-        Query query = getEntityManager().createQuery("FROM Sense s WHERE s.word.id = :id AND s.lexicon.id = :lexicon");
+        Query query = getEntityManager().createQuery("SELECT s FROM Sense s WHERE s.word.id = :id AND s.lexicon.id = :lexicon");
         query.setParameter("id", id);
         query.setParameter("lexicon", lexicon);
         return query.getResultList();
     }
 
     public Sense findHeadSenseOfSynset(Long synsetId) {
-        Query query = getEntityManager().createQuery("FROM Sense s JOIN FETCH s.domain JOIN FETCH s.lexicon WHERE s.synset.id = :id AND s.synsetPosition = 0")
+        Query query = getEntityManager().createQuery("SELECT s FROM Sense s JOIN FETCH s.domain JOIN FETCH s.lexicon WHERE s.synset.id = :id AND s.synsetPosition = 0")
                 .setParameter("id", synsetId);
         List<Sense> resultList = query.getResultList();
         if (!resultList.isEmpty()) {

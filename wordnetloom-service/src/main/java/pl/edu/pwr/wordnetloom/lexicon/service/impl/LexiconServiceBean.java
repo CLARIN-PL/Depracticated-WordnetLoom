@@ -44,12 +44,6 @@ public class LexiconServiceBean implements LexiconServiceLocal {
 
     @PermitAll
     @Override
-    public List<Lexicon> findAllByLexicon(List<Long> lexiconIds) {
-        return lexiconRepository.findByLexicons(lexiconIds);
-    }
-
-    @PermitAll
-    @Override
     public List<Lexicon> findAll() {
         return lexiconRepository.findAll("name");
     }

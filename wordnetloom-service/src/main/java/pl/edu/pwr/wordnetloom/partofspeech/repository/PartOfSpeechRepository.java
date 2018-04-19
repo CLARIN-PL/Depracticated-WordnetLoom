@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Stateless
@@ -27,7 +28,9 @@ public class PartOfSpeechRepository extends GenericRepository<PartOfSpeech> {
     }
 
     public List<PartOfSpeech> findByLexicon(Lexicon lexicon) {
-        Query query = em.createQuery("SELECT DISTINCT lapd.partOfSpeech FROM LexiconAllowedPartOfSpeech lapd WHERE lapd.lexicon.id = :id");
+        TypedQuery<PartOfSpeech> query = em.createQuery(
+                "SELECT DISTINCT lapd.partOfSpeech " +
+                   "FROM LexiconAllowedPartOfSpeech lapd WHERE lapd.lexicon.id = :id", PartOfSpeech.class);
         return query
                 .setParameter("id", lexicon.getId())
                 .getResultList();
