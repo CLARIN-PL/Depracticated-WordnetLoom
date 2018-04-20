@@ -161,7 +161,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
             saveResult = RemoteService.synsetRelationRemote.makeRelation(child, parent, reverseRelationType); // tworzenie relacji odwrotnej
         } else if(reverseRelationType != null){
             String reverseRelationTypeName = LocalisationManager.getInstance().getLocalisedString(reverseRelationType.getName());
-            if(DialogBox.showYesNo(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION + " " + reverseRelationTypeName) == DialogBox.YES) {
+            if(DialogBox.showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION, reverseRelationTypeName)) == DialogBox.YES) {
                 saveResult = RemoteService.synsetRelationRemote.makeRelation(child, parent, reverseRelationType);
             }
         }
