@@ -1,5 +1,7 @@
 package pl.edu.pwr.wordnetloom.common.repository;
 
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -29,6 +31,7 @@ public abstract class GenericRepository<T> {
     }
 
     public void delete(T entity) {
+//        getEntityManager().remove(getEntityManager().contains(entity)?entity:getEntityManager().merge(entity));
         getEntityManager().remove(entity);
     }
 

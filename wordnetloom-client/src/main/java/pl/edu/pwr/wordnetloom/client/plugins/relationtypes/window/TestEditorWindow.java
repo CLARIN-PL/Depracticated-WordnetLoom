@@ -98,7 +98,7 @@ public class TestEditorWindow extends DialogWindow implements ActionListener {
         add(buttonCancel);
     }
 
-//    static public Pair<String, PartOfSpeech> showModal(JFrame owner, String text, PartOfSpeech pos) {
+//    static public Pair<String, PartOfSpeech> showModalAndSaveRelation(JFrame owner, String text, PartOfSpeech pos) {
 //        TestEditorWindow frame = new TestEditorWindow(owner, pos, text);
 //        frame.setVisible(true);
 //        return new Pair<>(frame.lastText, frame.lastAPos);

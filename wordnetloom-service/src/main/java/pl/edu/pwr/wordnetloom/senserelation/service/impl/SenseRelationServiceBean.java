@@ -31,7 +31,8 @@ public class SenseRelationServiceBean implements SenseRelationServiceLocal {
     @RolesAllowed({"ADMIN", "USER"})
     @Override
     public void delete(SenseRelation rel) {
-        senseRelationRepository.delete(rel);
+        SenseRelation relation = senseRelationRepository.findById(rel.getId());
+        senseRelationRepository.delete(relation);
     }
 
     @RolesAllowed({"ADMIN", "USER"})

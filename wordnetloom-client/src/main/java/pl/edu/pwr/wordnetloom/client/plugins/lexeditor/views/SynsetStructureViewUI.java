@@ -376,7 +376,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             // takich relacji w bazie
 //                if (LexicalDA.areRelations(RelationArgument.LEXICAL_SPECIAL)) {
 //                    IRelationType rel;
-//                    rel = RelationTypeFrame.showModal(workbench,
+//                    rel = RelationTypeFrame.showModalAndSaveRelation(workbench,
 //                            RelationArgument.LEXICAL_SPECIAL, LexicalDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()),
             //  RemoteUtils.lexicalUnitRemote.dbFastGetUnits(lastSynset, LexiconManager.getInstance().getLexicons()), selectedUnits);
             // if (rel == null) {
@@ -572,7 +572,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 //            }
 //            Collection<Sense> unitsOfMainSynset = RelationsDA.getUnits(
 //                    lastSynset, lastSelectedUnits, LexiconManager.getInstance().getLexicons());
-//            final IRelationType rel = RelationTypeFrame.showModal(workbench,
+//            final IRelationType rel = RelationTypeFrame.showModalAndSaveRelation(workbench,
 //                    RelationArgument.SYNSET, RelationsDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()),
 //                    unitsOfMainSynset, lastSelectedUnits);
 //            if (rel == null) {

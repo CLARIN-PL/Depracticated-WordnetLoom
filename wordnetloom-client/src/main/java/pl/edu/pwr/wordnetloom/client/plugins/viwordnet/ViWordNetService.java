@@ -583,7 +583,7 @@ public class ViWordNetService extends AbstractService implements
             return;
         }
 
-        if (MakeNewRelationWindow.showMakeSynsetRelationModal(workbench, src, dst)) {
+        if (MakeNewRelationWindow.showModalAndSaveRelation(workbench, src, dst)) {
             for (ViwnGraphView gv : graphViews) {
                 gv.getUI().relationAdded(src, dst);
             }
@@ -609,7 +609,7 @@ public class ViWordNetService extends AbstractService implements
 //                    @Override
 //                    public void actionPerformed(ActionEvent ae) {
 //                        if (MakeNewLexicalRelationFrame
-//                                .showMakeLexicalRelationModal(workbench,
+//                                .showModalAndSaveRelation(workbench,
 //                                        (Sense) first, lu)) {
 //                            unitsRelationsView.refresh();
 //                        }
@@ -623,7 +623,7 @@ public class ViWordNetService extends AbstractService implements
     }
 
     private void makeUnitRelation(Sense sense1, Sense sense2) {
-        if (MakeNewLexicalRelationWindow.showMakeLexicalRelationModal(
+        if (MakeNewLexicalRelationWindow.showModalAndSaveRelation(
                 workbench, sense1, sense2)) {
             unitsRelationsView.refresh();
         }

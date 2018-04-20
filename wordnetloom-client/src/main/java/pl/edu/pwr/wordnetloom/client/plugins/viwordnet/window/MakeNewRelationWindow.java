@@ -112,8 +112,8 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
      * @param to        <code>ViwnNode</code> child for relation
      * @return true when relation was added successfully
      */
-    public static boolean showMakeSynsetRelationModal(Workbench workbench,
-                                                      ViwnNode from, ViwnNode to) {
+    public static boolean showModalAndSaveRelation(Workbench workbench,
+                                                   ViwnNode from, ViwnNode to) {
         boolean saveResult = false;
         ViwnNodeSynset nodeFrom = (ViwnNodeSynset) from;
         ViwnNodeSynset nodeTo = (ViwnNodeSynset) to;

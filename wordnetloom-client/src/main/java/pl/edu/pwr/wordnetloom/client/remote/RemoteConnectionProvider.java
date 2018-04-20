@@ -6,6 +6,7 @@ import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
 import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
+import pl.edu.pwr.wordnetloom.user.model.Role;
 import pl.edu.pwr.wordnetloom.user.model.User;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
 
@@ -111,7 +112,9 @@ public class RemoteConnectionProvider implements Loggable {
         }
         return userSessionData.getUser();
     }
-
+    public boolean hasRole(Role r){
+        return getUser().getRole().equals(r);
+    }
     public String getLanguage() {
         return userSessionData.getLanguage();
     }

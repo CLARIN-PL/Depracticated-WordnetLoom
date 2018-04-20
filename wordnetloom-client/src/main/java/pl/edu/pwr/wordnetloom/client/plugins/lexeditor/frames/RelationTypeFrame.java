@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
 import com.alee.laf.rootpane.WebFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
@@ -399,6 +400,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
     }
     //TODO przejrzeć to i pousuwać niepotrzebne rzeczy
     private void refreshTests(){
+
         RelationType relation;
         if(relationSubType.getItemCount() > 0){
             relation = (RelationType)relationSubType.getSelectedItem();

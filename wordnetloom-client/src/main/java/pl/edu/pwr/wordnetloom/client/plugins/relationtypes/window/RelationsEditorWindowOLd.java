@@ -32,11 +32,11 @@ public class RelationsEditorWindow extends MFrame implements ActionListener, Tre
 
     private RelationType currentEditedType;
 
-    public static void showModal(Workbench workbench) throws ParseException {
+    public static void showModalAndSaveRelation(Workbench workbench) throws ParseException {
         RelationsEditorWindow frame = new RelationsEditorWindow(workbench);
         frame.setLocationRelativeTo(workbench.getFrame());
         frame.setVisible(true);
-        frame.showModal();
+        frame.showModalAndSaveRelation();
     }
 
     private RelationsEditorWindow(Workbench workbench) throws ParseException {
@@ -180,7 +180,7 @@ public class RelationsEditorWindow extends MFrame implements ActionListener, Tre
             Set<Lexicon> lexicons = new LexiconCheckBoxDialog(lexicon, "leksykon"
                     , currentEditedType != null ? currentEditedType.getLexicons() : null
                     , RemoteService.lexiconServiceRemote.findAll()
-            ).showModal();
+            ).showModalAndSaveRelation();
             setLexiconFieldText(lexicons);
         });
         panel.add(RIGHT, buttonLexicon);
@@ -214,13 +214,13 @@ public class RelationsEditorWindow extends MFrame implements ActionListener, Tre
                 Labels.PARTS_OF_SPEECH_COLON,
                 null,
                 PartOfSpeechManager.getInstance().getAll()
-        ).showModal();
+        ).showModalAndSaveRelation();
         setPartOfSpeechFieldText(partOfSpeeches);
     }
 
     private void openReverseRelationDialog() {
         RelationTreeModel model = ((RelationsTypePanel) relationsPanel.getSelectedComponent()).getModel();
-        Pair<RelationType, Boolean> reverseRelationPair = ReverseRelationDialog.showModal(this, currentEditedType.getReverse(), currentEditedType.isAutoReverse(), model);
+        Pair<RelationType, Boolean> reverseRelationPair = ReverseRelationDialog.showModalAndSaveRelation(this, currentEditedType.getReverse(), currentEditedType.isAutoReverse(), model);
         if (reverseRelationPair.getA() != null) {
             String locale = RemoteConnectionProvider.getInstance().getLanguage();
             relationReverse.setText(reverseRelationPair.getA().getName(locale));
@@ -449,11 +449,11 @@ class TestsPanel extends JPanel {
     private void createTest() {
         //TODO ustawić częśc mowy
         PartOfSpeech partOfSpeech = PartOfSpeechManager.getInstance().getById(1L);
-//        Pair<String, PartOfSpeech> partOfSpeechPair = TestEditorWindow.showModal(owner, new SenseRelationTest());
+//        Pair<String, PartOfSpeech> partOfSpeechPair = TestEditorWindow.showModalAndSaveRelation(owner, new SenseRelationTest());
         RelationTest senseTest = new RelationTest();
         senseTest.setSenseApartOfSpeech(PartOfSpeechManager.getInstance().getById(2L));
         senseTest.setTest("To jest jakiś test");
-        RelationTest test = TestEditorWindow.showModal(owner, senseTest);
+        RelationTest test = TestEditorWindow.showModalAndSaveRelation(owner, senseTest);
         //TODO operacja na bazie danych
         //TODO zaktualizowac element na liście
 
@@ -751,7 +751,7 @@ abstract class CheckBoxDialog<T> extends JDialog {
         return okButton;
     }
 
-    public Set<T> showModal() {
+    public Set<T> showModalAndSaveRelation() {
         setVisible(true);
         return getSelectedElements();
     }
@@ -863,7 +863,7 @@ class ReverseRelationDialog extends JDialog implements ActionListener {
         add("", cancelButton);
     }
 
-    public static Pair<RelationType, Boolean> showModal(JFrame owner, RelationType lastReverse, Boolean autoReverse, RelationTreeModel treeModel) {
+    public static Pair<RelationType, Boolean> showModalAndSaveRelation(JFrame owner, RelationType lastReverse, Boolean autoReverse, RelationTreeModel treeModel) {
         ReverseRelationDialog dialog = new ReverseRelationDialog(owner, treeModel);
         dialog.lastRelation = lastReverse;
         dialog.autoReverse.setSelected(autoReverse != null ? autoReverse : false);
