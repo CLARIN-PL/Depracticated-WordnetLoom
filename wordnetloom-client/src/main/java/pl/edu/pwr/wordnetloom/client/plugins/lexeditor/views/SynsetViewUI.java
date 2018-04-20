@@ -11,6 +11,7 @@ import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LazyScrollPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MSplitPane;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -57,28 +58,45 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
     @Override
     protected void initialize(WebPanel content) {
         initializeComponents();
-        content.setLayout(new RiverLayout());
 
-        int scrollHeight = 220;
         WebScrollPane scroll = new WebScrollPane(criteria);
-        scroll.setMaximumSize(new Dimension(0, scrollHeight));
-        scroll.setMinimumSize(new Dimension(0, scrollHeight));
-        scroll.setPreferredSize(new Dimension(0, scrollHeight));
+        scroll.setMaximumSize(DEFAULT_SCROLL_DIMENSION);
+        scroll.setMinimumSize(DEFAULT_SCROLL_DIMENSION);
+        scroll.setPreferredSize(DEFAULT_SCROLL_DIMENSION);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        content.add("hfill", scroll);
-        content.add("br center", btnSearch);
-        content.add("center", btnReset);
-        content.add("br left", new MLabel(Labels.SYNSETS_COLON, 'j', synsetList));
-        content.add("br hfill vfill", scrollPane);
-        content.add("br left", infoLabel);
+        WebPanel top = new WebPanel();
+        top.setLayout(new RiverLayout());
+        top.setMargin(0);
+
+        WebPanel bottom = new WebPanel();
+        bottom.setLayout(new RiverLayout());
+        bottom.setMargin(0);
+
+        top.add("hfill", scroll);
+        top.add("br center", btnSearch);
+        top.add("center", btnReset);
+
+        bottom.add("br left", new MLabel(Labels.SYNSETS_COLON, 'j', synsetList));
+        bottom.add("br hfill vfill", scrollPane);
+        bottom.add("br left", infoLabel);
+
+        MSplitPane split = new MSplitPane(0, top, bottom);
+        split.setResizeWeight(0.0f);
+        split.setMargin(0);
+
+        content.setLayout(new RiverLayout(0,0));
+        content.setMargin(0);
+        content.add("hfill vfill", split);
     }
 
     private void initializeComponents() {
         criteria = new SynsetCriteria();
         criteria.getDomainComboBox().addActionListener(this);
         criteria.getPartsOfSpeechComboBox().addActionListener(this);
+
         synsetList = createSynsetList(synsetListModel);
+
         scrollPane = new LazyScrollPane(synsetList, LIMIT);
         scrollPane.setHorizontalScrolling(false);
         scrollPane.setScrollListener((offset, limit) -> loadMoreSynsets());

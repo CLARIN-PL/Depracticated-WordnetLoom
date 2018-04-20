@@ -8,9 +8,9 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.SynsetsFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
+import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
@@ -18,10 +18,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LazyScrollPane;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MButtonPanel;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
@@ -31,7 +27,6 @@ import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -49,8 +44,6 @@ import java.util.List;
 public class LexicalUnitsViewUI extends AbstractViewUI implements
         ActionListener, ListSelectionListener, KeyListener, MouseListener {
 
-    private final int DEFAULT_SCROLL_HEIGHT = 220;
-    private final Dimension DEFAULT_SCROLL_DIMENSION = new Dimension(0, DEFAULT_SCROLL_HEIGHT);
     private final int LIMIT = 50;
 
     private SenseCriteria criteria;
@@ -78,7 +71,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     @Override
     protected void initialize(WebPanel content) {
 
-        content.setLayout(new RiverLayout());
+        WebPanel criteriaPanel = new WebPanel();
+        criteriaPanel.setLayout(new RiverLayout());
+
         criteria = initSenseCriteria();
 
         btnSearch = MButton.buildSearchButton()
@@ -122,11 +117,10 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         scroll.setPreferredSize(DEFAULT_SCROLL_DIMENSION);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        content.setLayout(new RiverLayout());
-        content.add("hfill", scroll);
-        content.add("br center", btnSearch);
-        content.add("center", btnReset);
-        content.add("br left", new MLabel(Labels.LEXICAL_UNITS_COLON, 'j', unitsList));
+        criteriaPanel.setLayout(new RiverLayout());
+        criteriaPanel.add("hfill", scroll);
+        criteriaPanel.add("br center", btnSearch);
+        criteriaPanel.add("center", btnReset);
 
         unitsList = new ToolTipList(workbench, listModel, new SenseTooltipGenerator());
         unitsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -136,10 +130,18 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         unitsListScrollPane = new LazyScrollPane(unitsList, LIMIT);
         unitsListScrollPane.setScrollListener((offset, limit) -> loadMoreUnits());
 
-        content.add("br hfill vfill", unitsListScrollPane);
-        content.add("br left", infoLabel);
+        WebPanel resultListPanel = new WebPanel();
+        resultListPanel.setLayout(new RiverLayout());
+        resultListPanel.add("br left", new MLabel(Labels.LEXICAL_UNITS_COLON, 'j', unitsList));
+        resultListPanel.add("br hfill vfill", unitsListScrollPane);
+        resultListPanel.add("br left", infoLabel);
 
-        content.add("br center", buttons);
+        resultListPanel.add("br center", buttons);
+
+        MSplitPane split = new MSplitPane(0, criteriaPanel, resultListPanel);
+
+        content.setLayout(new RiverLayout(0,0));
+        content.add("hfill vfill", split);
     }
 
     private class UnitListCellRenderer extends WebLabel implements ListCellRenderer {

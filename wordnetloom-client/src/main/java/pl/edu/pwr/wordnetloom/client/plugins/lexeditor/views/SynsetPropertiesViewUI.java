@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
@@ -40,7 +41,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
     private MTextArea definitionValue;
     private MTextArea commentValue;
 
-    private JScrollPane scrollPaneExamples;
+    private WebScrollPane scrollPaneExamples;
     private MButton btnNewExample;
     private MButton btnEditExample;
     private MButton btnRemoveExample;
@@ -66,6 +67,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
     protected void initialize(WebPanel content) {
 
         content.setLayout(new RiverLayout());
+        content.setMargin(5,1,5,1);
 
         definitionValue = new MTextArea("");
         definitionValue.addCaretListener(this);
@@ -79,7 +81,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         abstractValue.setSelected(false);
         abstractValue.addActionListener(this);
 
-        scrollPaneExamples = new JScrollPane();
+
 
         examplesList = new WebList() {
 
@@ -90,6 +92,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
                 return true;
             }
         };
+        scrollPaneExamples = new WebScrollPane(examplesList);
+
         examplesList.setCellRenderer(new ExampleCellRenderer());
 
         ComponentListener l = new ComponentAdapter() {
@@ -115,8 +119,6 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             }
 
         });
-
-        scrollPaneExamples.setViewportView(examplesList);
 
         btnNewExample = MButton.buildAddButton();
 
@@ -167,16 +169,27 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         buttonsPanel.add("br", btnEditExample);
         buttonsPanel.add("br", btnRemoveExample);
 
-        content.setMargin(5,1,5,1);
-        content.add("vtop", new JLabel(Labels.DEFINITION_COLON));
-        content.add("br hfill", new JScrollPane(definitionValue));
-        content.add("br vtop", new JLabel(Labels.COMMENT_COLON));
-        content.add("br hfill", new JScrollPane(commentValue));
-        content.add("br vtop", new JLabel(Labels.EXAMPLES));
-        content.add("br hfill",  scrollPaneExamples);
-        content.add("", buttonsPanel);
-        content.add("br hfill", abstractValue);
-        content.add("br center", buttonSave);
+
+        WebPanel propertiesPanel = new WebPanel(new RiverLayout(0,0));
+
+        propertiesPanel.add("vtop", new JLabel(Labels.DEFINITION_COLON));
+        propertiesPanel.add("br hfill", new JScrollPane(definitionValue));
+        propertiesPanel.add("br vtop", new JLabel(Labels.COMMENT_COLON));
+        propertiesPanel.add("br hfill", new JScrollPane(commentValue));
+        propertiesPanel.add("br vtop", new JLabel(Labels.EXAMPLES));
+
+        WebPanel subPanel = new WebPanel(new RiverLayout(0,0));
+
+        subPanel.add("hfill",  scrollPaneExamples);
+        subPanel.add("", buttonsPanel);
+
+        propertiesPanel.add("br hfill", subPanel);
+        propertiesPanel.add("br", abstractValue);
+        propertiesPanel.add("br center", buttonSave);
+
+        WebScrollPane scroll = new WebScrollPane(propertiesPanel);
+        scroll.setDrawBorder(false);
+        content.add("hfill vfill",scroll);
 
         commentValue.setEnabled(false);
         definitionValue.setEnabled(false);

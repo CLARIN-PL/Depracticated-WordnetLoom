@@ -22,6 +22,9 @@ public abstract class AbstractViewUI implements KeyListener {
 
     protected SimpleListenersContainer listeners = new SimpleListenersContainer();
 
+    public final int DEFAULT_SCROLL_HEIGHT = 220;
+    public final Dimension DEFAULT_SCROLL_DIMENSION = new Dimension(0, DEFAULT_SCROLL_HEIGHT);
+
     protected Workbench workbench;
 
     private WebPanel mainContentPanel;
