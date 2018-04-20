@@ -19,9 +19,7 @@ import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 
 public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
 
@@ -32,9 +30,9 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
         initListeners();
         initWindowPosition();
 
-        addWindowListener(new java.awt.event.WindowAdapter() {
+        addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
+            public void windowClosing(WindowEvent e) {
                 System.exit(0);
             }
         });
@@ -137,7 +135,7 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
 
         btnCancel.setText("Cancel");
         Icon cancelIcon = IconFontSwing.buildIcon(FontAwesome.TIMES, 11);
-        btnCancel.addActionListener(evt -> btnCancelActionPerformed(evt));
+        btnCancel.addActionListener(evt -> btnCancelAction(evt));
         btnCancel.setIcon(cancelIcon);
 
         javax.swing.GroupLayout btnPanelLayout = new javax.swing.GroupLayout(btnPanel);
@@ -169,7 +167,7 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
         setBounds(0, 0, 516, 287);
     }
 
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+    private void btnCancelAction(ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         System.exit(0);
     }
 

@@ -35,12 +35,5 @@ public class DbMigrator {
         }
         flyway.migrate();
 
-//        try{
-//            V2_9__Add_Position_To_Relation_Type tempRelationTypePosition = new V2_9__Add_Position_To_Relation_Type();
-//            tempRelationTypePosition.addPosition(dataSource.getConnection());
-//        }catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-
     }
 }
