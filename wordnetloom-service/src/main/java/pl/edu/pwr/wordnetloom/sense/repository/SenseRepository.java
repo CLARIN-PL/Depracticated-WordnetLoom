@@ -151,7 +151,7 @@ public class SenseRepository extends GenericRepository<Sense> {
 
             if (dto.getExample() != null) {
                 Join<SenseAttributes, SenseExample> senseExampleJoin = senseAttributesRoot.join(EXAMPLES);
-                Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get(EXAMPLES), dto.getExample());
+                Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get("example"), "%"+dto.getExample()+"%");
                 predicates.add(examplePredicate);
             }
 

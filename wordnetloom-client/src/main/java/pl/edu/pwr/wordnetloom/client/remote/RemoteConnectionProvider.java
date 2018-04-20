@@ -63,7 +63,7 @@ public class RemoteConnectionProvider implements Loggable {
 
     private Properties getEjbProperties() {
 
-        String host = System.getenv("WORDNETLOOM_SERVER_HOST") != null ? System.getenv("WORDNETLOOM_SERVER_HOST") : "localhost";
+        String host = System.getenv("WORDNETLOOM_SERVER_HOST") != null ? System.getenv("WORDNETLOOM_SERVER_HOST") : "127.0.0.1";
         String port = System.getenv("WORDNETLOOM_SERVER_PORT") != null ? System.getenv("WORDNETLOOM_SERVER_PORT") : "8080";
 
         Properties ejbProperties = new Properties();

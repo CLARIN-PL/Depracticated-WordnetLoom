@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextField;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
@@ -23,14 +24,12 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
-import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MTextArea;
+import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
+import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
@@ -101,26 +100,10 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
     private final UnitsInSynsetListModel listModel = new UnitsInSynsetListModel();
     private Synset lastSynset = null;
-    private final boolean showRelations;
-    private final boolean showSwitch;
-    private final boolean bottomButtons;
     private final ViwnGraphViewUI graphUI;
 
 
-    /**
-     * konstruktor
-     *
-     * @param showRelations - czy pokazać przycisk z relacjami
-     * @param showSwitch    - czy pokazać przycisk do przelaczania sie do jednostek
-     * @param bottomButtons - czy przyciski maja byc na dole (true) czy z boku
-     *                      (false)
-     * @param graphUI
-     */
-    public SynsetStructureViewUI(boolean showRelations, boolean showSwitch,
-                                 boolean bottomButtons, ViwnGraphViewUI graphUI) {
-        this.showRelations = showRelations;
-        this.showSwitch = showSwitch;
-        this.bottomButtons = bottomButtons;
+    public SynsetStructureViewUI(ViwnGraphViewUI graphUI) {
         this.graphUI = graphUI;
     }
 
@@ -226,65 +209,50 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         installViewScopeShortCut(buttonSwitchToLexicalPerspective,
                 KeyEvent.CTRL_MASK, KeyEvent.VK_L);
 
-        // panel dolny z przyciskami
-        JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setLayout(new RiverLayout(0, 0));
-        if (bottomButtons) {
-            buttonsPanel.add("", buttonUp);
-            buttonsPanel.add("", buttonAdd);
-            if (showRelations) {
-                buttonsPanel.add("", buttonRelations);
-            }
-            buttonsPanel.add("br", buttonDown);
-            buttonsPanel.add("", buttonDelete);
-            buttonsPanel.add("", buttonToNew);
-            if (showSwitch) {
-                buttonsPanel.add("", buttonSwitchToLexicalPerspective);
-            }
-        } else {
-            buttonsPanel.add("", buttonUp);
-            buttonsPanel.add("br", buttonDown);
-            buttonsPanel.add("br", buttonAdd);
-            buttonsPanel.add("br", buttonDelete);
-            buttonsPanel.add("br", buttonToNew);
-            if (showRelations) {
-                buttonsPanel.add("br", buttonRelations);
-            }
-            if (showSwitch) {
-                buttonsPanel.add("br", buttonSwitchToLexicalPerspective);
-            }
-        }
+        MButtonPanel buttonsPanel = new MButtonPanel(buttonUp, buttonDown,buttonAdd, buttonDelete, buttonToNew)
+                .withVerticalLayout();
 
         // dodanie do okna
         content.add("", new MLabel(Labels.LEXICAL_UNITS_IN_SYSET_COLON, 'y',
                 unitsList));
-        content.add("br hfill vfill", new JScrollPane(unitsList));
-        if (!bottomButtons) {
-            content.add("", buttonsPanel);
-            content.add("br", new JLabel(Labels.COMMENT_COLON));
-            content.add("br", commentValue);
 
-        }
+        WebPanel synsetContentPanel = new WebPanel();
+        synsetContentPanel.setLayout(new RiverLayout(0,0));
 
-        content.add("br", isAbstract);
+        WebScrollPane scroll = new WebScrollPane(unitsList);
+        scroll.setMaximumSize(new Dimension(0, 140));
+        scroll.setMinimumSize(new Dimension(0, 140));
+        scroll.setPreferredSize(new Dimension(0, 140));
 
-        content.add("br", new WebLabel("Synset Id:"));
-        content.add("", synsetID);
+        synsetContentPanel.add("hfill", scroll);
+        synsetContentPanel.add("", buttonsPanel);
 
-        content.add("br", new WebLabel("Princeton Id:"));
-        content.add("", princentonID);
+        content.add("br hfill", synsetContentPanel);
 
-        content.add("br", new WebLabel("ILI Id:"));
-        content.add("", iliID);
+        WebPanel properties = new WebPanel();
+        properties.setLayout(new RiverLayout(0,0));
 
-        content.add("br", new WebLabel(Labels.OWNER_COLON));
-        content.add("", synsetOwner);
+        properties.add("br vtop", new JLabel(Labels.COMMENT_COLON));
+        properties.add("br", commentValue);
 
-        if (bottomButtons) {
-            content.add("br vtop", new JLabel(Labels.COMMENT_COLON));
-            content.add("", commentValue);
-            content.add("br center", buttonsPanel);
-        }
+        properties.add("br", isAbstract);
+
+        properties.add("br", new WebLabel("Synset Id:"));
+        properties.add("", synsetID);
+
+        properties.add("br", new WebLabel("Princeton Id:"));
+        properties.add("", princentonID);
+
+        properties.add("br", new WebLabel("ILI Id:"));
+        properties.add("", iliID);
+
+        properties.add("br", new WebLabel(Labels.OWNER_COLON));
+        properties.add("", synsetOwner);
+
+        WebScrollPane scr = new WebScrollPane(properties);
+        scr.setDrawBorder(false);
+
+        content.add("br vfill hfill", scr);
     }
 
     private void setSplitPosition(int newSplitPosition) {
