@@ -29,7 +29,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
-import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
@@ -37,6 +37,8 @@ import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
+import pl.edu.pwr.wordnetloom.synset.exception.InvalidLexiconException;
+import pl.edu.pwr.wordnetloom.synset.exception.InvalidPartOfSpeechException;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -57,7 +59,7 @@ import java.util.List;
  * @author Max
  */
 public class SynsetStructureViewUI extends AbstractViewUI implements
-        ActionListener, ListSelectionListener, CaretListener, MouseListener {
+        ActionListener, ListSelectionListener, CaretListener, MouseListener, Loggable {
 
     private ViWordNetService viWordNetService;
 
@@ -353,7 +355,14 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             for (Sense selectedUnit : selectedUnits) {
                 // dodanie powiazanie
                 selectedUnit.setSynset(lastSynset);
-                RemoteService.synsetRemote.addSenseToSynset(selectedUnit, lastSynset);
+
+                try {
+                    RemoteService.synsetRemote.addSenseToSynset(selectedUnit, lastSynset);
+                } catch(InvalidPartOfSpeechException poe){
+                    logger().error("Error", poe);
+                } catch (InvalidLexiconException lox){
+                    logger().error("Error", lox);
+                }
             }
             Collection<Sense> sensesInSynset = RemoteService.senseRemote.findBySynset(lastSynset, LexiconManager.getInstance().getLexiconsIds());
             listModel.setCollection(sensesInSynset); //TODO sprawdzić, czy nie da rady zrobić tego bez pobierania jednostek
@@ -428,7 +437,13 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         Synset newSynset = RemoteService.synsetRemote.save(synsetToSave);
 
         for (Sense sense : selectedUnits) {
-            RemoteService.synsetRemote.addSenseToSynset(sense, newSynset);
+            try {
+                RemoteService.synsetRemote.addSenseToSynset(sense, newSynset);
+            } catch(InvalidPartOfSpeechException poe){
+                logger().error("Error", poe);
+            } catch (InvalidLexiconException lox){
+                logger().error("Error", lox);
+            }
         }
 
         RemoteService.synsetRelationRemote.makeRelation(lastSynset, newSynset, relationType);

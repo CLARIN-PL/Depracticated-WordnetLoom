@@ -8,6 +8,8 @@ import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.exception.InvalidLexiconException;
+import pl.edu.pwr.wordnetloom.synset.exception.InvalidPartOfSpeechException;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.synset.repository.SynsetAttributesRepository;
@@ -32,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
 
 @Stateless
 @SecurityDomain("wordnetloom")
@@ -148,7 +149,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @RolesAllowed({"USER", "ADMIN"})
     @Override
-    public Synset addSenseToSynset(Sense sense, Synset synset) {
+    public Synset addSenseToSynset(Sense sense, Synset synset) throws InvalidLexiconException, InvalidPartOfSpeechException {
 
         Synset saved = synset;
 
@@ -166,6 +167,16 @@ public class SynsetServiceBean implements SynsetServiceLocal {
         }
 
         List<Sense> sensesInSynset = senseService.findBySynset(synset.getId());
+        sensesInSynset.stream()
+                .findFirst()
+                .ifPresent(s -> {
+                    if(!sense.getPartOfSpeech().equals(s.getPartOfSpeech())){
+                        throw new InvalidPartOfSpeechException();
+                    }
+                    if(!sense.getLexicon().equals(s.getLexicon())){
+                        throw new  InvalidLexiconException();
+                    }
+                });
 
         if (sensesInSynset.contains(sense)) {
             return saved;
