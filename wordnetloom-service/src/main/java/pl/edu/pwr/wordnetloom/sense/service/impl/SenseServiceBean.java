@@ -12,6 +12,8 @@ import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceRemote;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.word.model.Word;
+import pl.edu.pwr.wordnetloom.word.service.WordServiceLocal;
 
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.PermitAll;
@@ -39,6 +41,9 @@ public class SenseServiceBean implements SenseServiceLocal {
     @Inject
     Validator validator;
 
+    @Inject
+    WordServiceLocal wordServiceLocal;
+
     @Override
     public Sense clone(Sense unit) {
         return senseRepository.clone(unit);
@@ -55,7 +60,18 @@ public class SenseServiceBean implements SenseServiceLocal {
     @Override
     public Sense save(Sense sense) {
         ValidationUtils.validateEntityFields(validator, sense);
+
+        if(sense.getWord().getId() == null){
+            Word w = wordServiceLocal.add(sense.getWord());
+            sense.setWord(w);
+        }
+
         if (sense.getId() != null) {
+            Sense old =  senseRepository.findById(sense.getId());
+            if(!old.getLexicon().equals(sense.getLexicon()) ||
+                    !old.getWord().equals(sense.getWord()) || !old.getPartOfSpeech().equals(sense.getPartOfSpeech())){
+                sense.setVariant(senseRepository.findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech()));
+            }
             return senseRepository.update(sense);
         }
         sense.setVariant(senseRepository.findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech()));

@@ -2,10 +2,6 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tree.WebTree;
-//import org.hibernate.dialect.unique.DefaultUniqueDelegate;
-import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewLexicalRelationWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -20,13 +16,10 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
-//import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import se.datadosen.component.RiverLayout;
-import sun.plugin2.message.Message;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -36,9 +29,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.List;
+
 
 /**
  * [View User Interface] Displays a list of lexical relations for given unit.
@@ -117,35 +110,34 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
             protected String doInBackground() throws Exception {
                 root_from.removeAllChildren();
                 root_to.removeAllChildren();
-                List<SenseRelation> relationsFrom =  RemoteService.senseRelationRemote.findRelations((Sense)object, null, true, false);
-                List<SenseRelation> relationTo = RemoteService.senseRelationRemote.findRelations((Sense)object, null, false, false);
+                List<SenseRelation> relationsFrom = RemoteService.senseRelationRemote.findRelations((Sense) object, null, true, false);
+                List<SenseRelation> relationTo = RemoteService.senseRelationRemote.findRelations((Sense) object, null, false, false);
                 fillRootRelations(root_from, relationsFrom, true);
                 fillRootRelations(root_to, relationTo, false);
 
                 return null;
             }
 
-            private void fillRootRelations(DefaultMutableTreeNode nodeToFill, List<SenseRelation> relations, boolean displayChild)
-            {
+            private void fillRootRelations(DefaultMutableTreeNode nodeToFill, List<SenseRelation> relations, boolean displayChild) {
                 Map<Long, DefaultMutableTreeNode> relationTypeNodeMap = new HashMap<>();
                 DefaultMutableTreeNode node;
                 DefaultMutableTreeNode senseNode;
                 Sense senseToDisplay;
-                for(SenseRelation relation : relations) {
-                    if(!relationTypeNodeMap.containsKey(relation.getRelationType().getId())){
+                for (SenseRelation relation : relations) {
+                    if (!relationTypeNodeMap.containsKey(relation.getRelationType().getId())) {
                         node = new DefaultMutableTreeNode(relation);
                         node.setUserObject(relation);
                         relationTypeNodeMap.put(relation.getRelationType().getId(), node);
                     }
 
-                    if(relation.getChild() != null && relation.getParent() != null){
+                    if (relation.getChild() != null && relation.getParent() != null) {
                         senseToDisplay = displayChild ? relation.getChild() : relation.getParent();
                         senseNode = new DefaultMutableTreeNode(new Pair<>(senseToDisplay, relation));
                         DefaultMutableTreeNode parentNode = relationTypeNodeMap.get(relation.getRelationType().getId());
                         parentNode.add(senseNode);
                     }
                 }
-                for(Map.Entry<Long, DefaultMutableTreeNode> entry : relationTypeNodeMap.entrySet()){
+                for (Map.Entry<Long, DefaultMutableTreeNode> entry : relationTypeNodeMap.entrySet()) {
                     nodeToFill.add(entry.getValue());
                 }
             }
@@ -248,7 +240,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                 if (dmtn.isRoot()) {
                     setIcon(openIcon);
                 } else /* else, because, root shouldn't be relation */ if (dmtn.getUserObject() instanceof SenseRelation) {
-                    Long nameId = ((SenseRelation)dmtn.getUserObject()).getRelationType().getName();
+                    Long nameId = ((SenseRelation) dmtn.getUserObject()).getRelationType().getName();
                     setText(LocalisationManager.getInstance().getLocalisedString(nameId));
                 } else if (dmtn.getUserObject() instanceof Pair<?, ?>) {
                     Pair<Sense, SenseRelation> pair = (Pair<Sense, SenseRelation>) dmtn.getUserObject();
@@ -268,9 +260,9 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         Collection<Sense> selectedUnits = UnitsListFrame.showModal(workbench, point.x, point.y, true, null, created);
         Sense rootSense = (Sense) root.getUserObject(); //TODO zobaczyć, czy zwróci poprawny obiekt
 
-        if(areSelectedUnits(selectedUnits)) {
-            for(Sense sense : selectedUnits) {
-                if(sense.getId().equals(rootSense.getId())){
+        if (areSelectedUnits(selectedUnits)) {
+            for (Sense sense : selectedUnits) {
+                if (sense.getId().equals(rootSense.getId())) {
                     DialogBox.showError(Messages.FAILURE_SOURCE_UNIT_SAME_AS_TARGET);
                     return;
                 }
@@ -283,11 +275,11 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
             Sense parentSense = relationWindow.getParentSense();
             Sense childSense = relationWindow.getChildSense();
 
-            if(RemoteService.senseRelationRemote.relationExists(parentSense, childSense, relationType)){
+            if (RemoteService.senseRelationRemote.relationExists(parentSense, childSense, relationType)) {
                 showRelationExistsError(relationType, parentSense, childSense);
                 return;
             }
-            if (saveRelation(relationType, parentSense, childSense)){
+            if (saveRelation(relationType, parentSense, childSense)) {
                 refresh();
             }
         }
@@ -295,12 +287,12 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
     private boolean saveRelation(RelationType relationType, Sense parentSense, Sense childSense) {
         boolean saveResult = RemoteService.senseRelationRemote.makeRelation(parentSense, childSense, relationType);
-        if(!saveResult){
+        if (!saveResult) {
             //TODO wyświetlić komunikat o niepowodzeniu zapisu
             return false;
         }
         // sprawdzanie, czy relacja odwrotna istnieje
-        if(relationType.getReverse() != null){
+        if (relationType.getReverse() != null) {
             RelationType reverseRelationType = RemoteService.relationTypeRemote.findReverseByRelationType(relationType.getId());
             String reverseRelationName = LocalisationManager.getInstance().getLocalisedString(reverseRelationType.getName());
             //TODO dorobić pobieranie i ustawianie testów
@@ -310,7 +302,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
     private void showRelationExistsError(RelationType relationType, Sense parentSense, Sense childSense) {
         String relationTypeName = LocalisationManager.getInstance().getLocalisedString(relationType.getName());
-        DialogBox.showError(String.format(Messages.FAILURE_RELATION_EXISTS,relationTypeName,
+        DialogBox.showError(String.format(Messages.FAILURE_RELATION_EXISTS, relationTypeName,
                 parentSense.getWord().getWord(), childSense.getWord().getWord()));
     }
 
@@ -320,9 +312,9 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
     private void removeRelation() {
         SenseRelation senseRelation = getSelectedSenseRelation();
-        if(showSureToRemoveDialogBox(senseRelation.getRelationType().getName(), Messages.QUESTION_SURE_TO_REMOVE_RELATION)){
+        if (showSureToRemoveDialogBox(senseRelation.getRelationType().getName(), Messages.QUESTION_SURE_TO_REMOVE_RELATION)) {
             RemoteService.senseRelationRemote.delete(senseRelation);
-            if(checkRemoveReverseRelation(senseRelation)){
+            if (checkRemoveReverseRelation(senseRelation)) {
                 SenseRelation reverseRelations = RemoteService.senseRelationRemote.findRelation(senseRelation.getChild(), senseRelation.getParent(), senseRelation.getRelationType().getReverse());
                 RemoteService.senseRelationRemote.delete(reverseRelations);
             }
@@ -340,13 +332,13 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         return senseRelation.getRelationType().getReverse() != null
                 && RemoteService.senseRelationRemote.relationExists(senseRelation.getChild(), senseRelation.getParent(), senseRelation.getRelationType().getReverse())
                 && (senseRelation.getRelationType().isAutoReverse()
-                    || showSureToRemoveDialogBox(senseRelation.getRelationType().getReverse().getName(),Messages.QUESTION_SURE_TO_REMOVE_REVERSE_RELATION));
+                || showSureToRemoveDialogBox(senseRelation.getRelationType().getReverse().getName(), Messages.QUESTION_SURE_TO_REMOVE_REVERSE_RELATION));
 
     }
 
-    private boolean showSureToRemoveDialogBox(Long relationNameId, final String message) {
+    private boolean showSureToRemoveDialogBox(Long relationNameId, String message) {
         return DialogBox.showYesNo(String.format(message,
-                LocalisationManager.getInstance().getLocalisedString(relationNameId)))==DialogBox.YES;
+                LocalisationManager.getInstance().getLocalisedString(relationNameId))) == DialogBox.YES;
     }
 
     /**
@@ -354,9 +346,9 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        if(event.getSource() == addRelationButton){
+        if (event.getSource() == addRelationButton) {
             addRelation();
-        } else if(event.getSource() == deleteRelationButton) {
+        } else if (event.getSource() == deleteRelationButton) {
             removeRelation();
         }
     }
@@ -364,10 +356,11 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
     @Override
     public void valueChanged(TreeSelectionEvent evt) {
         DefaultMutableTreeNode selectedNode = tree.getSelectedNode();
-        if(selectedNode.isLeaf() && !root.isNodeChild(selectedNode))
+        if (selectedNode.isLeaf() && !root.isNodeChild(selectedNode)) {
             deleteRelationButton.setEnabled(true);
-        else
+        } else {
             deleteRelationButton.setEnabled(false);
+        }
     }
 
 }
