@@ -119,31 +119,6 @@ public class RelationsDA {
     }
 
     /**
-     * odczytanie pierwszej jednostki synsetu
-     *
-     * @param synset - synset
-     * @return pierwsza jednostka
-     */
-    public static Sense getFirstUnit(Synset synset) {
-//        Collection<Sense> units = RemoteUtils.lexicalUnitRemote.dbFullGetUnits(synset, 1, LexiconManager.getInstance().getLexicons());
-//        for (Sense unit : units) {
-//            return unit;
-//        }
-        return null;
-    }
-
-    /**
-     * utworzenie nowego synsetu
-     *
-     * @return nowy synset
-     */
-    public static Synset newSynset() {
-        Synset newSynset = new Synset();
-        newSynset.setSplit(1);
-        return null;//RemoteUtils.synsetRemote.updateSynset(newSynset);
-    }
-
-    /**
      * odczytanie czesci mowy synsetu
      *
      * @param synset   - synset
