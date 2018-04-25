@@ -312,7 +312,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
     private void removeRelation() {
         SenseRelation senseRelation = getSelectedSenseRelation();
-        if (showSureToRemoveDialogBox(senseRelation.getRelationType().getName(), Messages.QUESTION_SURE_TO_REMOVE_RELATION)) {
+        if (showSureToRemoveDialogBox(senseRelation.getRelationType().getName(), Messages.QUESTION_SURE_TO_REMOVE_RELATION) ) {
             RemoteService.senseRelationRemote.delete(senseRelation);
             if (checkRemoveReverseRelation(senseRelation)) {
                 SenseRelation reverseRelations = RemoteService.senseRelationRemote.findRelation(senseRelation.getChild(), senseRelation.getParent(), senseRelation.getRelationType().getReverse());
@@ -356,11 +356,14 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
     @Override
     public void valueChanged(TreeSelectionEvent evt) {
         DefaultMutableTreeNode selectedNode = tree.getSelectedNode();
+        if(selectedNode == null)
+        {
+            return;
+        }
         if (selectedNode.isLeaf() && !root.isNodeChild(selectedNode)) {
             deleteRelationButton.setEnabled(true);
         } else {
             deleteRelationButton.setEnabled(false);
         }
     }
-
 }

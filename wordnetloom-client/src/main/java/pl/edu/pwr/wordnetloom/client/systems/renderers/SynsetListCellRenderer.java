@@ -3,7 +3,6 @@ package pl.edu.pwr.wordnetloom.client.systems.renderers;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.scroll.WebScrollPane;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SynsetFormat;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LazyScrollPane;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 import javax.swing.*;

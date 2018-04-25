@@ -33,4 +33,6 @@ public interface RelationTypeServiceRemote {
     RelationType findByIdWithDependencies(Long id);
 
     RelationType findByName(String name);
+
+    RelationType findParent(Long childId);
 }

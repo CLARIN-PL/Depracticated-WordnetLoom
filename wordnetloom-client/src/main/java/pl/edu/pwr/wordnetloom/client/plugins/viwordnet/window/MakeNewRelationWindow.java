@@ -4,6 +4,7 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.utils.RelationTypeFormat;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -160,7 +161,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
         if(relationType.isAutoReverse() ) {
             saveResult = RemoteService.synsetRelationRemote.makeRelation(child, parent, reverseRelationType); // tworzenie relacji odwrotnej
         } else if(reverseRelationType != null){
-            String reverseRelationTypeName = LocalisationManager.getInstance().getLocalisedString(reverseRelationType.getName());
+            String reverseRelationTypeName = RelationTypeFormat.getText(reverseRelationType);
             if(DialogBox.showYesNo(String.format(Messages.QUESTION_CREATE_CONNECTION_FOR_REVERSE_RELATION, reverseRelationTypeName)) == DialogBox.YES) {
                 saveResult = RemoteService.synsetRelationRemote.makeRelation(child, parent, reverseRelationType);
             }

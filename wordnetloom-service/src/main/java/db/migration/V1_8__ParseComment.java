@@ -40,7 +40,6 @@ public class V1_8__ParseComment implements JdbcMigration {
             results = parser.parse(attribute.getComment());
             fixedAttribute = setAttributes(attribute, results, connection);
             updateAttributes(fixedAttribute, connection);
-            //TODO zapisanie
         }
     }
 
