@@ -34,9 +34,6 @@ public class V1_8__ParseComment implements JdbcMigration {
         List<ParserResult> results;
         Attribute fixedAttribute;
         for (Attribute attribute : attributes) {
-            if(attribute.getId() == (73563)){
-                System.out.println();
-            }
             results = parser.parse(attribute.getComment());
             fixedAttribute = setAttributes(attribute, results, connection);
             updateAttributes(fixedAttribute, connection);
