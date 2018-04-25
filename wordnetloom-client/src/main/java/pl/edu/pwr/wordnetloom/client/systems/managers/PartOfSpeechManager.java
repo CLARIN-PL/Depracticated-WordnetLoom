@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PartOfSpeechManager implements Loggable{
+public class PartOfSpeechManager implements Loggable {
 
     private static PartOfSpeechManager instance;
 
@@ -40,21 +40,6 @@ public class PartOfSpeechManager implements Loggable{
                 .orElse(null);
     }
 
-    @Deprecated
-    public PartOfSpeech decode(String s) {
-        PartOfSpeech pos = null;
-        if (s == null || s.equals("default")) {
-            pos = partOfSpeeches.get(0);
-        }
-
-//        for (int i = 0; i < partOfSpeeches.size() && pos == null; i++) {
-//            if (partOfSpeeches.get(i).getName(languageCode).toString().equals(s)) {
-//                pos = partOfSpeeches.get(i);
-//            }
-//        }
-        return pos;
-    }
-
     public List<PartOfSpeech> getByLexiconId(Long id) {
         List<PartOfSpeech> filtred = new ArrayList<>();
 
@@ -73,7 +58,7 @@ public class PartOfSpeechManager implements Loggable{
 
     public HashMap<PartOfSpeech, Color> getBackgroundColors() {
         HashMap<PartOfSpeech, Color> backgroundColors = new HashMap<>();
-        partOfSpeeches.forEach( p -> {
+        partOfSpeeches.forEach(p -> {
             Color c;
             try {
                 c = Color.decode(p.getColor());
@@ -84,7 +69,7 @@ public class PartOfSpeechManager implements Loggable{
 
             backgroundColors.put(p, c);
         });
-        return  backgroundColors;
+        return backgroundColors;
     }
 
     public List<PartOfSpeech> getAll() {

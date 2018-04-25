@@ -28,14 +28,14 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -457,11 +457,6 @@ public class ViWordNetService extends AbstractService implements
         setCursor(MERGE_SYNSETS_CURSOR, mergeSynsetsMode);
     }
 
-
-    private void newCandRelation(ViwnNodeSynset synset, ViwnNodeWord word) {
-        throw new NotImplementedException();
-    }
-
     public void mergeSynsets(Object second) {
         if (first instanceof ViwnNodeSynset && second instanceof ViwnNodeSynset) {
             ViwnNodeSynset src = (ViwnNodeSynset) first;
@@ -504,12 +499,7 @@ public class ViWordNetService extends AbstractService implements
     public void makeRelation(Object second) {
         if (first instanceof ViwnNodeSynset && second instanceof ViwnNodeSynset) {
             makeSynsetRelation((ViwnNodeSynset) second);
-        } else if (first instanceof ViwnNodeSynset && second instanceof ViwnNodeWord) {
-            makeCandidateRelation((ViwnNodeSynset) first, (ViwnNodeWord) second);
-        } else if (second instanceof ViwnNodeSynset && first instanceof ViwnNodeWord) {
-            makeCandidateRelation((ViwnNodeSynset) second, (ViwnNodeWord) first);
-        } // make relation between lexical units and one of lexical units from synset
-        else if (first instanceof Sense && second instanceof ViwnNodeSynset) {
+        } else if (first instanceof Sense && second instanceof ViwnNodeSynset) {
             makeUnitRelation((Sense) first, (ViwnNodeSynset) second);
         } else if (first instanceof Sense && second instanceof Sense) {
             makeUnitRelation((Sense) first, (Sense) second);
@@ -551,10 +541,6 @@ public class ViWordNetService extends AbstractService implements
                 gv.getUI().relationAdded(src, dst);
             }
         }
-    }
-
-    private void makeCandidateRelation(ViwnNodeSynset synset, ViwnNodeWord word) {
-        newCandRelation(synset, word);
     }
 
     private void makeUnitRelation(Sense sense, ViwnNodeSynset nodeSynset) {
