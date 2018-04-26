@@ -35,10 +35,10 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.synset.exception.InvalidLexiconException;
 import pl.edu.pwr.wordnetloom.synset.exception.InvalidPartOfSpeechException;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -61,20 +61,6 @@ import java.util.List;
 public class SynsetStructureViewUI extends AbstractViewUI implements
         ActionListener, ListSelectionListener, CaretListener, MouseListener, Loggable {
 
-    private ViWordNetService viWordNetService;
-
-    /**
-     * relacja dla synsetow
-     */
-    public static final int SYNSET_RELATIONS = 0;
-    /**
-     * przejscie do perspektywy leksyklanej
-     */
-    public static final int LEXICAL_PERSPECTIVE = 1;
-    /**
-     * zmienilo sie zaznaczenie na liscie
-     */
-    private static final int LIST_SELECTION_CHANGED = 2;
     /**
      * usunieto jednostke z synsetu
      */
@@ -83,7 +69,16 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
      * nowa jednostka zostala stworzona (dodane do systemu)
      */
     public static final int UNIT_CREATED = 4;
-
+    /**
+     * zmienilo sie zaznaczenie na liscie
+     */
+    private static final int LIST_SELECTION_CHANGED = 2;
+    private final SimpleListenersContainer clickListeners = new SimpleListenersContainer();
+    private final SimpleListenersContainer synsetUpdateListeners = new SimpleListenersContainer();
+    private final UnitsInSynsetListModel listModel = new UnitsInSynsetListModel();
+    private final ViwnGraphViewUI graphUI;
+    ArrayList<Sense> lastSelectedUnits = new ArrayList<>();
+    private ViWordNetService viWordNetService;
     private WebList unitsList;
     private WebTextField synsetID;
     private WebTextField princentonID;
@@ -94,19 +89,22 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             buttonRelations, buttonSwitchToLexicalPerspective, buttonToNew;
     private Collection<Sense> lastUnits = null;
     private MTextArea commentValue = null;
-
-    ArrayList<Sense> lastSelectedUnits = new ArrayList<>();
-
-    private final SimpleListenersContainer clickListeners = new SimpleListenersContainer();
-    private final SimpleListenersContainer synsetUpdateListeners = new SimpleListenersContainer();
-
-    private final UnitsInSynsetListModel listModel = new UnitsInSynsetListModel();
     private Synset lastSynset = null;
-    private final ViwnGraphViewUI graphUI;
 
 
     public SynsetStructureViewUI(ViwnGraphViewUI graphUI) {
         this.graphUI = graphUI;
+    }
+
+    /**
+     * formatowanie wartości, tak aby nie bylo nulla
+     *
+     * @param value - wartość wejsciowa
+     * @return wartośc wjesciowa lub "brak danych" gdy był null
+     */
+    private static String formatValue(String value) {
+        return (value == null || value.length() == 0) ? Labels.VALUE_UNKNOWN
+                : value;
     }
 
     /**
@@ -211,7 +209,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         installViewScopeShortCut(buttonSwitchToLexicalPerspective,
                 KeyEvent.CTRL_MASK, KeyEvent.VK_L);
 
-        MButtonPanel buttonsPanel = new MButtonPanel(buttonUp, buttonDown,buttonAdd, buttonDelete, buttonToNew)
+        MButtonPanel buttonsPanel = new MButtonPanel(buttonUp, buttonDown, buttonAdd, buttonDelete, buttonToNew)
                 .withVerticalLayout();
 
         // dodanie do okna
@@ -219,7 +217,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 unitsList));
 
         WebPanel synsetContentPanel = new WebPanel();
-        synsetContentPanel.setLayout(new RiverLayout(0,0));
+        synsetContentPanel.setLayout(new RiverLayout(0, 0));
 
         WebScrollPane scroll = new WebScrollPane(unitsList);
         scroll.setMaximumSize(new Dimension(0, 140));
@@ -232,7 +230,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         content.add("br hfill", synsetContentPanel);
 
         WebPanel properties = new WebPanel();
-        properties.setLayout(new RiverLayout(0,0));
+        properties.setLayout(new RiverLayout(0, 0));
 
         properties.add("br vtop", new JLabel(Labels.COMMENT_COLON));
         properties.add("br", commentValue);
@@ -313,7 +311,9 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         listModel.setCollection(sensesList);
     }
 
-    /** Update synset label on the graph from name of first (head) unit in synset */
+    /**
+     * Update synset label on the graph from name of first (head) unit in synset
+     */
     private void updateNodeNameOnGraph() {
         ViwnNode node = graphUI.getSelectedNode();
         if (node != null && node instanceof ViwnNodeSynset) {
@@ -358,9 +358,9 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
                 try {
                     RemoteService.synsetRemote.addSenseToSynset(selectedUnit, lastSynset);
-                } catch(InvalidPartOfSpeechException poe){
+                } catch (InvalidPartOfSpeechException poe) {
                     logger().error("Error", poe);
-                } catch (InvalidLexiconException lox){
+                } catch (InvalidLexiconException lox) {
                     logger().error("Error", lox);
                 }
             }
@@ -424,7 +424,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         // wyświetlenie okienka do ustalenia relacji między starym i nowym synsetem
         PartOfSpeech partOfSpeech = listModel.getObjectAt(0).getPartOfSpeech();
 
-        final RelationType relationType = RelationTypeFrame.showModal(workbench, RelationArgument.SYNSET_RELATION, partOfSpeech, lastSynset.getSenses(), selectedUnits);
+        RelationType relationType = RelationTypeFrame.showModal(workbench, RelationArgument.SYNSET_RELATION, partOfSpeech, lastSynset.getSenses(), selectedUnits);
 
         if (relationType == null) {
             return;
@@ -439,9 +439,9 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         for (Sense sense : selectedUnits) {
             try {
                 RemoteService.synsetRemote.addSenseToSynset(sense, newSynset);
-            } catch(InvalidPartOfSpeechException poe){
+            } catch (InvalidPartOfSpeechException poe) {
                 logger().error("Error", poe);
-            } catch (InvalidLexiconException lox){
+            } catch (InvalidLexiconException lox) {
                 logger().error("Error", lox);
             }
         }
@@ -673,17 +673,6 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             }
         }
         return selectedUnits;
-    }
-
-    /**
-     * formatowanie wartości, tak aby nie bylo nulla
-     *
-     * @param value - wartość wejsciowa
-     * @return wartośc wjesciowa lub "brak danych" gdy był null
-     */
-    private static String formatValue(String value) {
-        return (value == null || value.length() == 0) ? Labels.VALUE_UNKNOWN
-                : value;
     }
 
     /**

@@ -53,8 +53,8 @@ public class RemoteConnectionProvider implements Loggable {
     private Context getInitialContext() throws NamingException, IOException {
         Context localContext = initialContext;
         if (localContext == null) {
-            final EJBClientConfiguration ejbClientConfiguration = new PropertiesBasedEJBClientConfiguration(getEjbProperties());
-            final ConfigBasedEJBClientContextSelector selector = new ConfigBasedEJBClientContextSelector(ejbClientConfiguration);
+            EJBClientConfiguration ejbClientConfiguration = new PropertiesBasedEJBClientConfiguration(getEjbProperties());
+            ConfigBasedEJBClientContextSelector selector = new ConfigBasedEJBClientContextSelector(ejbClientConfiguration);
             EJBClientContext.setSelector(selector);
             initialContext = localContext = new InitialContext(getEjbProperties());
         }
@@ -84,7 +84,7 @@ public class RemoteConnectionProvider implements Loggable {
     private <T> String getLookupName(Class<T> remoteClass, String beanName) {
         String slash = "/";
         String localBeanName = remoteClass.getSimpleName().replace("Remote", beanName);
-        final String interfaceName = remoteClass.getName();
+        String interfaceName = remoteClass.getName();
         String appName = "wordnetloom-server-2.0";
         String moduleName = "wordnetloom-service-2.0";
         String distinctName = "";
@@ -97,12 +97,12 @@ public class RemoteConnectionProvider implements Loggable {
         return name;
     }
 
-    public void setUserSessionData(UserSessionData data) {
-        userSessionData = data;
+    public UserSessionData getUserSessionData() {
+        return userSessionData;
     }
 
-    public  UserSessionData getUserSessionData(){
-        return userSessionData;
+    public void setUserSessionData(UserSessionData data) {
+        userSessionData = data;
     }
 
     public User getUser() {
@@ -112,9 +112,11 @@ public class RemoteConnectionProvider implements Loggable {
         }
         return userSessionData.getUser();
     }
-    public boolean hasRole(Role r){
+
+    public boolean hasRole(Role r) {
         return getUser().getRole().equals(r);
     }
+
     public String getLanguage() {
         return userSessionData.getLanguage();
     }

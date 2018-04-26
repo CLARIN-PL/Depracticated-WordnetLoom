@@ -28,8 +28,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 
-import static com.alee.managers.notification.NotificationIcon.image;
-
 /**
  * Klasa będąca kontenerem na menu zawierająca metody do dodawania i
  * przeszukiwania zainstalowanych menu
@@ -43,7 +41,7 @@ public class MenuHolder {
     public MenuHolder() {
 
         menuBar = new WebMenuBar();
-        menuBar.setLayout( new RiverLayout());
+        menuBar.setLayout(new RiverLayout());
         WebLabel label = new WebLabel("WordnetLoom 2.0");
         label.setBoldFont();
         ImageIcon icon = new ImageIcon(Toolkit.getDefaultToolkit().getImage("/icons/wordnet.gif"));
@@ -67,8 +65,7 @@ public class MenuHolder {
      *
      * @param item - element do zainstalowania
      */
-    public void install(WebMenu item, String alignment)
-    {
+    public void install(WebMenu item, String alignment) {
         menuBar.add(alignment, item);
     }
 
@@ -117,9 +114,7 @@ public class MenuHolder {
      * @param shortCuts - kolekcja skrótów do zainstalowania
      */
     public void setShortCuts(Collection<ShortCut> shortCuts) {
-        // shortCutsMenu.removeAll();
 
-        // po wszystkich skrotach
         for (ShortCut cut : shortCuts) {
             MMenuItem newItem = new MMenuItem(".")
                     .withKeyStroke(cut.getKeyStroke());

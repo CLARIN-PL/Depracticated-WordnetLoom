@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+//TODO Refaktor do usuniecia
 public class RelationsDA {
 
     private RelationsDA() {

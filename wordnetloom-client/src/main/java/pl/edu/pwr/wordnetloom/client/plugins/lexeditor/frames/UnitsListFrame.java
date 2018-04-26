@@ -115,7 +115,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
 
         UnitsListFrame frame = new UnitsListFrame(workbench, x, y);
         frame.setFilterObject(filterObject);
-        frame.setMultSelect(multiSelect);
+        frame.setMultiSelect(multiSelect);
         frame.execute(filterObject);
         unitWasCreated.setValue(frame.unitWasCreated);
         return frame.selectedElements;
