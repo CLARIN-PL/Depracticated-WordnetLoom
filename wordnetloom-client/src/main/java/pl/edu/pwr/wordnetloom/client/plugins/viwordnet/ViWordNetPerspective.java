@@ -8,7 +8,6 @@ import pl.edu.pwr.wordnetloom.client.systems.listeners.CloseableTabbedPaneListen
 import pl.edu.pwr.wordnetloom.client.systems.ui.CloseableTabbedPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MSplitPane;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractPerspective;
-import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ShortCut;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.View;
@@ -28,21 +27,19 @@ import java.beans.PropertyChangeListener;
 public class ViWordNetPerspective extends AbstractPerspective implements
         CloseableTabbedPaneListener, PropertyChangeListener, Loggable {
 
-    private ViWordNetService service = null;
-
     public static final int SPLIT_LEFT_VIEW = 0;
     public static final int SPLIT_MAIN_VIEW = 1;
     public static final int SPILT_LOCKER_VIEW = 4;
     public static final int SPLIT_RIGHT_TOP_VIEW = 2;
     public static final int SPLIT_RIGHT_BOTTOM_VIEW = 3;
     public static final int SPLIT_RIGHT_CENTRAL_VIEW = 5;
-
     WebTabbedPane leftView;
     WebTabbedPane graphView;
     WebTabbedPane rightTopView;
     WebTabbedPane rightBottomView;
     WebTabbedPane rightCentralView;
     WebTabbedPane locker;
+    private ViWordNetService service = null;
 
     /**
      * @param name
@@ -107,6 +104,7 @@ public class ViWordNetPerspective extends AbstractPerspective implements
 
         MSplitPane splitSearch = new MSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, leftView, splitMainVertical);
+
         splitSearch.setStartDividerLocation(210);
         splitSearch.setResizeWeight(0.0f);
 

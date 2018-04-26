@@ -7,25 +7,25 @@ import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.SynsetsFrame;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
-import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
-import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
-import pl.edu.pwr.wordnetloom.client.systems.ui.*;
-import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
-import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
+import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
+import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
+import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import se.datadosen.component.RiverLayout;
 
@@ -37,31 +37,24 @@ import java.awt.event.*;
 import java.util.List;
 
 /**
- *
  * Lexical unit search panel
- *
  */
 public class LexicalUnitsViewUI extends AbstractViewUI implements
         ActionListener, ListSelectionListener, KeyListener, MouseListener {
 
     private final int LIMIT = 50;
-
+    private final boolean quietMode = false;
+    LazyScrollPane unitsListScrollPane;
     private SenseCriteria criteria;
     private ToolTipList unitsList;
     private WebLabel infoLabel;
     private SenseCriteriaDTO lastSenseCriteria;
     private int allUnitsCount;
-
     private MButton btnSearch, btnReset, btnNew, btnDelete, btnNewWithSyns, btnAddToSyns;
-
-    private final boolean quietMode = false;
-
     private DefaultListModel<Sense> listModel = new DefaultListModel<>();
     private Sense lastSelectedValue = null;
 
-    LazyScrollPane unitsListScrollPane;
-
-    private SenseCriteria initSenseCriteria(){
+    private SenseCriteria initSenseCriteria() {
         SenseCriteria senseCriteria = new SenseCriteria();
         senseCriteria.getDomainComboBox().addActionListener(this);
         senseCriteria.getPartsOfSpeechComboBox().addActionListener(this);
@@ -118,7 +111,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         criteriaPanel.setLayout(new RiverLayout());
-        criteriaPanel.add("hfill", scroll);
+        criteriaPanel.add("hfill vfill", scroll);
         criteriaPanel.add("br center", btnSearch);
         criteriaPanel.add("center", btnReset);
 
@@ -140,26 +133,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
         MSplitPane split = new MSplitPane(0, criteriaPanel, resultListPanel);
 
-        content.setLayout(new RiverLayout(0,0));
+        content.setLayout(new RiverLayout(0, 0));
         content.add("hfill vfill", split);
-    }
-
-    private class UnitListCellRenderer extends WebLabel implements ListCellRenderer {
-        private final String FONT_NAME = "Courier New";
-        private final int FONT_SIZE = 14;
-        final Font FONT = new Font(FONT_NAME, Font.PLAIN, FONT_SIZE);
-
-        UnitListCellRenderer(){
-            this.setDrawShade(false);
-            this.setFont(FONT);
-            this.setMargin(1,2,1,2);
-        }
-
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            this.setText(SenseFormat.getTextWithLexicon((Sense)value));
-            return this;
-        }
     }
 
     @Override
@@ -175,13 +150,13 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         }
 
         int returnValue = unitsList.getSelectedIndex();
-        if(returnValue < 0){
+        if (returnValue < 0) {
             return;
         }
         Sense unit = listModel.get(returnValue);
 
         btnDelete.setEnabled(unit != null);
-        btnAddToSyns.setEnabled(unit != null  && !LexicalDA.checkIfInAnySynset(unit));
+        btnAddToSyns.setEnabled(unit != null && !LexicalDA.checkIfInAnySynset(unit));
 
         unitsList.setEnabled(false);
         listeners.notifyAllListeners(unitsList.getSelectedIndices().length == 1 ? unit : null);
@@ -195,9 +170,10 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         criteria.getLexiconComboBox().refreshLexicons();
     }
 
-    /** Metoda ładująca nową listę jednostek
-     *  1. wyczyszczenie listy
-     *  2. pobranie jednostek i umieszczenie ich na liście
+    /**
+     * Metoda ładująca nową listę jednostek
+     * 1. wyczyszczenie listy
+     * 2. pobranie jednostek i umieszczenie ich na liście
      */
     public void loadUnits() {
         //wyczyszczenie listy jednostek
@@ -211,12 +187,12 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         for (Sense sense : units) {
             listModel.addElement(sense);
         }
-        unitsListScrollPane.setEnd(units.size()<LIMIT);
+        unitsListScrollPane.setEnd(units.size() < LIMIT);
     }
 
-    public void setInfoText(int loadedUnits, int allUnitsCount){
+    public void setInfoText(int loadedUnits, int allUnitsCount) {
         String labelText;
-        if(allUnitsCount!=0){
+        if (allUnitsCount != 0) {
             labelText = String.format(Labels.VALUE_COUNT_SIMPLE, loadedUnits + "/" + allUnitsCount);
         } else {
             labelText = "";
@@ -224,8 +200,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         infoLabel.setText(labelText);
     }
 
-    private List<Sense> getSenses(SenseCriteriaDTO dto, int limit, int offset)
-    {
+    private List<Sense> getSenses(SenseCriteriaDTO dto, int limit, int offset) {
         SenseCriteriaDTO senseCriteriaDTO = dto;
         senseCriteriaDTO.setLimit(limit);
         senseCriteriaDTO.setOffset(offset);
@@ -234,12 +209,12 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         return RemoteService.senseRemote.findByCriteria(senseCriteriaDTO);
     }
 
-    /** Ładuje kolejne jednostki do listy
-     *
+    /**
+     * Ładuje kolejne jednostki do listy
      */
     public void loadMoreUnits() {
         List<Sense> units = getSenses(lastSenseCriteria, lastSenseCriteria.getLimit(), listModel.getSize());
-        for(Sense sense : units) {
+        for (Sense sense : units) {
             listModel.addElement(sense);
         }
         setInfoText(listModel.getSize(), allUnitsCount);
@@ -303,7 +278,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                             }
                             workbench.setBusy(false);
                         }
-                        setInfoText(0,0); //TODO to może będzie można wyrzucić
+                        setInfoText(0, 0); //TODO to może będzie można wyrzucić
                     });
                 }
                 lastSelectedValue = null;
@@ -323,7 +298,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         } else if (event.getSource() == btnReset) {
             criteria.resetFields();
         } else if (event.getSource() == btnDelete) {
-           deleteSense();
+            deleteSense();
         } else if (event.getSource() == btnAddToSyns) {
             addToSynset();
         } else if (event.getSource() == btnNew) {
@@ -412,7 +387,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         Sense unit = listModel.get(i);
         assert unit.getSynset() == null;
         Synset synset = SynsetsFrame.showModal(workbench, unit);
-        if(synset != null) { // unit was move to other synset
+        if (synset != null) { // unit was move to other synset
             listeners.notifyAllListeners(unit);
         }
     }
@@ -428,20 +403,20 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     private void addNewSense() {
         Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, null);
-        if(newUnit != null){
+        if (newUnit != null) {
             Sense savedUnit = save(newUnit);
             insertSenseToList(savedUnit);
         }
     }
 
-    private Sense save(Pair<Sense, SenseAttributes> swa){
+    private Sense save(Pair<Sense, SenseAttributes> swa) {
         Sense savedUnit = RemoteService.senseRemote.save(swa.getA());
         RemoteService.senseRemote.addSenseAttribute(savedUnit.getId(), swa.getB());
         return savedUnit;
     }
 
     private void insertSenseToList(Sense sense) {
-        if(sense == null){
+        if (sense == null) {
             return;
         }
         Sense fetchedSense = RemoteService.senseRemote.fetchSense(sense.getId());
@@ -454,7 +429,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     private void addNewSenseWithSynset() {
         Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, null);
-        if(newUnit != null) {
+        if (newUnit != null) {
             Sense savedUnit = save(newUnit);
             createNewSynsetAndAddSense(savedUnit);
             insertSenseToList(savedUnit);
@@ -498,19 +473,18 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         }
     }
 
-    public void setSelectedUnit(Sense unit) {
-        lastSelectedValue = unit;
-    }
-
     @Override
     public JComponent getRootComponent() {
         return unitsList;
     }
 
-
     public Sense getSelectedUnit() {
         int returnValue = unitsList.getSelectedIndex();
         return listModel.get(returnValue);
+    }
+
+    public void setSelectedUnit(Sense unit) {
+        lastSelectedValue = unit;
     }
 
     /**
@@ -574,6 +548,24 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             for (Sense sense : crit.getSense()) {
                 listModel.addElement(sense);
             }
+        }
+    }
+
+    private class UnitListCellRenderer extends WebLabel implements ListCellRenderer {
+        private final String FONT_NAME = "Courier New";
+        private final int FONT_SIZE = 14;
+        final Font FONT = new Font(FONT_NAME, Font.PLAIN, FONT_SIZE);
+
+        UnitListCellRenderer() {
+            setDrawShade(false);
+            setFont(FONT);
+            setMargin(1, 2, 1, 2);
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            setText(SenseFormat.getTextWithLexicon((Sense) value));
+            return this;
         }
     }
 }

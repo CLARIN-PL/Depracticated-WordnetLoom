@@ -132,6 +132,12 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
         return null;
     }
 
+    public RelationType findParent(Long childId) {
+        return getEntityManager().createQuery("SELECT rt.parent FROM RelationType rt WHERE rt.id = :id", RelationType.class)
+                .setParameter("id", childId)
+                .getSingleResult();
+    }
+
     @Override
     protected Class<RelationType> getPersistentClass() {
         return RelationType.class;

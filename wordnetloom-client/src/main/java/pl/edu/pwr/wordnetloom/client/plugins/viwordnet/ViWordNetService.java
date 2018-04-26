@@ -457,7 +457,6 @@ public class ViWordNetService extends AbstractService implements
         setCursor(MERGE_SYNSETS_CURSOR, mergeSynsetsMode);
     }
 
-
     public void mergeSynsets(Object second) {
         if (first instanceof ViwnNodeSynset && second instanceof ViwnNodeSynset) {
             ViwnNodeSynset src = (ViwnNodeSynset) first;

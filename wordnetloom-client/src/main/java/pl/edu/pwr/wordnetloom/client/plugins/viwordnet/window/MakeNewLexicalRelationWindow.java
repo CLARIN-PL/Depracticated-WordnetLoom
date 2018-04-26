@@ -14,6 +14,7 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -23,6 +24,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
     private static final long serialVersionUID = 5479457915334417348L;
 
     protected Sense from, to;
+    private SenseRelation senseRelation;
 
     public MakeNewLexicalRelationWindow(WebFrame frame,
                                            PartOfSpeech pos, Sense senseFrom, Sense senseTo) {
@@ -91,7 +93,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
     @Override
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == buttonChoose) {
-            chosenType = getSelectedRelation();
+            senseRelation = getSenseRelation();
             setVisible(false);
         } else if (event.getSource() == buttonCancel) {
             setVisible(false);
@@ -100,6 +102,12 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
         } else {
             super.actionPerformed(event);
         }
+    }
+
+    private SenseRelation getSenseRelation()
+    {
+        chosenType = getSelectedRelation();
+        return new SenseRelation(chosenType, from, to);
     }
 
     private void switchSenses() {
@@ -198,5 +206,9 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
 
     public RelationType getChosenType(){
         return chosenType;
+    }
+
+    public SenseRelation getChoosenRelation(){
+        return senseRelation;
     }
 }

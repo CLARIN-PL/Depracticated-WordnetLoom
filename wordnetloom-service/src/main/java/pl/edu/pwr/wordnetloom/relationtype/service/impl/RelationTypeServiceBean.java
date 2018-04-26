@@ -125,4 +125,10 @@ public class RelationTypeServiceBean implements RelationTypeServiceLocal {
     public RelationType findByName(String name) {
         return relationTypeRepository.findByName(name);
     }
+
+    @PermitAll
+    @Override
+    public RelationType findParent(Long childId) {
+        return relationTypeRepository.findParent(childId);
+    }
 }

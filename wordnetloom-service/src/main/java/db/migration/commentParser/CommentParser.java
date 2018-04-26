@@ -19,6 +19,7 @@ public class CommentParser {
         int startMarker = 0;
         String marker;
         currentIndex = 0;
+        secondIndex = 0;
         text = text.replace("\n", " ");
         ParserResult parserResult;
         while((currentIndex = getNext(text, currentIndex)) != -1) {

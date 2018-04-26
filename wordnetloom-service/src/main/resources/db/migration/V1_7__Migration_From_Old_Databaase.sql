@@ -15,7 +15,7 @@ ALTER TABLE wordnet_work.relationtype
 
 #przeniesienie słów. m^2 oraz m^3 nalezy dodać odzielnie, ponieważ DISTINCT traktuje m^2 tak samo jak M2 i wstawia tylko jedną z tych wartości
 INSERT INTO wordnet.word (word)
-  SELECT DISTINCT lemma COLLATE utf8_polish_ci
+  SELECT DISTINCT CAST(BINARY lemma AS CHAR CHARACTER SET utf8) COLLATE utf8_bin
   FROM wordnet_work.lexicalunit
   UNION ALL
   SELECT 'm²'
@@ -110,6 +110,17 @@ INSERT INTO wordnet.synset (id, split,abstract, lexicon_id, status_id)
     LEFT JOIN wordnet_work.lexicalunit L ON U.LEX_ID = L.id
   WHERE U.SYN_ID IS NOT NULL AND L.id IS NOT NULL;
 
+CREATE TABLE tempWord(
+	id INT PRIMARY KEY,
+    bin BLOB, INDEX(bin(255)),
+    word TEXT
+);
+
+INSERT INTO tempWord(id, bin, word)
+SELECT DISTINCT id, BINARY TRIM(TRAILING FROM word), word
+FROM word;
+
+
 # przerzucenie jednostek
 INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, part_of_speech_id, synset_id, word_id, status_id)
   SELECT
@@ -126,13 +137,15 @@ INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, 
       THEN pos
     ELSE pos - 4 END AS part_of_speech,
     S.id             AS synset_id,
-    (SELECT id
-     FROM wordnet.word
-     WHERE word = L.lemma
+    (SELECT W.id
+     FROM tempWord W
+      WHERE W.bin = BINARY (TRIM(TRAILING FROM L.lemma))
      LIMIT 1)        AS word_id,
-     (SELECT id FROM wordnet.temp_dictionaries WHERE old_value = L.status AND dtype = 'Status') AS status
+      (SELECT id FROM wordnet.temp_dictionaries WHERE old_value = L.status AND dtype = 'Status') AS status
   FROM wordnet_work.lexicalunit L LEFT JOIN wordnet_work.unitandsynset U ON L.id = U.LEX_ID
     LEFT JOIN wordnet_work.synset S ON U.SYN_ID = S.id;
+
+DROP TABLE tempWord;
 
 # changing synset position in english lexicons
 UPDATE sense
