@@ -49,7 +49,7 @@ public class LazyList<T> extends AbstractList<T> implements Serializable {
          * @param firstRow the index of first row that should be fetched
          * @return a sub list from given first index
          */
-        public List<T> findEntities(int firstRow);
+         List<T> findEntities(int firstRow);
     }
 
     /**
@@ -62,7 +62,7 @@ public class LazyList<T> extends AbstractList<T> implements Serializable {
         /**
          * @return the count of entities listed in the LazyList
          */
-        public int size();
+        int size();
     }
 
     /**
