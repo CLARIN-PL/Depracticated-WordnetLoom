@@ -11,6 +11,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -100,8 +101,12 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
 //                    variant = LexicalDA.getAvaibleVariantNumber(lemma, pos, LexiconManager.getInstance().getUserChosenLexiconsIds());
 //                }
                 Sense sense = editPanel.updateAndGetSense();
-                RemoteService.senseRemote.save(sense);
-                refreshData(sense);
+//                RemoteService.senseRemote.save(sense);
+                SenseAttributes attributes = editPanel.getSenseAttributes(sense.getId());
+                attributes.setSense(sense);
+                RemoteService.senseRemote.save(attributes.getSense());
+
+                refreshData(sense); //TODO zobaczyć, czy to jest potrzebne
 
 //                if (!LexicalDA.updateUnit(editPanel.getSense(), lemma,
 //                        editPanel.getLexicon().getEntity(), variant,
@@ -116,6 +121,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
                 // lematu
                 editPanel.getVariant().setText("" + sense.getVariant());
 
+                //TODO zrobić aktualizację grafu za pomocą zdarzeń
                 ViwnNode node = graphUI.getSelectedNode();
                 if (node != null && node instanceof ViwnNodeSynset) {
                     ViwnNodeSynset s = (ViwnNodeSynset) node;
