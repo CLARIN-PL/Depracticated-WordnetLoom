@@ -15,6 +15,7 @@ public class V1_9__ParseSynsetDefinition implements JdbcMigration {
     private CommentParser parser = new CommentParser();
     private PrincetonDefinitionParser princetonParser = new PrincetonDefinitionParser();
 
+    @Override
     public void migrate(Connection connection) throws SQLException {
 
         List<Attribute> attributes = getAttributesList(connection);

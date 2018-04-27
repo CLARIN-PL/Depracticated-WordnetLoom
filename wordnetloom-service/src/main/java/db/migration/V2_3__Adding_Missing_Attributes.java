@@ -26,11 +26,9 @@ public class V2_3__Adding_Missing_Attributes implements JdbcMigration {
     }
 
     private List<Long> getMissingAttributeIds(Connection connection, String selectQuery) throws SQLException {
-        System.out.println("getMissingAttributeIds " + selectQuery);
         Statement selectStatement = connection.createStatement();
         ResultSet resultSet = selectStatement.executeQuery(selectQuery);
         resultSet.last();
-        System.out.println(resultSet.getRow());
         resultSet.beforeFirst();
         List<Long> result = new ArrayList<>();
         while (resultSet.next()) {
@@ -42,10 +40,12 @@ public class V2_3__Adding_Missing_Attributes implements JdbcMigration {
 
     private void insertAttributes(Connection connection, String insertQuery, List<Long> result) throws SQLException {
         PreparedStatement insertAttributeStatement = connection.prepareStatement(insertQuery);
-        System.out.println("insertAttributes " + insertQuery + " " + result.size());
+
         for (Long id : result) {
             insertAttributeStatement.setLong(1, id);
-            insertAttributeStatement.execute();
+            insertAttributeStatement.addBatch();
         }
+        insertAttributeStatement.executeBatch();
+        insertAttributeStatement.close();
     }
 }

@@ -156,27 +156,45 @@ UPDATE sense
 SET synset_position = 0
 WHERE synset_position < 0;
 
+CREATE TABLE tempSynsetPos(
+  id INT PRIMARY KEY,
+  pos INT
+);
+
+INSERT INTO tempSynsetPos(id, pos)
+  SELECT s.synset_id, min(s.synset_position) FROM wordnet.sense s
+  GROUP BY s.synset_id
+  HAVING min(s.synset_position) <> 0;
+
+UPDATE sense s
+  LEFT JOIN tempSynsetPos tmp on s.synset_id = tmp.id
+SET s.synset_position = s.synset_position - tmp.pos
+WHERE s.synset_id = tmp.id;
+
+DROP TABLE tempSynsetPos;
+# ------------------------------------------
+
 # PRZERZUCANIE UŻYTKOWNIKÓW
 #podział na imię i nazwisko
 SELECT DISTINCT
-  SUBSTRING_INDEX(TRIM(owner), '.', 1),
-  SUBSTRING_INDEX(TRIM(owner), '.', -1)
+  SUBSTRING_INDEX(TRIM(LOWER(owner)), '.', 1),
+  SUBSTRING_INDEX(TRIM(LOWER(owner)), '.', -1)
 FROM wordnet_work.lexicalunit;
 
 # dodanie użytkowników. Użytkownicy wymagają czyszczenia
 INSERT INTO wordnet.users (email, firstname, lastname, password)
   SELECT DISTINCT
     ''                                                            AS email,
-    SUBSTRING_INDEX(TRIM(owner), '.', 1) COLLATE utf8_general_ci  AS firstname,
-    SUBSTRING_INDEX(TRIM(owner), '.', -1) COLLATE utf8_general_ci AS lastname,
+    SUBSTRING_INDEX(LOWER(TRIM(owner)), '.', 1) COLLATE utf8_general_ci  AS firstname,
+    SUBSTRING_INDEX(LOWER(TRIM(owner)), '.', -1) COLLATE utf8_general_ci AS lastname,
     ''                                                            AS password
   FROM wordnet_work.lexicalunit
   HAVING firstname != '' AND lastname != ''
   UNION DISTINCT
   SELECT DISTINCT
     ''                                                            AS email,
-    SUBSTRING_INDEX(TRIM(owner), '.', 1) COLLATE utf8_general_ci  AS firstname,
-    SUBSTRING_INDEX(TRIM(owner), '.', -1) COLLATE utf8_general_ci AS lastname,
+    SUBSTRING_INDEX(LOWER(TRIM(owner)), '.', 1) COLLATE utf8_general_ci  AS firstname,
+    SUBSTRING_INDEX(LOWER(TRIM(owner)), '.', -1) COLLATE utf8_general_ci AS lastname,
     ''                                                            AS password
   FROM wordnet_work.synset
   HAVING firstname != '' AND lastname != '';
@@ -189,8 +207,8 @@ INSERT INTO wordnet.sense_attributes (sense_id, comment, user_id, error_comment)
     (SELECT id
      FROM wordnet.users
      WHERE
-       SUBSTRING_INDEX(TRIM(L.owner), '.', 1) = firstname AND
-       SUBSTRING_INDEX(TRIM(L.owner), '.', -1) = lastname) AS user,
+       SUBSTRING_INDEX(TRIM(LOWER(L.owner)), '.', 1) = firstname AND
+       SUBSTRING_INDEX(TRIM(LOWER(L.owner)), '.', -1) = lastname) AS user,
     error_comment
   FROM wordnet_work.lexicalunit L
   WHERE comment != '' AND comment IS NOT NULL;
@@ -205,8 +223,8 @@ INSERT INTO wordnet.synset_attributes (synset_id, comment, definition, owner_id,
     (SELECT id
      FROM wordnet.users
      WHERE
-       SUBSTRING_INDEX(TRIM(S.owner), '.', 1) = firstname AND
-       SUBSTRING_INDEX(TRIM(S.owner), '.', -1) = lastname
+       SUBSTRING_INDEX(TRIM(LOWER(S.owner)), '.', 1) = firstname AND
+       SUBSTRING_INDEX(TRIM(LOWER(S.owner)), '.', -1) = lastname
      LIMIT 1) AS user,
     error_comment
   FROM wordnet_work.synset S
@@ -355,43 +373,6 @@ DELIMITER ;
 CALL insertAllowedLexicons();
 
 DROP PROCEDURE IF EXISTS insertAllowedLexicons;
-
-# dodanie i wypełnienie tabeli register_types. Tabela będzie potrzebna do parsowania komentarzy
---CREATE TABLE wordnet.register_types
---(
---  id      INT PRIMARY KEY AUTO_INCREMENT,
---  name_id BIGINT NOT NULL UNIQUE
---);
-
---ALTER TABLE wordnet.register_types
---  ADD CONSTRAINT fk_register_types_localised
---FOREIGN KEY (name_id) REFERENCES wordnet.application_localised_string (id);
-
---DELIMITER $$
---DROP PROCEDURE IF EXISTS insert_register_types$$
---CREATE PROCEDURE insert_register_types()
---
---  BEGIN
---    SET @registers = 'og.,daw.,książk.,nienorm.,posp.,pot.,reg.,specj.,środ.,urz.,wulg.,';
---    WHILE (LOCATE(',', @registers) > 0) DO
---      SET @value = SUBSTRING(@registers, 1, LOCATE(',', @registers) - 1);
---      SET @last_insert_id = LAST_INSERT_ID();
---      INSERT INTO wordnet.application_localised_string (value, language)
---      VALUES (@value, 'pl');
---      SET @last_insert_id = LAST_INSERT_ID();
---      INSERT INTO wordnet.application_localised_string (id, value, language)
---      VALUES (@last_insert_id, @value, 'en');
---      INSERT INTO wordnet.register_types (name_id)
---      VALUES (@last_insert_id);
---      SET @registers = SUBSTRING(@registers, LOCATE(',', @registers) + 1);
---    END WHILE;
---  END $$
---
---DELIMITER ;
---
---CALL insert_register_types;
---
---DROP PROCEDURE insert_register_types;
 
 # dodanie kolumny proper_name, do atrybutów jednostek
 ALTER TABLE wordnet.sense_attributes
