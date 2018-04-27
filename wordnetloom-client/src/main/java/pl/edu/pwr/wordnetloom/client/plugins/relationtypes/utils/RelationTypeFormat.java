@@ -1,6 +1,5 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.utils;
 
-import org.hibernate.Hibernate;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
@@ -12,11 +11,8 @@ public class RelationTypeFormat {
         String text;
         String relationName = LocalisationManager.getInstance().getLocalisedString(relationType.getName());
         RelationType parentRelation;
-        if(Hibernate.isInitialized(relationType.getParent())) {
-            parentRelation = relationType.getParent();
-        } else {
-            parentRelation = RemoteService.relationTypeRemote.findParent(relationType.getId());
-        }
+
+        parentRelation = RemoteService.relationTypeRemote.findParent(relationType.getId());
 
         if(parentRelation != null) {
             String parentRelationName = LocalisationManager.getInstance().getLocalisedString(parentRelation.getName());
