@@ -4,7 +4,6 @@ import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
@@ -67,7 +66,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
     protected void initialize(WebPanel content) {
 
         content.setLayout(new RiverLayout());
-        content.setMargin(5,1,5,1);
+        content.setMargin(5, 1, 5, 1);
 
         definitionValue = new MTextArea("");
         definitionValue.addCaretListener(this);
@@ -80,7 +79,6 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         abstractValue = new WebCheckBox(Labels.ARTIFICIAL);
         abstractValue.setSelected(false);
         abstractValue.addActionListener(this);
-
 
 
         examplesList = new WebList() {
@@ -111,8 +109,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         examplesModel = new DefaultListModel();
         examplesList.setModel(examplesModel);
-        examplesList.addListSelectionListener( sl -> {
-            if(examplesList.isSelectionEmpty()){
+        examplesList.addListSelectionListener(sl -> {
+            if (examplesList.isSelectionEmpty()) {
                 adjustButtons(false);
             } else {
                 adjustButtons(true);
@@ -170,7 +168,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         buttonsPanel.add("br", btnRemoveExample);
 
 
-        WebPanel propertiesPanel = new WebPanel(new RiverLayout(0,0));
+        WebPanel propertiesPanel = new WebPanel(new RiverLayout(0, 0));
 
         propertiesPanel.add("vtop", new JLabel(Labels.DEFINITION_COLON));
         propertiesPanel.add("br hfill", new JScrollPane(definitionValue));
@@ -178,9 +176,9 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         propertiesPanel.add("br hfill", new JScrollPane(commentValue));
         propertiesPanel.add("br vtop", new JLabel(Labels.EXAMPLES));
 
-        WebPanel subPanel = new WebPanel(new RiverLayout(0,0));
+        WebPanel subPanel = new WebPanel(new RiverLayout(0, 0));
 
-        subPanel.add("hfill",  scrollPaneExamples);
+        subPanel.add("hfill", scrollPaneExamples);
         subPanel.add("", buttonsPanel);
 
         propertiesPanel.add("br hfill", subPanel);
@@ -189,7 +187,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         WebScrollPane scroll = new WebScrollPane(propertiesPanel);
         scroll.setDrawBorder(false);
-        content.add("hfill vfill",scroll);
+        content.add("hfill vfill", scroll);
 
         commentValue.setEnabled(false);
         definitionValue.setEnabled(false);
@@ -201,14 +199,14 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         return definitionValue;
     }
 
-    private void adjustButtons(boolean active){
+    private void adjustButtons(boolean active) {
         btnEditExample.setEnabled(active);
         btnRemoveExample.setEnabled(active);
     }
 
     public void refreshData(Synset synset) {
 
-        definitionValue .setText(formatValue(null));
+        definitionValue.setText(formatValue(null));
         commentValue.setText(formatValue(null));
         abstractValue.setSelected(false);
 
@@ -216,15 +214,15 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
             SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
 
-            if(sa.getDefinition() != null) {
+            if (sa.getDefinition() != null) {
                 definitionValue.setText(sa.getDefinition());
             }
 
-            if(sa.getComment() != null ) {
-               commentValue.setText(sa.getComment());
+            if (sa.getComment() != null) {
+                commentValue.setText(sa.getComment());
             }
 
-            if(sa.getExamples() != null){
+            if (sa.getExamples() != null) {
                 examplesModel.clear();
                 sa.getExamples().forEach(e -> examplesModel.addElement(e));
             }
@@ -232,13 +230,13 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             abstractValue.setSelected(synset.getAbstract());
         }
 
-       lastSynset = synset;
-       quiteMode = true;
-       commentValue.setEnabled(synset != null);
-       definitionValue.setEnabled(synset != null);
-       abstractValue.setEnabled(synset != null);
-       buttonSave.setEnabled(false);
-       quiteMode = false;
+        lastSynset = synset;
+        quiteMode = true;
+        commentValue.setEnabled(synset != null);
+        definitionValue.setEnabled(synset != null);
+        abstractValue.setEnabled(synset != null);
+        buttonSave.setEnabled(false);
+        quiteMode = false;
     }
 
     /**
@@ -277,14 +275,13 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         Set<SynsetExample> examples = new HashSet<>();
 
-        if(!examplesModel.isEmpty()) {
-            for(int i = 0; i < examplesModel.size(); i++)
-            {
-                examples.add((SynsetExample)examplesModel.getElementAt(i));
+        if (!examplesModel.isEmpty()) {
+            for (int i = 0; i < examplesModel.size(); i++) {
+                examples.add((SynsetExample) examplesModel.getElementAt(i));
             }
         }
 
-        if (!LexicalDA.updateSynset(lastSynset, definition, comment, isAbstract, examples)) {
+        if (!updateSynset(lastSynset, definition, comment, isAbstract, examples)) {
             refreshData(lastSynset); // nieudana zmiana statusu
             DialogBox.showError(Messages.ERROR_NO_STATUS_CHANGE_BECAUSE_OF_RELATIONS_IN_SYNSETS);
         }
@@ -307,6 +304,26 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             // dodano nowy synset, nie istnieje on nigdzie w grafie
             graphUI.graphChanged();
         }
+    }
+
+    public boolean updateSynset(Synset synset, String definition, String comment, boolean isAbstract, Set<SynsetExample> examples) {
+        boolean result = true;
+        if (synset != null) {
+
+            if (isAbstract != synset.getAbstract()) {
+                synset.setAbstract(isAbstract);
+                RemoteService.synsetRemote.save(synset);
+            }
+
+            SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
+            sa.setDefinition(definition);
+            sa.setComment(comment);
+            examples.forEach(e -> e.setSynsetAttributes(sa));
+            sa.setExamples(examples);
+
+            RemoteService.synsetRemote.save(sa);
+        }
+        return result;
     }
 
     @Override
