@@ -277,7 +277,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             int newSplitPosition = moveUp ? destIndex + 1 : destIndex - 1;
             setSplitPosition(newSplitPosition);
         } else {
-            exchangeUnitsInSynset(sourceIndex, destIndex, splitPosition, listModel);
+            replaceUnitsInSynset(sourceIndex, destIndex, splitPosition, listModel);
         }
 
         unitsList.updateUI();
@@ -289,26 +289,37 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         }
     }
 
-    private void exchangeUnitsInSynset(int senseIndex1, int senseIndex2, int splitPosition, UnitsInSynsetListModel listModel) {
+    private void replaceUnitsInSynset(int senseIndex1, int senseIndex2, int splitPosition, UnitsInSynsetListModel listModel) {
         assert senseIndex1 > 0 && senseIndex2 > 0;
         assert senseIndex1 < listModel.getSize() && senseIndex2 < listModel.getSize();
 
         Sense sense1 = listModel.getObjectAt(senseIndex1);
         Sense sense2 = listModel.getObjectAt(senseIndex2);
 
-        int sense1Position = sense1.getSynsetPosition();
-        int sense2Position = sense2.getSynsetPosition();
-        // exchange position of units in synset and saving in database
-        sense1.setSynsetPosition(sense2Position);
-        sense2.setSynsetPosition(sense1Position);
-        RemoteService.senseRemote.save(sense1);
-        RemoteService.senseRemote.save(sense2);
-        // exchange position on the list
+        replaceSynsetPositions(sense1, sense2);
+        replaceSensesOnList(senseIndex1, senseIndex2, splitPosition, listModel);
+        saveSensesInDatabase(sense1, sense2);
+    }
+
+    private void replaceSensesOnList(int senseIndex1, int senseIndex2, int splitPosition, UnitsInSynsetListModel listModel) {
         int indexOnList1 = senseIndex1 >= splitPosition ? senseIndex1 - 1 : senseIndex1;
         int indexOnList2 = senseIndex2 >= splitPosition ? senseIndex2 - 1 : senseIndex2;
         List<Sense> sensesList = new ArrayList<>(listModel.getCollection());
         Collections.swap(sensesList, indexOnList1, indexOnList2);
         listModel.setCollection(sensesList);
+    }
+
+    private void replaceSynsetPositions(Sense sense1, Sense sense2) {
+        int sense1Position = sense1.getSynsetPosition();
+        int sense2Position = sense2.getSynsetPosition();
+
+        sense1.setSynsetPosition(sense2Position);
+        sense2.setSynsetPosition(sense1Position);
+    }
+
+    private void saveSensesInDatabase(Sense sense1, Sense sense2) {
+        RemoteService.senseRemote.save(sense1);
+        RemoteService.senseRemote.save(sense2);
     }
 
     /**
@@ -342,16 +353,6 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             clickListeners.notifyAllListeners(lastSynset, UNIT_CREATED);
         }
         if (selectedUnits != null) {
-            // okienko z testami dla relacji, nie wyswietla gdy nie ma
-            // takich relacji w bazie
-//                if (LexicalDA.areRelations(RelationArgument.LEXICAL_SPECIAL)) {
-//                    IRelationType rel;
-//                    rel = RelationTypeFrame.showModalAndSaveRelation(workbench,
-//                            RelationArgument.LEXICAL_SPECIAL, LexicalDA.getPos(lastSynset, LexiconManager.getInstance().getLexicons()),
-            //  RemoteUtils.lexicalUnitRemote.dbFastGetUnits(lastSynset, LexiconManager.getInstance().getLexicons()), selectedUnits);
-            // if (rel == null) {
-            //      return;
-            // }
             for (Sense selectedUnit : selectedUnits) {
                 // dodanie powiazanie
                 selectedUnit.setSynset(lastSynset);
@@ -364,11 +365,15 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                     logger().error("Error", lox);
                 }
             }
-            Collection<Sense> sensesInSynset = RemoteService.senseRemote.findBySynset(lastSynset, LexiconManager.getInstance().getLexiconsIds());
-            listModel.setCollection(sensesInSynset); //TODO sprawdzić, czy nie da rady zrobić tego bez pobierania jednostek
-            unitsList.updateUI();
-            getViWordNetService().refreshViews();
+            addUnitsToList(lastSynset);
         }
+    }
+
+    private void addUnitsToList(Synset synset) {
+        Collection<Sense> sensesInSynset = RemoteService.senseRemote.findBySynset(synset, LexiconManager.getInstance().getLexiconsIds());
+        listModel.setCollection(sensesInSynset); //TODO sprawdzić, czy nie da rady zrobić tego bez pobierania jednostek
+        unitsList.updateUI();
+        getViWordNetService().refreshViews();
     }
 
     private void deleteUnitFromSynset() {
@@ -413,7 +418,6 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     }
 
     private void moveToNewSynset() {
-        //TODO można dodać ograniczniki, sprawdzające warunki wstępne
         int unitsInSynsetCount = listModel.getSize();
         Collection<Sense> selectedUnits = getSelectedUnits();
         // nie można przenieść wszystkich jednostek z synsetu
@@ -690,6 +694,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             newSplitPoint = synset.getSplit();
             // odczytanie jednostek
             units = RemoteService.senseRemote.findBySynset(synset, LexiconManager.getInstance().getLexiconsIds());
+//            addUnitsToList(synset);
             SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
 
             commentValue.setText(sa.getComment() != null ? sa.getComment() : "");

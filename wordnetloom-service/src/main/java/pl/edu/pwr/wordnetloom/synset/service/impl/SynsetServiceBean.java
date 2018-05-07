@@ -106,9 +106,17 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     public Synset save(Synset synset) {
         ValidationUtils.validateEntityFields(validator, synset);
         if (synset.getId() == null) {
-            return synsetRepository.persist(synset);
+            Synset newSynset = synsetRepository.persist(synset);
+            saveAttributes(newSynset);
         }
         return synsetRepository.update(synset);
+    }
+
+    private void saveAttributes(Synset newSynset) {
+        SynsetAttributes attributes = new SynsetAttributes();
+        attributes.setSynset(newSynset);
+        attributes.setId(newSynset.getId());
+        synsetAttributesRepository.persist(attributes);
     }
 
     @RolesAllowed({"USER", "ADMIN"})
@@ -166,15 +174,16 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
         }
 
+        Sense fetchedSense = senseService.fetchSense(sense.getId());
         List<Sense> sensesInSynset = senseService.findBySynset(synset.getId());
         sensesInSynset.stream()
                 .findFirst()
                 .ifPresent(s -> {
-                    if(!sense.getPartOfSpeech().equals(s.getPartOfSpeech())){
+                    if(!fetchedSense.getPartOfSpeech().equals(s.getPartOfSpeech())){
                         throw new InvalidPartOfSpeechException();
                     }
-                    if(!sense.getLexicon().equals(s.getLexicon())){
-                        throw new  InvalidLexiconException();
+                    if(!fetchedSense.getLexicon().equals(s.getLexicon())){
+                        throw new InvalidLexiconException();
                     }
                 });
 
@@ -182,9 +191,9 @@ public class SynsetServiceBean implements SynsetServiceLocal {
             return saved;
         }
 
-        sense.setSynset(saved);
-        sense.setSynsetPosition(sensesInSynset.size());
-        senseService.save(sense);
+        fetchedSense.setSynset(saved);
+        fetchedSense.setSynsetPosition(sensesInSynset.size());
+        senseService.save(fetchedSense);
 
         return saved;
     }
@@ -204,6 +213,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @Override
     public void deleteSensesFromSynset(Collection<Sense> senses, Synset synset) {
         for (Sense sense : senses) {
+            sense = senseService.fetchSense(sense.getId());
             sense.setSynset(null);
             sense.setSynsetPosition(null);
             senseService.save(sense);

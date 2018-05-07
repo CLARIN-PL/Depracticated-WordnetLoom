@@ -106,6 +106,7 @@ public class SynsetsFrame extends DialogWindow implements ActionListener, Loggab
     private void addSenseToNewSynset() {
         assert sense != null;
         Synset synset = new Synset();
+        synset.setLexicon(sense.getLexicon());
 
         selectedSynset = RemoteService.synsetRemote.save(synset);
         try {

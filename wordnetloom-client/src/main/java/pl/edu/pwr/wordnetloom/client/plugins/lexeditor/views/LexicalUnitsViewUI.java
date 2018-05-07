@@ -156,7 +156,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         Sense unit = listModel.get(returnValue);
 
         btnDelete.setEnabled(unit != null);
-        btnAddToSyns.setEnabled(unit != null && !LexicalDA.checkIfInAnySynset(unit));
+        btnAddToSyns.setEnabled(!checkInSynset(unit));
 
         unitsList.setEnabled(false);
         listeners.notifyAllListeners(unitsList.getSelectedIndices().length == 1 ? unit : null);
@@ -164,6 +164,10 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         unitsList.grabFocus();
 
         SwingUtilities.invokeLater(() -> unitsList.grabFocus());
+    }
+
+    private boolean checkInSynset(Sense unit) {
+        return unit != null && unit.getSynset() != null;
     }
 
     public void refreshLexiocn() {
@@ -177,8 +181,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
      */
     public void loadUnits() {
         //wyczyszczenie listy jednostek
-        unitsListScrollPane.reset();
-        listModel.clear();
+        clearUnitsList();
 
         SenseCriteriaDTO dto = criteria.getSenseCriteriaDTO();
         List<Sense> units = getSenses(dto, LIMIT, 0);
@@ -188,6 +191,11 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             listModel.addElement(sense);
         }
         unitsListScrollPane.setEnd(units.size() < LIMIT);
+    }
+
+    private void clearUnitsList() {
+        unitsListScrollPane.reset();
+        listModel.clear();
     }
 
     public void setInfoText(int loadedUnits, int allUnitsCount) {
@@ -232,8 +240,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 workbench.setBusy(true);
 
                 if (offset == 0) {
-                    unitsListScrollPane.reset();
-                    listModel.clear();
+                    clearUnitsList();
                 }
 
                 SenseCriteriaDTO dto = criteria.getSenseCriteriaDTO();
@@ -420,8 +427,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             return;
         }
         Sense fetchedSense = RemoteService.senseRemote.fetchSense(sense.getId());
-        unitsListScrollPane.reset();
-        listModel.clear();
+        clearUnitsList();
         listModel.addElement(fetchedSense);
         valueChanged(new ListSelectionEvent(btnNew, 0, 0, false));
         lastSelectedValue = null;

@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.sense.service.impl;
 
+import org.hibernate.Hibernate;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -67,10 +68,9 @@ public class SenseServiceBean implements SenseServiceLocal {
         }
 
         if (sense.getId() != null) {
-            Sense old =  senseRepository.findById(sense.getId());
-            if(!old.getLexicon().equals(sense.getLexicon()) ||
-                    !old.getWord().equals(sense.getWord()) || !old.getPartOfSpeech().equals(sense.getPartOfSpeech())){
-                sense.setVariant(senseRepository.findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech()));
+            if(variantMustBeChanged(sense)){
+                int nextVariant = senseRepository.findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech());
+                sense.setVariant(nextVariant);
             }
             return senseRepository.update(sense);
         }
@@ -78,6 +78,13 @@ public class SenseServiceBean implements SenseServiceLocal {
         return senseRepository.persist(sense);
     }
 
+    private boolean variantMustBeChanged(Sense sense) {
+        Sense old = senseRepository.fetchSense(sense.getId());
+        // if property is not initialized, it was not changed
+        return (Hibernate.isInitialized(sense.getLexicon()) && !old.getLexicon().equals(sense.getLexicon()))
+                || !old.getWord().getWord().equals(sense.getWord().getWord())
+                || (Hibernate.isInitialized(sense.getPartOfSpeech()) && !old.getPartOfSpeech().equals(sense.getPartOfSpeech()));
+    }
 
     @RolesAllowed({"USER", "ADMIN"})
     @Override
