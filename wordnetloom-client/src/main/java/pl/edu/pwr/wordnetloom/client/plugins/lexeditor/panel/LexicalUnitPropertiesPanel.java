@@ -328,16 +328,10 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         add(buttons, BorderLayout.SOUTH);
     }
 
-    public Sense updateAndGetSense()
+    public SenseAttributes getSenseAttributes(Long senseId)
     {
-        unit.getWord().setWord(getLemma().getText());
-        unit.setPartOfSpeech(getPartOfSpeech().getEntity());
-        unit.setDomain(getDomain().getEntity());
-        int variant = Integer.parseInt(getVariant().getText());
-        unit.setVariant(variant);
-
+        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(senseId);
         Register reg = register.getEntity();
-        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
         String definition = getDefinition().getText();
         String link = getLink().getToolTipText();
         String comment = getComment().getText();
@@ -359,6 +353,17 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                 examples.add((SenseExample)examplesModel.getElementAt(i));
             }
         }
+        return attributes;
+    }
+
+    public Sense updateAndGetSense()
+    {
+        unit.getWord().setWord(getLemma().getText());
+        unit.setPartOfSpeech(getPartOfSpeech().getEntity());
+        unit.setDomain(getDomain().getEntity());
+        int variant = Integer.parseInt(getVariant().getText());
+        unit.setVariant(variant);
+
         return unit;
     }
 

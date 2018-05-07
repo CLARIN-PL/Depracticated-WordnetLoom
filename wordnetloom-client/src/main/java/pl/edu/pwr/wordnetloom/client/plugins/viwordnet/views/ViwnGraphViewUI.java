@@ -221,7 +221,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
             rootNode = rootNodeSynset;
             for (NodeDirection direction : NodeDirection.values()) {
-                (rootNodeSynset).setFullLoadedRelation(direction, true);
+                (rootNodeSynset).setDownloadedRelation(direction, true);
             }
             cache.put(synset.getId(), rootNodeSynset);
 
@@ -236,7 +236,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                 if (rootNode instanceof ViwnNodeSynset) {
                     (rootNodeSynset).setState(dir,
                             ViwnNodeSynset.State.NOT_EXPANDED);
-                    rootNodeSynset.setFullLoadedRelation(dir, false);
+                    rootNodeSynset.setDownloadedRelation(dir, false);
                 }
             }
             addMissingRelationInForest();
@@ -262,7 +262,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
         rootNode = rootNodeSynset;
         for(NodeDirection direction : NodeDirection.values()){
-            (rootNodeSynset).setFullLoadedRelation(direction, true);
+            (rootNodeSynset).setDownloadedRelation(direction, true);
         }
         cache.put(synset.getId(), rootNodeSynset);
 
@@ -846,7 +846,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         if(!checkNodeWasExtended(synsetNode, dirs)) {
             synsetData.load(synsetNode.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds(), dirs);
             synsetNode.construct(dirs);
-            synsetNode.setFullLoadedRelation(dirs, true);
+            synsetNode.setDownloadedRelation(dirs, true);
         }
 
         // pokazanie relacji
@@ -867,7 +867,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
     private boolean checkNodeWasExtended(ViwnNodeSynset node, NodeDirection[] directions) {
         for(NodeDirection direction : directions) {
-            if(!node.isFullLoadedRelation(direction)){
+            if(!node.isDownloadedRelations(direction)){
                 return false;
             }
         }
