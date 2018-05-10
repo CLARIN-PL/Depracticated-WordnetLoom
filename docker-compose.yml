@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  mysql_database:
+    image: mysql:5.7.21
+    environment:
+      MYSQL_ROOT_PASSWORD: password # Change this
+      MYSQL_DATABASE: wordnet
+    restart: always
+    volumes:
+      - /opt/docker_data/mysql_data:/var/lib/mysql
+    container_name: clarinpl_wordnetloom_mysql
+
+  wildfly:
+    build: .
+    restart: always
+    ports:
+      - "8081:8081"
+      - "9991:9991"
+    depends_on:
+      - mysql_database
+    environment:
+          WAIT_HOSTS: clarinpl_wordnetloom_mysql:3306
+    container_name: clarinpl_wordnetloom
+volumes:
+  db_data:

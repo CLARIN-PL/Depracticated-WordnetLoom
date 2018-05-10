@@ -16,6 +16,7 @@ RUN curl -O https://download.jboss.org/wildfly/${VERSION}/wildfly-${VERSION}.zip
     && chown -R serveradmin:serveradmin /opt \
     && chmod a+x ${WILDFLY_HOME}/bin/standalone.sh \
     && chmod -R a+rw ${INSTALL_DIR}
+
 USER serveradmin
 RUN rm ${WILDFLY_HOME}/bin/standalone.conf
 ADD standalone.conf ${WILDFLY_HOME}/bin/
@@ -25,7 +26,7 @@ ENV MYSQL_VERSION 5.1.46
 ENV DB_NAME wordnet
 ENV DB_USER root
 ENV DB_PASS password
-ENV DB_URI 127.0.0.1:3306
+ENV DB_URI mysql_database:3306
 
 # Configure Wildfly server
 RUN rm ${WILDFLY_HOME}/standalone/configuration/standalone-full.xml
@@ -66,7 +67,17 @@ EXPOSE 8081 9991
 # Set the default command to run on boot
 # This will boot WildFly in the standalone mode and bind to all interfaces
 ## Deploying
+
+## Wait for mysql script
+USER root
+COPY ./wait.sh /tmp
+RUN  chown serveradmin:serveradmin /tmp/wait.sh
+RUN  chmod a+x /tmp/wait.sh
+
+USER serveradmin
+# Copy Princeton xml
+COPY ./wn-eng-lmf.xml /opt
 COPY ./wordnetloom-server/target/wordnetloom-server-2.0.ear ${DEPLOYMENT_DIR}
 COPY ./wordnetloom-download/target/download.war ${DEPLOYMENT_DIR}
 
-ENTRYPOINT ${WILDFLY_HOME}/bin/standalone.sh -c standalone-full.xml -b=0.0.0.0 -bmanagment=0.0.0.0 -Djboss.http.port=8081 -Djboss.management.http.port=9991 -Djboss.https.port=9433
+CMD  /tmp/wait.sh && ${WILDFLY_HOME}/bin/standalone.sh -c standalone-full.xml -b=0.0.0.0 -bmanagment=0.0.0.0 -Djboss.http.port=8081 -Djboss.management.http.port=9991 -Djboss.https.port=9433
