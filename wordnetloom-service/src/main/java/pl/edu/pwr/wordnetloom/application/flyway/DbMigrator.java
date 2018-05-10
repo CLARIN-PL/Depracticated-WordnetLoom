@@ -2,7 +2,6 @@ package pl.edu.pwr.wordnetloom.application.flyway;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.*;
@@ -34,13 +33,5 @@ public class DbMigrator {
             log.log(Level.INFO, "Migrate task: {0} : {1} from file: {2}", new Object[]{i.getVersion(), i.getDescription(), i.getScript()});
         }
         flyway.migrate();
-
-//        try{
-//            V2_9__Add_Position_To_Relation_Type tempRelationTypePosition = new V2_9__Add_Position_To_Relation_Type();
-//            tempRelationTypePosition.addPosition(dataSource.getConnection());
-//        }catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-
     }
 }

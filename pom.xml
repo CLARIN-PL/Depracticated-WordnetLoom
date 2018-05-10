@@ -122,5 +122,7 @@
         <module>wordnetloom-service</module>
         <module>wordnetloom-client</module>
         <module>wordnetloom-server</module>
+        <module>wordnetloom-client-updater</module>
+        <module>wordnetloom-download</module>
     </modules>
 </project>

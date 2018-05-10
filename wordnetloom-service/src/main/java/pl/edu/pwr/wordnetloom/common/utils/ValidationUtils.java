@@ -17,5 +17,4 @@ public abstract class ValidationUtils {
             throw new FieldNotValidException(violation.getPropertyPath().toString(), violation.getMessage());
         }
     }
-
 }

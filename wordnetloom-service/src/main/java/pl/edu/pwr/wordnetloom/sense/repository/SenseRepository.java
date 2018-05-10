@@ -151,7 +151,7 @@ public class SenseRepository extends GenericRepository<Sense> {
 
             if (dto.getExample() != null) {
                 Join<SenseAttributes, SenseExample> senseExampleJoin = senseAttributesRoot.join(EXAMPLES);
-                Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get(EXAMPLES), dto.getExample());
+                Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get("example"), "%"+dto.getExample()+"%");
                 predicates.add(examplePredicate);
             }
 
@@ -212,7 +212,7 @@ public class SenseRepository extends GenericRepository<Sense> {
 
     public List<Sense> findBySynset(Synset synset, List<Long> lexicons) {
         return getEntityManager().createQuery("SELECT s FROM Sense s LEFT JOIN FETCH s.domain " +
-                "WHERE s.synset.id = :synsetId AND s.lexicon.id IN (:lexicons)", Sense.class)
+                "LEFT JOIN FETCH s.partOfSpeech WHERE s.synset.id = :synsetId AND s.lexicon.id IN (:lexicons)", Sense.class)
                 .setParameter("synsetId", synset.getId())
                 .setParameter("lexicons", lexicons)
                 .getResultList();

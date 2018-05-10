@@ -31,10 +31,9 @@ import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.Point2D;
-import java.awt.geom.RoundRectangle2D;
+import java.awt.geom.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -227,16 +226,47 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
 
     private void renderLexiconMarker(ViwnNodeSynset node, Point2D.Float pos,
                                      GraphicsDecorator g) {
+        String icon = node.getLexiconLabel();
+        if(icon != null && !icon.isEmpty()) {
+            Image img = new javax.swing.ImageIcon(getClass().getResource("/icons/" + icon)).getImage();
+            g.drawImage(img, Math.round(pos.x) - 40, Math.round(pos.y) - 17, 16, 10, new Color(1f, 0f, 0f, 0.5f), null);
+        }
+    }
 
-        Shape lexicon = new Area(new RoundRectangle2D.Float(pos.x - 40, pos.y - 17, 24, 10, 12.5f, 5));
-        g.setColor(ViwnNodeSynset.PosBgColors.get(node.getPos()));
-        g.fillRoundRect(Math.round(pos.x - 40), Math.round(pos.y - 17), 24, 10, 12, 5);
-        g.setColor(Color.black);
-        g.draw(lexicon);
-        Font smallFont = new Font("Tahoma", Font.BOLD, 6);
-        g.setFont(smallFont);
-        g.drawString(node.getLexiconLabel(), pos.x - 38, pos.y - 10);
+    public static BufferedImage getTexturedImage(
+            BufferedImage src, Shape shp, int x, int y) {
+        Rectangle r = shp.getBounds();
+        // create a transparent image with 1 px padding.
+        BufferedImage tmp = new BufferedImage(
+                r.width+2,r.height+2,BufferedImage.TYPE_INT_ARGB);
+        // get the graphics object
+        Graphics2D g = tmp.createGraphics();
+        // set some nice rendering hints
+        g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(
+                RenderingHints.KEY_COLOR_RENDERING,
+                RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+        // create a transform to center the shape in the image
+        AffineTransform centerTransform = AffineTransform.
+                getTranslateInstance(-r.x+1, -r.y+1);
+        // set the transform to the graphics object
+        g.setTransform(centerTransform);
+        // set the shape as the clip
+        g.setClip(shp);
+        // draw the image
+        g.drawImage(src, x, y, null);
+        // clear the clip
+        g.setClip(null);
+        // draw the shape as an outline
+        g.setColor(Color.RED);
+        g.setStroke(new BasicStroke(1f));
+        g.draw(shp);
+        // dispose of any graphics object we explicitly create
+        g.dispose();
 
+        return tmp;
     }
 
     private void renderSet(

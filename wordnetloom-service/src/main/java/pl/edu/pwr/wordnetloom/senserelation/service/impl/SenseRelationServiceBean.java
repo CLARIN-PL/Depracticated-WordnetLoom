@@ -31,7 +31,8 @@ public class SenseRelationServiceBean implements SenseRelationServiceLocal {
     @RolesAllowed({"ADMIN", "USER"})
     @Override
     public void delete(SenseRelation rel) {
-        senseRelationRepository.delete(rel);
+        SenseRelation relation = senseRelationRepository.findById(rel.getId());
+        senseRelationRepository.delete(relation);
     }
 
     @RolesAllowed({"ADMIN", "USER"})
@@ -84,9 +85,11 @@ public class SenseRelationServiceBean implements SenseRelationServiceLocal {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @PermitAll
     @Override
     public SenseRelation findRelation(Sense parent, Sense child, RelationType relationType) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return senseRelationRepository.findRelation(parent, child, relationType);
     }
 
     @RolesAllowed({"ADMIN", "USER"})

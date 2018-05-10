@@ -29,6 +29,8 @@ public class Lexicon extends GenericEntity {
     @Column(name = "lexicon_version")
     private String lexiconVersion;
 
+    private String icon;
+
     public Lexicon() {
     }
 
@@ -68,6 +70,14 @@ public class Lexicon extends GenericEntity {
 
     public void setLexiconVersion(String lexiconVersion) {
         this.lexiconVersion = lexiconVersion;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     @Override

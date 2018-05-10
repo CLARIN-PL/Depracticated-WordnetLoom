@@ -17,25 +17,22 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.systems.misc;
 
-import java.awt.Component;
-import java.awt.Container;
+import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
+
+import javax.swing.*;
+import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.AbstractButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
 
 /**
  * klasa wyświetlająca okienka dialogowe (z przyciskami w jezyku polskim)
  *
  * @author Max
- *
  */
+//TODO Lokalizacja !!!
 public class DialogBox {
 
     /**
@@ -72,7 +69,7 @@ public class DialogBox {
     /**
      * wyświetlenie błedu
      *
-     * @param title - tytuł okienka
+     * @param title   - tytuł okienka
      * @param message - komunikat
      */
     static public void showError(String title, String message) {
@@ -84,7 +81,7 @@ public class DialogBox {
      *
      * @param message - komunikat
      */
-    static public void showError(final String message) {
+    static public void showError(String message) {
 
         try {
             GUIUtils.delegateToEDT(() -> {
@@ -99,7 +96,7 @@ public class DialogBox {
     /**
      * wyświetlenie informacji
      *
-     * @param title - tytuł okienka
+     * @param title   - tytuł okienka
      * @param message - komunikat
      */
     static public void showInformation(String title, String message) {
@@ -118,7 +115,7 @@ public class DialogBox {
     /**
      * wyświetlenie zapytanie tak, nie
      *
-     * @param title - tytuł okienka
+     * @param title   - tytuł okienka
      * @param message - komunikat
      * @return wybrana odpowiedź
      */
@@ -140,7 +137,7 @@ public class DialogBox {
     /**
      * wyświetlenie zapytanie tak, nie, anuluj
      *
-     * @param title - tytuł okienka
+     * @param title   - tytuł okienka
      * @param message - komunikat
      * @return wybrana odpowiedź
      */
@@ -162,8 +159,8 @@ public class DialogBox {
     /**
      * wyswietlenie okienka do wproadzania danych
      *
-     * @param title - tytul okienka
-     * @param message - komunikat
+     * @param title        - tytul okienka
+     * @param message      - komunikat
      * @param defaultValue - domysla wartosc
      * @return wpisana odpowiedz albo NULL
      */
@@ -174,7 +171,7 @@ public class DialogBox {
     /**
      * wyswietlenie okienka do wproadzania danych
      *
-     * @param message - komunikat
+     * @param message      - komunikat
      * @param defaultValue - domysla wartosc
      * @return wpisana odpowiedz albo NULL
      */
@@ -186,14 +183,14 @@ public class DialogBox {
      * Wystietla okienko JOptionPane w języku polskim oraz wiąże odpowiednio
      * mnemoniki z przyciskami.
      *
-     * @param msg Trećć komunikatu
-     * @param title Tytył okna
-     * @param type Typ okna np. JOptionPane.QUESTION_MESSAGE
+     * @param msg    Trećć komunikatu
+     * @param title  Tytył okna
+     * @param type   Typ okna np. JOptionPane.QUESTION_MESSAGE
      * @param option Wyświetlane opcje np. JOptionPane.YES_NO_OPTION
      * @return wybrana opcja
      */
-    public static int showConfirmDialog(final String msg, final String title,
-            final int type, final int option) {
+    public static int showConfirmDialog(String msg, String title,
+                                        int type, int option) {
 
         class Tmp implements Runnable {
 
@@ -238,8 +235,8 @@ public class DialogBox {
      * dodanie mneomonikow do przyciskow
      *
      * @param parentComponent - komponent
-     * @param text - nazwy przyciskow
-     * @param mnemonic - mnemoniki dla przyciskow
+     * @param text            - nazwy przyciskow
+     * @param mnemonic        - mnemoniki dla przyciskow
      */
     private static void addMnemonicsToButtons(Component parentComponent, String[] text, int[] mnemonic) {
         Collection<Component> components = getAllSubComponents(parentComponent);

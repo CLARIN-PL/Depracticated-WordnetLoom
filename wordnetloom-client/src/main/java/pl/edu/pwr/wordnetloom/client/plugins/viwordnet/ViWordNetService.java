@@ -15,8 +15,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.DeleteRelationWind
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewLexicalRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewRelationWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
-import pl.edu.pwr.wordnetloom.client.systems.common.Quadruple;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
@@ -28,17 +26,16 @@ import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -63,7 +60,7 @@ public class ViWordNetService extends AbstractService implements
             .getPredefinedCursor(Cursor.DEFAULT_CURSOR);
 
     private final List<ViwnGraphView> graphViews = new ArrayList<>(GRAPH_VIEWS_LIMIT);
-    private final Map<String, PartOfSpeech> posMap = new HashMap<>();
+
     private SynsetData synsetData = new SynsetData();
     private String perspectiveName = null;
     private ViWordNetPerspective perspective = null;
@@ -78,8 +75,7 @@ public class ViWordNetService extends AbstractService implements
     private ViwnLockerView lockerView = null;
     private ViwnExamplesView examplesView = null;
     private ViwnExampleKPWrView kpwrExamples = null;
-    private Object objectForReload;
-    private Integer tagForReload;
+
     /**
      * in make relation mode user can make new relation value should be changed
      * only by using of setMakeRelationMode(boolean) method
@@ -156,10 +152,6 @@ public class ViWordNetService extends AbstractService implements
         synsetView.addUnitChangeListener(this);
         workbench.installView(synsetView, ViWordNetPerspective.SPLIT_LEFT_VIEW, perspectiveName);
 
-        // candView = new CandidatesView(workbench, Labels.CANDIDATES);
-        //  candView.addCandidateChangeListener(new SimpleListenerWrapper(this, "candidateSelection"));
-        //  workbench.installView(candView, ViWordNetPerspective.SPLIT_LEFT_VIEW, perspectiveName);
-
         satelliteGraphView = new ViwnSatelliteGraphView(workbench, Labels.PREVIEW, graphUI);
         workbench.installView(satelliteGraphView, ViWordNetPerspective.SPLIT_RIGHT_TOP_VIEW, perspectiveName);
         activeGraphView.addGraphChangeListener(satelliteGraphView);
@@ -229,22 +221,6 @@ public class ViWordNetService extends AbstractService implements
         } else if (object instanceof Synset) {
             new LoadSynsetTask((Synset) object).execute();
         }
-    }
-
-    /**
-     * this method is invoked when candidate word has been selected
-     *
-     * @param pair - Pair<String, Pos> of selected word and its part of speach
-     * @param tag  - package number
-     */
-    public void candidateSelection(Object pair, Integer tag) {
-        // PUNKT WEJŚCIA
-        // A-słowo, B-część mowy, Tag-numer paczki
-        objectForReload = pair;
-        tagForReload = tag;
-        workbench.setBusy(true);
-        CandidateTask worker = new CandidateTask(pair, tag);
-        worker.execute();
     }
 
     /**
@@ -481,24 +457,6 @@ public class ViWordNetService extends AbstractService implements
         setCursor(MERGE_SYNSETS_CURSOR, mergeSynsetsMode);
     }
 
-    private ViwnNodeSynset findProposed(ViwnNodeSynset s, Long[] depth) {
-        if (s instanceof ViwnNodeCand) {
-            return s;
-        }
-        ViwnNode spawner = s.getSpawner();
-        if (spawner == null || !(spawner instanceof ViwnNodeSynset)) {
-            return null;
-        } else {
-            depth[0]++;
-            return findProposed((ViwnNodeSynset) spawner, depth);
-        }
-    }
-
-
-    private void newCandRelation(ViwnNodeSynset synset, ViwnNodeWord word) {
-        throw new NotImplementedException();
-    }
-
     public void mergeSynsets(Object second) {
         if (first instanceof ViwnNodeSynset && second instanceof ViwnNodeSynset) {
             ViwnNodeSynset src = (ViwnNodeSynset) first;
@@ -541,12 +499,7 @@ public class ViWordNetService extends AbstractService implements
     public void makeRelation(Object second) {
         if (first instanceof ViwnNodeSynset && second instanceof ViwnNodeSynset) {
             makeSynsetRelation((ViwnNodeSynset) second);
-        } else if (first instanceof ViwnNodeSynset && second instanceof ViwnNodeWord) {
-            makeCandidateRelation((ViwnNodeSynset) first, (ViwnNodeWord) second);
-        } else if (second instanceof ViwnNodeSynset && first instanceof ViwnNodeWord) {
-            makeCandidateRelation((ViwnNodeSynset) second, (ViwnNodeWord) first);
-        } // make relation between lexical units and one of lexical units from synset
-        else if (first instanceof Sense && second instanceof ViwnNodeSynset) {
+        } else if (first instanceof Sense && second instanceof ViwnNodeSynset) {
             makeUnitRelation((Sense) first, (ViwnNodeSynset) second);
         } else if (first instanceof Sense && second instanceof Sense) {
             makeUnitRelation((Sense) first, (Sense) second);
@@ -583,15 +536,11 @@ public class ViWordNetService extends AbstractService implements
             return;
         }
 
-        if (MakeNewRelationWindow.showMakeSynsetRelationModal(workbench, src, dst)) {
+        if (MakeNewRelationWindow.showModalAndSaveRelation(workbench, src, dst)) {
             for (ViwnGraphView gv : graphViews) {
                 gv.getUI().relationAdded(src, dst);
             }
         }
-    }
-
-    private void makeCandidateRelation(ViwnNodeSynset synset, ViwnNodeWord word) {
-        newCandRelation(synset, word);
     }
 
     private void makeUnitRelation(Sense sense, ViwnNodeSynset nodeSynset) {
@@ -609,7 +558,7 @@ public class ViWordNetService extends AbstractService implements
 //                    @Override
 //                    public void actionPerformed(ActionEvent ae) {
 //                        if (MakeNewLexicalRelationFrame
-//                                .showMakeLexicalRelationModal(workbench,
+//                                .showModalAndSaveRelation(workbench,
 //                                        (Sense) first, lu)) {
 //                            unitsRelationsView.refresh();
 //                        }
@@ -623,7 +572,7 @@ public class ViWordNetService extends AbstractService implements
     }
 
     private void makeUnitRelation(Sense sense1, Sense sense2) {
-        if (MakeNewLexicalRelationWindow.showMakeLexicalRelationModal(
+        if (MakeNewLexicalRelationWindow.showModalAndSaveRelation(
                 workbench, sense1, sense2)) {
             unitsRelationsView.refresh();
         }
@@ -748,48 +697,6 @@ public class ViWordNetService extends AbstractService implements
             synset = RemoteService.synsetRemote.findSynsetBySense(sense, LexiconManager.getInstance().getLexiconsIds());
             loadSynset(synset);
             return null;
-        }
-    }
-
-    class CandidateTask extends SwingWorker<Void, Void> {
-
-        final Pair<String, PartOfSpeech> p;
-        final Integer tag;
-        Quadruple<ViwnNodeWord, ArrayList<TreeSet<ViwnNodeSynset>>, ArrayList<ViwnNodeCand>, ArrayList<ViwnNodeSynset>> result;
-        ArrayList<ViwnNodeCandExtension> extensionResult = new ArrayList<>();
-
-        public CandidateTask(Object pair, Integer tag) {
-            p = (Pair<String, PartOfSpeech>) pair;
-            this.tag = tag;
-        }
-
-        @Override
-        protected Void doInBackground() throws Exception {
-            result = getActiveGraphView().loadCandidate(p.getA(), tag, p.getB());
-            examplesView.load_examples(p.getA());
-            kpwrExamples.load_examples(p.getA());
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-
-                @Override
-                protected Void doInBackground() throws Exception {
-                    ((ViWordNetPerspective) workbench.getActivePerspective())
-                            .setTabTitle("<html><font color=green>" + p.getA() + "</font> #" + tag + "</html>");
-                    extensionResult = getActiveGraphView().loadExtensions(p.getA(), tag, p.getB());
-                    getActiveGraphView().getUI().loadCandidate(result.getA(), result.getB(), result.getC(), result.getD(), extensionResult);
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    workbench.setBusy(false);
-                }
-            };
-            worker.execute();
         }
     }
 }

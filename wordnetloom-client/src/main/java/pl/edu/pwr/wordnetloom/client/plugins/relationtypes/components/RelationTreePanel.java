@@ -1,6 +1,5 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.components;
 
-import com.alee.extended.tree.AsyncTreeTransferHandler;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.tree.WebTree;
@@ -16,16 +15,11 @@ import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 
-import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -33,33 +27,25 @@ import java.util.Optional;
 
 public class RelationTreePanel extends WebPanel implements TreeSelectionListener {
 
-    private WebTree tree;
-
     private final RelationArgument relationArgument;
-
     private final RelationTypeNode root = new RelationTypeNode("Relations");
-
-    private final MButton moveUpButton = MButton.buildUpButton()
-            .withToolTip(Hints.MOVE_RELATION_UP)
-            .withActionListener(e -> moveRelationUp());
-
-
-    private final MButton moveDownButton = MButton.buildDownButton()
-            .withToolTip(Hints.MOVE_RELATION_DOWN)
-            .withActionListener(e -> moveRelationDown());
-
     private final MButton addButton = MButton.buildAddButton()
             .withToolTip(Hints.CREATE_RELATION_TYPE)
             .withActionListener(e -> addRelation());
-
     private final MButton addSubRelationButton = new MButton()
             .withToolTip(Hints.CREATE_NEW_RELATION_SUBTYPE)
             .withIcon(FontAwesome.PLUS_SQUARE)
             .withActionListener(e -> addSubRelation());
-
     private final MButton removeButton = MButton.buildDeleteButton()
             .withToolTip(Hints.REMOVE_SELECTED_REL_AND_SUBRELATION)
             .withActionListener(e -> removeRelation());
+    private WebTree tree;
+    private final MButton moveUpButton = MButton.buildUpButton()
+            .withToolTip(Hints.MOVE_RELATION_UP)
+            .withActionListener(e -> moveRelationUp());
+    private final MButton moveDownButton = MButton.buildDownButton()
+            .withToolTip(Hints.MOVE_RELATION_DOWN)
+            .withActionListener(e -> moveRelationDown());
 
     public RelationTreePanel(RelationArgument argument) {
         relationArgument = argument;
@@ -94,16 +80,16 @@ public class RelationTreePanel extends WebPanel implements TreeSelectionListener
         add(buttonPanel, BorderLayout.EAST);
     }
 
-    public void setRelationsTypes(final List<RelationType> list) {
+    public void setRelationsTypes(List<RelationType> list) {
         buildTree(list);
         tree.expandAll();
     }
 
-    private void buildTree(final List<RelationType> list) {
+    private void buildTree(List<RelationType> list) {
         root.removeAllChildren();
 
         list.forEach(e -> {
-            final RelationTypeNode parent = new RelationTypeNode(e);
+            RelationTypeNode parent = new RelationTypeNode(e);
             List<RelationType> children = RelationTypeManager.getInstance().getChildren(e.getId());
             children.forEach(child -> {
                 RelationTypeNode childNode = new RelationTypeNode(child);
@@ -118,7 +104,7 @@ public class RelationTreePanel extends WebPanel implements TreeSelectionListener
             RelationTypeNode parent = (RelationTypeNode) node.getParent();
             if (parent.getIndex(node) < parent.getIndex(parent.getLastChild())) {
 //                moveWithChildren(node, (RelationTypeNode) parent.getChildAfter(node), parent, parent.getIndex(node));
-                moveWithChildren(node, (RelationTypeNode)node.getNextSibling());
+                moveWithChildren(node, (RelationTypeNode) node.getNextSibling());
             }
         });
 
@@ -129,16 +115,16 @@ public class RelationTreePanel extends WebPanel implements TreeSelectionListener
             RelationTypeNode parent = (RelationTypeNode) node.getParent();
             if (parent.getIndex(node) > parent.getIndex(parent.getFirstChild())) {
 //                moveWithChildren(node, (RelationTypeNode) node.getPreviousNode(), parent, parent.getIndex(node));
-                moveWithChildren(node, (RelationTypeNode)node.getPreviousSibling());
+                moveWithChildren(node, (RelationTypeNode) node.getPreviousSibling());
             }
         });
     }
 
-    private void moveWithChildren(RelationTypeNode node, RelationTypeNode siblingNode){
+    private void moveWithChildren(RelationTypeNode node, RelationTypeNode siblingNode) {
         RelationTypeNode parent = (RelationTypeNode) node.getParent();
         int index = parent.getIndex(node);
         // save children of second element, and remove all children
-        final List<RelationTypeNode> children = new ArrayList<>();
+        List<RelationTypeNode> children = new ArrayList<>();
         if (siblingNode.getChildCount() > 0) {
             Enumeration en = siblingNode.breadthFirstEnumeration();
             en.nextElement(); //first element in enumeration is siblingNode
@@ -151,20 +137,20 @@ public class RelationTreePanel extends WebPanel implements TreeSelectionListener
         // save all expanded nodes in tree
         List<RelationTypeNode> expandedNodes = new ArrayList<>();
         Enumeration en = root.breadthFirstEnumeration();
-        while(en.hasMoreElements()){
+        while (en.hasMoreElements()) {
             RelationTypeNode item = (RelationTypeNode) en.nextElement();
-            if(tree.isExpanded(item)){
+            if (tree.isExpanded(item)) {
                 expandedNodes.add(item);
             }
         }
         // swap items and insert children to seconds node
         parent.insert(siblingNode, index);
         children.forEach(siblingNode::add);
-        final DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+        DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
         model.reload(parent);
 
         //restore expanding node
-        for(RelationTypeNode item:expandedNodes){
+        for (RelationTypeNode item : expandedNodes) {
             tree.expandNode(item);
         }
 
@@ -184,10 +170,7 @@ public class RelationTreePanel extends WebPanel implements TreeSelectionListener
 
     private void moveWithChildren(RelationTypeNode node, RelationTypeNode siblingNode, RelationTypeNode parent, int index) {
 
-
-
-        // update database
-        if(false){
+        if (false) {
             RelationType firstRelationType = node.getRelationType();
             RelationType secondRelationType = siblingNode.getRelationType();
             int firstPosition = firstRelationType.getPriority();
