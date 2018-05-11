@@ -55,12 +55,12 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
     /**
      * default distance from node to node at x axis
      */
-    protected final static int DEFAULT_DISTX = 80;
+    protected final static int DEFAULT_DISTX = 120;
 
     /**
      * default distance from node to node at y axis
      */
-    protected final static int DEFAULT_DISTY = 30;
+    protected final static int DEFAULT_DISTY = 35;
 
     protected int distX = DEFAULT_DISTX;
     protected int distY = DEFAULT_DISTY;
@@ -207,6 +207,12 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
 	 * after reducing a node?
      */
 
+    private void insertNodeToList(List<ViwnNode> list, ViwnNode element){
+        if(!list.contains(element)){
+            list.add(element);
+        }
+    }
+
     /**
      * set visualisation nodes locations
      * <p>
@@ -258,16 +264,20 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
                             && (opposite.getSpawnDir() != null)) {
                         switch (opposite.getSpawnDir()) {
                             case BOTTOM:
-                                bottom.add(opposite);
+//                                bottom.add(opposite);
+                                insertNodeToList(bottom, opposite);
                                 break;
                             case TOP:
-                                top.add(opposite);
+//                                top.add(opposite);
+                                insertNodeToList(top, opposite);
                                 break;
                             case RIGHT:
-                                right.add(opposite);
+//                                right.add(opposite);
+                                insertNodeToList(right, opposite);
                                 break;
                             case LEFT:
-                                left.add(opposite);
+//                                left.add(opposite);
+                                insertNodeToList(left, opposite);
                                 break;
                         }
                     }
@@ -286,93 +296,10 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
             int i = 0;
 
             // place lower
-            p.x = (int) loc.getX() - ((bottom.size() - 1) * distX) / 2 + distX / 11;
-            p.y = (int) loc.getY() + (distY * bottom.size()) / 2;
-            ile = bottom.size();
-
-            for (ViwnNode vn : bottom) {
-                // place it
-                setLocation(vn, new Point2D.Double(p.x, p.y
-                        + Math.sqrt(ile)
-                        * distY
-                        * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile))));
-                // mark as mapped
-                actual.add(vn);
-
-                p.x += distX;
-                ++i;
-            }
-
-            // place upper
-            p.x = (int) loc.getX() - ((top.size() - 1) * distX) / 2 + distX / 11;
-            p.y = (int) loc.getY() - (distY * top.size()) / 2;
-            ile = top.size();
-            i = 0;
-
-            for (ViwnNode vn : top) {
-                // place it
-                setLocation(
-                        vn,
-                        new Point2D.Double(p.x, p.y
-                                - Math.sqrt(ile)
-                                * distY
-                                * Math.cos(Math.PI
-                                * ((ile / 2D - i - 0.5D) / ile))));
-                // mark as mapped
-                actual.add(vn);
-
-                p.x += distX;
-                ++i;
-            }
-
-            // place right
-            double updownmax = Math.max((double) Math.max(bottom.size(), top.size()), 1);
-            if (updownmax < right.size()) {
-                p.x = (int) loc.getX() + distX
-                        + (int) ((updownmax - 1) * distX) / 2;
-            } else {
-                p.x = (int) loc.getX() + distX + ((right.size() - 1) * distX) / 2;
-            }
-            p.y = (int) loc.getY() - ((right.size() - 1) * distY) / 2 + distY / 3;
-            ile = right.size();
-            i = 0;
-            for (ViwnNode vn : right) {
-                // place it
-                setLocation(
-                        vn,
-                        new Point2D.Double((p.x + Math.sqrt(ile)
-                                * distY
-                                * Math.cos(Math.PI
-                                * ((ile / 2D - i - 0.5D) / ile))), p.y));
-                // mark as mapped
-                actual.add(vn);
-
-                p.y += distY;
-                ++i;
-            }
-
-            // place left
-            if (updownmax < left.size()) {
-                p.x = (int) loc.getX() - distX
-                        - (int) ((updownmax - 1) * distX) / 2;
-            } else {
-                p.x = (int) loc.getX() - distX - ((left.size() - 1) * distX) / 2;
-            }
-            p.y = (int) loc.getY() - ((left.size() - 1) * distY) / 2 + distY / 3;
-            ile = left.size();
-            i = 0;
-
-            for (ViwnNode vn : left) {
-                // place it
-                setLocation(vn, new Point2D.Double(p.x - Math.sqrt(ile) * distY
-                        * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile)),
-                        p.y));
-                // mark as mapped
-                actual.add(vn);
-
-                p.y += distY;
-                ++i;
-            }
+            placeLower(loc, actual, bottom, p, i);
+            placeUpper(loc, actual, top, p);
+            double updownmax = placeRight(loc, actual, bottom, top, right, p);
+            placeLeft(loc, actual, left, p, updownmax);
 
             // =========================== lower level
             for (ViwnNode vn : bottom) {
@@ -410,6 +337,101 @@ public class ViwnLayout implements Layout<ViwnNode, ViwnEdge> {
         }
 
         return actual;
+    }
+
+    private void placeLeft(Point2D loc, Set<ViwnNode> actual, List<ViwnNode> left, Point p, double updownmax) {
+        double ile;
+        int i;
+        if (updownmax < left.size()) {
+            p.x = (int) loc.getX() - distX
+                    - (int) ((updownmax - 1) * distX) / 2;
+        } else {
+            p.x = (int) loc.getX() - distX - ((left.size() - 1) * distX) / 2;
+        }
+        p.y = (int) loc.getY() - ((left.size() - 1) * distY) / 2 + distY / 3;
+        ile = left.size();
+        i = 0;
+
+        for (ViwnNode vn : left) {
+            // place it
+            setLocation(vn, new Point2D.Double(p.x - Math.sqrt(ile) * distY
+                    * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile)),
+                    p.y));
+            // mark as mapped
+            actual.add(vn);
+
+            p.y += distY;
+            ++i;
+        }
+    }
+
+    private double placeRight(Point2D loc, Set<ViwnNode> actual, List<ViwnNode> bottom, List<ViwnNode> top, List<ViwnNode> right, Point p) {
+        double ile;
+        int i;
+        double updownmax = Math.max((double) Math.max(bottom.size(), top.size()), 1);
+        if (updownmax < right.size()) {
+            p.x = (int) loc.getX() + distX
+                    + (int) ((updownmax - 1) * distX) / 2;
+        } else {
+            p.x = (int) loc.getX() + distX + ((right.size() - 1) * distX) / 2;
+        }
+        p.y = (int) loc.getY() - ((right.size() - 1) * distY) / 2 + distY / 3;
+        ile = right.size();
+        i = 0;
+        for (ViwnNode vn : right) {
+            // place it
+            setLocation(
+                    vn,
+                    new Point2D.Double((p.x + Math.sqrt(ile)
+                            * distY
+                            * Math.cos(Math.PI
+                            * ((ile / 2D - i - 0.5D) / ile))), p.y));
+            // mark as mapped
+            actual.add(vn);
+
+            p.y += distY;
+            ++i;
+        }
+        return updownmax;
+    }
+
+    private void placeUpper(Point2D loc, Set<ViwnNode> actual, List<ViwnNode> top, Point p) {
+        double ile;
+        int i;
+//        p.x = (int) loc.getX() - ((top.size() - 1) * distX) / 2 + distX / 11;
+
+        p.x = (int)loc.getX() - (top.size() - 1) * distX /2;
+        p.y = (int) loc.getY() - (distY * top.size()) / 2;
+        ile = top.size();
+        i = 0;
+        for (ViwnNode vn : top) {
+            setLocation(
+                    vn,
+                    new Point2D.Double(p.x,
+                            p.y - Math.sqrt(ile) * distY * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile))));
+            // mark as mapped
+            actual.add(vn);
+
+            p.x += distX;
+            ++i;
+        }
+    }
+
+    private void placeLower(Point2D loc, Set<ViwnNode> actual, List<ViwnNode> bottom, Point p, int i) {
+        double ile;
+//        p.x = (int) loc.getX() - ((bottom.size() - 1) * distX) / 2 + distX / 11;
+        p.x = (int) loc.getX() - (bottom.size() - 1) * distX /2;
+        p.y = (int) loc.getY() + (distY * bottom.size()) / 2;
+        ile = bottom.size();
+        for (ViwnNode vn : bottom) {
+            setLocation(vn, new Point2D.Double(p.x,
+                    p.y + Math.sqrt(ile) * distY * Math.cos(Math.PI * ((ile / 2D - i - 0.5D) / ile))));
+            // mark as mapped
+            actual.add(vn);
+
+            p.x += distX;
+            ++i;
+        }
     }
 
     /**

@@ -7,26 +7,21 @@ import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 import edu.uci.ics.jung.visualization.picking.PickedState;
-import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerView;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerViewUI;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,47 +47,6 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             vgvui.deselectAll();
         }
         vgvui.addSynsetsFromSet(syns);
-//        ViwnNode other = v;
-//        for (Object obj : syns) {
-//            ViwnNodeSynset node = (ViwnNodeSynset)obj;
-//            //TODO sprawdzić, czy w cache synset ma pobrane relacje
-////            Map<Long, DataEntry> entries = RemoteService.synsetRemote.prepareCacheForRootNode(synset, LexiconManager.getInstance().getLexiconsIds(), NodeDirection.values());
-//            DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(node.getId(), LexiconManager.getInstance().getLexiconsIds());
-//            vgvui.addToEntrySet(dataEntry);
-//            node.construct();
-//            vgvui.addSynsetFromSet(node);
-////            vgvui.addSynsetFromSet((ViwnNodeSynset) obj);
-//            other = (ViwnNode) obj;
-//        }
-//        if(!syns.isEmpty()){
-//            vgvui.recreateLayout();
-//        }
-
-
-//        if(!syns.isEmpty()){
-//            ViwnNode p2 = v;
-//            Graph<ViwnNode, ViwnEdge> g = vgvui.getGraph();
-//            ViwnNode parent = v.getSpawner();
-//            boolean dissapear = true;
-//            for (ViwnEdge edge : g.getIncidentEdges(parent)) {
-//                ViwnNode opposite = g.getOpposite(parent, edge);
-//                if (parent.equals(opposite.getSpawner())
-//                        && (opposite.getSpawnDir() != null)) {
-//                    if (opposite == v) {
-//                        dissapear = false;
-//                    }
-//                }
-//            }
-//            if (dissapear) {
-//                if (other != null) {
-//                    p2 = other;
-//                } else {
-//                    p2 = v.getSpawner();
-//                }
-//            }
-//
-//            vgvui.recreateLayoutWithFix(v, p2);
-//        }
     }
 
     private ViWordNetService getViWordNetService(){
@@ -101,16 +55,16 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
     private void showPathToHyponim(ViwnNode vertex) {
         Synset synset = ((ViwnNodeSynset)vertex).getSynset();
-
-        Long hiperonimId = RemoteService.relationTypeRemote.findByName("hiponimia").getId();
-        List<Synset> path = RemoteService.synsetRelationRemote.findTopPathInSynsets(synset, hiperonimId);
+        //TODO przerobić to tak, aby nie było trzeba wpisywać nazwy relacji
+        RelationType type = RemoteService.relationTypeRemote.findByName("hiponimia");
+        List<Synset> path = RemoteService.synsetRelationRemote.findTopPathInSynsets(synset, type.getId());
         DataEntry dataEntry;
         for(Synset synsetInPath : path){
             // TODO spróbowac zlikwidować dodatkowe pobieranie danych z bazy
             dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(synsetInPath.getId(), LexiconManager.getInstance().getUserChosenLexiconsIds());
             vgvui.addToEntrySet(dataEntry);
         }
-        getViWordNetService().getActiveGraphView().getUI().addConnectedSynsetsToGraph((ViwnNodeSynset)vertex, path);
+        getViWordNetService().getActiveGraphView().getUI().addConnectedSynsetsToGraph((ViwnNodeSynset)vertex, path, type.getNodePosition());
     }
 
     @Override

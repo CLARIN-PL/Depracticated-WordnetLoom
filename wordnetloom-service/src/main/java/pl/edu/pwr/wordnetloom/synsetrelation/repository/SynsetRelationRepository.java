@@ -6,8 +6,6 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
-import pl.edu.pwr.wordnetloom.relationtype.repository.RelationTypeRepository;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
@@ -15,9 +13,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.criteria.*;
 import java.util.*;
-import java.util.Map.Entry;
 
 @Stateless
 public class SynsetRelationRepository extends GenericRepository<SynsetRelation> {
@@ -41,7 +37,6 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
     }
 
     public void delete(SynsetRelation relation){
-//        getEntityManager().remove(relation);
         em.remove(em.contains(relation) ? relation : em.merge(relation));
     }
 
@@ -134,6 +129,24 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
     public List<Synset> findTopPathInSynsets(Synset synset, Long rtype) {
         ArrayList<Synset> path = new ArrayList<>();
 
+        DirectedGraph<Long, SynsetRelation> g = getRelationDirectedGraph(synset, rtype);
+        DijkstraShortestPath<Long, SynsetRelation> dsp = new DijkstraShortestPath<>(g);
+        Map<Long, Number> map = dsp.getDistanceMap(synset.getId());
+        Long last = getLastElement(map);
+        if (last != -1) {
+            List<SynsetRelation> p = dsp.getPath(synset.getId(), last);
+            for (SynsetRelation r : p) {
+                path.add(r.getChild());
+            }
+        }
+        return path;
+    }
+
+    private Long getLastElement(Map<Long, Number> map) {
+        return map.entrySet().stream().skip(map.size()-1).findFirst().get().getKey();
+    }
+
+    private DirectedGraph<Long, SynsetRelation> getRelationDirectedGraph(Synset synset, Long rtype) {
         DirectedGraph<Long, SynsetRelation> g = new DirectedSparseGraph<>();
 
         g.addVertex(synset.getId());
@@ -151,23 +164,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 }
             }
         }
-
-        DijkstraShortestPath<Long, SynsetRelation> dsp
-                = new DijkstraShortestPath<>(g);
-
-        Map<Long, Number> map = dsp.getDistanceMap(synset.getId());
-        Long last = new Long(-1);
-        for (Entry<Long, Number> p : map.entrySet()) {
-            last = p.getKey();
-        }
-
-        if (last != -1) {
-            List<SynsetRelation> p = dsp.getPath(synset.getId(), last);
-            for (SynsetRelation r : p) {
-                path.add(r.getParent());
-            }
-        }
-        return path;
+        return g;
     }
 
     private List<SynsetRelation> findSynsetRelation(Long parentId, Long relationTypeId) {
@@ -259,7 +256,6 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 .setParameter("id", synset.getId())
                 .getResultList();
     }
-
 
     @Override
     protected Class<SynsetRelation> getPersistentClass() {
