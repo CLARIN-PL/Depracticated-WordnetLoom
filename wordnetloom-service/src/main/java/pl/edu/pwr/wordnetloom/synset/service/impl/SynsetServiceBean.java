@@ -257,5 +257,4 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     public int getCountSynsetRandomByCriteria(SynsetCriteriaDTO criteria) {
         return synsetRepository.getCountSynsetRandomByCriteria(criteria);
     }
-
 }
