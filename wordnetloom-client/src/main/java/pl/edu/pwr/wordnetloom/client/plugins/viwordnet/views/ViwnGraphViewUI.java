@@ -988,15 +988,17 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         return null;
     }
 
-    public void addConnectedSynsetsToGraph(ViwnNodeSynset first, List<Synset> synsets) {
+    public void addConnectedSynsetsToGraph(ViwnNodeSynset first, List<Synset> synsets, NodeDirection direction) {
         ViwnNodeSynset prev = first;
+        // TODO dorzucić do parametru kierunku
         for (Synset synset : synsets) {
             ViwnNodeSynset node = loadSynsetNode(synset);
-            relationAdded(prev, node);
+            tryInsertNodeToForest(node, prev, direction);
             prev = node;
         }
         checkMissing();
         recreateLayoutWithFix(null,null);
+        center();
     }
 
     public void relationAdded(ViwnNodeSynset from, ViwnNodeSynset to) {
@@ -1009,8 +1011,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             newSynset = new ViwnNodeSynset(to.getSynset(), this);
             insertNodeInForest(newSynset, from);
         }
-        checkMissing();
-        recreateLayoutWithFix(null,null);
     }
 
    private void insertNodeInForest(ViwnNodeSynset first, ViwnNodeSynset second){
@@ -1022,8 +1022,13 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                cache.put(first.getId(), first);
            }
        }
-       checkMissing();
-       recreateLayoutWithFix(null, null);
+       checkMissing(first);
+       recreateLayoutWithFix(first, second);
+   }
+
+   private void checkMissing(ViwnNodeSynset node){
+       addMissingRelations(node);
+       // TODO może dorobić checkState
    }
 
     protected void checkMissing() {
@@ -1032,9 +1037,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         nodes.stream().filter((node) -> ((node instanceof ViwnNodeSynset)
                 && !(node instanceof ViwnNodeCandExtension))).forEachOrdered((node) -> {
             addMissingRelations((ViwnNodeSynset) node);
-        });
-
-        nodes.stream().filter((node) -> (node instanceof ViwnNodeSynset)).forEachOrdered((node) -> {
             for (NodeDirection d : NodeDirection.values()) {
                 checkState((ViwnNodeSynset) node, d);
             }

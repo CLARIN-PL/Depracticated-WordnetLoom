@@ -244,5 +244,4 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     public SynsetAttributes fetchSynsetAttributes(Long synsetId) {
         return synsetRepository.fetchSynsetAttributes(synsetId);
     }
-
 }
