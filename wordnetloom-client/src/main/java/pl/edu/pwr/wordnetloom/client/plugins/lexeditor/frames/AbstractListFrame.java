@@ -39,18 +39,15 @@ abstract public class AbstractListFrame<T, G> extends
         DialogWindow implements ActionListener, ListSelectionListener,
         KeyListener, MouseListener {
 
-    private static final String STANDARD_VALUE_FILTER = "";
     public static final int WIDTH = 300, HEIGHT = 400;
-
+    private static final String STANDARD_VALUE_FILTER = "";
     private static final long serialVersionUID = 1L;
-
-    protected JTextField filterEdit;
     private final JList itemsList;
     private final MButton buttonChoose;
     private final MButton buttonSearch;
     private final MButton buttonCancel;
     private final MButton buttonNew;
-
+    protected JTextField filterEdit;
     protected GenericListModel<T> listModel = null;
     protected G filterObject = null;
 
@@ -238,7 +235,7 @@ abstract public class AbstractListFrame<T, G> extends
         }
     }
 
-    protected void setMultSelect(boolean multiSelect) {
+    protected void setMultiSelect(boolean multiSelect) {
         if (multiSelect) {
             itemsList
                     .setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

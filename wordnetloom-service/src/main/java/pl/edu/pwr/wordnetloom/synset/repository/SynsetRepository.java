@@ -231,7 +231,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
             }
             dataEntry.addRelation(relation, direction);
         }
-        dataEntry.setLexicon(sense.getLexicon().getIdentifier());
+        dataEntry.setLexicon(sense.getLexicon().getIcon());
         dataEntry.setPosID(sense.getPartOfSpeech().getId());
         dataEntry.setName(sense.getWord().getWord());
         dataEntry.setVariant(String.valueOf(sense.getVariant()));

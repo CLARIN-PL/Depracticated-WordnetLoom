@@ -6,6 +6,7 @@ import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
 import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
+import pl.edu.pwr.wordnetloom.user.model.Role;
 import pl.edu.pwr.wordnetloom.user.model.User;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
 
@@ -52,8 +53,8 @@ public class RemoteConnectionProvider implements Loggable {
     private Context getInitialContext() throws NamingException, IOException {
         Context localContext = initialContext;
         if (localContext == null) {
-            final EJBClientConfiguration ejbClientConfiguration = new PropertiesBasedEJBClientConfiguration(getEjbProperties());
-            final ConfigBasedEJBClientContextSelector selector = new ConfigBasedEJBClientContextSelector(ejbClientConfiguration);
+            EJBClientConfiguration ejbClientConfiguration = new PropertiesBasedEJBClientConfiguration(getEjbProperties());
+            ConfigBasedEJBClientContextSelector selector = new ConfigBasedEJBClientContextSelector(ejbClientConfiguration);
             EJBClientContext.setSelector(selector);
             initialContext = localContext = new InitialContext(getEjbProperties());
         }
@@ -62,7 +63,7 @@ public class RemoteConnectionProvider implements Loggable {
 
     private Properties getEjbProperties() {
 
-        String host = System.getenv("WORDNETLOOM_SERVER_HOST") != null ? System.getenv("WORDNETLOOM_SERVER_HOST") : "localhost";
+        String host = System.getenv("WORDNETLOOM_SERVER_HOST") != null ? System.getenv("WORDNETLOOM_SERVER_HOST") : "127.0.0.1";
         String port = System.getenv("WORDNETLOOM_SERVER_PORT") != null ? System.getenv("WORDNETLOOM_SERVER_PORT") : "8080";
 
         Properties ejbProperties = new Properties();
@@ -83,7 +84,7 @@ public class RemoteConnectionProvider implements Loggable {
     private <T> String getLookupName(Class<T> remoteClass, String beanName) {
         String slash = "/";
         String localBeanName = remoteClass.getSimpleName().replace("Remote", beanName);
-        final String interfaceName = remoteClass.getName();
+        String interfaceName = remoteClass.getName();
         String appName = "wordnetloom-server-2.0";
         String moduleName = "wordnetloom-service-2.0";
         String distinctName = "";
@@ -96,12 +97,12 @@ public class RemoteConnectionProvider implements Loggable {
         return name;
     }
 
-    public void setUserSessionData(UserSessionData data) {
-        userSessionData = data;
+    public UserSessionData getUserSessionData() {
+        return userSessionData;
     }
 
-    public  UserSessionData getUserSessionData(){
-        return userSessionData;
+    public void setUserSessionData(UserSessionData data) {
+        userSessionData = data;
     }
 
     public User getUser() {
@@ -110,6 +111,10 @@ public class RemoteConnectionProvider implements Loggable {
             userSessionData = new UserSessionData(userSessionData, u);
         }
         return userSessionData.getUser();
+    }
+
+    public boolean hasRole(Role r) {
+        return getUser().getRole().equals(r);
     }
 
     public String getLanguage() {

@@ -14,7 +14,6 @@ import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DictionaryManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
@@ -329,16 +328,10 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         add(buttons, BorderLayout.SOUTH);
     }
 
-    public Sense updateAndGetSense()
+    public SenseAttributes getSenseAttributes(Long senseId)
     {
-        unit.getWord().setWord(getLemma().getText());
-        unit.setPartOfSpeech(getPartOfSpeech().getEntity());
-        unit.setDomain(getDomain().getEntity());
-        int variant = Integer.parseInt(getVariant().getText());
-        unit.setVariant(variant);
-
+        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(senseId);
         Register reg = register.getEntity();
-        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
         String definition = getDefinition().getText();
         String link = getLink().getToolTipText();
         String comment = getComment().getText();
@@ -360,6 +353,17 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
                 examples.add((SenseExample)examplesModel.getElementAt(i));
             }
         }
+        return attributes;
+    }
+
+    public Sense updateAndGetSense()
+    {
+        unit.getWord().setWord(getLemma().getText());
+        unit.setPartOfSpeech(getPartOfSpeech().getEntity());
+        unit.setDomain(getDomain().getEntity());
+        int variant = Integer.parseInt(getVariant().getText());
+        unit.setVariant(variant);
+
         return unit;
     }
 

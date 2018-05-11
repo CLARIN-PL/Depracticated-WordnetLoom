@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.workbench.abstracts;
 
 import com.alee.laf.panel.WebPanel;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
+import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ShortCut;
@@ -21,6 +23,9 @@ import java.util.Collection;
 public abstract class AbstractViewUI implements KeyListener {
 
     protected SimpleListenersContainer listeners = new SimpleListenersContainer();
+
+    public final int DEFAULT_SCROLL_HEIGHT = 220;
+    public final Dimension DEFAULT_SCROLL_DIMENSION = new Dimension(0, DEFAULT_SCROLL_HEIGHT);
 
     protected Workbench workbench;
 
@@ -151,6 +156,13 @@ public abstract class AbstractViewUI implements KeyListener {
                 break;
             }
         }
+    }
+
+    protected Point getLocation(JComponent component, Workbench workbench){
+        Point location = component.getLocationOnScreen();
+        Rectangle rectangle = workbench.getFrame().getBounds();
+        int x = rectangle.x + rectangle.width - AbstractListFrame.WIDTH/2 - 50;
+        return new Point(x, location.y);
     }
 
     @Override

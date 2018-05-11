@@ -27,8 +27,8 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 
 import javax.swing.*;
@@ -36,7 +36,6 @@ import java.util.Collection;
 
 /**
  * klasa dostarczajace okno z lista jednostek leksykalnych
- *
  */
 public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
 
@@ -78,7 +77,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
         } else {
             SenseCriteriaDTO dto = new SenseCriteriaDTO();
             dto.setLemma(filter);
-            if(pos != null){
+            if (pos != null) {
                 dto.setPartOfSpeechId(pos.getId());
             }
             dto.setLexicons(LexiconManager.getInstance().getUserChosenLexiconsIds());
@@ -115,7 +114,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
 
         UnitsListFrame frame = new UnitsListFrame(workbench, x, y);
         frame.setFilterObject(filterObject);
-        frame.setMultSelect(multiSelect);
+        frame.setMultiSelect(multiSelect);
         frame.execute(filterObject);
         unitWasCreated.setValue(frame.unitWasCreated);
         return frame.selectedElements;

@@ -9,17 +9,20 @@ import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LazyScrollPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.exception.InvalidLexiconException;
+import pl.edu.pwr.wordnetloom.synset.exception.InvalidPartOfSpeechException;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class SynsetsFrame extends DialogWindow implements ActionListener {
+public class SynsetsFrame extends DialogWindow implements ActionListener, Loggable {
 
     private static Sense sense;
     private final SynsetCriteria criteriaPanel;
@@ -103,9 +106,16 @@ public class SynsetsFrame extends DialogWindow implements ActionListener {
     private void addSenseToNewSynset() {
         assert sense != null;
         Synset synset = new Synset();
+        synset.setLexicon(sense.getLexicon());
 
         selectedSynset = RemoteService.synsetRemote.save(synset);
-        RemoteService.synsetRemote.addSenseToSynset(sense, selectedSynset);
+        try {
+            RemoteService.synsetRemote.addSenseToSynset(sense, selectedSynset);
+        } catch(InvalidPartOfSpeechException poe){
+            logger().error("Error", poe);
+        } catch (InvalidLexiconException lox){
+            logger().error("Error", lox);
+        }
 
         setVisible(false);
     }
@@ -113,7 +123,14 @@ public class SynsetsFrame extends DialogWindow implements ActionListener {
     private void addSenseToSelectedSynset() {
         int selectedIndex = synsetsList.getSelectedIndex();
         selectedSynset = listModel.getElementAt(selectedIndex);
-        RemoteService.synsetRemote.addSenseToSynset(sense, selectedSynset);
+
+        try {
+            RemoteService.synsetRemote.addSenseToSynset(sense, selectedSynset);
+        } catch(InvalidPartOfSpeechException poe){
+            logger().error("Error", poe);
+        } catch (InvalidLexiconException lox){
+            logger().error("Error", lox);
+        }
 
         setVisible(false);
     }

@@ -31,7 +31,7 @@ public class SynsetStructureView extends AbstractView implements SimpleListenerI
      * @param graphUI
      */
     public SynsetStructureView(Workbench workbench, String title, boolean showRelations, boolean showGoToLexEditor, boolean bottomButtons, int viewNumber, ViwnGraphViewUI graphUI) {
-        super(workbench, title, new SynsetStructureViewUI(showRelations, showGoToLexEditor, bottomButtons, graphUI));
+        super(workbench, title, new SynsetStructureViewUI(graphUI));
         if (viewNumber == 2) {
             getUI().setBackgroundColor(colorOfSecond); // kolor dla drugiego
         }

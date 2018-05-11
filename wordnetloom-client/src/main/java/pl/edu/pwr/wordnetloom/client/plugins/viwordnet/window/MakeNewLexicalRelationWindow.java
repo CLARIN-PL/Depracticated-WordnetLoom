@@ -14,8 +14,8 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -24,6 +24,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
     private static final long serialVersionUID = 5479457915334417348L;
 
     protected Sense from, to;
+    private SenseRelation senseRelation;
 
     public MakeNewLexicalRelationWindow(WebFrame frame,
                                            PartOfSpeech pos, Sense senseFrom, Sense senseTo) {
@@ -56,6 +57,7 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
             loadParentRelation(relationsType, MULTILINGUAL_RELATIONS);
         }
     }
+
 
     private void createUIComponents() {
         parentItem = new MComboBox();
@@ -91,17 +93,21 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
     @Override
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == buttonChoose) {
-            chosenType = getSelectedRelation();
+            senseRelation = getSenseRelation();
             setVisible(false);
         } else if (event.getSource() == buttonCancel) {
             setVisible(false);
         } else if (event.getSource() == buttonSwitch) {
             switchSenses();
-        } /*else if (event.getSource() == relationSubType) {
-            testsList.setListData(new String[]{});
-        } */else {
+        } else {
             super.actionPerformed(event);
         }
+    }
+
+    private SenseRelation getSenseRelation()
+    {
+        chosenType = getSelectedRelation();
+        return new SenseRelation(chosenType, from, to);
     }
 
     private void switchSenses() {
@@ -129,23 +135,26 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
     public void keyTyped(KeyEvent arg0) {
     }
 
+    private static RelationType chooseRelationType(Workbench workbench, PartOfSpeech partOfSpeech, Sense senseFrom, Sense senseTo){
+        MakeNewLexicalRelationWindow relationWindow = new MakeNewLexicalRelationWindow(workbench.getFrame(), partOfSpeech, senseFrom, senseTo);
+        relationWindow.setVisible(true);
+        return relationWindow.chosenType;
+    }
+
     /**
      * @param workbench <code>Workbench</code> to get JFrame
-     * @param from      <code>ViwnNode</code> parent for relation
-     * @param to        <code>ViwnNode</code> child for relation
+     * @param senseFrom      <code>ViwnNode</code> parent for relation
+     * @param senseTo        <code>ViwnNode</code> child for relation
      * @return true when relation was added successfully
      */
-    public static boolean showMakeLexicalRelationModal(Workbench workbench,
-                                                       Sense from, Sense to) {
-        Sense[] from1 = new Sense[]{from};
-        Sense[] to1 = new Sense[]{to};
-        Sense sf = from1[0];
-        Sense st = to1[0];
+    public static boolean showModalAndSaveRelation(Workbench workbench,
+                                                   Sense senseFrom, Sense senseTo) {
         // check if parent and child are different lexical units
-        if (sf.getId().equals(st.getId())) {
+        if (senseFrom.getId().equals(senseTo.getId())) {
             DialogBox.showInformation(Messages.FAILURE_SOURCE_UNIT_SAME_AS_TARGET);
             return false;
         }
+
 
 //        MakeNewLexicalRelationFrame framew = new MakeNewLexicalRelationFrame(
 //                workbench.getFrame(), RelationArgument.LEXICAL,
@@ -187,7 +196,19 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
         return false;
     }
 
+    public Sense getParentSense(){
+        return from;
+    }
+
+    public Sense getChildSense(){
+        return to;
+    }
+
     public RelationType getChosenType(){
         return chosenType;
+    }
+
+    public SenseRelation getChoosenRelation(){
+        return senseRelation;
     }
 }

@@ -8,6 +8,8 @@ import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.exception.InvalidLexiconException;
+import pl.edu.pwr.wordnetloom.synset.exception.InvalidPartOfSpeechException;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.synset.repository.SynsetAttributesRepository;
@@ -32,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
 
 @Stateless
 @SecurityDomain("wordnetloom")
@@ -105,9 +106,17 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     public Synset save(Synset synset) {
         ValidationUtils.validateEntityFields(validator, synset);
         if (synset.getId() == null) {
-            return synsetRepository.persist(synset);
+            Synset newSynset = synsetRepository.persist(synset);
+            saveAttributes(newSynset);
         }
         return synsetRepository.update(synset);
+    }
+
+    private void saveAttributes(Synset newSynset) {
+        SynsetAttributes attributes = new SynsetAttributes();
+        attributes.setSynset(newSynset);
+        attributes.setId(newSynset.getId());
+        synsetAttributesRepository.persist(attributes);
     }
 
     @RolesAllowed({"USER", "ADMIN"})
@@ -148,7 +157,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @RolesAllowed({"USER", "ADMIN"})
     @Override
-    public Synset addSenseToSynset(Sense sense, Synset synset) {
+    public Synset addSenseToSynset(Sense sense, Synset synset) throws InvalidLexiconException, InvalidPartOfSpeechException {
 
         Synset saved = synset;
 
@@ -165,15 +174,26 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
         }
 
+        Sense fetchedSense = senseService.fetchSense(sense.getId());
         List<Sense> sensesInSynset = senseService.findBySynset(synset.getId());
+        sensesInSynset.stream()
+                .findFirst()
+                .ifPresent(s -> {
+                    if(!fetchedSense.getPartOfSpeech().equals(s.getPartOfSpeech())){
+                        throw new InvalidPartOfSpeechException();
+                    }
+                    if(!fetchedSense.getLexicon().equals(s.getLexicon())){
+                        throw new InvalidLexiconException();
+                    }
+                });
 
         if (sensesInSynset.contains(sense)) {
             return saved;
         }
 
-        sense.setSynset(saved);
-        sense.setSynsetPosition(sensesInSynset.size());
-        senseService.save(sense);
+        fetchedSense.setSynset(saved);
+        fetchedSense.setSynsetPosition(sensesInSynset.size());
+        senseService.save(fetchedSense);
 
         return saved;
     }
@@ -193,6 +213,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @Override
     public void deleteSensesFromSynset(Collection<Sense> senses, Synset synset) {
         for (Sense sense : senses) {
+            sense = senseService.fetchSense(sense.getId());
             sense.setSynset(null);
             sense.setSynsetPosition(null);
             senseService.save(sense);

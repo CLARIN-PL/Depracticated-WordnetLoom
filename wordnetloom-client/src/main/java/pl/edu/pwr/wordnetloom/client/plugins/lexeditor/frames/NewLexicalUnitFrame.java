@@ -27,7 +27,6 @@ import java.util.List;
 
 /**
  * New lexical unit parameter window
- *
  */
 public class NewLexicalUnitFrame extends DialogWindow implements ActionListener {
 
