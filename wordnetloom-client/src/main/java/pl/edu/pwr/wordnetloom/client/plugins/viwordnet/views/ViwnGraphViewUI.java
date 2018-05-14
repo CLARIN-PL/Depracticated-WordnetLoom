@@ -963,7 +963,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         if (cache.containsKey(synset.getId())) {
             ViwnNodeSynset s = cache.get(synset.getId());
             if (s.isDirty()) {
-//                s.construct();
                 s.construct();
             }
             return s;
