@@ -246,7 +246,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
      * @return wartośc wjesciowa lub "brak danych" gdy był null
      */
     private static String formatValue(String value) {
-        return (value == null || value.length() == 0) ? Labels.VALUE_UNKNOWN : value;
+//        return (value == null || value.length() == 0) ? Labels.VALUE_UNKNOWN : value;
+        return value == null ? "" : value;
     }
 
     /**
@@ -292,18 +293,14 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         } else {
             commentValue.grabFocus();
         }
-        // poinformowanie o zmianie parametrow
-        listeners.notifyAllListeners(lastSynset);
 
         ViwnNode node = graphUI.getSelectedNode();
         if (node != null && node instanceof ViwnNodeSynset) {
             ViwnNodeSynset s = (ViwnNodeSynset) node;
             s.setLabel(null);
-            graphUI.graphChanged();
-        } else {
-            // dodano nowy synset, nie istnieje on nigdzie w grafie
-            graphUI.graphChanged();
         }
+        graphUI.graphChanged();
+        graphUI.refreshView(lastSynset);
     }
 
     public boolean updateSynset(Synset synset, String definition, String comment, boolean isAbstract, Set<SynsetExample> examples) {
