@@ -143,7 +143,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
 
     @Override
     public void actionPerformed(ActionEvent event) {
-
+        //TODO Sprawdzić to wywoływane śa funkcje co nic nie robią - TO REFACTOR
         if (event.getSource() == editPanel.getBtnSave()) {
 
             String testLemma = editPanel.getLemma().getText();

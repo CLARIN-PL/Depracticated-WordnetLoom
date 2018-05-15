@@ -15,7 +15,7 @@ import pl.edu.pwr.wordnetloom.synset.model.SynsetExample;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
 import java.util.*;
-
+//TODO REFAKTOR eliminacj tej klasy
 public class LexicalDA {
 
     private LexicalDA() {

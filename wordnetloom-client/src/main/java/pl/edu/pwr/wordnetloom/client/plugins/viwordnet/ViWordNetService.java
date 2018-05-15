@@ -205,11 +205,9 @@ public class ViWordNetService extends AbstractService implements
     public void synsetSelectionChangeListener(ViwnNode node) {
         if (node != null && node instanceof ViwnNodeSynset) {
             ViwnNodeSynset synset = (ViwnNodeSynset) node;
-            if (getActiveGraphView().getUI().getSelectedNode() == null || !getActiveGraphView().getUI().getSelectedNode().equals(synset)) {
-                getActiveGraphView().getUI().setSelectedNode(synset);
-                synsetStructureView.doAction(synset.getSynset(), 1);
-                synsetPropertiesView.doAction(synset.getSynset(), 1);
-            }
+            getActiveGraphView().getUI().setSelectedNode(synset);
+            synsetStructureView.doAction(synset.getSynset(), 1);
+            synsetPropertiesView.doAction(synset.getSynset(), 1);
         }
     }
 

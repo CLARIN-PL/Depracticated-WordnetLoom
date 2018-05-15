@@ -1,5 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.control;
 
+import com.alee.laf.list.WebList;
+import com.alee.laf.menu.WebMenu;
+import com.alee.laf.menu.WebMenuItem;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
@@ -267,7 +270,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 popup.add(createRelationItem);
 
                 // add lexical unit to locker
-                final JMenuItem addToClipboardItem = new JMenu(Labels.UNIT_ADD_TO_CLIPBOARD);
+                final WebMenuItem addToClipboardItem = new WebMenuItem(Labels.UNIT_ADD_TO_CLIPBOARD);
                 addToClipboardItem.addItemListener(e12 -> {
                     addToClipboardItem.removeAll();
                     final List<Sense> senses = RemoteService.senseRemote.findBySynset(((ViwnNodeSynset)vertex).getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds());
@@ -295,7 +298,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 }
 
                 list_focus = true;
-                synset_list_ = new JList(model);
+                synset_list_ = new WebList(model);
                 synset_list_.setSelectedIndex(0);
 
                 JScrollPane scroll_pane = new JScrollPane();
