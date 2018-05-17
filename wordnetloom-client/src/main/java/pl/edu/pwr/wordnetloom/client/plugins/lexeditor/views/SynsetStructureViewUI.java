@@ -485,8 +485,8 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     }
 
     @Override
-    public void valueChanged(ListSelectionEvent arg0) {
-        if (arg0 != null && arg0.getValueIsAdjusting()) {
+    public void valueChanged(ListSelectionEvent event) {
+        if (event != null && event.getValueIsAdjusting()) {
             return;
         }
 
