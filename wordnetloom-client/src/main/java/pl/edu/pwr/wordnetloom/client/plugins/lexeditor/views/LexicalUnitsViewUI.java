@@ -142,10 +142,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         if (unitsList == null) {
             return;
         }
-        if (event != null && event.getValueIsAdjusting()) {
-            return;
-        }
-        if (event == null) {
+        if (event == null || event.getValueIsAdjusting()) {
             return;
         }
 
@@ -187,10 +184,14 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         List<Sense> units = getSenses(dto, LIMIT, 0);
         allUnitsCount = RemoteService.senseRemote.getCountUnitsByCriteria(dto);
         setInfoText(units.size(), allUnitsCount);
+        addUnitsToList(units);
+        unitsListScrollPane.setEnd(units.size() < LIMIT);
+    }
+
+    private void addUnitsToList(List<Sense> units) {
         for (Sense sense : units) {
             listModel.addElement(sense);
         }
-        unitsListScrollPane.setEnd(units.size() < LIMIT);
     }
 
     private void clearUnitsList() {
@@ -222,9 +223,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
      */
     public void loadMoreUnits() {
         List<Sense> units = getSenses(lastSenseCriteria, lastSenseCriteria.getLimit(), listModel.getSize());
-        for (Sense sense : units) {
-            listModel.addElement(sense);
-        }
+        addUnitsToList(units);
         setInfoText(listModel.getSize(), allUnitsCount);
         unitsListScrollPane.setEnd(listModel.getSize() == allUnitsCount);
     }
@@ -264,9 +263,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 if (units.size() < limit) {
                     unitsListScrollPane.setEnd(true);
                 }
-                for (Sense sense : units) {
-                    listModel.addElement(sense);
-                }
+                addUnitsToList(units);
 
                 return null;
             }
@@ -299,7 +296,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         if (quietMode) {
             return;
         }
-
         if (event.getSource() == btnSearch) {
             loadUnits();
         } else if (event.getSource() == btnReset) {
@@ -551,9 +547,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     public void setCriteria(CriteriaDTO crit) {
         criteria.restoreCriteria(crit);
         if (crit != null && crit.getSense() != null) {
-            for (Sense sense : crit.getSense()) {
-                listModel.addElement(sense);
-            }
+            addUnitsToList(crit.getSense());
         }
     }
 

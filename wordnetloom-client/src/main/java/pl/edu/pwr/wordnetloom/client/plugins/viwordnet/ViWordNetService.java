@@ -656,7 +656,7 @@ public class ViWordNetService extends AbstractService implements
         protected void loadSynset(Synset synset) {
             getActiveGraphView().getUI().clearNodeCache();
             if (synset != null) {
-                synsetData.load(synset, LexiconManager.getInstance().getLexiconsIds());
+                synsetData.load(synset, LexiconManager.getInstance().getUserChosenLexiconsIds());
                 // loading full object. Original rootSynset does't have partOfSpeech and other required data
                 synset = synsetData.getSynsetById(synset.getId());
                 loadGraph(synset);
