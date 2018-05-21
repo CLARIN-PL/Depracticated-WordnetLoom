@@ -2,6 +2,9 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
+import com.google.common.eventbus.Subscribe;
+import pl.edu.pwr.wordnetloom.client.Application;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SetLexiconsEvent;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
@@ -35,6 +38,13 @@ public abstract class CriteriaPanel extends WebPanel {
 
     public CriteriaPanel() {
         initialize();
+        Application.eventBus.register(this);
+    }
+
+    @Subscribe
+    public void setLexicons(SetLexiconsEvent event) {
+        System.out.println(" Ustawianie leksykonów");
+        lexiconComboBox.refreshLexicons();
     }
 
     private void initialize() {

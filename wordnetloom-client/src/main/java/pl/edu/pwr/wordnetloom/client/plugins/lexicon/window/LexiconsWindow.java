@@ -72,10 +72,7 @@ public class LexiconsWindow extends DialogWindow implements ActionListener {
     private void addLexicons() {
         add("br center hfill vfill", panel);
 
-        checkboxes.forEach((k, v) -> {
-            panel.add(v);
-        });
-
+        checkboxes.forEach((k, v) -> panel.add(v));
     }
 
     private void initButton() {

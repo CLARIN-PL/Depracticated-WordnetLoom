@@ -1,10 +1,14 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexicon;
 
 import com.alee.laf.menu.WebMenu;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.core.CoreService;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SetLexiconsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
@@ -30,10 +34,11 @@ public class LexiconService extends AbstractService {
 
         lexiconItem.addActionListener((ActionEvent e) -> {
             showLexiconWindow();
+            sendEvents();
             ViWordNetService s = ServiceManager.getViWordNetService(workbench);
-            s.getLexicalUnitsView().refreshLexicons();
-            s.getSynsetView().refreshLexicons();
-            s.clearAllViews();
+//            s.getLexicalUnitsView().refreshLexicons();
+//            s.getSynsetView().refreshLexicons();
+//            s.clearAllViews();
             s.reloadCurrentListSelection();
         });
     }
@@ -81,5 +86,11 @@ public class LexiconService extends AbstractService {
         UserSessionData data = RemoteConnectionProvider.getInstance().getUserSessionData();
         UserSessionData current = new UserSessionData(data.getUsername(), data.getPassword(), data.getLanguage() , user);
         RemoteConnectionProvider.getInstance().setUserSessionData(current);
+    }
+
+    private void sendEvents(){
+        Application.eventBus.post(new SetLexiconsEvent());
+        Application.eventBus.post(new SearchUnitsEvent());
+        Application.eventBus.post(new UpdateGraphEvent(null));
     }
 }

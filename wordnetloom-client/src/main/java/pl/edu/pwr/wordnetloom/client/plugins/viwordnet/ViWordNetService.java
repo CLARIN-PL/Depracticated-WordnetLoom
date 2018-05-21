@@ -1,11 +1,14 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
 import com.alee.laf.menu.WebMenu;
+import com.google.common.eventbus.Subscribe;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitsView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetPropertiesView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetStructureView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetView;
 import pl.edu.pwr.wordnetloom.client.plugins.relations.da.RelationsDA;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.LockerChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
@@ -97,6 +100,8 @@ public class ViWordNetService extends AbstractService implements
         super(workbench);
         this.perspectiveName = perspectiveName;
         this.perspective = perspective;
+
+        Application.eventBus.register(this);
     }
 
     public SynsetData getSynsetData() {
@@ -206,8 +211,10 @@ public class ViWordNetService extends AbstractService implements
         if (node != null && node instanceof ViwnNodeSynset) {
             ViwnNodeSynset synset = (ViwnNodeSynset) node;
             getActiveGraphView().getUI().setSelectedNode(synset);
-            synsetStructureView.doAction(synset.getSynset(), 1);
-            synsetPropertiesView.doAction(synset.getSynset(), 1);
+            
+//            synsetStructureView.doAction(synset.getSynset(), 1);
+//            synsetPropertiesView.doAction(synset.getSynset(), 1);
+
         }
     }
 
@@ -221,6 +228,16 @@ public class ViWordNetService extends AbstractService implements
         }
     }
 
+    @Subscribe
+    public void updateGraph(UpdateGraphEvent event) {
+        System.out.println("Wywołano zdarzenie");
+        if(event.getSense() == null){
+            Synset synset = getActiveGraphView().getUI().getRootSynset();
+            new LoadSynsetTask(synset).execute();
+        } else {
+            new LoadSenseTask(event.getSense()).execute();
+        }
+    }
     /**
      * Add new item to locker, every item remember a node which it represents
      * and a <code>ViwnGraphViewUI</code> to which it belongs
