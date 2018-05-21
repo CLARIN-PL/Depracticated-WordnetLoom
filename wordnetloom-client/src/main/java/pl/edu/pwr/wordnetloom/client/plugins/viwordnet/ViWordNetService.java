@@ -9,6 +9,8 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetStructureView
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetView;
 import pl.edu.pwr.wordnetloom.client.plugins.relations.da.RelationsDA;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetPropertiesEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetUnitsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.LockerChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
@@ -211,11 +213,18 @@ public class ViWordNetService extends AbstractService implements
         if (node != null && node instanceof ViwnNodeSynset) {
             ViwnNodeSynset synset = (ViwnNodeSynset) node;
             getActiveGraphView().getUI().setSelectedNode(synset);
-            
+
+            sendSelectionChangeEvents(synset.getSynset());
+
 //            synsetStructureView.doAction(synset.getSynset(), 1);
 //            synsetPropertiesView.doAction(synset.getSynset(), 1);
 
         }
+    }
+
+    private void sendSelectionChangeEvents(Synset synset){
+        Application.eventBus.post(new UpdateSynsetUnitsEvent(synset));
+        Application.eventBus.post(new UpdateSynsetPropertiesEvent(synset));
     }
 
     @Override

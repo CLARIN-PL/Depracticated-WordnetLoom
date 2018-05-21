@@ -5,7 +5,9 @@ import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextField;
+import com.google.common.eventbus.Subscribe;
 import jiconfont.icons.FontAwesome;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
@@ -13,6 +15,8 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.models.UnitsInSynsetListModel;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetPropertiesEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetUnitsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
@@ -94,6 +98,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
     public SynsetStructureViewUI(ViwnGraphViewUI graphUI) {
         this.graphUI = graphUI;
+        Application.eventBus.register(this);
     }
 
     /**
@@ -528,6 +533,12 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             }
         }
         return selectedUnits;
+    }
+
+    @Subscribe
+    public void handleUpdateUnitsEvent(UpdateSynsetUnitsEvent event){
+        System.out.println("Aktualziacja jednostek synsetu");
+        refreshData(event.getSynset());
     }
 
     /**
