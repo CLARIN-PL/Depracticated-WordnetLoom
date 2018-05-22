@@ -67,23 +67,6 @@ public class DomainManager {
         return getAllDomainsSorted().toArray(new Domain[]{});
     }
 
-    @Deprecated
-    public Domain decode(String s) {
-
-        Domain toReturn = null;
-
-        if (s == null || s.equals("default")) {
-            toReturn = cache.get(0);
-        }
-
-        String lang = RemoteConnectionProvider.getInstance().getLanguage();
-        for (int i = 0; i < cache.size() && toReturn == null; i++) {
-            // if (cache.get(i).getName(lang).equals(s)) {
-            //     toReturn = cache.get(i);
-            // }
-        }
-        return toReturn;
-    }
 
     public Domain[] sortedDomainsAsArrayByNumber() {
         long max = 0;

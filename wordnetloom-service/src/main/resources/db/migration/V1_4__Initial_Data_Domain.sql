@@ -346,8 +346,7 @@ INSERT INTO domain (id, name_id, description_id) VALUES (49, 99, 100);
 
 # grad
 INSERT INTO application_localised_string (id, language, value) VALUES (101, 'pl', 'grad');
-INSERT INTO application_localised_string (id, language, value)
-VALUES (102, 'pl', 'przymiotniki odprzymiotnikowe (natężenie cechy)');
+INSERT INTO application_localised_string (id, language, value) VALUES (102, 'pl', 'przymiotniki odprzymiotnikowe (natężenie cechy)');
 INSERT INTO application_localised_string (id, language, value) VALUES (101, 'en', 'grad');
 INSERT INTO application_localised_string (id, language, value) VALUES (102, 'en', '');
 INSERT INTO domain (id, name_id, description_id) VALUES (45, 101, 102);

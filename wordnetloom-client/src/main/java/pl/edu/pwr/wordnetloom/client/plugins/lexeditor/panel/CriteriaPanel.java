@@ -80,8 +80,6 @@ public abstract class CriteriaPanel extends WebPanel {
                 domainComboBox.filterDomainByUbyPosAndLexcion(pos, lex, true);
             } else if (lex != null && pos == null) {
                 domainComboBox.filterDomainsByLexicon(lex, true);
-            } else if (pos != null && lex == null) {
-                domainComboBox.filterDomainByUbyPos(pos, true);
             } else {
                 domainComboBox.allDomains(true);
             }

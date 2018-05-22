@@ -42,11 +42,6 @@ public class DomainMComboBox extends MComboBox<Domain> {
         }
     }
 
-    public void filterDomainByUbyPos(PartOfSpeech pos, boolean withPrefix) {
-        //  all = filterDomainByUbyPos(pos.getUbyType());
-        loadItems(withPrefix);
-    }
-
     public void filterDomainByUbyPosAndLexcion(PartOfSpeech pos, Lexicon lex, boolean withPrefix) {
         //  all = filterDomainByUbyPos(pos.getUbyType());
         filterDomainsByLexicon(lex, withPrefix);
@@ -61,10 +56,11 @@ public class DomainMComboBox extends MComboBox<Domain> {
         removeAllItems();
         all = DomainManager.getInstance().sortDomains(all);
         addItem(new CustomDescription<>(nullRepresentation, null));
-        String text;
+        String shortcut, desc;
         for (Domain domain : all) {
-            text = LocalisationManager.getInstance().getLocalisedString(domain.getName());
-            addItem(new CustomDescription<>(withPrefix ? text : nameWithoutPrefix(text), domain));
+            shortcut = LocalisationManager.getInstance().getLocalisedString(domain.getName());
+            desc = LocalisationManager.getInstance().getLocalisedString(domain.getDescription());
+            addItem(new CustomDescription<>(String.format("%s (%s)", desc,shortcut), domain));
         }
     }
 
