@@ -93,10 +93,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
     private SynsetData synsetData;
 
+    private Synset rootSynset;
     private static final float EDGE_PICK_SIZE = 10f;
     final int MAX_SYNSETS_SHOWN = 4;
     final int MIN_SYNSETS_IN_GROUP = 2;
 
+    public Synset getRootSynset(){
+        return rootSynset;
+    }
 
     public void addSynsetToCash(Long synsetId, ViwnNodeSynset node) {
         cache.put(synsetId, node);
@@ -253,6 +257,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     public void refreshView(Synset synset) {
         // Clear the visualisation.
         clear();
+        rootSynset = synset;
 
         ViwnNodeSynset rootNodeSynset;
         if(cache.containsKey(synset.getId())){

@@ -4,6 +4,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LexiconComboBox extends MComboBox<Lexicon> {
@@ -19,7 +20,7 @@ public class LexiconComboBox extends MComboBox<Lexicon> {
     }
 
     private void loadLexicons() {
-        all = LexiconManager.getInstance().getLexicons();
+        all = new ArrayList<>(LexiconManager.getInstance().getUserChosenLexicons());
     }
 
     private void loadItems() {

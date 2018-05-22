@@ -4,7 +4,10 @@ import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
+import com.google.common.eventbus.Subscribe;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetPropertiesEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
@@ -60,6 +63,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
     public SynsetPropertiesViewUI(ViwnGraphViewUI graphUI) {
         this.graphUI = graphUI;
+        Application.eventBus.register(this);
     }
 
     @Override
@@ -202,6 +206,12 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
     private void adjustButtons(boolean active) {
         btnEditExample.setEnabled(active);
         btnRemoveExample.setEnabled(active);
+    }
+
+    @Subscribe
+    public void handleUpdatePropertiesEvent(UpdateSynsetPropertiesEvent event){
+        System.out.println("Aktualizacja właściwości synsetu");
+        refreshData(event.getSynset());
     }
 
     public void refreshData(Synset synset) {

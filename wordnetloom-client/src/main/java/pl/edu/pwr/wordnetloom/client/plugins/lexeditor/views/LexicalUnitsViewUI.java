@@ -3,12 +3,16 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
+import com.google.common.eventbus.Subscribe;
 import jiconfont.icons.FontAwesome;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.SynsetsFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
@@ -135,6 +139,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
         content.setLayout(new RiverLayout(0, 0));
         content.add("hfill vfill", split);
+
+        Application.eventBus.register(this);
     }
 
     @Override
@@ -142,10 +148,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         if (unitsList == null) {
             return;
         }
-        if (event != null && event.getValueIsAdjusting()) {
-            return;
-        }
-        if (event == null) {
+        if (event == null || event.getValueIsAdjusting()) {
             return;
         }
 
@@ -159,7 +162,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         btnAddToSyns.setEnabled(!checkInSynset(unit));
 
         unitsList.setEnabled(false);
-        listeners.notifyAllListeners(unitsList.getSelectedIndices().length == 1 ? unit : null);
+//        listeners.notifyAllListeners(unitsList.getSelectedIndices().length == 1 ? unit : null);
+        Sense sense = unitsList.getSelectedIndices().length == 1 ? unit : null;
+        Application.eventBus.post(new UpdateGraphEvent(sense));
         unitsList.setEnabled(true);
         unitsList.grabFocus();
 
@@ -187,10 +192,14 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         List<Sense> units = getSenses(dto, LIMIT, 0);
         allUnitsCount = RemoteService.senseRemote.getCountUnitsByCriteria(dto);
         setInfoText(units.size(), allUnitsCount);
+        addUnitsToList(units);
+        unitsListScrollPane.setEnd(units.size() < LIMIT);
+    }
+
+    private void addUnitsToList(List<Sense> units) {
         for (Sense sense : units) {
             listModel.addElement(sense);
         }
-        unitsListScrollPane.setEnd(units.size() < LIMIT);
     }
 
     private void clearUnitsList() {
@@ -222,9 +231,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
      */
     public void loadMoreUnits() {
         List<Sense> units = getSenses(lastSenseCriteria, lastSenseCriteria.getLimit(), listModel.getSize());
-        for (Sense sense : units) {
-            listModel.addElement(sense);
-        }
+        addUnitsToList(units);
         setInfoText(listModel.getSize(), allUnitsCount);
         unitsListScrollPane.setEnd(listModel.getSize() == allUnitsCount);
     }
@@ -264,9 +271,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 if (units.size() < limit) {
                     unitsListScrollPane.setEnd(true);
                 }
-                for (Sense sense : units) {
-                    listModel.addElement(sense);
-                }
+                addUnitsToList(units);
 
                 return null;
             }
@@ -299,7 +304,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         if (quietMode) {
             return;
         }
-
         if (event.getSource() == btnSearch) {
             loadUnits();
         } else if (event.getSource() == btnReset) {
@@ -313,6 +317,12 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         } else if (event.getSource() == btnNewWithSyns) {
             addNewSenseWithSynset();
         }
+    }
+
+    @Subscribe
+    public void loadUnits(SearchUnitsEvent event){
+        loadUnits();
+        System.out.println(" Szukanie jednostki ");
     }
 
     private void deleteSense() {
@@ -551,9 +561,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     public void setCriteria(CriteriaDTO crit) {
         criteria.restoreCriteria(crit);
         if (crit != null && crit.getSense() != null) {
-            for (Sense sense : crit.getSense()) {
-                listModel.addElement(sense);
-            }
+            addUnitsToList(crit.getSense());
         }
     }
 
