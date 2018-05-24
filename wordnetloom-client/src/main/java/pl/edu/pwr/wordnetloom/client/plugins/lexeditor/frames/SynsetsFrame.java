@@ -77,6 +77,7 @@ public class SynsetsFrame extends DialogWindow implements ActionListener, Loggab
         panel.add(searchButton, BorderLayout.SOUTH);
         add(panel, BorderLayout.WEST);
         add(synsetsScrollPane, BorderLayout.CENTER);
+
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.add(cancelButton);
         buttonsPanel.add(addToSelectedButton);

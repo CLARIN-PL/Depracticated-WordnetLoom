@@ -1,20 +1,12 @@
-package pl.edu.pwr.wordnetloom.client.plugins.login.window;
+package pl.edu.pwr.wordnetloom.client.security;
 
 import com.alee.laf.button.WebButton;
-import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.text.WebPasswordField;
-import com.alee.laf.text.WebTextField;
-import jiconfont.icons.FontAwesome;
-import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.Application;
-import pl.edu.pwr.wordnetloom.client.plugins.core.window.AboutWindow;
-import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
@@ -23,12 +15,10 @@ import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class ChangePasswordWindow extends DialogWindow implements KeyListener, Loggable {
-
 
     public ChangePasswordWindow(WebFrame parent) {
         super(parent, "");
@@ -37,7 +27,7 @@ public class ChangePasswordWindow extends DialogWindow implements KeyListener, L
         initWindowPosition();
     }
 
-    private boolean isPasswordValid(){
+    private boolean isPasswordValid() {
         return txtPassword.getText().equals(txtRePassword.getText());
     }
 
@@ -61,7 +51,7 @@ public class ChangePasswordWindow extends DialogWindow implements KeyListener, L
         setResizable(false);
         setSize(new Dimension(350, 110));
         getContentPane().setLayout(new RiverLayout());
-        getContentPane().add("hfill vfill",panel);
+        getContentPane().add("hfill vfill", panel);
 
 
         panel.setLayout(new RiverLayout());
@@ -84,10 +74,9 @@ public class ChangePasswordWindow extends DialogWindow implements KeyListener, L
         btnChange.setText("Change");
         btnChange.addActionListener(a -> {
             String password = txtRePassword.getText();
-            UserSessionData current = RemoteConnectionProvider.getInstance().getUserSessionData();
-            User u = RemoteService.userServiceRemote.changePasswordByEmail(RemoteConnectionProvider.getInstance().getUser().getEmail(),password);
-            UserSessionData data = new UserSessionData(current.getUsername(), password, current.getLanguage(), u);
-            RemoteConnectionProvider.getInstance().setUserSessionData(data);
+            User u = RemoteService.userServiceRemote.changePasswordByEmail(UserSessionContext.getInstance().getUser().getEmail(), password);
+            UserSessionContext.initialiseAndGetInstance(u, UserSessionContext.getInstance().getLanguage());
+            Application.eventBus.post(new PasswordChangedEvent(password));
             dispose();
         });
 
@@ -127,7 +116,7 @@ public class ChangePasswordWindow extends DialogWindow implements KeyListener, L
 
         if (evt.getModifiers() == 0 && evt.getKeyCode() == KeyEvent.VK_ENTER) {
             evt.consume();
-            if(isPasswordValid()) {
+            if (isPasswordValid()) {
                 btnChange.doClick();
             }
         }

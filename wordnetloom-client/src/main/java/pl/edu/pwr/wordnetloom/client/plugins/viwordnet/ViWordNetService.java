@@ -15,7 +15,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.LockerChangeLis
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.*;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerViewUI.LockerElementRenderer;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.DeleteRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewLexicalRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewRelationWindow;
@@ -77,7 +76,6 @@ public class ViWordNetService extends AbstractService implements
     private SynsetStructureView synsetStructureView = null;
     private SynsetPropertiesView synsetPropertiesView = null;
     private ViwnSatelliteGraphView satelliteGraphView = null;
-    private ViwnLockerView lockerView = null;
     private ViwnExamplesView examplesView = null;
     private ViwnExampleKPWrView kpwrExamples = null;
 
@@ -124,12 +122,6 @@ public class ViWordNetService extends AbstractService implements
                     }
                     return false;
                 });
-
-        WebMenu other = workbench.getMenu(Labels.SETTINGS);
-        if (other == null) {
-            return;
-        }
-        other.addSeparator();
     }
 
     public void refreshViews() {
@@ -167,11 +159,6 @@ public class ViWordNetService extends AbstractService implements
         kpwrExamples = new ViwnExampleKPWrView(workbench, Labels.KPWR, graphUI);
         workbench.installView(examplesView, ViWordNetPerspective.SPILT_LOCKER_VIEW, perspectiveName);
         workbench.installView(kpwrExamples, ViWordNetPerspective.SPILT_LOCKER_VIEW, perspectiveName);
-
-        lockerView = new ViwnLockerView(workbench, Labels.CLIPBOARD);
-        lockerView.addSynsetSelectionChangeListener(this);
-        lockerView.addLockerChangeListener(this);
-        workbench.installView(lockerView, ViWordNetPerspective.SPILT_LOCKER_VIEW, perspectiveName);
 
         synsetStructureView = new SynsetStructureView(workbench, Labels.SYNSET, false, false, false, 1, graphUI);
         synsetStructureView.addUnitChangeListener(new SimpleListenerWrapper(this, "synsetUnitSelection"));
@@ -215,14 +202,10 @@ public class ViWordNetService extends AbstractService implements
             getActiveGraphView().getUI().setSelectedNode(synset);
 
             sendSelectionChangeEvents(synset.getSynset());
-
-//            synsetStructureView.doAction(synset.getSynset(), 1);
-//            synsetPropertiesView.doAction(synset.getSynset(), 1);
-
         }
     }
 
-    private void sendSelectionChangeEvents(Synset synset){
+    private void sendSelectionChangeEvents(Synset synset) {
         Application.eventBus.post(new UpdateSynsetUnitsEvent(synset));
         Application.eventBus.post(new UpdateSynsetPropertiesEvent(synset));
     }
@@ -239,23 +222,12 @@ public class ViWordNetService extends AbstractService implements
 
     @Subscribe
     public void updateGraph(UpdateGraphEvent event) {
-        System.out.println("Wywołano zdarzenie");
-        if(event.getSense() == null){
+        if (event.getSense() == null) {
             Synset synset = getActiveGraphView().getUI().getRootSynset();
             new LoadSynsetTask(synset).execute();
         } else {
             new LoadSenseTask(event.getSense()).execute();
         }
-    }
-    /**
-     * Add new item to locker, every item remember a node which it represents
-     * and a <code>ViwnGraphViewUI</code> to which it belongs
-     *
-     * @param vn
-     * @param ler
-     */
-    public void addToLocker(Object vn, LockerElementRenderer ler) {
-        lockerView.addToLocker(vn, ler);
     }
 
     /**
@@ -470,7 +442,6 @@ public class ViWordNetService extends AbstractService implements
         for (ViwnGraphView viwnGraphView : graphViews) {
             viwnGraphView.getUI().setCursor(cursor);
         }
-        lockerView.getViewUI().setCursor(cursor);
     }
 
     /**
@@ -508,7 +479,6 @@ public class ViWordNetService extends AbstractService implements
 
                 ViWordNetService s = ServiceManager.getViWordNetService(workbench);
                 src.getSynset().setId((long) -1);
-                s.lockerView.refreshData();
             }
         }
 

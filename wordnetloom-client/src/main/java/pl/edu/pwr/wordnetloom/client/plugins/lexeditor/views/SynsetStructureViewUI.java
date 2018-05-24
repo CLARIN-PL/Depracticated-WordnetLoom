@@ -15,7 +15,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.models.UnitsInSynsetListModel;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetPropertiesEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetUnitsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
@@ -214,7 +213,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         installViewScopeShortCut(buttonSwitchToLexicalPerspective,
                 KeyEvent.CTRL_MASK, KeyEvent.VK_L);
 
-        MButtonPanel buttonsPanel = new MButtonPanel(buttonUp, buttonDown, buttonAdd, buttonDelete, buttonToNew)
+        MComponentGroup buttonsPanel = new MComponentGroup(buttonUp, buttonDown, buttonAdd, buttonDelete, buttonToNew)
                 .withVerticalLayout();
 
         // dodanie do okna

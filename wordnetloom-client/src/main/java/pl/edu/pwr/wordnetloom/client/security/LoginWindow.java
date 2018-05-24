@@ -1,4 +1,4 @@
-package pl.edu.pwr.wordnetloom.client.plugins.login.window;
+package pl.edu.pwr.wordnetloom.client.security;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
@@ -7,15 +7,17 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.text.WebPasswordField;
 import com.alee.laf.text.WebTextField;
+import com.google.common.eventbus.Subscribe;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.Application;
-import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.remote.ConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.user.model.User;
+import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +28,8 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
 
     public LoginWindow(WebFrame parent) {
         super(parent, "");
+        Application.eventBus.register(this);
+
         initComponents();
         initListeners();
         initWindowPosition();
@@ -36,7 +40,6 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
                 System.exit(0);
             }
         });
-
     }
 
     private void initComponents() {
@@ -133,6 +136,13 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
         Icon singInIcon = IconFontSwing.buildIcon(FontAwesome.SIGN_IN, 11);
         btnSignIn.setIcon(singInIcon);
 
+        btnSignIn.addActionListener(e -> {
+            if (login()) {
+                LocalisationManager.getInstance().load(getSelectedLanguage());
+                Application.eventBus.post(new AuthenticationSuccessEvent());
+            }
+        });
+
         btnCancel.setText("Cancel");
         Icon cancelIcon = IconFontSwing.buildIcon(FontAwesome.TIMES, 11);
         btnCancel.addActionListener(evt -> btnCancelAction(evt));
@@ -171,32 +181,33 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
         System.exit(0);
     }
 
-    public void btnOkActionListener(ActionListener listener) {
-        btnSignIn.addActionListener(listener);
+    @Subscribe
+    public void onAuthenticateUser(AuthenticateUserEvent event) {
+        setVisible(true);
     }
 
-    public boolean login() {
+    private boolean login() {
 
-        RemoteConnectionProvider
+        ConnectionProvider
                 .getInstance()
-                .setUserSessionData(new UserSessionData(txtUsername.getText(), txtPassword.getText(), getSelectedLanguage().getAbbreviation()));
+                .setCredentials(txtUsername.getText(), txtPassword.getText());
 
         try {
-            User user = RemoteConnectionProvider.getInstance().getUser();
+            User user = ConnectionProvider.getInstance()
+                    .lookupForService(UserServiceRemote.class).findUserByEmail(txtUsername.getText());
             if (user != null) {
+                UserSessionContext.initialiseAndGetInstance(user, getSelectedLanguage().getAbbreviation());
                 dispose();
                 return true;
+            } else {
+                ConnectionProvider.getInstance().destroyInstance();
             }
 
         } catch (Exception ex) {
             logger().error("Unable to connect or incorrect login/password", ex);
-            RemoteConnectionProvider.getInstance().destroyInstance();
+            ConnectionProvider.getInstance().destroyInstance();
             SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(null,
-                        "Unable to connect or incorrect login/password",
-                        Application.PROGRAM_NAME_VERSION,
-                        JOptionPane.ERROR_MESSAGE);
-
+                Application.eventBus.post(new AuthenticationFailedEvent("Unable to connect or incorrect login/password"));
             });
             return false;
         }

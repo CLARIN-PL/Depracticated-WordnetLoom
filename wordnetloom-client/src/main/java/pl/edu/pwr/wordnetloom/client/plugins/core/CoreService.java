@@ -6,9 +6,10 @@ import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.core.window.AboutWindow;
-import pl.edu.pwr.wordnetloom.client.plugins.login.window.ChangePasswordWindow;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.remote.ConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.security.ChangePasswordWindow;
+import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -78,11 +79,13 @@ public class CoreService extends AbstractService implements MenuListener {
 
         showTooltips = new WebCheckBoxMenuItem(Labels.SHOW_TOOLTIPS);
         showTooltips.setMnemonic(KeyEvent.VK_D);
+        //showTooltips.setIcon( IconFontSwing.buildIcon(FontAwesome.COMMENTS, 12));
+
 
         showTooltips.addChangeListener(e -> {
             JCheckBoxMenuItem item = (JCheckBoxMenuItem) e.getSource();
-            RemoteConnectionProvider.getInstance().getUser().getSettings().setShowToolTips(item.isSelected());
-            RemoteService.userServiceRemote.update(RemoteConnectionProvider.getInstance().getUser().getSettings());
+            UserSessionContext.getInstance().getUserSettings().setShowToolTips(item.isSelected());
+            RemoteService.userServiceRemote.update(UserSessionContext.getInstance().getUserSettings());
         });
 
         settings = new WebMenu(Labels.SETTINGS);
@@ -90,7 +93,7 @@ public class CoreService extends AbstractService implements MenuListener {
         Icon settingsIcon = IconFontSwing.buildIcon(FontAwesome.COGS, 12);
         settings.setIcon(settingsIcon);
 
-        user = new WebMenu(RemoteConnectionProvider.getInstance().getUser().getFullname());
+        user = new WebMenu(UserSessionContext.getInstance().getFullName());
         Icon userIcon = IconFontSwing.buildIcon(FontAwesome.USER, 12);
         user.setIcon(userIcon);
 
@@ -125,9 +128,7 @@ public class CoreService extends AbstractService implements MenuListener {
                 ));
 
         workbench.installMenu(help, "left");
-        if(RemoteConnectionProvider
-                .getInstance()
-                .getUser().getRole().equals(Role.ADMIN)) {
+        if(UserSessionContext.getInstance().hasRole(Role.ADMIN)) {
             workbench.installMenu(settings, "left");
         }
         workbench.installMenu(user, "right");

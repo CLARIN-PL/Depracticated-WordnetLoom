@@ -1,7 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.systems.managers;
 
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 
 import java.util.Arrays;
@@ -58,7 +58,7 @@ public class DomainManager {
 
     public List<Domain> sortDomains(List<Domain> domainsToSort) {
         List<Domain> toReturn = Arrays.asList(domainsToSort.toArray(new Domain[]{}));
-        String lang = RemoteConnectionProvider.getInstance().getLanguage();
+        String lang = UserSessionContext.getInstance().getLanguage();
         // toReturn.sort(Comparator.comparing(a -> a.getName(lang)));
         return toReturn;
     }

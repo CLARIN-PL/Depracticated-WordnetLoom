@@ -10,7 +10,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.events.ShowRelationTe
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window.TestEditorWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MButtonPanel;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MComponentGroup;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.relationtest.model.RelationTest;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
@@ -43,6 +43,7 @@ public class RelationTypeTestsPanel extends WebPanel {
             .withDefaultIconSize()
             .withActionListener(e -> removeTest());
     private RelationType relationType;
+
     private final MButton addButton = MButton.buildAddButton()
             .withToolTip(Hints.CREATE_NEW_TEST)
             .withDefaultIconSize()
@@ -66,10 +67,10 @@ public class RelationTypeTestsPanel extends WebPanel {
             }
         });
 
-        MButtonPanel buttonsPanel = new MButtonPanel(moveUpButton, moveDownButton,
+        MComponentGroup buttonsPanel = new MComponentGroup(moveUpButton, moveDownButton,
                 addButton, editButton, removeButton)
                 .withVerticalLayout()
-                .withAllButtonsEnabled(true)
+                .withAllComponentsEnabled(true)
                 .withMargin(10);
 
         add(new WebScrollPane(tests), BorderLayout.CENTER);

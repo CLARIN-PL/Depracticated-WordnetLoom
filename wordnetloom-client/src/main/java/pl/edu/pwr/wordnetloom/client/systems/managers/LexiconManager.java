@@ -1,10 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.systems.managers;
 
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
-import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,7 +39,7 @@ public final class LexiconManager implements Loggable {
     }
 
     private void loadLexiconMarker() {
-        lexiconMarker = RemoteConnectionProvider.getInstance().getUser().getSettings().getLexionMarker();
+        lexiconMarker = UserSessionContext.getInstance().getUserSettings().getLexionMarker();
     }
 
     public List<Lexicon> getLexicons() {
@@ -59,17 +58,17 @@ public final class LexiconManager implements Loggable {
         lexiconMarker = false;
     }
 
-    public Lexicon findLexiconById(final Long id){
+    public Lexicon findLexiconById(Long id) {
         return lexicons
                 .stream()
-                .filter( l -> l.getId().equals(id))
+                .filter(l -> l.getId().equals(id))
                 .findAny()
                 .orElse(null);
     }
 
     public List<Long> getUserChosenLexiconsIds() {
         List<Long> list = new ArrayList<>();
-        String[] lexiconArray = RemoteConnectionProvider.getInstance().getUser().getSettings().getChosenLexicons().split(";");
+        String[] lexiconArray = UserSessionContext.getInstance().getUserSettings().getChosenLexicons().split(";");
 
         for (String element : lexiconArray) {
             try {
@@ -87,10 +86,8 @@ public final class LexiconManager implements Loggable {
 
         Set<Lexicon> list = new HashSet<>();
 
-        String[] lexiconArray = RemoteConnectionProvider
-                .getInstance()
-                .getUser()
-                .getSettings()
+        String[] lexiconArray = UserSessionContext.getInstance()
+                .getUserSettings()
                 .getChosenLexicons().split(";");
 
         for (String element : lexiconArray) {
@@ -120,7 +117,7 @@ public final class LexiconManager implements Loggable {
 
     public String lexiconIdToString(Set<Lexicon> lexicon) {
         return lexicon.stream()
-                .map(l -> l.getId()+ "")
+                .map(l -> l.getId() + "")
                 .collect(Collectors.joining(";"));
     }
 

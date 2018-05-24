@@ -6,7 +6,6 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.google.common.eventbus.Subscribe;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.Application;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.SynsetsFrame;
@@ -105,7 +104,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 .withToolTip(Hints.ADD_TO_NEW_SYNSET)
                 .withEnabled(false);
 
-        WebPanel buttons = new MButtonPanel(btnNewWithSyns, btnNew, btnDelete, btnAddToSyns)
+        WebPanel buttons = new MComponentGroup(btnNewWithSyns, btnNew, btnDelete, btnAddToSyns)
                 .withHorizontalLayout();
 
         WebScrollPane scroll = new WebScrollPane(criteria);

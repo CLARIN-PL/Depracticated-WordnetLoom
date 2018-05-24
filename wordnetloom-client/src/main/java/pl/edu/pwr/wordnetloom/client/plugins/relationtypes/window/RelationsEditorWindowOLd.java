@@ -123,7 +123,7 @@ public class RelationsEditorWindow extends MFrame implements ActionListener, Tre
 
 
         // utworzenie pola części mowy oraz przycisku do wybierania części mowy
-        String locale = RemoteConnectionProvider.getInstance().getLanguage();
+        String locale = ConnectionProvider.getInstance().getLanguage();
         relationPos = new MTextField(PartOfSpeechManager.getInstance().getById(1L).getName(locale));
 
         buttonPos = new MButton("...", e -> openPartOfSpeechDialog());
@@ -222,7 +222,7 @@ public class RelationsEditorWindow extends MFrame implements ActionListener, Tre
         RelationTreeModel model = ((RelationsTypePanel) relationsPanel.getSelectedComponent()).getModel();
         Pair<RelationType, Boolean> reverseRelationPair = ReverseRelationDialog.showModalAndSaveRelation(this, currentEditedType.getReverse(), currentEditedType.isAutoReverse(), model);
         if (reverseRelationPair.getA() != null) {
-            String locale = RemoteConnectionProvider.getInstance().getLanguage();
+            String locale = ConnectionProvider.getInstance().getLanguage();
             relationReverse.setText(reverseRelationPair.getA().getName(locale));
         } else {
             relationReverse.setText("");
@@ -271,7 +271,7 @@ public class RelationsEditorWindow extends MFrame implements ActionListener, Tre
         if (!pos.isEmpty()) {
             StringBuilder textBuilder = new StringBuilder();
             Iterator iterator = pos.iterator();
-            String locale = RemoteConnectionProvider.getInstance().getLanguage();
+            String locale = ConnectionProvider.getInstance().getLanguage();
             while (iterator.hasNext()) {
                 textBuilder.append(((PartOfSpeech) iterator.next()).getName(locale));
                 if (iterator.hasNext()) {
@@ -291,7 +291,7 @@ public class RelationsEditorWindow extends MFrame implements ActionListener, Tre
             return;
         }
         setDetailsPanelEnabled(true);
-        String locale = RemoteConnectionProvider.getInstance().getLanguage();
+        String locale = ConnectionProvider.getInstance().getLanguage();
         multilingual.setSelected(rel.isMultilingual());
         setLexiconFieldText(rel.getLexicons());
         relationName.setText(rel.getName(locale));
@@ -312,7 +312,7 @@ public class RelationsEditorWindow extends MFrame implements ActionListener, Tre
         relationDisplay.setText("");
         relationShortcut.setText("");
         relationDescription.setText("");
-        String locale = RemoteConnectionProvider.getInstance().getLanguage();
+        String locale = ConnectionProvider.getInstance().getLanguage();
         relationPos.setText(PartOfSpeechManager.getInstance().getById(1L).getName(locale));
         relationReverse.setText("");
         relationColor.setText("");
@@ -562,7 +562,7 @@ class RelationsTypePanel extends JPanel {
         allowedLexicons.add(allLexicons.get(2));
 
         IRelationType type1 = new SynsetRelationType();
-        String locale = RemoteConnectionProvider.getInstance().getLanguage();
+        String locale = ConnectionProvider.getInstance().getLanguage();
         type1.setName(locale, "Jeden");
         type1.setDisplayText(locale, "Jedd");
         type1.setDescription(locale, "To jest jakiś opis");
@@ -663,7 +663,7 @@ class RelationsTypePanel extends JPanel {
         String relationName = JOptionPane.showInputDialog(Labels.RELATION_NAME_COLON);
         //TODO operacja na bazie danych
         RelationType type = new RelationType(); //TODO znaleźć sposób, aby utworzyć odpowiedni obiekt, zrobić jakiś kreator czy coś
-        String locale = RemoteConnectionProvider.getInstance().getLanguage();
+        String locale = ConnectionProvider.getInstance().getLanguage();
         type.setName(locale, relationName);
         model.addNode(type);
 //        tree.updateUI();
@@ -681,7 +681,7 @@ class RelationsTypePanel extends JPanel {
         String subRelationName = JOptionPane.showInputDialog(Labels.SUBTYPE_RELATION_NAME_COLON);
         //TODO operacja na bazie danych
         RelationType child = new RelationType();
-        String locale = RemoteConnectionProvider.getInstance().getLanguage();
+        String locale = ConnectionProvider.getInstance().getLanguage();
         child.setName(locale, subRelationName);
         model.addChild(node, child);
 //        model.nodeChanged(node);
@@ -775,7 +775,7 @@ class PartOfSpeechCheckBoxDialog extends CheckBoxDialog<PartOfSpeech> {
 
     @Override
     public String getName(PartOfSpeech element) {
-        String locale = RemoteConnectionProvider.getInstance().getLanguage();
+        String locale = ConnectionProvider.getInstance().getLanguage();
         return element.getName(locale);
     }
 }

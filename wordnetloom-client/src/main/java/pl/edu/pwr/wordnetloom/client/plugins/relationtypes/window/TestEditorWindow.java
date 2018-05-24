@@ -1,7 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.relationtypes.window;
 
 import com.alee.laf.rootpane.WebFrame;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;

@@ -3,7 +3,8 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.remote.ConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
@@ -64,7 +65,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         newUnit.setDomain(domain);
 
         SenseAttributes senseAttributes = new SenseAttributes();
-        senseAttributes.setOwner(RemoteConnectionProvider.getInstance().getUser());
+        senseAttributes.setOwner(UserSessionContext.getInstance().getUser());
 
         if (editPanel.getDefinition().getText() != null && !editPanel.getDefinition().getText().isEmpty()) {
             senseAttributes.setDefinition(editPanel.getDefinition().getText());

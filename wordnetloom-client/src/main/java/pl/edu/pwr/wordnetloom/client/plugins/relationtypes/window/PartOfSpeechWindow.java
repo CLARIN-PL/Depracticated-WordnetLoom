@@ -7,7 +7,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MButtonPanel;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MComponentGroup;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 
@@ -72,7 +72,7 @@ public class PartOfSpeechWindow extends DialogWindow implements ActionListener {
 
     public void addButtonsPanel() {
 
-        MButtonPanel buttonPanel = new MButtonPanel(btnOk)
+        MComponentGroup buttonPanel = new MComponentGroup(btnOk)
                 .withHorizontalLayout();
         add("br center", buttonPanel);
     }

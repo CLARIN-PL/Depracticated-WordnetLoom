@@ -1,16 +1,17 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexicon;
 
 import com.alee.laf.menu.WebMenu;
+import com.alee.laf.menu.WebMenuItem;
+import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.core.CoreService;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SetLexiconsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
-import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -20,25 +21,22 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Set;
 
 public class LexiconService extends AbstractService {
 
-    private final JMenuItem lexiconItem = new MMenuItem(Labels.LEXICON);
+    private final WebMenuItem lexiconItem = new MMenuItem(Labels.LEXICON)
+            .withIcon(FontAwesome.BOOK);
 
-    public LexiconService(final Workbench workbench) {
+    public LexiconService(Workbench workbench) {
         super(workbench);
 
         lexiconItem.addActionListener((ActionEvent e) -> {
             showLexiconWindow();
             sendEvents();
             ViWordNetService s = ServiceManager.getViWordNetService(workbench);
-//            s.getLexicalUnitsView().refreshLexicons();
-//            s.getSynsetView().refreshLexicons();
-//            s.clearAllViews();
             s.reloadCurrentListSelection();
         });
     }
@@ -49,7 +47,7 @@ public class LexiconService extends AbstractService {
 
     @Override
     public void installMenuItems() {
-        WebMenu user = workbench.getMenu(RemoteConnectionProvider.getInstance().getUser().getFullname());
+        WebMenu user = workbench.getMenu(UserSessionContext.getInstance().getFullName());
         WebMenu help = findMenu(CoreService.APP_SETTINGS, user);
         if (help == null) {
             return;
@@ -68,6 +66,7 @@ public class LexiconService extends AbstractService {
         }
         return null;
     }
+
     @Override
     public boolean onClose() {
         return true;
@@ -79,16 +78,17 @@ public class LexiconService extends AbstractService {
 
     private void showLexiconWindow() {
         Set<Lexicon> lexicons = LexiconsWindow.showModal(workbench.getFrame(), LexiconManager.getInstance().getUserChosenLexicons());
-        User user = RemoteConnectionProvider.getInstance().getUser();
+
+        User user = UserSessionContext.getInstance().getUser();
         user.getSettings().setChosenLexicons(LexiconManager.getInstance().lexiconIdToString(lexicons));
         RemoteService.userServiceRemote.save(user);
 
-        UserSessionData data = RemoteConnectionProvider.getInstance().getUserSessionData();
-        UserSessionData current = new UserSessionData(data.getUsername(), data.getPassword(), data.getLanguage() , user);
-        RemoteConnectionProvider.getInstance().setUserSessionData(current);
+        String language = UserSessionContext.getInstance().getLanguage();
+        UserSessionContext.initialiseAndGetInstance(user, language);
+
     }
 
-    private void sendEvents(){
+    private void sendEvents() {
         Application.eventBus.post(new SetLexiconsEvent());
         Application.eventBus.post(new SearchUnitsEvent());
         Application.eventBus.post(new UpdateGraphEvent(null));

@@ -50,6 +50,11 @@ public class MTextField extends WebTextField implements Serializable {
         setFocusHandler();
     }
 
+    public MTextField withSize(Dimension dimension) {
+        setPreferredSize(dimension);
+        return this;
+    }
+
     @Override
     public void setEnabled(boolean enable) {
         super.setEnabled(enable);

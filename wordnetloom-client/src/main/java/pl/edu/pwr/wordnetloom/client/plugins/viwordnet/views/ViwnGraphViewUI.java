@@ -17,7 +17,6 @@ import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.ShapePickSupport;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.collections15.Transformer;
-import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.SynsetData;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.GraphChangeListener;
@@ -39,6 +38,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
+import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import se.datadosen.component.RiverLayout;
 
@@ -92,13 +92,13 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     private ViwnGraphMouseListener graphMouseListener = null;
 
     private SynsetData synsetData;
-
     private Synset rootSynset;
-    private static final float EDGE_PICK_SIZE = 10f;
-    final int MAX_SYNSETS_SHOWN = 4;
-    final int MIN_SYNSETS_IN_GROUP = 2;
 
-    public Synset getRootSynset(){
+    private static final float EDGE_PICK_SIZE = 10f;
+    private final int MAX_SYNSETS_SHOWN = 4;
+    private final int MIN_SYNSETS_IN_GROUP = 2;
+
+    public Synset getRootSynset() {
         return rootSynset;
     }
 
@@ -215,11 +215,11 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
 
-    public void addSynsetNode(ViwnNodeSynset synset){
+    public void addSynsetNode(ViwnNodeSynset synset) {
         clear();
         cache.clear();
         // TODO refaktor, część wspólna z metodą refreshView
-        if(!cache.containsKey(synset.getSynset().getId())) {
+        if (!cache.containsKey(synset.getSynset().getId())) {
             ViwnNodeSynset rootNodeSynset = synset;
             rootNodeSynset.construct();
 
@@ -260,13 +260,13 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         rootSynset = synset;
 
         ViwnNodeSynset rootNodeSynset;
-        if(cache.containsKey(synset.getId())){
+        if (cache.containsKey(synset.getId())) {
             rootNodeSynset = cache.get(synset.getId());
         } else {
             rootNodeSynset = new ViwnNodeSynset(synset, this);
         }
         rootNode = rootNodeSynset;
-        for(NodeDirection direction : NodeDirection.values()){
+        for (NodeDirection direction : NodeDirection.values()) {
             (rootNodeSynset).setDownloadedRelation(direction, true);
         }
         cache.put(synset.getId(), rootNodeSynset);
@@ -292,163 +292,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         recreateLayout();
         center();
         vv.setVisible(true);
-    }
-
-    /**
-     * @param root
-     * @param groups
-     * @param roots
-     * @param freeSyns
-     * @param extensions
-     * @author boombel
-     */
-    public void loadCandidate(ViwnNodeWord root,
-                              ArrayList<TreeSet<ViwnNodeSynset>> groups,
-                              ArrayList<ViwnNodeCand> roots, ArrayList<ViwnNodeSynset> freeSyns,
-                              ArrayList<ViwnNodeCandExtension> extensions) {
-        clear();
-
-        rootNode = root;
-        forest.addVertex(root);
-        HashSet<Long> indexes = new HashSet<>();
-        // Dodanie rozszerzeń w górnej części grafu
-
-        if (extensions != null) {
-            for (ViwnNodeCandExtension node : extensions) {
-                roots.remove(node);
-                if (node.getSpawner() == null) {
-                    node.setSpawner(root, NodeDirection.BOTTOM);
-                    ViwnEdgeCandidate e = new ViwnEdgeCandidate(node.getRelName());
-                    indexes.add(node.getId());
-                    e.setHidden(false);
-                    if (node.getExtGraphExtension().getBase()) {
-                        forest.addEdge(e, rootNode, node);
-                    } else {
-                        forest.addEdge(e, node, rootNode);
-                    }
-                    forest.addVertex(node);
-                }
-            }
-        }
-
-        freeSyns.stream().filter((node) -> (node.getSpawner() == null)).map((node) -> {
-            node.setSpawner(root, NodeDirection.BOTTOM);
-            return node;
-        }).map((node) -> {
-            ViwnEdgeCandidate e = new ViwnEdgeCandidate();
-            e.setHidden(true);
-            forest.addEdge(e, rootNode, node);
-            return node;
-        }).forEachOrdered((node) -> {
-            forest.addVertex(node);
-        });
-
-        HashMap<ViwnNodeRoot, ArrayList<ViwnNodeSynset>> map = new HashMap<>();
-
-        roots.forEach((r) -> {
-            map.put(r, new ArrayList<>());
-        });
-
-        for (int i = 0; i < groups.size(); ++i) {
-            for (ViwnNodeSynset s : groups.get(i)) {
-                ArrayList<ViwnNodeSynset> list = map.get(s
-                        .getSpawner());
-                if (list == null) {
-                    list = new ArrayList<>();
-                    list.add(s);
-                    map.put((ViwnNodeRoot) s.getSpawner(), list);
-                } else {
-                    list.add(s);
-                }
-
-            }
-        }
-
-        for (ViwnNodeRoot key : map.keySet()) {
-            if (key == null) {
-                continue;
-            }
-
-            ArrayList<ViwnNodeRoot> add_list = new ArrayList<>();
-
-            TreeMap<String, ArrayList<ViwnNodeRoot>> all_sorted = new TreeMap<>(
-                    (String o1, String o2) -> o2.compareTo(o1));
-
-            MultiValueMap mult_all_sorted = MultiValueMap.decorate(all_sorted);
-            map.get(key).forEach((r) -> {
-                mult_all_sorted.put(r.getLabel(), r);
-            });
-
-            // legacy
-            Iterator<ViwnNodeSynset> it = mult_all_sorted.values().iterator();
-
-            int to_add = map.get(key).size() - MAX_SYNSETS_SHOWN;
-
-            while (to_add > 0 && it.hasNext()) {
-                ViwnNodeSynset s = it.next();
-                ViwnNodeSet set = key.getSynsetSet(s.getSpawnDir());
-
-                if (!forest.containsVertex(s) && map.get(s) == null) {
-                    s.setSet(set);
-                    set.add(s);
-                    to_add--;
-                } else {
-                    add_list.add(s);
-                }
-            }
-
-            for (NodeDirection dir : NodeDirection.values()) {
-                ViwnNodeSet set = key.getSynsetSet(dir);
-
-                if (set.getSynsets().size() < MIN_SYNSETS_IN_GROUP) {
-                    add_list.addAll(set.getSynsets());
-                    set.removeAll();
-                } else if (!set.getSynsets().isEmpty()) {
-                    set.setSpawner(key, dir);
-                    forest.addVertex(set);
-
-                    addEdgeSynsSet(key, set, dir);
-                }
-            }
-
-            while (it.hasNext()) {
-                ViwnNodeSynset s = it.next();
-                forest.addVertex(s);
-                if (key instanceof ViwnNodeWord) {
-                    ViwnNodeCand c = (ViwnNodeCand) s;
-                    ViwnEdgeCandidate ec = new ViwnEdgeCandidate();
-                    if (c.isEvaluated()
-                            || s.getLabel().equals("! S.y.n.s.e.t p.u.s.t.y !")
-                            || indexes.contains(s.getId())) {
-                        ec.setHidden(true);
-                    }
-                    forest.addEdge(ec, rootNode, s);
-                }
-            }
-
-            add_list.stream().map((s) -> {
-                forest.addVertex(s);
-                return s;
-            }).filter((s) -> (key instanceof ViwnNodeWord)).forEachOrdered((s) -> {
-                ViwnNodeCand c = (ViwnNodeCand) s;
-                ViwnEdgeCandidate ec = new ViwnEdgeCandidate();
-                if (c.isEvaluated()) {
-                    ec.setHidden(true);
-                }
-                forest.addEdge(ec, rootNode, s);
-            });
-        }
-
-        forest.getVertices().stream().filter((n) -> (n instanceof ViwnNodeSynset
-                && !(n instanceof ViwnNodeCandExtension))).forEachOrdered((n) -> {
-            addMissingRelations((ViwnNodeSynset) n);
-        });
-
-        checkAllStates();
-
-        recreateLayout();
-//        selectedNode = rootNode;
-        center();
     }
 
     /**
@@ -543,14 +386,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
         ViwnNodeSynset other;
         for (ViwnEdgeSynset e : node.getRelation(direction)) {
-            if(e.getParent().equals(node.getId())) {
+            if (e.getParent().equals(node.getId())) {
                 other = cache.get(e.getChild());
             } else {
                 other = cache.get(e.getParent());
             }
-            if(forest.containsVertex(other)){
+            if (forest.containsVertex(other)) {
                 node.setState(direction, ViwnNodeSynset.State.SEMI_EXPANDED);
-            } else if(!node.getSynsetSet(direction).getSynsets().contains(other)){
+            } else if (!node.getSynsetSet(direction).getSynsets().contains(other)) {
                 all_ok = false;
             }
         }
@@ -661,7 +504,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                     child = cache.get(e.getChild());
                     inner = synset == parent ? child : parent;
                     // jeżeli oba węzły są widoczne na grafie, rysujemy łącząca je linie
-                    if(forest.containsVertex(parent) && forest.containsVertex(child)){
+                    if (forest.containsVertex(parent) && forest.containsVertex(child)) {
                         addEdge(e, e.getParent(), e.getChild());
 
                         for (NodeDirection in_dir : NodeDirection.values()) {
@@ -698,10 +541,10 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     public void addSynsetsFromSet(List<ViwnNodeSynset> synsets) {
-        if(synsets.isEmpty()) {
+        if (synsets.isEmpty()) {
             return;
         }
-        for(ViwnNodeSynset synset : synsets) {
+        for (ViwnNodeSynset synset : synsets) {
             synsetData.load(synset.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds());
             synset.construct();
             addSynsetFromSet(synset);
@@ -828,8 +671,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
     }
 
-    private void addMissingRelationInForest()
-    {
+    private void addMissingRelationInForest() {
 //        Collection<ViwnNode> nodes = forest.getVertices();
 //        for(ViwnNode node : nodes)
 //        {
@@ -839,8 +681,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         //TODO zlikwidowac kopiowanie i usunąć błąd powodujący dodawanie drzew do lasu podczas iterowania po forest
         List<ViwnNode> nodes = new ArrayList<>(forest.getVertices());
         nodes.forEach(viwnNode -> {
-            if(viwnNode instanceof ViwnNodeSynset)
-                addMissingRelations((ViwnNodeSynset)viwnNode);
+            if (viwnNode instanceof ViwnNodeSynset)
+                addMissingRelations((ViwnNodeSynset) viwnNode);
         });
     }
 
@@ -848,14 +690,14 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         SwingUtilities.invokeLater(() -> workbench.setBusy(true));
 
         // jeżeli relacje nie były pobrane wczesniej, zostaną pobrane
-        if(!checkNodeWasExtended(synsetNode, dirs)) {
+        if (!checkNodeWasExtended(synsetNode, dirs)) {
             synsetData.load(synsetNode.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds(), dirs);
             synsetNode.construct(dirs);
             synsetNode.setDownloadedRelation(dirs, true);
         }
 
         // pokazanie relacji
-        for(NodeDirection dir : dirs) {
+        for (NodeDirection dir : dirs) {
             showRelationGUI(synsetNode, dir);
         }
         addMissingRelationInForest();
@@ -871,8 +713,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     private boolean checkNodeWasExtended(ViwnNodeSynset node, NodeDirection[] directions) {
-        for(NodeDirection direction : directions) {
-            if(!node.isDownloadedRelations(direction)){
+        for (NodeDirection direction : directions) {
+            if (!node.isDownloadedRelations(direction)) {
                 return false;
             }
         }
@@ -885,13 +727,13 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
     /**
      * @param synsetNode node which relations will be shown
-     * @param direction        relation class which will be shown
+     * @param direction  relation class which will be shown
      */
     private void showRelationGUI(ViwnNodeSynset synsetNode, NodeDirection direction) {
         List<ViwnEdgeSynset> relations = (List<ViwnEdgeSynset>) synsetNode.getRelation(direction);
         int toShow = Math.min(MAX_SYNSETS_SHOWN, relations.size()); // number synset to show on the graph
         int insertedNodes = insertVisibleSynsetNodes(relations, synsetNode, direction, toShow);
-        if(insertedNodes < relations.size()){
+        if (insertedNodes < relations.size()) {
             insertInvisibleSynsetNodes(relations, synsetNode, direction, insertedNodes);
         }
     }
@@ -899,7 +741,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     private int insertVisibleSynsetNodes(List<ViwnEdgeSynset> relations, ViwnNodeSynset nodeSynset, NodeDirection direction, int maxShowedNodes) {
         int i = 0;
         ViwnNodeSynset node;
-        while(i < maxShowedNodes && i <relations.size()) {
+        while (i < maxShowedNodes && i < relations.size()) {
             node = getNodeSynsetFromEdge(relations.get(i), nodeSynset);
             tryInsertNodeToForest(node, nodeSynset, direction);
             i++;
@@ -910,10 +752,10 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     private void insertInvisibleSynsetNodes(List<ViwnEdgeSynset> relations, ViwnNodeSynset nodeSynset, NodeDirection direction, int insertedNodes) {
         ViwnNodeSet set = nodeSynset.getSynsetSet(direction);
         ViwnNodeSynset node;
-        for(int i = insertedNodes; i<relations.size(); i++) {
+        for (int i = insertedNodes; i < relations.size(); i++) {
             node = getNodeSynsetFromEdge(relations.get(i), nodeSynset);
-            if(!forest.containsVertex(node)){
-                if(!set.contains(node)){
+            if (!forest.containsVertex(node)) {
+                if (!set.contains(node)) {
                     node.setSpawner(nodeSynset, direction);
                     node.setSet(set);
                     set.add(node);
@@ -922,8 +764,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             }
         }
 
-        if(!set.getSynsets().isEmpty()){
-            if(set.getSynsets().size() == 1){ // if set contains only one element, we put out node from set and put in on the graph. Set is not added to graph
+        if (!set.getSynsets().isEmpty()) {
+            if (set.getSynsets().size() == 1) { // if set contains only one element, we put out node from set and put in on the graph. Set is not added to graph
                 node = set.getSynsets().iterator().next();
                 tryInsertNodeToForest(node, nodeSynset, direction);
             } else {
@@ -934,9 +776,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
     }
 
-    private void tryInsertNodeToForest(ViwnNodeSynset node,ViwnNodeSynset spawnerNode, NodeDirection direction) {
-        if(!forest.containsVertex(node)) {
-            if(node.getSet() != null){
+    private void tryInsertNodeToForest(ViwnNodeSynset node, ViwnNodeSynset spawnerNode, NodeDirection direction) {
+        if (!forest.containsVertex(node)) {
+            if (node.getSet() != null) {
                 node.getSet().remove(node);
                 node.setSet(null);
             }
@@ -946,7 +788,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     private ViwnNodeSynset getNodeSynsetFromEdge(ViwnEdgeSynset edge, ViwnNodeSynset originalNode) {
-        if(edge.getSynsetFrom().getId().equals(originalNode.getId())){
+        if (edge.getSynsetFrom().getId().equals(originalNode.getId())) {
             return loadSynsetNode(edge.getSynsetTo());
         } else {
             return loadSynsetNode(edge.getSynsetFrom());
@@ -1001,39 +843,39 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             prev = node;
         }
         checkMissing();
-        recreateLayoutWithFix(null,null);
+        recreateLayoutWithFix(null, null);
         center();
     }
 
     public void relationAdded(ViwnNodeSynset from, ViwnNodeSynset to) {
         ViwnNodeSynset newSynset;
         // if synset node not belong to forest, we create new copy of node
-        if(!forest.containsVertex(from)){
+        if (!forest.containsVertex(from)) {
             newSynset = new ViwnNodeSynset(from.getSynset(), this);
             insertNodeInForest(newSynset, to);
-        } else if(!forest.containsVertex(to)){
+        } else if (!forest.containsVertex(to)) {
             newSynset = new ViwnNodeSynset(to.getSynset(), this);
             insertNodeInForest(newSynset, from);
         }
     }
 
-   private void insertNodeInForest(ViwnNodeSynset first, ViwnNodeSynset second){
-       NodeDirection cdir = findCommonRelationDir(second, first);
-       if (cdir != null) {
-           first.setSpawner(second, cdir);
-           forest.addVertex(first);
-           if(!cache.containsKey(first.getId())){
-               cache.put(first.getId(), first);
-           }
-       }
-       checkMissing(first);
-       recreateLayoutWithFix(first, second);
-   }
+    private void insertNodeInForest(ViwnNodeSynset first, ViwnNodeSynset second) {
+        NodeDirection cdir = findCommonRelationDir(second, first);
+        if (cdir != null) {
+            first.setSpawner(second, cdir);
+            forest.addVertex(first);
+            if (!cache.containsKey(first.getId())) {
+                cache.put(first.getId(), first);
+            }
+        }
+        checkMissing(first);
+        recreateLayoutWithFix(first, second);
+    }
 
-   private void checkMissing(ViwnNodeSynset node){
-       addMissingRelations(node);
-       // TODO może dorobić checkState
-   }
+    private void checkMissing(ViwnNodeSynset node) {
+        addMissingRelations(node);
+        // TODO może dorobić checkState
+    }
 
     protected void checkMissing() {
         List<ViwnNode> nodes = new ArrayList<>(forest.getVertices());

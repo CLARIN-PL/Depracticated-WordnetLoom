@@ -38,6 +38,7 @@ public class ReverseRelationWindow extends DialogWindow implements ActionListene
     private final MButton buttonChoose, buttonCancel, buttonNoReverse;
     private RelationType lastReverse = null;
     private RelationType selectedRelation = null;
+
     private final JTree tree;
     private final JCheckBox autoReverse;
 

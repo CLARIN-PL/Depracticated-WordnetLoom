@@ -1,9 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.systems.tooltips;
 
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
@@ -13,12 +12,11 @@ import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import java.util.List;
 
-public class SynsetTooltipGenerator implements ToolTipGeneratorInterface{
+public class SynsetTooltipGenerator implements ToolTipGeneratorInterface {
 
     private ToolTipBuilder builder;
 
-    public SynsetTooltipGenerator()
-    {
+    public SynsetTooltipGenerator() {
         builder = new ToolTipBuilder();
     }
 
@@ -27,19 +25,19 @@ public class SynsetTooltipGenerator implements ToolTipGeneratorInterface{
         if (!hasEnabledTooltips()) {
             return null;
         }
-        Synset synset = (Synset)object;
+        Synset synset = (Synset) object;
         Synset fetchedSynset = RemoteService.synsetRemote.fetchSynset(synset.getId());
         SynsetAttributes attributes = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
         //TODO sprawdzić, czy wystarczy pobrać tylko relację, gdzie synset jest relacja
         List<SynsetRelation> synsetRelations = RemoteService.synsetRelationRemote.findRelationsWhereSynsetIsParent(synset, LexiconManager.getInstance().getUserChosenLexiconsIds(), NodeDirection.values());
 
-        return getSenseToolTipText(fetchedSynset,attributes, synsetRelations);
+        return getSenseToolTipText(fetchedSynset, attributes, synsetRelations);
     }
 
     private String getSenseToolTipText(Synset synset, SynsetAttributes attributes, List<SynsetRelation> relations) {
         builder.clear();
 
-        if(attributes != null) {
+        if (attributes != null) {
             builder.addDefinition(attributes.getDefinition())
                     .addArtificial(synset.getAbstract());
         } else {
@@ -49,15 +47,15 @@ public class SynsetTooltipGenerator implements ToolTipGeneratorInterface{
 
         Sense headSense = synset.getSenses().get(0);
         builder.addDomain(headSense.getDomain());
-        if(attributes != null) {
+        if (attributes != null) {
             builder.addOwner(attributes.getOwner())
                     .addSynsetComment(attributes.getComment());
         }
         SenseAttributes senseAttributes = RemoteService.senseRemote.fetchSenseAttribute(headSense.getId());
-        if(senseAttributes != null) {
+        if (senseAttributes != null) {
             builder.addSenseComment(senseAttributes.getComment());
         }
-        if(relations != null && !relations.isEmpty()) {
+        if (relations != null && !relations.isEmpty()) {
             builder.addSynsetRelations(relations);
         }
 
@@ -66,6 +64,6 @@ public class SynsetTooltipGenerator implements ToolTipGeneratorInterface{
 
     @Override
     public boolean hasEnabledTooltips() {
-        return RemoteConnectionProvider.getInstance().getUser().getSettings().getShowToolTips();
+        return UserSessionContext.getInstance().getUserSettings().getShowToolTips();
     }
 }

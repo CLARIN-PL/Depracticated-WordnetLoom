@@ -1,14 +1,13 @@
 package pl.edu.pwr.wordnetloom.client.remote;
 
+import com.google.common.eventbus.Subscribe;
 import org.jboss.ejb.client.EJBClientConfiguration;
 import org.jboss.ejb.client.EJBClientContext;
 import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
 import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
-import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
+import pl.edu.pwr.wordnetloom.client.Application;
+import pl.edu.pwr.wordnetloom.client.security.PasswordChangedEvent;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
-import pl.edu.pwr.wordnetloom.user.model.Role;
-import pl.edu.pwr.wordnetloom.user.model.User;
-import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -16,22 +15,24 @@ import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.Properties;
 
-public class RemoteConnectionProvider implements Loggable {
+public class ConnectionProvider implements Loggable {
 
-    private static RemoteConnectionProvider instance;
+    private static ConnectionProvider instance;
 
     private Context initialContext;
 
-    private UserSessionData userSessionData;
+    private String username;
+    private String password;
 
-    private RemoteConnectionProvider() {
+    private ConnectionProvider() {
+        Application.eventBus.register(this);
     }
 
-    public static RemoteConnectionProvider getInstance() {
+    public static ConnectionProvider getInstance() {
         if (instance == null) {
-            synchronized (RemoteConnectionProvider.class) {
+            synchronized (ConnectionProvider.class) {
                 if (instance == null) {
-                    instance = new RemoteConnectionProvider();
+                    instance = new ConnectionProvider();
                 }
             }
         }
@@ -76,8 +77,8 @@ public class RemoteConnectionProvider implements Loggable {
         ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_DISALLOWED_MECHANISMS", "JBOSS-LOCAL-USER");
         ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SASL_POLICY_NOPLAINTEXT", "false");
         ejbProperties.put("remote.connection.default.connect.options.org.xnio.Options.SSL_STARTTLS", "false");
-        ejbProperties.put("remote.connection.default.username", userSessionData.getUsername());
-        ejbProperties.put("remote.connection.default.password", userSessionData.getPassword());
+        ejbProperties.put("remote.connection.default.username", username);
+        ejbProperties.put("remote.connection.default.password", password);
         return ejbProperties;
     }
 
@@ -97,30 +98,15 @@ public class RemoteConnectionProvider implements Loggable {
         return name;
     }
 
-    public UserSessionData getUserSessionData() {
-        return userSessionData;
+    public void setCredentials(String username, String password){
+        this.username = username;
+        this.password = password;
     }
 
-    public void setUserSessionData(UserSessionData data) {
-        userSessionData = data;
+    @Subscribe
+    public void onPasswordChange(PasswordChangedEvent event){
+        this.password = event.getPassword();
     }
-
-    public User getUser() {
-        if (userSessionData != null && userSessionData.getUser() == null) {
-            User u = lookupForService(UserServiceRemote.class).findUserByEmail(userSessionData.getUsername());
-            userSessionData = new UserSessionData(userSessionData, u);
-        }
-        return userSessionData.getUser();
-    }
-
-    public boolean hasRole(Role r) {
-        return getUser().getRole().equals(r);
-    }
-
-    public String getLanguage() {
-        return userSessionData.getLanguage();
-    }
-
     public void destroyInstance() {
         initialContext = null;
     }

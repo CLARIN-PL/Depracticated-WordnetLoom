@@ -73,7 +73,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         bottom.setLayout(new RiverLayout());
         bottom.setMargin(0);
 
-        top.add("hfill", scroll);
+        top.add("hfill vfill", scroll);
         top.add("br center", btnSearch);
         top.add("center", btnReset);
 

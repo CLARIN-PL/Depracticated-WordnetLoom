@@ -3,11 +3,14 @@ package pl.edu.pwr.wordnetloom.client;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.rootpane.WebFrame;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
-import pl.edu.pwr.wordnetloom.client.plugins.login.window.LoginWindow;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.security.AuthenticateUserEvent;
+import pl.edu.pwr.wordnetloom.client.security.AuthenticationSuccessEvent;
+import pl.edu.pwr.wordnetloom.client.security.ErrorEvent;
+import pl.edu.pwr.wordnetloom.client.security.LoginWindow;
 import pl.edu.pwr.wordnetloom.client.systems.managers.*;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.PanelWorkbench;
@@ -27,24 +30,20 @@ public class Application implements Loggable {
 
     public static final EventBus eventBus = new EventBus();
 
-    public static void main(String...args) {
+    private LoginWindow login = new LoginWindow(new WebFrame());
+
+    public Application() {
+        eventBus.register(this);
+    }
+
+    public static void main(String... args) {
 
         WebLookAndFeel.install();
         IconFontSwing.register(FontAwesome.getIconFont());
+
         Application app = new Application();
-        app.login();
+        eventBus.post(new AuthenticateUserEvent());
 
-    }
-
-    private void login() {
-        LoginWindow login = new LoginWindow(new WebFrame());
-        login.btnOkActionListener(l -> {
-            if (login.login()) {
-                LocalisationManager.getInstance().load(login.getSelectedLanguage());
-                initialise();
-            }
-        });
-        login.setVisible(true);
     }
 
     private void start() {
@@ -58,7 +57,8 @@ public class Application implements Loggable {
         }
     }
 
-    private void initialise() {
+    @Subscribe
+    public void onAuthenticationSuccess(AuthenticationSuccessEvent event) {
 
         Thread managers = new Thread(() -> {
 
@@ -80,10 +80,7 @@ public class Application implements Loggable {
                 if (first) {
                     SwingUtilities.invokeLater(() -> {
                         tt.printStackTrace();
-                        JOptionPane.showMessageDialog(null,
-                                Messages.ERROR_UNABLE_TO_CONNECT_TO_SERVER,
-                                Application.PROGRAM_NAME_VERSION,
-                                JOptionPane.ERROR_MESSAGE);
+                        eventBus.post(new ApplicationErrorEvent(Messages.ERROR_UNABLE_TO_CONNECT_TO_SERVER));
                     });
                     first = false;
                 }
@@ -98,5 +95,12 @@ public class Application implements Loggable {
         managers.start();
     }
 
+    @Subscribe
+    public void onErrorEvent(ErrorEvent event) {
+        JOptionPane.showMessageDialog(null,
+                event.getMessage(),
+                Application.PROGRAM_NAME_VERSION,
+                JOptionPane.ERROR_MESSAGE);
+    }
 
 }
