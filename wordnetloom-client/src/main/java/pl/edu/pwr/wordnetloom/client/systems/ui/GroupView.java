@@ -16,10 +16,11 @@ import java.util.Map;
 
 public class GroupView {
 
-    public static Component createGroupView(Map<String, Component> components, float labelRatio, float componentRatio) {
+    public static Component createGroupView(Map<String, Component> components,
+                                            Dimension d,
+                                            float labelRatio, float componentRatio) {
 
         List<Component> preview = new ArrayList<>();
-        Component exampleView;
 
         WebPanel groupPanel = new WebPanel() {
             @Override
@@ -32,9 +33,8 @@ public class GroupView {
         };
 
         groupPanel.putClientProperty(SwingUtils.HANDLES_ENABLE_STATE, true);
-        groupPanel.setOpaque(false);
-        exampleView = groupPanel;
-
+        groupPanel.setOpaque(true);
+        if(d != null) groupPanel.setPreferredSize(d);
         int rowsAmount = components.size() > 1 ? components.size() * 2 - 1 : 1;
 
         double[] rows = new double[6 + rowsAmount];
@@ -51,7 +51,7 @@ public class GroupView {
         rows[rows.length - 1] = TableLayout.FILL;
 
         double[] columns =
-                {labelRatio, TableLayout.PREFERRED, TableLayout.PREFERRED, componentRatio};
+                {labelRatio, TableLayout.PREFERRED, TableLayout.PREFERRED, componentRatio,TableLayout.FILL};
 
         TableLayout groupLayout = new TableLayout(new double[][]{columns, rows});
         groupLayout.setHGap(4);
@@ -76,7 +76,7 @@ public class GroupView {
             row[0] += 2;
         });
 
-        WebScrollPane panel = new WebScrollPane(exampleView);
+        WebScrollPane panel = new WebScrollPane(groupPanel);
         panel.setDrawBorder(false);
         return panel ;
     }
