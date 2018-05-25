@@ -37,8 +37,9 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
     public void initialize(final WebPanel content) {
         this.content = content;
         this.content.setLayout(new RiverLayout());
+
         editPanel = new LexicalUnitPropertiesPanel(graphUI.getWorkbench().getFrame());
-        content.add("hfill", editPanel);
+        content.add("hfill vfill", editPanel);
 
         editPanel.getBtnSave().addActionListener((ActionEvent e) -> {
             editPanel.getBtnSave().setEnabled(false);
@@ -101,7 +102,6 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
 //                    variant = LexicalDA.getAvaibleVariantNumber(lemma, pos, LexiconManager.getInstance().getUserChosenLexiconsIds());
 //                }
                 Sense sense = editPanel.updateAndGetSense();
-//                RemoteService.senseRemote.save(sense);
                 SenseAttributes attributes = editPanel.getSenseAttributes(sense.getId());
                 attributes.setSense(sense);
                 RemoteService.senseRemote.save(attributes.getSense());

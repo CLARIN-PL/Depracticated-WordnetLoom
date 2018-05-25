@@ -31,7 +31,7 @@ public class DialogWindow extends WebDialog {
 
     public DialogWindow(WebFrame baseFrame, String title, int width, int height) {
         super(baseFrame, title, true);
-
+        setLocationRelativeTo(baseFrame);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         initializeComponents(calculateCenterPosition(screenSize.width, width), calculateCenterPosition(screenSize.height, height), width, height);
@@ -52,7 +52,7 @@ public class DialogWindow extends WebDialog {
      */
     public DialogWindow(WebFrame frame, String title) {
         super(frame, title, true);
-
+        setLocationRelativeTo(frame);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         int width = screenSize.width - 50;

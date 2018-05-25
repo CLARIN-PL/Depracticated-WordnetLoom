@@ -1,15 +1,10 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
+import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.tabbedpane.WebTabbedPane;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.Sizes;
-import com.jgoodies.forms.util.LayoutStyle;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -27,6 +22,7 @@ import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
+import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -36,8 +32,12 @@ import java.awt.event.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-public class LexicalUnitPropertiesPanel extends JPanel implements
+
+public class LexicalUnitPropertiesPanel extends WebPanel implements
         CaretListener, ActionListener {
 
     private static final long serialVersionUID = 8598891792812358941L;
@@ -51,110 +51,52 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
     private MComboBox<PartOfSpeech> partOfSpeech;
     private DomainMComboBox domain;
     private MTextPane comment;
-    private final MButton btnCancel;
+    private MButton btnCancel;
     private MButton btnSave;
-    private JScrollPane commentScrollPane;
-    private JScrollPane scrollPaneExamples;
-    private final MButton btnGoToLink;
-    private final MButton btnNewExample;
-    private final MButton btnEditExample;
-    private final MButton btnRemoveExample;
+    private WebScrollPane commentScrollPane;
+    private WebScrollPane scrollPaneExamples;
+    private MButton btnGoToLink;
+    private MButton btnNewExample;
+    private MButton btnEditExample;
+    private MButton btnRemoveExample;
     private WebList examplesList;
     private DefaultListModel examplesModel;
-    private WebLabel lblDefinition;
-    private JScrollPane definitionScrollPane;
+    private WebScrollPane definitionScrollPane;
     private MTextPane definition;
 
-    public LexicalUnitPropertiesPanel(final WebFrame frame) {
-        setLayout(new BorderLayout(0, 0));
-        WebPanel mainPanel = new WebPanel();
-        mainPanel.setLayout(new FormLayout(new ColumnSpec[]{
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(57dlu;min)"),
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(48dlu;min)"),
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(49dlu;min)"),
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(28dlu;min):grow"),
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(17dlu;min)"),
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(44dlu;default)"),
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(5dlu;default):grow"),},
-                new RowSpec[]{
-                        RowSpec.decode("1dlu"),
-                        RowSpec.decode("6dlu"),
-                        RowSpec.decode("fill:max(14dlu;default)"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("fill:max(14dlu;default)"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("fill:default"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("fill:default"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("fill:max(14dlu;default)"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("max(36dlu;default):grow"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("fill:max(40dlu;pref):grow"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("max(14dlu;default)"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("max(14dlu;default)"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("max(14dlu;default)"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        new RowSpec(Sizes.DEFAULT),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("fill:max(14dlu;default)"),
-                        RowSpec.decode("max(10dlu;default):grow"),}));
+    public LexicalUnitPropertiesPanel(WebFrame frame) {
+        setLayout(new RiverLayout());
+        Map<String, Component> components = new LinkedHashMap<>();
 
-        JLabel lblLemma = new JLabel(Labels.LEMMA_COLON);
-        lblLemma.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblLemma, "2, 3, left, default");
+        lemma = new MTextField(Labels.VALUE_UNKNOWN)
+                .withSize(new Dimension(250, 25))
+                .withCaretListener(this);
+        components.put(Labels.LEMMA_COLON, new MComponentGroup(lemma));
 
-        lemma = new MTextField(Labels.VALUE_UNKNOWN);
-        lemma.addCaretListener(this);
-        mainPanel.add(lemma, "4, 3, 4, 1, fill, fill");
-        lemma.setColumns(10);
+        variant = new MTextField(DEFAULT_VARIANT)
+                .withSize(new Dimension(100, 25))
+                .withCaretListener(this)
+                .withEnabled(false);
+        components.put(Labels.NUMBER_COLON, new MComponentGroup(variant));
 
-        JLabel lblVariant = new JLabel(Labels.NUMBER_COLON);
-        lblVariant.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblVariant, "8, 3, 3, 1, fill, fill");
-
-        variant = new MTextField(DEFAULT_VARIANT);
-        variant.addCaretListener(this);
-        variant.setEditable(false);
-        mainPanel.add(variant, "12, 3, left, fill");
-        variant.setColumns(10);
-
-        JLabel lblLexicon = new JLabel(Labels.LEXICON_COLON);
-        lblLexicon.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblLexicon, "2, 5, left, fill");
         lexicon = new LexiconComboBox(Labels.NOT_CHOSEN);
         lexicon.addActionListener(this);
         lexicon.addItemListener((ItemEvent e) -> {
             Lexicon lex = lexicon.getEntity();
             if (lex != null) {
-//                partOfSpeech.filterByLexicon(lex);
-                domain.filterDomainsByLexicon(lex, false);
+                // partOfSpeech.filterByLexicon(lex);
+                // domain.filterDomainsByLexicon(lex, false);
             }
         });
-        mainPanel.add(lexicon, "4, 5, 3, 1, fill, fill");
-
-        JLabel lblPoS = new JLabel(Labels.PARTS_OF_SPEECH_COLON);
-        lblPoS.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblPoS, "2, 7, left, default");
+        components.put(Labels.LEXICON_COLON, lexicon);
 
         partOfSpeech = new PartOfSpeechComboBox(Labels.NOT_CHOSEN);
-        java.util.List<PartOfSpeech> partOfSpeechList = PartOfSpeechManager.getInstance().getAll();
-        java.util.List<CustomDescription> partOfSpeechDescriptorList = new ArrayList<>();
-        partOfSpeechDescriptorList.add(new CustomDescription("Brak", null)); //TODO zmienić puste
+        List<PartOfSpeech> partOfSpeechList = PartOfSpeechManager.getInstance().getAll();
+        List<CustomDescription> partOfSpeechDescriptorList = new ArrayList<>();
+        partOfSpeechDescriptorList.add(new CustomDescription(Labels.NOT_CHOSEN, null)); //TODO zmienić puste
         String posName;
 
-        for(PartOfSpeech pos : partOfSpeechList){
+        for (PartOfSpeech pos : partOfSpeechList) {
             posName = LocalisationManager.getInstance().getLocalisedString(pos.getName());
             partOfSpeechDescriptorList.add(new CustomDescription(posName, pos));
         }
@@ -164,23 +106,15 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         partOfSpeech.addItemListener((ItemEvent e) -> {
             PartOfSpeech pos = partOfSpeech.getEntity();
             if (pos != null) {
-                domain.filterDomainByPos(pos, false);
+                //  domain.filterDomainByPos(pos, false);
             }
         });
-        mainPanel.add(partOfSpeech, "4, 7, 3, 1, fill, fill");
-
-        JLabel lblDomain = new JLabel(Labels.DOMAIN_COLON);
-        lblDomain.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblDomain, "2, 9, left, fill");
+        components.put(Labels.PARTS_OF_SPEECH_COLON, partOfSpeech);
 
         domain = new DomainMComboBox(Labels.NOT_CHOSEN);
         domain.allDomains(false);
         domain.addActionListener(this);
-        mainPanel.add(domain, "4, 9, 3, 1, fill, fill");
-
-        JLabel lblRegister = new JLabel(Labels.REGISTER_COLON);
-        lblRegister.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblRegister, "2, 11, left, fill");
+        components.put(Labels.DOMAIN_COLON, domain);
 
         register = new MComboBox<>()
                 .withDictionaryItems(
@@ -188,34 +122,18 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                         Labels.NOT_CHOSEN);
 
         register.addActionListener(this);
-        mainPanel.add(register, "4, 11, 3, 1, fill, fill");
-
-        lblDefinition = new WebLabel(Labels.DEFINITION_COLON);
-        lblDefinition.setVerticalAlignment(SwingConstants.TOP);
-        lblDefinition.setHorizontalAlignment(SwingConstants.LEFT);
-        mainPanel.add(lblDefinition, "2, 13, left, top");
-
-        definitionScrollPane = new JScrollPane();
-        mainPanel.add(definitionScrollPane, "4, 13, 9, 1, default, fill");
+        components.put(Labels.REGISTER_COLON, register);
 
         definition = new MTextPane();
         definition.addCaretListener(this);
-        definitionScrollPane.setViewportView(definition);
-
-        JLabel lblComment = new JLabel(Labels.COMMENT_COLON);
-        lblComment.setVerticalAlignment(SwingConstants.TOP);
-        lblComment.setHorizontalAlignment(SwingConstants.LEFT);
-        mainPanel.add(lblComment, "2, 15, left, default");
-
-        commentScrollPane = new JScrollPane();
-        mainPanel.add(commentScrollPane, "4, 15, 9, 1, default, fill");
+        definitionScrollPane = new WebScrollPane(definition);
+        components.put(Labels.DEFINITION_COLON, definitionScrollPane);
 
         comment = new MTextPane();
         comment.addCaretListener(this);
-        commentScrollPane.setViewportView(comment);
+        commentScrollPane = new WebScrollPane(comment);
 
-        scrollPaneExamples = new JScrollPane();
-        mainPanel.add(scrollPaneExamples, "4, 17, 7, 7, default, fill");
+        components.put(Labels.COMMENT_COLON, commentScrollPane);
 
         examplesList = new WebList() {
 
@@ -228,7 +146,7 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         };
         examplesList.setCellRenderer(new ExampleCellRenderer());
 
-        ComponentListener l = new ComponentAdapter() {
+        examplesList.addComponentListener(new ComponentAdapter() {
 
             @Override
             public void componentResized(ComponentEvent e) {
@@ -236,14 +154,12 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                 examplesList.setFixedCellHeight(-1);
             }
 
-        };
+        });
 
-        examplesList.addComponentListener(l);
         examplesModel = new DefaultListModel();
-        scrollPaneExamples.setViewportView(examplesList);
+        scrollPaneExamples = new WebScrollPane(examplesList);
 
         btnNewExample = MButton.buildAddButton();
-
         btnNewExample.addActionListener((ActionEvent e) -> {
             String example = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
             if (example != null && !"".equals(example)) {
@@ -255,12 +171,6 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                 examplesList.updateUI();
             }
         });
-
-        JLabel lblExample = new JLabel(Labels.USE_CASE_COLON);
-        lblExample.setVerticalAlignment(SwingConstants.TOP);
-        lblExample.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblExample, "2, 17, left, fill");
-        mainPanel.add(btnNewExample, "12, 17, fill, fill");
 
         btnEditExample = MButton.buildEditButton();
         btnEditExample.addActionListener((ActionEvent e) -> {
@@ -278,7 +188,6 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                 }
             }
         });
-        mainPanel.add(btnEditExample, "12, 19, fill, fill");
 
         btnRemoveExample = MButton.buildDeleteButton();
         btnRemoveExample.addActionListener((ActionEvent e) -> {
@@ -288,34 +197,30 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
                 btnSave.setEnabled(true);
             }
         });
-        mainPanel.add(btnRemoveExample, "12, 21, fill, fill");
 
-        WebLabel lblLink = new WebLabel(Labels.LINK_COLON);
-        lblLink.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblLink, "2, 25, left, fill");
+        components.put(Labels.USE_CASE_COLON, new MComponentGroup(scrollPaneExamples,
+                new MComponentGroup(btnNewExample, btnEditExample, btnRemoveExample)
+                        .withVerticalLayout())
+                .withHorizontalLayout());
 
         link = new MTextField("");
         link.addCaretListener(this);
-        mainPanel.add(link, "4, 25, 7, 1, fill, fill");
-        link.setColumns(10);
 
         btnGoToLink = new MButton().withIcon(FontAwesome.INTERNET_EXPLORER);
         btnGoToLink.addActionListener((ActionEvent e) -> {
             try {
                 URI uri = new java.net.URI(link.getText());
-                LinkRunner lr =  new LinkRunner(uri);
+                LinkRunner lr = new LinkRunner(uri);
                 lr.execute();
             } catch (URISyntaxException use) {
             }
         });
-        mainPanel.add(btnGoToLink, "12, 25, fill, fill");
+        components.put(Labels.LINK_COLON, new MComponentGroup(link, btnGoToLink).withHorizontalLayout());
 
         WebTabbedPane tabs = new WebTabbedPane();
-        tabs.setPreferredSize(new Dimension(620, 500));
         tabs.setLayout(new BorderLayout());
         tabs.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        add(tabs, BorderLayout.CENTER);
-        tabs.addTab("Main", mainPanel);
+        tabs.addTab("Main", GroupView.createGroupView(components, null,0.1f, 0.7f));
 
         JPanel buttons = new JPanel();
         buttons.setLayout(new FlowLayout());
@@ -325,18 +230,18 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         btnSave = MButton.buildSaveButton();
         buttons.add(btnSave);
         btnSave.addActionListener(this);
-        add(buttons, BorderLayout.SOUTH);
+
+        add("hfill vfill", tabs);
+        add("br center", buttons);
     }
 
-    public SenseAttributes getSenseAttributes(Long senseId)
-    {
+    public SenseAttributes getSenseAttributes(Long senseId) {
         SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(senseId);
         Register reg = register.getEntity();
         String definition = getDefinition().getText();
         String link = getLink().getToolTipText();
         String comment = getComment().getText();
-        if(attributes == null && (definition != null || link != null || comment != null || register.getSelectedIndex() > 0))
-        {
+        if (attributes == null && (definition != null || link != null || comment != null || register.getSelectedIndex() > 0)) {
             attributes = new SenseAttributes();
         }
         attributes.setComment(comment);
@@ -347,17 +252,15 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         java.util.Set<SenseExample> examples = attributes.getExamples();
         examples.clear();
 
-        if(!examplesModel.isEmpty()) {
-            for(int i = 0; i < examplesModel.size(); i++)
-            {
-                examples.add((SenseExample)examplesModel.getElementAt(i));
+        if (!examplesModel.isEmpty()) {
+            for (int i = 0; i < examplesModel.size(); i++) {
+                examples.add((SenseExample) examplesModel.getElementAt(i));
             }
         }
         return attributes;
     }
 
-    public Sense updateAndGetSense()
-    {
+    public Sense updateAndGetSense() {
         unit.getWord().setWord(getLemma().getText());
         unit.setPartOfSpeech(getPartOfSpeech().getEntity());
         unit.setDomain(getDomain().getEntity());
@@ -396,15 +299,17 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
 
         String partOfSpeechText = LocalisationManager.getInstance().getLocalisedString(unit.getPartOfSpeech().getId());
         partOfSpeech.setSelectedItem(unit != null ? new CustomDescription<>(
-                partOfSpeechText, unit.getPartOfSpeech()): null);
+                partOfSpeechText, unit.getPartOfSpeech()) : null);
 
-        String domainText = LocalisationManager.getInstance().getLocalisedString(unit.getDomain().getName());
+        String domainText = String.format("%s (%s)",
+                LocalisationManager.getInstance().getLocalisedString(unit.getDomain().getDescription()),
+                LocalisationManager.getInstance().getLocalisedString(unit.getDomain().getName()));
         domain.setSelectedItem(domainText == null ? null
                 : new CustomDescription<>(domainText, unit.getDomain()));
 
         SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
 
-        if(attributes != null){
+        if (attributes != null) {
             definition.setText(attributes.getDefinition());
             comment.setText(attributes.getComment());
             register.setSelectedItem(attributes.getRegister() == null ? null :
@@ -413,8 +318,8 @@ public class LexicalUnitPropertiesPanel extends JPanel implements
         }
 
         examplesModel.clear();
-        if(attributes.getExamples() != null){
-            for(SenseExample example : attributes.getExamples()){
+        if (attributes.getExamples() != null) {
+            for (SenseExample example : attributes.getExamples()) {
                 examplesModel.addElement(example);
             }
             examplesList.setModel(examplesModel);

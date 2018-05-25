@@ -31,7 +31,7 @@ public class MakeNewRelationWindow extends RelationTypeFrame {
 
     protected MakeNewRelationWindow(WebFrame frame, PartOfSpeech pos, ViwnNode[] from, ViwnNode[] to) {
         super(frame, RelationArgument.SYNSET_RELATION, pos, null);
-
+        setLocationRelativeTo(frame);
         this.from = from;
         this.to = to;
 

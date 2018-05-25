@@ -52,7 +52,7 @@ public class LexiconsWindow extends DialogWindow implements ActionListener {
 
         panel.add(GroupView.createGroupView(checkboxes.entrySet()
                 .stream()
-                .collect(Collectors.toMap(e -> e.getValue().getA(), e -> e.getValue().getB())), 0.2f,0.8f));
+                .collect(Collectors.toMap(e -> e.getValue().getA(), e -> e.getValue().getB())), null,0.2f,0.8f));
 
         add("hfill vfill", panel);
         add("br center", buttonOk);

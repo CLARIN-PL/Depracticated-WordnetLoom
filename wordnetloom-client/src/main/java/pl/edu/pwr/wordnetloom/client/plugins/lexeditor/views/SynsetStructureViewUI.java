@@ -654,7 +654,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(graphUI);
             lui.init(workbench);
 
-            DialogWindow dia = new DialogWindow(workbench.getFrame(), Labels.UNIT_PROPERTIES, 585, 520);
+            DialogWindow dia = new DialogWindow(workbench.getFrame(), Labels.UNIT_PROPERTIES, 500, 600);
             WebPanel pan = new WebPanel();
 
             lui.initialize(pan);

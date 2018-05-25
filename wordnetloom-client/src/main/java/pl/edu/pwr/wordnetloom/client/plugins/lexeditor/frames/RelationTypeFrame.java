@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
 import com.alee.laf.rootpane.WebFrame;
+import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
@@ -44,8 +45,6 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
     protected List<RelationType> mainRelations = null;
     protected RelationArgument relationsType;
 
-    //    private Sense parentSense;
-//    private Sense childSense;
     protected MButton buttonSwitch;
     protected JPanel jp;
     private RelationType fixedRelationType;
@@ -60,6 +59,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
                               Collection<Sense> middleUnits,
                               Collection<Sense> childUnits) {
         super(frame, Labels.RELATION_PARAMS, 650, 500);
+        setLocationRelativeTo(frame);
         RelationTypeFrame.pos = pos;
         this.fixedRelationType = fixedRelationType;
         setResizable(false);
@@ -282,6 +282,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         testsList = new JList();
 
         buttonSwitch = new MButton(this)
+                .withIcon(FontAwesome.EXCHANGE)
                 .withCaption(Labels.SWITCH)
                 .withMnemonic(KeyEvent.VK_Z)
                 .withKeyListener(this);
