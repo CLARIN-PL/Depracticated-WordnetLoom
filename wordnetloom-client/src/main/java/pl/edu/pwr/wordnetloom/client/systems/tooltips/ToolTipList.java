@@ -37,6 +37,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.swing.*;
 
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.models.UnitsInSynsetListModel;
+import pl.edu.pwr.wordnetloom.client.systems.models.GenericListModel;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 
@@ -192,7 +194,12 @@ public class ToolTipList extends WebList {
         ListModel model = getModel();
 
         if (toolTipsGenerator != null && model != null && index != -1 && this.getCellBounds(index, index).contains(point)) { // czy jest cos na liscie
-            final Object item = model.getElementAt(index);
+            final Object item;
+            if(model instanceof DefaultListModel) {
+                item = model.getElementAt(index);
+            } else {
+                item = ((GenericListModel<Object>)model).getObjectAt(index);
+            }
             if (item == null) {
                 return null;
             }
