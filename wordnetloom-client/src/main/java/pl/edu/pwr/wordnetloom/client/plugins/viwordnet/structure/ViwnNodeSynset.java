@@ -324,7 +324,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     public String getUnitsStr() {
         if (getSynset() != null) {
             if(unitsStr == null || unitsStr.equals("")){
-                System.out.println();
+                return ret;
             }
             return unitsStr;
         }
