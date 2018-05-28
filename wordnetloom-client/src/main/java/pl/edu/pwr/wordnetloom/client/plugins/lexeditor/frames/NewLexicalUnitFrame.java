@@ -3,7 +3,6 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
-import pl.edu.pwr.wordnetloom.client.remote.ConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
@@ -146,7 +145,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     public void actionPerformed(ActionEvent event) {
         //TODO Sprawdzić to wywoływane śa funkcje co nic nie robią - TO REFACTOR
         if (event.getSource() == editPanel.getBtnSave()) {
-
+            System.out.println("Naciśnięto przycisk zapisu");
             String testLemma = editPanel.getLemma().getText();
 
             List<Sense> units = LexicalDA.getFullLexicalUnits(testLemma, LexiconManager.getInstance().getUserChosenLexiconsIds());
