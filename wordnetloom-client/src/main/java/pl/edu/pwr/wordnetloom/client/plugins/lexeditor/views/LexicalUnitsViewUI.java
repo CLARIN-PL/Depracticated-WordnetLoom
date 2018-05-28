@@ -311,8 +311,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     @Subscribe
     public void loadUnits(SearchUnitsEvent event){
-        loadUnits();
-        System.out.println(" Szukanie jednostki ");
+        SwingUtilities.invokeLater(() -> loadUnits());
     }
 
     private void deleteSense() {
