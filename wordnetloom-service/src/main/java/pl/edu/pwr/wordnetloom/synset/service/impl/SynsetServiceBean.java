@@ -162,16 +162,8 @@ public class SynsetServiceBean implements SynsetServiceLocal {
         Synset saved = synset;
 
         if (synset.getId() == null) {
-
             saved = save(synset);
-
-            SynsetAttributes synsetAttributes = new SynsetAttributes();
-            String email = principal.getName();
-            User user = userService.findUserByEmail(email);
-            synsetAttributes.setOwner(user);
-            synsetAttributes.setSynset(saved);
-            save(synsetAttributes);
-
+            saveOwner(saved);
         }
 
         Sense fetchedSense = senseService.fetchSense(sense.getId());
@@ -196,6 +188,14 @@ public class SynsetServiceBean implements SynsetServiceLocal {
         senseService.save(fetchedSense);
 
         return saved;
+    }
+
+    private void saveOwner(Synset saved) {
+        SynsetAttributes attributes = synsetAttributesRepository.findById(saved.getId());
+        String email = principal.getName();
+        User user = userService.findUserByEmail(email);
+        attributes.setOwner(user);
+        save(attributes);
     }
 
     private int reindexSensesInSynset(Synset synset) {

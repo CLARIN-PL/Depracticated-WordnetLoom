@@ -46,8 +46,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         ActionListener, ListSelectionListener, KeyListener, MouseListener {
 
     private final int LIMIT = 50;
-    private final boolean quietMode = false;
-    LazyScrollPane unitsListScrollPane;
+    private LazyScrollPane unitsListScrollPane;
     private SenseCriteria criteria;
     private ToolTipList unitsList;
     private WebLabel infoLabel;
@@ -123,7 +122,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         unitsList.getSelectionModel().addListSelectionListener(this);
         unitsList.setCellRenderer(new UnitListCellRenderer());
 
-        unitsListScrollPane = new LazyScrollPane(unitsList, LIMIT);
+        unitsListScrollPane = new LazyScrollPane(unitsList,listModel, LIMIT);
         unitsListScrollPane.setScrollListener((offset, limit) -> loadMoreUnits());
 
         WebPanel resultListPanel = new WebPanel();
@@ -192,7 +191,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         allUnitsCount = RemoteService.senseRemote.getCountUnitsByCriteria(dto);
         setInfoText(units.size(), allUnitsCount);
         addUnitsToList(units);
-        unitsListScrollPane.setEnd(units.size() < LIMIT);
+//        unitsListScrollPane.setEnd(units.size() < LIMIT);
     }
 
     private void addUnitsToList(List<Sense> units) {
@@ -228,11 +227,10 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     /**
      * Ładuje kolejne jednostki do listy
      */
-    public void loadMoreUnits() {
-        List<Sense> units = getSenses(lastSenseCriteria, lastSenseCriteria.getLimit(), listModel.getSize());
-        addUnitsToList(units);
-        setInfoText(listModel.getSize(), allUnitsCount);
-        unitsListScrollPane.setEnd(listModel.getSize() == allUnitsCount);
+    public List<Sense> loadMoreUnits() {
+        List<Sense> units = getSenses(lastSenseCriteria, lastSenseCriteria.getLimit(), unitsListScrollPane.getModelSize());
+        setInfoText(unitsListScrollPane.getModelSize() + units.size(), allUnitsCount);
+        return units;
     }
 
     /**
@@ -264,14 +262,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                     workbench.setBusy(false);
                 }
                 criteria.setSensesToHold(units);
-
-                // jeżeli pobrało mniej elementów niż zakładano, oznacza to, że pobrano już wszystkie elementy
-                // i nie należy próbowac pobierać ponownie
-                if (units.size() < limit) {
-                    unitsListScrollPane.setEnd(true);
-                }
-                addUnitsToList(units);
-
                 return null;
             }
 
@@ -300,6 +290,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     @Override
     public void actionPerformed(ActionEvent event) {
+        boolean quietMode = false;
         if (quietMode) {
             return;
         }

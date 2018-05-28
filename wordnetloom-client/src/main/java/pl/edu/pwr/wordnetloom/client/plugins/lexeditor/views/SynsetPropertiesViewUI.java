@@ -193,8 +193,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         scroll.setDrawBorder(false);
         content.add("hfill vfill", scroll);
 
-        commentValue.setEnabled(false);
-        definitionValue.setEnabled(false);
+//        commentValue.setEnabled(false);
+//        definitionValue.setEnabled(false);
         abstractValue.setEnabled(false);
     }
 
@@ -242,8 +242,6 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         lastSynset = synset;
         quiteMode = true;
-        commentValue.setEnabled(synset != null);
-        definitionValue.setEnabled(synset != null);
         abstractValue.setEnabled(synset != null);
         buttonSave.setEnabled(false);
         quiteMode = false;
@@ -280,8 +278,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
     }
 
     private void saveChanges() {
-        String definition = definitionValue.getText();
-        String comment = commentValue.getText();
+        String definition = definitionValue.getText().isEmpty() ? definitionValue.getText() : null;
+        String comment = commentValue.getText().isEmpty() ? commentValue.getText() : null;
         boolean isAbstract = abstractValue.isSelected();
 
         Set<SynsetExample> examples = new HashSet<>();
