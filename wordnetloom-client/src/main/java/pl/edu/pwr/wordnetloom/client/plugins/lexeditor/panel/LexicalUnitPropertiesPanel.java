@@ -69,15 +69,16 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         Map<String, Component> components = new LinkedHashMap<>();
 
         lemma = new MTextField(Labels.VALUE_UNKNOWN)
-                .withSize(new Dimension(250, 25))
+                .withSize(new Dimension(300, 25))
                 .withCaretListener(this);
-        components.put(Labels.LEMMA_COLON, new MComponentGroup(lemma));
+        components.put(Labels.LEMMA_COLON, new MComponentGroup(lemma)
+                .withHorizontalLayout());
 
         variant = new MTextField(DEFAULT_VARIANT)
-                .withSize(new Dimension(100, 25))
+                .withSize(new Dimension(50, 25))
                 .withCaretListener(this)
                 .withEnabled(false);
-        components.put(Labels.NUMBER_COLON, new MComponentGroup(variant));
+        components.put(Labels.NUMBER_COLON, new MComponentGroup(variant).withHorizontalLayout());
 
         lexicon = new LexiconComboBox(Labels.NOT_CHOSEN);
         lexicon.addActionListener(this);
@@ -88,7 +89,9 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
                 // domain.filterDomainsByLexicon(lex, false);
             }
         });
-        components.put(Labels.LEXICON_COLON, lexicon);
+        components.put(Labels.LEXICON_COLON, new MComponentGroup(lexicon)
+                .withFirstElementSize(new Dimension(300, 25))
+                .withHorizontalLayout());
 
         partOfSpeech = new PartOfSpeechComboBox(Labels.NOT_CHOSEN);
         List<PartOfSpeech> partOfSpeechList = PartOfSpeechManager.getInstance().getAll();
@@ -109,12 +112,16 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
                 //  domain.filterDomainByPos(pos, false);
             }
         });
-        components.put(Labels.PARTS_OF_SPEECH_COLON, partOfSpeech);
+        components.put(Labels.PARTS_OF_SPEECH_COLON, new MComponentGroup(partOfSpeech)
+                .withFirstElementSize(new Dimension(300, 25))
+                .withHorizontalLayout());
 
         domain = new DomainMComboBox(Labels.NOT_CHOSEN);
         domain.allDomains(false);
         domain.addActionListener(this);
-        components.put(Labels.DOMAIN_COLON, domain);
+        components.put(Labels.DOMAIN_COLON, new MComponentGroup(domain)
+                .withFirstElementSize(new Dimension(300,25))
+                .withHorizontalLayout());
 
         register = new MComboBox<>()
                 .withDictionaryItems(
@@ -122,18 +129,24 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
                         Labels.NOT_CHOSEN);
 
         register.addActionListener(this);
-        components.put(Labels.REGISTER_COLON, register);
+        components.put(Labels.REGISTER_COLON, new MComponentGroup(register)
+                .withFirstElementSize(new Dimension(300, 25))
+                .withHorizontalLayout());
 
         definition = new MTextPane();
         definition.addCaretListener(this);
         definitionScrollPane = new WebScrollPane(definition);
-        components.put(Labels.DEFINITION_COLON, definitionScrollPane);
+        components.put(Labels.DEFINITION_COLON, new MComponentGroup(definitionScrollPane)
+                .withFirstElementSize(new Dimension(300, 75))
+                .withHorizontalLayout());
 
         comment = new MTextPane();
         comment.addCaretListener(this);
         commentScrollPane = new WebScrollPane(comment);
 
-        components.put(Labels.COMMENT_COLON, commentScrollPane);
+        components.put(Labels.COMMENT_COLON, new MComponentGroup(commentScrollPane)
+                .withFirstElementSize(new Dimension(300, 50))
+                .withHorizontalLayout());
 
         examplesList = new WebList() {
 
@@ -201,6 +214,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         components.put(Labels.USE_CASE_COLON, new MComponentGroup(scrollPaneExamples,
                 new MComponentGroup(btnNewExample, btnEditExample, btnRemoveExample)
                         .withVerticalLayout())
+                .withFirstElementSize(new Dimension(300, 110))
                 .withHorizontalLayout());
 
         link = new MTextField("");
@@ -215,12 +229,14 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
             } catch (URISyntaxException use) {
             }
         });
-        components.put(Labels.LINK_COLON, new MComponentGroup(link, btnGoToLink).withHorizontalLayout());
+        components.put(Labels.LINK_COLON, new MComponentGroup(link, btnGoToLink)
+                .withFirstElementSize(new Dimension(300, 25))
+                .withHorizontalLayout());
 
         WebTabbedPane tabs = new WebTabbedPane();
         tabs.setLayout(new BorderLayout());
         tabs.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        tabs.addTab("Main", GroupView.createGroupView(components, null,0.1f, 0.7f));
+        tabs.addTab("Main", GroupView.createGroupView(components, new Dimension(600, 550),0.1f, 0.9f));
 
         JPanel buttons = new JPanel();
         buttons.setLayout(new FlowLayout());

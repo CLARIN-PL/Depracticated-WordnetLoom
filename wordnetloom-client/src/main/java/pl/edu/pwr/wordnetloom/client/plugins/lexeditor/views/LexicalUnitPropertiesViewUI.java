@@ -36,10 +36,9 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
     @Override
     public void initialize(final WebPanel content) {
         this.content = content;
-        this.content.setLayout(new RiverLayout());
 
         editPanel = new LexicalUnitPropertiesPanel(graphUI.getWorkbench().getFrame());
-        content.add("hfill vfill", editPanel);
+        content.add(editPanel);
 
         editPanel.getBtnSave().addActionListener((ActionEvent e) -> {
             editPanel.getBtnSave().setEnabled(false);

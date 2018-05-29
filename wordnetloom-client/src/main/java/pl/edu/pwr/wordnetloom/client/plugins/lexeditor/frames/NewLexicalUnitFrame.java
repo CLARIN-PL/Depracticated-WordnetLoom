@@ -3,7 +3,6 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
-import pl.edu.pwr.wordnetloom.client.remote.ConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
@@ -39,15 +38,15 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     private static final long serialVersionUID = 1L;
     private boolean wasAddClicked = false;
 
-    private NewLexicalUnitFrame(Workbench workbench, WebFrame frame) {
-        super(frame, Labels.UNIT_PARAMS, 625, 500);
+    private NewLexicalUnitFrame(Workbench workbench) {
+        super(workbench.getFrame(), Labels.UNIT_PARAMS, 600, 680);
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(frame);
-        editPanel = new LexicalUnitPropertiesPanel(frame);
+        setLocationRelativeTo(workbench.getFrame());
+        editPanel = new LexicalUnitPropertiesPanel(workbench.getFrame());
         editPanel.getBtnSave().addActionListener(this);
         editPanel.getBtnCancel().addActionListener(this);
-        add(editPanel, "hfill");
+        add("hfill vfill", editPanel);
         pack();
     }
 
@@ -90,27 +89,25 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     }
 
     static public Pair<Sense, SenseAttributes> showModal(Workbench workbench, PartOfSpeech newPos) {
-        return showModal(workbench, workbench.getFrame(), null, newPos, DomainManager.getInstance().getById(0));
+        return showModal(workbench,  null, newPos, DomainManager.getInstance().getById(0));
     }
 
     static public Pair<Sense, SenseAttributes> showModal(Workbench workbench, String word, PartOfSpeech newPos) {
-        return showModal(workbench, workbench.getFrame(), word, newPos, DomainManager.getInstance().getById(0));
+        return showModal(workbench,  word, newPos, DomainManager.getInstance().getById(0));
     }
 
     /**
      * wyswietlenie okienka dialogowego
      *
      * @param workbench - srodowisko
-     * @param frame
      * @param word
      * @param newPos    - pos dla jednostki, null gdy mozna go wybrac
      * @param domain
      * @return nowa jednostka lub null gdy anulowano
      */
-    static public Pair<Sense, SenseAttributes> showModal(Workbench workbench, WebFrame frame,
-                                                         String word, PartOfSpeech newPos, Domain domain) {
+    static public Pair<Sense, SenseAttributes> showModal(Workbench workbench, String word, PartOfSpeech newPos, Domain domain) {
 
-        NewLexicalUnitFrame modalFrame = new NewLexicalUnitFrame(workbench, frame);
+        NewLexicalUnitFrame modalFrame = new NewLexicalUnitFrame(workbench);
 
         modalFrame.editPanel.getLexicon().setSelectedIndex(1);
         if (word != null) {

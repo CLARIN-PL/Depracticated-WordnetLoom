@@ -51,7 +51,7 @@ public class GroupView {
         rows[rows.length - 1] = TableLayout.FILL;
 
         double[] columns =
-                {labelRatio, TableLayout.PREFERRED, TableLayout.PREFERRED, componentRatio,TableLayout.FILL};
+                {labelRatio, TableLayout.PREFERRED, TableLayout.PREFERRED, componentRatio,TableLayout.PREFERRED, TableLayout.FILL};
 
         TableLayout groupLayout = new TableLayout(new double[][]{columns, rows});
         groupLayout.setHGap(4);

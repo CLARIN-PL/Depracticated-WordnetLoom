@@ -165,7 +165,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             }
         });
 
-        JPanel buttonsPanel = new JPanel();
+        WebPanel buttonsPanel = new WebPanel();
         buttonsPanel.setLayout(new RiverLayout(0, 0));
         buttonsPanel.add("br", btnNewExample);
         buttonsPanel.add("br", btnEditExample);
@@ -210,7 +210,6 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
     @Subscribe
     public void handleUpdatePropertiesEvent(UpdateSynsetPropertiesEvent event){
-        System.out.println("Aktualizacja właściwości synsetu");
         refreshData(event.getSynset());
     }
 
