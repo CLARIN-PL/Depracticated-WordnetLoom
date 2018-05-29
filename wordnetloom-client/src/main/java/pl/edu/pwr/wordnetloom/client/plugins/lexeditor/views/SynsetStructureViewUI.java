@@ -536,8 +536,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
     @Subscribe
     public void handleUpdateUnitsEvent(UpdateSynsetUnitsEvent event){
-        System.out.println("Aktualziacja jednostek synsetu");
-        refreshData(event.getSynset());
+        SwingUtilities.invokeLater(() -> refreshData(event.getSynset()));
     }
 
     /**
@@ -549,7 +548,6 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         lastSynset = synset;
         int newSplitPoint = 0;
         List<Sense> units = null;
-
         if (synset != null) {
             // odczytanie punktu podzialu
             newSplitPoint = synset.getSplit();
@@ -659,9 +657,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
             lui.initialize(pan);
             lui.refreshData(unit);
-            lui.closeWindow((ActionEvent e1) -> {
-                dia.dispose();
-            });
+            lui.closeWindow((ActionEvent e1) -> dia.dispose());
             dia.setLocationRelativeTo(workbench.getFrame());
             dia.setContentPane(pan);
             dia.pack();

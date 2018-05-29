@@ -24,6 +24,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class SynsetViewUI extends AbstractViewUI implements ActionListener, ListSelectionListener, KeyListener {
 
@@ -97,9 +98,18 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
 
         synsetList = createSynsetList(synsetListModel);
 
-        scrollPane = new LazyScrollPane(synsetList, LIMIT);
+        scrollPane = new LazyScrollPane(synsetList,synsetListModel, LIMIT);
         scrollPane.setHorizontalScrolling(false);
-        scrollPane.setScrollListener((offset, limit) -> loadMoreSynsets());
+        scrollPane.setScrollListener((offset, limit) -> {
+            try {
+                return loadMoreSynsets();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
 
         infoLabel = new WebLabel();
         infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "0"));
@@ -121,8 +131,11 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         new SynsetDownloaderWorker(true).execute();
     }
 
-    public void loadMoreSynsets() {
+    public List<Synset> loadMoreSynsets() throws ExecutionException, InterruptedException {
         new SynsetDownloaderWorker(false).execute();
+        SynsetDownloaderWorker worker = new SynsetDownloaderWorker(false);
+        worker.execute();
+        return worker.get();
     }
 
     @Override
@@ -164,7 +177,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         }
     }
 
-    private class SynsetDownloaderWorker extends SwingWorker<Void, Void> {
+    private class SynsetDownloaderWorker extends SwingWorker<List<Synset>, Void> {
 
         private boolean isNewCriteria;
 
@@ -173,7 +186,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         }
 
         @Override
-        protected Void doInBackground() throws Exception {
+        protected List<Synset> doInBackground() throws Exception {
             workbench.setBusy(true);
 
             if(isNewCriteria){
@@ -184,8 +197,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
                 allMatchedSynsetCount = RemoteService.synsetRemote.getCountSynsetsByCriteria(lastCriteriaDTO);
             }
             lastCriteriaDTO.setOffset(synsetListModel.getSize());
-            loadAndAddSynsets(lastCriteriaDTO);
-            return null;
+            return loadAndAddSynsets(lastCriteriaDTO);
         }
 
         private void resetSynsetList() {
@@ -193,11 +205,12 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
             scrollPane.reset();
         }
 
-        private void loadAndAddSynsets(SynsetCriteriaDTO criteriaDTO) {
+        private List<Synset> loadAndAddSynsets(SynsetCriteriaDTO criteriaDTO) {
             lastCriteriaDTO = criteriaDTO;
             List<Synset> synsets = RemoteService.synsetRemote.findSynsetsByCriteria(criteriaDTO);
             addElementsToList(synsets);
-            scrollPane.setEnd(synsets.isEmpty() || synsets.size() < criteriaDTO.getLimit());
+            return synsets;
+//            scrollPane.setEnd(synsets.isEmpty() || synsets.size() < criteriaDTO.getLimit());
         }
 
         private void addElementsToList(List<Synset> synsets) {

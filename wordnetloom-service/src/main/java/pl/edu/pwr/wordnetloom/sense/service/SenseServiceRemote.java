@@ -15,6 +15,8 @@ public interface SenseServiceRemote {
 
     Sense save(Sense sense);
 
+    SenseAttributes save(SenseAttributes attributes);
+
     SenseAttributes addSenseAttribute(final Long senseId, final SenseAttributes attributes);
 
     void delete(Sense sense);
@@ -62,4 +64,5 @@ public interface SenseServiceRemote {
     Sense fetchSense(Long senseId);
 
     SenseAttributes fetchSenseAttribute(Long senseId);
+
 }

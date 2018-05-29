@@ -143,7 +143,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     public void actionPerformed(ActionEvent event) {
         //TODO Sprawdzić to wywoływane śa funkcje co nic nie robią - TO REFACTOR
         if (event.getSource() == editPanel.getBtnSave()) {
-
+            System.out.println("Naciśnięto przycisk zapisu");
             String testLemma = editPanel.getLemma().getText();
 
             List<Sense> units = LexicalDA.getFullLexicalUnits(testLemma, LexiconManager.getInstance().getUserChosenLexiconsIds());

@@ -78,6 +78,22 @@ public class SenseServiceBean implements SenseServiceLocal {
         return senseRepository.persist(sense);
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
+    @Override
+    public SenseAttributes save(SenseAttributes attributes) {
+        ValidationUtils.validateEntityFields(validator, attributes);
+        Sense sense = save(attributes.getSense());
+        SenseAttributes savedAttributes;
+        if(attributes.getId() != null){
+            savedAttributes = senseAttributesRepository.update(attributes);
+        } else {
+            savedAttributes = senseAttributesRepository.persist(attributes);
+        }
+        savedAttributes.setSense(sense);
+        return savedAttributes;
+        //TODO zobaczyć, czy trzeba oddzielnie zapisywać jednostkę
+    }
+
     private boolean variantMustBeChanged(Sense sense) {
         Sense old = senseRepository.fetchSense(sense.getId());
         // if property is not initialized, it was not changed

@@ -53,7 +53,7 @@ public class SynsetsFrame extends DialogWindow implements ActionListener, Loggab
         synsetsList = new ToolTipList(workbench, listModel, new SynsetTooltipGenerator());
         synsetsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        LazyScrollPane synsetsScrollPane = new LazyScrollPane(synsetsList, 15);
+        LazyScrollPane synsetsScrollPane = new LazyScrollPane(synsetsList, listModel, 15);
         synsetsList.setCellRenderer(new SynsetListCellRenderer(synsetsScrollPane));
 
         addToNewSynsetButton = MButton.buildOkButton()

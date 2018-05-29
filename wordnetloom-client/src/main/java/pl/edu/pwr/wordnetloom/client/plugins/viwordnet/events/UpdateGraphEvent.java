@@ -6,8 +6,8 @@ public class UpdateGraphEvent {
 
     private Sense sense;
 
-    public UpdateGraphEvent(Sense synset) {
-        this.sense = synset;
+    public UpdateGraphEvent(Sense sense) {
+        this.sense = sense;
 
     }
 
