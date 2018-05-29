@@ -123,7 +123,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         unitsList.setCellRenderer(new UnitListCellRenderer());
 
         unitsListScrollPane = new LazyScrollList(unitsList,listModel,new Sense(), LIMIT);
-        unitsListScrollPane.setScrollListener((offset, limit) -> loadMoreUnits());
+        unitsListScrollPane.setScrollListener((offset, limit) -> loadMoreUnits(offset, limit));
 
         WebPanel resultListPanel = new WebPanel();
         resultListPanel.setLayout(new RiverLayout());
@@ -228,8 +228,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     /**
      * Ładuje kolejne jednostki do listy
      */
-    public List<Sense> loadMoreUnits() {
-        List<Sense> units = getSenses(lastSenseCriteria, lastSenseCriteria.getLimit(), unitsListScrollPane.getModelSize());
+    public List<Sense> loadMoreUnits(int offset, int limit) {
+//        List<Sense> units = getSenses(lastSenseCriteria, lastSenseCriteria.getLimit(), unitsListScrollPane.getModelSize());
+        List<Sense> units = getSenses(lastSenseCriteria, limit, offset);
         setInfoText(unitsListScrollPane.getModelSize() + units.size(), allUnitsCount);
         return units;
     }
