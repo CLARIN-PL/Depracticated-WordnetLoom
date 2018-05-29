@@ -236,7 +236,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         WebTabbedPane tabs = new WebTabbedPane();
         tabs.setLayout(new BorderLayout());
         tabs.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        tabs.addTab("Main", GroupView.createGroupView(components, new Dimension(600, 550),0.1f, 0.9f));
+        tabs.addTab("Main", GroupView.createGroupView(components, new Dimension(560, 520),0.1f, 0.85f));
 
         JPanel buttons = new JPanel();
         buttons.setLayout(new FlowLayout());
@@ -247,7 +247,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         buttons.add(btnSave);
         btnSave.addActionListener(this);
 
-        add("hfill vfill", tabs);
+        add("", tabs);
         add("br center", buttons);
     }
 

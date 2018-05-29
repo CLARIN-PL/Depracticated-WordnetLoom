@@ -34,7 +34,6 @@ public class GroupView {
 
         groupPanel.putClientProperty(SwingUtils.HANDLES_ENABLE_STATE, true);
         groupPanel.setOpaque(true);
-        if(d != null) groupPanel.setPreferredSize(d);
         int rowsAmount = components.size() > 1 ? components.size() * 2 - 1 : 1;
 
         double[] rows = new double[6 + rowsAmount];
@@ -77,6 +76,9 @@ public class GroupView {
         });
 
         WebScrollPane panel = new WebScrollPane(groupPanel);
+        if(d !=null) {
+            panel.setPreferredSize(d);
+        }
         panel.setDrawBorder(false);
         return panel ;
     }

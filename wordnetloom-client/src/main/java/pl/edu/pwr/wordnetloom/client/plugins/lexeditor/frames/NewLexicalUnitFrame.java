@@ -21,6 +21,7 @@ import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -40,7 +41,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
 
     private NewLexicalUnitFrame(Workbench workbench) {
         super(workbench.getFrame(), Labels.UNIT_PARAMS, 600, 680);
-        setResizable(true);
+        setResizable(false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(workbench.getFrame());
         editPanel = new LexicalUnitPropertiesPanel(workbench.getFrame());

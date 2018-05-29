@@ -89,7 +89,7 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         components.put(Labels.COLOR_COLON, colorChooser);
         components.put(Labels.DIRECTION_COLON, relationDirection);
 
-        add("vfill hfill", GroupView.createGroupView(components, null, 0.1f,0.9f));
+        add("", GroupView.createGroupView(components, null, 0.1f,0.9f));
 
         add(RiverLayout.LINE_BREAK + " " + RiverLayout.CENTER, btnSave);
     }

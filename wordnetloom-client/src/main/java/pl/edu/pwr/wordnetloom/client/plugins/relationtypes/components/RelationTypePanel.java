@@ -64,7 +64,7 @@ public class RelationTypePanel extends WebPanel {
         WebPanel testsWrapper = new WebPanel(testsPanel);
         testsWrapper.setMargin(5);
 
-        MSplitPane properties = buildSplitPanel(propertiesWrapper, testsWrapper, (int) (parentWidth * 0.6), JSplitPane.HORIZONTAL_SPLIT);
+        MSplitPane properties = buildSplitPanel(propertiesWrapper, testsWrapper, (int) (parentWidth * 0.55), JSplitPane.HORIZONTAL_SPLIT);
         MSplitPane main = buildSplitPanel(tabsWrapper, properties, parentHeight / 8, JSplitPane.VERTICAL_SPLIT);
 
         add(main, BorderLayout.CENTER);
