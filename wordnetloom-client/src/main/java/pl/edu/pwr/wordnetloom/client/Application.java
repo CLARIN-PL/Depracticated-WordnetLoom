@@ -30,8 +30,6 @@ public class Application implements Loggable {
 
     public static final EventBus eventBus = new EventBus();
 
-    private LoginWindow login = new LoginWindow(new WebFrame());
-
     public Application() {
         eventBus.register(this);
     }
@@ -41,7 +39,8 @@ public class Application implements Loggable {
         WebLookAndFeel.install();
         IconFontSwing.register(FontAwesome.getIconFont());
 
-        Application app = new Application();
+        new LoginWindow(new WebFrame());
+        new Application();
         eventBus.post(new AuthenticateUserEvent());
 
     }

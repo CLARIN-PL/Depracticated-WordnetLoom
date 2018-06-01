@@ -13,6 +13,7 @@ import pl.edu.pwr.wordnetloom.senserelation.service.SenseRelationServiceRemote;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
 import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceRemote;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
+import pl.edu.pwr.wordnetloom.wordform.service.WordFormServiceRemote;
 
 public final class RemoteService {
 
@@ -29,7 +30,7 @@ public final class RemoteService {
     public static UserServiceRemote userServiceRemote = ConnectionProvider.getInstance().lookupForService(UserServiceRemote.class);
     public static LocalisedStringServiceRemote localisedStringServiceRemote = ConnectionProvider.getInstance().lookupForService(LocalisedStringServiceRemote.class);
     public static DictionaryServiceRemote dictionaryServiceRemote = ConnectionProvider.getInstance().lookupForService(DictionaryServiceRemote.class);
-
+    public static WordFormServiceRemote wordFormServiceRemote = ConnectionProvider.getInstance().lookupForService(WordFormServiceRemote.class);
 
     private RemoteService() {
     }

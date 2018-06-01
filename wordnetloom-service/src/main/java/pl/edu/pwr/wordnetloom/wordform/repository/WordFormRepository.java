@@ -30,20 +30,10 @@ public class WordFormRepository extends GenericRepository<WordForm> {
                 .executeUpdate();
     }
 
-    public WordForm findByWordAndTags(Word word, List<String> tags) {
-        List<WordForm> list = em.createQuery("SELECT w FROM WordForm w WHERE w.word LIKE :word OR w.form IN (:tags)", WordForm.class)
-                .setParameter("word", word.getWord())
-                .setParameter("tags", tags)
+    public List<WordForm> findFormByLemmaAndTag(String lemma){
+        return em.createNamedQuery(WordForm.FIND_FORM_BY_WORD, WordForm.class)
+                .setParameter("word",lemma)
                 .getResultList();
-        if (list.isEmpty() || list.get(0) == null) {
-            return null;
-        }
-        return list.get(0);
-    }
-
-    public List<Sense> findSensesWithoutForm() {
-        //return lexUnit.dbGetUnitsWithoutForms();
-        return null;
     }
 
 }

@@ -55,7 +55,7 @@ public class RelationTypePanel extends WebPanel {
         WebPanel tabsWrapper = new WebPanel(tabs);
         tabsWrapper.setMargin(5);
 
-        tabs.add("Synset relation", synsetRelationTreePanel);
+        tabs.add("Synset relations", synsetRelationTreePanel);
         tabs.add("Sense relations ", senseRelationTreePanel);
 
         WebPanel propertiesWrapper = new WebPanel(propertiesPanel);
