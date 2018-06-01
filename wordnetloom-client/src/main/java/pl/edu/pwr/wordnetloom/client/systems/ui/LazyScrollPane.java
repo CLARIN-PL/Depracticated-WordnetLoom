@@ -28,9 +28,6 @@ public class LazyScrollPane<T> extends WebScrollPane {
     private boolean end;
 
     private ScrollListener scrollListener;
-//    private WebButton loadMoreButton;
-
-    private java.util.List<T> tempItemList;
 
     public LazyScrollPane(WebList list, DefaultListModel model, int limit){
         super(list);
@@ -38,11 +35,6 @@ public class LazyScrollPane<T> extends WebScrollPane {
         WebPanel panel = new WebPanel(new BorderLayout());
         panel.add(list, BorderLayout.NORTH);
 
-//        loadMoreButton = new WebButton("Ładuj"); //TODO dorobić etykietę
-//        loadMoreButton.addActionListener(e -> onBottomScroll());
-//        loadMoreButton.setVisible(false);
-//        loadMoreButton.setHorizontalAlignment(SwingConstants.LEFT);
-//        panel.add(loadMoreButton);
         setViewportView(panel);
 
         this.list = list;
@@ -76,11 +68,6 @@ public class LazyScrollPane<T> extends WebScrollPane {
     }
 
     public int getLimit() {return limit;}
-
-   /* public void setEnd(boolean end){
-        this.end = end;
-//        loadMoreButton.setVisible(!end);
-    }*/
 
     public void reset(){
 //        loadMoreButton.setVisible(false);

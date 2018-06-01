@@ -46,7 +46,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         ActionListener, ListSelectionListener, KeyListener, MouseListener {
 
     private final int LIMIT = 50;
-    private LazyScrollPane unitsListScrollPane;
+    private LazyScrollList unitsListScrollPane;
     private SenseCriteria criteria;
     private ToolTipList unitsList;
     private WebLabel infoLabel;
@@ -122,8 +122,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         unitsList.getSelectionModel().addListSelectionListener(this);
         unitsList.setCellRenderer(new UnitListCellRenderer());
 
-        unitsListScrollPane = new LazyScrollPane(unitsList,listModel, LIMIT);
-        unitsListScrollPane.setScrollListener((offset, limit) -> loadMoreUnits());
+        unitsListScrollPane = new LazyScrollList(unitsList,listModel,new Sense(), LIMIT);
+        unitsListScrollPane.setScrollListener((offset, limit) -> loadMoreUnits(offset, limit));
 
         WebPanel resultListPanel = new WebPanel();
         resultListPanel.setLayout(new RiverLayout());
@@ -190,7 +190,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         List<Sense> units = getSenses(dto, LIMIT, 0);
         allUnitsCount = RemoteService.senseRemote.getCountUnitsByCriteria(dto);
         setInfoText(units.size(), allUnitsCount);
-        addUnitsToList(units);
+        unitsListScrollPane.setCollection(units, allUnitsCount);
+//        addUnitsToList(units);
 //        unitsListScrollPane.setEnd(units.size() < LIMIT);
     }
 
@@ -227,8 +228,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     /**
      * Ładuje kolejne jednostki do listy
      */
-    public List<Sense> loadMoreUnits() {
-        List<Sense> units = getSenses(lastSenseCriteria, lastSenseCriteria.getLimit(), unitsListScrollPane.getModelSize());
+    public List<Sense> loadMoreUnits(int offset, int limit) {
+//        List<Sense> units = getSenses(lastSenseCriteria, lastSenseCriteria.getLimit(), unitsListScrollPane.getModelSize());
+        List<Sense> units = getSenses(lastSenseCriteria, limit, offset);
         setInfoText(unitsListScrollPane.getModelSize() + units.size(), allUnitsCount);
         return units;
     }
