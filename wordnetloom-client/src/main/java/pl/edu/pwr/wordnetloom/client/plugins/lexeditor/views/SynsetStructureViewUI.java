@@ -8,7 +8,6 @@ import com.alee.laf.text.WebTextField;
 import com.google.common.eventbus.Subscribe;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.Application;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
@@ -349,9 +348,10 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         Rectangle r = workbench.getFrame().getBounds();
         int x = r.x + r.width - AbstractListFrame.WIDTH / 2 - 50;
 
+        Sense firstSense = RemoteService.senseRemote.findHeadSenseOfSynset(lastSynset.getId());
+
         Collection<Sense> selectedUnits = UnitsListFrame.showModal(
-                workbench, x, location.y, true,
-                LexicalDA.getPos(lastSynset, LexiconManager.getInstance().getUserChosenLexiconsIds()), created);
+                workbench, x, location.y, true, firstSense.getPartOfSpeech(), created);
 
         if (created.getValue()) {
             clickListeners.notifyAllListeners(lastSynset, UNIT_CREATED);
@@ -535,7 +535,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     }
 
     @Subscribe
-    public void handleUpdateUnitsEvent(UpdateSynsetUnitsEvent event){
+    public void handleUpdateUnitsEvent(UpdateSynsetUnitsEvent event) {
         SwingUtilities.invokeLater(() -> refreshData(event.getSynset()));
     }
 

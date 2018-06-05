@@ -116,6 +116,12 @@ public class SenseServiceBean implements SenseServiceLocal {
         return senseAttributesRepository.persist(attributes);
     }
 
+    @PermitAll
+    @Override
+    public List<SenseAttributes> findByLemmaWithSense(String lemma, List<Long> lexicons){
+        return senseAttributesRepository.findByLemmaWithSense(lemma, lexicons);
+    }
+
     @RolesAllowed({"USER", "ADMIN"})
     @Override
     public void deleteAll() {

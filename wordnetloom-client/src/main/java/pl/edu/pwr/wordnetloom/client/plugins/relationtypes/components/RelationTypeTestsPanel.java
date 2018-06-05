@@ -20,28 +20,34 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.List;
+import java.util.Set;
 
 public class RelationTypeTestsPanel extends WebPanel {
 
     private final WebList tests;
     private final DefaultListModel<RelationTest> model = new DefaultListModel<>();
+
     private final MButton moveUpButton = MButton.buildUpButton()
             .withToolTip(Hints.MOVE_TEST_UP)
             .withDefaultIconSize()
             .withActionListener(e -> moveTestUp());
+
     private final MButton moveDownButton = MButton.buildDownButton()
             .withToolTip(Hints.MOVE_TEST_DOWN)
             .withDefaultIconSize()
             .withActionListener(e -> moveTestDown());
+
     private final MButton editButton = new MButton()
             .withToolTip(Hints.EDIT_SELECTED_TEST)
             .withIcon(FontAwesome.PENCIL)
             .withDefaultIconSize()
             .withActionListener(e -> editTest());
+
     private final MButton removeButton = MButton.buildDeleteButton()
             .withToolTip(Hints.REMOVE_SELECTED_TEST)
             .withDefaultIconSize()
             .withActionListener(e -> removeTest());
+
     private RelationType relationType;
 
     private final MButton addButton = MButton.buildAddButton()
@@ -77,7 +83,7 @@ public class RelationTypeTestsPanel extends WebPanel {
         add(buttonsPanel, BorderLayout.EAST);
     }
 
-    public void setRelationTests(List<RelationTest> tests) {
+    public void setRelationTests(Set<RelationTest> tests) {
         model.clear();
         tests.forEach(model::addElement);
     }
@@ -93,9 +99,39 @@ public class RelationTypeTestsPanel extends WebPanel {
     }
 
     private void moveTestUp() {
+        RelationTest selected = getSelected();
+        int index =  model.indexOf(selected);
+        if(index - 1 >= 0) {
+            RelationTest upper = model.elementAt(index-1);
+
+            selected.setPosition(selected.getPosition()-1);
+            upper.setPosition(upper.getPosition()+1);
+
+            model.setElementAt(upper, index);
+            model.setElementAt(selected, index-1);
+            tests.setSelectedIndex(index-1);
+
+            RemoteService.relationTestRemote.save(upper);
+            RemoteService.relationTestRemote.save(selected) ;
+        }
     }
 
     private void moveTestDown() {
+        RelationTest selected = getSelected();
+        int index =  model.indexOf(selected);
+        if(model.size() >  index+1 ) {
+            RelationTest upper = model.elementAt(index+1);
+
+            selected.setPosition(selected.getPosition()+1);
+            upper.setPosition(upper.getPosition()-1);
+
+            model.setElementAt(upper, index);
+            model.setElementAt(selected, index+1);
+            tests.setSelectedIndex(index+1);
+
+            RemoteService.relationTestRemote.save(upper);
+            RemoteService.relationTestRemote.save(selected) ;
+        }
     }
 
     private void removeTest() {

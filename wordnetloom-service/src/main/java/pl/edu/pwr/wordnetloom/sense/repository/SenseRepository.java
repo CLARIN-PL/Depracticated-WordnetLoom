@@ -74,6 +74,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         Root<Sense> senseRoot = query.from(Sense.class);
         senseRoot.fetch(DOMAIN);
         senseRoot.fetch(LEXICON);
+        senseRoot.fetch(SYNSET);
 
         query.select(senseRoot);
         query.where(getPredicatesByCriteria(dto, senseRoot, criteriaBuilder));
@@ -186,7 +187,6 @@ public class SenseRepository extends GenericRepository<Sense> {
 
         return Math.toIntExact(getEntityManager().createQuery(query).getSingleResult());
     }
-
 
 
     public List<Sense> filterSenseByLexicon(List<Sense> senses, List<Long> lexicons) {
@@ -319,7 +319,7 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     public Sense findHeadSenseOfSynset(Long synsetId) {
-        Query query = getEntityManager().createQuery("SELECT s FROM Sense s JOIN FETCH s.domain JOIN FETCH s.lexicon WHERE s.synset.id = :id AND s.synsetPosition = 0")
+        Query query = getEntityManager().createQuery("SELECT s FROM Sense s JOIN FETCH s.partOfSpeech JOIN FETCH s.domain JOIN FETCH s.lexicon WHERE s.synset.id = :id AND s.synsetPosition = 0")
                 .setParameter("id", synsetId);
         List<Sense> resultList = query.getResultList();
         if (!resultList.isEmpty()) {

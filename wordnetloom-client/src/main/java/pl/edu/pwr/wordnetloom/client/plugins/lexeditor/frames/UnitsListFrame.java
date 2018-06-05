@@ -17,7 +17,6 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
@@ -61,7 +60,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
     protected boolean verifySelectedElements() {
         if (filterObject != null) {
             for (Sense elem : selectedElements) {
-                if (LexicalDA.checkIfInAnySynset(elem)) {
+                if (elem.getSynset().getId() != null) {
                     DialogBox.showError(String.format(Messages.INFO_UNIT_ALREADY_ASSIGNED_TO_SYNSET, (elem).getWord()));
                     return false;
                 }

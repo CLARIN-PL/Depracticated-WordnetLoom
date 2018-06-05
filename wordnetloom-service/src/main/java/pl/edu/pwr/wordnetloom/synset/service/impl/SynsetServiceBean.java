@@ -68,6 +68,8 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @RolesAllowed({"USER", "ADMIN"})
     @Override
     public boolean delete(Synset synset) {
+        //TODO Usuwanie nie jest kompletne ksowanie synsetu z relacjami i jednostkami
+        synsetAttributesRepository.delete(synset.getId());
         synsetRepository.delete(synset);
         return true;
     }

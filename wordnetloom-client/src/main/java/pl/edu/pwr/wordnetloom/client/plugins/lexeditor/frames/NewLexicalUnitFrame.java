@@ -1,8 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
-import com.alee.laf.rootpane.WebFrame;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
@@ -15,13 +14,13 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -90,11 +89,11 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     }
 
     static public Pair<Sense, SenseAttributes> showModal(Workbench workbench, PartOfSpeech newPos) {
-        return showModal(workbench,  null, newPos, DomainManager.getInstance().getById(0));
+        return showModal(workbench, null, newPos, DomainManager.getInstance().getById(0));
     }
 
     static public Pair<Sense, SenseAttributes> showModal(Workbench workbench, String word, PartOfSpeech newPos) {
-        return showModal(workbench,  word, newPos, DomainManager.getInstance().getById(0));
+        return showModal(workbench, word, newPos, DomainManager.getInstance().getById(0));
     }
 
     /**
@@ -142,12 +141,12 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        //TODO Sprawdzić to wywoływane śa funkcje co nic nie robią - TO REFACTOR
+
         if (event.getSource() == editPanel.getBtnSave()) {
-            System.out.println("Naciśnięto przycisk zapisu");
+
             String testLemma = editPanel.getLemma().getText();
 
-            List<Sense> units = LexicalDA.getFullLexicalUnits(testLemma, LexiconManager.getInstance().getUserChosenLexiconsIds());
+            List<SenseAttributes> units = RemoteService.senseRemote.findByLemmaWithSense(testLemma, LexiconManager.getInstance().getUserChosenLexiconsIds());
 
             if (validateSelections()) {
                 if (checkUnitExists(testLemma, units)) {
@@ -164,26 +163,29 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         }
     }
 
-    private boolean checkUnitExists(String testLemma, List<Sense> units) {
-        if (units != null && units.size() > 0) {
+    private boolean checkUnitExists(String testLemma, List<SenseAttributes> attributes) {
+        if (attributes != null && attributes.size() > 0) {
 
+            Lexicon testLexicon = editPanel.getLexicon().getEntity();
             Domain testDomain = editPanel.getDomain().getEntity();
             PartOfSpeech testPos = editPanel.getPartOfSpeech().getEntity();
-            String testComments = editPanel.getComment().getText();
+            String testDefinition = editPanel.getDefinition().getText();
 
-//            for (Sense unit : units) {
-//                String comment = Common.getSenseAttribute(unit, Sense.COMMENT);
-//                // check domain exists
-//                if (testLemma.equals(unit.getLemma().getWord())
-//                        && unit.getDomain().getId().equals(testDomain.getId())
-//                        && unit.getPartOfSpeech().equals(testPos)
-//                        && testComments.equals(comment)) {
-//                    this.setAlwaysOnTop(false);
-//                    DialogBox.showError(Messages.FAILURE_UNIT_EXISTS);
-//                    this.setAlwaysOnTop(true);
-//                    return false;
-//                }
-//            }
+            long count = attributes.stream()
+                    .filter(sa -> sa.getSense().getWord().getWord().equals(testLemma))
+                    .filter(sa -> sa.getSense().getLexicon().getId().equals(testLexicon.getId()))
+                    .filter(sa -> sa.getSense().getDomain().getId().equals(testDomain.getId()))
+                    .filter(sa -> sa.getSense().getPartOfSpeech().getId().equals(testPos.getId()))
+                    .filter(sa -> sa.getDefinition().equals(testDefinition))
+                    .count();
+
+            if (count > 0) {
+                setAlwaysOnTop(false);
+                DialogBox.showError(Messages.FAILURE_UNIT_EXISTS);
+                setAlwaysOnTop(true);
+                return false;
+            }
+
         }
         return true;
     }

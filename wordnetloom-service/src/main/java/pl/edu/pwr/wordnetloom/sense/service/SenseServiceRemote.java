@@ -19,6 +19,8 @@ public interface SenseServiceRemote {
 
     SenseAttributes addSenseAttribute(final Long senseId, final SenseAttributes attributes);
 
+    List<SenseAttributes> findByLemmaWithSense(String lemma, List<Long> lexicons);
+
     void delete(Sense sense);
 
     void deleteAll();
