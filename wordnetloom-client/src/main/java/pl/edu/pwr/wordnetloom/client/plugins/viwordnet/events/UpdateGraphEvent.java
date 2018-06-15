@@ -8,7 +8,6 @@ public class UpdateGraphEvent {
 
     public UpdateGraphEvent(Sense sense) {
         this.sense = sense;
-
     }
 
     public Sense getSense(){

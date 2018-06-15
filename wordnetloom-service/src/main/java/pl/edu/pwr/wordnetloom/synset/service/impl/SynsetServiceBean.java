@@ -16,6 +16,8 @@ import pl.edu.pwr.wordnetloom.synset.repository.SynsetAttributesRepository;
 import pl.edu.pwr.wordnetloom.synset.repository.SynsetRepository;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceLocal;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
+import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository;
 import pl.edu.pwr.wordnetloom.user.model.User;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceLocal;
 
@@ -49,6 +51,9 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     SynsetAttributesRepository synsetAttributesRepository;
 
     @Inject
+    SynsetRelationRepository synsetRelationRepository;
+
+    @Inject
     SenseServiceLocal senseService;
 
     @Inject
@@ -68,7 +73,6 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @RolesAllowed({"USER", "ADMIN"})
     @Override
     public boolean delete(Synset synset) {
-        //TODO Usuwanie nie jest kompletne ksowanie synsetu z relacjami i jednostkami
         synsetAttributesRepository.delete(synset.getId());
         synsetRepository.delete(synset);
         return true;
@@ -245,5 +249,44 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @Override
     public SynsetAttributes fetchSynsetAttributes(Long synsetId) {
         return synsetRepository.fetchSynsetAttributes(synsetId);
+    }
+
+    @RolesAllowed({"USER", "ADMIN"})
+    @Override
+    public void merge(Synset target, Synset source){
+        moveSenses(target, source);
+        moveRelations(target, source);
+        delete(source);
+    }
+
+    private void moveRelations(Synset target, Synset source) {
+        List<SynsetRelation> sourceRelations = synsetRelationRepository.findRelations(source);
+        for(SynsetRelation relation : sourceRelations){
+            RelationType relationType = relation.getRelationType();
+            if(source == relation.getParent()){
+                Synset child = relation.getChild();
+                if(!synsetRelationRepository.checkRelationExists(target, child, relationType)){
+                    synsetRelationRepository.create(target, child, relationType);
+                }
+            } else { //source == relation.getChild()
+                Synset parent = relation.getParent();
+                if (!synsetRelationRepository.checkRelationExists(parent, target, relationType)) {
+                    synsetRelationRepository.create(parent, target, relationType);
+                }
+            }
+            synsetRelationRepository.delete(relation);
+        }
+    }
+
+    private void moveSenses(Synset target, Synset source) {
+        List<Sense> sourceSenses = senseService.findBySynset(source.getId());
+        int sensesInTarget = synsetRepository.findSynsetSenseCount(target);
+        int positionInSynset = sensesInTarget;
+        for(Sense sense : sourceSenses){
+            positionInSynset++;
+            sense.setSynset(target);
+            sense.setSynsetPosition(positionInSynset);
+            senseService.save(sense);
+        }
     }
 }

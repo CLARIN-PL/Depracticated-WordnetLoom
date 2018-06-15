@@ -176,7 +176,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
                     .filter(sa -> sa.getSense().getLexicon().getId().equals(testLexicon.getId()))
                     .filter(sa -> sa.getSense().getDomain().getId().equals(testDomain.getId()))
                     .filter(sa -> sa.getSense().getPartOfSpeech().getId().equals(testPos.getId()))
-                    .filter(sa -> sa.getDefinition().equals(testDefinition))
+                    .filter(sa -> sa.getDefinition() == null || sa.getDefinition().equals(testDefinition))
                     .count();
 
             if (count > 0) {

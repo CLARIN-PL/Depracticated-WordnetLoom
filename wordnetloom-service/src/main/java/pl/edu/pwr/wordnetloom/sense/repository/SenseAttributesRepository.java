@@ -33,6 +33,7 @@ public class SenseAttributesRepository extends GenericRepository<SenseAttributes
                         "LEFT JOIN FETCH s.word w "+
                         "LEFT JOIN FETCH s.domain "+
                         "LEFT JOIN FETCH s.partOfSpeech "+
+                        "LEFT JOIN FETCH s.lexicon " +
                         "WHERE s.lexicon.id IN (:lexicons) " +
                         "AND LOWER(w.word) LIKE :lemma ORDER BY w.word asc", SenseAttributes.class)
                 .setParameter("lemma", lemma.toLowerCase())

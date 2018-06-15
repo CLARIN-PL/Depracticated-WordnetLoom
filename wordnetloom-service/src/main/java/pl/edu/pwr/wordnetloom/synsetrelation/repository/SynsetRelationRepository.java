@@ -257,6 +257,14 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
                 .getResultList();
     }
 
+    public void create(Synset parent, Synset child, RelationType relationType){
+        SynsetRelation relation = new SynsetRelation();
+        relation.setParent(parent);
+        relation.setChild(child);
+        relation.setRelationType(relationType);
+        persist(relation);
+    }
+
     @Override
     protected Class<SynsetRelation> getPersistentClass() {
         return SynsetRelation.class;

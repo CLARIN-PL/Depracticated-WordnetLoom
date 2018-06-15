@@ -31,6 +31,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 import javax.swing.*;
@@ -223,8 +224,12 @@ public class ViWordNetService extends AbstractService implements
     @Subscribe
     public void updateGraph(UpdateGraphEvent event) {
         if (event.getSense() == null) {
-            Synset synset = getActiveGraphView().getUI().getRootSynset();
-            new LoadSynsetTask(synset).execute();
+            for(ViwnGraphView gv : graphViews){
+                Synset synset = gv.getUI().getRootSynset();
+                new LoadSynsetTask(synset).execute();
+            }
+//            Synset synset = getActiveGraphView().getUI().getRootSynset();
+//            new LoadSynsetTask(synset).execute();
         } else {
             new LoadSenseTask(event.getSense()).execute();
         }
@@ -462,29 +467,34 @@ public class ViWordNetService extends AbstractService implements
                 return;
             }
 
-            String MERGE_SYNSETS = "<html>Czy na pewno chcesz połączyć synsety:<br>"
+            final String MERGE_SYNSETS = "<html>Czy na pewno chcesz połączyć synsety:<br>"
                     + "1. <font color=\"blue\">%s</font><br>"
                     + "2. <font color=\"blue\">%s</font> ?</html>";
 
             if (DialogBox.showYesNo(String.format(MERGE_SYNSETS,
                     src.getUnitsStr(), dst.getUnitsStr())) == DialogBox.YES) {
 
-                RelationsDA.mergeSynsets(src.getSynset(), dst.getSynset(),
-                        LexiconManager.getInstance().getLexiconsIds());
+//                RelationsDA.mergeSynsets(src.getSynset(), dst.getSynset(),
+//                        LexiconManager.getInstance().getLexiconsIds());
 
-                for (ViwnGraphView gv : new ArrayList<>(graphViews)) {
+                RemoteService.synsetRemote.merge(dst.getSynset(), src.getSynset());
+
+                Application.eventBus.post(new UpdateGraphEvent(null));
+                for(ViwnGraphView gv: graphViews){
                     gv.getUI().removeSynset(src);
-                    gv.getUI().updateSynset(dst);
                 }
-
-                ViWordNetService s = ServiceManager.getViWordNetService(workbench);
-                src.getSynset().setId((long) -1);
+//                for (ViwnGraphView gv : new ArrayList<>(graphViews)) {
+//                    gv.getUI().removeSynset(src);
+//                    gv.getUI().updateSynset(dst);
+//                }
+//
+//
+//                ViWordNetService s = ServiceManager.getViWordNetService(workbench);
+//                src.getSynset().setId((long) -1);
             }
         }
-
         setMergeSynsetsMode(false);
     }
-
 
     /**
      * @param second object to make relation with first turns off make relation
@@ -647,6 +657,8 @@ public class ViWordNetService extends AbstractService implements
         @Override
         public void done() {
             workbench.setBusy(false);
+            Application.eventBus.post(new UpdateSynsetPropertiesEvent(synset));
+            Application.eventBus.post(new UpdateSynsetUnitsEvent(synset));
         }
 
         protected void loadSynset(Synset synset) {
@@ -692,5 +704,6 @@ public class ViWordNetService extends AbstractService implements
             loadSynset(synset);
             return null;
         }
+
     }
 }

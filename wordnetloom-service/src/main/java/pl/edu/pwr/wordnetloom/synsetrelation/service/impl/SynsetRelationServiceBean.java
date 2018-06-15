@@ -171,4 +171,10 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     public List<SynsetRelation> findSimpleRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons) {
         return synsetRelationRepository.findSimpleRelationsWhereSynsetIsChild(synset, lexicons);
     }
+
+    @RolesAllowed({"USER", "ADMIN"})
+    @Override
+    public void create(Synset parent, Synset child, RelationType relationType){
+        synsetRelationRepository.create(parent, child, relationType);
+    }
 }
