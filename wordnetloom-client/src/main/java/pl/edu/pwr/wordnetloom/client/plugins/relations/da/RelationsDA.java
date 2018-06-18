@@ -50,7 +50,12 @@ public class RelationsDA {
         throw new RuntimeException("//TODO: FIXME"); // TODO: FIXME
     }
 
-    //TODO Nie działa łączenie synsetów
+    //TODO Merging doesn't work reimplementation needed
+    //TODO Operation should move src unique relations to dst synset and units but only with diff lemma
+    //TODO synset 1 (lemma 1, lemma 2, lemma3) + synset 2 (lemma 2) if  lemma 1 = lemma 2
+    //TODO then delete lemma 2  move  sense relations?? remove synset 2
+    //TODO move implementation to service
+
     public static void mergeSynsets(Synset src, Synset dst, List<Long> lexicons) {
         if (src == null || dst == null || src.getId() == -1 || dst.getId() == -1) {
             return;
