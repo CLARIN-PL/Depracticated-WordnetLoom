@@ -4,6 +4,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitProperti
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
+import pl.edu.pwr.wordnetloom.client.systems.errors.ErrorProvider;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
@@ -21,9 +22,16 @@ import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.List;
+
+import javax.swing.*;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 /**
  * New lexical unit parameter window
@@ -38,6 +46,8 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     private static final long serialVersionUID = 1L;
     private boolean wasAddClicked = false;
 
+    private ErrorProvider errorProvider;
+
     private NewLexicalUnitFrame(Workbench workbench) {
         super(workbench.getFrame(), Labels.UNIT_PARAMS, 600, 680);
         setResizable(false);
@@ -48,6 +58,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         editPanel.getBtnCancel().addActionListener(this);
         add("hfill vfill", editPanel);
         pack();
+        errorProvider = new ErrorProvider(editPanel.getLemma());
     }
 
     public Pair<Sense, SenseAttributes> saveAndReturnNewSense() {
@@ -191,21 +202,42 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     }
 
     private boolean validateSelections() {
-        if (editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText())) {
-            DialogBox.showError(Messages.SELECT_LEMMA);
-            return false;
-        }
-        if (editPanel.getLexicon().getEntity() == null) {
-            DialogBox.showError(Messages.SELECT_LEXICON);
-            return false;
-        }
-        if (editPanel.getPartOfSpeech().getEntity() == null) {
-            DialogBox.showError(Messages.SELECT_POS);
-            return false;
-        }
-        if (editPanel.getDomain().getEntity() == null) {
-            DialogBox.showError(Messages.SELECT_DOMAIN);
-            return false;
+//        if (editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText())) {
+////            DialogBox.showError(Messages.SELECT_LEMMA);
+//            errorProvider.setError(editPanel.getLemma(), ErrorProvider.ERROR, "Pole nie może być puste");
+//            return false;
+//        }
+//        if (editPanel.getLexicon().getEntity() == null) {
+//            DialogBox.showError(Messages.SELECT_LEXICON);
+//            return false;
+//        }
+//        if (editPanel.getPartOfSpeech().getEntity() == null) {
+//            DialogBox.showError(Messages.SELECT_POS);
+//            return false;
+//        }
+//        if (editPanel.getDomain().getEntity() == null) {
+//            DialogBox.showError(Messages.SELECT_DOMAIN);
+//            return false;
+//        }
+        editPanel.getLexicon().setBackground(Color.red);
+
+        boolean[] result = new boolean[4];
+        result[0] = errorProvider.setError(editPanel.getLemma(),
+                editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()),
+                        "Pole nie może być puste");
+
+        result[1] = errorProvider.setError(editPanel.getLexicon(),
+                editPanel.getLexicon().getEntity() == null, "Leksykon musi być ustawiony");
+
+        result[2] = errorProvider.setError(editPanel.getPartOfSpeech(),
+                editPanel.getPartOfSpeech().getEntity() == null, "Część mowy musi być ustawiona");
+
+        result[3] = errorProvider.setError(editPanel.getDomain(),
+                editPanel.getDomain().getEntity() == null, "Domena musi być ustawiona");
+        for(int i = 0; i<result.length; i++){
+            if(!result[i]) {
+                return false;
+            }
         }
         return true;
     }

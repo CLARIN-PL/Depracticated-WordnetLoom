@@ -569,7 +569,6 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             synsetOwner.setText(sa.getOwner() != null ? sa.getOwner().getFullname() : "");
         }
 
-
         // odczytanie zaznaczonej jednostki
         Collection<Sense> selectedUnits = lastUnits;
         if (selectedUnits == null && unitsList != null
