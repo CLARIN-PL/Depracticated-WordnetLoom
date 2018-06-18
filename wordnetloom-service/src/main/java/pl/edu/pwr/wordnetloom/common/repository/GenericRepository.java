@@ -35,6 +35,7 @@ public abstract class GenericRepository<T> {
     public void delete(final Long id) {
         if (id != null) {
             getEntityManager().remove(findById(id));
+            getEntityManager().flush();
         }
     }
 

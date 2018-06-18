@@ -50,4 +50,6 @@ public interface SynsetRelationServiceRemote {
     List<SynsetRelation> findSimpleRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons);
 
     List<SynsetRelation> findSimpleRelationsWhereSynsetIsParent(Synset synset, List<Long> lexicons);
+
+    void create(Synset parent, Synset child, RelationType relationType);
 }
