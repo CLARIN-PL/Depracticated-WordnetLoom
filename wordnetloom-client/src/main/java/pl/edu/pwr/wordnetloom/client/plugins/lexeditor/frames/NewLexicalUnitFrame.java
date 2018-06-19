@@ -22,16 +22,9 @@ import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.util.List;
-
-import javax.swing.*;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 
 /**
  * New lexical unit parameter window
@@ -202,29 +195,11 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     }
 
     private boolean validateSelections() {
-//        if (editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText())) {
-////            DialogBox.showError(Messages.SELECT_LEMMA);
-//            errorProvider.setError(editPanel.getLemma(), ErrorProvider.ERROR, "Pole nie może być puste");
-//            return false;
-//        }
-//        if (editPanel.getLexicon().getEntity() == null) {
-//            DialogBox.showError(Messages.SELECT_LEXICON);
-//            return false;
-//        }
-//        if (editPanel.getPartOfSpeech().getEntity() == null) {
-//            DialogBox.showError(Messages.SELECT_POS);
-//            return false;
-//        }
-//        if (editPanel.getDomain().getEntity() == null) {
-//            DialogBox.showError(Messages.SELECT_DOMAIN);
-//            return false;
-//        }
-        editPanel.getLexicon().setBackground(Color.red);
 
         boolean[] result = new boolean[4];
         result[0] = errorProvider.setError(editPanel.getLemma(),
                 editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()),
-                        "Pole nie może być puste");
+                "Pole nie może być puste");
 
         result[1] = errorProvider.setError(editPanel.getLexicon(),
                 editPanel.getLexicon().getEntity() == null, "Leksykon musi być ustawiony");
@@ -234,6 +209,8 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
 
         result[3] = errorProvider.setError(editPanel.getDomain(),
                 editPanel.getDomain().getEntity() == null, "Domena musi być ustawiona");
+
+
         for(int i = 0; i<result.length; i++){
             if(!result[i]) {
                 return false;

@@ -88,6 +88,8 @@ public class CoreService extends AbstractService implements MenuListener {
             RemoteService.userServiceRemote.update(UserSessionContext.getInstance().getUserSettings());
         });
 
+
+
         settings = new WebMenu(Labels.SETTINGS);
         settings.setMnemonic(KeyEvent.VK_S);
         Icon settingsIcon = IconFontSwing.buildIcon(FontAwesome.COGS, 12);
