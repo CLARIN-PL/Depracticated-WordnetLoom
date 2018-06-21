@@ -39,7 +39,7 @@ create table tracker_part_of_speech (
   id bigint not null,
   REV integer not null,
   REVTYPE tinyint,
-  color varchar(255),
+  borderColor varchar(255),
   name_id bigint,
   primary key (id, REV)
 );
@@ -49,7 +49,7 @@ create table tracker_relation_type (
   REV integer not null,
   REVTYPE tinyint,
   auto_reverse bit default 0,
-  color varchar(255),
+  borderColor varchar(255),
   description_id bigint,
   display_text_id bigint,
   multilingual bit default 0,

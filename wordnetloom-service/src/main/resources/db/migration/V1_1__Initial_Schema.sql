@@ -28,7 +28,7 @@ CREATE TABLE domain (
 CREATE TABLE part_of_speech (
   id      BIGINT NOT NULL AUTO_INCREMENT,
   name_id BIGINT COMMENT 'Name of part of speech',
-  color   VARCHAR(255) COMMENT 'Color displayed on visualisation',
+  borderColor   VARCHAR(255) COMMENT 'Color displayed on visualisation',
   PRIMARY KEY (id)
 )
   COMMENT 'Table describes parts of speech';
@@ -128,7 +128,7 @@ CREATE TABLE relation_type (
   relation_argument        VARCHAR(255) COMMENT 'Describes type of relation',
   reverse_relation_type_id BIGINT,
   short_display_text_id    BIGINT COMMENT 'Text displayed on visualisation',
-  color                    VARCHAR(255) COMMENT 'Color of displayed relation',
+  borderColor                    VARCHAR(255) COMMENT 'Color of displayed relation',
   node_position            VARCHAR(255) COMMENT 'Position in node LEFT,TOP,RIGHT,BOTTOM',
   priority                 INT,
   PRIMARY KEY (id)

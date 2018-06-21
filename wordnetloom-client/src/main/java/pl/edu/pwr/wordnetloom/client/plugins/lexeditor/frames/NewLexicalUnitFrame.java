@@ -4,6 +4,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitProperti
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
+import pl.edu.pwr.wordnetloom.client.systems.errors.ErrorManager;
 import pl.edu.pwr.wordnetloom.client.systems.errors.ErrorProvider;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
@@ -39,7 +40,8 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     private static final long serialVersionUID = 1L;
     private boolean wasAddClicked = false;
 
-    private ErrorProvider errorProvider;
+//    private ErrorProvider errorProvider;
+    private final ErrorManager errorManager = new ErrorManager();
 
     private NewLexicalUnitFrame(Workbench workbench) {
         super(workbench.getFrame(), Labels.UNIT_PARAMS, 600, 680);
@@ -51,7 +53,16 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         editPanel.getBtnCancel().addActionListener(this);
         add("hfill vfill", editPanel);
         pack();
-        errorProvider = new ErrorProvider(editPanel.getLemma());
+//        errorProvider = new ErrorProvider(editPanel.getLemma());
+        initErrorManager();
+    }
+
+    private void initErrorManager(){
+        // TODO dodać etykiety do bazy
+        errorManager.registerError(editPanel.getLemma(), "Pole nie może być puste", () -> editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()));
+        errorManager.registerError(editPanel.getLexicon(), "Leksykon musi być ustawiony", ()->editPanel.getLexicon().getEntity() == null);
+        errorManager.registerError(editPanel.getPartOfSpeech(), "Część mowy musi być ustawiona", ()->editPanel.getPartOfSpeech().getEntity() == null);
+        errorManager.registerError(editPanel.getDomain(), "Domena musi być ustawiona", ()->editPanel.getDomain().getEntity()==null);
     }
 
     public Pair<Sense, SenseAttributes> saveAndReturnNewSense() {
@@ -196,26 +207,27 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
 
     private boolean validateSelections() {
 
-        boolean[] result = new boolean[4];
-        result[0] = errorProvider.setError(editPanel.getLemma(),
-                editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()),
-                "Pole nie może być puste");
-
-        result[1] = errorProvider.setError(editPanel.getLexicon(),
-                editPanel.getLexicon().getEntity() == null, "Leksykon musi być ustawiony");
-
-        result[2] = errorProvider.setError(editPanel.getPartOfSpeech(),
-                editPanel.getPartOfSpeech().getEntity() == null, "Część mowy musi być ustawiona");
-
-        result[3] = errorProvider.setError(editPanel.getDomain(),
-                editPanel.getDomain().getEntity() == null, "Domena musi być ustawiona");
-
-
-        for(int i = 0; i<result.length; i++){
-            if(!result[i]) {
-                return false;
-            }
-        }
-        return true;
+//        boolean[] result = new boolean[4];
+//        result[0] = errorProvider.setError(editPanel.getLemma(),
+//                editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()),
+//                "Pole nie może być puste");
+//
+//        result[1] = errorProvider.setError(editPanel.getLexicon(),
+//                editPanel.getLexicon().getEntity() == null, "Leksykon musi być ustawiony");
+//
+//        result[2] = errorProvider.setError(editPanel.getPartOfSpeech(),
+//                editPanel.getPartOfSpeech().getEntity() == null, "Część mowy musi być ustawiona");
+//
+//        result[3] = errorProvider.setError(editPanel.getDomain(),
+//                editPanel.getDomain().getEntity() == null, "Domena musi być ustawiona");
+//
+//
+//        for(int i = 0; i<result.length; i++){
+//            if(!result[i]) {
+//                return false;
+//            }
+//        }
+//        return true;
+        return errorManager.checkErrors();
     }
 }

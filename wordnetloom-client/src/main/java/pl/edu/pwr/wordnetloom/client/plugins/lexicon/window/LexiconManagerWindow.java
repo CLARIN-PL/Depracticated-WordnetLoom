@@ -15,7 +15,6 @@ import javax.validation.constraints.NotNull;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -34,11 +33,10 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
     public LexiconManagerWindow(WebFrame parentFrame) {
         // TODO dodać etykietę
         super(parentFrame, "Zarządzanie leksykonami",MAX_WINDOW_WIDTH, MAX_WINDOW_HEIGHT);
-        init();
+        initView();
     }
 
-    private void init()
-    {
+    private void initView() {
         setLayout(new RiverLayout());
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -48,14 +46,10 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
                 lexicon -> lexiconPropertiesPanel.setLexicon(lexicon));
         lexiconPropertiesPanel = new LexiconPropertiesPanel(MAX_WINDOW_WIDTH, MAX_WINDOW_HEIGHT/2);
         saveButton = MButton.buildSaveButton().withActionListener(e->{
-            Lexicon lexicon = lexiconPropertiesPanel.getLexicon();
-            if(lexicon != null){
-                System.out.println(lexicon);
-                RemoteService.lexiconServiceRemote.add(lexicon);
-            }
+            saveLexicon();
         });
         cancelButton = MButton.buildCancelButton().withActionListener(e->{
-            // load old lexicon
+            // load old lexicon/ clear changes
             Lexicon lexicon = lexiconListPanel.getSelectedLexicon();
             lexiconPropertiesPanel.setLexicon(lexicon);
         });
@@ -64,6 +58,17 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
         add(RiverLayout.LINE_BREAK + " " + RiverLayout.CENTER, saveButton);
         add(cancelButton);
 
+    }
+
+    private void saveLexicon() {
+        Lexicon lexicon = lexiconPropertiesPanel.getLexicon();
+        if(lexicon != null){
+            Lexicon savedLexicon = RemoteService.lexiconServiceRemote.add(lexicon);
+            java.util.List<Lexicon> lexicons = RemoteService.lexiconServiceRemote.findAll();
+            LexiconManager.getInstance().load(lexicons);
+            lexiconListPanel.refreshAndSelect(savedLexicon);
+
+        }
     }
 
     public static void showModal(WebFrame parentFrame) {
@@ -102,7 +107,8 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
         private void init() {
             this.setLayout(new BorderLayout());
             this.setSize(new Dimension(width, height));
-            this.add(createLexiconsList(), BorderLayout.CENTER);
+            JScrollPane listScroll = new JScrollPane(createLexiconsList());
+            this.add(listScroll, BorderLayout.CENTER);
             this.add(createButtonPanel(), BorderLayout.EAST);
         }
 
@@ -114,7 +120,9 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
             lexiconsList.addListSelectionListener(e->{
                 if(clickListener != null){
                     Lexicon selectedLexicon = (Lexicon)lexiconsList.getSelectedValue();
-                    clickListener.load(selectedLexicon);
+                    if(selectedLexicon != null){
+                        clickListener.load(selectedLexicon);
+                    }
                 }
             });
 
@@ -143,6 +151,8 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
         }
 
         private void refreshList(){
+            lexiconsList.clearSelection();
+            model.clear();
             java.util.List<Lexicon> lexicons = LexiconManager.getInstance().getLexicons();
 
             for (Lexicon lexicon : lexicons) {
@@ -151,11 +161,15 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
             lexiconsList.setModel(model);
         }
 
+        private void refreshAndSelect(Lexicon lexicon){
+            refreshList();
+            lexiconsList.setSelectedValue(lexicon, true);
+        }
+
         private void addLexicon() {
             // add new item to lexicons list
             Lexicon lexicon = new Lexicon();
-            lexicon.setName("Nowy"); // TODO można też wstawić nazwę "nowy"
-            model.addElement(lexicon);
+            lexicon.setName(""); // TODO można też wstawić nazwę "nowy"
             clickListener.load(lexicon);
 
         }
@@ -184,13 +198,16 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
         private int width;
         private int height;
 
+        private ErrorProvider errorProvider;
+
         public LexiconPropertiesPanel(int width, int height) {
             this.width = width;
             this.height = height;
-            init();
+            initView();
+            errorProvider = new ErrorProvider(name);
         }
 
-        private void init(){
+        private void initView(){
             setLayout(new RiverLayout());
             setSize(new Dimension(width, height));
             // TODO dodać etykiety do bazy
@@ -236,27 +253,34 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
         }
 
         private boolean validateLexicon() {
-            ErrorProvider errorProvider = new ErrorProvider(name);
-
             boolean[] result = new boolean[5];
             result[0] = errorProvider.setError(name, name.getText().isEmpty(), "Pole nie może być puste");
-            result[1] = errorProvider.setError(name, checkNameIsUsed(name.getText()), "Nazwa jest już zajęta");
+            if(result[0] == true){
+                result[1] = errorProvider.setError(name, checkNameIsUsed(name.getText()), "Nazwa jest już zajęta");
+
+            }
             result[2] = errorProvider.setError(identifier, identifier.getText().isEmpty(), "Pole nie może być puste");
             result[3] = errorProvider.setError(languageName, languageName.getText().isEmpty(), "Pole nie może być puste");
             result[4] = errorProvider.setError(languageShorcut, languageShorcut.getText().isEmpty(), "Pole nie może być puste");
 
-            return !Arrays.asList(result).contains(false);
+            for(boolean value : result){
+                if(!value){
+                    return false;
+                }
+            }
+            return true;
         }
 
         private boolean checkNameIsUsed(String lexiconName) {
             // TODO poprawić komunikat. Przy pustym polu wyswietla komunikat, nazwa jest już zajęta
             java.util.List<Lexicon> lexicons = LexiconManager.getInstance().getLexicons();
             for(Lexicon lex : lexicons) {
-                if(lexicon != null && lexicon.getId() != null && lexicon.getId().equals(lex.getId()) && lexicon.getName().equals(lexiconName)){
-                    return false;
+                if((lexicon == null || lexicon.getId() == null || !lexicon.getId().equals(lex.getId()))
+                        && lex.getName().equals(lexiconName)){
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
     }
 }

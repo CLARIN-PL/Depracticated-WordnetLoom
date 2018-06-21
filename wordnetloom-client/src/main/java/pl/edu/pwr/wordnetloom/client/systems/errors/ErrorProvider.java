@@ -59,10 +59,11 @@ public class ErrorProvider {
         component.setBackground(getColor(errorType));
         if(errorType == NO_ERROR){
             component.setBorder(originalBorder);
+            component.setToolTipText("");
         } else {
-            component.setBorder(new IconBorder(getImage(errorType),originalBorder));
+            component.setBorder(new IconBorder(Color.RED, getImage(errorType)));
+            component.setToolTipText(message);
         }
-        component.setToolTipText(message);
 
         return errorType == NO_ERROR;
     }
