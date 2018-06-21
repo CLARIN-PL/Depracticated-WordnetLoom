@@ -3,11 +3,13 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexicon.window;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.client.systems.errors.ErrorProvider;
+import pl.edu.pwr.wordnetloom.client.systems.errors.ValidationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -15,6 +17,7 @@ import javax.validation.constraints.NotNull;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -140,7 +143,7 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
                     .withActionListener(e -> addLexicon());
             MButton removeButton = MButton.buildRemoveButton()
                     .withToolTip("Usuń zaznaczony leksykon")
-                    .withActionListener(e -> removeLexicon());
+                    .withActionListener(e -> removeLexicon((Lexicon)lexiconsList.getSelectedValue()));
             buttonsPanel = new MComponentGroup(addButton, removeButton)
                     .withVerticalLayout()
                     .withAllComponentsEnabled(true)
@@ -174,13 +177,30 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
 
         }
 
-        private void removeLexicon() {
-            // TOOD dodać etykietę
-            int answer = DialogBox.showYesNo("Czy usunąć ten leksykon?");
+        private void removeLexicon(Lexicon lexicon) {
+            // TODO dodać etykietę
+            int senseCount = getSenseCount(lexicon);
+            int synsetCount = getSynsetCount(lexicon);
+            int answer = DialogBox.showYesNo("Czy usunąć ten leksykon?\n" +
+                    "Liczba jednostek : " + senseCount + "\nLiczba synsetów : " + synsetCount);
             if(answer == DialogBox.YES){
+                System.out.println("Usunięcie leksykonu");
                 //TODO zrobić usuwanie leksykonu
-
             }
+        }
+
+        private int getSenseCount(Lexicon lexicon){
+            ArrayList<Long> lexiconList = new ArrayList<>();
+            lexiconList.add(lexicon.getId());
+            SenseCriteriaDTO senseDTO = new SenseCriteriaDTO();
+            senseDTO.setLexicons(lexiconList);
+            return RemoteService.senseRemote.getCountUnitsByCriteria(senseDTO);
+        }
+
+        private int getSynsetCount(Lexicon lexicon){
+            SynsetCriteriaDTO synsetDTO = new SynsetCriteriaDTO();
+            synsetDTO.setLexiconId(lexicon.getId());
+            return RemoteService.synsetRemote.getCountSynsetsByCriteria(synsetDTO);
         }
     }
 
@@ -198,13 +218,23 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
         private int width;
         private int height;
 
-        private ErrorProvider errorProvider;
+        private ValidationManager validationManager;
 
         public LexiconPropertiesPanel(int width, int height) {
             this.width = width;
             this.height = height;
             initView();
-            errorProvider = new ErrorProvider(name);
+            initValidation();
+        }
+
+        private void initValidation(){
+            validationManager = new ValidationManager();
+            // TODO dodać etykiety do bazy danych
+            validationManager.registerError(name, "Pole nie może być puste", ()->name.getText().isEmpty());
+            validationManager.registerError(name, "Nazwa jest już zajęta", ()->checkNameIsUsed(name.getText()));
+            validationManager.registerError(identifier, "Pole nie może być puste", ()->identifier.getText().isEmpty());
+            validationManager.registerError(languageName, "Pole nie może być puste", ()->languageName.getText().isEmpty());
+            validationManager.registerError(languageShorcut, "Pole nie może być puste", ()->languageShorcut.getText().isEmpty());
         }
 
         private void initView(){
@@ -253,22 +283,7 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
         }
 
         private boolean validateLexicon() {
-            boolean[] result = new boolean[5];
-            result[0] = errorProvider.setError(name, name.getText().isEmpty(), "Pole nie może być puste");
-            if(result[0] == true){
-                result[1] = errorProvider.setError(name, checkNameIsUsed(name.getText()), "Nazwa jest już zajęta");
-
-            }
-            result[2] = errorProvider.setError(identifier, identifier.getText().isEmpty(), "Pole nie może być puste");
-            result[3] = errorProvider.setError(languageName, languageName.getText().isEmpty(), "Pole nie może być puste");
-            result[4] = errorProvider.setError(languageShorcut, languageShorcut.getText().isEmpty(), "Pole nie może być puste");
-
-            for(boolean value : result){
-                if(!value){
-                    return false;
-                }
-            }
-            return true;
+            return validationManager.validate();
         }
 
         private boolean checkNameIsUsed(String lexiconName) {

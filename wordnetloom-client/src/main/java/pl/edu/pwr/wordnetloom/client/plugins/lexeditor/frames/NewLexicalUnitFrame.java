@@ -4,8 +4,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitProperti
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
-import pl.edu.pwr.wordnetloom.client.systems.errors.ErrorManager;
-import pl.edu.pwr.wordnetloom.client.systems.errors.ErrorProvider;
+import pl.edu.pwr.wordnetloom.client.systems.errors.ValidationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
@@ -41,7 +40,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     private boolean wasAddClicked = false;
 
 //    private ErrorProvider errorProvider;
-    private final ErrorManager errorManager = new ErrorManager();
+    private final ValidationManager validationManager = new ValidationManager();
 
     private NewLexicalUnitFrame(Workbench workbench) {
         super(workbench.getFrame(), Labels.UNIT_PARAMS, 600, 680);
@@ -59,10 +58,11 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
 
     private void initErrorManager(){
         // TODO dodać etykiety do bazy
-        errorManager.registerError(editPanel.getLemma(), "Pole nie może być puste", () -> editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()));
-        errorManager.registerError(editPanel.getLexicon(), "Leksykon musi być ustawiony", ()->editPanel.getLexicon().getEntity() == null);
-        errorManager.registerError(editPanel.getPartOfSpeech(), "Część mowy musi być ustawiona", ()->editPanel.getPartOfSpeech().getEntity() == null);
-        errorManager.registerError(editPanel.getDomain(), "Domena musi być ustawiona", ()->editPanel.getDomain().getEntity()==null);
+        validationManager.registerError(editPanel.getLemma(), "Pole nie może być puste", () -> editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()));
+        validationManager.registerError(editPanel.getLexicon(), "Leksykon musi być ustawiony", ()->editPanel.getLexicon().getEntity() == null);
+        validationManager.registerError(editPanel.getPartOfSpeech(), "Część mowy musi być ustawiona", ()->editPanel.getPartOfSpeech().getEntity() == null);
+        validationManager.registerError(editPanel.getDomain(), "Domena musi być ustawiona", ()->editPanel.getDomain().getEntity()==null);
+        validationManager.registerError(editPanel.getRegister(), "Rejest nie może być pusty", ()->editPanel.getRegister().getEntity() == null);
     }
 
     public Pair<Sense, SenseAttributes> saveAndReturnNewSense() {
@@ -228,6 +228,6 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
 //            }
 //        }
 //        return true;
-        return errorManager.checkErrors();
+        return validationManager.validate();
     }
 }
