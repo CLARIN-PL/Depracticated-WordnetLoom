@@ -87,6 +87,14 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
         return resultMap;
     }
 
+    public Map<String, String> findStringsByKey(String key){
+        Map<String, String> map = new HashMap<>();
+        final List<Object[]> list = em.createNativeQuery("SELECT language, value FROM application_labels WHERE label_key =:key")
+                .setParameter("key", key).getResultList();
+        list.forEach(i->map.put(i[0].toString(), i[1].toString()));
+        return map;
+    }
+
     @Override
     public LocalisedString persist(LocalisedString s) {
         if (s.getKey().getId() == null) {
@@ -95,7 +103,6 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
         getEntityManager().persist(s);
         return s;
     }
-
 
     @Override
     protected Class<LocalisedString> getPersistentClass() {

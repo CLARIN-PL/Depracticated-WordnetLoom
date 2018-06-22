@@ -12,4 +12,6 @@ public interface LexiconServiceRemote {
     List<Long> findAllLexiconIds();
 
     Lexicon add(Lexicon lexicon);
+
+    void remove(long lexiconId);
 }

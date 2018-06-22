@@ -2,9 +2,11 @@ package pl.edu.pwr.wordnetloom.client.plugins.core;
 
 import com.alee.laf.menu.WebCheckBoxMenuItem;
 import com.alee.laf.menu.WebMenu;
+import com.alee.laf.menu.WebMenuItem;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.Application;
+import pl.edu.pwr.wordnetloom.client.plugins.administrator.labelEditor.LabelEditorWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.core.window.AboutWindow;
 import pl.edu.pwr.wordnetloom.client.remote.ConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -16,13 +18,12 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.user.model.Role;
+import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 
 /**
  * Class is handling basic menu interactions
@@ -118,6 +119,18 @@ public class CoreService extends AbstractService implements MenuListener {
                 .withMnemonic(KeyEvent.VK_S).withActionListener(e -> w.getActivePerspective().resetViews()));
         appSettings.addMenuListener(this);
         appSettings.add(showTooltips);
+
+        if(UserSessionContext.getInstance().hasRole(Role.ADMIN)){
+            // TODO dodać etykietę do bazy
+            WebMenuItem labelEditorItem = new MMenuItem("Edytor etykiet");
+            labelEditorItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    LabelEditorWindow.showModal(workbench.getFrame());
+                }
+            });
+            appSettings.add(labelEditorItem);
+        }
 
         user.add(appSettings);
         user.add(account);

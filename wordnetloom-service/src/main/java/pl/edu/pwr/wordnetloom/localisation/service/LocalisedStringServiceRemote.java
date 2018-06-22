@@ -17,4 +17,6 @@ public interface LocalisedStringServiceRemote {
     Map<Long, String> findAllByLanguageAsMap(String language);
 
     void update(LocalisedString ls);
+
+    Map<String, String> findStringInAllLanguages(String key);
 }

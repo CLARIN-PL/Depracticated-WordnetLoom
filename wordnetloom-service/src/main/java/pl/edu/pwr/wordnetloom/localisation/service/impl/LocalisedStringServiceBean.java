@@ -8,6 +8,7 @@ import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 import pl.edu.pwr.wordnetloom.localisation.repository.LocalisedStringRepository;
 import pl.edu.pwr.wordnetloom.localisation.service.LocalisedStringServiceLocal;
 import pl.edu.pwr.wordnetloom.localisation.service.LocalisedStringServiceRemote;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -74,5 +75,10 @@ public class LocalisedStringServiceBean implements LocalisedStringServiceLocal {
     @Override
     public Map<String, Map<Long, String>> finaAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public Map<String, String> findStringInAllLanguages(String key){
+        return repository.findStringsByKey(key);
     }
 }

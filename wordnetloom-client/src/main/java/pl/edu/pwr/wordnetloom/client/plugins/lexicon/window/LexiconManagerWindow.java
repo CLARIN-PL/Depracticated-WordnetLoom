@@ -15,13 +15,11 @@ import se.datadosen.component.RiverLayout;
 import javax.swing.*;
 import javax.validation.constraints.NotNull;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class LexiconManagerWindow extends MFrame implements ActionListener {
+public class LexiconManagerWindow extends MFrame {
 
     public final static int MIN_WINDOW_WIDTH = 600;
     public final static int MIN_WINDOW_HEIGHT = 680;
@@ -77,11 +75,6 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
     public static void showModal(WebFrame parentFrame) {
         LexiconManagerWindow frame = new LexiconManagerWindow(parentFrame);
         frame.setVisible(true);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
     }
 
     public interface LexiconLoadListener {
@@ -201,6 +194,10 @@ public class LexiconManagerWindow extends MFrame implements ActionListener {
             SynsetCriteriaDTO synsetDTO = new SynsetCriteriaDTO();
             synsetDTO.setLexiconId(lexicon.getId());
             return RemoteService.synsetRemote.getCountSynsetsByCriteria(synsetDTO);
+        }
+
+        private void removeLexicon(){
+
         }
     }
 
