@@ -8,12 +8,14 @@ import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 import pl.edu.pwr.wordnetloom.localisation.repository.LocalisedStringRepository;
 import pl.edu.pwr.wordnetloom.localisation.service.LocalisedStringServiceLocal;
 import pl.edu.pwr.wordnetloom.localisation.service.LocalisedStringServiceRemote;
+import sun.reflect.CallerSensitive;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import javax.validation.Validator;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +72,21 @@ public class LocalisedStringServiceBean implements LocalisedStringServiceLocal {
         }
 
         repository.update(entity);
+    }
+
+    @Override
+    public Long findId(final String key, final String language){
+        try{
+            return repository.findId(key, language);
+        } catch (NoResultException e){
+            return null;
+        }
+    }
+
+    @Override
+    public LocalisedString save(LocalisedString localisedString){
+        // TOOD zrobić zapisywanie
+        throw new NotImplementedException();
     }
 
     @Override

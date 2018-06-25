@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.localisation.repository;
 
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.dictionary.model.Register;
+import pl.edu.pwr.wordnetloom.localisation.model.ApplicationLabel;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 
@@ -20,11 +21,17 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
     EntityManager em;
 
     public Map<String, String> findAllLabels(String locale) {
+//        Map<String, String> map = new HashMap<>();
+//
+//        final List<Object[]> list = em.createNativeQuery("SELECT label_key, value FROM application_labels WHERE language = :locale")
+//                .setParameter("locale", locale).getResultList();
+//        list.forEach(i -> map.put(i[0].toString(), i[1].toString()));
+//        return map;
         Map<String, String> map = new HashMap<>();
-
-        final List<Object[]> list = em.createNativeQuery("SELECT label_key, value FROM application_labels WHERE language = :locale")
-                .setParameter("locale", locale).getResultList();
-        list.forEach(i -> map.put(i[0].toString(), i[1].toString()));
+        final List<ApplicationLabel> list = em.createQuery("FROM ApplicationLabel a WHERE a.language=:language")
+                .setParameter("language", locale)
+                .getResultList();
+        list.forEach(i->map.put(i.getKey(), i.getValue()));
         return map;
     }
 
@@ -88,11 +95,24 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
     }
 
     public Map<String, String> findStringsByKey(String key){
+//        Map<String, String> map = new HashMap<>();
+//        final List<Object[]> list = em.createNativeQuery("SELECT language, value FROM application_labels WHERE label_key =:key")
+//                .setParameter("key", key).getResultList();
+//        list.forEach(i->map.put(i[0].toString(), i[1].toString()));
+//        return map;
         Map<String, String> map = new HashMap<>();
-        final List<Object[]> list = em.createNativeQuery("SELECT language, value FROM application_labels WHERE label_key =:key")
-                .setParameter("key", key).getResultList();
-        list.forEach(i->map.put(i[0].toString(), i[1].toString()));
+        final List<ApplicationLabel> list = em.createQuery("FROM ApplicationLabel a WHERE a.key =:key")
+                .setParameter("key", key)
+                .getResultList();
+        list.forEach(i->map.put(i.getLanguage(),i.getValue()));
         return map;
+    }
+
+    public Long findId(final String key, final String language){
+        return (Long)em.createNativeQuery("SELECT id FROM application_labels WHERE label_key =:key AND language=:language")
+                .setParameter("key", key)
+                .setParameter("language", language)
+                .getSingleResult();
     }
 
     @Override

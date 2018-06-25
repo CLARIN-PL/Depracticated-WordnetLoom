@@ -1,11 +1,13 @@
 package pl.edu.pwr.wordnetloom.client.plugins.administrator.labelEditor;
 
 import com.alee.extended.panel.WebComponentPanel;
+import com.alee.laf.text.WebTextArea;
 import com.alee.laf.text.WebTextField;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
@@ -15,9 +17,15 @@ import java.util.Map;
 
 class EditLabelPanel extends JPanel {
 
+    public interface EditLabelListener{
+        void onSave(String labelName);
+    }
+
     private final int LANGUAGE_LABEL_WIDTH = 50;
     private JTextField labelName;
     private Map<String, JComponent> componentsMap;
+
+    private Long labelId;
 
     // TODO można dorobić zapisywanie kolejności języków
     EditLabelPanel() {
@@ -57,7 +65,9 @@ class EditLabelPanel extends JPanel {
     private JPanel createLanguagePanel(String language) {
         JLabel label = new JLabel(language);
         label.setPreferredSize(new Dimension(LANGUAGE_LABEL_WIDTH, label.getHeight()));
-        JTextField textField = new WebTextField();
+        JTextArea textField = new WebTextArea();
+        textField.setRows(2);
+        textField.setLineWrap(true);
         componentsMap.put(language, textField);
         JPanel componentGroup = new JPanel(new BorderLayout());
         componentGroup.add(label, BorderLayout.WEST);
@@ -66,12 +76,22 @@ class EditLabelPanel extends JPanel {
     }
 
     private void saveLabel() {
+        String language;
+        String value;
+        for(Map.Entry<String, JComponent> entry: componentsMap.entrySet()){
+            language = entry.getKey();
+            value = ((JTextField)entry.getValue()).getText();
+            // TODO tutaj zrobić zapisywanie
+            LocalisedKey key = new LocalisedKey();
+            // TODO zrobić pobieranie numeru id
+
+        }
+
         throw new NotImplementedException();
     }
 
     void loadLabel(String name) {
-        // TODO pobrać wszystkie wartości dla wszystkich języków
-        labelName.setText(name);
+        // TODO zrobić pobieranie numeru id
         Map<String, String> labelsMap = RemoteService.localisedStringServiceRemote.findStringInAllLanguages(name);
         for (Map.Entry<String, String> entry : labelsMap.entrySet()) {
             editLabelValue(entry.getKey(), entry.getValue());
@@ -79,11 +99,7 @@ class EditLabelPanel extends JPanel {
     }
 
     private void editLabelValue(String language, String value) {
-        JTextField labelTextField = (JTextField) componentsMap.get(language);
+        JTextArea labelTextField = (JTextArea) componentsMap.get(language);
         labelTextField.setText(value);
-    }
-
-    public interface EditLabelListener {
-        void save(String labelName);
     }
 }
