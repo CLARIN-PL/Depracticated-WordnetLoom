@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.localisation.service.impl;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.localisation.exception.LocalisedStringNotFoundException;
 import pl.edu.pwr.wordnetloom.localisation.exception.UnsupportedLanguageException;
+import pl.edu.pwr.wordnetloom.localisation.model.ApplicationLabel;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 import pl.edu.pwr.wordnetloom.localisation.repository.LocalisedStringRepository;
@@ -32,12 +33,8 @@ public class LocalisedStringServiceBean implements LocalisedStringServiceLocal {
     Validator validator;
 
     @Override
-    public Map<String, String> findLabelsByLanguage(String locale) {
-        Map<String, String> labels = repository.findAllLabels(locale);
-        if (labels.isEmpty()) {
-            throw new UnsupportedLanguageException(locale);
-        }
-        return labels;
+    public List<ApplicationLabel> findLabelsByLanguage(String locale) {
+        return repository.findAllLabels(locale);
     }
 
     @Override
@@ -75,18 +72,13 @@ public class LocalisedStringServiceBean implements LocalisedStringServiceLocal {
     }
 
     @Override
-    public Long findId(final String key, final String language){
-        try{
-            return repository.findId(key, language);
-        } catch (NoResultException e){
-            return null;
-        }
+    public ApplicationLabel save(ApplicationLabel label){
+        return repository.save(label);
     }
 
     @Override
-    public LocalisedString save(LocalisedString localisedString){
-        // TOOD zrobić zapisywanie
-        throw new NotImplementedException();
+    public ApplicationLabel find(String key, String language){
+        return repository.find(key, language);
     }
 
     @Override
@@ -95,7 +87,7 @@ public class LocalisedStringServiceBean implements LocalisedStringServiceLocal {
     }
 
     @Override
-    public Map<String, String> findStringInAllLanguages(String key){
+    public List<ApplicationLabel> findStringInAllLanguages(String key){
         return repository.findStringsByKey(key);
     }
 }

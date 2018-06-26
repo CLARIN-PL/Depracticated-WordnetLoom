@@ -32,10 +32,9 @@ public class LabelEditorWindow extends MFrame {
         setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT));
 
         labelsListPanel = new LabelsListPanel(labelName -> editLabelPanel.loadLabel(labelName));
-        editLabelPanel = new EditLabelPanel();
+        editLabelPanel = new EditLabelPanel(key -> labelsListPanel.refreshLabel(key));
 
         WebSplitPane splitPane = new WebSplitPane(JSplitPane.HORIZONTAL_SPLIT, labelsListPanel, editLabelPanel);
         add(splitPane);
     }
-
 }

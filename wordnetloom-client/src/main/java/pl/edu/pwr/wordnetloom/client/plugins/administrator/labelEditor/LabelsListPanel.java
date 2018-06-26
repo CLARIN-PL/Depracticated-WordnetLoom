@@ -1,38 +1,47 @@
 package pl.edu.pwr.wordnetloom.client.plugins.administrator.labelEditor;
 
+import com.google.common.eventbus.EventBus;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MComponentGroup;
+import pl.edu.pwr.wordnetloom.localisation.model.ApplicationLabel;
 import se.datadosen.component.RiverLayout;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import java.util.List;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 class LabelsListPanel extends JPanel {
 
     private JComboBox languageCombo;
     private JTable labelsTable;
-    private TableModel model;
+    private LabelModel model;
     private LabelsListListener listener;
+
+    private int editingLabelIndex;
 
     LabelsListPanel(LabelsListListener listener) {
         this.listener = listener;
         initView();
         loadLabels(UserSessionContext.getInstance().getLanguage());
+    }
+
+    public void refreshLabel(String key) {
+        ApplicationLabel label = RemoteService.localisedStringServiceRemote.find(key, (String) languageCombo.getSelectedItem());
+        model.setElementAt(label, editingLabelIndex);
     }
 
     private void initView() {
@@ -67,24 +76,14 @@ class LabelsListPanel extends JPanel {
             public void changedUpdate(DocumentEvent e) {
                 search(searchField.getText());
             }
+
+            private void search(String text){
+                labelsTable.setRowSorter(model.getFilter(text));
+            }
         });
-        JButton searchButton = MButton.buildSearchButton().withActionListener(e -> search(searchField.getText().toString()));
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(searchField, BorderLayout.CENTER);
-        panel.add(searchButton, BorderLayout.EAST);
         return panel;
-    }
-
-    private void search(String text) {
-        RowFilter<Object, Object> filter = new RowFilter<Object, Object>() {
-            @Override
-            public boolean include(Entry<?, ?> entry) {
-                return entry.getStringValue(0).contains(text);
-            }
-        };
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
-        sorter.setRowFilter(filter);
-        labelsTable.setRowSorter(sorter);
     }
 
     private JPanel createLanguagePanel() {
@@ -128,7 +127,10 @@ class LabelsListPanel extends JPanel {
     }
 
     private void addLabel() {
-        throw new NotImplementedException();
+        editingLabelIndex = -1;
+        ApplicationLabel applicationLabel = new ApplicationLabel();
+        applicationLabel.setLanguage((String) languageCombo.getSelectedItem());
+        listener.click(applicationLabel);
     }
 
     private void editLabel() {
@@ -147,8 +149,8 @@ class LabelsListPanel extends JPanel {
                 super.mouseClicked(e);
                 int row = labelsTable.rowAtPoint(e.getPoint());
                 if (e.getClickCount() == 2 && labelsTable.getSelectedRow() != -1) {
-                    String value = (String) labelsTable.getValueAt(row, 0);
-                    listener.click(value);
+                    editingLabelIndex = row;
+                    listener.click(model.getElementAt(row));
                 }
             }
         });
@@ -156,34 +158,100 @@ class LabelsListPanel extends JPanel {
     }
 
     private void loadLabels(String language) {
-        Map<String, String> labelsMap = RemoteService.localisedStringServiceRemote.findLabelsByLanguage(language);
-        String[][] labelsArray = convertToArray(labelsMap);
+        List<ApplicationLabel> labels = RemoteService.localisedStringServiceRemote.findLabelsByLanguage(language);
         // TODO dorobić etykiety
-        String[] columnNames = {"Nazwa", "Wartość"};
-        model = new DefaultTableModel(labelsArray, columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        List<String> columns = Arrays.asList("Nazwa", "Wartość");
+        model = new LabelModel(labels, columns);
         labelsTable.setModel(model);
     }
 
-    private String[][] convertToArray(Map<String, String> map) {
-        final int NAME = 0;
-        final int VALUE = 1;
-        String[][] resultArray = new String[map.size()][2];
-        int row = 0;
-
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            resultArray[row][NAME] = entry.getKey();
-            resultArray[row][VALUE] = entry.getValue();
-            row++;
-        }
-        return resultArray;
+    public interface LabelsListListener {
+        void click(ApplicationLabel applicationLabel);
     }
 
-    public interface LabelsListListener {
-        void click(String labelName);
+    private class LabelModel extends AbstractTableModel {
+        private final int COLUMN_COUNT = 2;
+        private final int NAME_COLUMN = 0;
+        private final int VALUE_COLUMN = 1;
+
+        private List<String> columns;
+        private List<ApplicationLabel> items;
+        private List<ApplicationLabel> filteredItems;
+        private String filter;
+
+        public LabelModel(List<ApplicationLabel> labels, List<String> columns){
+            this.columns = columns;
+            this.items = labels;
+            filteredItems = new ArrayList<>();
+            filteredItems.addAll(items);
+        }
+
+        @Override
+        public int getRowCount() {
+            return items.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return COLUMN_COUNT;
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            switch (columnIndex){
+                case NAME_COLUMN:
+                    return items.get(rowIndex).getKey();
+                case VALUE_COLUMN:
+                    return items.get(rowIndex).getValue();
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        public ApplicationLabel getElementAt(int rowIndex){
+            int index = labelsTable.convertRowIndexToModel(rowIndex);
+            return items.get(index);
+        }
+
+        public void setElementAt(ApplicationLabel label, int rowIndex){
+            if( rowIndex>= 0){
+                items.set(rowIndex, label);
+                if(isItemVisible(label)){
+                    this.fireTableRowsUpdated(rowIndex, rowIndex);
+                }
+            } else {
+                items.add(label);
+                if(isItemVisible(label)){
+                    this.fireTableRowsInserted(getRowCount()-1,getRowCount()-1);
+                }
+            }
+        }
+
+        private boolean isItemVisible(ApplicationLabel label){
+            return label.getKey().contains(filter);
+        }
+
+        public TableRowSorter<TableModel> getFilter(String text){
+            filter = text;
+            RowFilter<Object, Object> filter = new RowFilter<Object, Object>() {
+                @Override
+                public boolean include(Entry<?, ?> entry) {
+                    return entry.getStringValue(0).contains(text);
+                }
+            };
+            TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
+            sorter.setRowFilter(filter);
+            return sorter;
+        }
+
+        @Override
+        public String getColumnName(int columnIndex){
+            return columns.get(columnIndex);
+        }
+
+        @Override
+        public boolean isCellEditable(int row, int column){
+            return false;
+        }
     }
 }

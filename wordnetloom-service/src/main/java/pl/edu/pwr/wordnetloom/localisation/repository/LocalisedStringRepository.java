@@ -20,19 +20,10 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
     @Inject
     EntityManager em;
 
-    public Map<String, String> findAllLabels(String locale) {
-//        Map<String, String> map = new HashMap<>();
-//
-//        final List<Object[]> list = em.createNativeQuery("SELECT label_key, value FROM application_labels WHERE language = :locale")
-//                .setParameter("locale", locale).getResultList();
-//        list.forEach(i -> map.put(i[0].toString(), i[1].toString()));
-//        return map;
-        Map<String, String> map = new HashMap<>();
-        final List<ApplicationLabel> list = em.createQuery("FROM ApplicationLabel a WHERE a.language=:language")
+    public List<ApplicationLabel> findAllLabels(String locale) {
+        return em.createQuery("FROM ApplicationLabel a WHERE a.language=:language")
                 .setParameter("language", locale)
                 .getResultList();
-        list.forEach(i->map.put(i.getKey(), i.getValue()));
-        return map;
     }
 
     public LocalisedString findByKey(LocalisedKey key) {
@@ -94,22 +85,23 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
         return resultMap;
     }
 
-    public Map<String, String> findStringsByKey(String key){
-//        Map<String, String> map = new HashMap<>();
-//        final List<Object[]> list = em.createNativeQuery("SELECT language, value FROM application_labels WHERE label_key =:key")
-//                .setParameter("key", key).getResultList();
-//        list.forEach(i->map.put(i[0].toString(), i[1].toString()));
-//        return map;
-        Map<String, String> map = new HashMap<>();
-        final List<ApplicationLabel> list = em.createQuery("FROM ApplicationLabel a WHERE a.key =:key")
+    public List<ApplicationLabel> findStringsByKey(String key){
+        return em.createQuery("FROM ApplicationLabel a WHERE a.key =:key")
                 .setParameter("key", key)
                 .getResultList();
-        list.forEach(i->map.put(i.getLanguage(),i.getValue()));
-        return map;
     }
 
-    public Long findId(final String key, final String language){
-        return (Long)em.createNativeQuery("SELECT id FROM application_labels WHERE label_key =:key AND language=:language")
+    public ApplicationLabel save(ApplicationLabel label){
+        if(em.contains(label)){
+            em.persist(label);
+            return label;
+        } else {
+            return em.merge(label);
+        }
+    }
+
+    public ApplicationLabel find(String key, String language){
+        return (ApplicationLabel) em.createQuery("FROM ApplicationLabel a WHERE a.key = :key AND a.language = :language")
                 .setParameter("key", key)
                 .setParameter("language", language)
                 .getSingleResult();
