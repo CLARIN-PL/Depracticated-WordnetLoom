@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -115,14 +116,14 @@ public class ValidationManager {
          * @param component
          */
         private void addListener(JComponent component) {
-            if (component instanceof JTextField) {
-                addTextFieldListener((JTextField) component);
+            if (component instanceof JTextComponent) {
+                addTextFieldListener((JTextComponent)component);
             } else if (component instanceof JComboBox) {
                 addComboBoxListener((JComboBox) component);
             }
         }
 
-        private void addTextFieldListener(JTextField component) {
+        private void addTextFieldListener(JTextComponent component) {
             (component).getDocument().addDocumentListener(new DocumentListener() {
                 @Override
                 public void insertUpdate(DocumentEvent e) {
@@ -140,6 +141,7 @@ public class ValidationManager {
                 }
             });
         }
+
 
         private void addComboBoxListener(JComboBox component) {
             component.addActionListener(e -> checkAndClear());

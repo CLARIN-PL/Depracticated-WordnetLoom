@@ -1,9 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.plugins.administrator.labelEditor;
 
-import com.google.common.eventbus.EventBus;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
+import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MComponentGroup;
 import pl.edu.pwr.wordnetloom.localisation.model.ApplicationLabel;
@@ -16,12 +16,12 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.util.List;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 class LabelsListPanel extends JPanel {
@@ -30,7 +30,6 @@ class LabelsListPanel extends JPanel {
     private JTable labelsTable;
     private LabelModel model;
     private LabelsListListener listener;
-
     private int editingLabelIndex;
 
     LabelsListPanel(LabelsListListener listener) {
@@ -77,7 +76,7 @@ class LabelsListPanel extends JPanel {
                 search(searchField.getText());
             }
 
-            private void search(String text){
+            private void search(String text) {
                 labelsTable.setRowSorter(model.getFilter(text));
             }
         });
@@ -130,15 +129,24 @@ class LabelsListPanel extends JPanel {
         editingLabelIndex = -1;
         ApplicationLabel applicationLabel = new ApplicationLabel();
         applicationLabel.setLanguage((String) languageCombo.getSelectedItem());
-        listener.click(applicationLabel);
+        listener.onEdit(applicationLabel);
     }
 
     private void editLabel() {
-        throw new NotImplementedException();
+        int rowIndex = labelsTable.getSelectedRow();
+        editLabel(rowIndex);
     }
 
     private void deleteLabel() {
-        throw new NotImplementedException();
+        // TODO dorobić etykiety
+        int answer = DialogBox.showYesNo("Czy na pewno usunąć zaznaczone etykiety?");
+        if (answer == DialogBox.YES) {
+            int selectedRow = labelsTable.getSelectedRow();
+            ApplicationLabel labelToRemove = model.getElementAt(selectedRow);
+            model.remove(selectedRow);
+            RemoteService.localisedStringServiceRemote.remove(labelToRemove);
+            listener.onDelete();
+        }
     }
 
     private JScrollPane createLabelsTable() {
@@ -149,12 +157,16 @@ class LabelsListPanel extends JPanel {
                 super.mouseClicked(e);
                 int row = labelsTable.rowAtPoint(e.getPoint());
                 if (e.getClickCount() == 2 && labelsTable.getSelectedRow() != -1) {
-                    editingLabelIndex = row;
-                    listener.click(model.getElementAt(row));
+                    editLabel(row);
                 }
             }
         });
         return new JScrollPane(labelsTable);
+    }
+
+    private void editLabel(int row) {
+        editingLabelIndex = row;
+        listener.onEdit(model.getElementAt(row));
     }
 
     private void loadLabels(String language) {
@@ -165,8 +177,11 @@ class LabelsListPanel extends JPanel {
         labelsTable.setModel(model);
     }
 
+
     public interface LabelsListListener {
-        void click(ApplicationLabel applicationLabel);
+        void onEdit(ApplicationLabel applicationLabel);
+
+        void onDelete();
     }
 
     private class LabelModel extends AbstractTableModel {
@@ -176,14 +191,17 @@ class LabelsListPanel extends JPanel {
 
         private List<String> columns;
         private List<ApplicationLabel> items;
-        private List<ApplicationLabel> filteredItems;
         private String filter;
 
-        public LabelModel(List<ApplicationLabel> labels, List<String> columns){
+        LabelModel(List<ApplicationLabel> labels, List<String> columns) {
             this.columns = columns;
             this.items = labels;
-            filteredItems = new ArrayList<>();
-            filteredItems.addAll(items);
+        }
+
+        public void remove(int rowIndex) {
+            int index = labelsTable.convertRowIndexToModel(rowIndex);
+            items.remove(index);
+            this.fireTableRowsDeleted(index, index);
         }
 
         @Override
@@ -198,7 +216,7 @@ class LabelsListPanel extends JPanel {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            switch (columnIndex){
+            switch (columnIndex) {
                 case NAME_COLUMN:
                     return items.get(rowIndex).getKey();
                 case VALUE_COLUMN:
@@ -208,35 +226,36 @@ class LabelsListPanel extends JPanel {
             }
         }
 
-        public ApplicationLabel getElementAt(int rowIndex){
+        ApplicationLabel getElementAt(int rowIndex) {
             int index = labelsTable.convertRowIndexToModel(rowIndex);
             return items.get(index);
         }
 
-        public void setElementAt(ApplicationLabel label, int rowIndex){
-            if( rowIndex>= 0){
+        void setElementAt(ApplicationLabel label, int rowIndex) {
+            if (rowIndex >= 0) {
                 items.set(rowIndex, label);
-                if(isItemVisible(label)){
+                if (isItemFiltered(label)) {
                     this.fireTableRowsUpdated(rowIndex, rowIndex);
                 }
             } else {
                 items.add(label);
-                if(isItemVisible(label)){
-                    this.fireTableRowsInserted(getRowCount()-1,getRowCount()-1);
+                if (isItemFiltered(label)) {
+                    this.fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
                 }
             }
         }
 
-        private boolean isItemVisible(ApplicationLabel label){
+        private boolean isItemFiltered(ApplicationLabel label) {
             return label.getKey().contains(filter);
         }
 
-        public TableRowSorter<TableModel> getFilter(String text){
+        TableRowSorter<TableModel> getFilter(String text) {
             filter = text;
             RowFilter<Object, Object> filter = new RowFilter<Object, Object>() {
                 @Override
                 public boolean include(Entry<?, ?> entry) {
-                    return entry.getStringValue(0).contains(text);
+                    return entry.getStringValue(0).toLowerCase().contains(text.toLowerCase())
+                            || entry.getStringValue(1).toLowerCase().contains(text.toLowerCase());
                 }
             };
             TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
@@ -245,12 +264,12 @@ class LabelsListPanel extends JPanel {
         }
 
         @Override
-        public String getColumnName(int columnIndex){
+        public String getColumnName(int columnIndex) {
             return columns.get(columnIndex);
         }
 
         @Override
-        public boolean isCellEditable(int row, int column){
+        public boolean isCellEditable(int row, int column) {
             return false;
         }
     }

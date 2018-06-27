@@ -107,6 +107,10 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
                 .getSingleResult();
     }
 
+    public void remove(ApplicationLabel label){
+        em.remove(label);
+    }
+
     @Override
     public LocalisedString persist(LocalisedString s) {
         if (s.getKey().getId() == null) {

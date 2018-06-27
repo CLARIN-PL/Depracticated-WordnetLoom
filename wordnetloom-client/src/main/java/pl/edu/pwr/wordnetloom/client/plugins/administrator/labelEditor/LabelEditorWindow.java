@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.administrator.labelEditor;
 import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.splitpane.WebSplitPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
+import pl.edu.pwr.wordnetloom.localisation.model.ApplicationLabel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +32,17 @@ public class LabelEditorWindow extends MFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT));
 
-        labelsListPanel = new LabelsListPanel(labelName -> editLabelPanel.loadLabel(labelName));
+        labelsListPanel = new LabelsListPanel(new LabelsListPanel.LabelsListListener() {
+            @Override
+            public void onEdit(ApplicationLabel applicationLabel) {
+                editLabelPanel.loadLabel(applicationLabel);
+            }
+
+            @Override
+            public void onDelete() {
+                editLabelPanel.setComponentsEnabled(false);
+            }
+        });
         editLabelPanel = new EditLabelPanel(key -> labelsListPanel.refreshLabel(key));
 
         WebSplitPane splitPane = new WebSplitPane(JSplitPane.HORIZONTAL_SPLIT, labelsListPanel, editLabelPanel);

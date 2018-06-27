@@ -24,4 +24,6 @@ public interface LocalisedStringServiceRemote {
     ApplicationLabel save(ApplicationLabel label);
 
     ApplicationLabel find(String key, String language);
+
+    void remove(ApplicationLabel label);
 }
