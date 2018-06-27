@@ -6,6 +6,7 @@ import com.alee.laf.menu.WebMenuItem;
 import jiconfont.icons.FontAwesome;
 import jiconfont.swing.IconFontSwing;
 import pl.edu.pwr.wordnetloom.client.Application;
+import pl.edu.pwr.wordnetloom.client.plugins.administrator.dictionaryEditor.DictionaryEditorWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.administrator.labelEditor.LabelEditorWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.core.window.AboutWindow;
 import pl.edu.pwr.wordnetloom.client.remote.ConnectionProvider;
@@ -120,16 +121,16 @@ public class CoreService extends AbstractService implements MenuListener {
         appSettings.addMenuListener(this);
         appSettings.add(showTooltips);
 
+        // TODO zobaczyć, czy to sprawdzenie jest potrzebne w tym miejscu
         if(UserSessionContext.getInstance().hasRole(Role.ADMIN)){
             // TODO dodać etykietę do bazy
             WebMenuItem labelEditorItem = new MMenuItem("Edytor etykiet");
-            labelEditorItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    LabelEditorWindow.showModal(workbench.getFrame());
-                }
-            });
+            labelEditorItem.addActionListener(e -> LabelEditorWindow.showModal(workbench.getFrame()));
             appSettings.add(labelEditorItem);
+
+            WebMenuItem dictionaryEditorItem = new MMenuItem("Edytor słówników");
+            dictionaryEditorItem.addActionListener(e -> DictionaryEditorWindow.showModal(workbench.getFrame()));
+            appSettings.add(dictionaryEditorItem);
         }
 
         user.add(appSettings);
