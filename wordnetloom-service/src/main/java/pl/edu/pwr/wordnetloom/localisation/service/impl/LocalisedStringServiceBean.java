@@ -44,6 +44,7 @@ public class LocalisedStringServiceBean implements LocalisedStringServiceLocal {
         return repository.findAllLabels(locale);
     }
 
+    @PermitAll
     @Override
     public LocalisedString findStringsByKey(LocalisedKey key) {
         LocalisedString string = repository.findByKey(key);

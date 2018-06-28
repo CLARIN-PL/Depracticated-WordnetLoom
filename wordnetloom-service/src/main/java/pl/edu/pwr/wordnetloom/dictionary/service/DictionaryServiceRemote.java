@@ -9,7 +9,7 @@ public interface DictionaryServiceRemote {
 
     void remove(Dictionary dic);
 
-    <T> List<T> findDictionaryByClass(Class<T> clazz);
+    <T extends Dictionary> List<? extends Dictionary> findDictionaryByClass(Class<T> clazz);
 
     List<String> findAllDictionaryNames();
 

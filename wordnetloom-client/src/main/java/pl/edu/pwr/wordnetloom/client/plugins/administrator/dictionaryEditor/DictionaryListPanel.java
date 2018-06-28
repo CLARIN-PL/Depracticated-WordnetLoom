@@ -2,8 +2,13 @@ package pl.edu.pwr.wordnetloom.client.plugins.administrator.dictionaryEditor;
 
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MComponentGroup;
+import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import se.datadosen.component.RiverLayout;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -12,35 +17,47 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.JTextComponent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import java.util.List;
 
 public class DictionaryListPanel extends JPanel {
+
+    public interface DictionaryListListener{
+        void onEdit(Dictionary dictionary);
+    }
 
     private JComboBox dictionaryType;
     private JTable dictionaryTable;
     private DictionaryTableModel tableModel;
     private JTextComponent searchTextField;
 
-    public DictionaryListPanel() {
+    private JButton addButton;
+    private JButton editButton;
+    private JButton deleteButton;
+
+    DictionaryListListener listener;
+
+    public DictionaryListPanel(DictionaryListListener listener) {
+        this.listener = listener;
         initView();
+        loadDictionary();
     }
 
     private void initView() {
-        // TODO combobox z typem słownika
-        // TODO textField do wyszukiwania
-        // TODO lista
         // TODO przyciski
         setLayout(new RiverLayout());
 
         dictionaryType = createDictionaryTypeComponent();
         dictionaryTable = createDictionaryTable();
         searchTextField = createSearchField();
+        JPanel buttonsPanel = createButtonsPanel();
 
         add(RiverLayout.HFILL,dictionaryType);
         add(RiverLayout.LINE_BREAK + " " + RiverLayout.HFILL, searchTextField);
         add(RiverLayout.LINE_BREAK + " " + RiverLayout.HFILL + " " + RiverLayout.VFILL, dictionaryTable);
-
-
+        add(RiverLayout.LINE_BREAK + " " + RiverLayout.HFILL, buttonsPanel);
     }
 
     private JComboBox createDictionaryTypeComponent(){
@@ -75,14 +92,65 @@ public class DictionaryListPanel extends JPanel {
                 dictionaryTable.setRowSorter(tableModel.getSorter(text));
             }
         });
-        // TODO dokończyć robienie pola wyszukiwania
         return textField;
     }
 
     private JTable createDictionaryTable(){
         JTable table = new JTable();
-        // TODO dokończyć tabele
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                int row = table.rowAtPoint(e.getPoint());
+                if(e.getClickCount() == 2 && table.getSelectedRow() != -1){
+                    editDictionary(row); // TODO tutaj może wstawić numer wiersza
+                }
+            }
+        });
         return table;
+    }
+
+    private JPanel createButtonsPanel() {
+        addButton = MButton.buildAddButton()
+                .withToolTip(Labels.ADD)
+                .withActionListener(e->addDictionary());
+        editButton = MButton.buildEditButton()
+                .withToolTip(Labels.EDIT)
+                .withActionListener(e->editDictionary());
+        deleteButton = MButton.buildDeleteButton()
+                .withToolTip(Labels.DELETE)
+                .withActionListener(e->removeDictionary());
+
+        MComponentGroup panel = new MComponentGroup(addButton, editButton, deleteButton);
+        panel.withHorizontalLayout();
+        return panel;
+    }
+
+    public void loadDictionary(){
+        // TODO odczytanie rodzaju słownika
+        List<? extends Dictionary> dictionaries = RemoteService.dictionaryServiceRemote.findDictionaryByClass(Register.class);
+        List<String> columns = Arrays.asList("Nazwa", "Słownik");
+        tableModel = new DictionaryTableModel(dictionaries, columns, dictionaryTable);
+        dictionaryTable.setModel(tableModel);
+    }
+
+    private void addDictionary(){
+        throw new NotImplementedException();
+    }
+
+    private void editDictionary(int row){
+        Dictionary dictionary = tableModel.getElementAt(row);
+        listener.onEdit(dictionary);
+    }
+
+    private void editDictionary(){
+        int selectedIndex = dictionaryTable.getSelectedRow();
+        editDictionary(selectedIndex);
+    }
+
+    private void removeDictionary(){
+        throw new NotImplementedException();
     }
 
     private class DictionaryTableModel extends AbstractTableModel{
@@ -92,16 +160,20 @@ public class DictionaryListPanel extends JPanel {
         private final int DESCRIPTION_COLUMN = 1;
 
         private List<String> columns;
-        private List<Dictionary> items;
+        private List<? extends Dictionary> items;
         private String filter;
         private JTable table;
 
-        private DictionaryTableModel(List<Dictionary> items, List<String> columns, JTable table) {
+        private DictionaryTableModel(List<? extends Dictionary> items, List<String> columns, JTable table) {
             this.items = items;
             this.columns = columns;
+            this.table = table;
         }
 
-
+        @Override
+        public String getColumnName(int columnIndex){
+            return columns.get(columnIndex);
+        }
 
         @Override
         public int getRowCount() {
