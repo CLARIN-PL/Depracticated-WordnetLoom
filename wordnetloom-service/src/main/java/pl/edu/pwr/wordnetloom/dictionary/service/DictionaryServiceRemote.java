@@ -11,6 +11,8 @@ public interface DictionaryServiceRemote {
 
     <T extends Dictionary> List<? extends Dictionary> findDictionaryByClass(Class<T> clazz);
 
+    <T extends Dictionary> List<? extends Dictionary> findDictionaryByClass(String className);
+
     List<String> findAllDictionaryNames();
 
     List<Dictionary> findAll();

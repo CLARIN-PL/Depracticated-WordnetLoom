@@ -25,7 +25,12 @@ public class DictionaryRepository extends GenericRepository<Dictionary> {
     }
 
     public <T extends Dictionary> List<? extends Dictionary> findDictionaryByClass(Class<T> clazz) {
-        return getEntityManager().createQuery("FROM "+ clazz.getName()).getResultList();
+//        return getEntityManager().createQuery("FROM "+ clazz.getName()).getResultList();
+        return findDictionaryByClass(clazz.getName());
+    }
+
+    public <T extends Dictionary> List<? extends Dictionary> findDictionaryByClass(String className) {
+        return getEntityManager().createQuery("FROM " + className).getResultList();
     }
 
     public List<String> findAllDictionaryNames() {

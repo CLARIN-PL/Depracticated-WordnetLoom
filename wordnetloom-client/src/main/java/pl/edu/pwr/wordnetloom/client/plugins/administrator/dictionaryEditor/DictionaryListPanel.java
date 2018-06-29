@@ -17,6 +17,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.JTextComponent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
@@ -42,7 +44,6 @@ public class DictionaryListPanel extends JPanel {
     public DictionaryListPanel(DictionaryListListener listener) {
         this.listener = listener;
         initView();
-        loadDictionary();
     }
 
     private void initView() {
@@ -62,6 +63,18 @@ public class DictionaryListPanel extends JPanel {
 
     private JComboBox createDictionaryTypeComponent(){
         JComboBox comboBox = new JComboBox();
+        comboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if(dictionaryType != null){
+                        loadDictionary();
+                    }
+                } catch (ClassNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         List<String> dictionaryNames = RemoteService.dictionaryServiceRemote.findAllDictionaryNames();
         for(String s : dictionaryNames){
             comboBox.addItem(s);
@@ -127,9 +140,9 @@ public class DictionaryListPanel extends JPanel {
         return panel;
     }
 
-    public void loadDictionary(){
+    public void loadDictionary() throws ClassNotFoundException {
         // TODO odczytanie rodzaju słownika
-        List<? extends Dictionary> dictionaries = RemoteService.dictionaryServiceRemote.findDictionaryByClass(Register.class);
+        List<? extends Dictionary> dictionaries = RemoteService.dictionaryServiceRemote.findDictionaryByClass((String) dictionaryType.getSelectedItem());
         List<String> columns = Arrays.asList("Nazwa", "Słownik");
         tableModel = new DictionaryTableModel(dictionaries, columns, dictionaryTable);
         dictionaryTable.setModel(tableModel);

@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.administrator.dictionaryEditor;
 import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.splitpane.WebSplitPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,13 +30,11 @@ public class DictionaryEditorWindow extends MFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         // TODO usunąć wpisane register
-        dictionaryListPanel = new DictionaryListPanel((dictionary)->editDictionaryPanel.load(dictionary, "Register"));
+        dictionaryListPanel = new DictionaryListPanel(null); // TODO dodać słuchacza
         editDictionaryPanel = new EditDictionaryPanel();
 
         WebSplitPane splitPane = new WebSplitPane(JSplitPane.HORIZONTAL_SPLIT, dictionaryListPanel, editDictionaryPanel);
         add(splitPane);
-        // TODO zrobić tworzenie paneli
-
     }
 
     public static void showModal(WebFrame parentFrame){

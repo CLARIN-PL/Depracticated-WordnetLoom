@@ -41,6 +41,11 @@ public class DictionaryServiceBean implements  DictionaryServiceLocal{
     }
 
     @Override
+    public <T extends Dictionary> List<? extends Dictionary> findDictionaryByClass(String className) {
+        return dictionaryRepository.findDictionaryByClass(className);
+    }
+
+    @Override
     public List<String> findAllDictionaryNames() {
         return dictionaryRepository.findAllDictionaryNames();
     }
