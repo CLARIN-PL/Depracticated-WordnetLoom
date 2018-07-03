@@ -6,7 +6,6 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MComponentGroup;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
-import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import se.datadosen.component.RiverLayout;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

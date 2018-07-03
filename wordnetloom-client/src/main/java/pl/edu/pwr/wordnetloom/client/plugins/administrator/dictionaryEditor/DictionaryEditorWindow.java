@@ -30,7 +30,7 @@ public class DictionaryEditorWindow extends MFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         // TODO usunąć wpisane register
-        dictionaryListPanel = new DictionaryListPanel(null); // TODO dodać słuchacza
+        dictionaryListPanel = new DictionaryListPanel(e->editDictionaryPanel.load(e)); // TODO dodać słuchacza
         editDictionaryPanel = new EditDictionaryPanel();
 
         WebSplitPane splitPane = new WebSplitPane(JSplitPane.HORIZONTAL_SPLIT, dictionaryListPanel, editDictionaryPanel);
