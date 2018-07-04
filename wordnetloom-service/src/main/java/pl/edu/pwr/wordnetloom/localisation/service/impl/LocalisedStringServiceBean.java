@@ -3,15 +3,13 @@ package pl.edu.pwr.wordnetloom.localisation.service.impl;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.localisation.exception.LocalisedStringNotFoundException;
-import pl.edu.pwr.wordnetloom.localisation.exception.UnsupportedLanguageException;
 import pl.edu.pwr.wordnetloom.localisation.model.ApplicationLabel;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 import pl.edu.pwr.wordnetloom.localisation.repository.LocalisedStringRepository;
 import pl.edu.pwr.wordnetloom.localisation.service.LocalisedStringServiceLocal;
 import pl.edu.pwr.wordnetloom.localisation.service.LocalisedStringServiceRemote;
-import sun.reflect.CallerSensitive;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.PermitAll;
@@ -20,8 +18,7 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
-import javax.validation.Validator;
+import javax.persistence.NoResultException;import javax.validation.Validator;
 import java.util.List;
 import java.util.Map;
 
@@ -73,14 +70,20 @@ public class LocalisedStringServiceBean implements LocalisedStringServiceLocal {
     }
 
     @RolesAllowed("ADMIN")
-    public void update(LocalisedString entity) {
+    @Override
+    public LocalisedString save(LocalisedString localisedString) {
+        return repository.save(localisedString);
+    }
+
+    @RolesAllowed("ADMIN")
+    public LocalisedString update(LocalisedString entity) {
         ValidationUtils.validateEntityFields(validator, entity);
 
         if (!repository.existsByKey(entity.getKey())) {
             throw new LocalisedStringNotFoundException();
         }
 
-        repository.update(entity);
+        return repository.update(entity);
     }
 
     @RolesAllowed("ADMIN")

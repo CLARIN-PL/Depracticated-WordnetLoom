@@ -1,30 +1,28 @@
 package pl.edu.pwr.wordnetloom.client.plugins.administrator.dictionaryEditor;
 
 import com.alee.extended.panel.WebComponentPanel;
-import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
-import pl.edu.pwr.wordnetloom.client.systems.ui.GroupView;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MComponentGroup;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
-import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 import se.datadosen.component.RiverLayout;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.ejb.Local;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
+import javax.validation.constraints.NotNull;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EditDictionaryPanel extends JPanel {
+
+    private final int LABEL_WIDTH = 50;
 
     private JPanel otherValuesPanel;
     private JPanel localisedValuesPanel;
@@ -34,221 +32,275 @@ public class EditDictionaryPanel extends JPanel {
 
     private Dictionary editedDictionary;
 
-    // <language, component>
-    private Map<String, LocalisedComponent> localisedComponentMap;
-    private Map<String, JTextComponent> otherComponentMap;
-    // TODO dodać mapy przechowujące informacje o komponentach
+    private Map<String, JTextComponent> notLocalisedComponents;
+    private Map<String, Map<String, LocalisedComponent>> localisedComponents;
+    private Map<String, Long> localisedFieldsIds;
 
-    public EditDictionaryPanel() {
-        localisedComponentMap = new HashMap<>();
-        otherComponentMap = new HashMap<>();
+    public EditDictionaryPanel(){
+        notLocalisedComponents = new HashMap<>();
+        localisedComponents = new HashMap<>();
+        localisedFieldsIds = new HashMap<>();
+
         initView();
     }
 
     private void initView() {
         setLayout(new BorderLayout());
-        valuesPanel = initValuesView();
-        add(valuesPanel, BorderLayout.CENTER);
-        saveButton = new JButton(Labels.SAVE);
+
+        saveButton = createSaveButton();
         add(saveButton, BorderLayout.SOUTH);
     }
 
-    private JPanel initValuesView(){
-        JPanel panel = new JPanel(new RiverLayout());
-        List<Field> fields = getFields();
-        List<String> localisedFieldsNames = new ArrayList<>();
-        List<String> stringFieldsNames = new ArrayList<>();
-        for(Field field: fields){
-            if(field.getType() == Long.class){
-                localisedFieldsNames.add(field.getName());
-            } else {
-                stringFieldsNames.add(field.getName());
+    private JButton createSaveButton() {
+        JButton button = new JButton(Labels.SAVE);
+        button.addActionListener(e -> {
+            try {
+                save(editedDictionary);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e1) {
+                e1.printStackTrace();
+            }
+        });
+        return button;
+    }
+
+    private void save(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        updateNotLocalisedValues(dictionary);
+        updateLocalisedValues(dictionary);
+        // TODO zapisać zlokalizowane wartości i słównik.
+        // przy zapisywaniu nowych wartośći, dodać ID do mapy
+       throw new NotImplementedException();
+    }
+
+    private void updateNotLocalisedValues(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        String fieldName;
+        String value;
+        for(Map.Entry<String, JTextComponent> entry : notLocalisedComponents.entrySet()){
+            fieldName = entry.getKey();
+            value = entry.getValue().getText();
+            setValue(dictionary, fieldName, String.class, value);
+        }
+    }
+
+    private void updateLocalisedValues(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        String fieldName;
+        Long value;
+        for(Map.Entry<String, Map<String, LocalisedComponent>> languageEntry : localisedComponents.entrySet()){
+            for(Map.Entry<String, LocalisedComponent> entry : languageEntry.getValue().entrySet()){
+                fieldName = entry.getKey();
+                // TODO to może można jakoś skrócić
+                value = entry.getValue().getLocalisedString().getKey().getId();
+                setValue(dictionary, fieldName, Long.class, value);
             }
         }
-        // TODO wstawić pojedyńcze
-        for(String field : stringFieldsNames){
+    }
+
+    private void saveLocalisedValue(){
+        throw new NotImplementedException();
+    }
+
+    private void setValue(Dictionary dictionary, String fieldName, Class parameterClass, Object value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method method = dictionary.getClass().getMethod("set"+fieldName, parameterClass);
+        method.invoke(dictionary, value);
+    }
+
+    private JPanel createValuesPanel(Dictionary dictionary){
+        List<Method> methods = getMethods(dictionary);
+        List<String> notLocalisedFields = new ArrayList<>();
+        List<String> localisedFields = new ArrayList<>();
+        for(Method method: methods){
+            if(method.getReturnType() == Long.class){
+                localisedFields.add(getFieldName(method));
+            } else if(method.getReturnType() == String.class){
+                notLocalisedFields.add(getFieldName(method));
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+        JPanel notLocalisedPanel = createNotLocalisedPanel(notLocalisedFields);
+        JPanel localisedPanel = createLocalisedPanel(localisedFields);
+
+        JPanel resultPanel = new JPanel(new RiverLayout());
+        resultPanel.add(RiverLayout.HFILL, notLocalisedPanel);
+        resultPanel.add(RiverLayout.LINE_BREAK + " " + RiverLayout.HFILL, localisedPanel);
+
+        return resultPanel;
+    }
+
+    private JPanel createNotLocalisedPanel(List<String> fieldsNames){
+        JPanel panel = new JPanel(new RiverLayout()); // TODO określić
+        for(String field : fieldsNames){
             JLabel label = new JLabel(field);
-            panel.add(RiverLayout.LINE_BREAK, label);
             JTextComponent component = new JTextField();
-            panel.add(RiverLayout.HFILL, component);
-            otherComponentMap.put(field, component);
+            addToPanel(panel, label, component);
+            addNotLocalisedComponent(field, component);
         }
-
-        WebComponentPanel webComponentPanel = new WebComponentPanel();
-        webComponentPanel.setElementMargin(10);
-        webComponentPanel.setReorderingAllowed(true);
-        for(String language : getLanguages()) {
-            LocalisedComponent localisedComponent = new LocalisedComponent(language, localisedFieldsNames);
-            JPanel localisedComponentPanel = localisedComponent.getPanel();
-            webComponentPanel.addElement(localisedComponentPanel);
-
-            localisedComponentMap.put(language, localisedComponent);
-        }
-        panel.add(RiverLayout.LINE_BREAK + " " + RiverLayout.HFILL, webComponentPanel);
-        validate();
-        repaint();
 
         return panel;
     }
 
-
-    private List<String> getLanguages(){
-        List<String> languagesList = new ArrayList<>();
-        for(Language language : Language.values()){
-            languagesList.add(language.getAbbreviation());
-        }
-        return languagesList;
+    private void addToPanel(JPanel panel, JLabel label, JComponent component){
+        panel.add(RiverLayout.LINE_BREAK, label);
+        panel.add(RiverLayout.HFILL, component);
     }
 
-    private List<Field> getFields(){
-        if(editedDictionary == null){
-            return new ArrayList<>();
-        }
-        Class clazz = editedDictionary.getClass();
+    private void addNotLocalisedComponent(String fieldName, JTextComponent component){
+        notLocalisedComponents.put(fieldName, component);
+    }
 
-        Method[] methods = clazz.getMethods();
-        List<Method> methodsList = new ArrayList<>();
-        String name;
-        // extract fields name, exclue id field
-        for(Method method: methods) {
-            name = method.getName();
-            if(name.startsWith("get")
-                    && !name.equals("getClass")
-                    && !name.equals("getId")){
-                methodsList.add(method);
+    private List<Method> getMethods(Dictionary dictionary) {
+        Method[] methods = dictionary.getClass().getMethods();
+        List<Method> methodList = Arrays.stream(methods).filter(x->
+                x.getName().startsWith("get") && !x.getName().equals("getClass") && !x.getName().equals("getId"))
+                .collect(Collectors.toList());
+        return methodList;
+    }
+
+    private String getFieldName(Method method){
+        return method.getName().substring(3, method.getName().length());
+    }
+
+    // TODO refactor
+    private JPanel createLocalisedPanel(List<String> fieldsNames) {
+        final int ELEMENT_MARGIN = 10;
+        final boolean REORDERING_ALLOWED = true;
+
+        WebComponentPanel panel = new WebComponentPanel();
+        panel.setElementMargin(ELEMENT_MARGIN);
+        panel.setReorderingAllowed(REORDERING_ALLOWED);
+        for(String language : getLangauges()) {
+            Map<String, LocalisedComponent> map = new HashMap<>();
+            localisedComponents.put(language, map);
+            // TODO przemyśleć to jeszcze
+            JPanel languagePanel = new JPanel(new BorderLayout());
+
+            JPanel valuesPanel = new JPanel(new RiverLayout());
+            for(String fieldName : fieldsNames) {
+                JLabel label = new JLabel(fieldName);
+                JTextComponent component = new JTextField();
+                addToPanel(valuesPanel, label, component);
+                // TODO zobaczyć, czy nie można zrobić tego w inny sposób
+                LocalisedComponent localisedComponent = new LocalisedComponent(component, null, language);
+                map.put(fieldName, localisedComponent);
             }
-        }
+            JLabel languageLabel = new JLabel(language);
+            languagePanel.add(languageLabel, BorderLayout.WEST);
+            languagePanel.add(valuesPanel, BorderLayout.CENTER);
 
-        List<Field> fields = new ArrayList<>();
-        for(Method method : methodsList) {
-           fields.add(new Field(method));
+            panel.addElement(languagePanel);
+            // TODO dodać te dwa panele do innego panelu
         }
-
-        return fields;
+        return panel;
     }
 
-    public void load(Dictionary dictionary){
-        if(editedDictionary != dictionary){
+    private List<String> getLangauges(){
+        return Arrays.stream(Language.values())
+                .map(Language::getAbbreviation)
+                .collect(Collectors.toList());
+    }
+
+    public void load(@NotNull Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        if (editedDictionary != dictionary){
             editedDictionary = dictionary;
-//            removeAll();
-            remove(valuesPanel);
-
-
-            localisedComponentMap.clear();
-            valuesPanel = initValuesView();
-            add(valuesPanel, BorderLayout.CENTER);
+            clear();
+            addValuesPanel(createValuesPanel(dictionary));
         }
         editedDictionary = dictionary;
-        if(editedDictionary == null){
-            return;
+        loadNotLocalisedFields(editedDictionary);
+        loadLocalisedFields(editedDictionary);
+
+        validate();
+        repaint();
+    }
+
+    private void loadNotLocalisedFields(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        String value;
+        for(Map.Entry<String, JTextComponent> entry: notLocalisedComponents.entrySet()){
+            value = (String) getValue(dictionary, entry.getKey());
+            entry.getValue().setText(value);
         }
-        otherComponentMap.forEach((k,v)->{
-            try {
-                v.setText(getValue(editedDictionary, k));
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
+    }
+
+    private void loadLocalisedFields(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Long id;
+        for(Map.Entry<String, Map<String, LocalisedComponent>> languageEntry: localisedComponents.entrySet()) {
+            String language = languageEntry.getKey();
+            for(Map.Entry<String, LocalisedComponent> entry : languageEntry.getValue().entrySet()) {
+                String fieldName = entry.getKey();
+                id = (Long) getValue(dictionary, fieldName);
+                LocalisedString localisedString = getLocalisedString(id, language);
+                // TODO zrobić trochę czytelniej z nullem
+                entry.getValue().setLocalisedString(localisedString);
+                if(id != null) {
+                    localisedFieldsIds.put(fieldName, localisedString.getKey().getId());
+                }
             }
-        });
-        localisedComponentMap.forEach((k,v)->{
-            v.updateValues(dictionary);
-        });
-
+        }
     }
 
-    private String getValue(Dictionary dictionary, String fieldName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private LocalisedString getLocalisedString(Long id, String language){
+        if(id == null){
+            return null;
+        }
+        LocalisedKey key = new LocalisedKey(id, language);
+        return RemoteService.localisedStringServiceRemote.findStringsByKey(key);
+    }
+
+    private Object getValue(Dictionary dictionary, String fieldName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method method = dictionary.getClass().getMethod("get"+fieldName);
-        return (String) method.invoke(dictionary);
+        return method.invoke(dictionary);
     }
+
+    private void addValuesPanel(JPanel panel){
+        valuesPanel = panel;
+        add(valuesPanel, BorderLayout.CENTER);
+    }
+
+    private void clear(){
+        if(valuesPanel != null){
+            remove(valuesPanel);
+        }
+        notLocalisedComponents.clear();
+        localisedComponents.forEach((k,v)->v.clear());
+        localisedComponents.clear();
+        localisedFieldsIds.clear();
+    }
+
 
     private class LocalisedComponent{
-        private final int LABEL_WIDTH = 50;
-
         private String language;
-        private Map<String, JTextComponent> componentMap;
-        private Map<String, LocalisedString> localisedStringMap;
+        private JTextComponent component;
+        private LocalisedString localisedString;
 
-        public LocalisedComponent(String language, List<String> fields){
+        public LocalisedComponent(JTextComponent component, LocalisedString localisedString, String language){
+            this.component = component;
             this.language = language;
-            componentMap = new HashMap<>();
-            localisedStringMap = new HashMap<>();
-
-            createFields(fields);
-        }
-
-        private void createFields(List<String> fields){
-            for(String field : fields){
-                addField(field);
+            this.localisedString = localisedString;
+            if(this.localisedString == null){
+                this.localisedString = new LocalisedString();
+                this.localisedString.addKey(null, language);
             }
         }
 
-        private void addField(String fieldName){
-            // TODO jeżeli description to JTextArea
-            JTextComponent component = new JTextField();
-            componentMap.put(fieldName, component);
+        public LocalisedString getLocalisedString(){
+            updateLocalisedString();
+            return localisedString;
         }
 
-        public void clear(){
-            throw new NotImplementedException();
+        private void updateLocalisedString(){
+            localisedString.setValue(component.getText());
         }
 
-        public JPanel getPanel(){
-             JPanel panel = new JPanel(new RiverLayout());
-             componentMap.forEach((name,component)->{
-                 JLabel label = new JLabel(name);
-                 label.setSize(LABEL_WIDTH, label.getHeight());
-
-                 panel.add(RiverLayout.LINE_BREAK, label);
-                 panel.add(RiverLayout.HFILL, component);
-             });
-            return panel;
+        private void updateComponentValue() {
+            component.setText(localisedString.getValue());
         }
 
-        public void updateValues(Dictionary dictionary) {
-            localisedStringMap.clear();
-            componentMap.forEach((k,v)->{
-                // TODO przypatrzeć się temu
-                Long id = null;
-                try {
-                    id = getValue(dictionary, k);
-                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    e.printStackTrace();
-                    return;
-                }
-                if(id != null){
-                    LocalisedKey key = new LocalisedKey(id, language);
-                    LocalisedString localisedString = RemoteService.localisedStringServiceRemote.findStringsByKey(key);
-                    localisedStringMap.put(k, localisedString);
-
-                    v.setText(localisedString.getValue());
-                } else {
-                    v.setText("");
-                }
-
-            });
-        }
-
-        private Long getValue(Dictionary dictionary, String fieldName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-            Method method = dictionary.getClass().getMethod("get"+fieldName);
-            return (Long)method.invoke(dictionary);
-        }
-    }
-
-    private class Field{
-        private String name;
-        private Class type;
-
-        public Field(Method method){
-            String methodName = method.getName();
-            this.name = methodName.substring(3, methodName.length());
-            this.type = method.getReturnType();
-        }
-
-        public String getName(){
-            return name;
-        }
-
-        public Class getType(){
-            return type;
+        public void setLocalisedString(LocalisedString localisedString){
+            this.localisedString = localisedString;
+            if(this.localisedString == null) {
+                this.localisedString = new LocalisedString();
+                this.localisedString.addKey(null, language);
+            }
+            updateComponentValue();
         }
     }
 }

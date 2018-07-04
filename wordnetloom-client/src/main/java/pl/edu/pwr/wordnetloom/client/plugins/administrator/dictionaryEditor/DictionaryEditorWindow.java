@@ -7,6 +7,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 
 public class DictionaryEditorWindow extends MFrame {
 
@@ -29,8 +30,13 @@ public class DictionaryEditorWindow extends MFrame {
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        // TODO usunąć wpisane register
-        dictionaryListPanel = new DictionaryListPanel(e->editDictionaryPanel.load(e)); // TODO dodać słuchacza
+        dictionaryListPanel = new DictionaryListPanel(e -> {
+            try {
+                editDictionaryPanel.load(e);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e1) {
+                e1.printStackTrace();
+            }
+        });
         editDictionaryPanel = new EditDictionaryPanel();
 
         WebSplitPane splitPane = new WebSplitPane(JSplitPane.HORIZONTAL_SPLIT, dictionaryListPanel, editDictionaryPanel);

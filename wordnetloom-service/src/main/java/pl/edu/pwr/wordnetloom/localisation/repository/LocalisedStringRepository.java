@@ -91,6 +91,15 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
                 .getResultList();
     }
 
+    public LocalisedString save(LocalisedString localisedString){
+        if(getEntityManager().contains(localisedString)){
+            return getEntityManager().merge(localisedString);
+        } else {
+            getEntityManager().persist(localisedString);
+            return localisedString;
+        }
+    }
+
     public ApplicationLabel save(ApplicationLabel label){
         if(em.contains(label)){
             em.persist(label);
