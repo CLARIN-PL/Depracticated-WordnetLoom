@@ -87,6 +87,22 @@ public class LocalisedStringServiceBean implements LocalisedStringServiceLocal {
     }
 
     @RolesAllowed("ADMIN")
+    public Long save(List<LocalisedString> localisedStringList){
+        assert  !localisedStringList.isEmpty();
+        Long id;
+        // if save new entity, generate next id value
+        if(localisedStringList.get(0).getKey().getId()==null){
+            id = repository.getNextIdValue();
+            localisedStringList.forEach(localisedString -> localisedString.getKey().setId(id));
+        } else {
+            id = localisedStringList.get(0).getKey().getId();
+        }
+        localisedStringList.forEach(localisedString -> repository.save(localisedString));
+        return id;
+    }
+
+
+    @RolesAllowed("ADMIN")
     @Override
     public void remove(ApplicationLabel label){
         repository.remove(find(label.getKey(), label.getLanguage()));

@@ -26,7 +26,10 @@ public class DictionaryServiceBean implements  DictionaryServiceLocal{
 
     @Override
     public Dictionary save(Dictionary dic) {
-        ValidationUtils.validateEntityFields(validator, dic);
+        // TODO
+        if(dic.getId() != null){
+            ValidationUtils.validateEntityFields(validator, dic);
+        }
         return dictionaryRepository.save(dic);
     }
 

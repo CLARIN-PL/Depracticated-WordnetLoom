@@ -21,7 +21,7 @@ public class DictionaryRepository extends GenericRepository<Dictionary> {
            return  em.merge(dic);
         }
         em.persist(dic);
-        return  dic;
+        return dic;
     }
 
     public <T extends Dictionary> List<? extends Dictionary> findDictionaryByClass(Class<T> clazz) {

@@ -1,11 +1,12 @@
 package pl.edu.pwr.wordnetloom.client.plugins.administrator.dictionaryEditor;
 
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MComponentGroup;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
+import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import se.datadosen.component.RiverLayout;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -16,6 +17,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.JTextComponent;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -23,62 +25,66 @@ import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
 
+import static se.datadosen.component.RiverLayout.*;
+
 public class DictionaryListPanel extends JPanel {
+
+    private final String DICTIONARY_MODEL_PACKET = "pl.edu.pwr.wordnetloom.dictionary.model.";
 
     public interface DictionaryListListener{
         void onEdit(Dictionary dictionary);
     }
 
     private JComboBox dictionaryType;
+    private JComboBox languageCombo;
     private JTable dictionaryTable;
     private DictionaryTableModel tableModel;
     private JTextComponent searchTextField;
 
-    private JButton addButton;
-    private JButton editButton;
-    private JButton deleteButton;
-
     DictionaryListListener listener;
 
-    public DictionaryListPanel(DictionaryListListener listener) {
+    public DictionaryListPanel(int width, DictionaryListListener listener) {
         this.listener = listener;
-        initView();
+        initView(width);
     }
 
-    private void initView() {
-        // TODO przyciski
+    private void initView(int width) {
         setLayout(new RiverLayout());
 
+        JPanel comboPanel = new JPanel(new GridLayout(1,2));
+        languageCombo = createLanguageComponent();
         dictionaryType = createDictionaryTypeComponent();
+        comboPanel.add(dictionaryType);
+        comboPanel.add(languageCombo);
         dictionaryTable = createDictionaryTable();
         searchTextField = createSearchField();
         JPanel buttonsPanel = createButtonsPanel();
 
-        add(RiverLayout.HFILL,dictionaryType);
-        add(RiverLayout.LINE_BREAK + " " + RiverLayout.HFILL, searchTextField);
-        add(RiverLayout.LINE_BREAK + " " + RiverLayout.HFILL + " " + RiverLayout.VFILL, dictionaryTable);
-        add(RiverLayout.LINE_BREAK + " " + RiverLayout.HFILL, buttonsPanel);
+        add(HFILL,comboPanel);
+        add(LINE_BREAK + " " + HFILL, searchTextField);
+        add(LINE_BREAK + " " + HFILL + " " + VFILL, dictionaryTable);
+        add(LINE_BREAK + " " + HFILL, buttonsPanel);
+
+        setPreferredSize(new Dimension(width, getHeight()));
+    }
+
+    private JComboBox createLanguageComponent() {
+        JComboBox comboBox = new JComboBox();
+        // TODO utworzyć słuchacza
+        comboBox.addActionListener(new LoadListener());
+        for(Language language : Language.values()){
+            comboBox.addItem(language.getAbbreviation());
+        }
+        return comboBox;
     }
 
     private JComboBox createDictionaryTypeComponent(){
         JComboBox comboBox = new JComboBox();
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    if(dictionaryType != null){
-                        loadDictionary();
-                    }
-                } catch (ClassNotFoundException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
+        comboBox.addActionListener(new LoadListener());
         List<String> dictionaryNames = RemoteService.dictionaryServiceRemote.findAllDictionaryNames();
         for(String s : dictionaryNames){
             comboBox.addItem(s);
         }
-
         return comboBox;
     }
 
@@ -116,7 +122,7 @@ public class DictionaryListPanel extends JPanel {
                 super.mouseClicked(e);
                 int row = table.rowAtPoint(e.getPoint());
                 if(e.getClickCount() == 2 && table.getSelectedRow() != -1){
-                    editDictionary(row); // TODO tutaj może wstawić numer wiersza
+                    editDictionary(row);
                 }
             }
         });
@@ -124,15 +130,21 @@ public class DictionaryListPanel extends JPanel {
     }
 
     private JPanel createButtonsPanel() {
-        addButton = MButton.buildAddButton()
+        JButton addButton = MButton.buildAddButton()
                 .withToolTip(Labels.ADD)
-                .withActionListener(e->addDictionary());
-        editButton = MButton.buildEditButton()
+                .withActionListener(e -> {
+                    try {
+                        addDictionary();
+                    } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e1) {
+                        e1.printStackTrace();
+                    }
+                });
+        JButton editButton = MButton.buildEditButton()
                 .withToolTip(Labels.EDIT)
-                .withActionListener(e->editDictionary());
-        deleteButton = MButton.buildDeleteButton()
+                .withActionListener(e -> editDictionary());
+        JButton deleteButton = MButton.buildDeleteButton()
                 .withToolTip(Labels.DELETE)
-                .withActionListener(e->removeDictionary());
+                .withActionListener(e -> removeDictionary());
 
         MComponentGroup panel = new MComponentGroup(addButton, editButton, deleteButton);
         panel.withHorizontalLayout();
@@ -141,14 +153,22 @@ public class DictionaryListPanel extends JPanel {
 
     public void loadDictionary() throws ClassNotFoundException {
         // TODO odczytanie rodzaju słownika
-        List<? extends Dictionary> dictionaries = RemoteService.dictionaryServiceRemote.findDictionaryByClass((String) dictionaryType.getSelectedItem());
-        List<String> columns = Arrays.asList("Nazwa", "Słownik");
-        tableModel = new DictionaryTableModel(dictionaries, columns, dictionaryTable);
-        dictionaryTable.setModel(tableModel);
+        if(dictionaryType != null && languageCombo != null){
+            List<? extends Dictionary> dictionaries = RemoteService.dictionaryServiceRemote.findDictionaryByClass((String) dictionaryType.getSelectedItem());
+            List<String> columns = Arrays.asList("Nazwa", "Słownik");
+            String language = (String) languageCombo.getSelectedItem();
+            tableModel = new DictionaryTableModel(dictionaries, columns, dictionaryTable, language);
+            dictionaryTable.setModel(tableModel);
+        }
     }
 
-    private void addDictionary(){
-        throw new NotImplementedException();
+    private void addDictionary() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        Dictionary dictionary = createNewDictionary((String) dictionaryType.getSelectedItem());
+        listener.onEdit(dictionary);
+    }
+
+    private Dictionary createNewDictionary(String type) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        return (Dictionary) Class.forName(DICTIONARY_MODEL_PACKET + type).newInstance();
     }
 
     private void editDictionary(int row){
@@ -165,6 +185,18 @@ public class DictionaryListPanel extends JPanel {
         throw new NotImplementedException();
     }
 
+    private class LoadListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                loadDictionary();
+            } catch (ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
     private class DictionaryTableModel extends AbstractTableModel{
 
         private final int COLUMN_COUNT = 2;
@@ -173,13 +205,14 @@ public class DictionaryListPanel extends JPanel {
 
         private List<String> columns;
         private List<? extends Dictionary> items;
-        private String filter;
         private JTable table;
+        private String language;
 
-        private DictionaryTableModel(List<? extends Dictionary> items, List<String> columns, JTable table) {
+        private DictionaryTableModel(List<? extends Dictionary> items, List<String> columns, JTable table, String language) {
             this.items = items;
             this.columns = columns;
             this.table = table;
+            this.language = language;
         }
 
         @Override
@@ -202,13 +235,22 @@ public class DictionaryListPanel extends JPanel {
             switch (columnIndex){
                 case NAME_COLUMN:
                     Long nameID = items.get(rowIndex).getName();
-                    return LocalisationManager.getInstance().getLocalisedString(nameID);
+                    return getLocalisedString(nameID);
                 case DESCRIPTION_COLUMN:
                     Long descriptionID = items.get(rowIndex).getDescription();
-                    return LocalisationManager.getInstance().getLocalisedString(descriptionID);
+                    return getLocalisedString(descriptionID);
                 default:
                     throw new IllegalArgumentException();
             }
+        }
+
+        private String getLocalisedString(Long id) {
+//            return LocalisationManager.getInstance().getLocalisedString(id);
+            if(id == null){
+                return "";
+            }
+            LocalisedKey key = new LocalisedKey(id, language);
+            return RemoteService.localisedStringServiceRemote.findStringsByKey(key).getValue();
         }
 
         Dictionary getElementAt(int rowIndex){
@@ -217,7 +259,6 @@ public class DictionaryListPanel extends JPanel {
         }
 
         TableRowSorter<TableModel> getSorter(String text){
-            filter = text;
             RowFilter<Object, Object> rowFilter = new RowFilter<Object, Object>() {
                 @Override
                 public boolean include(Entry<?, ?> entry) {

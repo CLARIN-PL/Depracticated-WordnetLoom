@@ -21,7 +21,7 @@ public class DictionaryEditorWindow extends MFrame {
 
     private DictionaryEditorWindow(WebFrame parentFrame){
         // TODO dorobić etykiety
-        super(parentFrame,"Edycja słowników");
+        super(parentFrame,"Edycja słowników", MAX_WINDOW_WIDTH, MAX_WINDOW_HEIGHT);
         initView();
     }
 
@@ -29,15 +29,18 @@ public class DictionaryEditorWindow extends MFrame {
         setLayout(new BorderLayout());
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT));
 
-        dictionaryListPanel = new DictionaryListPanel(e -> {
+        int panelWidth = MIN_WINDOW_WIDTH/2;
+
+        dictionaryListPanel = new DictionaryListPanel(panelWidth,e -> {
             try {
                 editDictionaryPanel.load(e);
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e1) {
                 e1.printStackTrace();
             }
         });
-        editDictionaryPanel = new EditDictionaryPanel();
+        editDictionaryPanel = new EditDictionaryPanel(panelWidth);
 
         WebSplitPane splitPane = new WebSplitPane(JSplitPane.HORIZONTAL_SPLIT, dictionaryListPanel, editDictionaryPanel);
         add(splitPane);

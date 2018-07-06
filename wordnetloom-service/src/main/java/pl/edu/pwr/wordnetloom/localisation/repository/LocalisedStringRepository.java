@@ -93,11 +93,16 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
 
     public LocalisedString save(LocalisedString localisedString){
         if(getEntityManager().contains(localisedString)){
-            return getEntityManager().merge(localisedString);
-        } else {
             getEntityManager().persist(localisedString);
             return localisedString;
+        } else {
+            return getEntityManager().merge(localisedString);
         }
+    }
+
+    public synchronized Long getNextIdValue() {
+        Long latestId = (Long) getEntityManager().createQuery("SELECT MAX(l.key.id) FROM  LocalisedString l").getSingleResult();
+        return latestId + 1;
     }
 
     public ApplicationLabel save(ApplicationLabel label){

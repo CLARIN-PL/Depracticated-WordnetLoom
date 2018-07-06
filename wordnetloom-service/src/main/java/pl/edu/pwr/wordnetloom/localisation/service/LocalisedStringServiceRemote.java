@@ -28,4 +28,6 @@ public interface LocalisedStringServiceRemote {
     ApplicationLabel find(String key, String language);
 
     void remove(ApplicationLabel label);
+
+    Long save(List<LocalisedString> localisedStringList);
 }
