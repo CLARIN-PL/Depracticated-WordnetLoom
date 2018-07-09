@@ -29,6 +29,10 @@ public class DictionaryRepository extends GenericRepository<Dictionary> {
         return findDictionaryByClass(clazz.getName());
     }
 
+    public void delete (Dictionary dictionary) {
+        getEntityManager().remove(dictionary);
+    }
+
     public <T extends Dictionary> List<? extends Dictionary> findDictionaryByClass(String className) {
         return getEntityManager().createQuery("FROM " + className).getResultList();
     }

@@ -2,6 +2,8 @@ package pl.edu.pwr.wordnetloom.localisation.service.impl;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
+import pl.edu.pwr.wordnetloom.dictionary.repository.DictionaryRepository;
+import pl.edu.pwr.wordnetloom.domain.repository.DomainRepository;
 import pl.edu.pwr.wordnetloom.localisation.exception.LocalisedStringNotFoundException;
 import pl.edu.pwr.wordnetloom.localisation.model.ApplicationLabel;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
@@ -9,6 +11,9 @@ import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 import pl.edu.pwr.wordnetloom.localisation.repository.LocalisedStringRepository;
 import pl.edu.pwr.wordnetloom.localisation.service.LocalisedStringServiceLocal;
 import pl.edu.pwr.wordnetloom.localisation.service.LocalisedStringServiceRemote;
+import pl.edu.pwr.wordnetloom.partofspeech.repository.PartOfSpeechRepository;
+import pl.edu.pwr.wordnetloom.relationtype.repository.RelationTypeRepository;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 import javax.annotation.security.DeclareRoles;
@@ -100,7 +105,6 @@ public class LocalisedStringServiceBean implements LocalisedStringServiceLocal {
         localisedStringList.forEach(localisedString -> repository.save(localisedString));
         return id;
     }
-
 
     @RolesAllowed("ADMIN")
     @Override

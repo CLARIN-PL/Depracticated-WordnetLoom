@@ -125,6 +125,11 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
         em.remove(label);
     }
 
+    public void removeLocalisedString(Long id) {
+        getEntityManager().createQuery("DELETE FROM LocalisedString l WHERE l.key.id = :id")
+                .setParameter("id", id).executeUpdate();
+    }
+
     @Override
     public LocalisedString persist(LocalisedString s) {
         if (s.getKey().getId() == null) {

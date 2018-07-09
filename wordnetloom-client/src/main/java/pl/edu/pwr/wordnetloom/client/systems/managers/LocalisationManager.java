@@ -68,4 +68,9 @@ public class LocalisationManager {
         RemoteService.localisedStringServiceRemote.update(ls);
         localisedStringsMap.replace(key, value);
     }
+
+
+    public void removeLocalisationString(Long key){
+        localisedStringsMap.remove(key);
+    }
 }

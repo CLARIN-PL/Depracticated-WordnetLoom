@@ -30,4 +30,5 @@ public interface LocalisedStringServiceRemote {
     void remove(ApplicationLabel label);
 
     Long save(List<LocalisedString> localisedStringList);
+
 }

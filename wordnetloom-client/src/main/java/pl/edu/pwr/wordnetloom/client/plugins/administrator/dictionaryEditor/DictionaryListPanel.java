@@ -2,6 +2,8 @@ package pl.edu.pwr.wordnetloom.client.plugins.administrator.dictionaryEditor;
 
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MComponentGroup;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -22,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -182,7 +185,25 @@ public class DictionaryListPanel extends JPanel {
     }
 
     private void removeDictionary(){
-        throw new NotImplementedException();
+        int selectedRow = dictionaryTable.getSelectedRow();
+        Dictionary dictionary = tableModel.getElementAt(selectedRow);
+        String dictionaryName = LocalisationManager.getInstance().getLocalisedString(dictionary.getName());
+        // TODO dorobić etykietę
+        int answer = DialogBox.showYesNo("Czy na pewno usunać słownik " + dictionaryName);
+        if(answer == DialogBox.YES){
+            tableModel.removeElement(selectedRow);
+            removeDictionaryFromDatabase(dictionary);
+            removeDictionaryFromLocalisationManager(dictionary);
+            listener.onEdit(null);
+        }
+    }
+
+    private void removeDictionaryFromDatabase(Dictionary dictionary){
+        RemoteService.dictionaryServiceRemote.remove(dictionary);
+    }
+
+    private void removeDictionaryFromLocalisationManager(Dictionary dictionary) {
+        LocalisationManager.getInstance().removeLocalisationString(dictionary.getName());
     }
 
     private class LoadListener implements ActionListener{
@@ -242,6 +263,11 @@ public class DictionaryListPanel extends JPanel {
                 default:
                     throw new IllegalArgumentException();
             }
+        }
+
+        public void removeElement(int row) {
+            items.remove(row);
+            this.fireTableRowsDeleted(row, row);
         }
 
         private String getLocalisedString(Long id) {

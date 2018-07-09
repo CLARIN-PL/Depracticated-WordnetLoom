@@ -17,22 +17,27 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class EditDictionaryPanel extends JPanel {
 
     private JLabel modeLabel;
     private JPanel valuesPanel;
-
+    private JButton saveButton;
 
     private Dictionary editedDictionary;
+
+    private interface MapIteratorFunc{
+        void run(String language, String fieldName, LocalisedComponent component) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException;
+    }
 
     private Map<String, JTextComponent> notLocalisedComponents;
     private Map<String, Map<String, LocalisedComponent>> localisedComponents;
 
     public EditDictionaryPanel(int width){
-        notLocalisedComponents = new HashMap<>();
-        localisedComponents = new HashMap<>();
+        notLocalisedComponents = new LinkedHashMap<>();
+        localisedComponents = new LinkedHashMap<>();
 
         initView(width);
     }
@@ -40,12 +45,13 @@ public class EditDictionaryPanel extends JPanel {
     private void initView(int width) {
         setLayout(new BorderLayout());
 
-        JButton saveButton = createSaveButton();
+        saveButton = createSaveButton();
         modeLabel = new JLabel(" ");
         add(modeLabel, BorderLayout.NORTH);
         add(saveButton, BorderLayout.SOUTH);
 
         setPreferredSize(new Dimension(width,getHeight()));
+        setEnabled(false);
     }
 
     private JButton createSaveButton() {
@@ -83,7 +89,7 @@ public class EditDictionaryPanel extends JPanel {
      */
     private Map<String, Long> saveLocalisedStrings() {
         // result map
-        Map<String, Long> idsMap = new HashMap<>();
+        Map<String, Long> idsMap = new LinkedHashMap<>();
         // get ant value
         Map<String, LocalisedComponent> fieldsMap = localisedComponents.entrySet().iterator().next().getValue();
         fieldsMap.forEach((fieldName, component)->{
@@ -217,14 +223,37 @@ public class EditDictionaryPanel extends JPanel {
                 .collect(Collectors.toList());
     }
 
-    public void load(@NotNull Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        if (editedDictionary != dictionary){
+    public void setEnabled(boolean enabled) {
+        notLocalisedComponents.forEach((k,v)->v.setEnabled(enabled));
+        localisedComponentsMapIterate((language, fieldName, component)->component.setComponentEnabled(enabled));
+        saveButton.setEnabled(enabled);
+    }
+
+    private void localisedComponentsMapIterate(MapIteratorFunc func){
+        for(Map.Entry<String, Map<String, LocalisedComponent>> languageEntry : localisedComponents.entrySet()){
+            for(Map.Entry<String, LocalisedComponent> fieldEntry : languageEntry.getValue().entrySet()){
+                try {
+                    func.run(languageEntry.getKey(), fieldEntry.getKey(), fieldEntry.getValue());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void load(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        if(dictionary == null) {
+            clear();
+            refreshView();
+            return;
+        }
+        // if this dictionary class is equal old dictionary class, we not rebuild view
+        if (editedDictionary== null || editedDictionary.getClass() != dictionary.getClass()){
             editedDictionary = dictionary;
             clear();
             addValuesPanel(createValuesPanel(dictionary));
         }
         editedDictionary = dictionary;
-        // TODO zobaczyć, czy przy pustym słowniku to się nie wysypie
         if(dictionary.getId() != null){
             loadNotLocalisedFields(editedDictionary);
             loadLocalisedFields(editedDictionary);
@@ -235,6 +264,11 @@ public class EditDictionaryPanel extends JPanel {
             modeLabel.setText("Dodawanie nowej wartosci");
         }
 
+        refreshView();
+        setEnabled(true);
+    }
+
+    private void refreshView() {
         validate();
         repaint();
     }
@@ -248,17 +282,11 @@ public class EditDictionaryPanel extends JPanel {
     }
 
     private void loadLocalisedFields(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        Long id;
-        for(Map.Entry<String, Map<String, LocalisedComponent>> languageEntry: localisedComponents.entrySet()) {
-            String language = languageEntry.getKey();
-            for(Map.Entry<String, LocalisedComponent> entry : languageEntry.getValue().entrySet()) {
-                String fieldName = entry.getKey();
-                id = (Long) getValue(dictionary, fieldName);
-                LocalisedString localisedString = getLocalisedString(id, language);
-                // TODO zrobić trochę czytelniej z nullem
-                entry.getValue().setLocalisedString(localisedString);
-            }
-        }
+        localisedComponentsMapIterate((language, fieldName, component)->{
+            Long id = (Long) getValue(dictionary, fieldName);
+            LocalisedString localisedString = getLocalisedString(id, language);
+            component.setLocalisedString(localisedString);
+        });
     }
 
     private LocalisedString getLocalisedString(Long id, String language){
@@ -279,7 +307,8 @@ public class EditDictionaryPanel extends JPanel {
         add(valuesPanel, BorderLayout.CENTER);
     }
 
-    private void clear(){
+    public void clear(){
+        modeLabel.setText("");
         if(valuesPanel != null){
             remove(valuesPanel);
         }
@@ -324,6 +353,10 @@ public class EditDictionaryPanel extends JPanel {
                 this.localisedString.addKey(null, language);
             }
             updateComponentValue();
+        }
+
+        public void setComponentEnabled(boolean enabled){
+            component.setEnabled(enabled);
         }
     }
 }

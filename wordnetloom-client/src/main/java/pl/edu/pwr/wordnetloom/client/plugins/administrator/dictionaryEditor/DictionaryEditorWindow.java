@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.administrator.dictionaryEditor;
 import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.splitpane.WebSplitPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
+import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
