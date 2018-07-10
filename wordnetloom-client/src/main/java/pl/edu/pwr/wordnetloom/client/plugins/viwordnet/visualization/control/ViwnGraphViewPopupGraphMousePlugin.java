@@ -24,6 +24,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
@@ -185,26 +186,22 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 popup.add(group_action);
 
                 // enter make relation mode
-                popup.add(new AbstractAction(Labels.SYNSET_CREATE_RELATION_WITH) {
-                    /**
-                     *
-                     */
-                    private static final long serialVersionUID = 1892743918624978L;
-
+                AbstractAction createRelationAction = new AbstractAction(Labels.CREATE_RELATION_WITH) {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         getViWordNetService().setFirstMakeRelation(vertex);
                     }
-                });
+                };
 
-                popup.add(new AbstractAction(Labels.SYNSET_MERGE_WITH) {
-                    private static final long serialVersionUID = 1L;
-
+                AbstractAction mergeAction = new AbstractAction(Labels.SYNSET_MERGE_WITH) {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         getViWordNetService().setFirstMergeSynsets(vertex);
                     }
-                });
+                };
+
+                popup.add(createRelationAction);
+                popup.add(mergeAction);
 
                 // split synset options from lexical unit options
                 popup.addSeparator();
@@ -229,6 +226,9 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 });
 
                 popup.add(createRelationItem);
+
+                PermissionHelper.checkPermissionToEditAndSetComponents(createRelationAction, mergeAction);
+                PermissionHelper.checkPermissionToEditAndSetComponents(createRelationItem);
 
             } else if (vertex != null && vertex instanceof ViwnNodeSet) {
                 ViwnNodeSet set = (ViwnNodeSet) vertex;
@@ -324,10 +324,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 });
 
                 if (edge instanceof ViwnEdgeSynset) {
-                    popup.add(new AbstractAction(Labels.REMOVE_RELATION) {
-
-                        private static final long serialVersionUID = -9382109827346L;
-
+                    AbstractAction removeRelationAction = new AbstractAction(Labels.REMOVE_RELATION) {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             Pair<ViwnNode> c = vgvui.getGraph().getEndpoints(edge);
@@ -335,7 +332,9 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                             rel.addAll(vgvui.getGraph().findEdgeSet(c.getSecond(), c.getFirst()));
                             getViWordNetService().removeRelation(rel);
                         }
-                    });
+                    };
+                    popup.add(removeRelationAction);
+                    PermissionHelper.checkPermissionToEditAndSetComponents(removeRelationAction);
                 }
 
             } else {

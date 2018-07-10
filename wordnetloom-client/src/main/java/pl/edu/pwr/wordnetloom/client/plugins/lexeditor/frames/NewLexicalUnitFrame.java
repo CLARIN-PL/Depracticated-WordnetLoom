@@ -13,6 +13,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DomainMComboBox;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -52,7 +53,7 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         editPanel.getBtnCancel().addActionListener(this);
         add("hfill vfill", editPanel);
         pack();
-//        errorProvider = new ErrorProvider(editPanel.getLemma());
+
         initErrorManager();
     }
 
@@ -158,24 +159,26 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     public void actionPerformed(ActionEvent event) {
 
         if (event.getSource() == editPanel.getBtnSave()) {
-
-            String testLemma = editPanel.getLemma().getText();
-
-            List<SenseAttributes> units = RemoteService.senseRemote.findByLemmaWithSense(testLemma, LexiconManager.getInstance().getUserChosenLexiconsIds());
-
-            if (validateSelections()) {
-                if (checkUnitExists(testLemma, units)) {
-                    wasAddClicked = true;
-                    setVisible(false);
-                }
-            }
-
-            lastPickDomain = editPanel.getDomain().getEntity();
-            lastPickPos = editPanel.getPartOfSpeech().getEntity();
-
+            PermissionHelper.handle(this::save);
         } else if (event.getSource() == editPanel.getBtnCancel()) {
             setVisible(false);
         }
+    }
+
+    private void save() {
+        String testLemma = editPanel.getLemma().getText();
+
+        List<SenseAttributes> units = RemoteService.senseRemote.findByLemmaWithSense(testLemma, LexiconManager.getInstance().getUserChosenLexiconsIds());
+
+        if (validateSelections()) {
+            if (checkUnitExists(testLemma, units)) {
+                wasAddClicked = true;
+                setVisible(false);
+            }
+        }
+
+        lastPickDomain = editPanel.getDomain().getEntity();
+        lastPickPos = editPanel.getPartOfSpeech().getEntity();
     }
 
     private boolean checkUnitExists(String testLemma, List<SenseAttributes> attributes) {

@@ -11,13 +11,11 @@ import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import javax.validation.constraints.NotNull;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class EditDictionaryPanel extends JPanel {

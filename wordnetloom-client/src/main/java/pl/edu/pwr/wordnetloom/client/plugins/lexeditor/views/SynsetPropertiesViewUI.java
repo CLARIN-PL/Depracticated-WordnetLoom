@@ -12,6 +12,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.renderers.ExampleCellRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
@@ -20,11 +21,14 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetExample;
+import pl.edu.pwr.wordnetloom.user.model.Role;
 import se.datadosen.component.RiverLayout;
+import sun.security.acl.PermissionImpl;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -60,6 +64,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
     private Synset lastSynset = null;
     private boolean quiteMode = false;
     private final ViwnGraphViewUI graphUI;
+
+    private boolean permissionToEdit = false;
 
     public SynsetPropertiesViewUI(ViwnGraphViewUI graphUI) {
         this.graphUI = graphUI;
@@ -193,9 +199,11 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         scroll.setDrawBorder(false);
         content.add("hfill vfill", scroll);
 
-//        commentValue.setEnabled(false);
-//        definitionValue.setEnabled(false);
         abstractValue.setEnabled(false);
+
+        permissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(
+                definitionValue, commentValue, examplesList, abstractValue, buttonSave
+        );
     }
 
     @Override
@@ -241,9 +249,13 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         lastSynset = synset;
         quiteMode = true;
-        abstractValue.setEnabled(synset != null);
+        abstractValue.setEnabled(canEditSynset(synset));
         buttonSave.setEnabled(false);
         quiteMode = false;
+    }
+
+    private boolean canEditSynset(Synset synset) {
+        return permissionToEdit && synset != null;
     }
 
     /**
@@ -269,7 +281,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         }
         // zmiana zaznaczenia w checkboxie
         if (event.getSource() == abstractValue) {
-            buttonSave.setEnabled(true);
+            buttonSave.setEnabled(permissionToEdit);
             // zapisanie zmian
         } else if (event.getSource() == buttonSave) { // zapisanie zmian
             saveChanges();
@@ -332,16 +344,16 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
     @Override
     public void caretUpdate(CaretEvent arg0) {
-        if (quiteMode == true || lastSynset == null) {
-            return; // nie ma co aktualizować
+        if (quiteMode || lastSynset == null) {
+            return;
         }
         if (arg0.getSource() instanceof MTextField) {
             MTextField field = (MTextField) arg0.getSource();
-            buttonSave.setEnabled(buttonSave.isEnabled() | field.wasTextChanged());
+            buttonSave.setEnabled(permissionToEdit && buttonSave.isEnabled() | field.wasTextChanged());
         }
         if (arg0.getSource() instanceof MTextArea) {
             MTextArea field = (MTextArea) arg0.getSource();
-            buttonSave.setEnabled(buttonSave.isEnabled() | field.wasTextChanged());
+            buttonSave.setEnabled(permissionToEdit && buttonSave.isEnabled() | field.wasTextChanged());
         }
     }
 }
