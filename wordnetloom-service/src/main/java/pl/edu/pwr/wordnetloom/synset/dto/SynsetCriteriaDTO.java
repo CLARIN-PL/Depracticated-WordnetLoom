@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class SynsetCriteriaDTO implements Serializable {
 
     private String lemma;
+    private Long synsetId;
     private Long lexiconId;
     private Long partOfSpeechId;
     private Long domainId;
@@ -22,6 +23,10 @@ public class SynsetCriteriaDTO implements Serializable {
     public void setLemma(String lemma) {
         this.lemma = lemma;
     }
+
+    public Long getSynsetId(){return synsetId;}
+
+    public void setSynsetId(Long id){synsetId = id;}
 
     public Long getLexiconId() {
         return lexiconId;

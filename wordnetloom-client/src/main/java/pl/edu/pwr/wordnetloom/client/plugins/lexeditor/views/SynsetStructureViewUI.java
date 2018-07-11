@@ -82,7 +82,6 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     private final SimpleListenersContainer synsetUpdateListeners = new SimpleListenersContainer();
     private final UnitsInSynsetListModel listModel = new UnitsInSynsetListModel();
     private final ViwnGraphViewUI graphUI;
-    ArrayList<Sense> lastSelectedUnits = new ArrayList<>();
     private ViWordNetService viWordNetService;
     private WebList unitsList;
     private WebTextField synsetID;

@@ -40,11 +40,11 @@ import java.util.List;
 
 public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMousePlugin {
 
-    protected WebPopupMenu popup = new WebPopupMenu();
-    protected ViwnGraphViewUI vgvui;
-    protected WebList synset_list_ = null;
+    private WebPopupMenu popup = new WebPopupMenu();
+    private ViwnGraphViewUI vgvui;
+    private WebList synset_list_ = null;
 
-    public ViwnGraphViewPopupGraphMousePlugin(ViwnGraphViewUI vgvui) {
+    ViwnGraphViewPopupGraphMousePlugin(ViwnGraphViewUI vgvui) {
         this.vgvui = vgvui;
     }
 
@@ -130,31 +130,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                     }
                 });
 
-                popup.add(new AbstractAction(Labels.OPEN_IN_NEW_TAB) {
-                    /**
-                     *
-                     */
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        ViWordNetService s = getViWordNetService();
-                        Synset synset = ((ViwnNodeSynset)vertex).getSynset();
-                        // pobranie obiektu DataEntry ze starego grafu, z którego zostanie zbudowany węzeł synsetu
-                        DataEntry synsetDataEntry = getViWordNetService().getSynsetData().getById(synset.getId());
-                        //utworzenie nowego widoku. W tym momencie aktywnym grafem staje się ten nowo utworzony
-                        s.addGraphView();
-                        // utworzenie nowego węzła synsetu, który zostanie przekazany do nowo utowrzonowego grafu
-                        ViwnNodeSynset newSynset = new ViwnNodeSynset(synset, s.getActiveGraphView().getUI());
-                        // przekazanie obiektu DataEntry do nowego grafu
-                        s.getActiveGraphView().getUI().addToEntrySet(synsetDataEntry);
-                        // wstawienie węzła synsetu do grafu
-                        s.getActiveGraphView().getUI().addSynsetNode(newSynset); //TODO można przekazać tylko synset, reszta i tak dzieje się w środku metody
-                        // aktualizowanie nazwy zakładki
-                        ViWordNetPerspective perspective = (ViWordNetPerspective) vgvui.getWorkbench().getActivePerspective();
-                        perspective.setTabTitle(s.getActiveGraphView().getUI().getRootNode().getLabel());
-                    }
-                });
+                popup.add(createOpenInNewTabAction((ViwnNodeSynset) vertex));
 
                 AbstractAction group_action = new AbstractAction(Labels.GRUPPING) {
                     {
@@ -362,6 +338,31 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             }
         }
 
+    }
+
+    private AbstractAction createOpenInNewTabAction(ViwnNodeSynset vertex) {
+        return new AbstractAction(Labels.OPEN_IN_NEW_TAB) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ViWordNetService s = getViWordNetService();
+                Synset synset = vertex.getSynset();
+                // pobranie obiektu DataEntry ze starego grafu, z którego zostanie zbudowany węzeł synsetu
+                DataEntry synsetDataEntry = getViWordNetService().getSynsetData().getById(synset.getId());
+                //utworzenie nowego widoku. W tym momencie aktywnym grafem staje się ten nowo utworzony
+                s.addGraphView();
+                // utworzenie nowego węzła synsetu, który zostanie przekazany do nowo utowrzonowego grafu
+                ViwnNodeSynset newSynset = new ViwnNodeSynset(synset, s.getActiveGraphView().getUI());
+                // przekazanie obiektu DataEntry do nowego grafu
+                s.getActiveGraphView().getUI().addToEntrySet(synsetDataEntry);
+                // wstawienie węzła synsetu do grafu
+                s.getActiveGraphView().getUI().addSynsetNode(newSynset); //TODO można przekazać tylko synset, reszta i tak dzieje się w środku metody
+                // aktualizowanie nazwy zakładki
+                ViWordNetPerspective perspective = (ViWordNetPerspective) vgvui.getWorkbench().getActivePerspective();
+                perspective.setTabTitle(s.getActiveGraphView().getUI().getRootNode().getLabel());
+            }
+        };
     }
 
     private String getSenseMenuItemText(Sense sense){

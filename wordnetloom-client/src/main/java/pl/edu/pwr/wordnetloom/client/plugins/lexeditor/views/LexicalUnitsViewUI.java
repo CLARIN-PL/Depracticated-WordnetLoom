@@ -5,6 +5,7 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.google.common.eventbus.Subscribe;
 import jiconfont.icons.FontAwesome;
+import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
@@ -43,7 +44,7 @@ import java.util.List;
  * Lexical unit search panel
  */
 public class LexicalUnitsViewUI extends AbstractViewUI implements
-        ActionListener, ListSelectionListener, KeyListener, MouseListener {
+        ActionListener, ListSelectionListener, KeyListener {
 
     private final int LIMIT = 50;
     private LazyScrollList unitsListScrollPane;
@@ -86,7 +87,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 .withIcon(FontAwesome.PLUS_SQUARE)
                 .withToolTip(Hints.CREATE_NEW_UNIT_AND_SYNSET);
 
-
         newUnitButton = new MButton(this)
                 .withIcon(FontAwesome.PLUS)
                 .withToolTip(Hints.CREATE_NEW_UNIT);
@@ -119,10 +119,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         criteriaPanel.add("br center", searchButton);
         criteriaPanel.add("center", resetButton);
 
-        unitsList = new ToolTipList(workbench, listModel, new SenseTooltipGenerator());
-        unitsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        unitsList.getSelectionModel().addListSelectionListener(this);
-        unitsList.setCellRenderer(new UnitListCellRenderer());
+        unitsList = createUnitsList();
 
         unitsListScrollPane = new LazyScrollList(unitsList,listModel,new Sense(), LIMIT);
         unitsListScrollPane.setScrollListener((offset, limit) -> loadMoreUnits(offset, limit));
@@ -147,6 +144,15 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         );
     }
 
+    private ToolTipList createUnitsList() {
+        ToolTipList unitsList = new ToolTipList(workbench, listModel, new SenseTooltipGenerator());
+        unitsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        unitsList.getSelectionModel().addListSelectionListener(this);
+        unitsList.setCellRenderer(new UnitListCellRenderer());
+
+        return unitsList;
+    }
+
     @Override
     public void valueChanged(ListSelectionEvent event) {
         if (unitsList == null) {
@@ -169,7 +175,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         Sense sense = unitsList.getSelectedIndices().length == 1 ? unit : null;
         Application.eventBus.post(new UpdateGraphEvent(sense));
         unitsList.setEnabled(true);
-        unitsList.grabFocus();
 
         SwingUtilities.invokeLater(() -> unitsList.grabFocus());
     }
@@ -253,7 +258,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             @Override
             protected Void doInBackground() throws Exception {
                 workbench.setBusy(true);
-
                 if (offset == 0) {
                     clearUnitsList();
                 }
@@ -263,37 +267,36 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 dto.setOffset(offset);
 
                 List<Sense> units = RemoteService.senseRemote.findByCriteria(dto);
-
-                // odczytanie zaznaczonej jednostki
+                // get selected unit
                 if (lastSelectedValue == null && unitsList != null
                         && !unitsList.isSelectionEmpty()) {
                     lastSelectedValue = listModel.get(unitsList.getSelectedIndex());
                 }
-                if (units.isEmpty()) {
-                    workbench.setBusy(false);
-                }
+
                 criteria.setSensesToHold(units);
                 return null;
             }
 
             @Override
             protected void done() {
-                if (unitsList != null) {
-                    SwingUtilities.invokeLater(() -> {
-                        if (listModel.getSize() != 0) {
-                            if (listModel.getSize() == unitsListScrollPane.getLimit()) {
-                                unitsList.clearSelection();
-                                unitsList.grabFocus();
-                                unitsList.ensureIndexIsVisible(0);
-                            } else {
-                                unitsList.updateUI();
-                            }
-                            workbench.setBusy(false);
-                        }
-                        setInfoText(0, 0); //TODO to może będzie można wyrzucić
-                    });
-                }
                 lastSelectedValue = null;
+                if(unitsList == null){
+                    return;
+                }
+
+                SwingUtilities.invokeLater(() -> {
+                    if (listModel.getSize() != 0) {
+                        if (listModel.getSize() == unitsListScrollPane.getLimit()) {
+                            unitsList.clearSelection();
+                            unitsList.grabFocus();
+                            unitsList.ensureIndexIsVisible(0);
+                        } else {
+                            unitsList.updateUI();
+                        }
+                        workbench.setBusy(false);
+                    }
+                    setInfoText(0, 0); //TODO to może będzie można wyrzucić
+                });
             }
         };
         worker.execute();
@@ -301,10 +304,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        boolean quietMode = false;
-        if (quietMode) {
-            return;
-        }
         if (event.getSource() == searchButton) {
             loadUnits();
         } else if (event.getSource() == resetButton) {
@@ -331,44 +330,21 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             return;
         }
 
-        if (returnValues.length == 1
-                && DialogBox.showYesNoCancel(Messages.QUESTION_REMOVE_UNIT) != DialogBox.YES) {
-            return;
-        }
-        if (returnValues.length != 1
-                && DialogBox
-                .showYesNoCancel(Messages.QUESTION_REMOVE_UNITS) != DialogBox.YES) {
+        String message = returnValues.length==1? Messages.QUESTION_REMOVE_UNIT : Messages.QUESTION_REMOVE_UNITS;
+        if(DialogBox.showYesNo(message) != DialogBox.YES){
             return;
         }
 
-        // usuuniecie zaznaczonych jednostek
         for (int i : returnValues) {
-//                Sense unit = listModel.getObjectAt(i);
             Sense unit = listModel.get(i);
-
-            // TODOspradzenie czy ma jakies relacje
-//            int result = DialogBox.YES;
-//                if (RemoteUtils.lexicalRelationRemote
-//                        .dbGetRelationCountOfUnit(unit) > 0) {
-//                    result = DialogBox.showYesNoCancel(String.format(
-//                            Messages.QUESTION_UNIT_HAS_RELATIONS,
-//                            unit.toString()));
-//                    if (result == DialogBox.CANCEL) {
-//                        continue;
-//                    }
-//                }
-
-//            if (result == DialogBox.YES) {
-
-
-            ViWordNetService s = ServiceManager.getViWordNetService(workbench);
-            s.getActiveGraphView().getUI().clear();
-            listeners.notifyAllListeners(null);
+            ViWordNetService service = ServiceManager.getViWordNetService(workbench);
+            service.getActiveGraphView().getUI().clear();
+//            listeners.notifyAllListeners(null);
+            // TODO jeżeli jednostka jest na grafie, czyścimy graf
             listModel.remove(i);
             RemoteService.senseRemote.delete(unit);
-            allUnitsCount--; // jeżeli usunięto
-            setInfoText(listModel.getSize(), allUnitsCount);
-//            }
+            allUnitsCount--;
+            setInfoText(listModel.getSize(), allUnitsCount); // TODO zlikwidować napis z liczbą załadowanych jednostek
         }
     }
 
@@ -453,34 +429,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     }
 
     @Override
-    public void keyPressed(KeyEvent event) {
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent arg0) {
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent arg0) {
-    }
-
-    @Override
-    public void mousePressed(MouseEvent arg0) {
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent arg0) {
-    }
-
-    @Override
-    public void mouseExited(MouseEvent arg0) {
-    }
-
-    @Override
-    public void keyTyped(KeyEvent arg0) {
-    }
-
-    @Override
     public void keyReleased(KeyEvent event) {
         super.keyPressed(event);
         if (!event.isConsumed() && event.getSource() == criteria.getSearchTextField() && event.getKeyChar() == KeyEvent.VK_ENTER) {
@@ -558,15 +506,15 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         return criteria.getCriteria();
     }
 
-    public void setCriteria(CriteriaDTO crit) {
-        criteria.restoreCriteria(crit);
-        if (crit != null && crit.getSense() != null) {
-            addUnitsToList(crit.getSense());
+    public void setCriteria(CriteriaDTO criteria) {
+        this.criteria.restoreCriteria(criteria);
+        if (criteria != null && criteria.getSense() != null) {
+            addUnitsToList(criteria.getSense());
         }
     }
 
     private class UnitListCellRenderer extends WebLabel implements ListCellRenderer {
-        private final String FONT_NAME = "Courier New";
+        private final String FONT_NAME = Font.SANS_SERIF;
         private final int FONT_SIZE = 14;
         final Font FONT = new Font(FONT_NAME, Font.PLAIN, FONT_SIZE);
 

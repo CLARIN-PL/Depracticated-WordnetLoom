@@ -1,19 +1,28 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import com.alee.laf.radiobutton.WebRadioButton;
+import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
+import pl.edu.pwr.wordnetloom.user.model.Role;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.NumberFormatter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.text.NumberFormat;
 
 public final class SynsetCriteria extends CriteriaPanel implements ActionListener {
 
+    private JTextField id;
     private MTextField definition;
     private MTextField comment;
     private Boolean isArtificial;
@@ -30,6 +39,9 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
     private void init() {
         crit = new CriteriaDTO();
         isArtificial = null;
+
+        id = createIdField();
+
         definition = new MTextField(STANDARD_VALUE_FILTER);
         comment = new MTextField(STANDARD_VALUE_FILTER);
         all = new WebRadioButton(Labels.VALUE_ALL, true);
@@ -40,9 +52,27 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         notArtificial.addActionListener(this);
     }
 
+    private JTextField createIdField() {
+        JTextField id = new MTextField(STANDARD_VALUE_FILTER);
+        id.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c= e.getKeyChar();
+                if(!Character.isDigit(c)|| c== KeyEvent.VK_BACK_SPACE || c==KeyEvent.VK_DELETE){
+                    e.consume();
+                }
+            }
+        });
+
+        return id;
+    }
+
     @Override
     protected void initializeFormPanel() {
         addSearch();
+        if(UserSessionContext.getInstance().hasRole(Role.ADMIN)){
+            addId();
+        }
         addLexicon();
         addPartsOfSpeach();
         addDomain();
@@ -58,6 +88,11 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
 
     public MTextField getComment() {
         return comment;
+    }
+
+    private void addId() {
+        add("br", new MLabel("id", 'i', id));
+        add("br hfill", id);
     }
 
     protected void addDefinition() {
@@ -126,6 +161,9 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
     public SynsetCriteriaDTO getSynsetCriteria() {
         SynsetCriteriaDTO dto = new SynsetCriteriaDTO();
         dto.setLemma(getSearchTextField().getText());
+        if(!id.getText().isEmpty()){
+            dto.setSynsetId(Long.parseLong(id.getText()));
+        }
         if (getLexiconComboBox().getSelectedLexicon() != null) {
             dto.setLexiconId(getLexiconComboBox().getSelectedLexicon().getId());
         }

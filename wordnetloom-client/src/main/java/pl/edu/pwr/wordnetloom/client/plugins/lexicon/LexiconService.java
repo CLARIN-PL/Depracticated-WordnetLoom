@@ -28,6 +28,7 @@ import java.util.Set;
 
 public class LexiconService extends AbstractService {
 
+    // TODO przenieśc to w inne miejsce
     private final WebMenuItem lexiconItem = new MMenuItem(Labels.LEXICON)
             .withIcon(FontAwesome.BOOK);
 
