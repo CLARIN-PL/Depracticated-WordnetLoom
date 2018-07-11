@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.administrator.dictionaryEditor;
 import com.alee.extended.panel.WebComponentPanel;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
+import pl.edu.pwr.wordnetloom.client.systems.errors.ValidationManager;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
@@ -25,30 +26,59 @@ public class EditDictionaryPanel extends JPanel {
     private JButton saveButton;
 
     private Dictionary editedDictionary;
-
-    private interface MapIteratorFunc{
-        void run(String language, String fieldName, LocalisedComponent component) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException;
-    }
-
+    private ValidationManager validationManager;
     private Map<String, JTextComponent> notLocalisedComponents;
     private Map<String, Map<String, LocalisedComponent>> localisedComponents;
-
-    public EditDictionaryPanel(int width){
+    public EditDictionaryPanel(int width) {
         notLocalisedComponents = new LinkedHashMap<>();
         localisedComponents = new LinkedHashMap<>();
 
         initView(width);
     }
 
+    private ValidationManager initValidation() {
+        final String NAME_FIELD = "Name";
+        ValidationManager validationManager = new ValidationManager();
+        localisedComponentsMapIterate((language, fieldName, component) -> {
+            // TODO dorobić etykietę
+            // field must be filled in all languages
+            validationManager.registerError(component.getComponent()
+                    , "Pole nie może być puste, jeżeli jest wypełnione w inych językach",
+                    () -> {
+                        JTextComponent comp = component.getComponent();
+                        boolean isFilled = false;
+                        if (comp.getText().isEmpty()) {
+                            for (String lang : localisedComponents.keySet()) {
+                                if (!localisedComponents.get(lang).get(fieldName).getComponent().getText().isEmpty()) {
+                                    isFilled = true;
+                                }
+                            }
+                        }
+                        return isFilled;
+                    });
+            // name field is required
+            if (fieldName.equals(NAME_FIELD)) {
+                validationManager.registerError(component.getComponent(),
+                        "Pole nie może być puste",
+                        () -> component.getComponent().getText().isEmpty());
+            }
+        });
+
+        return validationManager;
+    }
+
     private void initView(int width) {
+        final Font MODE_LABEL_FONT = new Font(Font.SANS_SERIF, Font.BOLD, 20);
+
         setLayout(new BorderLayout());
 
         saveButton = createSaveButton();
-        modeLabel = new JLabel(" ");
+        modeLabel = new JLabel(" ", SwingConstants.CENTER);
+        modeLabel.setFont(MODE_LABEL_FONT);
         add(modeLabel, BorderLayout.NORTH);
         add(saveButton, BorderLayout.SOUTH);
 
-        setPreferredSize(new Dimension(width,getHeight()));
+        setPreferredSize(new Dimension(width, getHeight()));
         setEnabled(false);
     }
 
@@ -65,16 +95,18 @@ public class EditDictionaryPanel extends JPanel {
     }
 
     private void save(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        updateNotLocalisedValues(dictionary);
-        Map<String, Long> localisedIds = saveLocalisedStrings();
-        updateLocalisedValues(dictionary, localisedIds);
-        editedDictionary = saveDictionary(dictionary);
+        if (validationManager.validate()) {
+            updateNotLocalisedValues(dictionary);
+            Map<String, Long> localisedIds = saveLocalisedStrings();
+            updateLocalisedValues(dictionary, localisedIds);
+            editedDictionary = saveDictionary(dictionary);
+        }
     }
 
     private void updateLocalisedValues(Dictionary dictionary, Map<String, Long> localisedIds) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         String fieldName;
         Long id;
-        for(Map.Entry<String, Long> entry : localisedIds.entrySet()) {
+        for (Map.Entry<String, Long> entry : localisedIds.entrySet()) {
             fieldName = entry.getKey();
             id = entry.getValue();
             setValue(dictionary, fieldName, Long.class, id);
@@ -83,6 +115,7 @@ public class EditDictionaryPanel extends JPanel {
 
     /**
      * Save all not empty values.
+     *
      * @return ids of LocalisationKey for every field
      */
     private Map<String, Long> saveLocalisedStrings() {
@@ -90,16 +123,16 @@ public class EditDictionaryPanel extends JPanel {
         Map<String, Long> idsMap = new LinkedHashMap<>();
         // get ant value
         Map<String, LocalisedComponent> fieldsMap = localisedComponents.entrySet().iterator().next().getValue();
-        fieldsMap.forEach((fieldName, component)->{
+        fieldsMap.forEach((fieldName, component) -> {
             List<LocalisedString> localisedStringList = new ArrayList<>();
-            localisedComponents.keySet().forEach(language->{
+            localisedComponents.keySet().forEach(language -> {
                 LocalisedString localisedString = localisedComponents.get(language).get(fieldName).getLocalisedString();
 
-                if(localisedString.getKey().getId() != null || !localisedString.getValue().isEmpty()) {
+                if (localisedString.getKey().getId() != null || !localisedString.getValue().isEmpty()) {
                     localisedStringList.add(localisedString);
                 }
             });
-            if(!localisedStringList.isEmpty()){
+            if (!localisedStringList.isEmpty()) {
                 Long id = RemoteService.localisedStringServiceRemote.save(localisedStringList);
                 idsMap.put(fieldName, id);
             }
@@ -114,7 +147,7 @@ public class EditDictionaryPanel extends JPanel {
     private void updateNotLocalisedValues(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         String fieldName;
         String value;
-        for(Map.Entry<String, JTextComponent> entry : notLocalisedComponents.entrySet()){
+        for (Map.Entry<String, JTextComponent> entry : notLocalisedComponents.entrySet()) {
             fieldName = entry.getKey();
             value = entry.getValue().getText();
             setValue(dictionary, fieldName, String.class, value);
@@ -122,18 +155,18 @@ public class EditDictionaryPanel extends JPanel {
     }
 
     private void setValue(Dictionary dictionary, String fieldName, Class parameterClass, Object value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = dictionary.getClass().getMethod("set"+fieldName, parameterClass);
+        Method method = dictionary.getClass().getMethod("set" + fieldName, parameterClass);
         method.invoke(dictionary, value);
     }
 
-    private JPanel createValuesPanel(Dictionary dictionary){
+    private JPanel createValuesPanel(Dictionary dictionary) {
         List<Method> methods = getMethods(dictionary);
         List<String> notLocalisedFields = new ArrayList<>();
         List<String> localisedFields = new ArrayList<>();
-        for(Method method: methods){
-            if(method.getReturnType() == Long.class){
+        for (Method method : methods) {
+            if (method.getReturnType() == Long.class) {
                 localisedFields.add(getFieldName(method));
-            } else if(method.getReturnType() == String.class){
+            } else if (method.getReturnType() == String.class) {
                 notLocalisedFields.add(getFieldName(method));
             } else {
                 throw new IllegalArgumentException();
@@ -149,9 +182,9 @@ public class EditDictionaryPanel extends JPanel {
         return resultPanel;
     }
 
-    private JPanel createNotLocalisedPanel(List<String> fieldsNames){
+    private JPanel createNotLocalisedPanel(List<String> fieldsNames) {
         JPanel panel = new JPanel(new RiverLayout()); // TODO określić
-        for(String field : fieldsNames){
+        for (String field : fieldsNames) {
             JLabel label = new JLabel(field);
             int LABEL_WIDTH = 50;
             label.setSize(LABEL_WIDTH, label.getHeight());
@@ -159,28 +192,27 @@ public class EditDictionaryPanel extends JPanel {
             addToPanel(panel, label, component);
             addNotLocalisedComponent(field, component);
         }
-
         return panel;
     }
 
-    private void addToPanel(JPanel panel, JLabel label, JComponent component){
+    private void addToPanel(JPanel panel, JLabel label, JComponent component) {
         panel.add(RiverLayout.LINE_BREAK, label);
         panel.add(RiverLayout.HFILL, component);
     }
 
-    private void addNotLocalisedComponent(String fieldName, JTextComponent component){
+    private void addNotLocalisedComponent(String fieldName, JTextComponent component) {
         notLocalisedComponents.put(fieldName, component);
     }
 
     private List<Method> getMethods(Dictionary dictionary) {
         Method[] methods = dictionary.getClass().getMethods();
-        List<Method> methodList = Arrays.stream(methods).filter(x->
+        List<Method> methodList = Arrays.stream(methods).filter(x ->
                 x.getName().startsWith("get") && !x.getName().equals("getClass") && !x.getName().equals("getId"))
                 .collect(Collectors.toList());
         return methodList;
     }
 
-    private String getFieldName(Method method){
+    private String getFieldName(Method method) {
         return method.getName().substring(3, method.getName().length());
     }
 
@@ -192,12 +224,12 @@ public class EditDictionaryPanel extends JPanel {
         WebComponentPanel webComponentPanel = new WebComponentPanel();
         webComponentPanel.setElementMargin(ELEMENT_MARGIN);
         webComponentPanel.setReorderingAllowed(REORDERING_ALLOWED);
-        for(String language : getLangauges()) {
+        for (String language : getLangauges()) {
             Map<String, LocalisedComponent> map = new HashMap<>();
             localisedComponents.put(language, map);
 
             JPanel valuesPanel = new JPanel(new RiverLayout());
-            for(String fieldName : fieldsNames) {
+            for (String fieldName : fieldsNames) {
                 JLabel label = new JLabel(fieldName);
                 JTextComponent component = new JTextField();
                 addToPanel(valuesPanel, label, component);
@@ -215,21 +247,21 @@ public class EditDictionaryPanel extends JPanel {
         return webComponentPanel;
     }
 
-    private List<String> getLangauges(){
+    private List<String> getLangauges() {
         return Arrays.stream(Language.values())
                 .map(Language::getAbbreviation)
                 .collect(Collectors.toList());
     }
 
     public void setEnabled(boolean enabled) {
-        notLocalisedComponents.forEach((k,v)->v.setEnabled(enabled));
-        localisedComponentsMapIterate((language, fieldName, component)->component.setComponentEnabled(enabled));
+        notLocalisedComponents.forEach((k, v) -> v.setEnabled(enabled));
+        localisedComponentsMapIterate((language, fieldName, component) -> component.setComponentEnabled(enabled));
         saveButton.setEnabled(enabled);
     }
 
-    private void localisedComponentsMapIterate(MapIteratorFunc func){
-        for(Map.Entry<String, Map<String, LocalisedComponent>> languageEntry : localisedComponents.entrySet()){
-            for(Map.Entry<String, LocalisedComponent> fieldEntry : languageEntry.getValue().entrySet()){
+    private void localisedComponentsMapIterate(MapIteratorFunc func) {
+        for (Map.Entry<String, Map<String, LocalisedComponent>> languageEntry : localisedComponents.entrySet()) {
+            for (Map.Entry<String, LocalisedComponent> fieldEntry : languageEntry.getValue().entrySet()) {
                 try {
                     func.run(languageEntry.getKey(), fieldEntry.getKey(), fieldEntry.getValue());
                 } catch (Exception e) {
@@ -240,19 +272,20 @@ public class EditDictionaryPanel extends JPanel {
     }
 
     public void load(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        if(dictionary == null) {
+        clearFields();
+        if (dictionary == null) {
             clear();
             refreshView();
             return;
         }
         // if this dictionary class is equal old dictionary class, we not rebuild view
-        if (editedDictionary== null || editedDictionary.getClass() != dictionary.getClass()){
+        if (editedDictionary == null || editedDictionary.getClass() != dictionary.getClass()) {
             editedDictionary = dictionary;
             clear();
             addValuesPanel(createValuesPanel(dictionary));
         }
         editedDictionary = dictionary;
-        if(dictionary.getId() != null){
+        if (dictionary.getId() != null) {
             loadNotLocalisedFields(editedDictionary);
             loadLocalisedFields(editedDictionary);
             // TODO dorobić etykietę
@@ -261,7 +294,7 @@ public class EditDictionaryPanel extends JPanel {
             // TODO dorobić etykietę
             modeLabel.setText("Dodawanie nowej wartosci");
         }
-
+        validationManager = initValidation();
         refreshView();
         setEnabled(true);
     }
@@ -273,22 +306,22 @@ public class EditDictionaryPanel extends JPanel {
 
     private void loadNotLocalisedFields(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         String value;
-        for(Map.Entry<String, JTextComponent> entry: notLocalisedComponents.entrySet()){
+        for (Map.Entry<String, JTextComponent> entry : notLocalisedComponents.entrySet()) {
             value = (String) getValue(dictionary, entry.getKey());
             entry.getValue().setText(value);
         }
     }
 
     private void loadLocalisedFields(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        localisedComponentsMapIterate((language, fieldName, component)->{
+        localisedComponentsMapIterate((language, fieldName, component) -> {
             Long id = (Long) getValue(dictionary, fieldName);
             LocalisedString localisedString = getLocalisedString(id, language);
             component.setLocalisedString(localisedString);
         });
     }
 
-    private LocalisedString getLocalisedString(Long id, String language){
-        if(id == null){
+    private LocalisedString getLocalisedString(Long id, String language) {
+        if (id == null) {
             return null;
         }
         LocalisedKey key = new LocalisedKey(id, language);
@@ -296,47 +329,65 @@ public class EditDictionaryPanel extends JPanel {
     }
 
     private Object getValue(Dictionary dictionary, String fieldName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = dictionary.getClass().getMethod("get"+fieldName);
+        Method method = dictionary.getClass().getMethod("get" + fieldName);
         return method.invoke(dictionary);
     }
 
-    private void addValuesPanel(JPanel panel){
+    private void addValuesPanel(JPanel panel) {
         valuesPanel = panel;
         add(valuesPanel, BorderLayout.CENTER);
     }
 
-    public void clear(){
-        modeLabel.setText("");
-        if(valuesPanel != null){
+    private void clear() {
+        if (valuesPanel != null) {
             remove(valuesPanel);
         }
         notLocalisedComponents.clear();
-        localisedComponents.forEach((k,v)->v.clear());
+        localisedComponents.forEach((k, v) -> v.clear());
         localisedComponents.clear();
     }
 
+    private void clearFields() {
+        modeLabel.setText("");
+        localisedComponentsMapIterate((language, fieldName, component) -> {
+            component.getComponent().setText("");
+        });
+    }
 
-    private class LocalisedComponent{
+    private interface MapIteratorFunc {
+        void run(String language, String fieldName, LocalisedComponent component) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException;
+    }
+
+    private class LocalisedComponent {
         private String language;
         private JTextComponent component;
         private LocalisedString localisedString;
 
-        public LocalisedComponent(JTextComponent component, LocalisedString localisedString, String language){
+        public LocalisedComponent(JTextComponent component, LocalisedString localisedString, String language) {
             this.component = component;
             this.language = language;
             this.localisedString = localisedString;
-            if(this.localisedString == null){
+            if (this.localisedString == null) {
                 this.localisedString = new LocalisedString();
                 this.localisedString.addKey(null, language);
             }
         }
 
-        public LocalisedString getLocalisedString(){
+        public LocalisedString getLocalisedString() {
             updateLocalisedString();
             return localisedString;
         }
 
-        private void updateLocalisedString(){
+        public void setLocalisedString(LocalisedString localisedString) {
+            this.localisedString = localisedString;
+            if (this.localisedString == null) {
+                this.localisedString = new LocalisedString();
+                this.localisedString.addKey(null, language);
+            }
+            updateComponentValue();
+        }
+
+        private void updateLocalisedString() {
             localisedString.setValue(component.getText());
         }
 
@@ -344,17 +395,12 @@ public class EditDictionaryPanel extends JPanel {
             component.setText(localisedString.getValue());
         }
 
-        public void setLocalisedString(LocalisedString localisedString){
-            this.localisedString = localisedString;
-            if(this.localisedString == null) {
-                this.localisedString = new LocalisedString();
-                this.localisedString.addKey(null, language);
-            }
-            updateComponentValue();
+        public void setComponentEnabled(boolean enabled) {
+            component.setEnabled(enabled);
         }
 
-        public void setComponentEnabled(boolean enabled){
-            component.setEnabled(enabled);
+        public JTextComponent getComponent() {
+            return component;
         }
     }
 }

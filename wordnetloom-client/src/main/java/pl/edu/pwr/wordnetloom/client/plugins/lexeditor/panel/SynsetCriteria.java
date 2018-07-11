@@ -41,7 +41,6 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         isArtificial = null;
 
         id = createIdField();
-
         definition = new MTextField(STANDARD_VALUE_FILTER);
         comment = new MTextField(STANDARD_VALUE_FILTER);
         all = new WebRadioButton(Labels.VALUE_ALL, true);

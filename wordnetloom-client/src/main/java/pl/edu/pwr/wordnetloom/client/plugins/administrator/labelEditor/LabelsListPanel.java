@@ -40,7 +40,7 @@ class LabelsListPanel extends JPanel {
 
     public void refreshLabel(String key) {
         ApplicationLabel label = RemoteService.localisedStringServiceRemote.find(key, (String) languageCombo.getSelectedItem());
-        model.setElementAt(label, editingLabelIndex);
+        editingLabelIndex = model.setElementAt(label, editingLabelIndex);
     }
 
     private void initView() {
@@ -91,13 +91,7 @@ class LabelsListPanel extends JPanel {
         getLanguages().forEach(languageCombo::addItem);
         languageCombo.addActionListener(e -> loadLabels((String) languageCombo.getSelectedItem()));
 
-        JButton button = MButton.buildAddButton().withActionListener(e -> {
-            // TODO wyświetlenie okienka do tworzenia nowego języka
-            throw new NotImplementedException();
-        });
-
         panel.add(languageCombo, BorderLayout.CENTER);
-        panel.add(button, BorderLayout.EAST);
 
         return panel;
     }
@@ -191,7 +185,7 @@ class LabelsListPanel extends JPanel {
 
         private List<String> columns;
         private List<ApplicationLabel> items;
-        private String filter;
+        private String filter = "";
 
         LabelModel(List<ApplicationLabel> labels, List<String> columns) {
             this.columns = columns;
@@ -231,17 +225,19 @@ class LabelsListPanel extends JPanel {
             return items.get(index);
         }
 
-        void setElementAt(ApplicationLabel label, int rowIndex) {
+        int setElementAt(ApplicationLabel label, int rowIndex) {
             if (rowIndex >= 0) {
                 items.set(rowIndex, label);
                 if (isItemFiltered(label)) {
                     this.fireTableRowsUpdated(rowIndex, rowIndex);
                 }
+                return rowIndex;
             } else {
                 items.add(label);
                 if (isItemFiltered(label)) {
                     this.fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
                 }
+                return items.size()-1;
             }
         }
 

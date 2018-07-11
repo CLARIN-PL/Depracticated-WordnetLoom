@@ -9,25 +9,20 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.localisation.model.ApplicationLabel;
 
-
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.util.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-class EditLabelPanel extends JPanel{
+class EditLabelPanel extends JPanel {
 
     // TODO dorobić etykiety
     private final String ADDING_MODE = "Dodawanie";
     private final String EDITING_MODE = "Edytowanie";
     private final String EMPTY_MODE = " ";
-
-
-    public interface EditLabelListener {
-        void onSave(String key);
-    }
-
     private final int LANGUAGE_LABEL_WIDTH = 50;
     private JTextField labelName;
     private Map<String, JComponent> componentsMap;
@@ -35,7 +30,6 @@ class EditLabelPanel extends JPanel{
     private EditLabelListener listener;
     private JLabel modeLabel;
     private JButton saveButton;
-
     private ValidationManager validationManager;
 
     // TODO można dorobić zapisywanie kolejności języków
@@ -49,7 +43,7 @@ class EditLabelPanel extends JPanel{
         validationManager = initValidation();
     }
 
-    private void initView(){
+    private void initView() {
         setLayout(new BorderLayout());
 
         JPanel namePanel = createInfoLabelPanel();
@@ -64,15 +58,14 @@ class EditLabelPanel extends JPanel{
         add(saveButton, BorderLayout.SOUTH);
     }
 
-    private ValidationManager initValidation(){
+    private ValidationManager initValidation() {
         ValidationManager manager = new ValidationManager();
         // TODO zrobić etykiety
-        manager.registerError(labelName, "Pole nie może być puste",()->labelName.getText().isEmpty());
-        manager.registerError(labelName, "Nazwa jest już zajęta", ()->{
-            if(isEditingMode()) return false;
-            return checkNameIsUsed(labelName.getText());
-        });
-        componentsMap.forEach((k,v)->manager.registerError(v,"Pole nie może być puste",()-> ((JTextArea)v).getText().isEmpty()));
+        manager.registerError(labelName, "Pole nie może być puste", () -> labelName.getText().isEmpty());
+        manager.registerError(labelName, "Nazwa jest już zajęta", () ->
+            !isEditingMode() && checkNameIsUsed(labelName.getText())
+        );
+        componentsMap.forEach((k, v) -> manager.registerError(v, "Pole nie może być puste", () -> ((JTextArea) v).getText().isEmpty()));
 
         return manager;
     }
@@ -103,11 +96,11 @@ class EditLabelPanel extends JPanel{
         return componentGroup;
     }
 
-    public void setComponentsEnabled(boolean enabled){
+    public void setComponentsEnabled(boolean enabled) {
         labelName.setEnabled(enabled);
-        componentsMap.forEach((k,v)->v.setEnabled(enabled));
+        componentsMap.forEach((k, v) -> v.setEnabled(enabled));
         saveButton.setEnabled(enabled);
-        if(!enabled){
+        if (!enabled) {
             modeLabel.setText(EMPTY_MODE);
         }
     }
@@ -144,22 +137,27 @@ class EditLabelPanel extends JPanel{
     }
 
     private void saveLabel() {
-        if(validateFields()){
-            for(ApplicationLabel label : labels){
+        if (validateFields()) {
+            ApplicationLabel label;
+            ApplicationLabel savedLabel;
+            for (int i = 0; i < labels.size(); i++) {
+                label = labels.get(i);
                 label.setKey(labelName.getText());
-                label.setValue(((JTextArea)componentsMap.get(label.getLanguage())).getText());
-                RemoteService.localisedStringServiceRemote.save(label);
+                label.setValue(((JTextArea) componentsMap.get(label.getLanguage())).getText());
+                savedLabel = RemoteService.localisedStringServiceRemote.save(label);
+                labels.set(i, savedLabel);
             }
+            modeLabel.setText(EDITING_MODE);
             listener.onSave(labelName.getText());
         }
     }
 
-    private boolean validateFields(){
+    private boolean validateFields() {
         return validationManager.validate();
     }
 
     void loadLabel(ApplicationLabel applicationLabel) {
-        if(isNewLabel(applicationLabel)){
+        if (isNewLabel(applicationLabel)) {
             prepareCreatingLabel();
         } else {
             prepareEditingLabel(applicationLabel);
@@ -174,14 +172,14 @@ class EditLabelPanel extends JPanel{
     private void prepareEditingLabel(ApplicationLabel applicationLabel) {
         labelName.setText(applicationLabel.getKey());
         labels = RemoteService.localisedStringServiceRemote.findStringInAllLanguages(applicationLabel.getKey());
-        labels.forEach(l->editLabelValue(l.getLanguage(), l.getValue()));
+        labels.forEach(l -> editLabelValue(l.getLanguage(), l.getValue()));
         modeLabel.setText(EDITING_MODE);
     }
 
     private void prepareCreatingLabel() {
         clearFields();
         labels.clear();
-        componentsMap.forEach((k,v)->{
+        componentsMap.forEach((k, v) -> {
             ApplicationLabel label = new ApplicationLabel();
             label.setLanguage(k);
             labels.add(label);
@@ -191,11 +189,15 @@ class EditLabelPanel extends JPanel{
 
     private void editLabelValue(String language, String value) {
         JTextArea labelTextField = (JTextArea) componentsMap.get(language);
-        labelTextField.setText(value!=null ? value : "");
+        labelTextField.setText(value != null ? value : "");
     }
 
-    private void clearFields(){
+    private void clearFields() {
         labelName.setText("");
-        componentsMap.forEach((k,v)->((JTextComponent)v).setText(""));
+        componentsMap.forEach((k, v) -> ((JTextComponent) v).setText(""));
+    }
+
+    public interface EditLabelListener {
+        void onSave(String key);
     }
 }
