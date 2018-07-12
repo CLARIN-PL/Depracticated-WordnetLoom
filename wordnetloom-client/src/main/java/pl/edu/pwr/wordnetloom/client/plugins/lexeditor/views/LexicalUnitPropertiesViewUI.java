@@ -55,7 +55,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
         for (int i = 0; i < examples.length; i++) {
             editPanel.getExamplesModel().addElement(examples[i]);
         }
-        editPanel.getBtnSave().setEnabled(true);
+        editPanel.getBtnSave().setEnabled(editPanel.isPermissionToEdit());
     }
 
     public void refreshData(Sense unit) {

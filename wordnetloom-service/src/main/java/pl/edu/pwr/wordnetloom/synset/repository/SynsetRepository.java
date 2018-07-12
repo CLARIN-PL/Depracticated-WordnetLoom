@@ -357,18 +357,23 @@ public class SynsetRepository extends GenericRepository<Synset> {
     }
 
     public List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria){
-        CriteriaQuery<Synset> query = getSynsetCriteriaQuery(criteria, false);
-        query.distinct(true);
-        Query selectQuery = getEntityManager().createQuery(query);
-        if(criteria.getLimit() > 0){
-            selectQuery.setMaxResults(criteria.getLimit());
-        }
-        if(criteria.getOffset() > 0){
-            selectQuery.setFirstResult(criteria.getOffset());
-        }
 
-        List<Synset> result = selectQuery.getResultList();
+        List<Synset> result;
+        if(criteria.getSynsetId() != null){
+            result = findSynsetsByIds(new Long[]{criteria.getSynsetId()});
+        } else {
+            CriteriaQuery<Synset> query = getSynsetCriteriaQuery(criteria, false);
+            query.distinct(true);
+            Query selectQuery = getEntityManager().createQuery(query);
+            if(criteria.getLimit() > 0){
+                selectQuery.setMaxResults(criteria.getLimit());
+            }
+            if(criteria.getOffset() > 0){
+                selectQuery.setFirstResult(criteria.getOffset());
+            }
 
+            result = selectQuery.getResultList();
+        }
         //loading lazy objects. Loading objects for result in this moment is faster than fetching in query
         fetchLazyObject(result);
         return result;

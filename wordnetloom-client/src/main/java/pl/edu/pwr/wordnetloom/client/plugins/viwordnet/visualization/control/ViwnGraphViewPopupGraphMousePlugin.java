@@ -24,6 +24,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
@@ -39,11 +40,11 @@ import java.util.List;
 
 public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMousePlugin {
 
-    protected WebPopupMenu popup = new WebPopupMenu();
-    protected ViwnGraphViewUI vgvui;
-    protected WebList synset_list_ = null;
+    private WebPopupMenu popup = new WebPopupMenu();
+    private ViwnGraphViewUI vgvui;
+    private WebList synset_list_ = null;
 
-    public ViwnGraphViewPopupGraphMousePlugin(ViwnGraphViewUI vgvui) {
+    ViwnGraphViewPopupGraphMousePlugin(ViwnGraphViewUI vgvui) {
         this.vgvui = vgvui;
     }
 
@@ -129,31 +130,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                     }
                 });
 
-                popup.add(new AbstractAction(Labels.OPEN_IN_NEW_TAB) {
-                    /**
-                     *
-                     */
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        ViWordNetService s = getViWordNetService();
-                        Synset synset = ((ViwnNodeSynset)vertex).getSynset();
-                        // pobranie obiektu DataEntry ze starego grafu, z którego zostanie zbudowany węzeł synsetu
-                        DataEntry synsetDataEntry = getViWordNetService().getSynsetData().getById(synset.getId());
-                        //utworzenie nowego widoku. W tym momencie aktywnym grafem staje się ten nowo utworzony
-                        s.addGraphView();
-                        // utworzenie nowego węzła synsetu, który zostanie przekazany do nowo utowrzonowego grafu
-                        ViwnNodeSynset newSynset = new ViwnNodeSynset(synset, s.getActiveGraphView().getUI());
-                        // przekazanie obiektu DataEntry do nowego grafu
-                        s.getActiveGraphView().getUI().addToEntrySet(synsetDataEntry);
-                        // wstawienie węzła synsetu do grafu
-                        s.getActiveGraphView().getUI().addSynsetNode(newSynset); //TODO można przekazać tylko synset, reszta i tak dzieje się w środku metody
-                        // aktualizowanie nazwy zakładki
-                        ViWordNetPerspective perspective = (ViWordNetPerspective) vgvui.getWorkbench().getActivePerspective();
-                        perspective.setTabTitle(s.getActiveGraphView().getUI().getRootNode().getLabel());
-                    }
-                });
+                popup.add(createOpenInNewTabAction((ViwnNodeSynset) vertex));
 
                 AbstractAction group_action = new AbstractAction(Labels.GRUPPING) {
                     {
@@ -185,26 +162,22 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 popup.add(group_action);
 
                 // enter make relation mode
-                popup.add(new AbstractAction(Labels.SYNSET_CREATE_RELATION_WITH) {
-                    /**
-                     *
-                     */
-                    private static final long serialVersionUID = 1892743918624978L;
-
+                AbstractAction createRelationAction = new AbstractAction(Labels.CREATE_RELATION_WITH) {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         getViWordNetService().setFirstMakeRelation(vertex);
                     }
-                });
+                };
 
-                popup.add(new AbstractAction(Labels.SYNSET_MERGE_WITH) {
-                    private static final long serialVersionUID = 1L;
-
+                AbstractAction mergeAction = new AbstractAction(Labels.SYNSET_MERGE_WITH) {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         getViWordNetService().setFirstMergeSynsets(vertex);
                     }
-                });
+                };
+
+                popup.add(createRelationAction);
+                popup.add(mergeAction);
 
                 // split synset options from lexical unit options
                 popup.addSeparator();
@@ -229,6 +202,9 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 });
 
                 popup.add(createRelationItem);
+
+                PermissionHelper.checkPermissionToEditAndSetComponents(createRelationAction, mergeAction);
+                PermissionHelper.checkPermissionToEditAndSetComponents(createRelationItem);
 
             } else if (vertex != null && vertex instanceof ViwnNodeSet) {
                 ViwnNodeSet set = (ViwnNodeSet) vertex;
@@ -324,10 +300,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 });
 
                 if (edge instanceof ViwnEdgeSynset) {
-                    popup.add(new AbstractAction(Labels.REMOVE_RELATION) {
-
-                        private static final long serialVersionUID = -9382109827346L;
-
+                    AbstractAction removeRelationAction = new AbstractAction(Labels.REMOVE_RELATION) {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             Pair<ViwnNode> c = vgvui.getGraph().getEndpoints(edge);
@@ -335,7 +308,9 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                             rel.addAll(vgvui.getGraph().findEdgeSet(c.getSecond(), c.getFirst()));
                             getViWordNetService().removeRelation(rel);
                         }
-                    });
+                    };
+                    popup.add(removeRelationAction);
+                    PermissionHelper.checkPermissionToEditAndSetComponents(removeRelationAction);
                 }
 
             } else {
@@ -363,6 +338,31 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             }
         }
 
+    }
+
+    private AbstractAction createOpenInNewTabAction(ViwnNodeSynset vertex) {
+        return new AbstractAction(Labels.OPEN_IN_NEW_TAB) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ViWordNetService s = getViWordNetService();
+                Synset synset = vertex.getSynset();
+                // pobranie obiektu DataEntry ze starego grafu, z którego zostanie zbudowany węzeł synsetu
+                DataEntry synsetDataEntry = getViWordNetService().getSynsetData().getById(synset.getId());
+                //utworzenie nowego widoku. W tym momencie aktywnym grafem staje się ten nowo utworzony
+                s.addGraphView();
+                // utworzenie nowego węzła synsetu, który zostanie przekazany do nowo utowrzonowego grafu
+                ViwnNodeSynset newSynset = new ViwnNodeSynset(synset, s.getActiveGraphView().getUI());
+                // przekazanie obiektu DataEntry do nowego grafu
+                s.getActiveGraphView().getUI().addToEntrySet(synsetDataEntry);
+                // wstawienie węzła synsetu do grafu
+                s.getActiveGraphView().getUI().addSynsetNode(newSynset); //TODO można przekazać tylko synset, reszta i tak dzieje się w środku metody
+                // aktualizowanie nazwy zakładki
+                ViWordNetPerspective perspective = (ViWordNetPerspective) vgvui.getWorkbench().getActivePerspective();
+                perspective.setTabTitle(s.getActiveGraphView().getUI().getRootNode().getLabel());
+            }
+        };
     }
 
     private String getSenseMenuItemText(Sense sense){

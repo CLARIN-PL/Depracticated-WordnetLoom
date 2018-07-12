@@ -48,6 +48,7 @@ public abstract class GenericRepository<T> {
 
 
     public List<T> findAll(final String orderField) {
+        System.out.println("Select e From " + getPersistentClass().getSimpleName() + " e Order by e." + orderField);
         return getEntityManager().createQuery(
                 "Select e From " + getPersistentClass().getSimpleName() + " e Order by e." + orderField)
                 .getResultList();

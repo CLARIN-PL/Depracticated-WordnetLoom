@@ -340,7 +340,6 @@ public class SenseRepository extends GenericRepository<Sense> {
         return getEntityManager().createQuery(query).getSingleResult();
     }
 
-
     @Override
     protected Class<Sense> getPersistentClass() {
         return Sense.class;

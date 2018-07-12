@@ -1,9 +1,6 @@
 package pl.edu.pwr.wordnetloom.localisation.model;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -12,7 +9,7 @@ import java.io.Serializable;
 @Table(name = "application_localised_string")
 public class LocalisedString implements Serializable {
 
-    @Valid
+//    @Valid
     @NotNull
     @EmbeddedId
     private LocalisedKey key;

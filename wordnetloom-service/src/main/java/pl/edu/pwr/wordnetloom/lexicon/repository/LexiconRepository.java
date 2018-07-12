@@ -27,6 +27,15 @@ public class LexiconRepository extends GenericRepository<Lexicon> {
         return em;
     }
 
+    public Lexicon save(Lexicon lexicon){
+        if(em.contains(lexicon)){
+            em.persist(lexicon);
+            return lexicon;
+        } else {
+            return em.merge(lexicon);
+        }
+    }
+
     public List<Long> findAllLexiconIds() {
         TypedQuery<Long> query = getEntityManager().createQuery("SELECT l.id FROM Lexicon l", Long.class);
         return query.getResultList();

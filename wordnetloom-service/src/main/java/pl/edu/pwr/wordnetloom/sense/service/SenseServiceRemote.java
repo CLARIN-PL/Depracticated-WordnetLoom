@@ -66,5 +66,4 @@ public interface SenseServiceRemote {
     Sense fetchSense(Long senseId);
 
     SenseAttributes fetchSenseAttribute(Long senseId);
-
 }

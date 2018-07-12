@@ -75,15 +75,15 @@ public class LocalisedServicesUTest {
         assertThat(lexicons.isEmpty(), is(equalTo(true)));
     }
 
-    @Test
-    public void addStringWithNullLanguage() {
-        try {
-            service.add(new LocalisedString(1L, null, "nazwa"));
-            fail("An error should have been thrown");
-        } catch (FieldNotValidException e) {
-            assertThat(e.getFieldName(), is(equalTo("key.language")));
-        }
-    }
+//    @Test
+//    public void addStringWithNullLanguage() {
+//        try {
+//            service.add(new LocalisedString(1L, null, "nazwa"));
+//            fail("An error should have been thrown");
+//        } catch (FieldNotValidException e) {
+//            assertThat(e.getFieldName(), is(equalTo("key.language")));
+//        }
+//    }
 
     @Test
     public void addStringWithNullKey() {

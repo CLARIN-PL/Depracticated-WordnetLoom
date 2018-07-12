@@ -7,6 +7,7 @@ import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.core.CoreService;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SetLexiconsEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconManagerWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
@@ -27,8 +28,12 @@ import java.util.Set;
 
 public class LexiconService extends AbstractService {
 
+    // TODO przenieśc to w inne miejsce
     private final WebMenuItem lexiconItem = new MMenuItem(Labels.LEXICON)
             .withIcon(FontAwesome.BOOK);
+
+    private final WebMenuItem lexiconManagerItem = new MMenuItem("Zarządzaj leksykonami")
+            .withIcon(FontAwesome.ANGELLIST);
 
     public LexiconService(Workbench workbench) {
         super(workbench);
@@ -38,6 +43,10 @@ public class LexiconService extends AbstractService {
             sendEvents();
             ViWordNetService s = ServiceManager.getViWordNetService(workbench);
             s.reloadCurrentListSelection();
+        });
+
+        lexiconManagerItem.addActionListener((ActionEvent e) -> {
+            showLexiconManagerWindow();
         });
     }
 
@@ -53,6 +62,7 @@ public class LexiconService extends AbstractService {
             return;
         }
         help.add(lexiconItem);
+        help.add(lexiconManagerItem);
     }
 
     public WebMenu findMenu(String name, WebMenu menu) {
@@ -85,7 +95,10 @@ public class LexiconService extends AbstractService {
 
         String language = UserSessionContext.getInstance().getLanguage();
         UserSessionContext.initialiseAndGetInstance(user, language);
+    }
 
+    private void showLexiconManagerWindow() {
+        LexiconManagerWindow.showModal(workbench.getFrame());
     }
 
     private void sendEvents() {

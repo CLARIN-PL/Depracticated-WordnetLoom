@@ -15,6 +15,7 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.renderers.ExampleCellRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -63,6 +64,16 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
     private DefaultListModel examplesModel;
     private WebScrollPane definitionScrollPane;
     private MTextPane definition;
+
+    private boolean permissionToEdit = false;
+
+    private void setupPermissionComponents() {
+        permissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(
+                lexicon, lemma, variant, link, register, partOfSpeech,
+                domain, comment, btnSave, btnNewExample, btnEditExample,
+                btnRemoveExample, examplesList, definition
+        );
+    }
 
     public LexicalUnitPropertiesPanel(WebFrame frame) {
         setLayout(new RiverLayout());
@@ -180,7 +191,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
                 senseExample.setExample(example);
                 senseExample.setType("W");
                 examplesModel.addElement(senseExample);
-                btnSave.setEnabled(true);
+                enableSaveButton();
                 examplesList.updateUI();
             }
         });
@@ -197,7 +208,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
                 if (modified != null && !old.equals(modified)) {
                     example.setExample(modified);
                     examplesList.updateUI();
-                    btnSave.setEnabled(true);
+                    enableSaveButton();
                 }
             }
         });
@@ -207,7 +218,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
             int idx = examplesList.getSelectedIndex();
             if (idx >= 0) {
                 examplesModel.remove(idx);
-                btnSave.setEnabled(true);
+                enableSaveButton();
             }
         });
 
@@ -249,6 +260,8 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
 
         add("", tabs);
         add("br center", buttons);
+
+        setupPermissionComponents();
     }
 
     public SenseAttributes getSenseAttributes(Long senseId) {
@@ -299,11 +312,11 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
     public void caretUpdate(CaretEvent event) {
         if (event.getSource() instanceof MTextField) {
             MTextField field = (MTextField) event.getSource();
-            btnSave.setEnabled(btnSave.isEnabled() | field.wasTextChanged());
+            btnSave.setEnabled(permissionToEdit && btnSave.isEnabled() | field.wasTextChanged());
         }
         if (event.getSource() instanceof MTextPane) {
             MTextPane field = (MTextPane) event.getSource();
-            btnSave.setEnabled(btnSave.isEnabled() | field.wasTextChanged());
+            btnSave.setEnabled(permissionToEdit && btnSave.isEnabled() | field.wasTextChanged());
         }
     }
 
@@ -352,18 +365,22 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
     public void actionPerformed(ActionEvent event) {
 
         if (event.getSource() == domain) {
-            btnSave.setEnabled(true);
+            enableSaveButton();
         } else if (event.getSource() == lexicon) {
-            btnSave.setEnabled(true);
+            enableSaveButton();
         } else if (event.getSource() == register) {
-            btnSave.setEnabled(true);
+            enableSaveButton();
         } else if (event.getSource() == link) {
-            btnSave.setEnabled(true);
+            enableSaveButton();
         } else if (event.getSource() == examplesList) {
-            btnSave.setEnabled(true);
+            enableSaveButton();
         } else if (event.getSource() == partOfSpeech) {
-            btnSave.setEnabled(true);
+            enableSaveButton();
         }
+    }
+
+    private void enableSaveButton() {
+        btnSave.setEnabled(permissionToEdit);
     }
 
     public MComboBox<Lexicon> getLexicon() {
@@ -412,6 +429,10 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
 
     public JButton getBtnSave() {
         return btnSave;
+    }
+
+    public boolean isPermissionToEdit(){
+        return permissionToEdit;
     }
 
 }

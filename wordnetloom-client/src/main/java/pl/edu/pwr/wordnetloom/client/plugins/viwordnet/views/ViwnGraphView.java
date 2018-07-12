@@ -267,7 +267,7 @@ public class ViwnGraphView extends AbstractView {
 //                            getId()).
 //                            getRelationType().
 //                            getName().getText());
-//                    ext.setColor(graphExts.get(synGraphs.get(s.getId()).getId()).getColor());
+//                    ext.setColor(graphExts.get(synGraphs.get(s.getId()).getId()).setColor());
 //                    return ext;
 //                }).forEachOrdered((ext) -> {
 //                    result.add(ext);

@@ -13,4 +13,5 @@ public interface LexiconServiceRemote {
 
     Lexicon add(Lexicon lexicon);
 
+    void remove(long lexiconId);
 }

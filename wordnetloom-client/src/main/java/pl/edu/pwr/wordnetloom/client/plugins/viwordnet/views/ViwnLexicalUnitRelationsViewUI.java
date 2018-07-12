@@ -17,6 +17,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
@@ -54,6 +55,8 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
     private MButton deleteRelationButton = null;
 
     Workbench workbench;
+
+    private boolean permissionToUpdate = false;
 
     public ViwnLexicalUnitRelationsViewUI(Workbench workbench) {
         super();
@@ -95,6 +98,9 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         content.add("hfill vfill", new JScrollPane(tree));
         content.add("br center", addRelationButton);
         content.add(deleteRelationButton);
+
+        permissionToUpdate = PermissionHelper.checkPermissionToEditAndSetComponents(addRelationButton, deleteRelationButton);
+
     }
 
     @Override
@@ -413,12 +419,11 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
     @Override
     public void valueChanged(TreeSelectionEvent evt) {
         DefaultMutableTreeNode selectedNode = tree.getSelectedNode();
-        if(selectedNode == null)
-        {
+        if(selectedNode == null) {
             return;
         }
         if (selectedNode.isLeaf() && !root.isNodeChild(selectedNode)) {
-            deleteRelationButton.setEnabled(true);
+            deleteRelationButton.setEnabled(permissionToUpdate);
         } else {
             deleteRelationButton.setEnabled(false);
         }

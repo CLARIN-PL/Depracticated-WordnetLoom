@@ -19,6 +19,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
@@ -30,6 +31,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -41,6 +43,7 @@ import pl.edu.pwr.wordnetloom.synset.exception.InvalidLexiconException;
 import pl.edu.pwr.wordnetloom.synset.exception.InvalidPartOfSpeechException;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
+import pl.edu.pwr.wordnetloom.user.model.Role;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -79,7 +82,6 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     private final SimpleListenersContainer synsetUpdateListeners = new SimpleListenersContainer();
     private final UnitsInSynsetListModel listModel = new UnitsInSynsetListModel();
     private final ViwnGraphViewUI graphUI;
-    ArrayList<Sense> lastSelectedUnits = new ArrayList<>();
     private ViWordNetService viWordNetService;
     private WebList unitsList;
     private WebTextField synsetID;
@@ -93,6 +95,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
     private MTextArea commentValue = null;
     private Synset lastSynset = null;
 
+    private boolean permissionToEdit = false;
 
     public SynsetStructureViewUI(ViwnGraphViewUI graphUI) {
         this.graphUI = graphUI;
@@ -256,6 +259,10 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         scr.setDrawBorder(false);
 
         content.add("br vfill hfill", scr);
+
+        permissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(
+            buttonUp, buttonDown, buttonAdd, buttonRelations, buttonSwitchToLexicalPerspective, buttonToNew
+        );
     }
 
     private void setSplitPosition(int newSplitPosition) {
@@ -497,23 +504,43 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         int index = unitsList.getSelectedIndex();
         boolean singleSelection = unitsList.getSelectedIndices() == null
                 || unitsList.getSelectedIndices().length < 2;
-        buttonUp.setEnabled(singleSelection && index > 0
-                && (listModel.getLineSplitPosition() != index || index > 1));
-        buttonDown.setEnabled(singleSelection && index != -1
-                && index + 1 < listModel.getSize()
-                && (index > 0 || index + 1 != listModel.getLineSplitPosition()));
-        buttonToNew.setEnabled(null != lastSynset
-                && listModel.getCollection().size() > 1);
+        buttonUp.setEnabled(canMoveUp(index, singleSelection));
+        buttonDown.setEnabled(canMoveDown(index, singleSelection));
+        buttonToNew.setEnabled(canAddUnit());
 
         int selectionSize = unitsList.getSelectedIndices().length;
         // nie można usunąć linii podziału
-        buttonDelete.setEnabled(selectionSize > 0
-                && selectionSize < listModel.getSize());
-        buttonSwitchToLexicalPerspective.setEnabled(singleSelection
-                && index != -1 && index != listModel.getLineSplitPosition());
+        buttonDelete.setEnabled(canDeleteUnit(selectionSize));
+        buttonSwitchToLexicalPerspective.setEnabled(canSwitchToLexicalPerspective(index, singleSelection));
 
         // powiadomienie zainteresowanych
         listeners.notifyAllListeners(listModel.getObjectAt(index), LIST_SELECTION_CHANGED);
+    }
+
+    private boolean canSwitchToLexicalPerspective(int index, boolean singleSelection) {
+        return permissionToEdit && singleSelection
+                && index != -1 && index != listModel.getLineSplitPosition();
+    }
+
+    private boolean canDeleteUnit(int selectionSize) {
+        return permissionToEdit && selectionSize > 0
+                && selectionSize < listModel.getSize();
+    }
+
+    private boolean canAddUnit() {
+        return permissionToEdit && null != lastSynset
+                && listModel.getCollection().size() > 1;
+    }
+
+    private boolean canMoveDown(int index, boolean singleSelection) {
+        return permissionToEdit && singleSelection && index != -1
+                && index + 1 < listModel.getSize()
+                && (index > 0 || index + 1 != listModel.getLineSplitPosition());
+    }
+
+    private boolean canMoveUp(int index, boolean singleSelection) {
+        return permissionToEdit && singleSelection && index > 0
+                && (listModel.getLineSplitPosition() != index || index > 1);
     }
 
     /**
@@ -584,9 +611,9 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         listModel.setCollection(units, newSplitPoint);
 
         if (unitsList != null) {
-            buttonAdd.setEnabled(listModel.getSize() > 1);
+            buttonAdd.setEnabled(canEditUnit());
             unitsList.setEnabled(listModel.getSize() > 1);
-            buttonRelations.setEnabled(listModel.getSize() > 1);
+            buttonRelations.setEnabled(canEditUnit());
             // przywrocenie zaznaczenia
             Collection<Integer> indices = selectedUnits != null ? listModel
                     .getIndexesOfSelectedElements(selectedUnits) : null;
@@ -604,6 +631,10 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 unitsList.clearSelection();
             }
         }
+    }
+
+    private boolean canEditUnit() {
+        return permissionToEdit && listModel.getSize() > 1;
     }
 
     /**

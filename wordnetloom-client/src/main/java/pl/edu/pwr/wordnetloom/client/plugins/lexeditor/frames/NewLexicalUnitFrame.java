@@ -4,7 +4,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitProperti
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
-import pl.edu.pwr.wordnetloom.client.systems.errors.ErrorProvider;
+import pl.edu.pwr.wordnetloom.client.systems.errors.ValidationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DomainManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
@@ -13,6 +13,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DomainMComboBox;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -22,16 +23,9 @@ import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.util.List;
-
-import javax.swing.*;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 
 /**
  * New lexical unit parameter window
@@ -46,7 +40,8 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     private static final long serialVersionUID = 1L;
     private boolean wasAddClicked = false;
 
-    private ErrorProvider errorProvider;
+//    private ErrorProvider errorProvider;
+    private final ValidationManager validationManager = new ValidationManager();
 
     private NewLexicalUnitFrame(Workbench workbench) {
         super(workbench.getFrame(), Labels.UNIT_PARAMS, 600, 680);
@@ -58,7 +53,17 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         editPanel.getBtnCancel().addActionListener(this);
         add("hfill vfill", editPanel);
         pack();
-        errorProvider = new ErrorProvider(editPanel.getLemma());
+
+        initErrorManager();
+    }
+
+    private void initErrorManager(){
+        // TODO dodać etykiety do bazy
+        validationManager.registerError(editPanel.getLemma(), "Pole nie może być puste", () -> editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()));
+        validationManager.registerError(editPanel.getLexicon(), "Leksykon musi być ustawiony", ()->editPanel.getLexicon().getEntity() == null);
+        validationManager.registerError(editPanel.getPartOfSpeech(), "Część mowy musi być ustawiona", ()->editPanel.getPartOfSpeech().getEntity() == null);
+        validationManager.registerError(editPanel.getDomain(), "Domena musi być ustawiona", ()->editPanel.getDomain().getEntity()==null);
+        validationManager.registerError(editPanel.getRegister(), "Rejest nie może być pusty", ()->editPanel.getRegister().getEntity() == null);
     }
 
     public Pair<Sense, SenseAttributes> saveAndReturnNewSense() {
@@ -154,24 +159,26 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     public void actionPerformed(ActionEvent event) {
 
         if (event.getSource() == editPanel.getBtnSave()) {
-
-            String testLemma = editPanel.getLemma().getText();
-
-            List<SenseAttributes> units = RemoteService.senseRemote.findByLemmaWithSense(testLemma, LexiconManager.getInstance().getUserChosenLexiconsIds());
-
-            if (validateSelections()) {
-                if (checkUnitExists(testLemma, units)) {
-                    wasAddClicked = true;
-                    setVisible(false);
-                }
-            }
-
-            lastPickDomain = editPanel.getDomain().getEntity();
-            lastPickPos = editPanel.getPartOfSpeech().getEntity();
-
+            PermissionHelper.handle(this::save);
         } else if (event.getSource() == editPanel.getBtnCancel()) {
             setVisible(false);
         }
+    }
+
+    private void save() {
+        String testLemma = editPanel.getLemma().getText();
+
+        List<SenseAttributes> units = RemoteService.senseRemote.findByLemmaWithSense(testLemma, LexiconManager.getInstance().getUserChosenLexiconsIds());
+
+        if (validateSelections()) {
+            if (checkUnitExists(testLemma, units)) {
+                wasAddClicked = true;
+                setVisible(false);
+            }
+        }
+
+        lastPickDomain = editPanel.getDomain().getEntity();
+        lastPickPos = editPanel.getPartOfSpeech().getEntity();
     }
 
     private boolean checkUnitExists(String testLemma, List<SenseAttributes> attributes) {
@@ -202,43 +209,28 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     }
 
     private boolean validateSelections() {
-//        if (editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText())) {
-////            DialogBox.showError(Messages.SELECT_LEMMA);
-//            errorProvider.setError(editPanel.getLemma(), ErrorProvider.ERROR, "Pole nie może być puste");
-//            return false;
-//        }
-//        if (editPanel.getLexicon().getEntity() == null) {
-//            DialogBox.showError(Messages.SELECT_LEXICON);
-//            return false;
-//        }
-//        if (editPanel.getPartOfSpeech().getEntity() == null) {
-//            DialogBox.showError(Messages.SELECT_POS);
-//            return false;
-//        }
-//        if (editPanel.getDomain().getEntity() == null) {
-//            DialogBox.showError(Messages.SELECT_DOMAIN);
-//            return false;
-//        }
-        editPanel.getLexicon().setBackground(Color.red);
 
-        boolean[] result = new boolean[4];
-        result[0] = errorProvider.setError(editPanel.getLemma(),
-                editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()),
-                        "Pole nie może być puste");
-
-        result[1] = errorProvider.setError(editPanel.getLexicon(),
-                editPanel.getLexicon().getEntity() == null, "Leksykon musi być ustawiony");
-
-        result[2] = errorProvider.setError(editPanel.getPartOfSpeech(),
-                editPanel.getPartOfSpeech().getEntity() == null, "Część mowy musi być ustawiona");
-
-        result[3] = errorProvider.setError(editPanel.getDomain(),
-                editPanel.getDomain().getEntity() == null, "Domena musi być ustawiona");
-        for(int i = 0; i<result.length; i++){
-            if(!result[i]) {
-                return false;
-            }
-        }
-        return true;
+//        boolean[] result = new boolean[4];
+//        result[0] = errorProvider.setError(editPanel.getLemma(),
+//                editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()),
+//                "Pole nie może być puste");
+//
+//        result[1] = errorProvider.setError(editPanel.getLexicon(),
+//                editPanel.getLexicon().getEntity() == null, "Leksykon musi być ustawiony");
+//
+//        result[2] = errorProvider.setError(editPanel.getPartOfSpeech(),
+//                editPanel.getPartOfSpeech().getEntity() == null, "Część mowy musi być ustawiona");
+//
+//        result[3] = errorProvider.setError(editPanel.getDomain(),
+//                editPanel.getDomain().getEntity() == null, "Domena musi być ustawiona");
+//
+//
+//        for(int i = 0; i<result.length; i++){
+//            if(!result[i]) {
+//                return false;
+//            }
+//        }
+//        return true;
+        return validationManager.validate();
     }
 }
