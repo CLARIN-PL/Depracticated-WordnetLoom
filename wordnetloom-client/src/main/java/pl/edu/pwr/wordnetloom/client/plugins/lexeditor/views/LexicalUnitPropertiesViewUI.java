@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 import com.alee.laf.panel.WebPanel;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.EmotionsPropertiesPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetUnitsEvent;
@@ -29,6 +30,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
 
     private final ViwnGraphViewUI graphUI;
     private LexicalUnitPropertiesPanel editPanel;
+
     private WebPanel content;
 
     public LexicalUnitPropertiesViewUI(ViwnGraphViewUI graphUI) {
@@ -39,13 +41,23 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
     public void initialize(final WebPanel content) {
         this.content = content;
 
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+
         editPanel = new LexicalUnitPropertiesPanel(graphUI.getWorkbench().getFrame());
-        content.add(editPanel);
+//        content.add(editPanel);
 
         editPanel.getBtnSave().addActionListener((ActionEvent e) -> {
             saveChangesInUnit();
             editPanel.getBtnSave().setEnabled(false);
         });
+
+        JPanel emotionsPanel = new EmotionsPropertiesPanel(graphUI.getWorkbench().getFrame());
+
+        tabbedPane.add(editPanel);
+        tabbedPane.add(emotionsPanel);
+
+        content.add(tabbedPane);
     }
 
     public void fillKPWrExample(Object[] examples) {

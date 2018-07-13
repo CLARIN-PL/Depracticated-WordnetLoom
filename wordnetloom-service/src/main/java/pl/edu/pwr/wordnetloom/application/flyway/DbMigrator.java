@@ -39,6 +39,5 @@ public class DbMigrator {
             e.printStackTrace();
             flyway.repair();
         }
-
     }
 }
