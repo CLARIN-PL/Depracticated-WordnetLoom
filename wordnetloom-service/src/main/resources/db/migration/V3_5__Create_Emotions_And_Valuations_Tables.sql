@@ -29,7 +29,7 @@ CREATE TRIGGER unit_emotions_before_insert_trigger
 $$
 
 CREATE TRIGGER unit_valuation_beore_insert_trigger
-	BEFORE INSERT ON unit_valuation FOR EACH ROW
+	BEFORE INSERT ON unit_valuations FOR EACH ROW
     BEGIN
 		IF (SELECT dtype FROM dictionaries WHERE id=NEW.valuation) <> 'Valuation'
         THEN SIGNAL SQLSTATE '45000'

@@ -119,7 +119,6 @@ public class V3_7__Move_Emotions_And_Valuations implements JdbcMigration {
             saveUser(annotation.getId(), annotation.getUser(), usersStatement);
         }
 
-
         emotionsStatement.close();
         valuationsStatement.close();
         usersStatement.close();
@@ -132,7 +131,7 @@ public class V3_7__Move_Emotions_And_Valuations implements JdbcMigration {
         statement.executeUpdate();
     }
 
-    private void save(List<Long> ids, Long annotationId, PreparedStatement statement) throws SQLException {
+    private void save(Set<Long> ids, Long annotationId, PreparedStatement statement) throws SQLException {
         if (ids.isEmpty()) {
             return;
         }
@@ -395,16 +394,18 @@ public class V3_7__Move_Emotions_And_Valuations implements JdbcMigration {
     private class Annotation {
         private Long id;
         private String emotions;
-        private List<Long> emotionsIds;
+        private Set<Long> emotionsIds;
         private String valuations;
-        private List<Long> valuationsIds;
+        private Set<Long> valuationsIds;
         private boolean isEmotionalCharacteristic;
         private String userName;
         private Long user;
 
         Annotation() {
-            emotionsIds = new ArrayList<>();
-            valuationsIds = new ArrayList<>();
+//            emotionsIds = new ArrayList<>();
+//            valuationsIds = new ArrayList<>();
+            emotionsIds = new LinkedHashSet<>();
+            valuationsIds = new LinkedHashSet<>();
         }
 
         String getUserName() {
@@ -439,11 +440,11 @@ public class V3_7__Move_Emotions_And_Valuations implements JdbcMigration {
             this.emotions = emotions;
         }
 
-        List<Long> getEmotionsIds() {
+        Set<Long> getEmotionsIds() {
             return emotionsIds;
         }
 
-        public void setEmotionsIds(List<Long> emotionsIds) {
+        public void setEmotionsIds(Set<Long> emotionsIds) {
             this.emotionsIds = emotionsIds;
         }
 
@@ -455,11 +456,11 @@ public class V3_7__Move_Emotions_And_Valuations implements JdbcMigration {
             this.valuations = valuations;
         }
 
-        List<Long> getValuationsIds() {
+        Set<Long> getValuationsIds() {
             return valuationsIds;
         }
 
-        public void setValuationsIds(List<Long> valuationsIds) {
+        public void setValuationsIds(Set<Long> valuationsIds) {
             this.valuationsIds = valuationsIds;
         }
 

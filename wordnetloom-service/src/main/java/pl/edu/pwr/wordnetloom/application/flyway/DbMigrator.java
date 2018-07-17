@@ -33,6 +33,7 @@ public class DbMigrator {
         for (MigrationInfo i : flyway.info().all()) {
             log.log(Level.INFO, "Migrate task: {0} : {1} from file: {2}", new Object[]{i.getVersion(), i.getDescription(), i.getScript()});
         }
+
         try{
             flyway.migrate();
         } catch (FlywayException e){
