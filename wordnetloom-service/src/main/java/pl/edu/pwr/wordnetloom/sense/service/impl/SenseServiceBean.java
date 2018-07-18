@@ -6,8 +6,10 @@ import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.model.EmotionalAnnotation;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
+import pl.edu.pwr.wordnetloom.sense.repository.EmotionalAnnotationRepository;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseAttributesRepository;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
@@ -23,6 +25,7 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.OneToMany;
 import javax.validation.Validator;
 import java.util.List;
 
@@ -38,6 +41,9 @@ public class SenseServiceBean implements SenseServiceLocal {
 
     @Inject
     SenseAttributesRepository senseAttributesRepository;
+
+    @Inject
+    EmotionalAnnotationRepository emotionalAnnotationRepository;
 
     @Inject
     Validator validator;
@@ -236,7 +242,6 @@ public class SenseServiceBean implements SenseServiceLocal {
         return senseRepository.findSensesByWordId(id, lexicon);
     }
 
-
     @PermitAll
     @Override
     public Sense findHeadSenseOfSynset(Long synsetId) {
@@ -253,5 +258,11 @@ public class SenseServiceBean implements SenseServiceLocal {
     @Override
     public SenseAttributes fetchSenseAttribute(Long senseId) {
         return senseRepository.fetchSenseAttribute(senseId);
+    }
+
+    @PermitAll
+    @Override
+    public List<EmotionalAnnotation> getEmotionalAnnotations(Long senseId) {
+        return emotionalAnnotationRepository.getEmotionalAnnotations(senseId);
     }
 }

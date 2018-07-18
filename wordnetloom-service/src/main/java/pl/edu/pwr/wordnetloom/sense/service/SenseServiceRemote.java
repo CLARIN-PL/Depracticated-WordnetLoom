@@ -4,6 +4,7 @@ import java.util.List;
 
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.sense.model.EmotionalAnnotation;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
@@ -66,4 +67,6 @@ public interface SenseServiceRemote {
     Sense fetchSense(Long senseId);
 
     SenseAttributes fetchSenseAttribute(Long senseId);
+
+    List<EmotionalAnnotation> getEmotionalAnnotations(Long senseID);
 }

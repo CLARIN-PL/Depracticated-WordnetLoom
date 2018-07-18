@@ -17,8 +17,19 @@ public class V3_7__Move_Emotions_And_Valuations implements JdbcMigration {
     private final String VALUATION_TYPE = "Valuation";
     private final String SPLIT_REGEX = "[\\;\\.\\:]";
 
+    private final String M_PLUS = "+m";
+    private final String M_MINUS = "-m";
+    private final String S_PLUS = "+s";
+    private final String S_MINUS = "-s";
+    private final String AMB = "amb";
+    private final String EMPTY = "";
+
+    private final String ANNOTATION_TABLE = "wordnet.emotional_annotations";
+    private final String MARKEDNESS = "Markedness";
+
     @Override
     public void migrate(Connection connection) throws Exception {
+        connection.setAutoCommit(false);
         List<Annotation> annotations = getAnnotations(connection);
         Map<String, Element> emotions = getEmotions(connection);
         Map<String, Element> valuation = getValuations(connection);
@@ -26,6 +37,123 @@ public class V3_7__Move_Emotions_And_Valuations implements JdbcMigration {
 
         List<Annotation> filledAnnotations = setIds(annotations, emotions, valuation, users);
         save(connection, filledAnnotations);
+
+        Map<String, Long> dictonaries = getDictionariesMarkednes(connection);
+        List<Markedness> markednesses = getAnnotationsMarkedness(connection);
+        save(markednesses, dictonaries, connection);
+
+        connection.commit();
+    }
+
+    private Map<String, Long> getDictionariesMarkednes(Connection connection) throws SQLException {
+        final String SELECT_STATEMENT = "SELECT DISTINCT D.id, S.value FROM " + DICTIONARIES_TABLE + " D JOIN " + LOCALISED_STRING_TABLE
+                + " S ON D.name_id = S.id WHERE dtype = ?";
+        final int ID = 1;
+        final int VALUE = 2;
+        PreparedStatement statement = connection.prepareStatement(SELECT_STATEMENT);
+        statement.setString(1, MARKEDNESS);
+        ResultSet resultSet = statement.executeQuery();
+        Map<String, Long> markedness = new HashMap<>();
+        while(resultSet.next()){
+            Long id = resultSet.getLong(ID);
+            String value = resultSet.getString(VALUE);
+            String mark = getMarkedness(value);
+
+            markedness.put(mark, id);
+        }
+        return markedness;
+    }
+
+    private String getMarkedness(String value) {
+        final int FIRST_CHAR = 0;
+        final int SECOND_CHAR = 1;
+        value = value.replaceAll("\\s", "");
+        char firstChar = value.charAt(FIRST_CHAR);
+        if(firstChar == '+'){
+            if(value.charAt(SECOND_CHAR) == 'm'){
+                return M_PLUS;
+            } else {
+                return S_PLUS;
+            }
+        } else if(firstChar == '-') {
+            if(value.charAt(SECOND_CHAR) == 'm'){
+                return M_MINUS;
+            } else {
+                return S_MINUS;
+            }
+        } else if (firstChar == 'a'){
+            return AMB;
+        } else {
+            return null;
+        }
+    }
+
+    private List<Markedness> getAnnotationsMarkedness(Connection connection) throws SQLException {
+        final String SELECT_STATEMENT = "SELECT id, markedness FROM " + OUTPUT_EMOTIONAL_ANNOTATION_TABLE;
+        final int ID = 1;
+        final int MARKEDNESS = 2;
+        List<Markedness> markedness = new ArrayList<>();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(SELECT_STATEMENT);
+        Markedness mark;
+        while(resultSet.next()){
+            mark = new Markedness();
+            mark.setId(resultSet.getLong(ID));
+            mark.setMarkedness(resultSet.getString(MARKEDNESS));
+
+            markedness.add(mark);
+        }
+        return markedness;
+    }
+
+    private void save(List<Markedness> markednesses, Map<String, Long> dictionary, Connection connection) throws SQLException {
+        final String UPDATE_STATEMENT = "UPDATE " + OUTPUT_EMOTIONAL_ANNOTATION_TABLE + " SET markedness_id=? WHERE id=?";
+        final int MARKEDNESS = 1;
+        final int ID = 2;
+        PreparedStatement statement = connection.prepareStatement(UPDATE_STATEMENT);
+        for(Markedness markedness : markednesses){
+            if(markedness.getMarkedness() != null){
+                Long dictionaryId = dictionary.get(markedness.getMarkedness());
+                statement.setLong(MARKEDNESS, dictionaryId);
+                statement.setLong(ID, markedness.getId());
+                statement.executeUpdate();
+            }
+        }
+    }
+
+    private class Markedness {
+
+        private Long id;
+        private String markedness;
+        private Long markednessId;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getMarkedness() {
+            return markedness;
+        }
+
+        public void setMarkedness(String markedness) {
+            if(markedness == null || markedness.isEmpty()){
+                this.markedness = null;
+            } else {
+                this.markedness = markedness.replaceAll("\\s", "");
+            }
+        }
+
+        public Long getMarkednessId() {
+            return markednessId;
+        }
+
+        public void setMarkednessId(Long markednessId) {
+            this.markednessId = markednessId;
+        }
     }
 
     private Map<String, User> getUsers(Connection connection) throws SQLException {

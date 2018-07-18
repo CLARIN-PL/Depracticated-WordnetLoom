@@ -48,5 +48,26 @@ ALTER TABLE emotional_annotations
 ADD CONSTRAINT FK_emotional_annotations_users
 FOREIGN KEY (owner) REFERENCES users(id);
 
+ALTER TABLE emotional_annotations
+ADD markedness_id BIGINT;
+
+ALTER TABLE emotional_annotations
+ADD CONSTRAINT FK_annotations_markedness FOREIGN KEY (markedness_id) REFERENCES dictionaries(id);
+
+DELIMITER $$
+
+CREATE TRIGGER annotations_markedness_trigger
+	BEFORE INSERT ON emotional_annotations FOR EACH ROW
+	BEGIN
+		IF(SELECT dtype FROM dictionaries WHERE id = NEW.markedness_id) <> 'Markedness'
+        THEN SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'Cannot add or update row: markedness id is incorrect type';
+		END IF;
+	END;
+$$
+
+DELIMITER ;
+
+
 COMMIT;
 

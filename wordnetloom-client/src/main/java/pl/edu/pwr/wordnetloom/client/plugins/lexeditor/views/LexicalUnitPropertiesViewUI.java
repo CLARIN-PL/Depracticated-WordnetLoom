@@ -30,6 +30,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
 
     private final ViwnGraphViewUI graphUI;
     private LexicalUnitPropertiesPanel editPanel;
+    private EmotionsPropertiesPanel emotionsPanel;
 
     private WebPanel content;
 
@@ -52,7 +53,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
             editPanel.getBtnSave().setEnabled(false);
         });
 
-        JPanel emotionsPanel = new EmotionsPropertiesPanel(graphUI.getWorkbench().getFrame());
+        emotionsPanel = new EmotionsPropertiesPanel(graphUI.getWorkbench().getFrame());
 
         tabbedPane.add(editPanel);
         tabbedPane.add(emotionsPanel);
@@ -72,6 +73,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
 
     public void refreshData(Sense unit) {
         editPanel.setSense(unit);
+        emotionsPanel.load(unit);
     }
 
     public void closeWindow(ActionListener close) {
