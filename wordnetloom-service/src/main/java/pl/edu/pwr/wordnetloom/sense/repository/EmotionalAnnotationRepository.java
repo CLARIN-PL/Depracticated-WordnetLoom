@@ -20,6 +20,15 @@ public class EmotionalAnnotationRepository extends GenericRepository<EmotionalAn
                 .getResultList();
     }
 
+    public EmotionalAnnotation save(EmotionalAnnotation emotionalAnnotation) {
+        if(!getEntityManager().contains(emotionalAnnotation)){
+            return getEntityManager().merge(emotionalAnnotation);
+        } else {
+            getEntityManager().persist(emotionalAnnotation);
+            return emotionalAnnotation;
+        }
+    }
+
     @Override
     protected Class<EmotionalAnnotation> getPersistentClass() {
         return EmotionalAnnotation.class;

@@ -1,15 +1,18 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.JoinColumnOrFormula;
+import org.hibernate.annotations.*;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
+import pl.edu.pwr.wordnetloom.dictionary.model.Markedness;
 import pl.edu.pwr.wordnetloom.user.model.User;
 import sun.security.acl.PermissionImpl;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "emotional_annotations")
@@ -26,21 +29,23 @@ public class EmotionalAnnotation extends GenericEntity {
     private boolean emotionalCharacteristic;
 
 
-    @OneToMany(mappedBy = "annotation", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "annotation", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<UnitEmotion> emotions;
+    private Set<UnitEmotion> emotions;
 
-    @OneToMany(mappedBy = "annotation", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "annotation", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<UnitValuation> valuations;
+    private Set<UnitValuation> valuations;
 
-    private String markedness;
+    @ManyToOne()
+    @JoinColumn(name = "markedness_id")
+    private Markedness markedness;
 
     private String example1;
 
     private String example2;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "owner")
     private User owner;
 
@@ -56,15 +61,15 @@ public class EmotionalAnnotation extends GenericEntity {
         return emotionalCharacteristic;
     }
 
-    public List<UnitEmotion> getEmotions() {
+    public Set<UnitEmotion> getEmotions() {
         return emotions;
     }
 
-    public List<UnitValuation> getValuations() {
+    public Set<UnitValuation> getValuations() {
         return valuations;
     }
 
-    public String getMarkedness() {
+    public Markedness getMarkedness() {
         return markedness;
     }
 
@@ -88,15 +93,15 @@ public class EmotionalAnnotation extends GenericEntity {
         this.emotionalCharacteristic = emotionalCharacteristic;
     }
 
-    public void setEmotions(List<UnitEmotion> emotions){
+    public void setEmotions(Set<UnitEmotion> emotions){
         this.emotions = emotions;
     }
 
-    public void setValuations(List<UnitValuation> valuations){
+    public void setValuations(Set<UnitValuation> valuations){
         this.valuations = valuations;
     }
 
-    public void setMarkedness(String markedness){
+    public void setMarkedness(Markedness markedness){
         this.markedness = markedness;
     }
 
@@ -111,100 +116,4 @@ public class EmotionalAnnotation extends GenericEntity {
     public void setOwner(User owner){
         this.owner = owner;
     }
-
-    //    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private long id;
-//
-//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "sense_id")
-//    private Sense sense;
-//
-//    @Column(name = "super_anotation")
-//    private boolean superAnotation;
-//
-//    @Column(name = "has_emotional_characteristic")
-//    private boolean hasEmotionalCharacteristic;
-//
-//    private String emotions;
-//
-//    private String valuations;
-//
-//    private String markedness;
-//
-//    private String example1;
-//
-//    private String example2;
-//
-//    public long getId() {
-//        return id;
-//    }
-//
-//    public void setId(long id) {
-//        this.id = id;
-//    }
-//
-//    public Sense getSense() {
-//        return sense;
-//    }
-//
-//    public void setSense(Sense sense) {
-//        this.sense = sense;
-//    }
-//
-//    public boolean isSuperAnotation() {
-//        return superAnotation;
-//    }
-//
-//    public void setSuperAnotation(boolean superAnotation) {
-//        this.superAnotation = superAnotation;
-//    }
-//
-//    public boolean isHasEmotionalCharacteristic() {
-//        return hasEmotionalCharacteristic;
-//    }
-//
-//    public void setHasEmotionalCharacteristic(boolean hasEmotionalCharacteristic) {
-//        this.hasEmotionalCharacteristic = hasEmotionalCharacteristic;
-//    }
-//
-//    public String getEmotions() {
-//        return emotions;
-//    }
-//
-//    public void setEmotions(String emotions) {
-//        this.emotions = emotions;
-//    }
-//
-//    public String getValuations() {
-//        return valuations;
-//    }
-//
-//    public void setValuations(String valuations) {
-//        this.valuations = valuations;
-//    }
-//
-//    public String getMarkedness() {
-//        return markedness;
-//    }
-//
-//    public void setMarkedness(String markedness) {
-//        this.markedness = markedness;
-//    }
-//
-//    public String getExample1() {
-//        return example1;
-//    }
-//
-//    public void setExample1(String example1) {
-//        this.example1 = example1;
-//    }
-//
-//    public String getExample2() {
-//        return example2;
-//    }
-//
-//    public void setExample2(String example2) {
-//        this.example2 = example2;
-//    }
 }

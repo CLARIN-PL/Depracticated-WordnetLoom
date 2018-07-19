@@ -69,4 +69,6 @@ public interface SenseServiceRemote {
     SenseAttributes fetchSenseAttribute(Long senseId);
 
     List<EmotionalAnnotation> getEmotionalAnnotations(Long senseID);
+
+    EmotionalAnnotation save(EmotionalAnnotation annotation);
 }

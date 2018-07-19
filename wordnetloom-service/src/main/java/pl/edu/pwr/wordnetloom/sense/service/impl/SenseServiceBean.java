@@ -17,6 +17,7 @@ import pl.edu.pwr.wordnetloom.sense.service.SenseServiceRemote;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 import pl.edu.pwr.wordnetloom.word.service.WordServiceLocal;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.PermitAll;
@@ -264,5 +265,11 @@ public class SenseServiceBean implements SenseServiceLocal {
     @Override
     public List<EmotionalAnnotation> getEmotionalAnnotations(Long senseId) {
         return emotionalAnnotationRepository.getEmotionalAnnotations(senseId);
+    }
+
+    @RolesAllowed({"USER", "ADMIN"})
+    @Override
+    public EmotionalAnnotation save(EmotionalAnnotation emotionalAnnotation){
+        return emotionalAnnotationRepository.save(emotionalAnnotation);
     }
 }

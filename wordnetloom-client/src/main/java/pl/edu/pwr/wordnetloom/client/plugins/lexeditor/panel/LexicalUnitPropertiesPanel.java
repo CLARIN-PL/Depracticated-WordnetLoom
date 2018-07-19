@@ -66,6 +66,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
     private MTextPane definition;
 
     private boolean permissionToEdit = false;
+    private EmotionsPropertiesPanel emotionsPanel;
 
     private void setupPermissionComponents() {
         permissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(
@@ -249,6 +250,9 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         tabs.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         tabs.addTab("Main", GroupView.createGroupView(components, new Dimension(560, 520),0.1f, 0.85f));
 
+        emotionsPanel = new EmotionsPropertiesPanel(frame);
+        tabs.addTab(Labels.EMOTIONS, emotionsPanel);
+
         JPanel buttons = new JPanel();
         buttons.setLayout(new FlowLayout());
         btnCancel = MButton.buildCancelButton();
@@ -306,6 +310,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
     public void setSense(Sense unit) {
         this.unit = unit;
         refreshData();
+        emotionsPanel.load(unit);
     }
 
     @Override

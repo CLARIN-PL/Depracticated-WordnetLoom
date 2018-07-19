@@ -1,6 +1,5 @@
 package pl.edu.pwr.wordnetloom.application.flyway;
 
-import db.migration.MigrationTest;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.MigrationInfo;
