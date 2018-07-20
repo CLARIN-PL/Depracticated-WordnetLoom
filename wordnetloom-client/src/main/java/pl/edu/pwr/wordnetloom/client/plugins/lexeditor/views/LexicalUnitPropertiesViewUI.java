@@ -49,13 +49,13 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
             return;
         }
         for (int i = 0; i < examples.length; i++) {
-            editPanel.getExamplesModel().addElement(examples[i]);
+//            editPanel.getExamplesModel().addElement(examples[i]);
         }
 //        editPanel.getBtnSave().setEnabled(editPanel.isPermissionToEdit());
     }
 
     public void refreshData(Sense unit) {
-        editPanel.setSense(unit);
+//        editPanel.setSense(unit);
     }
 
     public void closeWindow(ActionListener close) {
@@ -78,14 +78,15 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
     }
 
     private void setVariantInEditPanel(SenseAttributes savedAttributes) {
-        editPanel.getVariant().setText("" + savedAttributes.getSense().getVariant());
+//        editPanel.getVariant().setText("" + savedAttributes.getSense().getVariant());
     }
 
     private SenseAttributes saveSenseAttributes() {
-        Sense sense = editPanel.updateAndGetSense();
-        SenseAttributes attributes = editPanel.getSenseAttributes(sense.getId());
-        attributes.setSense(sense);
-        return RemoteService.senseRemote.save(attributes);
+//        Sense sense = editPanel.updateAndGetSense();
+//        SenseAttributes attributes = editPanel.getSenseAttributes(sense.getId());
+//        attributes.setSense(sense);
+//        return RemoteService.senseRemote.save(attributes);
+        return null;
     }
 
     /**
@@ -106,29 +107,31 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
 
     @Override
     public JComponent getRootComponent() {
-        if (editPanel == null) {
-            return editPanel.getLemma();
-        }
-        return editPanel.getLemma();
+//        if (editPanel == null) {
+//            return editPanel.getLemma();
+//        }
+//        return editPanel.getLemma();
+        return null;
     }
 
     private boolean validateSelections() {
-        if (editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText())) {
-            DialogBox.showError(Messages.SELECT_LEMMA);
-            return false;
-        }
-        if (editPanel.getLexicon().getEntity() == null) {
-            DialogBox.showError(Messages.SELECT_LEXICON);
-            return false;
-        }
-        if (editPanel.getPartOfSpeech().getEntity() == null) {
-            DialogBox.showError(Messages.SELECT_POS);
-            return false;
-        }
-        if (editPanel.getDomain().getEntity() == null) {
-            DialogBox.showError(Messages.SELECT_DOMAIN);
-            return false;
-        }
-        return true;
+//        if (editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText())) {
+//            DialogBox.showError(Messages.SELECT_LEMMA);
+//            return false;
+//        }
+//        if (editPanel.getLexicon().getEntity() == null) {
+//            DialogBox.showError(Messages.SELECT_LEXICON);
+//            return false;
+//        }
+//        if (editPanel.getPartOfSpeech().getEntity() == null) {
+//            DialogBox.showError(Messages.SELECT_POS);
+//            return false;
+//        }
+//        if (editPanel.getDomain().getEntity() == null) {
+//            DialogBox.showError(Messages.SELECT_DOMAIN);
+//            return false;
+//        }
+//        return true;
+        return false;
     }
 }

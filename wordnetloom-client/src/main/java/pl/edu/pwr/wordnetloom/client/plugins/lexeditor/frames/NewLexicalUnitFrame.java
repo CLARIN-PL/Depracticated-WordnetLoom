@@ -59,49 +59,50 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
 
     private void initErrorManager(){
         // TODO dodać etykiety do bazy
-        validationManager.registerError(editPanel.getLemma(), "Pole nie może być puste", () -> editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()));
-        validationManager.registerError(editPanel.getLexicon(), "Leksykon musi być ustawiony", ()->editPanel.getLexicon().getEntity() == null);
-        validationManager.registerError(editPanel.getPartOfSpeech(), "Część mowy musi być ustawiona", ()->editPanel.getPartOfSpeech().getEntity() == null);
-        validationManager.registerError(editPanel.getDomain(), "Domena musi być ustawiona", ()->editPanel.getDomain().getEntity()==null);
-        validationManager.registerError(editPanel.getRegister(), "Rejest nie może być pusty", ()->editPanel.getRegister().getEntity() == null);
+//        validationManager.registerError(editPanel.getLemma(), "Pole nie może być puste", () -> editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()));
+//        validationManager.registerError(editPanel.getLexicon(), "Leksykon musi być ustawiony", ()->editPanel.getLexicon().getEntity() == null);
+//        validationManager.registerError(editPanel.getPartOfSpeech(), "Część mowy musi być ustawiona", ()->editPanel.getPartOfSpeech().getEntity() == null);
+//        validationManager.registerError(editPanel.getDomain(), "Domena musi być ustawiona", ()->editPanel.getDomain().getEntity()==null);
+//        validationManager.registerError(editPanel.getRegister(), "Rejest nie może być pusty", ()->editPanel.getRegister().getEntity() == null);
     }
 
     public Pair<Sense, SenseAttributes> saveAndReturnNewSense() {
 
-        Sense newUnit = new Sense();
-
-        newUnit.setWord(new Word(editPanel.getLemma().getText()));
-        newUnit.setLexicon(editPanel.getLexicon().getEntity());
-
-        PartOfSpeech pos = editPanel.getPartOfSpeech().getEntity();
-        newUnit.setPartOfSpeech(pos);
-
-        Domain domain = editPanel.getDomain().getEntity();
-        newUnit.setDomain(domain);
-
-        SenseAttributes senseAttributes = new SenseAttributes();
-        senseAttributes.setOwner(UserSessionContext.getInstance().getUser());
-
-        if (editPanel.getDefinition().getText() != null && !editPanel.getDefinition().getText().isEmpty()) {
-            senseAttributes.setDefinition(editPanel.getDefinition().getText());
-        }
-
-        if (editPanel.getComment().getText() != null && !editPanel.getComment().getText().isEmpty()) {
-            senseAttributes.setComment(editPanel.getComment().getText());
-        }
-
-        if (editPanel.getRegister().getEntity() != null) {
-            senseAttributes.setRegister(editPanel.getRegister().getEntity());
-        }
-
-        for (Object example : editPanel.getExamplesModel().toArray()) {
-            senseAttributes.addExample((SenseExample) example);
-        }
-
-        if (editPanel.getLink().getText() != null && !editPanel.getLink().getText().isEmpty()) {
-            senseAttributes.setLink(editPanel.getLink().getText());
-        }
-        return new Pair<>(newUnit, senseAttributes);
+//        Sense newUnit = new Sense();
+//
+//        newUnit.setWord(new Word(editPanel.getLemma().getText()));
+//        newUnit.setLexicon(editPanel.getLexicon().getEntity());
+//
+//        PartOfSpeech pos = editPanel.getPartOfSpeech().getEntity();
+//        newUnit.setPartOfSpeech(pos);
+//
+//        Domain domain = editPanel.getDomain().getEntity();
+//        newUnit.setDomain(domain);
+//
+//        SenseAttributes senseAttributes = new SenseAttributes();
+//        senseAttributes.setOwner(UserSessionContext.getInstance().getUser());
+//
+//        if (editPanel.getDefinition().getText() != null && !editPanel.getDefinition().getText().isEmpty()) {
+//            senseAttributes.setDefinition(editPanel.getDefinition().getText());
+//        }
+//
+//        if (editPanel.getComment().getText() != null && !editPanel.getComment().getText().isEmpty()) {
+//            senseAttributes.setComment(editPanel.getComment().getText());
+//        }
+//
+//        if (editPanel.getRegister().getEntity() != null) {
+//            senseAttributes.setRegister(editPanel.getRegister().getEntity());
+//        }
+//
+//        for (Object example : editPanel.getExamplesModel().toArray()) {
+//            senseAttributes.addExample((SenseExample) example);
+//        }
+//
+//        if (editPanel.getLink().getText() != null && !editPanel.getLink().getText().isEmpty()) {
+//            senseAttributes.setLink(editPanel.getLink().getText());
+//        }
+//        return new Pair<>(newUnit, senseAttributes);
+        return null;
     }
 
     static public Pair<Sense, SenseAttributes> showModal(Workbench workbench, PartOfSpeech newPos) {
@@ -123,36 +124,37 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
      */
     static public Pair<Sense, SenseAttributes> showModal(Workbench workbench, String word, PartOfSpeech newPos, Domain domain) {
 
-        NewLexicalUnitFrame modalFrame = new NewLexicalUnitFrame(workbench);
-
-        modalFrame.editPanel.getLexicon().setSelectedIndex(1);
-        if (word != null) {
-            modalFrame.editPanel.getLemma().setText(word);
-            modalFrame.editPanel.getLemma().setEditable(false);
-        } else {
-            modalFrame.editPanel.getLemma().setText("");
-        }
-        if (newPos != null) {
-            modalFrame.editPanel.getPartOfSpeech().setSelectedItem(newPos);
-        } else if (lastPickPos != null) {
-            modalFrame.editPanel.getPartOfSpeech().setSelectedItem(
-                    new CustomDescription<>(lastPickPos.toString(), lastPickPos));
-        }
-
-        if (lastPickDomain != null) {
-            modalFrame.editPanel.getDomain().setSelectedItem(
-                    new CustomDescription<>(DomainMComboBox.nameWithoutPrefix(lastPickDomain.toString()), lastPickDomain));
-        }
-
-        modalFrame.setVisible(true);
-        Pair<Sense, SenseAttributes> newUnit = null;
-
-        if (modalFrame.wasAddClicked) {
-            newUnit = modalFrame.saveAndReturnNewSense();
-        }
-
-        modalFrame.dispose();
-        return newUnit;
+//        NewLexicalUnitFrame modalFrame = new NewLexicalUnitFrame(workbench);
+//
+//        modalFrame.editPanel.getLexicon().setSelectedIndex(1);
+//        if (word != null) {
+//            modalFrame.editPanel.getLemma().setText(word);
+//            modalFrame.editPanel.getLemma().setEditable(false);
+//        } else {
+//            modalFrame.editPanel.getLemma().setText("");
+//        }
+//        if (newPos != null) {
+//            modalFrame.editPanel.getPartOfSpeech().setSelectedItem(newPos);
+//        } else if (lastPickPos != null) {
+//            modalFrame.editPanel.getPartOfSpeech().setSelectedItem(
+//                    new CustomDescription<>(lastPickPos.toString(), lastPickPos));
+//        }
+//
+//        if (lastPickDomain != null) {
+//            modalFrame.editPanel.getDomain().setSelectedItem(
+//                    new CustomDescription<>(DomainMComboBox.nameWithoutPrefix(lastPickDomain.toString()), lastPickDomain));
+//        }
+//
+//        modalFrame.setVisible(true);
+//        Pair<Sense, SenseAttributes> newUnit = null;
+//
+//        if (modalFrame.wasAddClicked) {
+//            newUnit = modalFrame.saveAndReturnNewSense();
+//        }
+//
+//        modalFrame.dispose();
+//        return newUnit;
+        return null;
     }
 
     @Override
@@ -167,44 +169,44 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     }
 
     private void save() {
-        String testLemma = editPanel.getLemma().getText();
-
-        List<SenseAttributes> units = RemoteService.senseRemote.findByLemmaWithSense(testLemma, LexiconManager.getInstance().getUserChosenLexiconsIds());
-
-        if (validateSelections()) {
-            if (checkUnitExists(testLemma, units)) {
-                wasAddClicked = true;
-                setVisible(false);
-            }
-        }
-
-        lastPickDomain = editPanel.getDomain().getEntity();
-        lastPickPos = editPanel.getPartOfSpeech().getEntity();
+//        String testLemma = editPanel.getLemma().getText();
+//
+//        List<SenseAttributes> units = RemoteService.senseRemote.findByLemmaWithSense(testLemma, LexiconManager.getInstance().getUserChosenLexiconsIds());
+//
+//        if (validateSelections()) {
+//            if (checkUnitExists(testLemma, units)) {
+//                wasAddClicked = true;
+//                setVisible(false);
+//            }
+//        }
+//
+//        lastPickDomain = editPanel.getDomain().getEntity();
+//        lastPickPos = editPanel.getPartOfSpeech().getEntity();
     }
 
     private boolean checkUnitExists(String testLemma, List<SenseAttributes> attributes) {
-        if (attributes != null && attributes.size() > 0) {
-
-            Lexicon testLexicon = editPanel.getLexicon().getEntity();
-            Domain testDomain = editPanel.getDomain().getEntity();
-            PartOfSpeech testPos = editPanel.getPartOfSpeech().getEntity();
-            String testDefinition = editPanel.getDefinition().getText();
-
-            long count = attributes.stream()
-                    .filter(sa -> sa.getSense().getWord().getWord().equals(testLemma))
-                    .filter(sa -> sa.getSense().getLexicon().getId().equals(testLexicon.getId()))
-                    .filter(sa -> sa.getSense().getDomain().getId().equals(testDomain.getId()))
-                    .filter(sa -> sa.getSense().getPartOfSpeech().getId().equals(testPos.getId()))
-                    .filter(sa -> sa.getDefinition() == null || sa.getDefinition().equals(testDefinition))
-                    .count();
-
-            if (count > 0) {
-                setAlwaysOnTop(false);
-                DialogBox.showError(Messages.FAILURE_UNIT_EXISTS);
-                setAlwaysOnTop(true);
-                return false;
-            }
-        }
+//        if (attributes != null && attributes.size() > 0) {
+//
+//            Lexicon testLexicon = editPanel.getLexicon().getEntity();
+//            Domain testDomain = editPanel.getDomain().getEntity();
+//            PartOfSpeech testPos = editPanel.getPartOfSpeech().getEntity();
+//            String testDefinition = editPanel.getDefinition().getText();
+//
+//            long count = attributes.stream()
+//                    .filter(sa -> sa.getSense().getWord().getWord().equals(testLemma))
+//                    .filter(sa -> sa.getSense().getLexicon().getId().equals(testLexicon.getId()))
+//                    .filter(sa -> sa.getSense().getDomain().getId().equals(testDomain.getId()))
+//                    .filter(sa -> sa.getSense().getPartOfSpeech().getId().equals(testPos.getId()))
+//                    .filter(sa -> sa.getDefinition() == null || sa.getDefinition().equals(testDefinition))
+//                    .count();
+//
+//            if (count > 0) {
+//                setAlwaysOnTop(false);
+//                DialogBox.showError(Messages.FAILURE_UNIT_EXISTS);
+//                setAlwaysOnTop(true);
+//                return false;
+//            }
+//        }
         return true;
     }
 
