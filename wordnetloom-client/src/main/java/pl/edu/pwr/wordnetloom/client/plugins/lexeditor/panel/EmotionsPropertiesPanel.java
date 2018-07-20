@@ -44,7 +44,7 @@ public class EmotionsPropertiesPanel extends JPanel {
     private JTextArea example1;
     private JTextArea example2;
 
-    private JButton saveButton;
+//    private JButton saveButton;
 
     EmotionsListPanel listPanel;
 
@@ -53,11 +53,10 @@ public class EmotionsPropertiesPanel extends JPanel {
     private Map<Emotion, JCheckBox> emotionsMap = new HashMap<>();
     private Map<Valuation, JCheckBox> valuatesMap = new HashMap<>();
 
-    // TODO zamiast przycisku można przesłać zdarzenie
     public EmotionsPropertiesPanel(WebFrame frame){
         // TODO ustawianie odpowiedniego rozmiaru
 
-        setLayout(new BorderLayout());
+        setLayout(new RiverLayout());
 
         initComponents();
         listPanel = createListPanel();
@@ -68,18 +67,18 @@ public class EmotionsPropertiesPanel extends JPanel {
         JPanel markednessPanel = createMarkednessPanel();
         JPanel examplesPanel = createExamplesPanel();
 
-        JPanel valuePanel = new JPanel(new RiverLayout());
+//        JPanel valuePanel = new JPanel(new RiverLayout());
 
-        valuePanel.add(listPanel);
-        valuePanel.add(LINE_BREAK, statusPanel);
-        valuePanel.add(TAB_STOP, ownerPanel);
-        valuePanel.add(LINE_BREAK, emotionsPanel);
-        valuePanel.add(LINE_BREAK, valuationsPanel);
-        valuePanel.add(LINE_BREAK, markednessPanel);
-        valuePanel.add(LINE_BREAK, examplesPanel);
+        add(listPanel);
+        add(LINE_BREAK, statusPanel);
+        add(TAB_STOP, ownerPanel);
+        add(LINE_BREAK, emotionsPanel);
+        add(LINE_BREAK, valuationsPanel);
+        add(LINE_BREAK, markednessPanel);
+        add(LINE_BREAK, examplesPanel);
 
-        add(valuePanel, BorderLayout.CENTER);
-        add(saveButton, BorderLayout.SOUTH);
+//        add(valuePanel, BorderLayout.CENTER);
+//        add(saveButton, BorderLayout.SOUTH);
     }
 
     private void initComponents(){
@@ -103,17 +102,18 @@ public class EmotionsPropertiesPanel extends JPanel {
         example2.setRows(TEXT_AREA_ROWS);
         example2.setLineWrap(true);
 
-        saveButton = new JButton(Labels.SAVE);
-        saveButton.addActionListener(e -> save());
+//        saveButton = new JButton(Labels.SAVE);
+//        saveButton.addActionListener(e -> save());
 
         setEnableEditing(false);
     }
 
-    private void save() {
+    public void save() {
         // save all addotations
 //        for(EmotionalAnnotation annotation : listPanel.getAnnotations()){
 //            saveAnnotation(annotation);
 //        }
+        
         saveAnnotation(editedAnnotation);
     }
 

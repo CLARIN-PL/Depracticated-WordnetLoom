@@ -24,6 +24,7 @@ import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import se.datadosen.component.RiverLayout;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -52,8 +53,8 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
     private MComboBox<PartOfSpeech> partOfSpeech;
     private DomainMComboBox domain;
     private MTextPane comment;
-    private MButton btnCancel;
-    private MButton btnSave;
+//    private MButton btnCancel;
+//    private MButton btnSave;
     private WebScrollPane commentScrollPane;
     private WebScrollPane scrollPaneExamples;
     private MButton btnGoToLink;
@@ -66,12 +67,11 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
     private MTextPane definition;
 
     private boolean permissionToEdit = false;
-    private EmotionsPropertiesPanel emotionsPanel;
 
     private void setupPermissionComponents() {
         permissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(
                 lexicon, lemma, variant, link, register, partOfSpeech,
-                domain, comment, btnSave, btnNewExample, btnEditExample,
+                domain, comment, btnNewExample, btnEditExample,
                 btnRemoveExample, examplesList, definition
         );
     }
@@ -250,20 +250,19 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         tabs.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         tabs.addTab("Main", GroupView.createGroupView(components, new Dimension(560, 520),0.1f, 0.85f));
 
-        emotionsPanel = new EmotionsPropertiesPanel(frame);
-        tabs.addTab(Labels.EMOTIONS, emotionsPanel);
-
-        JPanel buttons = new JPanel();
-        buttons.setLayout(new FlowLayout());
-        btnCancel = MButton.buildCancelButton();
-        buttons.add(btnCancel);
-
-        btnSave = MButton.buildSaveButton();
-        buttons.add(btnSave);
-        btnSave.addActionListener(this);
-
-        add("", tabs);
-        add("br center", buttons);
+        Component component = GroupView.createGroupView(components, new Dimension(560, 520), 0.1f, 0.85f);
+        add(component);
+//        JPanel buttons = new JPanel();
+//        buttons.setLayout(new FlowLayout());
+//        btnCancel = MButton.buildCancelButton();
+//        buttons.add(btnCancel);
+//
+//        btnSave = MButton.buildSaveButton();
+//        buttons.add(btnSave);
+//        btnSave.addActionListener(this);
+//
+//        add("", tabs);
+//        add("br center", buttons);
 
         setupPermissionComponents();
     }
@@ -310,19 +309,18 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
     public void setSense(Sense unit) {
         this.unit = unit;
         refreshData();
-        emotionsPanel.load(unit);
     }
 
     @Override
     public void caretUpdate(CaretEvent event) {
-        if (event.getSource() instanceof MTextField) {
-            MTextField field = (MTextField) event.getSource();
-            btnSave.setEnabled(permissionToEdit && btnSave.isEnabled() | field.wasTextChanged());
-        }
-        if (event.getSource() instanceof MTextPane) {
-            MTextPane field = (MTextPane) event.getSource();
-            btnSave.setEnabled(permissionToEdit && btnSave.isEnabled() | field.wasTextChanged());
-        }
+//        if (event.getSource() instanceof MTextField) {
+//            MTextField field = (MTextField) event.getSource();
+//            btnSave.setEnabled(permissionToEdit && btnSave.isEnabled() | field.wasTextChanged());
+//        }
+//        if (event.getSource() instanceof MTextPane) {
+//            MTextPane field = (MTextPane) event.getSource();
+//            btnSave.setEnabled(permissionToEdit && btnSave.isEnabled() | field.wasTextChanged());
+//        }
     }
 
     public void refreshData() {
@@ -359,7 +357,12 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
             examplesList.setModel(examplesModel);
         }
 
-        btnSave.setEnabled(false);
+//        btnSave.setEnabled(false);
+    }
+
+    public void save()
+    {
+        throw new NotImplementedException();
     }
 
     private String formatValue(String value) {
@@ -385,7 +388,7 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
     }
 
     private void enableSaveButton() {
-        btnSave.setEnabled(permissionToEdit);
+//        btnSave.setEnabled(permissionToEdit);
     }
 
     public MComboBox<Lexicon> getLexicon() {
@@ -424,17 +427,17 @@ public class LexicalUnitPropertiesPanel extends WebPanel implements
         return comment;
     }
 
-    public JButton getBtnCancel() {
-        return btnCancel;
-    }
+//    public JButton getBtnCancel() {
+//        return btnCancel;
+//    }
 
     public DefaultListModel getExamplesModel() {
         return examplesModel;
     }
 
-    public JButton getBtnSave() {
-        return btnSave;
-    }
+//    public JButton getBtnSave() {
+//        return btnSave;
+//    }
 
     public boolean isPermissionToEdit(){
         return permissionToEdit;

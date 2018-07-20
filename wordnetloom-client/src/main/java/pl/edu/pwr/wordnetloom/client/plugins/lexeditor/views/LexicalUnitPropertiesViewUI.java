@@ -51,7 +51,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
         for (int i = 0; i < examples.length; i++) {
             editPanel.getExamplesModel().addElement(examples[i]);
         }
-        editPanel.getBtnSave().setEnabled(editPanel.isPermissionToEdit());
+//        editPanel.getBtnSave().setEnabled(editPanel.isPermissionToEdit());
     }
 
     public void refreshData(Sense unit) {
@@ -59,7 +59,8 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
     }
 
     public void closeWindow(ActionListener close) {
-        editPanel.getBtnCancel().addActionListener(close);
+
+//        editPanel.getBtnCancel().addActionListener(close);
     }
 
     public void saveChangesInUnit() {

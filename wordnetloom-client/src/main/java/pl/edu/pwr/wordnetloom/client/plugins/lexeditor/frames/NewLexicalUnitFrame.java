@@ -49,8 +49,8 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(workbench.getFrame());
         editPanel = new LexicalUnitPropertiesPanel(workbench.getFrame());
-        editPanel.getBtnSave().addActionListener(this);
-        editPanel.getBtnCancel().addActionListener(this);
+//        editPanel.getBtnSave().addActionListener(this);
+//        editPanel.getBtnCancel().addActionListener(this);
         add("hfill vfill", editPanel);
         pack();
 
@@ -158,11 +158,12 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
     @Override
     public void actionPerformed(ActionEvent event) {
 
-        if (event.getSource() == editPanel.getBtnSave()) {
-            PermissionHelper.handle(this::save);
-        } else if (event.getSource() == editPanel.getBtnCancel()) {
-            setVisible(false);
-        }
+        // TODO
+//        if (event.getSource() == editPanel.getBtnSave()) {
+//            PermissionHelper.handle(this::save);
+//        } else if (event.getSource() == editPanel.getBtnCancel()) {
+//            setVisible(false);
+//        }
     }
 
     private void save() {
@@ -203,34 +204,11 @@ public class NewLexicalUnitFrame extends DialogWindow implements ActionListener 
                 setAlwaysOnTop(true);
                 return false;
             }
-
         }
         return true;
     }
 
     private boolean validateSelections() {
-
-//        boolean[] result = new boolean[4];
-//        result[0] = errorProvider.setError(editPanel.getLemma(),
-//                editPanel.getLemma().getText() == null || "".equals(editPanel.getLemma().getText()),
-//                "Pole nie może być puste");
-//
-//        result[1] = errorProvider.setError(editPanel.getLexicon(),
-//                editPanel.getLexicon().getEntity() == null, "Leksykon musi być ustawiony");
-//
-//        result[2] = errorProvider.setError(editPanel.getPartOfSpeech(),
-//                editPanel.getPartOfSpeech().getEntity() == null, "Część mowy musi być ustawiona");
-//
-//        result[3] = errorProvider.setError(editPanel.getDomain(),
-//                editPanel.getDomain().getEntity() == null, "Domena musi być ustawiona");
-//
-//
-//        for(int i = 0; i<result.length; i++){
-//            if(!result[i]) {
-//                return false;
-//            }
-//        }
-//        return true;
         return validationManager.validate();
     }
 }
