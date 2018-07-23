@@ -41,4 +41,13 @@ public class SenseAttributesRepository extends GenericRepository<SenseAttributes
                 .getResultList();
     }
 
+    public SenseAttributes save(SenseAttributes senseAttributes) {
+        if(getEntityManager().contains(senseAttributes)){
+            getEntityManager().persist(senseAttributes);
+            return senseAttributes;
+        } else {
+            return getEntityManager().merge(senseAttributes);
+        }
+    }
+
 }

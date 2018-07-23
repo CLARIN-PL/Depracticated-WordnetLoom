@@ -362,4 +362,12 @@ public class SenseRepository extends GenericRepository<Sense> {
 
         return getEntityManager().createQuery(query).getSingleResult();
     }
+
+    public Sense save(Sense sense){
+        if(getEntityManager().contains(sense)){
+            getEntityManager().persist(sense);
+            return sense;
+        }
+        return getEntityManager().merge(sense);
+    }
 }

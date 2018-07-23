@@ -8,6 +8,7 @@ import jiconfont.icons.FontAwesome;
 import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.LexicalUnitPropertiesFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.NewLexicalUnitFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.SynsetsFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
@@ -395,11 +396,12 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     }
 
     private void addNewSense() {
-        Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, null);
-        if (newUnit != null) {
-            Sense savedUnit = save(newUnit);
-            insertSenseToList(savedUnit);
-        }
+        LexicalUnitPropertiesFrame.showModal(workbench, null);
+//        Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, null);
+//        if (newUnit != null) {
+//            Sense savedUnit = save(newUnit);
+//            insertSenseToList(savedUnit);
+//        }
     }
 
     private Sense save(Pair<Sense, SenseAttributes> swa) {
@@ -420,11 +422,11 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     }
 
     private void addNewSenseWithSynset() {
-        Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, null);
-        if (newUnit != null) {
-            Sense savedUnit = save(newUnit);
-            createNewSynsetAndAddSense(savedUnit);
-            insertSenseToList(savedUnit);
+        Sense savedSense = LexicalUnitPropertiesFrame.showModal(workbench, null);
+        System.out.println(savedSense);
+        if(savedSense != null) {
+            createNewSynsetAndAddSense(savedSense);
+            insertSenseToList(savedSense);
         }
     }
 

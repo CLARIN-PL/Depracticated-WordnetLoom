@@ -19,6 +19,8 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
     private LexicalUnitPropertiesPanel lexicalUnitPropertiesPanel;
     private EmotionsPropertiesPanel emotionsPropertiesPanel;
 
+    private static Sense savedSense;
+
     public LexicalUnitPropertiesFrame(WebFrame baseFrame, String title, int x, int y, int width, int height) {
         super(baseFrame, title, x, y, width, height);
         initComponents(baseFrame);
@@ -44,7 +46,7 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
 
     private void save() {
         if(tabbedPane.getSelectedComponent().equals(lexicalUnitPropertiesPanel)) {
-            lexicalUnitPropertiesPanel.save();
+            savedSense = lexicalUnitPropertiesPanel.save();
         } else {
             emotionsPropertiesPanel.save();
         }
@@ -70,7 +72,7 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
         emotionsPropertiesPanel.load(unit);
     }
 
-    public static void showModal(Workbench workbench, Sense unit) {
+    public static Sense showModal(Workbench workbench, Sense unit) {
         final int WIDTH = 600;
         final int HEIGHT = 680;
         final String TITLE = Labels.UNIT_PROPERTIES;
@@ -79,5 +81,6 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
         LexicalUnitPropertiesFrame frame = new LexicalUnitPropertiesFrame(workbench.getFrame(),TITLE, x, y, WIDTH, HEIGHT);
         frame.loadUnit(unit);
         frame.setVisible(true);
+        return savedSense;
     }
 }

@@ -113,7 +113,7 @@ public class EmotionsPropertiesPanel extends JPanel {
 //        for(EmotionalAnnotation annotation : listPanel.getAnnotations()){
 //            saveAnnotation(annotation);
 //        }
-        
+
         saveAnnotation(editedAnnotation);
     }
 
@@ -277,7 +277,11 @@ public class EmotionsPropertiesPanel extends JPanel {
     }
 
     public void load(Sense sense) {
-        listPanel.loadAnnotations(sense.getId());
+        if(sense != null){
+            listPanel.loadAnnotations(sense.getId());
+        } else {
+            listPanel.loadAnnotations(null);
+        }
     }
 
     private JPanel createEmotionsPanel(List<Emotion> emotions) {

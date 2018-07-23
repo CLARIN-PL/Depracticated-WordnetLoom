@@ -82,7 +82,7 @@ public class SenseServiceBean implements SenseServiceLocal {
             return senseRepository.update(sense);
         }
         sense.setVariant(senseRepository.findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech()));
-        return senseRepository.persist(sense);
+        return senseRepository.save(sense);
     }
 
     @RolesAllowed({"USER", "ADMIN"})
@@ -94,7 +94,8 @@ public class SenseServiceBean implements SenseServiceLocal {
         if(attributes.getId() != null){
             savedAttributes = senseAttributesRepository.update(attributes);
         } else {
-            savedAttributes = senseAttributesRepository.persist(attributes);
+            savedAttributes = senseAttributesRepository.save(attributes);
+
         }
         savedAttributes.setSense(sense);
         return savedAttributes;
@@ -122,6 +123,7 @@ public class SenseServiceBean implements SenseServiceLocal {
         attributes.setSense(s);
         return senseAttributesRepository.persist(attributes);
     }
+
 
     @PermitAll
     @Override

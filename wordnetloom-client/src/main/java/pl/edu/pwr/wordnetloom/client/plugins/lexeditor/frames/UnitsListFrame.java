@@ -87,15 +87,15 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
 
     @Override
     protected void invokeNew() {
-
-        Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, filterObject);
-        if (newUnit != null) {
-            Sense sense = RemoteService.senseRemote.save(newUnit.getA());
-            RemoteService.senseRemote.addSenseAttribute(sense.getId(), newUnit.getB());
-            filterEdit.setText(sense.getWord().getWord());
-            unitWasCreated = true;
-            refreshListModel();
-        }
+        LexicalUnitPropertiesFrame.showModal(workbench, null);
+//        Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, filterObject);
+//        if (newUnit != null) {
+//            Sense sense = RemoteService.senseRemote.save(newUnit.getA());
+//            RemoteService.senseRemote.addSenseAttribute(sense.getId(), newUnit.getB());
+//            filterEdit.setText(sense.getWord().getWord());
+//            unitWasCreated = true;
+//            refreshListModel();
+//        }
     }
 
     protected void setFilterObject(PartOfSpeech filterObject) {

@@ -15,6 +15,7 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import javax.validation.Validator;
 import java.util.List;
 
@@ -44,11 +45,7 @@ public class WordServiceBean implements WordServiceLocal {
     @PermitAll
     @Override
     public Word findByWord(String word) {
-        Word w = wordRepository.findByWord(word);
-        if (w == null) {
-            throw new WordNotFoundException();
-        }
-        return w;
+        return wordRepository.findByWord(word);
     }
 
     @PermitAll
