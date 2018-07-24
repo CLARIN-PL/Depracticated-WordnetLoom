@@ -9,9 +9,11 @@ import com.google.common.eventbus.Subscribe;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.AbstractListFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.LexicalUnitPropertiesFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.models.UnitsInSynsetListModel;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetUnitsEvent;
@@ -679,19 +681,21 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             Sense unit = listModel.getObjectAt(idx);
             unit = RemoteService.senseRemote.fetchSense(unit.getId());
 
-            LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(graphUI);
-            lui.init(workbench);
+            LexicalUnitPropertiesFrame.showModal(workbench, unit);
 
-            DialogWindow dia = new DialogWindow(workbench.getFrame(), Labels.UNIT_PROPERTIES, 500, 600);
-            WebPanel pan = new WebPanel();
-
-            lui.initialize(pan);
-            lui.refreshData(unit);
-            lui.closeWindow((ActionEvent e1) -> dia.dispose());
-            dia.setLocationRelativeTo(workbench.getFrame());
-            dia.setContentPane(pan);
-            dia.pack();
-            dia.setVisible(true);
+//            LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(graphUI);
+//            lui.init(workbench);
+//
+//            DialogWindow dia = new DialogWindow(workbench.getFrame(), Labels.UNIT_PROPERTIES, 500, 600);
+//            WebPanel pan = new WebPanel();
+//
+//            lui.initialize(pan);
+//            lui.refreshData(unit);
+//            lui.closeWindow((ActionEvent e1) -> dia.dispose());
+//            dia.setLocationRelativeTo(workbench.getFrame());
+//            dia.setContentPane(pan);
+//            dia.pack();
+//            dia.setVisible(true);
         }
     }
 

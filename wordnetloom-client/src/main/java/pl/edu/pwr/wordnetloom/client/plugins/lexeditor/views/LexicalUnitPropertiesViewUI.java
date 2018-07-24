@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 import com.alee.laf.panel.WebPanel;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.EmotionsPropertiesPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetUnitsEvent;
@@ -29,6 +30,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
 
     private final ViwnGraphViewUI graphUI;
     private LexicalUnitPropertiesPanel editPanel;
+
     private WebPanel content;
 
     public LexicalUnitPropertiesViewUI(ViwnGraphViewUI graphUI) {
@@ -38,14 +40,8 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
     @Override
     public void initialize(final WebPanel content) {
         this.content = content;
-
         editPanel = new LexicalUnitPropertiesPanel(graphUI.getWorkbench().getFrame());
         content.add(editPanel);
-
-        editPanel.getBtnSave().addActionListener((ActionEvent e) -> {
-            saveChangesInUnit();
-            editPanel.getBtnSave().setEnabled(false);
-        });
     }
 
     public void fillKPWrExample(Object[] examples) {
@@ -55,7 +51,7 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
         for (int i = 0; i < examples.length; i++) {
             editPanel.getExamplesModel().addElement(examples[i]);
         }
-        editPanel.getBtnSave().setEnabled(editPanel.isPermissionToEdit());
+//        editPanel.getBtnSave().setEnabled(editPanel.isPermissionToEdit());
     }
 
     public void refreshData(Sense unit) {
@@ -63,7 +59,8 @@ public class LexicalUnitPropertiesViewUI extends AbstractViewUI implements Logga
     }
 
     public void closeWindow(ActionListener close) {
-        editPanel.getBtnCancel().addActionListener(close);
+
+//        editPanel.getBtnCancel().addActionListener(close);
     }
 
     public void saveChangesInUnit() {

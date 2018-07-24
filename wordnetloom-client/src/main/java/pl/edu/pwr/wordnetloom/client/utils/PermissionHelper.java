@@ -43,7 +43,7 @@ public class PermissionHelper {
     }
 
     public static boolean checkPermissionToEditAndSetComponents(JComponent... components){
-        boolean permissionToEdit = !UserSessionContext.getInstance().hasRole(Role.ANONYMOUS);
+        boolean permissionToEdit = hasPermissionToEdit();
         if(!permissionToEdit){
             disableComponents(components);
         }
@@ -51,8 +51,14 @@ public class PermissionHelper {
     }
 
     public static void checkPermissionToEditAndSetComponents(AbstractAction... actions){
-        for(AbstractAction action : actions){
-            action.setEnabled(false);
+        if(!hasPermissionToEdit()){
+            for(AbstractAction action : actions){
+                action.setEnabled(false);
+            }
         }
+    }
+
+    private static boolean hasPermissionToEdit(){
+        return !UserSessionContext.getInstance().hasRole(Role.ANONYMOUS);
     }
 }
