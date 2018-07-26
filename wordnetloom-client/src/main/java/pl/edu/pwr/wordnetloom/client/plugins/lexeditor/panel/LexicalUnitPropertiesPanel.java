@@ -99,8 +99,9 @@ public class LexicalUnitPropertiesPanel extends JPanel {
     private void initComponents() {
         final int AREA_WIDTH = 300;
         final int AREA_HEIGHT = 75;
-        lemmaTextField = new JTextField(Labels.VALUE_UNKNOWN);
+        lemmaTextField = new JTextField();
         variantTextField = new JTextField(DEFAULT_VARIANT);
+        variantTextField.setEnabled(false);
         lexiconComboBox = createLexiconComboBox();
         partOfSpeechComboBox = createPartOfSpeechComboBox();
         domainComboBox = createDomainComboBox();
@@ -112,7 +113,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         commentScroll = new JScrollPane(commentArea);
         commentScroll.setPreferredSize(new Dimension(AREA_WIDTH, AREA_HEIGHT));
         examplesList = createExamplesList();
-        linkTextField = new JTextField(Labels.LINK_COLON);
+        linkTextField = new JTextField();
 
         addExampleButton = MButton.buildAddButton()
                 .withActionListener(e->addExample());
@@ -283,8 +284,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
             word = new Word(lemmaTextField.getText());
         }
         sense.setWord(word);
-        // TODO chyba nie powiniśmy zmieniać numerów wariantu
-        sense.setVariant(Integer.valueOf(variantTextField.getText()));
+//        sense.setVariant(Integer.valueOf(variantTextField.getText()));
         sense.setLexicon((Lexicon) lexiconComboBox.getSelectedItem());
         sense.setPartOfSpeech((PartOfSpeech)partOfSpeechComboBox.getSelectedItem());
         sense.setDomain((Domain)domainComboBox.getSelectedItem());

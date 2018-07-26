@@ -11,6 +11,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +19,12 @@ import java.util.Set;
 @Table(name = "emotional_annotations")
 public class EmotionalAnnotation extends GenericEntity {
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    public EmotionalAnnotation() {
+        emotions = new LinkedHashSet<>();
+        valuations = new LinkedHashSet<>();
+    }
+
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sense_id")
     private Sense sense;
 
@@ -83,6 +89,10 @@ public class EmotionalAnnotation extends GenericEntity {
 
     public User getOwner() {
         return owner;
+    }
+
+    public void setSense(Sense sense) {
+        this.sense = sense;
     }
 
     public void setSuperAnnotation(boolean superAnnotation){

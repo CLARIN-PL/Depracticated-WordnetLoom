@@ -24,6 +24,8 @@ public interface SenseServiceRemote {
 
     void delete(Sense sense);
 
+    void delete(EmotionalAnnotation annotation);
+
     void deleteAll();
 
     Sense findById(Long id);

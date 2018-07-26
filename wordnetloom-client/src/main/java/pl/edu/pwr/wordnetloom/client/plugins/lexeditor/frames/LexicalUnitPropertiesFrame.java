@@ -27,8 +27,7 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
         createView();
     }
 
-    private void createView()
-    {
+    private void createView() {
         setLayout(new BorderLayout());
 
         JPanel buttonsPanel = new JPanel();
@@ -47,14 +46,15 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
     private void save() {
         if(tabbedPane.getSelectedComponent().equals(lexicalUnitPropertiesPanel)) {
             savedSense = lexicalUnitPropertiesPanel.save();
+            loadUnit(savedSense);
         } else {
             emotionsPropertiesPanel.save();
         }
+        tabbedPane.setEnabledAt(1,true);
     }
 
     private void cancel() {
-        // TODO można jeszcze wyświtlić komunikat, czy na pewno zamknąć okno
-        // można zrobić sprawdzanie, czy
+
         setVisible(false);
     }
 
@@ -68,6 +68,13 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
     }
 
     private void loadUnit(Sense unit) {
+        // disable emotions tab when is creating new unit
+        if(unit == null){
+            tabbedPane.setEnabledAt(1, false);
+        } else {
+            tabbedPane.setEnabledAt(1, true);
+        }
+        // update panels
         lexicalUnitPropertiesPanel.setSense(unit);
         emotionsPropertiesPanel.load(unit);
     }

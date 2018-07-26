@@ -29,6 +29,10 @@ public class EmotionalAnnotationRepository extends GenericRepository<EmotionalAn
         }
     }
 
+    public void delete(EmotionalAnnotation annotation) {
+        getEntityManager().remove(getEntityManager().contains(annotation) ? annotation : getEntityManager().merge(annotation));
+    }
+
     @Override
     protected Class<EmotionalAnnotation> getPersistentClass() {
         return EmotionalAnnotation.class;

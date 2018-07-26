@@ -149,6 +149,12 @@ public class SenseServiceBean implements SenseServiceLocal {
         senseRepository.delete(sense);
     }
 
+    @RolesAllowed({"USER", "ADMIN"})
+    @Override
+    public void delete(EmotionalAnnotation annotation) {
+        emotionalAnnotationRepository.delete(annotation);
+    }
+
     @PermitAll
     @Override
     public List<Sense> findByCriteria(SenseCriteriaDTO dto) {

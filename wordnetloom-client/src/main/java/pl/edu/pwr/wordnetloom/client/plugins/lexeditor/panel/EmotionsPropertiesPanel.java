@@ -1,8 +1,11 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import com.alee.laf.rootpane.WebFrame;
+import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MComponentGroup;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
@@ -49,6 +52,7 @@ public class EmotionsPropertiesPanel extends JPanel {
     EmotionsListPanel listPanel;
 
     private EmotionalAnnotation editedAnnotation;
+    private Sense sense;
 
     private Map<Emotion, JCheckBox> emotionsMap = new HashMap<>();
     private Map<Valuation, JCheckBox> valuatesMap = new HashMap<>();
@@ -282,6 +286,7 @@ public class EmotionsPropertiesPanel extends JPanel {
         } else {
             listPanel.loadAnnotations(null);
         }
+        this.sense = sense;
     }
 
     private JPanel createEmotionsPanel(List<Emotion> emotions) {
@@ -452,11 +457,27 @@ public class EmotionsPropertiesPanel extends JPanel {
         }
 
         private void addEmotion(){
-            throw new NotImplementedException();
+            // creating new annotation. Annotation must have unit and owner
+            EmotionalAnnotation annotation = new EmotionalAnnotation();
+            annotation.setSense(sense);
+            User currentUser = UserSessionContext.getInstance().getUser();
+            annotation.setOwner(currentUser);
+            // annotation must be saved at this point, because saving later cause an error
+            annotation = RemoteService.senseRemote.save(annotation);
+            // adding saved annotation to the list and selecting it
+            listModel.addElement(annotation);
+            annotationsList.setSelectedIndex(listModel.getSize()-1);
         }
 
         private void removeEmotion(){
-            throw new NotImplementedException();
+            final String MESSAGE = "Czy na pewno usunąć anotacje";
+            if(DialogBox.showYesNo(MESSAGE) == DialogBox.YES) {
+                int selectedIndex = annotationsList.getSelectedIndex();
+                EmotionalAnnotation selectedAnnotation = (EmotionalAnnotation) listModel.getElementAt(selectedIndex);
+                listModel.remove(selectedIndex);
+
+                RemoteService.senseRemote.delete(selectedAnnotation);
+            }
         }
     }
 
