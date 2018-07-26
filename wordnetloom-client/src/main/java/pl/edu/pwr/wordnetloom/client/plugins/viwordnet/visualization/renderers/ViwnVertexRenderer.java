@@ -120,6 +120,8 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
 
         Shape shape = rc.getVertexShapeTransformer().transform(node);
         GraphicsDecorator g = rc.getGraphicsContext();
+        // TODO
+//        node.setFrame(true);
 
         if (node instanceof ViwnNodeCand) {
             ViwnNodeCand cand = (ViwnNodeCand) node;
@@ -133,7 +135,10 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
         } else if (PosFrameColors.containsKey(node.getPos())) {
             drawFrame(g, shape, PosFrameColors.get(node.getPos()), pos);
         } else if (node.getFrame()) {
-            drawFrame(g, shape, new Color(50, 132, 255), pos);
+            // TODO ustawić kolor
+
+//            drawFrame(g, shape, new Color(50, 132, 255), pos);
+            drawFrame(g, shape, new Color(255, 0, 0), pos);
         }
 
         delegate.paintVertex(rc, layout, node);

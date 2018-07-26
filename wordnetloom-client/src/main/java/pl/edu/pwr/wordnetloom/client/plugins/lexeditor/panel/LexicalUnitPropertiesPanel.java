@@ -72,7 +72,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         insertComponents();
         validationManager = initValidationManager();
     }
-    
+
     private ValidationManager initValidationManager() {
         ValidationManager validationManager = new ValidationManager();
         // TODO dorobić etykiety

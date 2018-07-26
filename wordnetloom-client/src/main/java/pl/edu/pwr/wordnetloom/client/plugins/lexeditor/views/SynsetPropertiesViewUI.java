@@ -15,6 +15,7 @@ import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.renderers.ExampleCellRenderer;
+import pl.edu.pwr.wordnetloom.client.systems.renderers.LocalisedRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextArea;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
@@ -23,6 +24,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
+import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetExample;
@@ -35,6 +37,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import java.awt.event.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -46,6 +49,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
     private MTextArea definitionValue;
     private MTextArea commentValue;
+    private JComboBox statusComboBox;
 
     private WebScrollPane scrollPaneExamples;
     private MButton btnNewExample;
@@ -85,6 +89,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         commentValue = new MTextArea("");
         commentValue.addCaretListener(this);
         commentValue.setRows(3);
+
+        statusComboBox = createStatusComboBox();
 
         abstractValue = new WebCheckBox(Labels.ARTIFICIAL);
         abstractValue.setSelected(false);
@@ -180,6 +186,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         WebPanel propertiesPanel = new WebPanel(new RiverLayout(0, 0));
 
+        propertiesPanel.add("vtop", new JLabel(Labels.STATUS_COLON));
+        propertiesPanel.add("br hfill", statusComboBox);
         propertiesPanel.add("vtop", new JLabel(Labels.DEFINITION_COLON));
         propertiesPanel.add("br hfill", new JScrollPane(definitionValue));
         propertiesPanel.add("br vtop", new JLabel(Labels.COMMENT_COLON));
@@ -206,6 +214,20 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         );
     }
 
+    private JComboBox createStatusComboBox() {
+        JComboBox comboBox = new JComboBox();
+        comboBox.addItem(null);
+        for(Status status : getAllStatuses()){
+            comboBox.addItem(status);
+        }
+        comboBox.setRenderer(new LocalisedRenderer());
+        return comboBox;
+    }
+
+    private List<Status> getAllStatuses() {
+        return (List<Status>) RemoteService.dictionaryServiceRemote.findDictionaryByClass(Status.class);
+    }
+
     @Override
     public JComponent getRootComponent() {
         return definitionValue;
@@ -229,8 +251,9 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         if (synset != null) {
 
-            SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
+            SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());;
 
+            statusComboBox.setSelectedItem(synset.getStatus());
             if (sa.getDefinition() != null) {
                 definitionValue.setText(sa.getDefinition());
             }

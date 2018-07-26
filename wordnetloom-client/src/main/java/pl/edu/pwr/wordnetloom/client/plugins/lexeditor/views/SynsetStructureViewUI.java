@@ -26,6 +26,7 @@ import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
@@ -95,6 +96,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             buttonRelations, buttonSwitchToLexicalPerspective, buttonToNew;
     private Collection<Sense> lastUnits = null;
     private MTextArea commentValue = null;
+    private JLabel statusText = null;
     private Synset lastSynset = null;
 
     private boolean permissionToEdit = false;
@@ -162,6 +164,8 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         commentValue.addCaretListener(this);
         commentValue.setRows(3);
         commentValue.setEnabled(false);
+
+        statusText = new JLabel();
 
         isAbstract = new WebLabel();
 
@@ -240,7 +244,10 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         WebPanel properties = new WebPanel();
         properties.setLayout(new RiverLayout(0, 0));
 
-        properties.add("br vtop", new JLabel(Labels.COMMENT_COLON));
+        properties.add("br ",new JLabel(Labels.STATUS_COLON));
+        properties.add(RiverLayout.HFILL, statusText);
+
+        properties.add("br", new JLabel(Labels.COMMENT_COLON));
         properties.add("br", commentValue);
 
         properties.add("br", isAbstract);
@@ -578,6 +585,10 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         int newSplitPoint = 0;
         List<Sense> units = null;
         if (synset != null) {
+            if(synset.getStatus() != null){
+                String status = LocalisationManager.getInstance().getLocalisedString(synset.getStatus().getName());
+                statusText.setText(status);
+            }
             // odczytanie punktu podzialu
             newSplitPoint = synset.getSplit();
             // odczytanie jednostek
