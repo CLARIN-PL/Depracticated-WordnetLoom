@@ -8,7 +8,6 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,14 +53,15 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
     }
 
     private void cancel() {
-
         setVisible(false);
     }
 
     private void initComponents(WebFrame frame) {
+        final int WIDTH = 560;
+        final int HEIGHT = 520;
         tabbedPane = new JTabbedPane();
-        lexicalUnitPropertiesPanel = new LexicalUnitPropertiesPanel(frame);
-        emotionsPropertiesPanel = new EmotionsPropertiesPanel(frame);
+        lexicalUnitPropertiesPanel = new LexicalUnitPropertiesPanel(frame,WIDTH, HEIGHT);
+        emotionsPropertiesPanel = new EmotionsPropertiesPanel(frame, WIDTH, HEIGHT);
 
         tabbedPane.add(lexicalUnitPropertiesPanel, Labels.PROPERTIES);
         tabbedPane.add(emotionsPropertiesPanel, Labels.EMOTIONS);

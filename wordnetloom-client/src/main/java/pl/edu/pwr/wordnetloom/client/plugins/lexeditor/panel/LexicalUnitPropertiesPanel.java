@@ -1,23 +1,16 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
-import com.alee.laf.list.WebList;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.tabbedpane.WebTabbedPane;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.errors.ValidationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.*;
-import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.renderers.*;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -26,19 +19,13 @@ import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.word.model.Word;
-import se.datadosen.component.RiverLayout;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import java.awt.*;
-import java.awt.event.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
-
 
 public class LexicalUnitPropertiesPanel extends JPanel {
 
@@ -76,9 +63,9 @@ public class LexicalUnitPropertiesPanel extends JPanel {
     private int width;
     private int height;
 
-    public LexicalUnitPropertiesPanel(WebFrame frame/*, int width, int height*/) {
-//        this.width = width;
-//        this.height = height;
+    public LexicalUnitPropertiesPanel(WebFrame frame, int width, int height) {
+        this.width = width;
+        this.height = height;
         this.frame = frame;
         initComponents();
         insertComponents();
@@ -89,9 +76,9 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         ValidationManager validationManager = new ValidationManager();
         // TODO dorobić etykiety
         validationManager.registerError(lemmaTextField, "To pole nie może być puste", ()->lemmaTextField.getText().isEmpty());
+        validationManager.registerError(lexiconComboBox, "To pole nie może być puste", ()->lexiconComboBox.getSelectedItem() == null);
         validationManager.registerError(partOfSpeechComboBox, "Wybierz część mowy", ()->partOfSpeechComboBox.getSelectedItem() == null);
         validationManager.registerError(domainComboBox, "Wybierz domenę", ()->domainComboBox.getSelectedItem() == null);
-        validationManager.registerError(registerComboBox, "Wybierz rejestr", ()->registerComboBox.getSelectedItem()==null);
 
         return validationManager;
     }
@@ -126,9 +113,6 @@ public class LexicalUnitPropertiesPanel extends JPanel {
     }
 
     private void insertComponents() {
-        // TODO zmienić na wynmiary okna
-        final int WIDTH = 560;
-        final int HEIGHT = 520;
         final float LABEL_RATIO = 0.1f;
         final float COMPONENT_RATIO = 0.9f;
         Map<String, Component> componentsMap = new LinkedHashMap<>();
@@ -143,7 +127,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         componentsMap.put(Labels.EXAMPLES, createExamplesPanel());
         componentsMap.put(Labels.LINK_COLON, createLinkPanel());
 
-        Component views = GroupView.createGroupView(componentsMap, new Dimension(WIDTH, HEIGHT),LABEL_RATIO, COMPONENT_RATIO);
+        Component views = GroupView.createGroupView(componentsMap, new Dimension(width, height),LABEL_RATIO, COMPONENT_RATIO);
         add(views);
     }
 
@@ -172,7 +156,6 @@ public class LexicalUnitPropertiesPanel extends JPanel {
             senseExample.setExample(example);
             senseExample.setType("W");
             examplesModel.addElement(senseExample);
-            // TODO enableSaveButton
             examplesList.updateUI();
         }
     }
@@ -181,7 +164,6 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         int index = examplesList.getSelectedIndex();
         if(index >= 0) {
             examplesModel.remove(index);
-            // TODO enableSaveButton
         }
     }
 
@@ -193,7 +175,6 @@ public class LexicalUnitPropertiesPanel extends JPanel {
             if(value != null && !value.equals(old)) {
                 example.setExample(value);
                 examplesList.updateUI();
-                // TODO enableSaveButton
             }
         }
     }
@@ -311,7 +292,6 @@ public class LexicalUnitPropertiesPanel extends JPanel {
     }
 
     private Sense saveSense(SenseAttributes attributes) {
-        // TODO sprawdzić, czy będzie poprawnie zapisywało, zwłaszcza nowe wartości
         Sense savedSense = RemoteService.senseRemote.save(attributes.getSense());
         attributes.setSense(savedSense);
         attributes = RemoteService.senseRemote.save(attributes);
