@@ -54,6 +54,7 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
         lblUsername = new WebLabel();
         btnPanel = new WebPanel();
         btnSignIn = new WebButton();
+        btnSignInAnonymous = new WebButton();
         btnCancel = new WebButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -80,13 +81,13 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
 
         lblLanguage.setText("Language:");
 
-        txtUsername.setText("admin@gmail.com");
+        txtUsername.setText("");
         txtUsername.setMinimumSize(new java.awt.Dimension(14, 25));
         txtUsername.setPreferredSize(new java.awt.Dimension(14, 25));
 
         lblPassword.setText("Password:");
 
-        txtPassword.setText("password");
+        txtPassword.setText("");
         txtPassword.setMinimumSize(new java.awt.Dimension(14, 25));
         txtPassword.setPreferredSize(new java.awt.Dimension(14, 25));
 
@@ -143,6 +144,16 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
             }
         });
 
+        btnSignInAnonymous.setText("Sign in as anonymous");
+        Icon singInIconAnon = IconFontSwing.buildIcon(FontAwesome.USER_SECRET, 11);
+        btnSignInAnonymous.setIcon(singInIconAnon);
+        btnSignInAnonymous.addActionListener(e -> {
+            if (loginAnonymous()) {
+                LocalisationManager.getInstance().load(getSelectedLanguage());
+                Application.eventBus.post(new AuthenticationSuccessEvent());
+            }
+        });
+
         btnCancel.setText("Cancel");
         Icon cancelIcon = IconFontSwing.buildIcon(FontAwesome.TIMES, 11);
         btnCancel.addActionListener(evt -> btnCancelAction(evt));
@@ -153,10 +164,12 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
         btnPanelLayout.setHorizontalGroup(
                 btnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnPanelLayout.createSequentialGroup()
-                                .addContainerGap(291, Short.MAX_VALUE)
+                                .addContainerGap(201, Short.MAX_VALUE)
                                 .addComponent(btnSignIn, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnSignInAnonymous, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(34, 34, 34))
         );
         btnPanelLayout.setVerticalGroup(
@@ -165,7 +178,9 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
                                 .addGap(14, 14, 14)
                                 .addGroup(btnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(btnSignIn)
-                                        .addComponent(btnCancel))
+                                        .addComponent(btnCancel)
+                                        .addComponent(btnSignInAnonymous)
+                                )
                                 .addContainerGap(142, Short.MAX_VALUE))
         );
 
@@ -214,6 +229,34 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
         return false;
     }
 
+    private boolean loginAnonymous() {
+
+        ConnectionProvider
+                .getInstance()
+                .setCredentials("anonymous@clarin-pl.eu", "password");
+
+        try {
+            User user = ConnectionProvider.getInstance()
+                    .lookupForService(UserServiceRemote.class).findUserByEmail("anonymous@clarin-pl.eu");
+            if (user != null) {
+                UserSessionContext.initialiseAndGetInstance(user, getSelectedLanguage().getAbbreviation());
+                dispose();
+                return true;
+            } else {
+                ConnectionProvider.getInstance().destroyInstance();
+            }
+
+        } catch (Exception ex) {
+            logger().error("Unable to connect or incorrect login/password", ex);
+            ConnectionProvider.getInstance().destroyInstance();
+            SwingUtilities.invokeLater(() -> {
+                Application.eventBus.post(new AuthenticationFailedEvent("Unable to connect or incorrect login/password"));
+            });
+            return false;
+        }
+        return false;
+    }
+
     private void initListeners() {
         txtPassword.addKeyListener(this);
         txtUsername.addKeyListener(this);
@@ -231,6 +274,7 @@ public class LoginWindow extends DialogWindow implements KeyListener, Loggable {
 
     private WebButton btnCancel;
     private WebButton btnSignIn;
+    private WebButton btnSignInAnonymous;
     private WebPanel btnPanel;
     private WebComboBox cmbLanguage;
     private WebPanel fieldsPanel;
