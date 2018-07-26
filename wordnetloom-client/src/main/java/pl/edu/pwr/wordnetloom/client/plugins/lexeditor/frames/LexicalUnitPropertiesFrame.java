@@ -5,6 +5,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.EmotionsPropertiesP
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.utils.ChangeListener;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -20,6 +21,8 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
 
     private static Sense savedSense;
 
+    private JButton saveButton;
+
     public LexicalUnitPropertiesFrame(WebFrame baseFrame, String title, int x, int y, int width, int height) {
         super(baseFrame, title, x, y, width, height);
         initComponents(baseFrame);
@@ -30,11 +33,10 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
         setLayout(new BorderLayout());
 
         JPanel buttonsPanel = new JPanel();
-        JButton saveButton = MButton.buildSaveButton()
+        saveButton = MButton.buildSaveButton()
                 .withActionListener(e->save());
         JButton cancelButton = MButton.buildCancelButton()
                 .withActionListener(e->cancel());
-
         buttonsPanel.add(cancelButton);
         buttonsPanel.add(saveButton);
 
@@ -45,7 +47,9 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
     private void save() {
         if(tabbedPane.getSelectedComponent().equals(lexicalUnitPropertiesPanel)) {
             savedSense = lexicalUnitPropertiesPanel.save();
-            loadUnit(savedSense);
+            if(savedSense != null){
+                loadUnit(savedSense);
+            }
         } else {
             emotionsPropertiesPanel.save();
         }
@@ -60,6 +64,7 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
         final int WIDTH = 560;
         final int HEIGHT = 520;
         tabbedPane = new JTabbedPane();
+
         lexicalUnitPropertiesPanel = new LexicalUnitPropertiesPanel(frame,WIDTH, HEIGHT);
         emotionsPropertiesPanel = new EmotionsPropertiesPanel(frame, WIDTH, HEIGHT);
 

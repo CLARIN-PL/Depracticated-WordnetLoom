@@ -63,6 +63,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
     private int width;
     private int height;
 
+
     public LexicalUnitPropertiesPanel(WebFrame frame, int width, int height) {
         this.width = width;
         this.height = height;
@@ -71,7 +72,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         insertComponents();
         validationManager = initValidationManager();
     }
-
+    
     private ValidationManager initValidationManager() {
         ValidationManager validationManager = new ValidationManager();
         // TODO dorobić etykiety
@@ -196,7 +197,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
 
     private JComboBox createPartOfSpeechComboBox() {
         List<PartOfSpeech> partOfSpeechList = PartOfSpeechManager.getInstance().getAll();
-        return createComboBox(partOfSpeechList.iterator(), new PartOfSpeechRenderer());
+        return createComboBox(partOfSpeechList.iterator(), new LocalisedRenderer());
     }
 
     private JComboBox createDomainComboBox() {
@@ -233,6 +234,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
 
     public void setSense(Sense unit) {
         this.editedSense = unit;
+        examplesModel.clear();
         if(unit == null) {
             return;
         }
@@ -284,7 +286,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
 
     public Sense save() {
         if(validateComponents()){
-            if(!checkUnitExists()) {
+            if(editedSense == null || !checkUnitExists()) {
                 return saveSense(getSense());
             }
         }
@@ -315,7 +317,8 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         String definition = !definitionArea.getText().isEmpty() ? definitionArea.getText() : null;
 
         long count = units.stream()
-                .filter(u->u.getSense().getWord().getWord().equals(lemma)
+                .filter(u-> !u.getId().equals(editedSense.getId())
+                        && u.getSense().getWord().getWord().equals(lemma)
                 && u.getSense().getLexicon().equals(lexicon)
                 && u.getSense().getDomain().equals(domain)
                 && u.getSense().getPartOfSpeech().equals(partOfSpeech)

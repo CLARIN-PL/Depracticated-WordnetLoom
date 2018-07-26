@@ -11,7 +11,7 @@ public class LexiconRenderer implements ListCellRenderer{
 
     private final String NULL_TEXT = Labels.NOT_CHOSEN;
 
-    private DefaultListCellRenderer defaultListCellRenderer = new DefaultListCellRenderer();
+    private ListCellRenderer defaultListCellRenderer = new JComboBox().getRenderer();
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) defaultListCellRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);

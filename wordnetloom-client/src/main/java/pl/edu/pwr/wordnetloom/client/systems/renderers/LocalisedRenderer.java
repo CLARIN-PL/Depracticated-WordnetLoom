@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.systems.renderers;
 
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 
 import javax.swing.*;
@@ -11,14 +12,13 @@ public class LocalisedRenderer implements ListCellRenderer{
 
     private final String NULL_TEXT = Labels.NOT_CHOSEN;
 
-    // TODO zmienić to, ponieważ słabo wygląda
-    private DefaultListCellRenderer defaultListCellRenderer = new DefaultListCellRenderer();
+    private ListCellRenderer listCellRenderer = new JComboBox().getRenderer();
 
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        JLabel label = (JLabel)defaultListCellRenderer.getListCellRendererComponent(list,value, index, isSelected, cellHasFocus);
+        JLabel label = (JLabel)listCellRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         String text = NULL_TEXT;
-        if(value != null) {
+        if(value != null){
             text = getLocalisedText(value);
         }
         label.setText(text);
