@@ -3,12 +3,21 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.google.common.eventbus.Subscribe;
+import org.hibernate.annotations.JoinColumnOrFormula;
+import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SetLexiconsEvent;
+import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
+import pl.edu.pwr.wordnetloom.client.systems.renderers.LocalisedRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Emotion;
+import pl.edu.pwr.wordnetloom.dictionary.model.Markedness;
+import pl.edu.pwr.wordnetloom.dictionary.model.Valuation;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
@@ -17,6 +26,9 @@ import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -35,6 +47,59 @@ public abstract class CriteriaPanel extends WebPanel {
     private PartOfSpeechComboBox partsOfSpeechComboBox;
     private MComboBox<RelationType> synsetRelationsComboBox;
     private MComboBox<RelationType> senseRelationsComboBox;
+    protected JComboBox<DictionaryCheckComboStore> emotionsComboBox;
+    protected JComboBox<DictionaryCheckComboStore> valuationsComboBox;
+    protected JComboBox<Markedness> markednessComboBox;
+
+    private List<DictionaryCheckComboStore> emotionsItems = new ArrayList<>();
+    private List<DictionaryCheckComboStore> valuationsItems = new ArrayList<>();
+
+    // TODO zrobić odzielną klasę z checkboxem
+    private class DictionaryCheckComboRenderer implements ListCellRenderer {
+
+        private JCheckBox checkBox;
+
+        public DictionaryCheckComboRenderer() {
+            checkBox = new JCheckBox();
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            DictionaryCheckComboStore store = (DictionaryCheckComboStore)value;
+            checkBox.setText(store.getName());
+            checkBox.setSelected(store.isSelected());
+            // TODO można ustawić kolory, dla zaznaczonych i niezaznaczonych
+            return checkBox;
+        }
+    }
+
+    private abstract class CheckComboStore<T> {
+        private boolean selected;
+        protected T object;
+
+        public CheckComboStore(T object, boolean selected){
+            this.object = object;
+            this.selected = selected;
+        }
+
+        public boolean isSelected() {
+            return selected;
+        }
+
+        public abstract String getName();
+    }
+
+    private class DictionaryCheckComboStore extends CheckComboStore<Dictionary> {
+
+        public DictionaryCheckComboStore(Dictionary object, boolean selected) {
+            super(object, selected);
+        }
+
+        public String getName() {
+            return LocalisationManager.getInstance().getLocalisedString(object.getName());
+        }
+    }
+
 
     public CriteriaPanel() {
         initialize();
@@ -50,11 +115,10 @@ public abstract class CriteriaPanel extends WebPanel {
     private void initialize() {
         setLayout(new RiverLayout());
 
-
-        lexiconComboBox = initLexiconComboBox();
-        partsOfSpeechComboBox = initPartOfSpeechComboBox();
+        lexiconComboBox = createLexiconComboBox();
+        partsOfSpeechComboBox = createPartOfSpeechComboBox();
         searchTextField = new MTextField(STANDARD_VALUE_FILTER);
-        domainComboBox = initDomainComboBox();
+        domainComboBox = createDomainComboBox();
 
         synsetRelationsComboBox = createSynsetRelationsComboBox();
         synsetRelationsComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
@@ -62,9 +126,42 @@ public abstract class CriteriaPanel extends WebPanel {
         senseRelationsComboBox = createSenseRelationsComboBox();
         senseRelationsComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
 
+        emotionsComboBox = createDictionariesComboBox(Emotion.class, emotionsItems);
+        valuationsComboBox = createDictionariesComboBox(Valuation.class, valuationsItems);
+        markednessComboBox = createMarkednessComboBox();
     }
 
-    private LexiconComboBox initLexiconComboBox() {
+    private JComboBox createDictionariesComboBox(Class clazz, List<DictionaryCheckComboStore> list){
+        JComboBox comboBox = new JComboBox();
+        comboBox.setRenderer(new DictionaryCheckComboRenderer());
+        List<Dictionary> dictionaries = RemoteService.dictionaryServiceRemote.findDictionaryByClass(clazz);
+        for(Dictionary dictionary : dictionaries) {
+            DictionaryCheckComboStore item = new DictionaryCheckComboStore(dictionary, false);
+            list.add(item);
+            comboBox.addItem(item);
+        }
+        comboBox.addActionListener(e -> {
+            JComboBox cb = (JComboBox) e.getSource();
+            CheckComboStore item = (CheckComboStore) cb.getSelectedItem();
+            DictionaryCheckComboRenderer renderer = (DictionaryCheckComboRenderer)cb.getRenderer();
+            renderer.checkBox.setSelected(item.selected = !item.isSelected());
+        });
+        return comboBox;
+    }
+
+    private JComboBox createMarkednessComboBox() {
+        JComboBox comboBox = new JComboBox();
+        comboBox.setRenderer(new LocalisedRenderer());
+        List<Markedness> dictionaries = (List<Markedness>) RemoteService.dictionaryServiceRemote.findDictionaryByClass(Markedness.class);
+        for(Markedness markedness: dictionaries) {
+            comboBox.addItem(markedness);
+        }
+
+        return comboBox;
+
+    }
+
+    private LexiconComboBox createLexiconComboBox() {
         LexiconComboBox resultComboBox = new LexiconComboBox(Labels.VALUE_ALL);
         resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
         resultComboBox.addActionListener((ActionEvent e) -> {
@@ -80,7 +177,7 @@ public abstract class CriteriaPanel extends WebPanel {
         return resultComboBox;
     }
 
-    private PartOfSpeechComboBox initPartOfSpeechComboBox() {
+    private PartOfSpeechComboBox createPartOfSpeechComboBox() {
         PartOfSpeechComboBox resultComboBox = new PartOfSpeechComboBox(Labels.VALUE_ALL);
         resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
         resultComboBox.addItemListener((ItemEvent e) -> {
@@ -98,7 +195,7 @@ public abstract class CriteriaPanel extends WebPanel {
         return resultComboBox;
     }
 
-    private DomainMComboBox initDomainComboBox() {
+    private DomainMComboBox createDomainComboBox() {
         DomainMComboBox resultComboBox = new DomainMComboBox(Labels.VALUE_ALL);
         resultComboBox.allDomains(true);
         resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
@@ -141,6 +238,16 @@ public abstract class CriteriaPanel extends WebPanel {
     protected void addSearch() {
         add("", new MLabel(Labels.SEARCH_COLON, 'w', searchTextField));
         add("br hfill", searchTextField);
+    }
+
+    protected void addEmotions() {
+        // TODO dorobić etykiet
+        add("br", new JLabel(Labels.EMOTIONS));
+        add("br hfill", emotionsComboBox);
+        add("br", new JLabel("Wartościowanie"));
+        add("br hfill", valuationsComboBox);
+        add("br", new JLabel("Nacechowanie"));
+        add("br hfill",markednessComboBox);
     }
 
     private MComboBox<RelationType> createSynsetRelationsComboBox() {

@@ -79,6 +79,7 @@ public final class SenseCriteria extends CriteriaPanel {
         addRegister();
         addComment();
         addExample();
+        addEmotions();
     }
 
     protected void addRegister() {
