@@ -45,14 +45,18 @@ public class WordServiceBean implements WordServiceLocal {
     @PermitAll
     @Override
     public Word findByWord(String word) {
-        return wordRepository.findByWord(word);
+        Word w = wordRepository.findByWord(word);
+        if(w == null){
+            throw new WordNotFoundException();
+        }
+        return w;
     }
 
     @PermitAll
     @Override
     public Word findById(Long id) {
         Word w = wordRepository.findById(id);
-        if (w == null) {
+        if(w == null){
             throw new WordNotFoundException();
         }
         return w;

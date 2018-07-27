@@ -94,6 +94,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
     }
 
     private void drawFrame(GraphicsDecorator g, Shape shape, Color color, Point2D.Float pos) {
+        final float BORDER_WIDTH = 5.0f;
         Shape old_clip = g.getClip();
         AffineTransform old = g.getTransform();
         AffineTransform t = g.getTransform();
@@ -101,7 +102,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
         g.setTransform(t);
         g.setColor(color);
         Stroke old_stroke = g.getStroke();
-        g.setStroke(new BasicStroke(10.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
+        g.setStroke(new BasicStroke(BORDER_WIDTH, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
         Area a = new Area(g.getClip());
         a.subtract(new Area(shape));
         g.setClip(a);
@@ -120,8 +121,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
 
         Shape shape = rc.getVertexShapeTransformer().transform(node);
         GraphicsDecorator g = rc.getGraphicsContext();
-        // TODO
-//        node.setFrame(true);
+        node.setFrame(true);
 
         if (node instanceof ViwnNodeCand) {
             ViwnNodeCand cand = (ViwnNodeCand) node;
@@ -135,10 +135,9 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
         } else if (PosFrameColors.containsKey(node.getPos())) {
             drawFrame(g, shape, PosFrameColors.get(node.getPos()), pos);
         } else if (node.getFrame()) {
-            // TODO ustawić kolor
-
-//            drawFrame(g, shape, new Color(50, 132, 255), pos);
-            drawFrame(g, shape, new Color(255, 0, 0), pos);
+            String colorHex = node.getSynset().getStatus().getColor();
+            Color borderColor = Color.decode(colorHex);
+            drawFrame(g, shape, borderColor, pos);
         }
 
         delegate.paintVertex(rc, layout, node);
