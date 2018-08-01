@@ -3,8 +3,6 @@ package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.google.common.eventbus.Subscribe;
-import org.hibernate.annotations.JoinColumnOrFormula;
-import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SetLexiconsEvent;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -47,56 +45,41 @@ public abstract class CriteriaPanel extends WebPanel {
     private PartOfSpeechComboBox partsOfSpeechComboBox;
     private MComboBox<RelationType> synsetRelationsComboBox;
     private MComboBox<RelationType> senseRelationsComboBox;
-    protected JComboBox<DictionaryCheckComboStore> emotionsComboBox;
-    protected JComboBox<DictionaryCheckComboStore> valuationsComboBox;
+    protected ComboCheckBox emotionsComboBox;
+    protected ComboCheckBox valuationsComboBox;
     protected JComboBox<Markedness> markednessComboBox;
 
     private List<DictionaryCheckComboStore> emotionsItems = new ArrayList<>();
     private List<DictionaryCheckComboStore> valuationsItems = new ArrayList<>();
 
-    // TODO zrobić odzielną klasę z checkboxem
-    private class DictionaryCheckComboRenderer implements ListCellRenderer {
 
-        private JCheckBox checkBox;
+    private class DictionaryCheckComboStore implements pl.edu.pwr.wordnetloom.client.systems.ui.ComboCheckBox.CheckComboStore{
 
-        public DictionaryCheckComboRenderer() {
-            checkBox = new JCheckBox();
-        }
-
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            DictionaryCheckComboStore store = (DictionaryCheckComboStore)value;
-            checkBox.setText(store.getName());
-            checkBox.setSelected(store.isSelected());
-            // TODO można ustawić kolory, dla zaznaczonych i niezaznaczonych
-            return checkBox;
-        }
-    }
-
-    private abstract class CheckComboStore<T> {
         private boolean selected;
-        protected T object;
+        private Dictionary dictionary;
 
-        public CheckComboStore(T object, boolean selected){
-            this.object = object;
+
+        public DictionaryCheckComboStore(Dictionary object, boolean selected) {
+            this.dictionary = object;
             this.selected = selected;
         }
 
-        public boolean isSelected() {
-            return selected;
+        @Override
+        public boolean isSelected() {return selected;}
+
+        @Override
+        public void setSelected(boolean selected){
+            this.selected = selected;
         }
 
-        public abstract String getName();
-    }
-
-    private class DictionaryCheckComboStore extends CheckComboStore<Dictionary> {
-
-        public DictionaryCheckComboStore(Dictionary object, boolean selected) {
-            super(object, selected);
-        }
-
+        @Override
         public String getName() {
-            return LocalisationManager.getInstance().getLocalisedString(object.getName());
+            return LocalisationManager.getInstance().getLocalisedString(dictionary.getName());
+        }
+
+        @Override
+        public Long getId() {
+            return dictionary.getId();
         }
     }
 
@@ -129,24 +112,18 @@ public abstract class CriteriaPanel extends WebPanel {
         emotionsComboBox = createDictionariesComboBox(Emotion.class, emotionsItems);
         valuationsComboBox = createDictionariesComboBox(Valuation.class, valuationsItems);
         markednessComboBox = createMarkednessComboBox();
+
     }
 
-    private JComboBox createDictionariesComboBox(Class clazz, List<DictionaryCheckComboStore> list){
-        JComboBox comboBox = new JComboBox();
-        comboBox.setRenderer(new DictionaryCheckComboRenderer());
+    private ComboCheckBox createDictionariesComboBox(Class clazz, List<DictionaryCheckComboStore> list){
+        ComboCheckBox comboCheckBox = new ComboCheckBox();
         List<Dictionary> dictionaries = RemoteService.dictionaryServiceRemote.findDictionaryByClass(clazz);
+        List<DictionaryCheckComboStore> comboElements = new ArrayList<>();
         for(Dictionary dictionary : dictionaries) {
-            DictionaryCheckComboStore item = new DictionaryCheckComboStore(dictionary, false);
-            list.add(item);
-            comboBox.addItem(item);
+            comboElements.add(new DictionaryCheckComboStore(dictionary, false));
         }
-        comboBox.addActionListener(e -> {
-            JComboBox cb = (JComboBox) e.getSource();
-            CheckComboStore item = (CheckComboStore) cb.getSelectedItem();
-            DictionaryCheckComboRenderer renderer = (DictionaryCheckComboRenderer)cb.getRenderer();
-            renderer.checkBox.setSelected(item.selected = !item.isSelected());
-        });
-        return comboBox;
+        comboCheckBox.setElements(comboElements);
+        return comboCheckBox;
     }
 
     private JComboBox createMarkednessComboBox() {
