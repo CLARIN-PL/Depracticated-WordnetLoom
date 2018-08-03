@@ -4,9 +4,7 @@ import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
-import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
+import pl.edu.pwr.wordnetloom.sense.model.*;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
@@ -66,6 +64,14 @@ public class SenseRepository extends GenericRepository<Sense> {
     private final String COMMENT = "comment";
     private final String EXAMPLES = "examples";
     private final String SYNSET = "synset";
+    private final String SENSE = "sense";
+    private final String ID = "id";
+    private final String EMOTION = "emotion";
+    private final String VALUATION = "valuation";
+    private final String MARKEDNESS = "markedness";
+    private final String EMOTIONS = "emotions";
+    private final String VALUATIONS = "valuations";
+    private final String EXAMPLE = "example";
 
     private List<Sense> getSensesByCriteria(SenseCriteriaDTO dto) {
 
@@ -136,7 +142,7 @@ public class SenseRepository extends GenericRepository<Sense> {
             CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
             Subquery<Long> subquery = query.subquery(Long.class);
             Root<SenseAttributes> senseAttributesRoot = subquery.from(SenseAttributes.class);
-            subquery.select(senseAttributesRoot.get("sense").get("id"));
+            subquery.select(senseAttributesRoot.get(SENSE).get(ID));
 
             List<Predicate> predicates = new ArrayList<>();
 
@@ -152,12 +158,12 @@ public class SenseRepository extends GenericRepository<Sense> {
 
             if (dto.getExample() != null) {
                 Join<SenseAttributes, SenseExample> senseExampleJoin = senseAttributesRoot.join(EXAMPLES);
-                Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get("example"), "%"+dto.getExample()+"%");
+                Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get(EXAMPLE), "%"+dto.getExample()+"%");
                 predicates.add(examplePredicate);
             }
 
             subquery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
-            Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get("id")).value(subquery);
+            Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get(ID)).value(subquery);
             predicateList.add(subquery_predicate);
         }
 
@@ -168,6 +174,29 @@ public class SenseRepository extends GenericRepository<Sense> {
         if (dto.getVariant() != null) {
             Predicate variantPredicate = criteriaBuilder.equal(senseRoot.get(VARIANT), dto.getVariant());
             predicateList.add(variantPredicate);
+        }
+
+        if(!dto.getEmotions().isEmpty() || !dto.getValuations().isEmpty() || dto.getMarkedness() != null){
+            CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
+            Subquery<Long> subquery = query.subquery(Long.class);
+            Root<EmotionalAnnotation> emotionalAnnotationRoot = subquery.from(EmotionalAnnotation.class);
+            subquery.select(emotionalAnnotationRoot.get(SENSE).get(ID));
+            query.select(emotionalAnnotationRoot.get(SENSE).get(ID));
+            if(!dto.getEmotions().isEmpty()) {
+                Join<EmotionalAnnotation, UnitEmotion> unitEmotionJoin = emotionalAnnotationRoot.join(EMOTIONS, JoinType.LEFT);
+                subquery.where(unitEmotionJoin.get(EMOTION).get(ID).in(dto.getEmotions()));
+            }
+            if(!dto.getValuations().isEmpty()) {
+                Join<EmotionalAnnotation, UnitValuation> unitValuationJoin = emotionalAnnotationRoot.join(VALUATIONS, JoinType.LEFT);
+                subquery.where(unitValuationJoin.get(VALUATION).get(ID).in(dto.getValuations()));
+            }
+            if(dto.getMarkedness() != null){
+                subquery.where(criteriaBuilder.equal(emotionalAnnotationRoot.get(MARKEDNESS).get(ID), dto.getMarkedness()));
+            }
+
+            Predicate emotionalAnnotationPredicate = criteriaBuilder.in(senseRoot.get(ID)).value(subquery);
+            predicateList.add(emotionalAnnotationPredicate);
+
         }
 
         return predicateList.toArray(new Predicate[0]);

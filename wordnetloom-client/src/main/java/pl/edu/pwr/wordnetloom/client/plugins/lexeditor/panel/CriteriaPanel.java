@@ -24,7 +24,6 @@ import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.*;
@@ -129,6 +128,7 @@ public abstract class CriteriaPanel extends WebPanel {
     private JComboBox createMarkednessComboBox() {
         JComboBox comboBox = new JComboBox();
         comboBox.setRenderer(new LocalisedRenderer());
+        comboBox.addItem(null);
         List<Markedness> dictionaries = (List<Markedness>) RemoteService.dictionaryServiceRemote.findDictionaryByClass(Markedness.class);
         for(Markedness markedness: dictionaries) {
             comboBox.addItem(markedness);

@@ -6,6 +6,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.dictionary.model.Markedness;
 import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
@@ -43,28 +44,25 @@ public final class SenseCriteria extends CriteriaPanel {
     }
 
     public SenseCriteriaDTO getSenseCriteriaDTO() {
-
+        Long partOfSpeechId = getPartsOfSpeechComboBox().getEntity() != null ? getPartsOfSpeechComboBox().getEntity().getId() : null;
+        Long domainId = getDomainComboBox().getEntity() != null ? getDomainComboBox().getEntity().getId() : null;
         String lemma = getSearchTextField().getText();
-        String comment = getComment().getText();
-        String example = getExample().getText();
-        Long partOfSpeechId = getPartsOfSpeechComboBox().getEntity() == null ? null : getPartsOfSpeechComboBox().getEntity().getId();
-        Long domainId = getDomainComboBox().getEntity() == null ? null : getDomainComboBox().getEntity().getId();
         List<Long> lexicons = new ArrayList<>();
         Lexicon lexicon = getLexiconComboBox().getEntity();
-        Long relationType = getSenseRelationTypeComboBox().getEntity() == null ? null : getSenseRelationTypeComboBox().getEntity().getId();
-        Long register = registerComboBox.getEntity() == null ? null : registerComboBox.getEntity().getId();
-
-        if (lexicon != null) {
+        if(lexicon != null){
             lexicons.add(lexicon.getId());
         } else {
             lexicons.addAll(LexiconManager.getInstance().getUserChosenLexiconsIds());
         }
 
         SenseCriteriaDTO senseCriteria = new SenseCriteriaDTO(partOfSpeechId, domainId, lemma, lexicons);
-        senseCriteria.setRelationTypeId(relationType);
-        senseCriteria.setComment(comment);
-        senseCriteria.setExample(example);
-        senseCriteria.setRegisterId(register);
+        senseCriteria.setRelationTypeId(getSenseRelationTypeComboBox().getEntity() != null ? getSenseRelationTypeComboBox().getEntity().getId() : null);
+        senseCriteria.setComment(getComment().getText());
+        senseCriteria.setExample(getExample().getText());
+        senseCriteria.setRegisterId(registerComboBox.getEntity() != null ? registerComboBox.getEntity().getId() : null);
+        senseCriteria.setEmotions(emotionsComboBox.getSelectedItemsIds());
+        senseCriteria.setValuations(valuationsComboBox.getSelectedItemsIds());
+        senseCriteria.setMarkedness(markednessComboBox.getSelectedItem() != null ? ((Markedness)markednessComboBox.getSelectedItem()).getId() : null);
 
         return senseCriteria;
     }

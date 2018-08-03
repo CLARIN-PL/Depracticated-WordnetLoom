@@ -16,6 +16,9 @@ public class SenseCriteriaDTO implements Serializable {
     private String example;
     private Long register;
     private Long synsetId;
+    private List<Long> emotions;
+    private List<Long> valuations;
+    private Long markedness;
 
     private int limit;
     private int offset;
@@ -143,4 +146,27 @@ public class SenseCriteriaDTO implements Serializable {
         this.offset = offset;
     }
 
+    public List<Long> getEmotions() {
+        return emotions;
+    }
+
+    public void setEmotions(List<Long> emotions){
+        this.emotions = emotions;
+    }
+
+    public List<Long> getValuations() {
+        return valuations;
+    }
+
+    public void setValuations(List<Long> valuations){
+        this.valuations = valuations;
+    }
+
+    public Long getMarkedness() {
+        return markedness;
+    }
+
+    public void setMarkedness(Long markedness) {
+        this.markedness = markedness;
+    }
 }
