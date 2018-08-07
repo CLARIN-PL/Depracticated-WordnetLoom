@@ -7,10 +7,12 @@ import pl.edu.pwr.wordnetloom.client.systems.errors.ValidationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
+import pl.edu.pwr.wordnetloom.client.utils.ChangeListener;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
 import se.datadosen.component.RiverLayout;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import javax.validation.constraints.NotNull;
@@ -44,7 +46,17 @@ public class LexiconManagerWindow extends MFrame {
         setMinimumSize(new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT));
 
         lexiconListPanel = new LexiconListPanel(MAX_WINDOW_WIDTH, MAX_WINDOW_HEIGHT / 2,
-                lexicon -> lexiconPropertiesPanel.setLexicon(lexicon));
+                new LexiconLoadListener() {
+                    @Override
+                    public void load(Lexicon lexicon) {
+                        lexiconPropertiesPanel.setLexicon(lexicon);
+                    }
+
+                    @Override
+                    public boolean isChanged() {
+                        return lexiconPropertiesPanel.isChanged();
+                    }
+                });
         lexiconPropertiesPanel = new LexiconPropertiesPanel(MAX_WINDOW_WIDTH, MAX_WINDOW_HEIGHT/2);
         saveButton = MButton.buildSaveButton().withActionListener(e->{
             saveLexicon();
@@ -62,6 +74,9 @@ public class LexiconManagerWindow extends MFrame {
     }
 
     private void saveLexicon() {
+        if(!lexiconPropertiesPanel.isChanged()) {
+            return;
+        }
         Lexicon lexicon = lexiconPropertiesPanel.getLexicon();
         if(lexicon != null){
             Lexicon savedLexicon = RemoteService.lexiconServiceRemote.add(lexicon);
@@ -79,6 +94,7 @@ public class LexiconManagerWindow extends MFrame {
 
     public interface LexiconLoadListener {
         void load(Lexicon lexicon);
+        boolean isChanged();
     }
 
     private class LexiconListPanel extends WebPanel {
@@ -91,7 +107,8 @@ public class LexiconManagerWindow extends MFrame {
         private int height;
 
         private boolean editMode;
-        LexiconLoadListener clickListener;
+        private LexiconLoadListener clickListener;
+        private int currentLexiconIndex = -1;
 
         public LexiconListPanel(int width, int height,@NotNull LexiconLoadListener listener) {
             this.width = width;
@@ -109,20 +126,43 @@ public class LexiconManagerWindow extends MFrame {
         }
 
         private JList createLexiconsList() {
+            // TODO dorobić etykiety
             lexiconsList = new JList();
             model = new DefaultListModel();
             refreshList();
 
-            lexiconsList.addListSelectionListener(e->{
-                if(clickListener != null){
-                    Lexicon selectedLexicon = (Lexicon)lexiconsList.getSelectedValue();
-                    if(selectedLexicon != null){
-                        clickListener.load(selectedLexicon);
-                    }
-                }
-            });
-
+            lexiconsList.addListSelectionListener(e-> selectLexicon());
             return lexiconsList;
+        }
+
+        private void selectLexicon(){
+            if(currentLexiconIndex == lexiconsList.getSelectedIndex()){
+                return;
+            }
+            assert clickListener != null;
+            // if any field of edited lexicon was changed
+            if(currentLexiconIndex != -1 && clickListener.isChanged()){
+                // TODO dorobić etykiety, zmienić pytanie
+                if(DialogBox.showYesNo("Czy porzucić zmiany?") == DialogBox.YES){
+                    // if previous selected item is not saved (added item)
+                    if(((Lexicon)model.get(currentLexiconIndex)).getId() == null){
+                        model.remove(currentLexiconIndex);
+                    }
+                    setSelectedLexicon();
+                } else {
+                    lexiconsList.setSelectedIndex(currentLexiconIndex);
+                }
+            } else {
+                setSelectedLexicon();
+            }
+        }
+
+        private void setSelectedLexicon() {
+            Lexicon selectedLexicon = (Lexicon)lexiconsList.getSelectedValue();
+            if(selectedLexicon != null){
+                clickListener.load(selectedLexicon);
+                currentLexiconIndex = lexiconsList.getSelectedIndex();
+            }
         }
 
         public Lexicon getSelectedLexicon(){
@@ -165,9 +205,9 @@ public class LexiconManagerWindow extends MFrame {
         private void addLexicon() {
             // add new item to lexicons list
             Lexicon lexicon = new Lexicon();
-            lexicon.setName(""); // TODO można też wstawić nazwę "nowy"
-            clickListener.load(lexicon);
-
+            lexicon.setName("Nowy");
+            model.addElement(lexicon);
+            lexiconsList.setSelectedIndex(model.getSize()-1); // select last element
         }
 
         private void removeLexicon(Lexicon lexicon) {
@@ -179,6 +219,7 @@ public class LexiconManagerWindow extends MFrame {
             if(answer == DialogBox.YES){
                 System.out.println("Usunięcie leksykonu");
                 //TODO zrobić usuwanie leksykonu
+                throw new NotImplementedException();
             }
         }
 
@@ -196,9 +237,6 @@ public class LexiconManagerWindow extends MFrame {
             return RemoteService.synsetRemote.getCountSynsetsByCriteria(synsetDTO);
         }
 
-        private void removeLexicon(){
-
-        }
     }
 
     private class LexiconPropertiesPanel extends WebPanel {
@@ -216,12 +254,14 @@ public class LexiconManagerWindow extends MFrame {
         private int height;
 
         private ValidationManager validationManager;
+        private ChangeListener changeListener;
 
         public LexiconPropertiesPanel(int width, int height) {
             this.width = width;
             this.height = height;
             initView();
             initValidation();
+            initChangeListener();
         }
 
         private void initValidation(){
@@ -232,6 +272,15 @@ public class LexiconManagerWindow extends MFrame {
             validationManager.registerError(identifier, "Pole nie może być puste", ()->identifier.getText().isEmpty());
             validationManager.registerError(languageName, "Pole nie może być puste", ()->languageName.getText().isEmpty());
             validationManager.registerError(languageShorcut, "Pole nie może być puste", ()->languageShorcut.getText().isEmpty());
+        }
+
+        private void initChangeListener() {
+            changeListener = new ChangeListener();
+            changeListener.addComponents(name, identifier, languageName, languageShorcut, version, licence, email);
+        }
+
+        public boolean isChanged() {
+            return changeListener.isChanged();
         }
 
         private void initView(){
@@ -259,6 +308,12 @@ public class LexiconManagerWindow extends MFrame {
             version.setText(lexicon.getLexiconVersion());
             licence.setText(lexicon.getLicense());
             email.setText(lexicon.getEmail());
+
+            changeListener.updateValues();
+            // when we add new lexicon
+            if(lexicon.getId() == null){
+                changeListener.setChanged(true);
+            }
         }
 
         public Lexicon getLexicon() {
