@@ -48,6 +48,8 @@ public class Lexicon extends GenericEntity {
     @Column(name = "confidence_score")
     private String confidenceScore;
 
+    private String description;
+
     public Lexicon() {
     }
 
@@ -139,6 +141,14 @@ public class Lexicon extends GenericEntity {
 
     public void setConfidenceScore(String confidenceScore) {
         this.confidenceScore = confidenceScore;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description){
+        this.description = description;
     }
 
     @Override

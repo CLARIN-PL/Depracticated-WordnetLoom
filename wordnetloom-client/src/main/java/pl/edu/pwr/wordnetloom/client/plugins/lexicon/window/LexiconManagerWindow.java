@@ -8,6 +8,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.ChangeListener;
+import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
@@ -82,8 +83,9 @@ public class LexiconManagerWindow extends MFrame {
             Lexicon savedLexicon = RemoteService.lexiconServiceRemote.add(lexicon);
             java.util.List<Lexicon> lexicons = RemoteService.lexiconServiceRemote.findAll();
             LexiconManager.getInstance().load(lexicons);
-            lexiconListPanel.refreshAndSelect(savedLexicon);
-
+            // TODO zmieniamy zaznaczony element
+            lexiconListPanel.replaceSelectedItem(savedLexicon);
+            lexiconPropertiesPanel.setChanged();
         }
     }
 
@@ -106,7 +108,6 @@ public class LexiconManagerWindow extends MFrame {
         private int width;
         private int height;
 
-        private boolean editMode;
         private LexiconLoadListener clickListener;
         private int currentLexiconIndex = -1;
 
@@ -165,6 +166,10 @@ public class LexiconManagerWindow extends MFrame {
             }
         }
 
+        private void replaceSelectedItem(Lexicon lexicon){
+            model.setElementAt(lexicon, currentLexiconIndex);
+        }
+
         public Lexicon getSelectedLexicon(){
             return (Lexicon)lexiconsList.getSelectedValue();
         }
@@ -183,7 +188,6 @@ public class LexiconManagerWindow extends MFrame {
                     .withMargin(10);
 
             return buttonsPanel;
-
         }
 
         private void refreshList(){
@@ -195,11 +199,6 @@ public class LexiconManagerWindow extends MFrame {
                 model.addElement(lexicon);
             }
             lexiconsList.setModel(model);
-        }
-
-        private void refreshAndSelect(Lexicon lexicon){
-            refreshList();
-            lexiconsList.setSelectedValue(lexicon, true);
         }
 
         private void addLexicon() {
@@ -249,6 +248,7 @@ public class LexiconManagerWindow extends MFrame {
         private final MTextField version = new MTextField("");
         private final MTextField licence = new MTextField("");
         private final MTextField email = new MTextField("");
+        private final MTextArea description = new MTextArea("");
 
         private int width;
         private int height;
@@ -276,7 +276,8 @@ public class LexiconManagerWindow extends MFrame {
 
         private void initChangeListener() {
             changeListener = new ChangeListener();
-            changeListener.addComponents(name, identifier, languageName, languageShorcut, version, licence, email);
+            changeListener.addComponents(name, identifier, languageName, languageShorcut,
+                    version, licence, email, description);
         }
 
         public boolean isChanged() {
@@ -284,8 +285,10 @@ public class LexiconManagerWindow extends MFrame {
         }
 
         private void initView(){
+            final int DESCRIPTION_ROWS = 2;
             setLayout(new RiverLayout());
             setSize(new Dimension(width, height));
+            description.setRows(DESCRIPTION_ROWS);
             // TODO dodać etykiety do bazy
             Map<String, Component> components = new LinkedHashMap<>();
             components.put("Nazwa", name);
@@ -295,6 +298,7 @@ public class LexiconManagerWindow extends MFrame {
             components.put("Wersja", version);
             components.put("Licencja", licence);
             components.put("Email", email);
+            components.put(Labels.DESCRIPTION_COLON, description);
 
             add("", GroupView.createGroupView(components, new Dimension(width - 20, height- 20), 0.1f, 0.9f));
         }
@@ -308,6 +312,7 @@ public class LexiconManagerWindow extends MFrame {
             version.setText(lexicon.getLexiconVersion());
             licence.setText(lexicon.getLicense());
             email.setText(lexicon.getEmail());
+            description.setText(lexicon.getDescription());
 
             changeListener.updateValues();
             // when we add new lexicon
@@ -330,6 +335,7 @@ public class LexiconManagerWindow extends MFrame {
             lexicon.setLexiconVersion(version.getText());
             lexicon.setLicense(licence.getText());
             lexicon.setEmail(email.getText());
+            lexicon.setDescription(description.getText());
 
             return lexicon;
         }
@@ -348,6 +354,10 @@ public class LexiconManagerWindow extends MFrame {
                 }
             }
             return false;
+        }
+
+        public void setChanged() {
+            changeListener.updateValues();
         }
     }
 }
