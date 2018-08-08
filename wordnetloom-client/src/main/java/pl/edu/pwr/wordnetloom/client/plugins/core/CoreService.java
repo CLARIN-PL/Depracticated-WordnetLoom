@@ -54,7 +54,9 @@ public class CoreService extends AbstractService implements MenuListener {
             WebMenu appSettings = createAppSettingMenu(w);
             user.add(appSettings);
         }
-        user.add(account);
+        if(!UserSessionContext.getInstance().hasRole(Role.ANONYMOUS)){
+            user.add(account);
+        }
         user.addSeparator();
         user.add(createSignOutMenuItem());
 

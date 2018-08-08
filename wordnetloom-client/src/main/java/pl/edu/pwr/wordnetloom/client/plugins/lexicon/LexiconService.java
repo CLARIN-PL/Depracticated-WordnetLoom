@@ -9,7 +9,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SetLexiconsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconManagerWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
@@ -17,13 +16,11 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
-import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.util.Set;
 
 public class LexiconService extends AbstractService {
@@ -38,16 +35,13 @@ public class LexiconService extends AbstractService {
     public LexiconService(Workbench workbench) {
         super(workbench);
 
-        lexiconItem.addActionListener((ActionEvent e) -> {
-            showLexiconWindow();
-            sendEvents();
-            ViWordNetService s = ServiceManager.getViWordNetService(workbench);
-            s.reloadCurrentListSelection();
+        lexiconItem.addActionListener(e -> {
+            boolean wasChanged = showLexiconWindow();
+            if(wasChanged) {
+                sendEvents();
+            }
         });
-
-        lexiconManagerItem.addActionListener((ActionEvent e) -> {
-            showLexiconManagerWindow();
-        });
+        lexiconManagerItem.addActionListener(e -> showLexiconManagerWindow());
     }
 
     @Override
@@ -86,8 +80,13 @@ public class LexiconService extends AbstractService {
     public void onStart() {
     }
 
-    private void showLexiconWindow() {
+    private boolean showLexiconWindow() {
+        Set<Lexicon> oldLexicons = LexiconManager.getInstance().getUserChosenLexicons();
         Set<Lexicon> lexicons = LexiconsWindow.showModal(workbench.getFrame(), LexiconManager.getInstance().getUserChosenLexicons());
+
+        if(compareLexicons(oldLexicons, lexicons)){
+            return false; // not changes
+        }
 
         User user = UserSessionContext.getInstance().getUser();
         user.getSettings().setChosenLexicons(LexiconManager.getInstance().lexiconIdToString(lexicons));
@@ -95,6 +94,20 @@ public class LexiconService extends AbstractService {
 
         String language = UserSessionContext.getInstance().getLanguage();
         UserSessionContext.initialiseAndGetInstance(user, language);
+
+        return true;
+    }
+
+    private boolean compareLexicons(Set<Lexicon> oldLexicons, Set<Lexicon> newLexicons) {
+        if(oldLexicons.size() != newLexicons.size()) {
+            return false;
+        }
+        for(Lexicon lexicon : oldLexicons){
+            if(!newLexicons.contains(lexicon)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void showLexiconManagerWindow() {

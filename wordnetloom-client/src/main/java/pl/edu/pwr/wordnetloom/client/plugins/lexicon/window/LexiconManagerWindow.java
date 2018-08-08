@@ -83,7 +83,6 @@ public class LexiconManagerWindow extends MFrame {
             Lexicon savedLexicon = RemoteService.lexiconServiceRemote.add(lexicon);
             java.util.List<Lexicon> lexicons = RemoteService.lexiconServiceRemote.findAll();
             LexiconManager.getInstance().load(lexicons);
-            // TODO zmieniamy zaznaczony element
             lexiconListPanel.replaceSelectedItem(savedLexicon);
             lexiconPropertiesPanel.setChanged();
         }

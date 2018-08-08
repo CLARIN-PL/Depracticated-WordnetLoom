@@ -318,7 +318,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     @Subscribe
     public void loadUnits(SearchUnitsEvent event){
-        SwingUtilities.invokeLater(() -> loadUnits());
+        if(lastSenseCriteria != null){
+            SwingUtilities.invokeLater(()->loadUnits());
+        }
     }
 
     private void deleteSense() {

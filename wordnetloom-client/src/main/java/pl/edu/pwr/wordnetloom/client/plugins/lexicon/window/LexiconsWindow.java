@@ -8,6 +8,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.GroupView;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
+import pl.edu.pwr.wordnetloom.client.utils.ChangeListener;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import se.datadosen.component.RiverLayout;
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
 public class LexiconsWindow extends DialogWindow implements ActionListener {
 
     private static final long serialVersionUID = 1L;
+
+    private ChangeListener changeListener;
 
     private final MButton buttonOk = MButton.buildOkButton()
             .withActionListener(this)
@@ -58,6 +61,10 @@ public class LexiconsWindow extends DialogWindow implements ActionListener {
         add("br center", buttonOk);
         pack();
 
+        changeListener = new ChangeListener();
+        checkboxes.forEach((k,v)->{
+            changeListener.addComponent(v.getB());
+        });
     }
 
     private void setLexicons(Set<Lexicon> list) {
