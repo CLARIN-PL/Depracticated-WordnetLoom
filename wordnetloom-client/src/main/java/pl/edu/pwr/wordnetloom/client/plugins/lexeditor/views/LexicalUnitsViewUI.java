@@ -242,7 +242,8 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
      */
     public List<Sense> loadMoreUnits(int offset, int limit) {
         List<Sense> units = getSenses(lastSenseCriteria, limit, offset);
-        setInfoText(unitsListScrollPane.getModelSize() + units.size(), allUnitsCount);
+        // TODO zmienić tekst, zostawić tylko ilość jednostek
+//        setInfoText(unitsListScrollPane.getModelSize() + units.size(), allUnitsCount);
         return units;
     }
 

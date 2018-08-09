@@ -203,7 +203,6 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     public int getCountUnitsByCriteria(SenseCriteriaDTO dto) {
-
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
 
