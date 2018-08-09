@@ -9,6 +9,7 @@ import pl.edu.pwr.wordnetloom.client.systems.renderers.LocalisedRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MComponentGroup;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.dictionary.model.Emotion;
 import pl.edu.pwr.wordnetloom.dictionary.model.Markedness;
 import pl.edu.pwr.wordnetloom.dictionary.model.Valuation;
@@ -336,8 +337,11 @@ public class EmotionsPropertiesPanel extends JPanel {
     }
 
     private void setStatusEnabled(boolean enabled) {
-        neutralRadio.setEnabled(enabled);
-        notMarkedRadio.setEnabled(enabled);
+        boolean hasPermissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(neutralRadio, notMarkedRadio);
+        if(hasPermissionToEdit){
+            neutralRadio.setEnabled(enabled);
+            notMarkedRadio.setEnabled(enabled);
+        }
     }
 
     private void setMarkedness(EmotionalAnnotation annotation) {
@@ -427,6 +431,7 @@ public class EmotionsPropertiesPanel extends JPanel {
         }
 
         private JPanel createButtonsPanel(){
+
             JButton addButton = MButton.buildAddButton()
                     .withToolTip(Labels.ADD)
                     .withActionListener(e->addEmotion());
@@ -434,6 +439,8 @@ public class EmotionsPropertiesPanel extends JPanel {
                     .withToolTip(Labels.DELETE)
                     .withActionListener(e->removeEmotion());
 
+            // for anonymous user buttons are disable
+            PermissionHelper.checkPermissionToEditAndSetComponents(addButton, removeButton);
             MComponentGroup panel = new MComponentGroup(addButton, removeButton);
             panel.withVerticalLayout();
             return panel;

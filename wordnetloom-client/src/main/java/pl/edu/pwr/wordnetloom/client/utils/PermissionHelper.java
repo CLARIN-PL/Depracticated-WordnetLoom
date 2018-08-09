@@ -29,10 +29,17 @@ public class PermissionHelper {
     }
 
     private static void disableComponent(JComponent component){
-        final String PERMISSION_DENIED = ". Nie posiadasz uprawnień do wykonania taj akcji";
+        final String PERMISSION_DENIED = "Nie posiadasz uprawnień do wykonania taj akcji";
         component.setEnabled(false);
         if(component instanceof JButton) {
-            component.setToolTipText(component.getToolTipText() + PERMISSION_DENIED);
+            String tooltipText = component.getToolTipText();
+            String newTooltipText = null;
+            if(tooltipText == null){
+                newTooltipText = PERMISSION_DENIED;
+            } else {
+                newTooltipText = tooltipText + ". " + PERMISSION_DENIED;
+            }
+            component.setToolTipText(newTooltipText);
         }
     }
 

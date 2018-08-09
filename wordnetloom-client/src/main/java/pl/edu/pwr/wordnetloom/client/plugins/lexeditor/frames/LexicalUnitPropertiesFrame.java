@@ -6,6 +6,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitProperti
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 
@@ -38,6 +39,8 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
                 .withActionListener(e->cancel());
         buttonsPanel.add(cancelButton);
         buttonsPanel.add(saveButton);
+
+        PermissionHelper.checkPermissionToEditAndSetComponents(saveButton);
 
         add(tabbedPane, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);

@@ -11,6 +11,7 @@ import pl.edu.pwr.wordnetloom.client.systems.renderers.*;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.dictionary.model.Register;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -111,6 +112,11 @@ public class LexicalUnitPropertiesPanel extends JPanel {
                 .withActionListener(e->editExample());
         goToLinkButton = new MButton().withIcon(FontAwesome.INTERNET_EXPLORER)
                 .withActionListener(e->goToLink());
+
+        PermissionHelper.checkPermissionToEditAndSetComponents(lemmaTextField,
+                variantTextField, lexiconComboBox, partOfSpeechComboBox, domainComboBox,
+                registerComboBox, definitionArea, commentArea, examplesList, linkTextField,
+                addExampleButton, removeExampleButton, editExampleButton);
     }
 
     private void insertComponents() {
