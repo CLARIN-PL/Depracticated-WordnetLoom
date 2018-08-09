@@ -41,7 +41,15 @@ public class DictionaryEditorWindow extends MFrame {
                 e1.printStackTrace();
             }
         });
-        editDictionaryPanel = new EditDictionaryPanel(panelWidth);
+        editDictionaryPanel = new EditDictionaryPanel(panelWidth, dictionary -> {
+            try {
+                int selectedRow = dictionaryListPanel.getSelectedRow();
+                dictionaryListPanel.loadDictionary();
+                dictionaryListPanel.setSelectedRow(selectedRow);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
 
         WebSplitPane splitPane = new WebSplitPane(JSplitPane.HORIZONTAL_SPLIT, dictionaryListPanel, editDictionaryPanel);
         add(splitPane);

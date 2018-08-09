@@ -49,6 +49,8 @@ public class DictionaryListPanel extends JPanel {
     public DictionaryListPanel(int width, DictionaryListListener listener) {
         this.listener = listener;
         initView(width);
+        // select first duictionary
+        dictionaryType.setSelectedIndex(0);
     }
 
     private void initView(int width) {
@@ -155,7 +157,6 @@ public class DictionaryListPanel extends JPanel {
     }
 
     public void loadDictionary() throws ClassNotFoundException {
-        // TODO odczytanie rodzaju słownika
         if(dictionaryType != null && languageCombo != null){
             List<? extends Dictionary> dictionaries = RemoteService.dictionaryServiceRemote.findDictionaryByClass((String) dictionaryType.getSelectedItem());
             List<String> columns = Arrays.asList("Nazwa", "Słownik");
@@ -163,6 +164,14 @@ public class DictionaryListPanel extends JPanel {
             tableModel = new DictionaryTableModel(dictionaries, columns, dictionaryTable, language);
             dictionaryTable.setModel(tableModel);
         }
+    }
+
+    public int getSelectedRow() {
+        return dictionaryTable.getSelectedRow();
+    }
+
+    public void setSelectedRow(int row){
+        dictionaryTable.setRowSelectionInterval(0, row);
     }
 
     private void addDictionary() throws ClassNotFoundException, IllegalAccessException, InstantiationException {

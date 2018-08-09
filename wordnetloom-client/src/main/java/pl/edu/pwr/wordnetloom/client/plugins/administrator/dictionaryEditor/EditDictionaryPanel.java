@@ -6,6 +6,7 @@ import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
 import pl.edu.pwr.wordnetloom.client.systems.errors.ValidationManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.client.utils.MessageInfo;
 import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
@@ -24,18 +25,26 @@ import java.util.stream.Collectors;
 
 public class EditDictionaryPanel extends JPanel {
 
+    public interface SaveListener {
+        void onSave(Dictionary dictionary);
+    }
+
     private JLabel modeLabel;
     private JPanel valuesPanel;
     private JButton saveButton;
+
+    private SaveListener listener;
 
     private Dictionary editedDictionary;
     private ValidationManager validationManager;
     private Map<String, JTextComponent> notLocalisedComponents;
     private Map<String, Map<String, LocalisedComponent>> localisedComponents;
-    public EditDictionaryPanel(int width) {
+
+
+    public EditDictionaryPanel(int width, SaveListener listener) {
+        this.listener = listener;
         notLocalisedComponents = new LinkedHashMap<>();
         localisedComponents = new LinkedHashMap<>();
-
         initView(width);
     }
 
@@ -46,7 +55,7 @@ public class EditDictionaryPanel extends JPanel {
             // TODO dorobić etykietę
             // field must be filled in all languages
             validationManager.registerError(component.getComponent()
-                    , "Pole nie może być puste, jeżeli jest wypełnione w inych językach",
+                    , "Pole nie może być puste, jeżeli jest wypełnione w innych językach",
                     () -> {
                         JTextComponent comp = component.getComponent();
                         boolean isFilled = false;
@@ -103,6 +112,8 @@ public class EditDictionaryPanel extends JPanel {
             Map<String, Long> localisedIds = saveLocalisedStrings();
             updateLocalisedValues(dictionary, localisedIds);
             editedDictionary = saveDictionary(dictionary);
+            listener.onSave(editedDictionary);
+            MessageInfo.showInfo("Zapisano", saveButton, MessageInfo.InfoType.SUCCESS);
         }
     }
 
