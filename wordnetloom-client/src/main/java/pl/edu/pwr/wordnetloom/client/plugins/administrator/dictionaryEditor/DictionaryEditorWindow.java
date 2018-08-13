@@ -3,8 +3,6 @@ package pl.edu.pwr.wordnetloom.client.plugins.administrator.dictionaryEditor;
 import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.splitpane.WebSplitPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MFrame;
-import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,22 +32,10 @@ public class DictionaryEditorWindow extends MFrame {
 
         int panelWidth = MIN_WINDOW_WIDTH/2;
 
-        dictionaryListPanel = new DictionaryListPanel(panelWidth,e -> {
-            try {
-                editDictionaryPanel.load(e);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e1) {
-                e1.printStackTrace();
-            }
-        });
-        editDictionaryPanel = new EditDictionaryPanel(panelWidth, dictionary -> {
-            try {
-                int selectedRow = dictionaryListPanel.getSelectedRow();
-                dictionaryListPanel.loadDictionary();
-                dictionaryListPanel.setSelectedRow(selectedRow);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        });
+        dictionaryListPanel = new DictionaryListPanel(panelWidth,
+                dictionary -> editDictionaryPanel.load(dictionary));
+        editDictionaryPanel = new EditDictionaryPanel(panelWidth,
+                dictionary -> dictionaryListPanel.updateSelectedItem(dictionary));
 
         WebSplitPane splitPane = new WebSplitPane(JSplitPane.HORIZONTAL_SPLIT, dictionaryListPanel, editDictionaryPanel);
         add(splitPane);

@@ -10,7 +10,6 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import se.datadosen.component.RiverLayout;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -24,13 +23,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static se.datadosen.component.RiverLayout.*;
 
-public class DictionaryListPanel extends JPanel {
+class DictionaryListPanel extends JPanel {
 
     private final String DICTIONARY_MODEL_PACKET = "pl.edu.pwr.wordnetloom.dictionary.model.";
 
@@ -46,10 +45,10 @@ public class DictionaryListPanel extends JPanel {
 
     DictionaryListListener listener;
 
-    public DictionaryListPanel(int width, DictionaryListListener listener) {
+    DictionaryListPanel(int width, DictionaryListListener listener) {
         this.listener = listener;
         initView(width);
-        // select first duictionary
+        // select first dictionary
         dictionaryType.setSelectedIndex(0);
     }
 
@@ -75,7 +74,6 @@ public class DictionaryListPanel extends JPanel {
 
     private JComboBox createLanguageComponent() {
         JComboBox comboBox = new JComboBox();
-        // TODO utworzyć słuchacza
         comboBox.addActionListener(new LoadListener());
         for(Language language : Language.values()){
             comboBox.addItem(language.getAbbreviation());
@@ -156,7 +154,7 @@ public class DictionaryListPanel extends JPanel {
         return panel;
     }
 
-    public void loadDictionary() throws ClassNotFoundException {
+    private void loadDictionary() throws ClassNotFoundException {
         if(dictionaryType != null && languageCombo != null){
             List<? extends Dictionary> dictionaries = RemoteService.dictionaryServiceRemote.findDictionaryByClass((String) dictionaryType.getSelectedItem());
             List<String> columns = Arrays.asList("Nazwa", "Słownik");
@@ -166,12 +164,9 @@ public class DictionaryListPanel extends JPanel {
         }
     }
 
-    public int getSelectedRow() {
-        return dictionaryTable.getSelectedRow();
-    }
-
-    public void setSelectedRow(int row){
-        dictionaryTable.setRowSelectionInterval(0, row);
+    void updateSelectedItem(Dictionary dictionary){
+        int selectedIndex = dictionaryTable.getSelectedRow();
+        tableModel.set(dictionary, selectedIndex);
     }
 
     private void addDictionary() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
@@ -274,13 +269,12 @@ public class DictionaryListPanel extends JPanel {
             }
         }
 
-        public void removeElement(int row) {
+        void removeElement(int row) {
             items.remove(row);
             this.fireTableRowsDeleted(row, row);
         }
 
         private String getLocalisedString(Long id) {
-//            return LocalisationManager.getInstance().getLocalisedString(id);
             if(id == null){
                 return "";
             }
@@ -305,6 +299,18 @@ public class DictionaryListPanel extends JPanel {
             return sorter;
         }
 
-        // TODO dorobić metodę dodającą element i ustawiającą element
+        public void add(Dictionary dictionary){
+            List newList = new ArrayList(items);
+            newList.add(dictionary);
+            items = newList;
+            updateUI();
+        }
+
+        public void set(Dictionary dictionary, int index){
+            List newList= new ArrayList(items);
+            newList.set(index,dictionary);
+            items = newList;
+            updateUI();
+        }
     }
 }

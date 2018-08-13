@@ -5,20 +5,17 @@ import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.enums.Language;
 import pl.edu.pwr.wordnetloom.client.systems.errors.ValidationManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.ColorPanel;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.MessageInfo;
+import pl.edu.pwr.wordnetloom.client.utils.ReflectionUtil;
 import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
@@ -97,17 +94,11 @@ public class EditDictionaryPanel extends JPanel {
 
     private JButton createSaveButton() {
         JButton button = new JButton(Labels.SAVE);
-        button.addActionListener(e -> {
-            try {
-                save(editedDictionary);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e1) {
-                e1.printStackTrace();
-            }
-        });
+        button.addActionListener(e -> save(editedDictionary));
         return button;
     }
 
-    private void save(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private void save(Dictionary dictionary) {
         if (validationManager.validate()) {
             updateNotLocalisedValues(dictionary);
             Map<String, Long> localisedIds = saveLocalisedStrings();
@@ -118,13 +109,13 @@ public class EditDictionaryPanel extends JPanel {
         }
     }
 
-    private void updateLocalisedValues(Dictionary dictionary, Map<String, Long> localisedIds) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private void updateLocalisedValues(Dictionary dictionary, Map<String, Long> localisedIds){
         String fieldName;
         Long id;
         for (Map.Entry<String, Long> entry : localisedIds.entrySet()) {
             fieldName = entry.getKey();
             id = entry.getValue();
-            setValue(dictionary, fieldName, Long.class, id);
+            ReflectionUtil.setValue(dictionary, fieldName, id, Long.class);
         }
     }
 
@@ -136,7 +127,7 @@ public class EditDictionaryPanel extends JPanel {
     private Map<String, Long> saveLocalisedStrings() {
         // result map
         Map<String, Long> idsMap = new LinkedHashMap<>();
-        // get ant value
+        // get any value
         Map<String, LocalisedComponent> fieldsMap = localisedComponents.entrySet().iterator().next().getValue();
         fieldsMap.forEach((fieldName, component) -> {
             List<LocalisedString> localisedStringList = new ArrayList<>();
@@ -159,27 +150,21 @@ public class EditDictionaryPanel extends JPanel {
         return RemoteService.dictionaryServiceRemote.save(dictionary);
     }
 
-    private void updateNotLocalisedValues(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private void updateNotLocalisedValues(Dictionary dictionary){
         String fieldName;
         String value;
         for (Map.Entry<String, JTextComponent> entry : notLocalisedComponents.entrySet()) {
             fieldName = entry.getKey();
             value = entry.getValue().getText();
-            setValue(dictionary, fieldName, String.class, value);
+            ReflectionUtil.setValue(dictionary, fieldName, value, String.class);
         }
     }
 
-    private void setValue(Dictionary dictionary, String fieldName, Class parameterClass, Object value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = dictionary.getClass().getMethod("set" + fieldName, parameterClass);
-        method.invoke(dictionary, value);
-    }
-
     private JPanel createValuesPanel(Dictionary dictionary) {
-        List<Method> methods = getMethods(dictionary);
         List<String> notLocalisedFields = new ArrayList<>();
         List<String> localisedFields = new ArrayList<>();
 
-        for (Method method : methods) {
+        for (Method method : ReflectionUtil.getMethods(dictionary)) {
             if (method.getReturnType() == Long.class) {
                 localisedFields.add(getFieldName(method));
             } else if (method.getReturnType() == String.class) {
@@ -190,7 +175,6 @@ public class EditDictionaryPanel extends JPanel {
         }
         JPanel notLocalisedPanel = createNotLocalisedPanel(notLocalisedFields);
         JPanel localisedPanel = createLocalisedPanel(localisedFields);
-
 
         JPanel resultPanel = new JPanel(new RiverLayout());
         resultPanel.add(RiverLayout.HFILL, notLocalisedPanel);
@@ -219,8 +203,6 @@ public class EditDictionaryPanel extends JPanel {
         return panel;
     }
 
-
-
     private void addToPanel(JPanel panel, JLabel label, JComponent component) {
         panel.add(RiverLayout.LINE_BREAK, label);
         panel.add(RiverLayout.HFILL, component);
@@ -230,19 +212,10 @@ public class EditDictionaryPanel extends JPanel {
         notLocalisedComponents.put(fieldName, component);
     }
 
-    private List<Method> getMethods(Dictionary dictionary) {
-        Method[] methods = dictionary.getClass().getMethods();
-        List<Method> methodList = Arrays.stream(methods).filter(x ->
-                x.getName().startsWith("get") && !x.getName().equals("getClass") && !x.getName().equals("getId"))
-                .collect(Collectors.toList());
-        return methodList;
-    }
-
     private String getFieldName(Method method) {
         return method.getName().substring(3, method.getName().length());
     }
 
-    // TODO refactor
     private JPanel createLocalisedPanel(List<String> fieldsNames) {
         final int ELEMENT_MARGIN = 10;
         final boolean REORDERING_ALLOWED = true;
@@ -253,24 +226,28 @@ public class EditDictionaryPanel extends JPanel {
         for (String language : getLangauges()) {
             Map<String, LocalisedComponent> map = new LinkedHashMap<>();
             localisedComponents.put(language, map);
-
-            JPanel valuesPanel = new JPanel(new RiverLayout());
-            for (String fieldName : fieldsNames) {
-                JLabel label = new JLabel(fieldName);
-                JTextComponent component = new JTextField();
-                addToPanel(valuesPanel, label, component);
-                // TODO zobaczyć, czy nie można zrobić tego w inny sposób
-                LocalisedComponent localisedComponent = new LocalisedComponent(component, null, language);
-                map.put(fieldName, localisedComponent);
-            }
-            JPanel languagePanel = new JPanel(new BorderLayout());
-            JLabel languageLabel = new JLabel(language);
-            languagePanel.add(languageLabel, BorderLayout.WEST);
-            languagePanel.add(valuesPanel, BorderLayout.CENTER);
-
+            JPanel languagePanel = createLanguagePanel(fieldsNames, language, map);
             webComponentPanel.addElement(languagePanel);
         }
         return webComponentPanel;
+    }
+
+    private JPanel createLanguagePanel(List<String> fieldsNames, String language, Map<String, LocalisedComponent> map) {
+        JPanel languagePanel = new JPanel(new BorderLayout());
+
+        JPanel valuesPanel = new JPanel(new RiverLayout());
+        for (String fieldName : fieldsNames) {
+            JLabel label = new JLabel(fieldName);
+            JTextComponent component = new JTextField();
+            addToPanel(valuesPanel, label, component);
+
+            LocalisedComponent localisedComponent = new LocalisedComponent(component, null, language);
+            map.put(fieldName, localisedComponent);
+        }
+
+        languagePanel.add(new JLabel(language), BorderLayout.WEST);
+        languagePanel.add(valuesPanel, BorderLayout.CENTER);
+        return languagePanel;
     }
 
     private List<String> getLangauges() {
@@ -297,7 +274,7 @@ public class EditDictionaryPanel extends JPanel {
         }
     }
 
-    public void load(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void load(Dictionary dictionary) {
         clearFields();
         if (dictionary == null) {
             clear();
@@ -330,17 +307,17 @@ public class EditDictionaryPanel extends JPanel {
         repaint();
     }
 
-    private void loadNotLocalisedFields(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private void loadNotLocalisedFields(Dictionary dictionary){
         String value;
         for (Map.Entry<String, JTextComponent> entry : notLocalisedComponents.entrySet()) {
-            value = (String) getValue(dictionary, entry.getKey());
+            value = ReflectionUtil.getStringValue(dictionary, entry.getKey());
             entry.getValue().setText(value);
         }
     }
 
-    private void loadLocalisedFields(Dictionary dictionary) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private void loadLocalisedFields(Dictionary dictionary) {
         localisedComponentsMapIterate((language, fieldName, component) -> {
-            Long id = (Long) getValue(dictionary, fieldName);
+            Long id = ReflectionUtil.getLongValue(dictionary, fieldName);
             LocalisedString localisedString = getLocalisedString(id, language);
             component.setLocalisedString(localisedString);
         });
@@ -352,11 +329,6 @@ public class EditDictionaryPanel extends JPanel {
         }
         LocalisedKey key = new LocalisedKey(id, language);
         return RemoteService.localisedStringServiceRemote.findStringsByKey(key);
-    }
-
-    private Object getValue(Dictionary dictionary, String fieldName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = dictionary.getClass().getMethod("get" + fieldName);
-        return method.invoke(dictionary);
     }
 
     private void addValuesPanel(JPanel panel) {
@@ -381,7 +353,7 @@ public class EditDictionaryPanel extends JPanel {
     }
 
     private interface MapIteratorFunc {
-        void run(String language, String fieldName, LocalisedComponent component) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException;
+        void run(String language, String fieldName, LocalisedComponent component);
     }
 
     private class LocalisedComponent {
