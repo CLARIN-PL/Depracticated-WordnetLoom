@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
+import com.alee.laf.list.WebList;
 import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SynsetCriteria;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -7,6 +8,7 @@ import pl.edu.pwr.wordnetloom.client.systems.renderers.SynsetListCellRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SynsetTooltipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
+import pl.edu.pwr.wordnetloom.client.systems.ui.LazyScrollList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LazyScrollPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
@@ -17,6 +19,7 @@ import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.exception.InvalidLexiconException;
 import pl.edu.pwr.wordnetloom.synset.exception.InvalidPartOfSpeechException;
 
+import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -50,11 +53,16 @@ public class SynsetsFrame extends DialogWindow implements ActionListener, Loggab
         criteriaPanel.getPartsOfSpeechComboBox().addActionListener(this);
 
         listModel = new DefaultListModel<>();
+
+        WebList list = new ToolTipList(workbench, listModel, new SynsetTooltipGenerator());
+        list.setSelectedValue(ListSelectionModel.SINGLE_SELECTION);
+        list.setCellRenderer(new SynsetListCellRenderer());
+
         synsetsList = new ToolTipList(workbench, listModel, new SynsetTooltipGenerator());
         synsetsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         LazyScrollPane synsetsScrollPane = new LazyScrollPane(synsetsList, listModel, 15);
-        synsetsList.setCellRenderer(new SynsetListCellRenderer(synsetsScrollPane));
+//        synsetsList.setCellRenderer(new SynsetListCellRenderer(synsetsScrollPane));
 
         addToNewSynsetButton = MButton.buildOkButton()
                 .withCaption("Dodaj do nowego synsetu")
@@ -143,7 +151,7 @@ public class SynsetsFrame extends DialogWindow implements ActionListener, Loggab
             protected Void doInBackground() throws Exception {
                 listModel.clear();
                 SynsetCriteriaDTO dto = criteriaPanel.getSynsetCriteria();
-                java.util.List<Synset> synsets = RemoteService.synsetRemote.findSynsetsByCriteria(dto);
+                List<Synset> synsets = RemoteService.synsetRemote.findSynsetsByCriteria(dto);
                 for (Synset synset : synsets) {
                     listModel.addElement(synset);
                 }

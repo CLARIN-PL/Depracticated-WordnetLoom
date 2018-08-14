@@ -5,6 +5,7 @@ import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.dictionary.model.Markedness;
 import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
 import pl.edu.pwr.wordnetloom.user.model.Role;
@@ -79,6 +80,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         addDefinition();
         addComment();
         addArificial();
+        addEmotions();
     }
 
     public MTextField getDefinition() {
@@ -154,6 +156,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         crit.setDefinition(getDefinition().getText());
         crit.setComment(getComment().getText());
         crit.setAbstract(isArtificial);
+
         return crit;
     }
 
@@ -182,6 +185,13 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         dto.setAbstract(getIsArtificial());
         dto.setRelationTypeId(relationType);
 
+        dto.setEmotions(emotionsComboBox.getSelectedItemsIds());
+        dto.setValuations(valuationsComboBox.getSelectedItemsIds());
+        Long markednessId = null;
+        if(markednessComboBox.getSelectedItem() != null) {
+            markednessId = ((Markedness)markednessComboBox.getSelectedItem()).getId();
+            dto.setMarkedness(markednessId);
+        }
         return dto;
     }
 

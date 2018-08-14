@@ -57,6 +57,7 @@ public class ChangeListener {
         if(component instanceof JRadioButton){
             return ((JRadioButton) component).isSelected();
         }
+
         // TODO dorzucić także inne elementy
         return null;
     }

@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.synset.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class SynsetCriteriaDTO implements Serializable {
 
@@ -15,6 +16,9 @@ public class SynsetCriteriaDTO implements Serializable {
     private Boolean abstractSynset;
     private int limit;
     private int offset;
+    private List<Long> emotions;
+    private List<Long> valuations;
+    private Long markedness;
 
     public String getLemma() {
         return lemma;
@@ -106,5 +110,29 @@ public class SynsetCriteriaDTO implements Serializable {
 
     public void setOffset(int offset){
         this.offset = offset;
+    }
+
+    public List<Long> getEmotions(){
+        return emotions;
+    }
+
+    public void setEmotions(List<Long> emotions) {
+        this.emotions = emotions;
+    }
+
+    public List<Long> getValuations(){
+        return valuations;
+    }
+
+    public void setValuations(List<Long> valuations){
+        this.valuations = valuations;
+    }
+
+    public Long getMarkedness() {
+        return markedness;
+    }
+
+    public void setMarkedness(Long markedness){
+        this.markedness = markedness;
     }
 }

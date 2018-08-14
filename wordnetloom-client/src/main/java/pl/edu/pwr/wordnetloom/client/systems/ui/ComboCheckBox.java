@@ -59,6 +59,14 @@ public class ComboCheckBox extends JComboBox{
         isReady = true;
     }
 
+    public void setSelectedIds(List<Long> ids){
+        items.forEach(item->{
+            if(ids.contains(item.getId())){
+                item.setSelected(true);
+            }
+        });
+    }
+
     public List<Long> getSelectedItemsIds() {
         List<Long> result = new ArrayList<>();
         for(int i =0; i<checkBoxList.size(); i++) {

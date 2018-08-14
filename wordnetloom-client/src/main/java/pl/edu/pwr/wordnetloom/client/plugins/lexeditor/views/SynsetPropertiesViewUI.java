@@ -19,10 +19,7 @@ import pl.edu.pwr.wordnetloom.client.systems.renderers.LocalisedRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextArea;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
-import pl.edu.pwr.wordnetloom.client.utils.Hints;
-import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.client.utils.Messages;
-import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
+import pl.edu.pwr.wordnetloom.client.utils.*;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -58,6 +55,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
     private WebList examplesList;
     private DefaultListModel examplesModel;
 
+    private ChangeListener changeListener;
+
     private final MButton buttonSave = MButton.buildSaveButton()
             .withToolTip(Hints.SAVE_CHANGES_IN_SYNSET)
             .withEnabled(false)
@@ -76,6 +75,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         Application.eventBus.register(this);
     }
 
+    //TODO refactor
     @Override
     protected void initialize(WebPanel content) {
 
@@ -212,6 +212,21 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         permissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(
                 definitionValue, commentValue, examplesList, abstractValue, buttonSave
         );
+
+        initChangeListener();
+    }
+
+    private void initChangeListener() {
+        // TODO dokończyć
+        System.out.println("Init change listener");
+        changeListener = new ChangeListener();
+        changeListener.addComponents(definitionValue, commentValue, statusComboBox,
+                examplesList, abstractValue);
+        changeListener.setListener(()-> {
+            System.out.println(changeListener.isChanged() && permissionToEdit);
+            buttonSave.setEnabled(changeListener.isChanged() && permissionToEdit);
+
+        });
     }
 
     private JComboBox createStatusComboBox() {

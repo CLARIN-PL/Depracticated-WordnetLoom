@@ -33,7 +33,6 @@ public class LazyScrollList<T> extends WebScrollPane {
         this.blankItem = blankItem;
         initViewport(list);
         setAdjustmentListener(list);
-        this.list.setFixedCellHeight(LIST_ITEM_HEIGHT);
     }
 
     private void initViewport(WebList list) {
@@ -164,6 +163,11 @@ public class LazyScrollList<T> extends WebScrollPane {
                 model.setElementAt(items.get(i), index);
             }
         });
+    }
+
+    public T getSelectedItem() {
+        int selectedIndex = list.getSelectedIndex();
+        return (T) model.getElementAt(selectedIndex);
     }
 
     public void setScrollListener(ScrollListener listener) {

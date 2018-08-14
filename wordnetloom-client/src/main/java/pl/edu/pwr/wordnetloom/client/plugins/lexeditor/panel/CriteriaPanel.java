@@ -57,7 +57,6 @@ public abstract class CriteriaPanel extends WebPanel {
         private boolean selected;
         private Dictionary dictionary;
 
-
         public DictionaryCheckComboStore(Dictionary object, boolean selected) {
             this.dictionary = object;
             this.selected = selected;

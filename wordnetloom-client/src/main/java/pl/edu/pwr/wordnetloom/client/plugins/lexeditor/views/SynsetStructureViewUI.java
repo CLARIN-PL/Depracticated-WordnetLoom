@@ -13,7 +13,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.LexicalUnitPropert
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.models.UnitsInSynsetListModel;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.LexicalUnitPropertiesPanel;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetUnitsEvent;
@@ -21,7 +20,6 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenersContainer;
@@ -46,7 +44,6 @@ import pl.edu.pwr.wordnetloom.synset.exception.InvalidLexiconException;
 import pl.edu.pwr.wordnetloom.synset.exception.InvalidPartOfSpeechException;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
-import pl.edu.pwr.wordnetloom.user.model.Role;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -69,18 +66,11 @@ import java.util.List;
 public class SynsetStructureViewUI extends AbstractViewUI implements
         ActionListener, ListSelectionListener, CaretListener, MouseListener, Loggable {
 
-    /**
-     * usunieto jednostke z synsetu
-     */
+
     public static final int UNIT_REMOVED = 3;
-    /**
-     * nowa jednostka zostala stworzona (dodane do systemu)
-     */
     public static final int UNIT_CREATED = 4;
-    /**
-     * zmienilo sie zaznaczenie na liscie
-     */
     private static final int LIST_SELECTION_CHANGED = 2;
+
     private final SimpleListenersContainer clickListeners = new SimpleListenersContainer();
     private final SimpleListenersContainer synsetUpdateListeners = new SimpleListenersContainer();
     private final UnitsInSynsetListModel listModel = new UnitsInSynsetListModel();
