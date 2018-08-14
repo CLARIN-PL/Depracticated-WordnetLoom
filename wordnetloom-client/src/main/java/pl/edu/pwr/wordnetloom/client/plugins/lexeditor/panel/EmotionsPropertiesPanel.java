@@ -26,7 +26,8 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-import static se.datadosen.component.RiverLayout.*;
+import static se.datadosen.component.RiverLayout.LINE_BREAK;
+import static se.datadosen.component.RiverLayout.TAB_STOP;
 
 public class EmotionsPropertiesPanel extends JPanel {
 
@@ -58,7 +59,7 @@ public class EmotionsPropertiesPanel extends JPanel {
     private int panelWidth;
     private int panelHeight;
 
-    public EmotionsPropertiesPanel(WebFrame frame, int width, int height){
+    public EmotionsPropertiesPanel(WebFrame frame, int width, int height) {
         final int WIDTH = width;
         final int HALF_WIDTH = width / 2 - 5;
         final int ELEMENT_HEIGHT = 50;
@@ -88,16 +89,17 @@ public class EmotionsPropertiesPanel extends JPanel {
         add(LINE_BREAK, examplesPanel);
 
         setPreferredSize(new Dimension(panelWidth, panelHeight));
-
+        setStatusEnabled(false);
+        setEnableEditing(false);
     }
 
-    private void initComponents(){
+    private void initComponents() {
         final int TEXT_AREA_ROWS = 2;
 
         neutralRadio = new JRadioButton(LABEL_NEUTRAL);
-        neutralRadio.addActionListener(e->setAnnotationEnabled());
+        neutralRadio.addActionListener(e -> setAnnotationEnabled());
         notMarkedRadio = new JRadioButton(LABEL_MARKED);
-        notMarkedRadio.addActionListener(e->setAnnotationEnabled());
+        notMarkedRadio.addActionListener(e -> setAnnotationEnabled());
         ButtonGroup statusGroup = new ButtonGroup();
         statusGroup.add(neutralRadio);
         statusGroup.add(notMarkedRadio);
@@ -111,8 +113,6 @@ public class EmotionsPropertiesPanel extends JPanel {
         example2 = new JTextArea();
         example2.setRows(TEXT_AREA_ROWS);
         example2.setLineWrap(true);
-
-        setEnableEditing(false);
     }
 
     public void save() {
@@ -121,7 +121,7 @@ public class EmotionsPropertiesPanel extends JPanel {
         RemoteService.senseRemote.save(editedAnnotation);
     }
 
-    private void setAnnotation(EmotionalAnnotation annotation){
+    private void setAnnotation(EmotionalAnnotation annotation) {
         annotation.setEmotionalCharacteristic(canEditingAnnotation());
         annotation.setEmotions(getAnnotationEmotions(annotation));
         annotation.setValuations(getAnnotationValuations(annotation));
@@ -132,8 +132,8 @@ public class EmotionsPropertiesPanel extends JPanel {
 
     private Set<UnitValuation> getAnnotationValuations(EmotionalAnnotation annotation) {
         Set<UnitValuation> valuations = new LinkedHashSet<>();
-        valuatesMap.forEach((k,v)->{
-            if(v.isSelected()){
+        valuatesMap.forEach((k, v) -> {
+            if (v.isSelected()) {
                 UnitValuation unitValuation = new UnitValuation(annotation, k);
                 valuations.add(unitValuation);
             }
@@ -143,8 +143,8 @@ public class EmotionsPropertiesPanel extends JPanel {
 
     private Set<UnitEmotion> getAnnotationEmotions(EmotionalAnnotation annotation) {
         Set<UnitEmotion> emotions = new LinkedHashSet<>();
-        emotionsMap.forEach((k,v)-> {
-            if(v.isSelected()){
+        emotionsMap.forEach((k, v) -> {
+            if (v.isSelected()) {
                 UnitEmotion unitEmotion = new UnitEmotion(annotation, k);
                 emotions.add(unitEmotion);
             }
@@ -156,7 +156,7 @@ public class EmotionsPropertiesPanel extends JPanel {
         JComboBox comboBox = new JComboBox();
         List<Markedness> markednesses = getAllMarkedness();
         comboBox.addItem(null);
-        for(Markedness markedness : markednesses) {
+        for (Markedness markedness : markednesses) {
             comboBox.addItem(markedness);
         }
         comboBox.setRenderer(new LocalisedRenderer());
@@ -169,7 +169,7 @@ public class EmotionsPropertiesPanel extends JPanel {
 
     private void setAnnotationEnabled() {
         boolean enabled = canEditingAnnotation();
-        if(!enabled) {
+        if (!enabled) {
             clearFields();
         } else {
             editedAnnotation.setEmotionalCharacteristic(enabled);
@@ -192,14 +192,14 @@ public class EmotionsPropertiesPanel extends JPanel {
 
     private void clearFields() {
         emotionsMap.forEach((k, emotionCheckBox) -> emotionCheckBox.setSelected(false));
-        valuatesMap.forEach((k, valuationCheckBox)->valuationCheckBox.setSelected(false));
+        valuatesMap.forEach((k, valuationCheckBox) -> valuationCheckBox.setSelected(false));
         markednessCombo.setSelectedItem(null);
         example1.setText("");
         example2.setText("");
     }
 
     private JPanel createStatusPanel(int width, int height) {
-        JPanel panel = new JPanel(new GridLayout(0,2));
+        JPanel panel = new JPanel(new GridLayout(0, 2));
         panel.add(neutralRadio);
         panel.add(notMarkedRadio);
 
@@ -218,7 +218,7 @@ public class EmotionsPropertiesPanel extends JPanel {
     }
 
     private JPanel createMarkednessPanel(int width, int height) {
-        JPanel panel = new JPanel(new GridLayout(1,1));
+        JPanel panel = new JPanel(new GridLayout(1, 1));
         panel.add(markednessCombo);
 
         panel.setPreferredSize(new Dimension(width, height));
@@ -247,9 +247,9 @@ public class EmotionsPropertiesPanel extends JPanel {
         example2Label.setSize(LABEL_WIDTH, example2Label.getHeight());
 
         panel.add(example1Label);
-        panel.add(RiverLayout.HFILL,example1Scroll);
-        panel.add(RiverLayout.LINE_BREAK,example2Label);
-        panel.add(RiverLayout.HFILL,example2Scroll);
+        panel.add(RiverLayout.HFILL, example1Scroll);
+        panel.add(RiverLayout.LINE_BREAK, example2Label);
+        panel.add(RiverLayout.HFILL, example2Scroll);
 
         setTitledBorder(LABEL_EXAMPLE, panel);
         return panel;
@@ -263,12 +263,12 @@ public class EmotionsPropertiesPanel extends JPanel {
         return panel;
     }
 
-    private void setTitledBorder(final String title, JPanel panel){
+    private void setTitledBorder(final String title, JPanel panel) {
         panel.setBorder(new TitledBorder(title));
     }
 
     public void load(Sense sense) {
-        if(sense != null){
+        if (sense != null) {
             listPanel.loadAnnotations(sense.getId());
         } else {
             listPanel.loadAnnotations(null);
@@ -277,10 +277,10 @@ public class EmotionsPropertiesPanel extends JPanel {
     }
 
     private JPanel createEmotionsPanel(List<Emotion> emotions, int width) {
-        final int COLUMNS  = 3;
-        JPanel panel = new JPanel(new GridLayout(0, COLUMNS, 0 ,3));
+        final int COLUMNS = 3;
+        JPanel panel = new JPanel(new GridLayout(0, COLUMNS, 0, 3));
 
-        for(Emotion emotion : emotions) {
+        for (Emotion emotion : emotions) {
             String emotionName = LocalisationManager.getInstance().getLocalisedString(emotion.getName());
             JCheckBox checkBox = new JCheckBox(emotionName);
             panel.add(checkBox);
@@ -297,8 +297,8 @@ public class EmotionsPropertiesPanel extends JPanel {
     private int calculateHeight(int elementsSize, int columnsCount) {
         final int ROW_HEIGHT = 30;
         int rows = elementsSize / columnsCount;
-        if(elementsSize % columnsCount != 0){
-            rows ++;
+        if (elementsSize % columnsCount != 0) {
+            rows++;
         }
         return rows * ROW_HEIGHT;
     }
@@ -308,7 +308,7 @@ public class EmotionsPropertiesPanel extends JPanel {
 
         JPanel panel = new JPanel(new GridLayout(0, COLUMNS));
 
-        for(Valuation valuation : valuations){
+        for (Valuation valuation : valuations) {
             String valuationName = LocalisationManager.getInstance().getLocalisedString(valuation.getName());
             JCheckBox checkBox = new JCheckBox(valuationName);
             panel.add(checkBox);
@@ -322,7 +322,7 @@ public class EmotionsPropertiesPanel extends JPanel {
     }
 
     private void loadAnnotation(EmotionalAnnotation annotation) {
-        if(annotation != null) {
+        if (annotation != null) {
             this.editedAnnotation = annotation;
             setStatus(annotation);
             setOwner(annotation);
@@ -338,7 +338,7 @@ public class EmotionsPropertiesPanel extends JPanel {
 
     private void setStatusEnabled(boolean enabled) {
         boolean hasPermissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(neutralRadio, notMarkedRadio);
-        if(hasPermissionToEdit){
+        if (hasPermissionToEdit) {
             neutralRadio.setEnabled(enabled);
             notMarkedRadio.setEnabled(enabled);
         }
@@ -348,8 +348,8 @@ public class EmotionsPropertiesPanel extends JPanel {
         markednessCombo.setSelectedItem(annotation.getMarkedness());
     }
 
-    private void setStatus(EmotionalAnnotation annotation){
-        if(annotation.hasEmotionalCharacteristic()) {
+    private void setStatus(EmotionalAnnotation annotation) {
+        if (annotation.hasEmotionalCharacteristic()) {
             notMarkedRadio.setSelected(true);
         } else {
             neutralRadio.setSelected(true);
@@ -365,14 +365,14 @@ public class EmotionsPropertiesPanel extends JPanel {
     private void setEmotions(EmotionalAnnotation annotation) {
         // clear emotions checkBoxes
         emotionsMap.forEach((k, emotionsCheckBox) -> emotionsCheckBox.setSelected(false));
-        for(UnitEmotion emotion : annotation.getEmotions()){
+        for (UnitEmotion emotion : annotation.getEmotions()) {
             emotionsMap.get(emotion.getEmotion()).setSelected(true);
         }
     }
 
     private void setValuations(EmotionalAnnotation annotation) {
         valuatesMap.forEach((k, valuationCheckBox) -> valuationCheckBox.setSelected(false));
-        for(UnitValuation valuation : annotation.getValuations()){
+        for (UnitValuation valuation : annotation.getValuations()) {
             valuatesMap.get(valuation.getValuation()).setSelected(true);
         }
     }
@@ -381,7 +381,7 @@ public class EmotionsPropertiesPanel extends JPanel {
         return (List<Emotion>) RemoteService.dictionaryServiceRemote.findDictionaryByClass(Emotion.class);
     }
 
-    private List<Valuation> getAllValuations(){
+    private List<Valuation> getAllValuations() {
         return (List<Valuation>) RemoteService.dictionaryServiceRemote.findDictionaryByClass(Valuation.class);
     }
 
@@ -399,7 +399,7 @@ public class EmotionsPropertiesPanel extends JPanel {
             add(buttonsPanel, BorderLayout.EAST);
         }
 
-        private void initComponents(){
+        private void initComponents() {
             annotationsList = new JList();
             annotationsList.setCellRenderer(new AnnotationRenderer());
             annotationsList.addListSelectionListener(e -> loadSelectedAnnotation());
@@ -407,37 +407,37 @@ public class EmotionsPropertiesPanel extends JPanel {
             annotationsList.setModel(listModel);
         }
 
-        private void loadSelectedAnnotation(){
+        private void loadSelectedAnnotation() {
             EmotionalAnnotation annotation = (EmotionalAnnotation) annotationsList.getSelectedValue();
             EmotionsPropertiesPanel.this.loadAnnotation(annotation);
         }
 
-        private List<EmotionalAnnotation> findEmotionalAnnotation(Long senseId){
+        private List<EmotionalAnnotation> findEmotionalAnnotation(Long senseId) {
             return RemoteService.senseRemote.getEmotionalAnnotations(senseId);
         }
 
         void loadAnnotations(Long senseId) {
             listModel.clear();
-            if(senseId == null){
+            if (senseId == null) {
                 return;
             }
             annotations = findEmotionalAnnotation(senseId);
-            for(EmotionalAnnotation annotation : annotations){
+            for (EmotionalAnnotation annotation : annotations) {
                 listModel.addElement(annotation);
             }
-            if(!annotations.isEmpty()) {
+            if (!annotations.isEmpty()) {
                 annotationsList.setSelectedIndex(0);
             }
         }
 
-        private JPanel createButtonsPanel(){
+        private JPanel createButtonsPanel() {
 
             JButton addButton = MButton.buildAddButton()
                     .withToolTip(Labels.ADD)
-                    .withActionListener(e->addEmotion());
+                    .withActionListener(e -> addEmotion());
             JButton removeButton = MButton.buildRemoveButton()
                     .withToolTip(Labels.DELETE)
-                    .withActionListener(e->removeEmotion());
+                    .withActionListener(e -> removeEmotion());
 
             // for anonymous user buttons are disable
             PermissionHelper.checkPermissionToEditAndSetComponents(addButton, removeButton);
@@ -446,7 +446,7 @@ public class EmotionsPropertiesPanel extends JPanel {
             return panel;
         }
 
-        private void addEmotion(){
+        private void addEmotion() {
             // creating new annotation. Annotation must have unit and owner
             EmotionalAnnotation annotation = new EmotionalAnnotation();
             annotation.setSense(sense);
@@ -456,13 +456,13 @@ public class EmotionsPropertiesPanel extends JPanel {
             annotation = RemoteService.senseRemote.save(annotation);
             // adding saved annotation to the list and selecting it
             listModel.addElement(annotation);
-            annotationsList.setSelectedIndex(listModel.getSize()-1);
+            annotationsList.setSelectedIndex(listModel.getSize() - 1);
         }
 
-        private void removeEmotion(){
+        private void removeEmotion() {
             // TODO dorobić etykietę
             final String MESSAGE = "Czy na pewno usunąć anotacje";
-            if(DialogBox.showYesNo(MESSAGE) == DialogBox.YES) {
+            if (DialogBox.showYesNo(MESSAGE) == DialogBox.YES) {
                 int selectedIndex = annotationsList.getSelectedIndex();
                 EmotionalAnnotation selectedAnnotation = (EmotionalAnnotation) listModel.getElementAt(selectedIndex);
                 listModel.remove(selectedIndex);
