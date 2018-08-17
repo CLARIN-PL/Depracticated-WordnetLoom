@@ -12,12 +12,20 @@ public class LocalisedRenderer implements ListCellRenderer{
 
     private final String NULL_TEXT = Labels.NOT_CHOSEN;
 
+    private String nullText = NULL_TEXT;
+
     private ListCellRenderer listCellRenderer = new JComboBox().getRenderer();
+
+    public LocalisedRenderer(){}
+
+    public LocalisedRenderer(String nullText){
+        this.nullText = nullText;
+    }
 
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel)listCellRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        String text = NULL_TEXT;
+        String text = nullText;
         if(value != null){
             text = getLocalisedText(value);
         }
@@ -34,5 +42,9 @@ public class LocalisedRenderer implements ListCellRenderer{
         } catch (NoSuchMethodException  | IllegalAccessException | InvocationTargetException e) {
             return "";
         }
+    }
+
+    public void setNullText(String text){
+        nullText = text;
     }
 }

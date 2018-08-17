@@ -116,7 +116,6 @@ public class LazyScrollList<T> extends WebScrollPane {
 
                 @Override
                 protected List<T> doInBackground() throws Exception {
-                    System.out.println(task.startIndex + " - " + task.endIndex);
                     result = scrollListener.load(task.getStartIndex(), task.getLimit());
                     return result;
                 }
@@ -124,7 +123,6 @@ public class LazyScrollList<T> extends WebScrollPane {
                 @Override
                 protected void done() {
                     setItems(result, task.startIndex);
-                    System.out.println("Result " + result.size());
                 }
             }.execute();
         });

@@ -6,6 +6,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.dictionary.model.Markedness;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
 import pl.edu.pwr.wordnetloom.user.model.Role;
@@ -25,7 +26,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
 
     private JTextField id;
     private MTextField definition;
-    private MTextField comment;
+//    private MTextField comment;
     private Boolean isArtificial;
     private WebRadioButton all;
     private WebRadioButton artificial;
@@ -43,7 +44,6 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
 
         id = createIdField();
         definition = new MTextField(STANDARD_VALUE_FILTER);
-        comment = new MTextField(STANDARD_VALUE_FILTER);
         all = new WebRadioButton(Labels.VALUE_ALL, true);
         all.addActionListener(this);
         artificial = new WebRadioButton(Labels.ARTIFICIAL, false);
@@ -76,7 +76,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         addLexicon();
         addPartsOfSpeach();
         addDomain();
-        addSynsetRelationTypes();
+        addRelationType(RelationArgument.SYNSET_RELATION);
         addDefinition();
         addComment();
         addArificial();
@@ -87,10 +87,6 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         return definition;
     }
 
-    public MTextField getComment() {
-        return comment;
-    }
-
     private void addId() {
         add("br", new MLabel("id", 'i', id));
         add("br hfill", id);
@@ -99,11 +95,6 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
     protected void addDefinition() {
         add("br", new MLabel(Labels.DEFINITION_COLON, 'd', definition));
         add("br hfill", definition);
-    }
-
-    protected void addComment() {
-        add("br", new MLabel(Labels.COMMENT_COLON, 'm', comment));
-        add("br hfill", comment);
     }
 
     protected void addArificial() {
@@ -138,7 +129,6 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
     public void resetFields() {
         super.resetFields();
         definition.setText("");
-        comment.setText("");
         all.setSelected(true);
     }
 
@@ -148,69 +138,86 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
 
     @Override
     public CriteriaDTO getCriteria() {
-        crit.setLemma(getSearchTextField().getText());
-        crit.setLexicon(getLexiconComboBox().getSelectedIndex());
-        crit.setPartOfSpeech(getPartsOfSpeechComboBox().getSelectedIndex());
-        crit.setDomain(getDomainComboBox().getSelectedIndex());
-        crit.setRelation(getSynsetRelationTypeComboBox().getSelectedIndex());
-        crit.setDefinition(getDefinition().getText());
-        crit.setComment(getComment().getText());
-        crit.setAbstract(isArtificial);
+         // TODO
 
-        return crit;
+        return getSynsetCriteria();
+//        crit.setLemma(getSearchTextField().getText());
+//        crit.setLexicon(getLexiconComboBox().getSelectedIndex());
+//        crit.setPartOfSpeech(getPartsOfSpeechComboBox().getSelectedIndex());
+//        crit.setDomain(getDomainComboBox().getSelectedIndex());
+//        crit.setRelation(getSynsetRelationTypeComboBox().getSelectedIndex());
+//        crit.setDefinition(getDefinition().getText());
+//        crit.setComment(getComment().getText());
+//        crit.setAbstract(isArtificial);
+//
+//        return crit;
     }
 
     public SynsetCriteriaDTO getSynsetCriteria() {
-        SynsetCriteriaDTO dto = new SynsetCriteriaDTO();
-        dto.setLemma(getSearchTextField().getText());
-        if(!id.getText().isEmpty()){
-            dto.setSynsetId(Long.parseLong(id.getText()));
-        }
-        if (getLexiconComboBox().getSelectedLexicon() != null) {
-            dto.setLexiconId(getLexiconComboBox().getSelectedLexicon().getId());
-        }
+//        SynsetCriteriaDTO dto = new SynsetCriteriaDTO();
+//        dto.setLemma(getSearchTextField().getText());
+//        if(!id.getText().isEmpty()){
+//            dto.setSynsetId(Long.parseLong(id.getText()));
+//        }
+//        if (getLexiconComboBox().getSelectedLexicon() != null) {
+//            dto.setLexiconId(getLexiconComboBox().getSelectedLexicon().getId());
+//        }
+//
+//        if (getPartsOfSpeechComboBox().getSelectedPartOfSpeech() != null) {
+//            dto.setPartOfSpeechId(getPartsOfSpeechComboBox().getSelectedPartOfSpeech().getId());
+//        }
+//
+//        if (getDomainComboBox().getSelectedDomain() != null) {
+//            dto.setDomainId(getDomainComboBox().getSelectedDomain().getId());
+//        }
+//
+//        Long relationType = getSynsetRelationTypeComboBox().getEntity() == null ? null : getSynsetRelationTypeComboBox().getEntity().getId();
+//
+//        dto.setDefinition(getDefinition().getText());
+//        dto.setComment(getComment().getText());
+//        dto.setAbstract(getIsArtificial());
+//        dto.setRelationTypeId(relationType);
+//
+//        dto.setEmotions(emotionsComboBox.getSelectedItemsIds());
+//        dto.setValuations(valuationsComboBox.getSelectedItemsIds());
+//        Long markednessId = null;
+//        if(markednessComboBox.getSelectedItem() != null) {
+//            markednessId = ((Markedness)markednessComboBox.getSelectedItem()).getId();
+//            dto.setMarkedness(markednessId);
+//        }
+//        return dto;
 
-        if (getPartsOfSpeechComboBox().getSelectedPartOfSpeech() != null) {
-            dto.setPartOfSpeechId(getPartsOfSpeechComboBox().getSelectedPartOfSpeech().getId());
-        }
+        SynsetCriteriaDTO dto = new SynsetCriteriaDTO(getCriteriaDTO());
+        dto.setDefinition(definition.getText());
+        dto.setAbstract(artificial.isSelected());
 
-        if (getDomainComboBox().getSelectedDomain() != null) {
-            dto.setDomainId(getDomainComboBox().getSelectedDomain().getId());
-        }
-
-        Long relationType = getSynsetRelationTypeComboBox().getEntity() == null ? null : getSynsetRelationTypeComboBox().getEntity().getId();
-
-        dto.setDefinition(getDefinition().getText());
-        dto.setComment(getComment().getText());
-        dto.setAbstract(getIsArtificial());
-        dto.setRelationTypeId(relationType);
-
-        dto.setEmotions(emotionsComboBox.getSelectedItemsIds());
-        dto.setValuations(valuationsComboBox.getSelectedItemsIds());
-        Long markednessId = null;
-        if(markednessComboBox.getSelectedItem() != null) {
-            markednessId = ((Markedness)markednessComboBox.getSelectedItem()).getId();
-            dto.setMarkedness(markednessId);
-        }
         return dto;
     }
 
     @Override
     public void restoreCriteria(CriteriaDTO criteria) {
-        getSearchTextField().setText(criteria.getLemma());
-        getLexiconComboBox().setSelectedIndex(criteria.getLexicon());
-        getPartsOfSpeechComboBox().setSelectedIndex(criteria.getPartOfSpeech());
-        getDomainComboBox().setSelectedIndex(criteria.getDomain());
-        getSynsetRelationTypeComboBox().setSelectedIndex(criteria.getRelation());
-        getDefinition().setText(criteria.getDefinition());
-        getComment().setText(criteria.getComment());
-        if (criteria.isAbstract() == null) {
-            all.setSelected(true);
-        } else if (criteria.isAbstract()) {
-            artificial.setSelected(true);
-        } else {
-            notArtificial.setSelected(true);
-        }
-        crit.setSense(criteria.getSense());
+        assert criteria instanceof SynsetCriteriaDTO;
+        SynsetCriteriaDTO dto = (SynsetCriteriaDTO) criteria;
+        restoreCriteriaDTO(dto);
+        definition.setText(dto.getDefinition());
+        artificial.setSelected(dto.isAbstract());
+        notArtificial.setSelected(!dto.isAbstract());
+        // TODO sprawdzić, czy to będzie działać
+
+//        getSearchTextField().setText(criteria.getLemma());
+//        getLexiconComboBox().setSelectedIndex(criteria.getLexicon());
+//        getPartsOfSpeechComboBox().setSelectedIndex(criteria.getPartOfSpeech());
+//        getDomainComboBox().setSelectedIndex(criteria.getDomain());
+//        getSynsetRelationTypeComboBox().setSelectedIndex(criteria.getRelation());
+//        getDefinition().setText(criteria.getDefinition());
+//        getComment().setText(criteria.getComment());
+//        if (criteria.isAbstract() == null) {
+//            all.setSelected(true);
+//        } else if (criteria.isAbstract()) {
+//            artificial.setSelected(true);
+//        } else {
+//            notArtificial.setSelected(true);
+//        }
+//        crit.setSense(criteria.getSense());
     }
 }

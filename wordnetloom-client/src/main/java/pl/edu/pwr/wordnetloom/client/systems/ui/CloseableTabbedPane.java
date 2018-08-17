@@ -167,6 +167,7 @@ public class CloseableTabbedPane extends WebTabbedPane implements MouseListener,
         super();
         init(SwingUtilities.LEFT);
         if (showTabButton) {
+            System.out.println("Add add tab");
             addAddTab();
         }
         this.allowAllTabsClosing = allowAllTabsClosing;

@@ -1,27 +1,26 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import pl.edu.pwr.wordnetloom.client.systems.managers.DictionaryManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MComboBox;
+import pl.edu.pwr.wordnetloom.client.systems.renderers.LocalisedRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.dictionary.model.Markedness;
 import pl.edu.pwr.wordnetloom.dictionary.model.Register;
-import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 
-import java.util.ArrayList;
+import javax.swing.*;
 import java.util.List;
 
 public final class SenseCriteria extends CriteriaPanel {
 
-    private MComboBox<Register> registerComboBox;
+    private JComboBox<Register> registerComboBox;
     private MTextField comment;
     private MTextField example;
     private CriteriaDTO criteria;
+    // TODO chyba powinno się tutaj dodać wariant
 
     public SenseCriteria() {
         init();
@@ -30,41 +29,30 @@ public final class SenseCriteria extends CriteriaPanel {
 
     private void init() {
         criteria = new CriteriaDTO();
-        registerComboBox = initRegisterComboBox();
+        registerComboBox = createRegisterComboBox();
         comment = new MTextField(STANDARD_VALUE_FILTER);
         example = new MTextField(STANDARD_VALUE_FILTER);
     }
 
-    private MComboBox initRegisterComboBox() {
-        return  new MComboBox<Register>()
-                .withSize(DEFAULT_DIMENSION_COMBO)
-                .withDictionaryItems(
-                        DictionaryManager.getInstance().getDictionaryByClassName(Register.class),
-                        Labels.VALUE_ALL);
+    private JComboBox createRegisterComboBox() {
+        JComboBox resultComboBox = new JComboBox();
+        resultComboBox.setRenderer(new LocalisedRenderer(Labels.VALUE_ALL));
+        List<Register> registerList = DictionaryManager.getInstance().getDictionaryByClassName(Register.class);
+        resultComboBox.addItem(null);
+        for(Register register : registerList){
+            resultComboBox.addItem(register);
+        }
+        return resultComboBox;
     }
 
     public SenseCriteriaDTO getSenseCriteriaDTO() {
-        Long partOfSpeechId = getPartsOfSpeechComboBox().getEntity() != null ? getPartsOfSpeechComboBox().getEntity().getId() : null;
-        Long domainId = getDomainComboBox().getEntity() != null ? getDomainComboBox().getEntity().getId() : null;
-        String lemma = getSearchTextField().getText();
-        List<Long> lexicons = new ArrayList<>();
-        Lexicon lexicon = getLexiconComboBox().getEntity();
-        if(lexicon != null){
-            lexicons.add(lexicon.getId());
-        } else {
-            lexicons.addAll(LexiconManager.getInstance().getUserChosenLexiconsIds());
-        }
+        // TODO to może będzie trzeba zrobić troszkę inaczej, getCriteriaDTO, powinna tylko ustawiać wartości, bez tworzenia nowego
+        SenseCriteriaDTO dto = new SenseCriteriaDTO(getCriteriaDTO());
+        // TODO ustawić wariant
+        dto.setExample(example.getText());
+        dto.setRegister((Register) registerComboBox.getSelectedItem());
 
-        SenseCriteriaDTO senseCriteria = new SenseCriteriaDTO(partOfSpeechId, domainId, lemma, lexicons);
-        senseCriteria.setRelationTypeId(getSenseRelationTypeComboBox().getEntity() != null ? getSenseRelationTypeComboBox().getEntity().getId() : null);
-        senseCriteria.setComment(getComment().getText());
-        senseCriteria.setExample(getExample().getText());
-        senseCriteria.setRegisterId(registerComboBox.getEntity() != null ? registerComboBox.getEntity().getId() : null);
-        senseCriteria.setEmotions(emotionsComboBox.getSelectedItemsIds());
-        senseCriteria.setValuations(valuationsComboBox.getSelectedItemsIds());
-        senseCriteria.setMarkedness(markednessComboBox.getSelectedItem() != null ? ((Markedness)markednessComboBox.getSelectedItem()).getId() : null);
-
-        return senseCriteria;
+        return dto;
     }
 
     @Override
@@ -73,7 +61,7 @@ public final class SenseCriteria extends CriteriaPanel {
         addLexicon();
         addPartsOfSpeach();
         addDomain();
-        addSenseRelationTypes();
+        addRelationType(RelationArgument.SENSE_RELATION);
         addRegister();
         addComment();
         addExample();
@@ -95,7 +83,7 @@ public final class SenseCriteria extends CriteriaPanel {
         add("br hfill", example);
     }
 
-    public MComboBox<Register> getRegisterComboBox() {
+    public JComboBox<Register> getRegisterComboBox() {
         return registerComboBox;
     }
 
@@ -117,31 +105,23 @@ public final class SenseCriteria extends CriteriaPanel {
 
     @Override
     public CriteriaDTO getCriteria() {
-        criteria.setLemma(getSearchTextField().getText());
-        criteria.setLexicon(getLexiconComboBox().getSelectedIndex());
-        criteria.setPartOfSpeech(getPartsOfSpeechComboBox().getSelectedIndex());
-        criteria.setDomain(getDomainComboBox().getSelectedIndex());
-        criteria.setRelation(getSenseRelationTypeComboBox().getSelectedIndex());
-        criteria.setRegister(getRegisterComboBox().getSelectedIndex());
-        criteria.setComment(getComment().getText());
-        criteria.setExample(getExample().getText());
+        criteria = getSenseCriteriaDTO();
         return criteria;
     }
 
     public void setSensesToHold(List<Sense> sense) {
-        criteria.setSense(new ArrayList<>(sense));
+        // TODO dokończyć
+//        criteria.setSense(new ArrayList<>(sense));
     }
 
     @Override
     public void restoreCriteria(CriteriaDTO criteria) {
-        getSearchTextField().setText(criteria.getLemma());
-        getLexiconComboBox().setSelectedIndex(criteria.getLexicon());
-        getPartsOfSpeechComboBox().setSelectedIndex(criteria.getPartOfSpeech());
-        getDomainComboBox().setSelectedIndex(criteria.getDomain());
-        getSenseRelationTypeComboBox().setSelectedIndex(criteria.getRelation());
-        getRegisterComboBox().setSelectedIndex(criteria.getRegister());
-        getComment().setText(criteria.getComment());
-        getExample().setText(criteria.getExample());
-        this.criteria.setSense(criteria.getSense());
+        if(criteria != null){
+            SenseCriteriaDTO dto = (SenseCriteriaDTO) criteria;
+            restoreCriteriaDTO(criteria);
+            example.setText(dto.getExample());
+            registerComboBox.setSelectedItem(dto.getRegister());
+            // TODO może należy ustawić sense do criteria
+        }
     }
 }

@@ -85,9 +85,17 @@ public class DomainMComboBox extends MComboBox<Domain> {
 
     public Domain getSelectedDomain() {
         int selectedIndex = getSelectedIndex();
-        if(selectedIndex == 0){
+        if(selectedIndex <= 0){
             return null;
         }
         return all.get(selectedIndex - 1);
+    }
+
+    public void setSelectedDomain(Domain domain){
+        if(domain == null){
+            setSelectedIndex(0);
+        } else {
+            setSelectedItem(domain);
+        }
     }
 }

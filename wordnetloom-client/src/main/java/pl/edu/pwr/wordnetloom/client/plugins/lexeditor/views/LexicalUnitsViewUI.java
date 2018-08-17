@@ -9,6 +9,7 @@ import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.LexicalUnitPropertiesFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.SynsetsFrame;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.models.Criteria;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
@@ -422,7 +423,6 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     private void addNewSenseWithSynset() {
         Sense savedSense = LexicalUnitPropertiesFrame.showModal(workbench, null);
-        System.out.println(savedSense);
         if(savedSense != null) {
             createNewSynsetAndAddSense(savedSense);
             insertSenseToList(savedSense);
@@ -509,9 +509,11 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
 
     public void setCriteria(CriteriaDTO criteria) {
         this.criteria.restoreCriteria(criteria);
-        if (criteria != null && criteria.getSense() != null) {
-            addUnitsToList(criteria.getSense());
-        }
+        // TODO przyjrzeć się temu
+//        if (criteria != null && criteria.getSense() != null) {
+//            addUnitsToList(criteria.getSense());
+//        }
+
     }
 
     private class UnitListCellRenderer extends WebLabel implements ListCellRenderer {

@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
 import com.alee.laf.menu.WebMenu;
+import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.google.common.eventbus.Subscribe;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitsView;
@@ -32,6 +33,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
+import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 
 import javax.swing.*;
@@ -213,6 +215,7 @@ public class ViWordNetService extends AbstractService implements
 
     @Override
     public void doAction(Object object, int tag) {
+        System.out.println("ViWordNetService - doAction");
         getActiveGraphView().getUI().setCriteria(luView.getCriteria());
         if (object instanceof Sense) {
             new LoadSenseTask((Sense) object).execute();
@@ -307,9 +310,13 @@ public class ViWordNetService extends AbstractService implements
      * @return true when <code>JPanel jp</code> found, otherwise false
      */
     public boolean setActiveGraphView(JPanel jp) {
+        System.out.println("ViWordNetService - setActiveGraphView");
         for (ViwnGraphView vgv : graphViews) {
             if (vgv.getPanel().equals(jp)) {
                 // set active in service
+                // TODO sprawdzić, czy to zadziała
+//                CriteriaDTO criteria = luView.getCriteria();
+//                activeGraphView.getUI().setCriteria(criteria);
                 activeGraphView = vgv;
                 luView.setCriteria(activeGraphView.getUI().getCriteria());
                 // refresh satellite view
@@ -601,16 +608,10 @@ public class ViWordNetService extends AbstractService implements
 //                System.out.println("exported: " + fname);
 //            }
 //        }
+        System.out.println("Zmiana tabeli");
     }
 
-    public void clearAllViews() {
-        graphViews.stream().map((vgv) -> {
-            vgv.getUI().clear();
-            return vgv;
-        }).forEach((vgv) -> {
-            vgv.getUI().getCriteria().setSense(new ArrayList<>());
-        });
-    }
+
 
     /**
      * @param object

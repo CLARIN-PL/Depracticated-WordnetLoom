@@ -83,7 +83,8 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
     private ViwnNode selectedNode = null;
 
-    private final CriteriaDTO criteria = new CriteriaDTO();
+//    private CriteriaDTO criteria = new CriteriaDTO();
+    private CriteriaDTO criteria;
     private int openedFromTabIndex;
 
     private final ScalingControl scaler = new ViewScalingControl();
@@ -1235,20 +1236,26 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     public CriteriaDTO getCriteria() {
+        System.out.println("ViwnGraphViewUI - getCriteria : admin@clarin-pl.eu" + criteria);
+
         return criteria;
     }
 
     public void setCriteria(CriteriaDTO criteria) {
-        this.criteria.setLemma(criteria.getLemma());
-        this.criteria.setLexicon(criteria.getLexicon());
-        this.criteria.setPartOfSpeech(criteria.getPartOfSpeech());
-        this.criteria.setDomain(criteria.getDomain());
-        this.criteria.setRegister(criteria.getRegister());
-        this.criteria.setDefinition(criteria.getDefinition());
-        this.criteria.setComment(criteria.getComment());
-        this.criteria.setExample(criteria.getExample());
-        this.criteria.setRelation(criteria.getRelation());
-        this.criteria.setSense(criteria.getSense());
+        // TODO zobaczyć, czy można zrobić to w ten sposób
+        System.out.println("ViwnGraphViewUI - setCriteria :" + criteria);
+        this.criteria = criteria;
+
+//        this.criteria.setLemma(criteria.getLemma());
+//        this.criteria.setLexicon(criteria.getLexicon());
+//        this.criteria.setPartOfSpeech(criteria.getPartOfSpeech());
+//        this.criteria.setDomain(criteria.getDomain());
+//        this.criteria.setRegister(criteria.getRegister());
+//        this.criteria.setDefinition(criteria.getDefinition());
+//        this.criteria.setComment(criteria.getComment());
+//        this.criteria.setExample(criteria.getExample());
+//        this.criteria.setRelation(criteria.getRelation());
+//        this.criteria.setSense(criteria.getSense());
     }
 
     public int getOpenedFromTabIndex() {

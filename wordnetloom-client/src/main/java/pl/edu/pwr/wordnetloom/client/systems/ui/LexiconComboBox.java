@@ -43,4 +43,21 @@ public class LexiconComboBox extends MComboBox<Lexicon> {
         }
         return all.get(selectedIndex - 1); // subtract 1, because first element is null (CustomDescription(nullRepresentation, null))
     }
+
+    public void setSelectedLexicon(List<Long> lexicon) {
+        if(lexicon.size() > 1){
+            setSelectedIndex(0); // select all lexicon
+        } else {
+            setSelectedItem(getIndex(lexicon.get(0)));
+        }
+    }
+
+    private int getIndex(Long lexiconId) {
+        for(int i=0; i < all.size(); i++){
+            if(all.get(i).equals(lexiconId)){
+                return i+1;
+            }
+        }
+        return 0;
+    }
 }

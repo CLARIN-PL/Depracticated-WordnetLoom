@@ -77,7 +77,8 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
             SenseCriteriaDTO dto = new SenseCriteriaDTO();
             dto.setLemma(filter);
             if (pos != null) {
-                dto.setPartOfSpeechId(pos.getId());
+//                dto.setPartOfSpeechId(pos.getId());
+                dto.setPartOfSpeech(pos);
             }
             dto.setLexicons(LexiconManager.getInstance().getUserChosenLexiconsIds());
             return RemoteService.senseRemote.findByCriteria(dto);

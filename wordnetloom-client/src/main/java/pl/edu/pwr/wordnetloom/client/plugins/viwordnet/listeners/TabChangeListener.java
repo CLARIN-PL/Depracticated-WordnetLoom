@@ -21,6 +21,7 @@ public class TabChangeListener implements ChangeListener {
     @Override
     public void stateChanged(ChangeEvent ce) {
         try {
+            System.out.println("Zmiana zakładki");
             JTabbedPane pane = (JTabbedPane) ce.getSource();
             JPanel sel = (JPanel) pane.getSelectedComponent();
             if (service != null) {

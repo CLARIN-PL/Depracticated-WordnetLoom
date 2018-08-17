@@ -1,93 +1,53 @@
 package pl.edu.pwr.wordnetloom.sense.dto;
 
-import java.io.Serializable;
+import pl.edu.pwr.wordnetloom.dictionary.model.Register;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
+
 import java.util.List;
 
-public class SenseCriteriaDTO implements Serializable {
+public class SenseCriteriaDTO extends CriteriaDTO {
 
-    private Long senseId;
-    private Long partOfSpeechId;
-    private Long domainId;
-    private String lemma;
-    private Long relationTypeId;
-    private List<Long> lexicons;
+    private Sense sense;
     private Integer variant;
-    private String comment;
     private String example;
-    private Long register;
-    private Long synsetId;
-    private List<Long> emotions;
-    private List<Long> valuations;
-    private Long markedness;
-
-    private int limit;
-    private int offset;
+    private Register register;
 
     public SenseCriteriaDTO(){
 
     }
 
-    public SenseCriteriaDTO(Long partOfSpeechId, Long domainId, String lemma, List<Long> lexicons) {
-        this.partOfSpeechId = partOfSpeechId;
-        this.domainId = domainId;
-        this.lemma = lemma;
-        this.lexicons = lexicons;
+    public SenseCriteriaDTO(CriteriaDTO criteriaDTO){
+        super(criteriaDTO);
     }
 
-    public SenseCriteriaDTO copy(SenseCriteriaDTO dto)
-    {
-        SenseCriteriaDTO newDto = new SenseCriteriaDTO();
+    public SenseCriteriaDTO(PartOfSpeech partOfSpeech, Domain domainId, String lemma, List<Long> lexicons){
+        // TODO sprawdzić, czy da radę to jakoś to przerobić
+//        setPartOfSpeechId(partOfSpeech);
+//        setDomainId(domainId);
+        setPartOfSpeech(partOfSpeech);
+        setDomain(domainId);
+        setLemma(lemma);
+        setLexicons(lexicons);
+    }
 
-        return newDto;
+    public Sense getSense() {
+        return sense;
     }
 
     public Long getSenseId() {
-        return senseId;
+        return sense != null ? sense.getId() : null;
     }
 
-    public void setSenseId(Long senseId) {
-        this.senseId = senseId;
+    public void setSense(Sense sense){
+        this.sense = sense;
     }
 
-    public Long getPartOfSpeechId() {
-        return partOfSpeechId;
-    }
-
-    public void setPartOfSpeechId(Long partOfSpeechId) {
-        this.partOfSpeechId = partOfSpeechId;
-    }
-
-    public Long getDomainId() {
-        return domainId;
-    }
-
-    public void setDomainId(Long domainId) {
-        this.domainId = domainId;
-    }
-
-    public String getLemma() {
-        return lemma;
-    }
-
-    public void setLemma(String lemma) {
-        this.lemma = lemma;
-    }
-
-    public Long getRelationTypeId() {
-        return relationTypeId;
-    }
-
-    public void setRelationTypeId(Long relationTypeId) {
-        this.relationTypeId = relationTypeId;
-    }
-
-    public List<Long> getLexicons() {
-        return lexicons;
-    }
-
-    public void setLexicons(List<Long> lexicons) {
-        this.lexicons = lexicons;
-    }
+//    public void setSenseId(Long senseId) {
+//        this.senseId = senseId;
+//    }
 
     public Integer getVariant() {
         return variant;
@@ -97,76 +57,27 @@ public class SenseCriteriaDTO implements Serializable {
         this.variant = variant;
     }
 
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        if(comment != null && !comment.isEmpty()){
-            this.comment = comment;
-        } else {
-            this.comment = null;
-        }
-    }
-
     public String getExample() {
         return example;
     }
 
     public void setExample(String example) {
-        if(example != null && !example.isEmpty()){
-            this.example = example;
-        } else {
-            this.example = null;
-        }
-
+        this.example = example;
     }
 
-    public Long getRegisterId(){
+    public Register getRegister() {
         return register;
     }
 
-    public void setRegisterId(Long registerId){
-        this.register = registerId;
+    public Long getRegisterId() {
+        return register != null ? register.getId() : null;
     }
 
-    public Long getSynsetId() {
-        return synsetId;
-    }
+//    public void setRegisterId(Long register) {
+//        this.registerId = register;
+//    }
 
-    public void setSynsetId(Long synsetId) {
-        this.synsetId = synsetId;
-    }
-
-    public int getLimit(){return limit;}
-    public void setLimit(int limit){this.limit = limit;}
-
-    public int getOffset(){return offset;}
-    public void setOffset(int offset){
-        this.offset = offset;
-    }
-
-    public List<Long> getEmotions() {
-        return emotions;
-    }
-
-    public void setEmotions(List<Long> emotions){
-        this.emotions = emotions;
-    }
-
-    public List<Long> getValuations() {
-        return valuations;
-    }
-
-    public void setValuations(List<Long> valuations){
-        this.valuations = valuations;
-    }
-
-    public Long getMarkedness() {
-        return markedness;
-    }
-
-    public void setMarkedness(Long markedness) {
-        this.markedness = markedness;
+    public void setRegister(Register register) {
+        this.register = register;
     }
 }
