@@ -40,6 +40,7 @@ public class CriteriaDTO implements Serializable{
     public CriteriaDTO(CriteriaDTO criteria) {
         setLemma(criteria.getLemma());
         setLexicons(criteria.getLexicons());
+        setPartOfSpeech(criteria.getPartOfSpeech());
         setDomain(criteria.getDomain());
         setRelationType(criteria.getRelationType());
         setComment(criteria.getComment());
@@ -141,7 +142,7 @@ public class CriteriaDTO implements Serializable{
     }
 
     public void setComment(String comment) {
-        if(comment != null && comment.isEmpty()){
+        if(comment == null || comment.isEmpty()){
             this.comment = null;
         } else {
             this.comment = comment;

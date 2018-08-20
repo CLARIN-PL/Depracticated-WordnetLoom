@@ -91,11 +91,19 @@ public class DomainMComboBox extends MComboBox<Domain> {
         return all.get(selectedIndex - 1);
     }
 
+    // TODO refactor
     public void setSelectedDomain(Domain domain){
         if(domain == null){
             setSelectedIndex(0);
         } else {
-            setSelectedItem(domain);
+            for(int i=0; i<getItemCount(); i++) {
+                CustomDescription<Domain> item = (CustomDescription<Domain>) getItemAt(i);
+                if(item != null && item.getObject() != null && item.getObject().equals(domain)){
+                    setSelectedIndex(i);
+                    return;
+                }
+            }
+            setSelectedIndex(0);
         }
     }
 }

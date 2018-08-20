@@ -1,7 +1,10 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners;
 
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
-import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.SetCriteriaEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateCriteriaEvent;
+import pl.edu.pwr.wordnetloom.client.systems.ui.GraphTabbedPane;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -13,6 +16,7 @@ import javax.swing.event.ChangeListener;
 public class TabChangeListener implements ChangeListener {
 
     private final ViWordNetService service;
+    private int previousTabIndex = 1;
 
     public TabChangeListener(ViWordNetService service) {
         this.service = service;
@@ -21,9 +25,15 @@ public class TabChangeListener implements ChangeListener {
     @Override
     public void stateChanged(ChangeEvent ce) {
         try {
-            System.out.println("Zmiana zakładki");
-            JTabbedPane pane = (JTabbedPane) ce.getSource();
-            JPanel sel = (JPanel) pane.getSelectedComponent();
+            GraphTabbedPane panel = (GraphTabbedPane) ce.getSource();
+            int previousTab = previousTabIndex;
+            int currentTab = panel.getSelectedIndex();
+            Application.eventBus.post(new UpdateCriteriaEvent(panel.getTabInfo(previousTab)));
+            Application.eventBus.post(new SetCriteriaEvent(panel.getTabInfo(currentTab)));
+
+            previousTabIndex = currentTab;
+
+            JPanel sel = (JPanel) panel.getSelectedComponent();
             if (service != null) {
                 service.setActiveGraphView(sel);
             }

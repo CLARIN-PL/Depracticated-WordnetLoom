@@ -215,7 +215,6 @@ public class ViWordNetService extends AbstractService implements
 
     @Override
     public void doAction(Object object, int tag) {
-        System.out.println("ViWordNetService - doAction");
         getActiveGraphView().getUI().setCriteria(luView.getCriteria());
         if (object instanceof Sense) {
             new LoadSenseTask((Sense) object).execute();

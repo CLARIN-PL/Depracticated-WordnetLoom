@@ -25,8 +25,6 @@ public class SenseCriteriaDTO extends CriteriaDTO {
 
     public SenseCriteriaDTO(PartOfSpeech partOfSpeech, Domain domainId, String lemma, List<Long> lexicons){
         // TODO sprawdzić, czy da radę to jakoś to przerobić
-//        setPartOfSpeechId(partOfSpeech);
-//        setDomainId(domainId);
         setPartOfSpeech(partOfSpeech);
         setDomain(domainId);
         setLemma(lemma);

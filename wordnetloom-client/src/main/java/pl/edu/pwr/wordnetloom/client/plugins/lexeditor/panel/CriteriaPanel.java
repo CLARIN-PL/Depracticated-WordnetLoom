@@ -5,6 +5,8 @@ import com.alee.laf.text.WebTextField;
 import com.google.common.eventbus.Subscribe;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SetLexiconsEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.SetCriteriaEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateCriteriaEvent;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
@@ -94,6 +96,31 @@ public abstract class CriteriaPanel extends WebPanel {
         lexiconComboBox.refreshLexicons();
     }
 
+
+
+    @Subscribe
+    public void setCriteria(SetCriteriaEvent event){
+        // TODO to powinno być raczej w SenseCriteria i SynsetCriteria
+        if(event.getTabInfo().getSenseCriteriaDTO() != null){
+            if(this instanceof SenseCriteria){
+                restoreCriteria(event.getTabInfo().getSenseCriteriaDTO());
+            } else {
+                restoreCriteria(event.getTabInfo().getSynsetCriteriaDTO());
+            }
+        }
+    }
+
+    @Subscribe
+    public void updateCriteria(UpdateCriteriaEvent event){
+        CriteriaDTO dto = getCriteria();
+        if(this instanceof SenseCriteria){
+            event.getTabInfo().setSenseCriteriaDTO(dto);
+        } else {
+            event.getTabInfo().setSynsetCriteriaDTO(dto);
+        }
+        // TODO przenieść to do innych klas
+    }
+
     private void initialize() {
         setLayout(new RiverLayout());
 
@@ -101,19 +128,13 @@ public abstract class CriteriaPanel extends WebPanel {
         partsOfSpeechComboBox = createPartOfSpeechComboBox();
         searchTextField = new MTextField(STANDARD_VALUE_FILTER);
         domainComboBox = createDomainComboBox();
-        commentArea = new MTextArea(STANDARD_VALUE_FILTER);
+        commentArea = new MTextField(STANDARD_VALUE_FILTER);
 
         relationTypeComboBox = new LocalisedComboBox(Labels.VALUE_ALL);
 
         emotionsComboBox = createDictionariesComboBox(Emotion.class, emotionsItems);
         valuationsComboBox = createDictionariesComboBox(Valuation.class, valuationsItems);
         markednessComboBox = createMarkednessComboBox();
-    }
-
-    private JComboBox createRelationTypeComboBox() {
-        JComboBox comboBox = new LocalisedComboBox(Labels.VALUE_ALL);
-
-        return comboBox;
     }
 
     private ComboCheckBox createDictionariesComboBox(Class clazz, List<DictionaryCheckComboStore> list){
@@ -269,27 +290,6 @@ public abstract class CriteriaPanel extends WebPanel {
     protected void addComment() {
         add("br", new MLabel(Labels.COMMENT_COLON, 'm', commentArea));
         add("br hfill", commentArea);
-    }
-
-    private MComboBox<RelationType> createSynsetRelationsComboBox() {
-        MComboBox<RelationType> combo = new MComboBox<>();
-        combo.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
-        combo.setPreferredSize(new Dimension(150, 20));
-        return combo;
-    }
-
-    private MComboBox<RelationType> createSenseRelationsComboBox() {
-        MComboBox<RelationType> combo = new MComboBox<>();
-        combo.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
-        combo.setPreferredSize(new Dimension(150, 20));
-        return combo;
-    }
-
-    private MComboBox<RelationType> createRelationsComboBox() {
-        MComboBox<RelationType> comboBox = new MComboBox<>();
-        comboBox.addItem(new CustomDescription<>(Labels.VALUE_ALL, null));
-        comboBox.setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-        return comboBox;
     }
 
     public void refreshPartOfSpeech() {

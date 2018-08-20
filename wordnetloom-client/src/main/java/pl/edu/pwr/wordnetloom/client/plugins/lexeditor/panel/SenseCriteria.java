@@ -17,7 +17,6 @@ import java.util.List;
 public final class SenseCriteria extends CriteriaPanel {
 
     private JComboBox<Register> registerComboBox;
-    private MTextField comment;
     private MTextField example;
     private CriteriaDTO criteria;
     // TODO chyba powinno się tutaj dodać wariant
@@ -30,7 +29,6 @@ public final class SenseCriteria extends CriteriaPanel {
     private void init() {
         criteria = new CriteriaDTO();
         registerComboBox = createRegisterComboBox();
-        comment = new MTextField(STANDARD_VALUE_FILTER);
         example = new MTextField(STANDARD_VALUE_FILTER);
     }
 
@@ -73,11 +71,6 @@ public final class SenseCriteria extends CriteriaPanel {
         add("br hfill", registerComboBox);
     }
 
-    protected void addComment() {
-        add("br", new MLabel(Labels.COMMENT_COLON, 'd', comment));
-        add("br hfill", comment);
-    }
-
     protected void addExample() {
         add("br", new MLabel(Labels.USE_CASE_COLON, 'd', example));
         add("br hfill", example);
@@ -85,10 +78,6 @@ public final class SenseCriteria extends CriteriaPanel {
 
     public JComboBox<Register> getRegisterComboBox() {
         return registerComboBox;
-    }
-
-    public MTextField getComment() {
-        return comment;
     }
 
     public MTextField getExample() {
@@ -99,7 +88,6 @@ public final class SenseCriteria extends CriteriaPanel {
     public void resetFields() {
         super.resetFields();
         registerComboBox.setSelectedIndex(0);
-        comment.setText("");
         example.setText("");
     }
 
