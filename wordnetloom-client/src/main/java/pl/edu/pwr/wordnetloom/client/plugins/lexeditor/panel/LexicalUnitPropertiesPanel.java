@@ -112,11 +112,6 @@ public class LexicalUnitPropertiesPanel extends JPanel {
                 .withActionListener(e->editExample());
         goToLinkButton = new MButton().withIcon(FontAwesome.INTERNET_EXPLORER)
                 .withActionListener(e->goToLink());
-
-        PermissionHelper.checkPermissionToEditAndSetComponents(lemmaTextField,
-                variantTextField, lexiconComboBox, partOfSpeechComboBox, domainComboBox,
-                registerComboBox, definitionArea, commentArea, examplesList, linkTextField,
-                addExampleButton, removeExampleButton, editExampleButton);
     }
 
     private void insertComponents() {
@@ -258,6 +253,14 @@ public class LexicalUnitPropertiesPanel extends JPanel {
             examplesModel.addElement(example);
         }
         linkTextField.setText(senseAttributes.getLink());
+        setEnableEditing(unit);
+    }
+
+    private void setEnableEditing(Sense unit){
+        PermissionHelper.checkPermissionToEditAndSetComponents(unit,
+                lemmaTextField, variantTextField, lexiconComboBox, partOfSpeechComboBox, domainComboBox,
+                registerComboBox, definitionArea, commentArea, examplesList, linkTextField,
+                addExampleButton, removeExampleButton, editExampleButton);
     }
 
     private SenseAttributes getSense(){

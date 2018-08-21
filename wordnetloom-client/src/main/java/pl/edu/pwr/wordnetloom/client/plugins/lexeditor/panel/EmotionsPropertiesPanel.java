@@ -179,7 +179,7 @@ public class EmotionsPropertiesPanel extends JPanel {
     }
 
     private boolean canEditingAnnotation() {
-        return notMarkedRadio.isSelected();
+        return notMarkedRadio.isSelected() && PermissionHelper.hasPermissionToEdit(sense);
     }
 
     private void setEnableEditing(boolean enabled) {
@@ -269,7 +269,7 @@ public class EmotionsPropertiesPanel extends JPanel {
 
     public void load(Sense sense) {
         if (sense != null) {
-            listPanel.loadAnnotations(sense.getId());
+            listPanel.loadAnnotations(sense);
         } else {
             listPanel.loadAnnotations(null);
         }
@@ -337,12 +337,19 @@ public class EmotionsPropertiesPanel extends JPanel {
     }
 
     private void setStatusEnabled(boolean enabled) {
-        boolean hasPermissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(neutralRadio, notMarkedRadio);
+        boolean hasPermissionToEdit;
+        if(sense != null){
+            hasPermissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(sense, neutralRadio, notMarkedRadio);
+        } else {
+            hasPermissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(neutralRadio, notMarkedRadio);
+        }
         if (hasPermissionToEdit) {
             neutralRadio.setEnabled(enabled);
             notMarkedRadio.setEnabled(enabled);
         }
     }
+
+
 
     private void setMarkedness(EmotionalAnnotation annotation) {
         markednessCombo.setSelectedItem(annotation.getMarkedness());
@@ -391,6 +398,9 @@ public class EmotionsPropertiesPanel extends JPanel {
         private DefaultListModel listModel;
         private List<EmotionalAnnotation> annotations;
 
+        private JButton addButton;
+        private JButton removeButton;
+
         EmotionsListPanel() {
             setLayout(new BorderLayout());
             initComponents();
@@ -416,31 +426,36 @@ public class EmotionsPropertiesPanel extends JPanel {
             return RemoteService.senseRemote.getEmotionalAnnotations(senseId);
         }
 
-        void loadAnnotations(Long senseId) {
+        void loadAnnotations(Sense sense) {
             listModel.clear();
-            if (senseId == null) {
+            if (sense == null) {
                 return;
             }
-            annotations = findEmotionalAnnotation(senseId);
+            annotations = findEmotionalAnnotation(sense.getId());
             for (EmotionalAnnotation annotation : annotations) {
                 listModel.addElement(annotation);
             }
             if (!annotations.isEmpty()) {
                 annotationsList.setSelectedIndex(0);
             }
+
+            setEnableEditing(sense);
+        }
+
+        private void setEnableEditing(Sense sense){
+            JComponent[] components = {addButton, removeButton};
+            PermissionHelper.checkPermissionToEditAndSetComponents(sense, components);
         }
 
         private JPanel createButtonsPanel() {
 
-            JButton addButton = MButton.buildAddButton()
+            addButton = MButton.buildAddButton()
                     .withToolTip(Labels.ADD)
                     .withActionListener(e -> addEmotion());
-            JButton removeButton = MButton.buildRemoveButton()
+            removeButton = MButton.buildRemoveButton()
                     .withToolTip(Labels.DELETE)
                     .withActionListener(e -> removeEmotion());
 
-            // for anonymous user buttons are disable
-            PermissionHelper.checkPermissionToEditAndSetComponents(addButton, removeButton);
             MComponentGroup panel = new MComponentGroup(addButton, removeButton);
             panel.withVerticalLayout();
             return panel;

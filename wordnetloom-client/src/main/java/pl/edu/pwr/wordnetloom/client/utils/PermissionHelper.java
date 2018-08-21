@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.client.utils;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.user.model.Role;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -58,6 +59,14 @@ public class PermissionHelper {
         return permissionToEdit;
     }
 
+    public static boolean checkPermissionToEditAndSetComponents(Sense unit, JComponent... components){
+        boolean permissionToEdit = hasPermissionToEdit(unit);
+        if(!permissionToEdit){
+            disableComponents(components);
+        }
+        return permissionToEdit;
+    }
+
     public static void checkPermissionToEditAndSetComponents(AbstractAction... actions){
         if(!hasPermissionToEdit()){
             for(AbstractAction action : actions){
@@ -70,11 +79,15 @@ public class PermissionHelper {
         return !UserSessionContext.getInstance().hasRole(Role.ANONYMOUS);
     }
 
-    private static boolean hasPermissionToEdit(Lexicon lexicon){
+    public static boolean hasPermissionToEdit(Sense unit){
+        assert unit!= null;
+        return hasPermissionToEdit(unit.getLexicon());
+    }
 
+    private static boolean hasPermissionToEdit(Lexicon lexicon) {
         if(lexicon != null && lexicon.isOnlyToRead()){
             return UserSessionContext.getInstance().hasRole(Role.ADMIN);
         }
-        return !UserSessionContext.getInstance().hasRole(Role.ANONYMOUS);
+        return hasPermissionToEdit();
     }
 }

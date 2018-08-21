@@ -40,7 +40,6 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
         buttonsPanel.add(cancelButton);
         buttonsPanel.add(saveButton);
 
-        PermissionHelper.checkPermissionToEditAndSetComponents(saveButton);
 
         add(tabbedPane, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);
@@ -84,6 +83,12 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
         // update panels
         lexicalUnitPropertiesPanel.setSense(unit);
         emotionsPropertiesPanel.load(unit);
+
+        setEnableEditing(unit);
+    }
+
+    private void setEnableEditing(Sense unit){
+        PermissionHelper.checkPermissionToEditAndSetComponents(unit, saveButton);
     }
 
     public static Sense showModal(Workbench workbench, Sense unit) {
