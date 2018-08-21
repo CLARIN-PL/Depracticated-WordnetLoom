@@ -15,20 +15,15 @@ import java.util.List;
 public class CriteriaDTO implements Serializable{
 
     private String lemma;
-    /// TODO sprawdzić, czy na pewno synsetId będzie potrzebe w SenseCriteriaDTO
     private Long synsetId;
 
     private List<Long> lexiconsIds;
     private PartOfSpeech partOfSpeech;
-//    private Long partOfSpeechId;
-//    private Long domainId;
     private Domain domain;
-//    private Long relationTypeId;
     private RelationType relationType;
     private String comment;
     private List<Long> emotions;
     private List<Long> valuations;
-//    private Long markedness;
     private Markedness markedness;
     private int limit;
     private int offset;
@@ -69,7 +64,6 @@ public class CriteriaDTO implements Serializable{
 
     public List<Long> getLexicons() {
         return lexiconsIds;
-//        return lexiconsIds;
     }
 
     public void setLexicons(List<Long> lexiconsIds) {
@@ -89,7 +83,6 @@ public class CriteriaDTO implements Serializable{
     }
 
     public Long getPartOfSpeechId() {
-//        return partOfSpeechId;
         return partOfSpeech != null ? partOfSpeech.getId() : null;
     }
 
@@ -97,9 +90,6 @@ public class CriteriaDTO implements Serializable{
         return partOfSpeech;
     }
 
-    //    public void setPartOfSpeechId(Long partOfSpeechId) {
-//        this.partOfSpeechId = partOfSpeechId;
-//    }
     public void setPartOfSpeech(PartOfSpeech partOfSpeech){
         this.partOfSpeech = partOfSpeech;
     }
@@ -112,26 +102,17 @@ public class CriteriaDTO implements Serializable{
         return domain;
     }
 
-//    public void setDomainId(Long domainId) {
-//        this.domainId = domainId;
-//    }
-
     public void setDomain(Domain domain){
         this.domain = domain;
     }
 
     public Long getRelationTypeId() {
-//        return relationTypeId;
         return relationType != null ? relationType.getId() : null;
     }
 
     public RelationType getRelationType() {
         return relationType;
     }
-
-//    public void setRelationTypeId(Long relationTypeId) {
-//        this.relationTypeId = relationTypeId;
-//    }
 
     public void setRelationType(RelationType relationType){
         this.relationType = relationType;
@@ -166,7 +147,6 @@ public class CriteriaDTO implements Serializable{
     }
 
     public Long getMarkednessId() {
-//        return markedness;
         return markedness != null ? markedness.getId() : null;
     }
 
@@ -177,10 +157,6 @@ public class CriteriaDTO implements Serializable{
     public void setMarkedness(Markedness markedness) {
         this.markedness = markedness;
     }
-
-//    public void setMarkedness(Long markedness) {
-//        this.markedness = markedness;
-//    }
 
     public int getLimit() {
         return limit;

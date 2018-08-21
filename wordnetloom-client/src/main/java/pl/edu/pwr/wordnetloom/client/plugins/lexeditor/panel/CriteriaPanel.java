@@ -180,7 +180,6 @@ public abstract class CriteriaPanel extends WebPanel {
         }
         relationTypeComboBox.setItems(allowedRelationTypes);
         relationTypeComboBox.setSelectedItem(selectedRelation);
-
     }
 
     private LocalisedComboBox createPartOfSpeechComboBox() {

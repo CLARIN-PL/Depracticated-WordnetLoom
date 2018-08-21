@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.client.utils;
 
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.user.model.Role;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -66,6 +67,14 @@ public class PermissionHelper {
     }
 
     private static boolean hasPermissionToEdit(){
+        return !UserSessionContext.getInstance().hasRole(Role.ANONYMOUS);
+    }
+
+    private static boolean hasPermissionToEdit(Lexicon lexicon){
+
+        if(lexicon != null && lexicon.isOnlyToRead()){
+            return UserSessionContext.getInstance().hasRole(Role.ADMIN);
+        }
         return !UserSessionContext.getInstance().hasRole(Role.ANONYMOUS);
     }
 }

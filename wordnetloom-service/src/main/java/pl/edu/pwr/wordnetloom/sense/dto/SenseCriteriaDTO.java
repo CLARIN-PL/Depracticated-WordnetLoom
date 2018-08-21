@@ -43,10 +43,6 @@ public class SenseCriteriaDTO extends CriteriaDTO {
         this.sense = sense;
     }
 
-//    public void setSenseId(Long senseId) {
-//        this.senseId = senseId;
-//    }
-
     public Integer getVariant() {
         return variant;
     }
@@ -60,7 +56,9 @@ public class SenseCriteriaDTO extends CriteriaDTO {
     }
 
     public void setExample(String example) {
-        this.example = example;
+        if(example != null && !example.isEmpty()) {
+            this.example = example;
+        }
     }
 
     public Register getRegister() {
@@ -70,10 +68,6 @@ public class SenseCriteriaDTO extends CriteriaDTO {
     public Long getRegisterId() {
         return register != null ? register.getId() : null;
     }
-
-//    public void setRegisterId(Long register) {
-//        this.registerId = register;
-//    }
 
     public void setRegister(Register register) {
         this.register = register;

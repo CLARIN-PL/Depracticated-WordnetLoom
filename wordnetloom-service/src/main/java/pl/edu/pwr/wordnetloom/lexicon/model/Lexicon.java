@@ -50,6 +50,8 @@ public class Lexicon extends GenericEntity {
 
     private String description;
 
+    private boolean onlyToRead;
+
     public Lexicon() {
     }
 
@@ -149,6 +151,14 @@ public class Lexicon extends GenericEntity {
 
     public void setDescription(String description){
         this.description = description;
+    }
+
+    public boolean isOnlyToRead() {
+        return onlyToRead;
+    }
+
+    public void setOnlyToRead(boolean onlyToRead){
+        this.onlyToRead = onlyToRead;
     }
 
     @Override

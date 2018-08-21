@@ -57,6 +57,9 @@ public class ChangeListener {
         if(component instanceof JRadioButton){
             return ((JRadioButton) component).isSelected();
         }
+        if(component instanceof JCheckBox) {
+            return ((JCheckBox) component).isSelected();
+        }
 
         // TODO dorzucić także inne elementy
         return null;
@@ -83,6 +86,8 @@ public class ChangeListener {
             ((JComboBox) component).setSelectedItem(value);
         } else if(component instanceof JRadioButton){
             ((JRadioButton) component).setSelected((Boolean) value);
+        } else if(component instanceof JCheckBox){
+            ((JCheckBox) component).setSelected((Boolean)value);
         }
     }
 

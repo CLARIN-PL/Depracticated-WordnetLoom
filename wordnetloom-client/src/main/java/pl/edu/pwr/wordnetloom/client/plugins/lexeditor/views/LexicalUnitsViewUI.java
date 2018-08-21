@@ -220,6 +220,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     }
 
     public void setInfoText(int loadedUnits, int allUnitsCount) {
+        // TODO przerobić to tak, aby pokazywało tylko ilość jednostek
         String labelText;
         if (allUnitsCount != 0) {
             labelText = String.format(Labels.VALUE_COUNT_SIMPLE, loadedUnits + "/" + allUnitsCount);

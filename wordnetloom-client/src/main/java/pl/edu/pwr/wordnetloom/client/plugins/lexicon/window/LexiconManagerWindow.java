@@ -248,6 +248,7 @@ public class LexiconManagerWindow extends MFrame {
         private final MTextField licence = new MTextField("");
         private final MTextField email = new MTextField("");
         private final MTextArea description = new MTextArea("");
+        private final JCheckBox onlyToRead = new JCheckBox();
 
         private int width;
         private int height;
@@ -276,7 +277,7 @@ public class LexiconManagerWindow extends MFrame {
         private void initChangeListener() {
             changeListener = new ChangeListener();
             changeListener.addComponents(name, identifier, languageName, languageShorcut,
-                    version, licence, email, description);
+                    version, licence, email, description, onlyToRead);
         }
 
         public boolean isChanged() {
@@ -298,6 +299,7 @@ public class LexiconManagerWindow extends MFrame {
             components.put("Licencja", licence);
             components.put("Email", email);
             components.put(Labels.DESCRIPTION_COLON, description);
+            components.put("Tylko do odczytu", onlyToRead);
 
             add("", GroupView.createGroupView(components, new Dimension(width - 20, height- 20), 0.1f, 0.9f));
         }
@@ -312,6 +314,7 @@ public class LexiconManagerWindow extends MFrame {
             licence.setText(lexicon.getLicense());
             email.setText(lexicon.getEmail());
             description.setText(lexicon.getDescription());
+            onlyToRead.setSelected(lexicon.isOnlyToRead());
 
             changeListener.updateValues();
             // when we add new lexicon
@@ -335,6 +338,7 @@ public class LexiconManagerWindow extends MFrame {
             lexicon.setLicense(licence.getText());
             lexicon.setEmail(email.getText());
             lexicon.setDescription(description.getText());
+            lexicon.setOnlyToRead(onlyToRead.isSelected());
 
             return lexicon;
         }

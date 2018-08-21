@@ -5,9 +5,7 @@ public class SynsetCriteriaDTO extends CriteriaDTO{
     private String definition;
     private Boolean abstractSynset;
 
-    public SynsetCriteriaDTO(){
-
-    }
+    public SynsetCriteriaDTO(){ }
 
     public SynsetCriteriaDTO(CriteriaDTO criteriaDTO){
         super(criteriaDTO);
