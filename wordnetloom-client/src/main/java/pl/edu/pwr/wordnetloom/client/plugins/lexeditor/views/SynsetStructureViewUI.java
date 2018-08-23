@@ -258,10 +258,6 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         scr.setDrawBorder(false);
 
         content.add("br vfill hfill", scr);
-
-        permissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(
-            buttonUp, buttonDown, buttonAdd, buttonRelations, buttonSwitchToLexicalPerspective, buttonToNew
-        );
     }
 
     private void setSplitPosition(int newSplitPosition) {

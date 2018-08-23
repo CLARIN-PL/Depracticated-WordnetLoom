@@ -212,7 +212,7 @@ public abstract class CriteriaPanel extends WebPanel {
 
     public abstract CriteriaDTO getCriteria();
 
-    protected CriteriaDTO getCriteriaDTO() {
+    CriteriaDTO getCriteriaDTO() {
         CriteriaDTO dto = new CriteriaDTO();
         dto.setLemma(searchTextField.getText());
         Lexicon lexicon = lexiconComboBox.getSelectedLexicon();
@@ -235,7 +235,7 @@ public abstract class CriteriaPanel extends WebPanel {
 
     public abstract void restoreCriteria(CriteriaDTO criteria);
 
-    protected void restoreCriteriaDTO(CriteriaDTO criteriaDTO) {
+    void restoreCriteriaDTO(CriteriaDTO criteriaDTO) {
         searchTextField.setText(criteriaDTO.getLemma());
         lexiconComboBox.setSelectedLexicon(criteriaDTO.getLexicons());
         domainComboBox.setSelectedDomain(criteriaDTO.getDomain());

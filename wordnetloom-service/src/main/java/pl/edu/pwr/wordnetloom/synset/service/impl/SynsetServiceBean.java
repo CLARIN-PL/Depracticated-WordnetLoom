@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.synset.service.impl;
 
+import org.hibernate.Hibernate;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
@@ -81,7 +82,9 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @PermitAll
     @Override
     public Synset findSynsetBySense(Sense sense, List<Long> lexicons) {
-        return synsetRepository.findSynsetBySense(sense, lexicons);
+        Synset synset = synsetRepository.findSynsetBySense(sense, lexicons);
+        Hibernate.initialize(synset.getLexicon());
+        return synset;
     }
 
     @PermitAll

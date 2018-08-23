@@ -20,6 +20,7 @@ import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
@@ -98,9 +99,13 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         content.add("hfill vfill", new JScrollPane(tree));
         content.add("br center", addRelationButton);
         content.add(deleteRelationButton);
+    }
 
-        permissionToUpdate = PermissionHelper.checkPermissionToEditAndSetComponents(addRelationButton, deleteRelationButton);
-
+    private void setEnableEditing(Sense sense){
+        System.out.println("ViwnLexicalUnitRelationsViewUI - setEnableEditing");
+        JComponent[] components = {addRelationButton, deleteRelationButton};
+        permissionToUpdate = PermissionHelper.checkPermissionToEditAndSetComponents(sense, components);
+        System.out.println("PermissionToUpdate " + permissionToUpdate);
     }
 
     @Override
@@ -119,11 +124,14 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
             protected String doInBackground() throws Exception {
                 root_from.removeAllChildren();
                 root_to.removeAllChildren();
-                List<SenseRelation> relationsFrom = RemoteService.senseRelationRemote.findRelations((Sense) object, null, true, false);
+                Sense sense = (Sense) object;
+                // TODO chyba można jakoś zapobiec dodatkowemu pobieraniu z bazy
+                sense = RemoteService.senseRemote.fetchSense(sense.getId());
+                List<SenseRelation> relationsFrom = RemoteService.senseRelationRemote.findRelations(sense, null, true, false);
                 List<SenseRelation> relationTo = RemoteService.senseRelationRemote.findRelations((Sense) object, null, false, false);
                 fillRootRelations(root_from, relationsFrom, true);
                 fillRootRelations(root_to, relationTo, false);
-
+                setEnableEditing(sense);
                 return null;
             }
 

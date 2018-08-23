@@ -209,11 +209,16 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         abstractValue.setEnabled(false);
 
-        permissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(
-                definitionValue, commentValue, examplesList, abstractValue, buttonSave
-        );
-
         initChangeListener();
+    }
+
+    void setEnableEditing(){
+        JComponent[] components = {statusComboBox, definitionValue, commentValue, examplesList, abstractValue, buttonSave};
+        if(lastSynset != null) {
+            permissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(lastSynset, components);
+        } else {
+            permissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(components);
+        }
     }
 
     private void initChangeListener() {
@@ -284,12 +289,13 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
             abstractValue.setSelected(synset.getAbstract());
         }
-
         lastSynset = synset;
         quiteMode = true;
         abstractValue.setEnabled(canEditSynset(synset));
         buttonSave.setEnabled(false);
         quiteMode = false;
+
+        setEnableEditing();
     }
 
     private boolean canEditSynset(Synset synset) {

@@ -27,6 +27,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LexicalUnitPropertiesPanel extends JPanel {
 
@@ -193,6 +194,10 @@ public class LexicalUnitPropertiesPanel extends JPanel {
 
     private JComboBox createLexiconComboBox() {
         List<Lexicon> lexiconsList = LexiconManager.getInstance().getLexicons();
+        // when user is not an administrator, we delete all read-only lexicons
+        if(!PermissionHelper.isAdministrator()) {
+            lexiconsList = lexiconsList.stream().filter(lexicon->!lexicon.isOnlyToRead()).collect(Collectors.toList());
+        }
         return createComboBox(lexiconsList.iterator(), new LexiconRenderer());
     }
 
@@ -235,9 +240,15 @@ public class LexicalUnitPropertiesPanel extends JPanel {
 
     public void setSense(Sense unit) {
         this.editedSense = unit;
+
         examplesModel.clear();
         if(unit == null) {
             return;
+        }
+        // when user isn't administrator, all only-read lexicons has been filtered, and current lexicon will not be shown
+        // then, we must add current lexicon to lexiconComboBox
+        if(!PermissionHelper.isAdministrator() && unit.getLexicon().isOnlyToRead()){
+            lexiconComboBox.addItem(unit.getLexicon());
         }
         senseAttributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
         assert senseAttributes != null;
@@ -254,6 +265,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         }
         linkTextField.setText(senseAttributes.getLink());
         setEnableEditing(unit);
+
     }
 
     private void setEnableEditing(Sense unit){

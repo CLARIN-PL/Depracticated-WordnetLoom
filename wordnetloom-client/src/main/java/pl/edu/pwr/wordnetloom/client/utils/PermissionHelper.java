@@ -4,6 +4,7 @@ import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.user.model.Role;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -14,6 +15,12 @@ public class PermissionHelper {
 
     public interface AccessExceptionHandler{
         void handle();
+    }
+
+    private static String getPermissionDeniedText(){
+        // TODO dorobić etykietę
+        final String PERMISSION_DENIED = "Nie posiadasz uprawnień do wykonania tej akcji";
+        return PERMISSION_DENIED;
     }
 
     public static void handle(AccessExceptionHandler handler){
@@ -31,39 +38,55 @@ public class PermissionHelper {
     }
 
     private static void disableComponent(JComponent component){
-        final String PERMISSION_DENIED = "Nie posiadasz uprawnień do wykonania taj akcji";
         component.setEnabled(false);
         if(component instanceof JButton) {
             String tooltipText = component.getToolTipText();
             String newTooltipText = null;
             if(tooltipText == null){
-                newTooltipText = PERMISSION_DENIED;
+                newTooltipText = getPermissionDeniedText();
             } else {
-                newTooltipText = tooltipText + ". " + PERMISSION_DENIED;
+                newTooltipText = tooltipText + ". " + getPermissionDeniedText();
             }
             component.setToolTipText(newTooltipText);
         }
     }
 
-    private static void disableComponents(JComponent... components){
+    private static void enableComponent(JComponent component){
+        component.setEnabled(true);
+        if(component instanceof JButton){
+            String tooltipText = component.getToolTipText();
+            if(tooltipText != null && tooltipText.contains(getPermissionDeniedText())){
+                String newTooltipText = tooltipText.replace(getPermissionDeniedText(), "");
+                component.setToolTipText(newTooltipText);
+            }
+        }
+    }
+
+    private static void setEnableComponents(boolean enabled, JComponent... components){
         for(JComponent component : components){
-            disableComponent(component);
+            if(enabled) {
+                enableComponent(component);
+            } else {
+                disableComponent(component);
+            }
         }
     }
 
     public static boolean checkPermissionToEditAndSetComponents(JComponent... components){
         boolean permissionToEdit = hasPermissionToEdit();
-        if(!permissionToEdit){
-            disableComponents(components);
-        }
+        setEnableComponents(permissionToEdit, components);
         return permissionToEdit;
     }
 
     public static boolean checkPermissionToEditAndSetComponents(Sense unit, JComponent... components){
         boolean permissionToEdit = hasPermissionToEdit(unit);
-        if(!permissionToEdit){
-            disableComponents(components);
-        }
+        setEnableComponents(permissionToEdit, components);
+        return permissionToEdit;
+    }
+
+    public static boolean checkPermissionToEditAndSetComponents(Synset synset, JComponent... components){
+        boolean permissionToEdit = hasPermissionToEdit(synset.getLexicon());
+        setEnableComponents(permissionToEdit, components);
         return permissionToEdit;
     }
 
@@ -73,6 +96,14 @@ public class PermissionHelper {
                 action.setEnabled(false);
             }
         }
+    }
+
+    public static boolean checkPermissionToEditAndSetComponents(Synset synset, AbstractAction... actions){
+        boolean permissionToEdit = hasPermissionToEdit(synset.getLexicon());
+        for(AbstractAction action : actions){
+            action.setEnabled(permissionToEdit);
+        }
+        return permissionToEdit;
     }
 
     private static boolean hasPermissionToEdit(){
@@ -89,5 +120,9 @@ public class PermissionHelper {
             return UserSessionContext.getInstance().hasRole(Role.ADMIN);
         }
         return hasPermissionToEdit();
+    }
+
+    public static boolean isAdministrator() {
+        return UserSessionContext.getInstance().hasRole(Role.ADMIN);
     }
 }

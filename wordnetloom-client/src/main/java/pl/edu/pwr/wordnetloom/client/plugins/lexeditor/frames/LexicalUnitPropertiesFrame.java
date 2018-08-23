@@ -88,7 +88,12 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
     }
 
     private void setEnableEditing(Sense unit){
-        PermissionHelper.checkPermissionToEditAndSetComponents(unit, saveButton);
+        JComponent[] components = {saveButton};
+        if(unit != null){
+            PermissionHelper.checkPermissionToEditAndSetComponents(unit, components);
+        } else {
+            PermissionHelper.checkPermissionToEditAndSetComponents(components);
+        }
     }
 
     public static Sense showModal(Workbench workbench, Sense unit) {

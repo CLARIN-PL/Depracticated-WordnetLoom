@@ -138,55 +138,10 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
 
     @Override
     public CriteriaDTO getCriteria() {
-         // TODO
-
         return getSynsetCriteria();
-//        crit.setLemma(getSearchTextField().getText());
-//        crit.setLexicon(getLexiconComboBox().getSelectedIndex());
-//        crit.setPartOfSpeech(getPartsOfSpeechComboBox().getSelectedIndex());
-//        crit.setDomain(getDomainComboBox().getSelectedIndex());
-//        crit.setRelation(getSynsetRelationTypeComboBox().getSelectedIndex());
-//        crit.setDefinition(getDefinition().getText());
-//        crit.setComment(getComment().getText());
-//        crit.setAbstract(isArtificial);
-//
-//        return crit;
     }
 
     public SynsetCriteriaDTO getSynsetCriteria() {
-//        SynsetCriteriaDTO dto = new SynsetCriteriaDTO();
-//        dto.setLemma(getSearchTextField().getText());
-//        if(!id.getText().isEmpty()){
-//            dto.setSynsetId(Long.parseLong(id.getText()));
-//        }
-//        if (getLexiconComboBox().getSelectedLexicon() != null) {
-//            dto.setLexiconId(getLexiconComboBox().getSelectedLexicon().getId());
-//        }
-//
-//        if (getPartsOfSpeechComboBox().getSelectedPartOfSpeech() != null) {
-//            dto.setPartOfSpeechId(getPartsOfSpeechComboBox().getSelectedPartOfSpeech().getId());
-//        }
-//
-//        if (getDomainComboBox().getSelectedDomain() != null) {
-//            dto.setDomainId(getDomainComboBox().getSelectedDomain().getId());
-//        }
-//
-//        Long relationType = getSynsetRelationTypeComboBox().getEntity() == null ? null : getSynsetRelationTypeComboBox().getEntity().getId();
-//
-//        dto.setDefinition(getDefinition().getText());
-//        dto.setComment(getComment().getText());
-//        dto.setAbstract(getIsArtificial());
-//        dto.setRelationTypeId(relationType);
-//
-//        dto.setEmotions(emotionsComboBox.getSelectedItemsIds());
-//        dto.setValuations(valuationsComboBox.getSelectedItemsIds());
-//        Long markednessId = null;
-//        if(markednessComboBox.getSelectedItem() != null) {
-//            markednessId = ((Markedness)markednessComboBox.getSelectedItem()).getId();
-//            dto.setMarkedness(markednessId);
-//        }
-//        return dto;
-
         SynsetCriteriaDTO dto = new SynsetCriteriaDTO(getCriteriaDTO());
         dto.setDefinition(definition.getText());
         dto.setAbstract(artificial.isSelected());
@@ -202,22 +157,5 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         definition.setText(dto.getDefinition());
         artificial.setSelected(dto.isAbstract());
         notArtificial.setSelected(!dto.isAbstract());
-        // TODO sprawdzić, czy to będzie działać
-
-//        getSearchTextField().setText(criteria.getLemma());
-//        getLexiconComboBox().setSelectedIndex(criteria.getLexicon());
-//        getPartsOfSpeechComboBox().setSelectedIndex(criteria.getPartOfSpeech());
-//        getDomainComboBox().setSelectedIndex(criteria.getDomain());
-//        getSynsetRelationTypeComboBox().setSelectedIndex(criteria.getRelation());
-//        getDefinition().setText(criteria.getDefinition());
-//        getComment().setText(criteria.getComment());
-//        if (criteria.isAbstract() == null) {
-//            all.setSelected(true);
-//        } else if (criteria.isAbstract()) {
-//            artificial.setSelected(true);
-//        } else {
-//            notArtificial.setSelected(true);
-//        }
-//        crit.setSense(criteria.getSense());
     }
 }

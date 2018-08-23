@@ -108,180 +108,11 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             PickedState<ViwnNode> pickedVertexState = vv.getPickedVertexState();
 
             if (vertex != null && vertex instanceof ViwnNodeWord) {
-                popup.add(new AbstractAction(Labels.CREATE_RELATION_WITH) {
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        s.setFirstMakeRelation(vertex);
-                    }
-                });
-
+                handleNodeWordPopup(s, vertex);
             } else if (vertex != null && vertex instanceof ViwnNodeSynset) {
-
-                popup.add(new WebLabel(Labels.SYNSET_OPTIONS));
-
-                popup.add(new AbstractAction(Labels.PATH_TO_HIPERONIM) {
-                    private static final long serialVersionUID = 0L;
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                       showPathToHyponim(vertex);
-                    }
-                });
-
-                popup.add(createOpenInNewTabAction((ViwnNodeSynset) vertex));
-
-                AbstractAction group_action = new AbstractAction(Labels.GRUPPING) {
-                    {
-                        setEnabled(false);
-                    }
-
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        Iterator<ViwnNode> pick_itr = pickedVertexState.getPicked().iterator();
-                        ViwnNode set = vertex; // need to remember last synset from set or set
-                        while (pick_itr.hasNext()) {
-                            ViwnNode n = pick_itr.next();
-                            if (n instanceof ViwnNodeSynset) {
-                                set = vgvui.addSynsetToSet((ViwnNodeSynset) n);
-                            }
-                        }
-                        /* recreate layout with fixing */
-                        vgvui.recreateLayoutWithFix(vertex, set);
-                    }
-                };
-
-                if (vgvui.canGroupSynsets()) {
-                    group_action.setEnabled(true);
-                }
-
-                // group
-                popup.add(group_action);
-
-                // enter make relation mode
-                AbstractAction createRelationAction = new AbstractAction(Labels.CREATE_RELATION_WITH) {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        getViWordNetService().setFirstMakeRelation(vertex);
-                    }
-                };
-
-                AbstractAction mergeAction = new AbstractAction(Labels.SYNSET_MERGE_WITH) {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        getViWordNetService().setFirstMergeSynsets(vertex);
-                    }
-                };
-
-                popup.add(createRelationAction);
-                popup.add(mergeAction);
-
-                // split synset options from lexical unit options
-                popup.addSeparator();
-                popup.add(new WebLabel(Labels.LEXICAL_UNIT_OPTIONS));
-
-                // TODO: make lexical units relations
-                // show lexical units of synsets
-                final WebMenu createRelationItem = new WebMenu(Labels.UNIT_CREATE_RELATION_WITH);
-                createRelationItem.addItemListener(e1 -> {
-                    createRelationItem.removeAll();
-                    final List<Sense> senses = RemoteService.senseRemote.findBySynset(((ViwnNodeSynset)vertex).getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds());
-                    String senseText;
-                    for(Sense sense : senses){
-                        senseText = getSenseMenuItemText(sense);
-                        createRelationItem.add(new WebMenuItem(new AbstractAction(senseText) {
-                            @Override
-                            public void actionPerformed(ActionEvent e1) {
-                                getViWordNetService().setFirstMakeRelation(sense);
-                            }
-                        }));
-                    }
-                });
-
-                popup.add(createRelationItem);
-
-                PermissionHelper.checkPermissionToEditAndSetComponents(createRelationAction, mergeAction);
-                PermissionHelper.checkPermissionToEditAndSetComponents(createRelationItem);
-
+                handleSynsetPopup(vertex, pickedVertexState);
             } else if (vertex != null && vertex instanceof ViwnNodeSet) {
-                ViwnNodeSet set = (ViwnNodeSet) vertex;
-                DefaultListModel model = new DefaultListModel();
-
-                ArrayList<ViwnNodeSynset> col = new ArrayList<>(set.getSynsets());
-                col.sort(new ViwnNodeAlphabeticComparator());
-                for (ViwnNodeSynset syns : col) {
-                    model.addElement(syns);
-                }
-
-                list_focus = true;
-                synset_list_ = new WebList(model);
-                synset_list_.setSelectedIndex(0);
-
-                JScrollPane scroll_pane = new JScrollPane();
-                scroll_pane.setPreferredSize(new Dimension(250, 200));
-                scroll_pane.getViewport().setView(synset_list_);
-
-                WebPanel panel = new WebPanel(new BorderLayout());
-
-                WebButton but_expand = new MButton()
-                        .withActionListener(l -> addSynsets(vertex))
-                        .withCaption(Labels.EXPAND)
-                        .withMnemonic(KeyEvent.VK_R);
-
-                WebButton but_cancel = MButton.buildCancelButton()
-                        .withActionListener(l -> popup.setVisible(false));
-
-                WebButton but_all = new MButton()
-                        .withCaption(Labels.VALUE_ALL)
-                        .withMnemonic(KeyEvent.VK_W)
-                        .withActionListener(l -> {
-
-                            popup.setVisible(false);
-                            DefaultListModel list = (DefaultListModel) synset_list_.getModel();
-                            if (list.size() > 0) {
-                                vgvui.deselectAll();
-                            }
-                            for (int i = 0; i < list.size(); i++) {
-                                ViwnNodeSynset obj = (ViwnNodeSynset) list.get(i);
-                                vgvui.addSynsetFromSet(obj);
-                            }
-                            if (list.size() > 0) {
-                            /* recreate view with fixing location */
-                                vgvui.recreateLayoutWithFix(vertex, (ViwnNode) list.get(list.size() - 1));
-                            }
-                        });
-
-                synset_list_.addKeyListener(new KeyListener() {
-                    @Override
-                    public void keyTyped(KeyEvent e) {
-                    }
-
-                    @Override
-                    public void keyReleased(KeyEvent e) {
-                    }
-
-                    @Override
-                    public void keyPressed(KeyEvent e) {
-                        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                            addSynsets(vertex);
-                        }
-                    }
-                });
-
-                panel.add(scroll_pane, BorderLayout.PAGE_START);
-
-                WebPanel inner_panel = new WebPanel(new FlowLayout());
-                inner_panel.add(but_expand);
-                inner_panel.add(but_cancel);
-                inner_panel.add(but_all);
-
-                panel.add(inner_panel, BorderLayout.CENTER);
-
-                popup.add(panel);
-
+                list_focus = handleSetPopup(vertex);
             } else if (edge != null) {
                 // edge clicked
                 popup.add(new AbstractAction(Labels.FOLLOW_EGDE) {
@@ -338,6 +169,197 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             }
         }
 
+    }
+
+    private void handleNodeWordPopup(ViWordNetService s, ViwnNode vertex) {
+        popup.add(new AbstractAction(Labels.CREATE_RELATION_WITH) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                s.setFirstMakeRelation(vertex);
+            }
+        });
+    }
+
+    private boolean handleSetPopup(ViwnNode vertex) {
+        boolean list_focus;ViwnNodeSet set = (ViwnNodeSet) vertex;
+        DefaultListModel model = new DefaultListModel();
+
+        ArrayList<ViwnNodeSynset> col = new ArrayList<>(set.getSynsets());
+        col.sort(new ViwnNodeAlphabeticComparator());
+        for (ViwnNodeSynset syns : col) {
+            model.addElement(syns);
+        }
+
+        list_focus = true;
+        synset_list_ = new WebList(model);
+        synset_list_.setSelectedIndex(0);
+
+        JScrollPane scroll_pane = new JScrollPane();
+        scroll_pane.setPreferredSize(new Dimension(250, 200));
+        scroll_pane.getViewport().setView(synset_list_);
+
+        WebPanel panel = new WebPanel(new BorderLayout());
+
+        WebButton but_expand = new MButton()
+                .withActionListener(l -> addSynsets(vertex))
+                .withCaption(Labels.EXPAND)
+                .withMnemonic(KeyEvent.VK_R);
+
+        WebButton but_cancel = MButton.buildCancelButton()
+                .withActionListener(l -> popup.setVisible(false));
+
+        WebButton but_all = new MButton()
+                .withCaption(Labels.VALUE_ALL)
+                .withMnemonic(KeyEvent.VK_W)
+                .withActionListener(l -> {
+
+                    popup.setVisible(false);
+                    DefaultListModel list = (DefaultListModel) synset_list_.getModel();
+                    if (list.size() > 0) {
+                        vgvui.deselectAll();
+                    }
+                    for (int i = 0; i < list.size(); i++) {
+                        ViwnNodeSynset obj = (ViwnNodeSynset) list.get(i);
+                        vgvui.addSynsetFromSet(obj);
+                    }
+                    if (list.size() > 0) {
+                    /* recreate view with fixing location */
+                        vgvui.recreateLayoutWithFix(vertex, (ViwnNode) list.get(list.size() - 1));
+                    }
+                });
+
+        synset_list_.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    addSynsets(vertex);
+                }
+            }
+        });
+
+        panel.add(scroll_pane, BorderLayout.PAGE_START);
+
+        WebPanel inner_panel = new WebPanel(new FlowLayout());
+        inner_panel.add(but_expand);
+        inner_panel.add(but_cancel);
+        inner_panel.add(but_all);
+
+        panel.add(inner_panel, BorderLayout.CENTER);
+
+        popup.add(panel);
+        return list_focus;
+    }
+
+    private void handleSynsetPopup(ViwnNode vertex, PickedState<ViwnNode> pickedVertexState) {
+        popup.add(new WebLabel(Labels.SYNSET_OPTIONS));
+
+        popup.add(new AbstractAction(Labels.PATH_TO_HIPERONIM) {
+            private static final long serialVersionUID = 0L;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               showPathToHyponim(vertex);
+            }
+        });
+
+        popup.add(createOpenInNewTabAction((ViwnNodeSynset) vertex));
+
+        AbstractAction group_action = new AbstractAction(Labels.GRUPPING) {
+            {
+                setEnabled(false);
+            }
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Iterator<ViwnNode> pick_itr = pickedVertexState.getPicked().iterator();
+                ViwnNode set = vertex; // need to remember last synset from set or set
+                while (pick_itr.hasNext()) {
+                    ViwnNode n = pick_itr.next();
+                    if (n instanceof ViwnNodeSynset) {
+                        set = vgvui.addSynsetToSet((ViwnNodeSynset) n);
+                    }
+                }
+                /* recreate layout with fixing */
+                vgvui.recreateLayoutWithFix(vertex, set);
+            }
+        };
+
+        if (vgvui.canGroupSynsets()) {
+            group_action.setEnabled(true);
+        }
+
+        // group
+        popup.add(group_action);
+
+        // enter make relation mode
+        AbstractAction createRelationAction = new AbstractAction(Labels.CREATE_RELATION_WITH) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getViWordNetService().setFirstMakeRelation(vertex);
+            }
+        };
+
+        AbstractAction mergeAction = new AbstractAction(Labels.SYNSET_MERGE_WITH) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getViWordNetService().setFirstMergeSynsets(vertex);
+            }
+        };
+
+        popup.add(createRelationAction);
+        popup.add(mergeAction);
+
+        // split synset options from lexical unit options
+        popup.addSeparator();
+        popup.add(new WebLabel(Labels.LEXICAL_UNIT_OPTIONS));
+
+        // TODO: make lexical units relations
+        // show lexical units of synsets
+        final WebMenu createRelationItem = createCreateRelationItem((ViwnNodeSynset) vertex);
+
+        popup.add(createRelationItem);
+
+        JComponent[] components = { createRelationItem};
+
+        Synset synset = ((ViwnNodeSynset) vertex).getSynset();
+        // merge action is disabled for anonymous user and for only-read lexicons
+        PermissionHelper.checkPermissionToEditAndSetComponents(synset, mergeAction);
+        // TODO zobaczyć opis
+        // create relation action is allowed, but when user try connected two synsets from this same read-only lexicon
+        // he get a error message. Only administrator can create these relations
+        PermissionHelper.checkPermissionToEditAndSetComponents(createRelationAction);
+        PermissionHelper.checkPermissionToEditAndSetComponents(synset, components);
+    }
+
+    private WebMenu createCreateRelationItem(ViwnNodeSynset vertex) {
+        final WebMenu createRelationItem = new WebMenu(Labels.UNIT_CREATE_RELATION_WITH);
+        createRelationItem.addItemListener(e1 -> {
+            createRelationItem.removeAll();
+            final List<Sense> senses = RemoteService.senseRemote.findBySynset(vertex.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds());
+            String senseText;
+            for(Sense sense : senses){
+                senseText = getSenseMenuItemText(sense);
+                createRelationItem.add(new WebMenuItem(new AbstractAction(senseText) {
+                    @Override
+                    public void actionPerformed(ActionEvent e1) {
+                        getViWordNetService().setFirstMakeRelation(sense);
+                    }
+                }));
+            }
+        });
+        return createRelationItem;
     }
 
     private AbstractAction createOpenInNewTabAction(ViwnNodeSynset vertex) {

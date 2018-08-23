@@ -545,6 +545,15 @@ public class ViWordNetService extends AbstractService implements
             setMakeRelationMode(false);
             return;
         }
+        Synset sourceSynset = src.getSynset();
+        Synset destinationSynset = dst.getSynset();
+        if(sourceSynset.getLexicon().isOnlyToRead() && sourceSynset.getLexicon().equals(destinationSynset.getLexicon())){
+            // TODO dorobić etykietę, poprawić tekst
+            final String MESSAGE_TEXT = "Nie można utworzyć relacji pomiędzy synsetami z temgo samego leksykonu tylko do odczytu";
+            DialogBox.showInformation(MESSAGE_TEXT);
+            setMakeRelationMode(false);
+            return;
+        }
 
         if (MakeNewRelationWindow.showModalAndSaveRelation(workbench, src, dst)) {
             for (ViwnGraphView gv : graphViews) {
