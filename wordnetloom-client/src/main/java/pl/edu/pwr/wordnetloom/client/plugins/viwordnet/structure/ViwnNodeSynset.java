@@ -180,7 +180,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(getSynset().getId(), LexiconManager.getInstance().getUserChosenLexiconsIds());
         ui.addToEntrySet(dataEntry);
         construct();
-        ui.recreateLayout(); //TODO zmienić to na coś, co nie powoduje zmiany pozycji synsetów
+        ui.recreateLayout();
     }
 
     public void construct() {
@@ -296,6 +296,16 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
      */
     public Collection<ViwnEdgeSynset> getRelation(NodeDirection dir) {
         return relations[dir.ordinal()];
+    }
+
+    public Collection<ViwnEdgeSynset> getRelations(RelationType relationType){
+        Collection<ViwnEdgeSynset>  result = new ArrayList<>();
+        for(ViwnEdgeSynset edge : relations[relationType.getNodePosition().ordinal()]){
+            if(edge.getRelationType().getId().equals(relationType.getId())){
+                result.add(edge);
+            }
+        }
+        return result;
     }
 
     public void setState(NodeDirection dir, State state_new) {

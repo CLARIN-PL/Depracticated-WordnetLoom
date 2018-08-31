@@ -38,6 +38,7 @@ import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import se.datadosen.component.RiverLayout;
@@ -215,10 +216,9 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         return cache;
     }
 
-
     public void addSynsetNode(ViwnNodeSynset synset) {
         clear();
-        cache.clear();
+//        cache.clear();
         // TODO refaktor, część wspólna z metodą refreshView
         if (!cache.containsKey(synset.getSynset().getId())) {
             ViwnNodeSynset rootNodeSynset = synset;
@@ -687,9 +687,16 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         });
     }
 
+    public void showRelation(Synset synset, NodeDirection[] dirs){
+        ViwnNodeSynset nodeSynset = new ViwnNodeSynset(synset, this);
+        forest.addVertex(nodeSynset);
+        showRelation(nodeSynset, dirs);
+    }
+
     public void showRelation(ViwnNodeSynset synsetNode, NodeDirection[] dirs) {
         SwingUtilities.invokeLater(() -> workbench.setBusy(true));
 
+        // TODO sprawdzić, czy poszczególne relacje są pobrane
         // jeżeli relacje nie były pobrane wczesniej, zostaną pobrane
         if (!checkNodeWasExtended(synsetNode, dirs)) {
             synsetData.load(synsetNode.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds(), dirs);
@@ -737,6 +744,19 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         if (insertedNodes < relations.size()) {
             insertInvisibleSynsetNodes(relations, synsetNode, direction, insertedNodes);
         }
+    }
+
+    // TODO napisać nową metodę i trochę to ogarnąć
+    public void showRelation(ViwnNodeSynset synsetNode, RelationType relationType){
+        forest.addVertex(synsetNode); // TODO może wrzucić to do innej metody
+        List<ViwnEdgeSynset> relations = (List<ViwnEdgeSynset>)synsetNode.getRelations(relationType);
+        int toShow = Math.min(MAX_SYNSETS_SHOWN, relations.size()); // number synset to show on the graph
+        int insertedNodes = insertVisibleSynsetNodes(relations, synsetNode, relationType.getNodePosition(), toShow);
+        if (insertedNodes < relations.size()) {
+            insertInvisibleSynsetNodes(relations, synsetNode, relationType.getNodePosition(), insertedNodes);
+        }
+        addMissingRelationInForest();
+        checkAllStates();
     }
 
     private int insertVisibleSynsetNodes(List<ViwnEdgeSynset> relations, ViwnNodeSynset nodeSynset, NodeDirection direction, int maxShowedNodes) {
@@ -837,10 +857,10 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
     public void addConnectedSynsetsToGraph(ViwnNodeSynset first, List<Synset> synsets, NodeDirection direction) {
         ViwnNodeSynset prev = first;
-        // TODO dorzucić do parametru kierunku
         for (Synset synset : synsets) {
             ViwnNodeSynset node = loadSynsetNode(synset);
             tryInsertNodeToForest(node, prev, direction);
+//            recreateLayoutWithFix(node, prev);
             prev = node;
         }
         checkMissing();
@@ -1242,8 +1262,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     public void setCriteria(CriteriaDTO criteria) {
-        // TODO zobaczyć, czy można zrobić to w ten sposób
-        System.out.println("ViwnGraphViewUI - setCriteria :" + criteria);
         this.criteria = criteria;
 
 //        this.criteria.setLemma(criteria.getLemma());

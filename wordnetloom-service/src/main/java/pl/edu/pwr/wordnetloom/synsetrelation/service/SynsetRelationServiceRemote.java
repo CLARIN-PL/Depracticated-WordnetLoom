@@ -1,5 +1,7 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.service;
 
+import edu.uci.ics.jung.graph.DirectedGraph;
+import pl.edu.pwr.wordnetloom.common.model.Graph;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -42,6 +44,12 @@ public interface SynsetRelationServiceRemote {
     SynsetRelation findRelation(Synset parent, Synset child, RelationType relation);
 
     List<Synset> findTopPathInSynsets(Synset synset, Long rtype);
+
+    Graph<Synset> findDirectedGraphPath(Synset synset, RelationType type);
+
+    DirectedGraph<Long, SynsetRelation> findDirectedGraph(Synset synset, RelationType type);
+
+    List<RelationType> findPath(Synset synset, RelationType type);
 
     List<SynsetRelation> findRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons, NodeDirection[] directions);
 

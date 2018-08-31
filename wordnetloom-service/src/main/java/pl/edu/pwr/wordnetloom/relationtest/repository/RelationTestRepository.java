@@ -39,7 +39,6 @@ public class RelationTestRepository extends GenericRepository<RelationTest> {
     }
 
     public List<RelationTest> findByRelationType(RelationType relationType) {
-        System.out.println("Relacja :" + relationType.getId());
         return em.createQuery("SELECT r FROM RelationTest r WHERE r.relationType.id = :relationType", RelationTest.class)
                 .setParameter("relationType", relationType.getId())
                 .getResultList();

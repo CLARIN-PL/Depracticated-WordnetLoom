@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.service.impl;
 
+import edu.uci.ics.jung.graph.DirectedGraph;
 import org.jboss.ejb3.annotation.SecurityDomain;
+import pl.edu.pwr.wordnetloom.common.model.Graph;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -146,6 +148,27 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     @Override
     public List<Synset> findTopPathInSynsets(Synset synset, Long rtype) {
         return synsetRelationRepository.findTopPathInSynsets(synset, rtype);
+    }
+
+    // TODO metoda testowa
+    @PermitAll
+    @Override
+    public Graph<Synset> findDirectedGraphPath(Synset synset, RelationType relationType){
+        return synsetRelationRepository.findDirectedGraphPath(synset, relationType);
+    }
+
+    //TODO metoda testowa
+    @PermitAll
+    @Override
+    public DirectedGraph<Long, SynsetRelation> findDirectedGraph(Synset synset, RelationType relationType){
+        return synsetRelationRepository.findDirectedGraph(synset, relationType);
+    }
+
+    // TODO Metoda testowa
+    @PermitAll
+    @Override
+    public List<RelationType> findPath(Synset synset, RelationType relationType){
+        return null;
     }
 
     @PermitAll

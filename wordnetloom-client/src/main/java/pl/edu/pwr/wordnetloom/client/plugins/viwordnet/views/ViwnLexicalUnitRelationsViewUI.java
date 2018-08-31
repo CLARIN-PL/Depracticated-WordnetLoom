@@ -102,10 +102,8 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
     }
 
     private void setEnableEditing(Sense sense){
-        System.out.println("ViwnLexicalUnitRelationsViewUI - setEnableEditing");
         JComponent[] components = {addRelationButton, deleteRelationButton};
         permissionToUpdate = PermissionHelper.checkPermissionToEditAndSetComponents(sense, components);
-        System.out.println("PermissionToUpdate " + permissionToUpdate);
     }
 
     @Override
@@ -364,9 +362,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
     }
 
     //TODO przeanalizować
-    private void removeNodeFromTree(SenseRelation senseRelation)
-    {
-        System.out.println("Usuwanie wierzchołka z drzewa relacji jednostek");
+    private void removeNodeFromTree(SenseRelation senseRelation) {
         DefaultMutableTreeNode node = null;
         List<DefaultMutableTreeNode> allNodes = tree.getAllNodes();
         for(DefaultMutableTreeNode treeNode : allNodes) {

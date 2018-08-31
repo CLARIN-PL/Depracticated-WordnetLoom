@@ -306,7 +306,6 @@ public abstract class CriteriaPanel extends WebPanel {
     }
 
     public void resetFields() {
-        System.out.println("CriteriaPanel - resetFields");
         searchTextField.setText("");
         domainComboBox.setSelectedIndex(0);
         partsOfSpeechComboBox.setSelectedIndex(0);

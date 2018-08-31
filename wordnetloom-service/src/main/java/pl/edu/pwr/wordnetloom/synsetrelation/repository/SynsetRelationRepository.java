@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.synsetrelation.repository;
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import pl.edu.pwr.wordnetloom.common.model.Graph;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
@@ -126,20 +127,29 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return relations.get(0);
     }
 
-    public List<Synset> findTopPathInSynsets(Synset synset, Long rtype) {
-        ArrayList<Synset> path = new ArrayList<>();
+    public Graph<Synset> findDirectedGraphPath(Synset synset, RelationType relationType){
+        return getRelationGraph(synset, relationType);
+    }
 
-        DirectedGraph<Long, SynsetRelation> g = getRelationDirectedGraph(synset, rtype);
-        DijkstraShortestPath<Long, SynsetRelation> dsp = new DijkstraShortestPath<>(g);
-        Map<Long, Number> map = dsp.getDistanceMap(synset.getId());
-        Long last = getLastElement(map);
-        if (last != -1) {
-            List<SynsetRelation> p = dsp.getPath(synset.getId(), last);
-            for (SynsetRelation r : p) {
-                path.add(r.getChild());
-            }
-        }
-        return path;
+    public DirectedGraph<Long, SynsetRelation> findDirectedGraph(Synset synset, RelationType relationType){
+        return getRelationDirectedGraph(synset, relationType.getId());
+    }
+
+    public List<Synset> findTopPathInSynsets(Synset synset, Long rtype) {
+//        ArrayList<Synset> path = new ArrayList<>();
+//
+//        DirectedGraph<Long, SynsetRelation> g = getRelationDirectedGraph(synset, rtype);
+//        DijkstraShortestPath<Long, SynsetRelation> dsp = new DijkstraShortestPath<>(g);
+//        Map<Long, Number> map = dsp.getDistanceMap(synset.getId());
+//        Long last = getLastElement(map);
+//        if (last != -1) {
+//            List<SynsetRelation> p = dsp.getPath(synset.getId(), last);
+//            for (SynsetRelation r : p) {
+//                path.add(r.getChild());
+//            }
+//        }
+//        return path;
+        return new ArrayList<>(getPath(synset, rtype));
     }
 
     private Long getLastElement(Map<Long, Number> map) {
@@ -158,6 +168,7 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
             item = stack.pop();
             relations = findSynsetRelation(item, rtype);
             for (SynsetRelation rel : relations) {
+                // TODO przemyśleć to, aby pobierało wszystko
                 if (!g.containsVertex(rel.getChild().getId())) {
                     stack.push(rel.getChild().getId());
                     g.addEdge(rel, item, rel.getChild().getId());
@@ -165,6 +176,44 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
             }
         }
         return g;
+    }
+
+    private Graph getRelationGraph(Synset synset, RelationType relationType){
+        Graph<Synset> graph = new Graph<>(synset);
+        Deque<Long> stack = new ArrayDeque<>();
+        stack.push(synset.getId());
+        List<SynsetRelation> relations;
+        Long synsetId;
+        while(!stack.isEmpty()){
+            synsetId = stack.pop();
+            relations = findSynsetRelation(synsetId, relationType.getId());
+            for(SynsetRelation relation : relations){
+                graph.add(relation.getParent(), relation.getChild());
+                stack.push(relation.getChild().getId());
+                // TODO zorientować się, w jaki sposób zapobiec zapętleniom
+            }
+        }
+        return graph;
+    }
+
+    private Set<Synset> getPath(Synset synset, Long relationTypeId){
+        Set<Synset> resultSynsets = new HashSet<>();
+        Deque<Long> stack = new ArrayDeque<>();
+        Long synsetId;
+        stack.push(synset.getId());
+        List<SynsetRelation> relations;
+        while(!stack.isEmpty()){
+            synsetId = stack.pop();
+            // TODO sprawdzić tę metodę, czy działa poprawnie
+            relations = findSynsetRelation(synsetId, relationTypeId);
+            for(SynsetRelation rel: relations){
+                if(!resultSynsets.contains(rel.getChild())){
+                    stack.push(rel.getChild().getId());
+                    resultSynsets.add(rel.getChild());
+                }
+            }
+        }
+        return resultSynsets;
     }
 
     private List<SynsetRelation> findSynsetRelation(Long parentId, Long relationTypeId) {

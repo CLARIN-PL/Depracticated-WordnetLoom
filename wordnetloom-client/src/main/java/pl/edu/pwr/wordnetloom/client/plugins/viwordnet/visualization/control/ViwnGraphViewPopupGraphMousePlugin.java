@@ -7,10 +7,9 @@ import com.alee.laf.menu.WebMenu;
 import com.alee.laf.menu.WebMenuItem;
 import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
@@ -27,9 +26,11 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
+import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,25 +63,63 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
     }
 
     private void showPathToHyponim(ViwnNode vertex) {
+        // TODO rozwiązanie tymczasowe
         Synset synset = ((ViwnNodeSynset)vertex).getSynset();
-        //TODO przerobić to tak, aby nie było trzeba wpisywać nazwy relacji
-        RelationType type = RemoteService.relationTypeRemote.findByName("hiponimia");
-        List<Synset> path = RemoteService.synsetRelationRemote.findTopPathInSynsets(synset, type.getId());
-        DataEntry dataEntry;
-        for(Synset synsetInPath : path){
-            // TODO spróbowac zlikwidować dodatkowe pobieranie danych z bazy
-            dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(synsetInPath.getId(), LexiconManager.getInstance().getUserChosenLexiconsIds());
-            vgvui.addToEntrySet(dataEntry);
+        RelationType type;
+        if(synset.getLexicon().getName().equals("Słowosieć")){
+            // TODO poprawić kierunek relacji
+            type = RemoteService.relationTypeRemote.findByName("hiponimia");
+        } else {
+            type = RemoteService.relationTypeRemote.findByName("Hyponym");
         }
-        getViWordNetService().getActiveGraphView().getUI().addConnectedSynsetsToGraph((ViwnNodeSynset)vertex, path, type.getNodePosition());
+        showPathTo(vertex, type);
+    }
+
+    private void showPathTo(ViwnNode node, RelationType relationType){
+        Synset synset = ((ViwnNodeSynset)node).getSynset();
+        DirectedGraph<Long, SynsetRelation> graph = RemoteService.synsetRelationRemote.findDirectedGraph(synset, relationType);
+        Deque<Long> stack = new ArrayDeque<>();
+        Deque<Synset> synsetStack = new ArrayDeque<>();
+        stack.push(synset.getId());
+
+        Long synsetId;
+        DataEntry dataEntry;
+        Set<Long> downloadedSynsets = new HashSet<>();
+        List<ViwnNodeSynset> nodeSynsetList = new ArrayList<>();
+        List<Synset> synsetList = new ArrayList<>();
+        synsetList.add(synset);
+        nodeSynsetList.add((ViwnNodeSynset) node);
+        Synset currentSynset;
+        NodeDirection[] directions = new NodeDirection[]{relationType.getNodePosition()};
+        while(stack.size() != 0){
+            synsetId = stack.pop();
+
+            Collection<SynsetRelation> relations = graph.getIncidentEdges(synsetId);
+            for(SynsetRelation relation: relations) {
+                Synset childSynset;
+                if (Objects.equals(relation.getChild().getId(), synsetId)) {
+                    continue;
+                }
+                childSynset = relation.getChild();
+                dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(childSynset.getId(), LexiconManager.getInstance().getUserChosenLexiconsIds());
+                vgvui.addToEntrySet(dataEntry);
+                synsetList.add(childSynset);
+                if (!downloadedSynsets.contains(childSynset.getId())) {
+                    stack.push(childSynset.getId());
+                }
+            }
+            downloadedSynsets.add(synsetId);
+        }
+        for(Synset syn : synsetList){
+            vgvui.showRelation(syn, directions);
+        }
     }
 
     @Override
     protected void handlePopup(MouseEvent e) {
-
         VisualizationViewer<ViwnNode, ViwnEdge> vv = (VisualizationViewer<ViwnNode, ViwnEdge>) e.getSource();
         Layout<ViwnNode, ViwnEdge> layout = vv.getGraphLayout();
-        Graph<ViwnNode, ViwnEdge> graph = layout.getGraph();
+        edu.uci.ics.jung.graph.Graph<ViwnNode, ViwnEdge> graph = layout.getGraph();
         Point2D p = e.getPoint();
         Point2D ivp = p;
         GraphElementAccessor<ViwnNode, ViwnEdge> pickSupport = vv.getPickSupport();
