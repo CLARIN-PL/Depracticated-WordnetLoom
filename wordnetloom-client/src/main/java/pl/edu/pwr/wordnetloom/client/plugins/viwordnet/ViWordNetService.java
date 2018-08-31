@@ -309,7 +309,6 @@ public class ViWordNetService extends AbstractService implements
      * @return true when <code>JPanel jp</code> found, otherwise false
      */
     public boolean setActiveGraphView(JPanel jp) {
-        System.out.println("ViWordNetService - setActiveGraphView");
         for (ViwnGraphView vgv : graphViews) {
             if (vgv.getPanel().equals(jp)) {
                 // set active in service
@@ -616,7 +615,6 @@ public class ViWordNetService extends AbstractService implements
 //                System.out.println("exported: " + fname);
 //            }
 //        }
-        System.out.println("Zmiana tabeli");
     }
 
 

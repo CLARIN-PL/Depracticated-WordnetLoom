@@ -172,8 +172,13 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
             relations[direction.ordinal()].clear();
         }
         DataEntry dataEntry = synsetData.getById(synset.getId());
+        updateSynset(dataEntry.getSynset()); // TODO try update status without this
         pos = PartOfSpeechManager.getInstance().getById(dataEntry.getPosID());
         addSynsetEdges(dataEntry, directions);
+    }
+
+    private void updateSynset(Synset synset){
+        this.synset.setStatus(synset.getStatus());
     }
 
     public void refresh(){

@@ -77,42 +77,10 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
     private void showPathTo(ViwnNode node, RelationType relationType){
         Synset synset = ((ViwnNodeSynset)node).getSynset();
-        DirectedGraph<Long, SynsetRelation> graph = RemoteService.synsetRelationRemote.findDirectedGraph(synset, relationType);
-        Deque<Long> stack = new ArrayDeque<>();
-        Deque<Synset> synsetStack = new ArrayDeque<>();
-        stack.push(synset.getId());
-
-        Long synsetId;
-        DataEntry dataEntry;
-        Set<Long> downloadedSynsets = new HashSet<>();
-        List<ViwnNodeSynset> nodeSynsetList = new ArrayList<>();
-        List<Synset> synsetList = new ArrayList<>();
-        synsetList.add(synset);
-        nodeSynsetList.add((ViwnNodeSynset) node);
-        Synset currentSynset;
-        NodeDirection[] directions = new NodeDirection[]{relationType.getNodePosition()};
-        while(stack.size() != 0){
-            synsetId = stack.pop();
-
-            Collection<SynsetRelation> relations = graph.getIncidentEdges(synsetId);
-            for(SynsetRelation relation: relations) {
-                Synset childSynset;
-                if (Objects.equals(relation.getChild().getId(), synsetId)) {
-                    continue;
-                }
-                childSynset = relation.getChild();
-                dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(childSynset.getId(), LexiconManager.getInstance().getUserChosenLexiconsIds());
-                vgvui.addToEntrySet(dataEntry);
-                synsetList.add(childSynset);
-                if (!downloadedSynsets.contains(childSynset.getId())) {
-                    stack.push(childSynset.getId());
-                }
-            }
-            downloadedSynsets.add(synsetId);
-        }
-        for(Synset syn : synsetList){
-            vgvui.showRelation(syn, directions);
-        }
+        List<DataEntry> dataEntries = RemoteService.synsetRelationRemote.findPath(synset, relationType, LexiconManager.getInstance().getUserChosenLexiconsIds());
+        final NodeDirection[] directions = new NodeDirection[]{relationType.getNodePosition()};
+        dataEntries.forEach(dataEntry -> vgvui.addToEntrySet(dataEntry));
+        dataEntries.forEach(dataEntry -> vgvui.showRelation(dataEntry.getSynset(), directions));
     }
 
     @Override

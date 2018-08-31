@@ -693,18 +693,28 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         showRelation(nodeSynset, dirs);
     }
 
+    private boolean checkRelationIsDownloaded(ViwnNodeSynset synset, NodeDirection[] directions) {
+        for(NodeDirection direction : directions){
+            for(ViwnEdgeSynset edge : synset.getRelation(direction)){
+                if(synsetData.getById(edge.getChild()) == null){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public void showRelation(ViwnNodeSynset synsetNode, NodeDirection[] dirs) {
         SwingUtilities.invokeLater(() -> workbench.setBusy(true));
-
-        // TODO sprawdzić, czy poszczególne relacje są pobrane
         // jeżeli relacje nie były pobrane wczesniej, zostaną pobrane
         if (!checkNodeWasExtended(synsetNode, dirs)) {
-            synsetData.load(synsetNode.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds(), dirs);
+            if(!checkRelationIsDownloaded(synsetNode, dirs)){
+                synsetData.load(synsetNode.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds(), dirs);
+            }
             synsetNode.construct(dirs);
             synsetNode.setDownloadedRelation(dirs, true);
         }
 
-        // pokazanie relacji
         for (NodeDirection dir : dirs) {
             showRelationGUI(synsetNode, dir);
         }
@@ -835,7 +845,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             }
             return s;
         }
-
         ViwnNodeSynset new_synset = new ViwnNodeSynset(synset, this);
 
         cache.put(synset.getId(), new_synset);

@@ -150,35 +150,9 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
             }
 
             if (node.getRelation(rclass).size() > 0) {
-
                 boolean hide = false;
-
                 if (node.getState(rclass) == State.EXPANDED) {
-                    hide = true;
-                    Iterator<ViwnEdgeSynset> itr = node.getRelation(rclass).iterator();
-                    while (hide && itr.hasNext()) {
-                        ViwnEdgeSynset e = itr.next();
-                        if (layout.getGraph().containsEdge(e)) {
-                            if(node.getSynset().getId() == 10642){
-                                System.out.println();
-                            }
-                            if(node.getRelation(rclass).size() != 0){
-                                hide = false;
-                            }
-//                            Collection<ViwnNode> inc = layout.getGraph().getIncidentVertices(e);
-//                            for (ViwnNode s : inc) {
-//                                ViwnNodeSynset ss = (ViwnNodeSynset) s;
-//                                if (ss.getSpawner() == node) {
-//                                    hide = false;
-//                                    break;
-//                                }
-//                            }
-                        }
-                    }
-                }
-
-                if(node.getSynset().getId() == 10642 && node.getState(rclass) == State.EXPANDED){
-                    System.out.println("Rozwinięte " + hide);
+                    hide = node.getRelation(rclass).isEmpty();
                 }
                 if (!hide) {
                     Area area = new Area(node.getButtonArea(rclass));

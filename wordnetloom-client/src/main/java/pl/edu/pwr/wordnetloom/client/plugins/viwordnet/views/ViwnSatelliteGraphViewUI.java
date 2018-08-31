@@ -128,7 +128,6 @@ public class ViwnSatelliteGraphViewUI extends AbstractViewUI {
      * visualisation scale is >1, fixed by double scaling
      */
     public void refreshViewUI() {
-        // System.out.println("refresh satellite view UI");
         // remove old satellite panel
         rootPanel.removeAll();
         // to get dimension of parent

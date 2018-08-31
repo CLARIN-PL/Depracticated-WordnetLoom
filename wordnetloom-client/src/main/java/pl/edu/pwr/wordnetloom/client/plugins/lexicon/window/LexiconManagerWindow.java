@@ -215,7 +215,6 @@ public class LexiconManagerWindow extends MFrame {
             int answer = DialogBox.showYesNo("Czy usunąć ten leksykon?\n" +
                     "Liczba jednostek : " + senseCount + "\nLiczba synsetów : " + synsetCount);
             if(answer == DialogBox.YES){
-                System.out.println("Usunięcie leksykonu");
                 //TODO zrobić usuwanie leksykonu
                 throw new NotImplementedException();
             }
