@@ -9,7 +9,6 @@ import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.panel.WebPanel;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
@@ -26,11 +25,9 @@ import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
-import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
-import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,7 +59,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
         return ServiceManager.getViWordNetService(vgvui.getWorkbench());
     }
 
-    private void showPathToHyponim(ViwnNode vertex) {
+    private void showPathToHypernym(ViwnNode vertex) {
         // TODO rozwiązanie tymczasowe
         Synset synset = ((ViwnNodeSynset)vertex).getSynset();
         RelationType type;
@@ -78,9 +75,8 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
     private void showPathTo(ViwnNode node, RelationType relationType){
         Synset synset = ((ViwnNodeSynset)node).getSynset();
         List<DataEntry> dataEntries = RemoteService.synsetRelationRemote.findPath(synset, relationType, LexiconManager.getInstance().getUserChosenLexiconsIds());
-        final NodeDirection[] directions = new NodeDirection[]{relationType.getNodePosition()};
         dataEntries.forEach(dataEntry -> vgvui.addToEntrySet(dataEntry));
-        dataEntries.forEach(dataEntry -> vgvui.showRelation(dataEntry.getSynset(), directions));
+        dataEntries.forEach(dataEntry -> vgvui.showRelation(dataEntry.getSynset(), relationType));
     }
 
     @Override
@@ -123,9 +119,6 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             } else if (edge != null) {
                 // edge clicked
                 popup.add(new AbstractAction(Labels.FOLLOW_EGDE) {
-                    /**
-                     *
-                     */
                     private static final long serialVersionUID = 5625564155297832427L;
 
                     @Override
@@ -275,7 +268,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
             @Override
             public void actionPerformed(ActionEvent e) {
-               showPathToHyponim(vertex);
+               showPathToHypernym(vertex);
             }
         });
 

@@ -162,6 +162,13 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
         return map.entrySet().stream().skip(map.size()-1).findFirst().get().getKey();
     }
 
+    private List<SynsetRelation> findSynsetRelation(Long parentId, Long relationTypeId) {
+        return getEntityManager().createQuery("SELECT s FROM SynsetRelation s  LEFT JOIN FETCH s.parent WHERE (s.parent.id = :id_s) AND s.relationType.id = :id_r")
+                .setParameter("id_s", parentId)
+                .setParameter("id_r", relationTypeId)
+                .getResultList();
+    }
+
     private DirectedGraph<Long, SynsetRelation> getRelationDirectedGraph(Synset synset, Long rtype) {
         DirectedGraph<Long, SynsetRelation> g = new DirectedSparseGraph<>();
 
@@ -182,13 +189,6 @@ public class SynsetRelationRepository extends GenericRepository<SynsetRelation> 
             }
         }
         return g;
-    }
-
-    private List<SynsetRelation> findSynsetRelation(Long parentId, Long relationTypeId) {
-        return getEntityManager().createQuery("SELECT s FROM SynsetRelation s  LEFT JOIN FETCH s.parent WHERE (s.parent.id = :id_s) AND s.relationType.id = :id_r")
-                .setParameter("id_s", parentId)
-                .setParameter("id_r", relationTypeId)
-                .getResultList();
     }
 
     private List<SynsetRelation> getRelations(Synset synset, List<Long> lexicons, String joinColumn, String synsetIdColumn, NodeDirection[] directions) {

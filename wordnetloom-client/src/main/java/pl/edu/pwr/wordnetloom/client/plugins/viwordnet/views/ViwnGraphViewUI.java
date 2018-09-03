@@ -54,6 +54,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author boombel
@@ -285,7 +286,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
                         ViwnNodeSynset.State.EXPANDED);
             }
             if (dir != NodeDirection.IGNORE) {
-                showRelationGUI(rootNodeSynset, dir);
+                showRelationGUI(rootNodeSynset, dir, null);
             }
         }
         addMissingRelationInForest();
@@ -687,10 +688,38 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         });
     }
 
-    public void showRelation(Synset synset, NodeDirection[] dirs){
+    public void showRelation(Synset synset, RelationType relationType) {
         ViwnNodeSynset nodeSynset = new ViwnNodeSynset(synset, this);
         forest.addVertex(nodeSynset);
-        showRelation(nodeSynset, dirs);
+        NodeDirection[] directions  = new NodeDirection[]{relationType.getNodePosition()};
+         showRelation(nodeSynset, directions, relationType);
+
+    }
+
+    public void showRelation(ViwnNodeSynset synsetNode, NodeDirection[] directions, RelationType relationType){
+        SwingUtilities.invokeLater(() -> workbench.setBusy(true));
+        // jeżeli relacje nie były pobrane wczesniej, zostaną pobrane
+        if (!checkNodeWasExtended(synsetNode, directions)) {
+            if(!checkRelationIsDownloaded(synsetNode, directions)){
+                synsetData.load(synsetNode.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds(), directions);
+            }
+            synsetNode.construct(directions);
+            synsetNode.setDownloadedRelation(directions, true);
+        }
+
+        for (NodeDirection dir : directions) {
+            showRelationGUI(synsetNode, dir, relationType);
+        }
+        addMissingRelationInForest();
+        checkAllStates();
+
+        SwingUtilities.invokeLater(() -> {
+            recreateLayoutWithFix(synsetNode, synsetNode);
+            recreateLayout();
+            vv.repaint();
+            workbench.setBusy(false);
+            vv.setVisible(true);
+        });
     }
 
     private boolean checkRelationIsDownloaded(ViwnNodeSynset synset, NodeDirection[] directions) {
@@ -705,29 +734,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
     }
 
     public void showRelation(ViwnNodeSynset synsetNode, NodeDirection[] dirs) {
-        SwingUtilities.invokeLater(() -> workbench.setBusy(true));
-        // jeżeli relacje nie były pobrane wczesniej, zostaną pobrane
-        if (!checkNodeWasExtended(synsetNode, dirs)) {
-            if(!checkRelationIsDownloaded(synsetNode, dirs)){
-                synsetData.load(synsetNode.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds(), dirs);
-            }
-            synsetNode.construct(dirs);
-            synsetNode.setDownloadedRelation(dirs, true);
-        }
-
-        for (NodeDirection dir : dirs) {
-            showRelationGUI(synsetNode, dir);
-        }
-        addMissingRelationInForest();
-        checkAllStates();
-
-        SwingUtilities.invokeLater(() -> {
-            recreateLayoutWithFix(synsetNode, synsetNode);
-            recreateLayout();
-            vv.repaint();
-            workbench.setBusy(false);
-            vv.setVisible(true);
-        });
+        showRelation(synsetNode, dirs, null);
     }
 
     private boolean checkNodeWasExtended(ViwnNodeSynset node, NodeDirection[] directions) {
@@ -747,26 +754,16 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * @param synsetNode node which relations will be shown
      * @param direction  relation class which will be shown
      */
-    private void showRelationGUI(ViwnNodeSynset synsetNode, NodeDirection direction) {
+    private void showRelationGUI(ViwnNodeSynset synsetNode, NodeDirection direction, RelationType relationType) {
         List<ViwnEdgeSynset> relations = (List<ViwnEdgeSynset>) synsetNode.getRelation(direction);
+        if(relationType != null){
+            relations = relations.stream().filter(e->e.getRelationType().getId().equals(relationType.getId())).collect(Collectors.toList());
+        }
         int toShow = Math.min(MAX_SYNSETS_SHOWN, relations.size()); // number synset to show on the graph
         int insertedNodes = insertVisibleSynsetNodes(relations, synsetNode, direction, toShow);
         if (insertedNodes < relations.size()) {
             insertInvisibleSynsetNodes(relations, synsetNode, direction, insertedNodes);
         }
-    }
-
-    // TODO napisać nową metodę i trochę to ogarnąć
-    public void showRelation(ViwnNodeSynset synsetNode, RelationType relationType){
-        forest.addVertex(synsetNode); // TODO może wrzucić to do innej metody
-        List<ViwnEdgeSynset> relations = (List<ViwnEdgeSynset>)synsetNode.getRelations(relationType);
-        int toShow = Math.min(MAX_SYNSETS_SHOWN, relations.size()); // number synset to show on the graph
-        int insertedNodes = insertVisibleSynsetNodes(relations, synsetNode, relationType.getNodePosition(), toShow);
-        if (insertedNodes < relations.size()) {
-            insertInvisibleSynsetNodes(relations, synsetNode, relationType.getNodePosition(), insertedNodes);
-        }
-        addMissingRelationInForest();
-        checkAllStates();
     }
 
     private int insertVisibleSynsetNodes(List<ViwnEdgeSynset> relations, ViwnNodeSynset nodeSynset, NodeDirection direction, int maxShowedNodes) {
