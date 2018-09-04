@@ -29,6 +29,8 @@ public class GraphTabbedPane extends CloseableTabbedPane {
     public class TabInfo {
         private CriteriaDTO senseCriteriaDTO;
         private CriteriaDTO synsetCriteriaDTO;
+        private LazyScrollList senseList;
+        private LazyScrollList synsetList;
         // TODO dodać listy
 
         public CriteriaDTO getSenseCriteriaDTO() {
@@ -45,6 +47,22 @@ public class GraphTabbedPane extends CloseableTabbedPane {
 
         public void setSynsetCriteriaDTO(CriteriaDTO criteriaDTO){
             this.synsetCriteriaDTO = criteriaDTO;
+        }
+
+        public LazyScrollList getSenseList() {
+            return senseList;
+        }
+
+        public void setSenseList(LazyScrollList list){
+            this.senseList = list;
+        }
+
+        public LazyScrollList getSynsetList(){
+            return synsetList;
+        }
+
+        public void setSynsetList(LazyScrollList list){
+            this.synsetList = list;
         }
     }
 }

@@ -1,5 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.SetCriteriaEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateCriteriaEvent;
 import pl.edu.pwr.wordnetloom.client.systems.managers.DictionaryManager;
 import pl.edu.pwr.wordnetloom.client.systems.renderers.LocalisedRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
@@ -22,8 +24,21 @@ public final class SenseCriteria extends CriteriaPanel {
     // TODO chyba powinno się tutaj dodać wariant
 
     public SenseCriteria() {
+        super();
         init();
         initializeFormPanel();
+    }
+
+    @Override
+    public void setCriteria(SetCriteriaEvent event){
+        if(event.getTabInfo().getSenseCriteriaDTO()!=null){
+            restoreCriteriaDTO(event.getTabInfo().getSenseCriteriaDTO());
+        }
+    }
+
+    @Override
+    public void updateCriteria(UpdateCriteriaEvent event){
+        event.getTabInfo().setSenseCriteriaDTO(getCriteria());
     }
 
     private void init() {
@@ -41,16 +56,6 @@ public final class SenseCriteria extends CriteriaPanel {
             resultComboBox.addItem(register);
         }
         return resultComboBox;
-    }
-
-    public SenseCriteriaDTO getSenseCriteriaDTO() {
-        // TODO to może będzie trzeba zrobić troszkę inaczej, getCriteriaDTO, powinna tylko ustawiać wartości, bez tworzenia nowego
-        SenseCriteriaDTO dto = new SenseCriteriaDTO(getCriteriaDTO());
-        // TODO ustawić wariant
-        dto.setExample(example.getText());
-        dto.setRegister((Register) registerComboBox.getSelectedItem());
-
-        return dto;
     }
 
     @Override
@@ -93,8 +98,13 @@ public final class SenseCriteria extends CriteriaPanel {
 
     @Override
     public CriteriaDTO getCriteria() {
-        criteria = getSenseCriteriaDTO();
-        return criteria;
+        SenseCriteriaDTO dto = new SenseCriteriaDTO(getCriteriaDTO());
+        // TODO ustawić wariant
+        dto.setExample(example.getText());
+        dto.setRegister((Register) registerComboBox.getSelectedItem());
+
+        criteria = dto;
+        return dto;
     }
 
     public void setSensesToHold(List<Sense> sense) {

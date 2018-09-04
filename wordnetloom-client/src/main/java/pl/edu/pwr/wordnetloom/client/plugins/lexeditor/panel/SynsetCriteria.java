@@ -1,6 +1,8 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
 import com.alee.laf.radiobutton.WebRadioButton;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.SetCriteriaEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateCriteriaEvent;
 import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
@@ -34,8 +36,21 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
     private CriteriaDTO crit;
 
     public SynsetCriteria() {
+        super();
         init();
         initializeFormPanel();
+    }
+
+    @Override
+    public void setCriteria(SetCriteriaEvent event){
+        if(event.getTabInfo().getSynsetCriteriaDTO()!=null){
+            restoreCriteriaDTO(event.getTabInfo().getSynsetCriteriaDTO());
+        }
+    }
+
+    @Override
+    public void updateCriteria(UpdateCriteriaEvent event){
+        event.getTabInfo().setSynsetCriteriaDTO(getCriteria());
     }
 
     private void init() {

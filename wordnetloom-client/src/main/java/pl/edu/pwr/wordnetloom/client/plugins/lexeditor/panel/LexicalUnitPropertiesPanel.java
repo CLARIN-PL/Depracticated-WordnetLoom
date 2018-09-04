@@ -22,6 +22,8 @@ import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -104,6 +106,22 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         commentScroll.setPreferredSize(new Dimension(AREA_WIDTH, AREA_HEIGHT));
         examplesList = createExamplesList();
         linkTextField = new JTextField();
+        linkTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                enableGoToLinkButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                enableGoToLinkButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                enableGoToLinkButton();
+            }
+        });
 
         addExampleButton = MButton.buildAddButton()
                 .withActionListener(e->addExample());
@@ -113,6 +131,11 @@ public class LexicalUnitPropertiesPanel extends JPanel {
                 .withActionListener(e->editExample());
         goToLinkButton = new MButton().withIcon(FontAwesome.INTERNET_EXPLORER)
                 .withActionListener(e->goToLink());
+    }
+
+    private void enableGoToLinkButton(){
+        // TODO can add link validation
+        goToLinkButton.setEnabled(!linkTextField.getText().isEmpty());
     }
 
     private void insertComponents() {
@@ -265,7 +288,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         }
         linkTextField.setText(senseAttributes.getLink());
         setEnableEditing(unit);
-
+        enableGoToLinkButton();
     }
 
     private void setEnableEditing(Sense unit){

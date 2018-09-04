@@ -223,7 +223,6 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
     private void initChangeListener() {
         // TODO dokończyć
-        System.out.println("Init change listener");
         changeListener = new ChangeListener();
         changeListener.addComponents(definitionValue, commentValue, statusComboBox,
                 examplesList, abstractValue);

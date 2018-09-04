@@ -12,6 +12,8 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.SynsetsFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.models.Criteria;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.SetCriteriaEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateCriteriaEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -140,7 +142,26 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         permissionToEdit = PermissionHelper.checkPermissionToEditAndSetComponents(
                 newUnitButton, newUnitWithSynsetButton, deleteButton, addToSynsetButton
         );
+
+        Application.eventBus.register(this);
     }
+
+//    @Subscribe
+//    public void setSenseList(SetCriteriaEvent event){
+//        System.out.println("Set sense list");
+//        if(event.getTabInfo().getSenseList() != null){
+//            unitsListScrollPane = event.getTabInfo().getSenseList();
+//            unitsListScrollPane.updateUI();
+//        }
+//    }
+//
+//    @Subscribe
+//    public void getSenseList(UpdateCriteriaEvent event){
+//        System.out.println("Get sense list");
+//        LazyScrollList list = unitsListScrollPane.copy();
+//        event.getTabInfo().setSenseList(list);
+//    }
+
 
     private ToolTipList createUnitsList() {
         ToolTipList unitsList = new ToolTipList(workbench, listModel, new SenseTooltipGenerator());
@@ -201,7 +222,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     public void loadUnits() {
         clearUnitsList();
 
-        SenseCriteriaDTO dto = criteria.getSenseCriteriaDTO();
+        SenseCriteriaDTO dto = (SenseCriteriaDTO) criteria.getCriteria();
         List<Sense> units = getSenses(dto, LIMIT, 0);
         allUnitsCount = RemoteService.senseRemote.getCountUnitsByCriteria(dto);
         setInfoText(units.size(), allUnitsCount);
@@ -262,7 +283,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                     clearUnitsList();
                 }
 
-                SenseCriteriaDTO dto = criteria.getSenseCriteriaDTO();
+                SenseCriteriaDTO dto = (SenseCriteriaDTO) criteria.getCriteria();
                 dto.setLimit(limit);
                 dto.setOffset(offset);
 

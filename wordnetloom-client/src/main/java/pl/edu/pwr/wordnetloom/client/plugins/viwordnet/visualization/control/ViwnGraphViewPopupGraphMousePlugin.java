@@ -9,6 +9,7 @@ import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.panel.WebPanel;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
@@ -123,10 +124,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        ViwnNode vn = graph.getDest(edge);
-                        vgvui.setSelectedNode(vn);
-                        vgvui.center();
-                        vv.repaint();
+                        actionFollowEdge(graph, edge, vv);
                     }
                 });
 
@@ -134,10 +132,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                     AbstractAction removeRelationAction = new AbstractAction(Labels.REMOVE_RELATION) {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            Pair<ViwnNode> c = vgvui.getGraph().getEndpoints(edge);
-                            HashSet<ViwnEdge> rel = new HashSet<>(vgvui.getGraph().findEdgeSet(c.getFirst(), c.getSecond()));
-                            rel.addAll(vgvui.getGraph().findEdgeSet(c.getSecond(), c.getFirst()));
-                            getViWordNetService().removeRelation(rel);
+                            actionRemoveRelation(edge);
                         }
                     };
                     popup.add(removeRelationAction);
@@ -168,7 +163,20 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
                 }
             }
         }
+    }
 
+    private void actionFollowEdge(Graph<ViwnNode, ViwnEdge> graph, ViwnEdge edge, VisualizationViewer<ViwnNode, ViwnEdge> vv) {
+        ViwnNode vn = graph.getDest(edge);
+        vgvui.setSelectedNode(vn);
+        vgvui.center();
+        vv.repaint();
+    }
+
+    private void actionRemoveRelation(ViwnEdge edge) {
+        Pair<ViwnNode> c = vgvui.getGraph().getEndpoints(edge);
+        HashSet<ViwnEdge> rel = new HashSet<>(vgvui.getGraph().findEdgeSet(c.getFirst(), c.getSecond()));
+        rel.addAll(vgvui.getGraph().findEdgeSet(c.getSecond(), c.getFirst()));
+        getViWordNetService().removeRelation(rel);
     }
 
     private void handleNodeWordPopup(ViWordNetService s, ViwnNode vertex) {
@@ -334,11 +342,14 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
         JComponent[] components = { createRelationItem};
 
         Synset synset = ((ViwnNodeSynset) vertex).getSynset();
+        checkPermissionToEdit(createRelationAction, mergeAction, components, synset);
+    }
+
+    private void checkPermissionToEdit(AbstractAction createRelationAction, AbstractAction mergeAction, JComponent[] components, Synset synset) {
         // merge action is disabled for anonymous user and for only-read lexicons
         PermissionHelper.checkPermissionToEditAndSetComponents(synset, mergeAction);
-        // TODO zobaczyć opis
-        // create relation action is allowed, but when user try connected two synsets from this same read-only lexicon
-        // he get a error message. Only administrator can create these relations
+        // creating relation action is allowed, but when user try connected two synsets from this same read-only lexicon
+        // he get a error message. Only administrator can create such relations
         PermissionHelper.checkPermissionToEditAndSetComponents(createRelationAction);
         PermissionHelper.checkPermissionToEditAndSetComponents(synset, components);
     }
@@ -370,17 +381,17 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             public void actionPerformed(ActionEvent e) {
                 ViWordNetService s = getViWordNetService();
                 Synset synset = vertex.getSynset();
-                // pobranie obiektu DataEntry ze starego grafu, z którego zostanie zbudowany węzeł synsetu
+                // get DataEntry from old graph, from which the synset node will be built
                 DataEntry synsetDataEntry = getViWordNetService().getSynsetData().getById(synset.getId());
-                //utworzenie nowego widoku. W tym momencie aktywnym grafem staje się ten nowo utworzony
+                // creating new view. Newly created graph become active graph
                 s.addGraphView();
-                // utworzenie nowego węzła synsetu, który zostanie przekazany do nowo utowrzonowego grafu
+                // createing new synset node, which will be passed to active graph
                 ViwnNodeSynset newSynset = new ViwnNodeSynset(synset, s.getActiveGraphView().getUI());
-                // przekazanie obiektu DataEntry do nowego grafu
+                // passes DataEntry to new graph
                 s.getActiveGraphView().getUI().addToEntrySet(synsetDataEntry);
-                // wstawienie węzła synsetu do grafu
-                s.getActiveGraphView().getUI().addSynsetNode(newSynset); //TODO można przekazać tylko synset, reszta i tak dzieje się w środku metody
-                // aktualizowanie nazwy zakładki
+                // set synset node to graph
+                s.getActiveGraphView().getUI().addSynsetNode(newSynset);
+                // update name of tab
                 ViWordNetPerspective perspective = (ViWordNetPerspective) vgvui.getWorkbench().getActivePerspective();
                 perspective.setTabTitle(s.getActiveGraphView().getUI().getRootNode().getLabel());
             }

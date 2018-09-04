@@ -11,7 +11,6 @@ import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
-import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
@@ -27,6 +26,8 @@ import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.*;
@@ -55,6 +56,31 @@ public abstract class CriteriaPanel extends WebPanel {
 
     private List<DictionaryCheckComboStore> emotionsItems = new ArrayList<>();
     private List<DictionaryCheckComboStore> valuationsItems = new ArrayList<>();
+
+    public void resize(int panelWidth){
+        int width = panelWidth - 30;
+
+        Dimension textFieldSize = getSize(searchTextField, width);
+        Dimension comboBoxSize = getSize(lexiconComboBox, width);
+        Dimension textAreaSize = getSize(commentArea, width);
+
+        Dimension currentDimension;
+        for(Component component : getComponents()){
+            if(component instanceof JTextField){
+                currentDimension = textFieldSize;
+            } else if (component instanceof  JTextArea){
+                currentDimension = textAreaSize;
+            } else {
+                currentDimension = comboBoxSize;
+            }
+            component.setPreferredSize(currentDimension);
+            comboBoxSize.setSize(currentDimension);
+        }
+    }
+
+    private Dimension getSize(Component component, int width){
+        return new Dimension(width, component.getHeight());
+    }
 
     private class DictionaryCheckComboStore implements pl.edu.pwr.wordnetloom.client.systems.ui.ComboCheckBox.CheckComboStore{
 
@@ -89,6 +115,15 @@ public abstract class CriteriaPanel extends WebPanel {
     public CriteriaPanel() {
         initialize();
         Application.eventBus.register(this);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                int width = getWidth();
+                resize(width);
+            }
+        });
     }
 
     @Subscribe
@@ -96,30 +131,11 @@ public abstract class CriteriaPanel extends WebPanel {
         lexiconComboBox.refreshLexicons();
     }
 
-
+    @Subscribe
+    public abstract void setCriteria(SetCriteriaEvent event);
 
     @Subscribe
-    public void setCriteria(SetCriteriaEvent event){
-        // TODO to powinno być raczej w SenseCriteria i SynsetCriteria
-        if(event.getTabInfo().getSenseCriteriaDTO() != null){
-            if(this instanceof SenseCriteria){
-                restoreCriteria(event.getTabInfo().getSenseCriteriaDTO());
-            } else {
-                restoreCriteria(event.getTabInfo().getSynsetCriteriaDTO());
-            }
-        }
-    }
-
-    @Subscribe
-    public void updateCriteria(UpdateCriteriaEvent event){
-        CriteriaDTO dto = getCriteria();
-        if(this instanceof SenseCriteria){
-            event.getTabInfo().setSenseCriteriaDTO(dto);
-        } else {
-            event.getTabInfo().setSynsetCriteriaDTO(dto);
-        }
-        // TODO przenieść to do innych klas
-    }
+    public abstract void updateCriteria(UpdateCriteriaEvent event);
 
     private void initialize() {
         setLayout(new RiverLayout());
@@ -155,7 +171,7 @@ public abstract class CriteriaPanel extends WebPanel {
 
     private LexiconComboBox createLexiconComboBox() {
         LexiconComboBox resultComboBox = new LexiconComboBox(Labels.VALUE_ALL);
-        resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
+//        resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
         resultComboBox.addActionListener((ActionEvent e) -> {
             Lexicon lex = resultComboBox.getEntity();
             if (lex != null) {
@@ -165,7 +181,6 @@ public abstract class CriteriaPanel extends WebPanel {
             }
             refreshRelationTypes();
         });
-
         return resultComboBox;
     }
 
@@ -184,7 +199,7 @@ public abstract class CriteriaPanel extends WebPanel {
 
     private LocalisedComboBox createPartOfSpeechComboBox() {
         LocalisedComboBox resultComboBox = new LocalisedComboBox(Labels.VALUE_ALL);
-        resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
+//        resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
         resultComboBox.addItemListener((ItemEvent e) -> {
             PartOfSpeech pos = (PartOfSpeech) resultComboBox.getSelectedItem();
             Lexicon lex = lexiconComboBox.getEntity();
@@ -204,7 +219,7 @@ public abstract class CriteriaPanel extends WebPanel {
     private DomainMComboBox createDomainComboBox() {
         DomainMComboBox resultComboBox = new DomainMComboBox(Labels.VALUE_ALL);
         resultComboBox.allDomains(true);
-        resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
+//        resultComboBox.setPreferredSize(DEFAULT_DIMENSION_COMBO);
         return resultComboBox;
     }
 
@@ -329,5 +344,4 @@ public abstract class CriteriaPanel extends WebPanel {
     public JComboBox getPartsOfSpeechComboBox() {
         return partsOfSpeechComboBox;
     }
-
 }

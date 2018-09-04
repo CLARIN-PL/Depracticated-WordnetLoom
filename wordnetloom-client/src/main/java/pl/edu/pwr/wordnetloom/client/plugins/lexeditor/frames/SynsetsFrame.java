@@ -8,7 +8,6 @@ import pl.edu.pwr.wordnetloom.client.systems.renderers.SynsetListCellRenderer;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SynsetTooltipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LazyScrollList;
 import pl.edu.pwr.wordnetloom.client.systems.ui.LazyScrollPane;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
@@ -39,6 +38,7 @@ public class SynsetsFrame extends DialogWindow implements ActionListener, Loggab
     private final MButton cancelButton;
     private Synset selectedSynset;
 
+    LazyScrollPane<Synset> synsetsScrollPane;
 
     public SynsetsFrame(Workbench workbench, WebFrame webFrame, Sense sense) {
         super(webFrame, "Wybieranie synsetu", 600, 500); //TODO dorobić etykietę
@@ -61,7 +61,7 @@ public class SynsetsFrame extends DialogWindow implements ActionListener, Loggab
         synsetsList = new ToolTipList(workbench, listModel, new SynsetTooltipGenerator());
         synsetsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        LazyScrollPane synsetsScrollPane = new LazyScrollPane(synsetsList, listModel, 15);
+        synsetsScrollPane = new LazyScrollPane(synsetsList, listModel, 15);
 //        synsetsList.setCellRenderer(new SynsetListCellRenderer(synsetsScrollPane));
 
         addToNewSynsetButton = MButton.buildOkButton()

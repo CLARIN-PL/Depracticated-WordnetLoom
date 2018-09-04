@@ -35,6 +35,14 @@ public class LazyScrollList<T> extends WebScrollPane {
         setAdjustmentListener(list);
     }
 
+    public DefaultListModel getModel() {
+        return model;
+    }
+
+    public WebList getList(){
+        return list;
+    }
+
     private void initViewport(WebList list) {
         WebPanel panel = new WebPanel(new BorderLayout());
         panel.add(list, BorderLayout.NORTH);
