@@ -29,7 +29,7 @@ public class SenseFormat {
 
     public static String getTextWithLexicon(Sense sense) {
         if(sense.getLexicon() == null){
-            return "";
+            return " "; // when return space, list item has normal height
         }
         String lexicon = sense.getLexicon().getIdentifier();
         return getText(sense) + " " + lexicon;

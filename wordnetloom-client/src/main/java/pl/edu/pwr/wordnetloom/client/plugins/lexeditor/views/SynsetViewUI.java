@@ -52,6 +52,16 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         }
     }
 
+    private void setCountInfoText(int numAllObjects) {
+        String infoText;
+        if(numAllObjects > 0){
+            infoText = String.format(Labels.VALUE_COUNT_SIMPLE, numAllObjects);
+        } else {
+            infoText = "";
+        }
+        infoLabel.setText(infoText);
+    }
+
     @Override
     protected void initialize(WebPanel content) {
         initializeComponents();
@@ -195,7 +205,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         @Override
         protected void done(){
             synsetList.updateUI();
-            setInfoLabelText(synsetListModel.getSize(), allMatchedSynsetCount);
+            setCountInfoText(allMatchedSynsetCount);
             workbench.setBusy(false);
         }
     }

@@ -12,7 +12,7 @@ import java.util.List;
 public class LazyScrollList<T> extends WebScrollPane {
 
     private final int LIST_ITEM_HEIGHT = 20;
-    private final int TIME_TO_LOAD = 2000;
+    private final int TIME_TO_LOAD = 1000;
     private WebList list;
     private DefaultListModel model;
     private int limit;
@@ -146,14 +146,15 @@ public class LazyScrollList<T> extends WebScrollPane {
 
     public void setCollection(java.util.List<T> collection, int allElementsCount) {
         listSize = allElementsCount;
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             loadedItems = new boolean[allElementsCount];
             for (int i = 0; i < collection.size(); i++) {
                 model.addElement(collection.get(i));
                 setLoaded(i);
             }
             addEmptyItems(collection, allElementsCount);
-        });
+//        });
+        list.updateUI();
     }
 
     private void addEmptyItems(List<T> collection, int allElementsCount) {
@@ -200,13 +201,6 @@ public class LazyScrollList<T> extends WebScrollPane {
     }
 
     public interface ScrollListener<T> {
-        /**
-         * Metoda wykonywana w momencie przesunięcia listy do samego końca.
-         * W metodzie powiny być pobierane kolejne elementy i dodawane do komponentu
-         *
-         * @param offset obecne przesunięcie
-         * @param limit  ilość elementów która ma zostać pobrana
-         */
         java.util.List<T> load(int offset, int limit);
     }
 

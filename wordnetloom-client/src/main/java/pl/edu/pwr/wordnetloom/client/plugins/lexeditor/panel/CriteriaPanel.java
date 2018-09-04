@@ -37,20 +37,20 @@ import java.awt.event.ItemEvent;
 public abstract class CriteriaPanel extends WebPanel {
 
     private static final long serialVersionUID = 4649824763750406980L;
-    public static final String STANDARD_VALUE_FILTER = "";
+    static final String STANDARD_VALUE_FILTER = "";
     private final int DEFAULT_WIDTH = 150;
     private final int DEFAULT_HEIGHT = 20;
     protected final Dimension DEFAULT_DIMENSION_COMBO = new Dimension(DEFAULT_WIDTH, 25);
 
-    protected WebTextField searchTextField;
-    protected LexiconComboBox lexiconComboBox;
-    protected DomainMComboBox domainComboBox;
-    protected JTextComponent commentArea;
-    protected JComboBox partsOfSpeechComboBox;
-    protected LocalisedComboBox relationTypeComboBox;
-    protected ComboCheckBox emotionsComboBox;
-    protected ComboCheckBox valuationsComboBox;
-    protected JComboBox<Markedness> markednessComboBox;
+    private WebTextField searchTextField;
+    private LexiconComboBox lexiconComboBox;
+    private DomainMComboBox domainComboBox;
+    private JTextComponent commentArea;
+    private JComboBox partsOfSpeechComboBox;
+    private LocalisedComboBox relationTypeComboBox;
+    private ComboCheckBox emotionsComboBox;
+    private ComboCheckBox valuationsComboBox;
+    private JComboBox<Markedness> markednessComboBox;
 
     private RelationArgument relationTypeArgument;
 
@@ -304,20 +304,6 @@ public abstract class CriteriaPanel extends WebPanel {
     protected void addComment() {
         add("br", new MLabel(Labels.COMMENT_COLON, 'm', commentArea));
         add("br hfill", commentArea);
-    }
-
-    public void refreshPartOfSpeech() {
-        int selected = partsOfSpeechComboBox.getSelectedIndex();
-        if (selected != -1) {
-            partsOfSpeechComboBox.setSelectedIndex(selected);
-        }
-    }
-
-    public void refreshDomain() {
-        int selected = domainComboBox.getSelectedIndex();
-        if (selected != -1) {
-            domainComboBox.setSelectedIndex(selected);
-        }
     }
 
     public void resetFields() {

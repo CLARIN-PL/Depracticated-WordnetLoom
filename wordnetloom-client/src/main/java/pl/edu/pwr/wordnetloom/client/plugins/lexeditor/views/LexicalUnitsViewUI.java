@@ -143,7 +143,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                 newUnitButton, newUnitWithSynsetButton, deleteButton, addToSynsetButton
         );
 
-        Application.eventBus.register(this);
+//        Application.eventBus.register(this);
     }
 
 //    @Subscribe
@@ -225,7 +225,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         SenseCriteriaDTO dto = (SenseCriteriaDTO) criteria.getCriteria();
         List<Sense> units = getSenses(dto, LIMIT, 0);
         allUnitsCount = RemoteService.senseRemote.getCountUnitsByCriteria(dto);
-        setInfoText(units.size(), allUnitsCount);
+        setCountInfoText(allUnitsCount);
         unitsListScrollPane.setCollection(units, allUnitsCount);
     }
 
@@ -238,6 +238,17 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     private void clearUnitsList() {
         unitsListScrollPane.reset();
         listModel.clear();
+    }
+
+    public void setCountInfoText(int allUnitsCount){
+        String labelText;
+        if(allUnitsCount != 0){
+            labelText = String.format(Labels.VALUE_COUNT_SIMPLE, allUnitsCount);
+//            labelText = Labels.VALUE_COUNT_SIMPLE + allUnitsCount;
+        } else {
+            labelText = "";
+        }
+        infoLabel.setText(labelText);
     }
 
     public void setInfoText(int loadedUnits, int allUnitsCount) {
@@ -316,7 +327,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
                         }
                         workbench.setBusy(false);
                     }
-                    setInfoText(0, 0); //TODO to może będzie można wyrzucić
+//                    setInfoText(0, 0);
                 });
             }
         };
@@ -367,7 +378,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
             listModel.remove(i);
             RemoteService.senseRemote.delete(unit);
             allUnitsCount--;
-            setInfoText(listModel.getSize(), allUnitsCount); // TODO zlikwidować napis z liczbą załadowanych jednostek
+//            setInfoText(listModel.getSize(), allUnitsCount); // TODO zlikwidować napis z liczbą załadowanych jednostek
         }
     }
 
