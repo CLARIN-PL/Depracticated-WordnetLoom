@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.dictionary.service.impl;
 
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 import pl.edu.pwr.wordnetloom.dictionary.repository.DictionaryRepository;
 import pl.edu.pwr.wordnetloom.dictionary.service.DictionaryServiceLocal;
 import pl.edu.pwr.wordnetloom.dictionary.service.DictionaryServiceRemote;
@@ -64,7 +65,7 @@ public class DictionaryServiceBean implements  DictionaryServiceLocal{
                     &&name.contains("get")
                     && !name.equals("getId")
                     && !name.equals("getClass")){
-                Long id = (Long) method.invoke(dictionary,null);
+                Long id = (Long) method.invoke(dictionary);
                 resultIds.add(id);
             }
         }
@@ -89,5 +90,10 @@ public class DictionaryServiceBean implements  DictionaryServiceLocal{
     @Override
     public List<Dictionary> findAll() {
         return dictionaryRepository.findAll("id");
+    }
+
+    @Override
+    public Status findStatusDefaultValue() {
+        return dictionaryRepository.findStatusDefaultValue();
     }
 }

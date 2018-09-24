@@ -1,14 +1,9 @@
 package pl.edu.pwr.wordnetloom.client.utils;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import javax.lang.model.type.UnknownTypeException;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.util.ArrayList;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ChangeListener {
@@ -92,7 +87,7 @@ public class ChangeListener {
     }
 
     public boolean isChanged(){
-        if(hasChange == true){
+        if(hasChange){
             return true;
         }
         for(Map.Entry<JComponent, Object> entry : componentsValues.entrySet()){

@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.sense.service.impl;
 import org.hibernate.Hibernate;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
+import pl.edu.pwr.wordnetloom.dictionary.repository.DictionaryRepository;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
@@ -52,6 +53,9 @@ public class SenseServiceBean implements SenseServiceLocal {
     @Inject
     WordServiceLocal wordServiceLocal;
 
+    @Inject
+    DictionaryRepository dictionaryRepository;
+
     @Override
     public Sense clone(Sense unit) {
         return senseRepository.clone(unit);
@@ -82,6 +86,7 @@ public class SenseServiceBean implements SenseServiceLocal {
             return senseRepository.update(sense);
         }
         sense.setVariant(senseRepository.findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech()));
+        sense.setStatus(dictionaryRepository.findStatusDefaultValue());
         return senseRepository.save(sense);
     }
 

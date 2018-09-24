@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.dictionary.service;
 
 import java.util.List;
 import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
+import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 
 public interface DictionaryServiceRemote {
 
@@ -16,4 +17,6 @@ public interface DictionaryServiceRemote {
     List<String> findAllDictionaryNames();
 
     List<Dictionary> findAll();
+
+    Status findStatusDefaultValue();
 }

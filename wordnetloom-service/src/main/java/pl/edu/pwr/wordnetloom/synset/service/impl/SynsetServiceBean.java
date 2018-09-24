@@ -5,6 +5,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
+import pl.edu.pwr.wordnetloom.dictionary.repository.DictionaryRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
@@ -59,6 +60,9 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @Inject
     UserServiceLocal userService;
+
+    @Inject
+    DictionaryRepository dictionaryRepository;
 
     @Inject
     Principal principal;
@@ -116,6 +120,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
         ValidationUtils.validateEntityFields(validator, synset);
         if (synset.getId() == null) {
             Synset newSynset = synsetRepository.persist(synset);
+            newSynset.setStatus(dictionaryRepository.findStatusDefaultValue());
             saveAttributes(newSynset);
         }
         return synsetRepository.update(synset);
