@@ -18,7 +18,6 @@ import pl.edu.pwr.wordnetloom.sense.service.SenseServiceRemote;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 import pl.edu.pwr.wordnetloom.word.service.WordServiceLocal;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.PermitAll;
@@ -27,7 +26,6 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.OneToMany;
 import javax.validation.Validator;
 import java.util.List;
 
@@ -284,5 +282,11 @@ public class SenseServiceBean implements SenseServiceLocal {
     @Override
     public EmotionalAnnotation save(EmotionalAnnotation emotionalAnnotation){
         return emotionalAnnotationRepository.save(emotionalAnnotation);
+    }
+
+    @PermitAll
+    @Override
+    public List<String> findUniqueExampleTypes(){
+        return senseAttributesRepository.findUniqueExampleTypes();
     }
 }

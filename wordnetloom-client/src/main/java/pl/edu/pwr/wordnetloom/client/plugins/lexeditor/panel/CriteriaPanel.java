@@ -45,6 +45,7 @@ public abstract class CriteriaPanel extends WebPanel {
     private WebTextField searchTextField;
     private LexiconComboBox lexiconComboBox;
     private DomainMComboBox domainComboBox;
+    private JComboBox statusComboBox;
     private JTextComponent commentArea;
     private JComboBox partsOfSpeechComboBox;
     private LocalisedComboBox relationTypeComboBox;
@@ -56,27 +57,6 @@ public abstract class CriteriaPanel extends WebPanel {
 
     private List<DictionaryCheckComboStore> emotionsItems = new ArrayList<>();
     private List<DictionaryCheckComboStore> valuationsItems = new ArrayList<>();
-
-    public void resize(int panelWidth){
-        int width = panelWidth - 30;
-
-        Dimension textFieldSize = getSize(searchTextField, width);
-        Dimension comboBoxSize = getSize(lexiconComboBox, width);
-        Dimension textAreaSize = getSize(commentArea, width);
-
-        Dimension currentDimension;
-        for(Component component : getComponents()){
-            if(component instanceof JTextField){
-                currentDimension = textFieldSize;
-            } else if (component instanceof  JTextArea){
-                currentDimension = textAreaSize;
-            } else {
-                currentDimension = comboBoxSize;
-            }
-            component.setPreferredSize(currentDimension);
-            comboBoxSize.setSize(currentDimension);
-        }
-    }
 
     private Dimension getSize(Component component, int width){
         return new Dimension(width, component.getHeight());
@@ -120,8 +100,6 @@ public abstract class CriteriaPanel extends WebPanel {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
-                int width = getWidth();
-                resize(width);
             }
         });
     }
@@ -144,6 +122,7 @@ public abstract class CriteriaPanel extends WebPanel {
         partsOfSpeechComboBox = createPartOfSpeechComboBox();
         searchTextField = new MTextField(STANDARD_VALUE_FILTER);
         domainComboBox = createDomainComboBox();
+        statusComboBox = new LocalisedComboBox(Labels.VALUE_ALL);
         commentArea = new MTextField(STANDARD_VALUE_FILTER);
 
         relationTypeComboBox = new LocalisedComboBox(Labels.VALUE_ALL);
@@ -304,6 +283,11 @@ public abstract class CriteriaPanel extends WebPanel {
     protected void addComment() {
         add("br", new MLabel(Labels.COMMENT_COLON, 'm', commentArea));
         add("br hfill", commentArea);
+    }
+
+    protected void addStatus() {
+        add("br", new MLabel(Labels.STATUS_COLON, 's', statusComboBox));
+        add("br hfill", statusComboBox);
     }
 
     public void resetFields() {

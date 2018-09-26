@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.sense.model;
 
 import org.hibernate.envers.Audited;
+import pl.edu.pwr.wordnetloom.common.model.Example;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 
 import javax.persistence.*;
@@ -8,7 +9,7 @@ import javax.persistence.*;
 @Audited
 @Entity
 @Table(name = "sense_examples")
-public class SenseExample extends GenericEntity {
+public class SenseExample extends GenericEntity implements Example{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sense_attribute_id")

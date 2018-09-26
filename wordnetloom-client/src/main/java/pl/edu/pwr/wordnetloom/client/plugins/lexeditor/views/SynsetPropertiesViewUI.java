@@ -137,12 +137,12 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         btnNewExample = MButton.buildAddButton();
 
         btnNewExample.addActionListener((ActionEvent e) -> {
-            String example = ExampleFrame.showModal(null, Labels.NEW_EXAMPLE, "", false);
+            String example = ExampleFrame.showModal(null, Labels.NEW_EXAMPLE, null, false);
             if (example != null && !"".equals(example)) {
                 SynsetExample exp = new SynsetExample();
                 exp.setExample(example);
                 examplesModel.addElement(exp);
-                saveChanges();
+//                saveChanges();
                 examplesList.updateUI();
             }
         });
@@ -158,7 +158,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             if (idx >= 0) {
                 String modified = ExampleFrame.showModal(null,
                         Labels.EDIT_EXAMPLE,
-                        example.getExample(), true);
+                        example, true);
                 String old = example.getExample();
                 if (modified != null && !old.equals(modified)) {
                     example.setExample(modified);

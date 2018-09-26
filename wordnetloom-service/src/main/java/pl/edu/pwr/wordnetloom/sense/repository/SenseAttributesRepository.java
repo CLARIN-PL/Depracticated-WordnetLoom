@@ -50,4 +50,9 @@ public class SenseAttributesRepository extends GenericRepository<SenseAttributes
         }
     }
 
+    public List<String> findUniqueExampleTypes() {
+        return getEntityManager().createQuery(
+                "SELECT DISTINCT s.type FROM SenseExample s"
+        ).getResultList();
+    }
 }

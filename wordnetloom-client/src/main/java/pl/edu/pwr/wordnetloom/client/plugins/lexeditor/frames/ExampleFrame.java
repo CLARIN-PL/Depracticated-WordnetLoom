@@ -4,6 +4,8 @@ import com.alee.laf.rootpane.WebFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.ExamplePanel;
 import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.common.model.Example;
+import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,9 +17,13 @@ public class ExampleFrame extends DialogWindow implements ActionListener {
     private String example;
     private String toReturn;
 
-    public ExampleFrame(WebFrame baseFrame, String title, String example) {
+    public ExampleFrame(WebFrame baseFrame, String title, Example example) {
         super(baseFrame, title, 450, 200);
-        this.example = example;
+        if (example != null){
+            this.example = example.getExample();
+        } else {
+            this.example = "";
+        }
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(baseFrame);
@@ -28,8 +34,11 @@ public class ExampleFrame extends DialogWindow implements ActionListener {
         pack();
     }
 
-    public void setExample(String example) {
-        panel.getExampleTextArea().setText(example);
+    public void setExample(Example example) {
+        if (example != null){
+            panel.getExampleTextArea().setText(example.getExample());
+            panel.getTypeComboBox().setSelectedItem(example.getType());
+        }
     }
 
     public String getExample() {
@@ -53,7 +62,7 @@ public class ExampleFrame extends DialogWindow implements ActionListener {
         }
     }
 
-    static public String showModal(WebFrame frame, String title, String example, boolean editable) {
+    static public String showModal(WebFrame frame, String title, Example example, boolean editable) {
         ExampleFrame modalFrame = new ExampleFrame(frame, title, example);
         if (editable) {
             modalFrame.changeBtnName();
