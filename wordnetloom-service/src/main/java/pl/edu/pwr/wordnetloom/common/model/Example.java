@@ -5,4 +5,6 @@ public interface Example {
     String getType();
     void setExample(String example);
     void setType(String type);
+
+    Example copy();
 }

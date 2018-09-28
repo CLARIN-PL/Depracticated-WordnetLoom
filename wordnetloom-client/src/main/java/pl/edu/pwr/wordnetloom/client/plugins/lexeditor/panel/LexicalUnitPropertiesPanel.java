@@ -182,14 +182,16 @@ public class LexicalUnitPropertiesPanel extends JPanel {
     }
 
     private void addExample() {
-        String example = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, null, false);
-        if(example != null && !example.isEmpty()) {
-            SenseExample senseExample = new SenseExample();
-            senseExample.setExample(example);
-            senseExample.setType("W");
-            examplesModel.addElement(senseExample);
-            examplesList.updateUI();
-        }
+        Example example = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, new SenseExample(), false);
+        examplesModel.addElement(example);
+        examplesList.updateUI();
+//        if(example != null && !example.isEmpty()) {
+//            SenseExample senseExample = new SenseExample();
+//            senseExample.setExample(example);
+//            senseExample.setType("W");
+//            examplesModel.addElement(senseExample);
+//            examplesList.updateUI();
+//        }
     }
 
     private void removeExample() {
@@ -202,13 +204,21 @@ public class LexicalUnitPropertiesPanel extends JPanel {
     private void editExample() {
         Example example = (Example) examplesList.getSelectedValue();
         if (example != null) {
-            String value = ExampleFrame.showModal(frame, Labels.EDIT_EXAMPLE, example, true);
-            String old = example.getExample();
-            if(value != null && !value.equals(old)) {
-                example.setExample(value);
-                examplesList.updateUI();
-            }
+            Example value = ExampleFrame.showModal(frame, Labels.EDIT_EXAMPLE, example, true);
+            // TODO sprawdzić, czy to będzie działać
+            updateExample(example, value);
+            examplesList.updateUI();
+//            String old = example.getExample();
+//            if(value != null && !value.equals(old)) {
+//                example.setExample(value);
+//                examplesList.updateUI();
+//            }
         }
+    }
+
+    private void updateExample(Example oldExample, Example newExample){
+        oldExample.setExample(newExample.getExample());
+        oldExample.setType(newExample.getType());
     }
 
     private void goToLink() {

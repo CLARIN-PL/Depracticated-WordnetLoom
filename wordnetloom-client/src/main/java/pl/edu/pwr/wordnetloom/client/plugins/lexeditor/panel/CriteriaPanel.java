@@ -13,10 +13,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
-import pl.edu.pwr.wordnetloom.dictionary.model.Dictionary;
-import pl.edu.pwr.wordnetloom.dictionary.model.Emotion;
-import pl.edu.pwr.wordnetloom.dictionary.model.Markedness;
-import pl.edu.pwr.wordnetloom.dictionary.model.Valuation;
+import pl.edu.pwr.wordnetloom.dictionary.model.*;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
@@ -122,7 +119,7 @@ public abstract class CriteriaPanel extends WebPanel {
         partsOfSpeechComboBox = createPartOfSpeechComboBox();
         searchTextField = new MTextField(STANDARD_VALUE_FILTER);
         domainComboBox = createDomainComboBox();
-        statusComboBox = new LocalisedComboBox(Labels.VALUE_ALL);
+        statusComboBox = createStatusComboBox();
         commentArea = new MTextField(STANDARD_VALUE_FILTER);
 
         relationTypeComboBox = new LocalisedComboBox(Labels.VALUE_ALL);
@@ -130,6 +127,11 @@ public abstract class CriteriaPanel extends WebPanel {
         emotionsComboBox = createDictionariesComboBox(Emotion.class, emotionsItems);
         valuationsComboBox = createDictionariesComboBox(Valuation.class, valuationsItems);
         markednessComboBox = createMarkednessComboBox();
+    }
+
+    private JComboBox createStatusComboBox() {
+        return new LocalisedComboBox(Labels.VALUE_ALL)
+                .withItems(RemoteService.dictionaryServiceRemote.findDictionaryByClass(Status.class));
     }
 
     private ComboCheckBox createDictionariesComboBox(Class clazz, List<DictionaryCheckComboStore> list){
@@ -223,6 +225,7 @@ public abstract class CriteriaPanel extends WebPanel {
         dto.setEmotions(emotionsComboBox.getSelectedItemsIds());
         dto.setValuations(valuationsComboBox.getSelectedItemsIds());
         dto.setMarkedness((Markedness) markednessComboBox.getSelectedItem());
+        dto.setStatus((Status)statusComboBox.getSelectedItem());
 
         return dto;
     }
@@ -234,6 +237,7 @@ public abstract class CriteriaPanel extends WebPanel {
         lexiconComboBox.setSelectedLexicon(criteriaDTO.getLexicons());
         domainComboBox.setSelectedDomain(criteriaDTO.getDomain());
         partsOfSpeechComboBox.setSelectedItem(criteriaDTO.getPartOfSpeech());
+        statusComboBox.setSelectedItem(criteriaDTO.getStatus());
         commentArea.setText(criteriaDTO.getComment());
         relationTypeComboBox.setSelectedItem(criteriaDTO.getRelationType());
         emotionsComboBox.setSelectedIds(criteriaDTO.getEmotions());
@@ -295,6 +299,7 @@ public abstract class CriteriaPanel extends WebPanel {
         domainComboBox.setSelectedIndex(0);
         partsOfSpeechComboBox.setSelectedIndex(0);
         commentArea.setText("");
+        statusComboBox.setSelectedIndex(-1);
         relationTypeComboBox.setSelectedIndex(0);
         lexiconComboBox.setSelectedIndex(0);
     }
@@ -313,5 +318,9 @@ public abstract class CriteriaPanel extends WebPanel {
 
     public JComboBox getPartsOfSpeechComboBox() {
         return partsOfSpeechComboBox;
+    }
+
+    public JComboBox getStatusComboBox() {
+        return statusComboBox;
     }
 }

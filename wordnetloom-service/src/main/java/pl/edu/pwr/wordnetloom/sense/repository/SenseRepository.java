@@ -57,6 +57,7 @@ public class SenseRepository extends GenericRepository<Sense> {
     private final String LEXICON = "lexicon";
     private final String PART_OF_SPEECH = "partOfSpeech";
     private final String VARIANT = "variant";
+    private final String STATUS = "status";
     private final String INCOMING_RELATIONS = "incomingRelations";
     private final String OUTGOING_RELATIONS = "outgoingRelations";
     private final String RELATION_TYPE = "relationType";
@@ -113,6 +114,11 @@ public class SenseRepository extends GenericRepository<Sense> {
         if (dto.getLemma() != null && !dto.getLemma().isEmpty()) {
             Predicate lemmaPredicate = criteriaBuilder.like(senseRoot.get(WORD).get(WORD), dto.getLemma() + "%");
             predicateList.add(lemmaPredicate);
+        }
+
+        if(dto.getStatus() != null){
+            Predicate statusPredicate = criteriaBuilder.equal(senseRoot.get(STATUS), dto.getStatusId());
+            predicateList.add(statusPredicate);
         }
 
         Predicate lexiconPredicate = senseRoot.get(LEXICON).in(dto.getLexicons());

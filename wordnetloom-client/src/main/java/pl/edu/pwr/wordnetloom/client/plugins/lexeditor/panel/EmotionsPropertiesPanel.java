@@ -269,11 +269,7 @@ public class EmotionsPropertiesPanel extends JPanel {
 
     public void load(Sense sense) {
         this.sense = sense;
-        if (sense != null) {
-            listPanel.loadAnnotations(sense);
-        } else {
-            listPanel.loadAnnotations(null);
-        }
+        listPanel.loadAnnotations(sense);
     }
 
     private JPanel createEmotionsPanel(List<Emotion> emotions, int width) {

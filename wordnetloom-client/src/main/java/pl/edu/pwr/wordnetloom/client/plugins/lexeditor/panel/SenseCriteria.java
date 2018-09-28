@@ -64,6 +64,7 @@ public final class SenseCriteria extends CriteriaPanel {
         addLexicon();
         addPartsOfSpeach();
         addDomain();
+        addStatus();
         addRelationType(RelationArgument.SENSE_RELATION);
         addRegister();
         addComment();

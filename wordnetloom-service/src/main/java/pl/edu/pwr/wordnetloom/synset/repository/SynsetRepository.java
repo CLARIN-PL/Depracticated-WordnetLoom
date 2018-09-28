@@ -41,6 +41,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
     private final String WORD = "word";
     private final String DOMAIN = "domain";
     private final String LEXICON = "lexicon";
+    private final String STATUS = "status";
     private final String PART_OF_SPEECH = "partOfSpeech";
     private final String RELATION_TYPE = "relationType";
     private final String SYNSET_ATTRIBUTE = "synsetAttributes";
@@ -359,7 +360,9 @@ public class SynsetRepository extends GenericRepository<Synset> {
     public List<Synset> findSynsetsByCriteria(SynsetCriteriaDTO criteria){
 
         List<Synset> result;
+        // when criteria have id, searching only by id
         if(criteria.getSynsetId() != null){
+            // TODO do przetestowania
             result = findSynsetsByIds(new Long[]{criteria.getSynsetId()});
         } else {
             CriteriaQuery<Synset> query = getSynsetCriteriaQuery(criteria, false);
@@ -390,6 +393,9 @@ public class SynsetRepository extends GenericRepository<Synset> {
     }
 
     public int getCountSynsetsByCriteria(SynsetCriteriaDTO criteria) {
+        if (criteria.getSynsetId() != null){
+            return 1;
+        }
         CriteriaQuery<Long> query = getSynsetCriteriaQuery(criteria, true);
         return Math.toIntExact(getEntityManager().createQuery(query).getSingleResult());
     }
@@ -407,6 +413,11 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
         Root<Synset> synsetRoot = query.from(Synset.class);
         List<Predicate> criteriaList = new ArrayList<>();
+
+        if(criteria.getStatus() != null){
+            Predicate statusPredicate = criteriaBuilder.equal(synsetRoot.get(STATUS), criteria.getStatusId());
+            criteriaList.add(statusPredicate);
+        }
 
         if(criteria.getLemma()!=null || criteria.getLexiconId() != null || criteria.getPartOfSpeechId() != null || criteria.getDomainId() != null){
             Join<Synset, Sense> senseJoin = synsetRoot.join(SENSES, JoinType.LEFT);

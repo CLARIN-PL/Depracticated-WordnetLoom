@@ -5,7 +5,10 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextArea;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import pl.edu.pwr.wordnetloom.client.systems.managers.SenseExampleManager;
+import pl.edu.pwr.wordnetloom.client.systems.ui.autocompleteField.AutocompleteTextField;
+import pl.edu.pwr.wordnetloom.client.systems.ui.autocompleteField.StringSuggestionFilter;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.common.model.Example;
 import se.datadosen.component.RiverLayout;
 
 import javax.swing.*;
@@ -66,12 +69,17 @@ public class ExamplePanel extends WebPanel {
         JComboBox typeComboBox = new JComboBox();
         Set<String> exampleTypes = SenseExampleManager.getInstance().getTypes();
         for(String type : exampleTypes){
-            typeComboBox.addItem(type);
+            typeComboBox.insertItemAt(type, 0);
         }
         AutoCompleteDecorator.decorate(typeComboBox);
         return typeComboBox;
     }
 
+    public void setExample(Example example) {
+        exampleTextArea.setText(example.getExample());
+        typeComboBox.setSelectedItem(example.getType());
+
+    }
 
     public JTextArea getExampleTextArea() {
         return exampleTextArea;
