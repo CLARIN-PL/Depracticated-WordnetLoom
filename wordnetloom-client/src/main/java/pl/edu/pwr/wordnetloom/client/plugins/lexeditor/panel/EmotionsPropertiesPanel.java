@@ -15,8 +15,8 @@ import pl.edu.pwr.wordnetloom.dictionary.model.Markedness;
 import pl.edu.pwr.wordnetloom.dictionary.model.Valuation;
 import pl.edu.pwr.wordnetloom.sense.model.EmotionalAnnotation;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.UnitEmotion;
-import pl.edu.pwr.wordnetloom.sense.model.UnitValuation;
+import pl.edu.pwr.wordnetloom.sense.model.SenseEmotion;
+import pl.edu.pwr.wordnetloom.sense.model.SenseValuation;
 import pl.edu.pwr.wordnetloom.user.model.User;
 import se.datadosen.component.RiverLayout;
 
@@ -130,23 +130,23 @@ public class EmotionsPropertiesPanel extends JPanel {
         annotation.setExample2(example2.getText());
     }
 
-    private Set<UnitValuation> getAnnotationValuations(EmotionalAnnotation annotation) {
-        Set<UnitValuation> valuations = new LinkedHashSet<>();
+    private Set<SenseValuation> getAnnotationValuations(EmotionalAnnotation annotation) {
+        Set<SenseValuation> valuations = new LinkedHashSet<>();
         valuatesMap.forEach((k, v) -> {
             if (v.isSelected()) {
-                UnitValuation unitValuation = new UnitValuation(annotation, k);
-                valuations.add(unitValuation);
+                SenseValuation senseValuation = new SenseValuation(annotation, k);
+                valuations.add(senseValuation);
             }
         });
         return valuations;
     }
 
-    private Set<UnitEmotion> getAnnotationEmotions(EmotionalAnnotation annotation) {
-        Set<UnitEmotion> emotions = new LinkedHashSet<>();
+    private Set<SenseEmotion> getAnnotationEmotions(EmotionalAnnotation annotation) {
+        Set<SenseEmotion> emotions = new LinkedHashSet<>();
         emotionsMap.forEach((k, v) -> {
             if (v.isSelected()) {
-                UnitEmotion unitEmotion = new UnitEmotion(annotation, k);
-                emotions.add(unitEmotion);
+                SenseEmotion senseEmotion = new SenseEmotion(annotation, k);
+                emotions.add(senseEmotion);
             }
         });
         return emotions;
@@ -372,14 +372,14 @@ public class EmotionsPropertiesPanel extends JPanel {
     private void setEmotions(EmotionalAnnotation annotation) {
         // clear emotions checkBoxes
         emotionsMap.forEach((k, emotionsCheckBox) -> emotionsCheckBox.setSelected(false));
-        for (UnitEmotion emotion : annotation.getEmotions()) {
+        for (SenseEmotion emotion : annotation.getEmotions()) {
             emotionsMap.get(emotion.getEmotion()).setSelected(true);
         }
     }
 
     private void setValuations(EmotionalAnnotation annotation) {
         valuatesMap.forEach((k, valuationCheckBox) -> valuationCheckBox.setSelected(false));
-        for (UnitValuation valuation : annotation.getValuations()) {
+        for (SenseValuation valuation : annotation.getValuations()) {
             valuatesMap.get(valuation.getValuation()).setSelected(true);
         }
     }
