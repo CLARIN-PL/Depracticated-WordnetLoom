@@ -12,7 +12,9 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
 import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
+import pl.edu.pwr.wordnetloom.common.model.Example;
 import pl.edu.pwr.wordnetloom.dictionary.model.Register;
+import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -43,6 +45,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
     private JComboBox partOfSpeechComboBox;
     private JComboBox domainComboBox;
     private JComboBox registerComboBox;
+    private JComboBox statusComboBox;
     private JTextArea definitionArea;
     private JScrollPane definitionScroll;
     private JTextArea commentArea;
@@ -84,6 +87,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         validationManager.registerError(lexiconComboBox, "To pole nie może być puste", ()->lexiconComboBox.getSelectedItem() == null);
         validationManager.registerError(partOfSpeechComboBox, "Wybierz część mowy", ()->partOfSpeechComboBox.getSelectedItem() == null);
         validationManager.registerError(domainComboBox, "Wybierz domenę", ()->domainComboBox.getSelectedItem() == null);
+        validationManager.registerError(statusComboBox, "Wybierz status", ()->statusComboBox.getSelectedItem() == null);
 
         return validationManager;
     }
@@ -98,6 +102,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         partOfSpeechComboBox = createPartOfSpeechComboBox();
         domainComboBox = createDomainComboBox();
         registerComboBox = createRegisterComboBox();
+        statusComboBox = createStatusComboBox();
         definitionArea = new JTextArea();
         definitionScroll = new JScrollPane(definitionArea);
         definitionScroll.setPreferredSize(new Dimension(AREA_WIDTH, AREA_HEIGHT));
@@ -148,6 +153,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         componentsMap.put(Labels.PARTS_OF_SPEECH_COLON, partOfSpeechComboBox);
         componentsMap.put(Labels.DOMAIN_COLON, domainComboBox);
         componentsMap.put(Labels.REGISTER_COLON, registerComboBox);
+        componentsMap.put(Labels.STATUS_COLON, statusComboBox);
         componentsMap.put(Labels.DEFINITION_COLON, definitionScroll);
         componentsMap.put(Labels.COMMENT_COLON, commentScroll);
         componentsMap.put(Labels.EXAMPLES, createExamplesPanel());
@@ -176,14 +182,16 @@ public class LexicalUnitPropertiesPanel extends JPanel {
     }
 
     private void addExample() {
-        String example = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
-        if(example != null && !example.isEmpty()) {
-            SenseExample senseExample = new SenseExample();
-            senseExample.setExample(example);
-            senseExample.setType("W");
-            examplesModel.addElement(senseExample);
-            examplesList.updateUI();
-        }
+        Example example = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, new SenseExample(), false);
+        examplesModel.addElement(example);
+        examplesList.updateUI();
+//        if(example != null && !example.isEmpty()) {
+//            SenseExample senseExample = new SenseExample();
+//            senseExample.setExample(example);
+//            senseExample.setType("W");
+//            examplesModel.addElement(senseExample);
+//            examplesList.updateUI();
+//        }
     }
 
     private void removeExample() {
@@ -194,15 +202,23 @@ public class LexicalUnitPropertiesPanel extends JPanel {
     }
 
     private void editExample() {
-        SenseExample example = (SenseExample) examplesList.getSelectedValue();
+        Example example = (Example) examplesList.getSelectedValue();
         if (example != null) {
-            String value = ExampleFrame.showModal(frame, Labels.EDIT_EXAMPLE, example.getExample(), true);
-            String old = example.getExample();
-            if(value != null && !value.equals(old)) {
-                example.setExample(value);
-                examplesList.updateUI();
-            }
+            Example value = ExampleFrame.showModal(frame, Labels.EDIT_EXAMPLE, example, true);
+            // TODO sprawdzić, czy to będzie działać
+            updateExample(example, value);
+            examplesList.updateUI();
+//            String old = example.getExample();
+//            if(value != null && !value.equals(old)) {
+//                example.setExample(value);
+//                examplesList.updateUI();
+//            }
         }
+    }
+
+    private void updateExample(Example oldExample, Example newExample){
+        oldExample.setExample(newExample.getExample());
+        oldExample.setType(newExample.getType());
     }
 
     private void goToLink() {
@@ -237,6 +253,11 @@ public class LexicalUnitPropertiesPanel extends JPanel {
     private JComboBox createRegisterComboBox() {
         List<Register> registerList = (List<Register>) RemoteService.dictionaryServiceRemote.findDictionaryByClass(Register.class);
         return createComboBox(registerList.iterator(), new LocalisedRenderer());
+    }
+
+    private JComboBox createStatusComboBox() {
+        List<Status> statusList = (List<Status>) RemoteService.dictionaryServiceRemote.findDictionaryByClass(Status.class);
+        return createComboBox(statusList.iterator(), new LocalisedRenderer());
     }
 
     private JComboBox createComboBox(Iterator iterator, ListCellRenderer renderer) {
@@ -281,6 +302,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         partOfSpeechComboBox.setSelectedItem(unit.getPartOfSpeech());
         domainComboBox.setSelectedItem(unit.getDomain());
         registerComboBox.setSelectedItem(senseAttributes.getRegister());
+        statusComboBox.setSelectedItem(unit.getStatus());
         definitionArea.setText(senseAttributes.getDefinition());
         commentScroll.setToolTipText(senseAttributes.getComment());
         for(SenseExample example : senseAttributes.getExamples()) {
@@ -316,13 +338,23 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         sense.setPartOfSpeech((PartOfSpeech)partOfSpeechComboBox.getSelectedItem());
         sense.setDomain((Domain)domainComboBox.getSelectedItem());
         attributes.setRegister((Register)registerComboBox.getSelectedItem());
+        sense.setStatus((Status)statusComboBox.getSelectedItem());
 
         String definition = !definitionArea.getText().isEmpty() ? definitionArea.getText() : null;
         String comment = !commentArea.getText().isEmpty() ? commentArea.getText() : null;
         String link = !linkTextField.getText().isEmpty() ? linkTextField.getText() : null;
+
+        Set<SenseExample> examples = new HashSet<>();
+        for(int i=0; i<examplesModel.getSize(); i++) {
+            SenseExample example = (SenseExample)examplesModel.getElementAt(i);
+            example.setSenseAttributes(senseAttributes);
+            examples.add(example);
+        }
+
         attributes.setDefinition(definition);
         attributes.setComment(comment);
         attributes.setLink(link);
+        attributes.setExamples(examples);
 
         attributes.setSense(sense);
         return attributes;

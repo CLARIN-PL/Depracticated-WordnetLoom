@@ -179,7 +179,6 @@ public class SynsetServiceBean implements SynsetServiceLocal {
             saved = save(synset);
             saveOwner(saved);
         }
-
         Sense fetchedSense = senseService.fetchSense(sense.getId());
         List<Sense> sensesInSynset = senseService.findBySynset(synset.getId());
         sensesInSynset.stream()

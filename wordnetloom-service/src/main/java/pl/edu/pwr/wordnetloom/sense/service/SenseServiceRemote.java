@@ -73,4 +73,6 @@ public interface SenseServiceRemote {
     List<EmotionalAnnotation> getEmotionalAnnotations(Long senseID);
 
     EmotionalAnnotation save(EmotionalAnnotation annotation);
+
+    List<String> findUniqueExampleTypes();
 }

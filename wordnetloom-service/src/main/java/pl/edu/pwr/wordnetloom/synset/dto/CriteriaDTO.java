@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.synset.dto;
 
 import EDU.oswego.cs.dl.util.concurrent.FJTask;
 import pl.edu.pwr.wordnetloom.dictionary.model.Markedness;
+import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -25,6 +26,7 @@ public class CriteriaDTO implements Serializable{
     private List<Long> emotions;
     private List<Long> valuations;
     private Markedness markedness;
+    private Status status;
     private int limit;
     private int offset;
 
@@ -44,6 +46,8 @@ public class CriteriaDTO implements Serializable{
         setMarkedness(criteria.getMarkedness());
         setLimit(criteria.getLimit());
         setOffset(criteria.getOffset());
+        setStatus(criteria.getStatus());
+
     }
 
     public String getLemma() {
@@ -172,5 +176,20 @@ public class CriteriaDTO implements Serializable{
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public Long getStatusId(){
+        if (status != null){
+            return status.getId();
+        }
+        return null;
+    }
+
+    public void setStatus(Status status){
+        this.status = status;
     }
 }

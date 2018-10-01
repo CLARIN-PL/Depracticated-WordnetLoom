@@ -26,7 +26,7 @@ public class WordRepository extends GenericRepository<Word> {
 
     public Word findByWord(String word) {
         try{
-            return em.createQuery("SELECT w FROM Word w WHERE w.word = :word", Word.class)
+            return em.createQuery("SELECT w FROM Word w WHERE CONVERT(w.word, BINARY) = :word", Word.class)
                     .setParameter("word", word)
                     .getSingleResult();
         } catch (NoResultException e){
@@ -40,5 +40,4 @@ public class WordRepository extends GenericRepository<Word> {
                 .setParameter("word", word)
                 .getSingleResult();
     }
-
 }

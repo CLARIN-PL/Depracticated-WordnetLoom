@@ -21,6 +21,7 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MTextArea;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MTextField;
 import pl.edu.pwr.wordnetloom.client.utils.*;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
+import pl.edu.pwr.wordnetloom.common.model.Example;
 import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
@@ -33,6 +34,7 @@ import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -136,46 +138,17 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         btnNewExample = MButton.buildAddButton();
 
-        btnNewExample.addActionListener((ActionEvent e) -> {
-            String example = ExampleFrame.showModal(null, Labels.NEW_EXAMPLE, "", false);
-            if (example != null && !"".equals(example)) {
-                SynsetExample exp = new SynsetExample();
-                exp.setExample(example);
-                examplesModel.addElement(exp);
-                saveChanges();
-                examplesList.updateUI();
-            }
-        });
+        btnNewExample.addActionListener((ActionEvent e) -> addExample());
 
         JLabel lblExample = new JLabel(Labels.USE_CASE_COLON);
         lblExample.setVerticalAlignment(SwingConstants.TOP);
         lblExample.setHorizontalAlignment(SwingConstants.RIGHT);
 
         btnEditExample = MButton.buildEditButton();
-        btnEditExample.addActionListener((ActionEvent e) -> {
-            int idx = examplesList.getSelectedIndex();
-            SynsetExample example = (SynsetExample) examplesModel.get(idx);
-            if (idx >= 0) {
-                String modified = ExampleFrame.showModal(null,
-                        Labels.EDIT_EXAMPLE,
-                        example.getExample(), true);
-                String old = example.getExample();
-                if (modified != null && !old.equals(modified)) {
-                    example.setExample(modified);
-                    examplesList.updateUI();
-                    saveChanges();
-                }
-            }
-        });
+        btnEditExample.addActionListener((ActionEvent e) -> editExample());
 
         btnRemoveExample = MButton.buildDeleteButton();
-        btnRemoveExample.addActionListener((ActionEvent e) -> {
-            int idx = examplesList.getSelectedIndex();
-            if (idx >= 0) {
-                examplesModel.remove(idx);
-                saveChanges();
-            }
-        });
+        btnRemoveExample.addActionListener((ActionEvent e) -> removeExample());
 
         WebPanel buttonsPanel = new WebPanel();
         buttonsPanel.setLayout(new RiverLayout(0, 0));
@@ -210,6 +183,51 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         abstractValue.setEnabled(false);
 
         initChangeListener();
+    }
+
+    private void removeExample() {
+        int idx = examplesList.getSelectedIndex();
+        if (idx >= 0) {
+            examplesModel.remove(idx);
+            saveChanges();
+        }
+    }
+
+    private void editExample() {
+        int idx = examplesList.getSelectedIndex();
+        Example example = (SynsetExample) examplesModel.get(idx);
+        if (idx >= 0) {
+            Example newExample = ExampleFrame.showModal(null, Labels.EDIT_EXAMPLE, example, true);
+            updateExample(example, newExample);
+            examplesList.updateUI();
+//            String modified = ExampleFrame.showModal(null,
+//                    Labels.EDIT_EXAMPLE,
+//                    example, true);
+//            String old = example.getExample();
+//            if (modified != null && !old.equals(modified)) {
+//                example.setExample(modified);
+//                examplesList.updateUI();
+//                saveChanges();
+//            }
+        }
+    }
+
+    private void updateExample(Example oldExample, Example newExample){
+        oldExample.setExample(newExample.getExample());
+        oldExample.setType(newExample.getType());
+    }
+
+    private void addExample() {
+        Example example = ExampleFrame.showModal(null, Labels.NEW_EXAMPLE, new SynsetExample(), false);
+        examplesModel.addElement(example);
+        examplesList.updateUI();
+//        if (example != null && !"".equals(example)) {
+//            SynsetExample exp = new SynsetExample();
+//            exp.setExample(example);
+//            examplesModel.addElement(exp);
+////                saveChanges();
+//            examplesList.updateUI();
+//        }
     }
 
     void setEnableEditing(){
@@ -336,8 +354,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         String comment = commentValue.getText().isEmpty() ? commentValue.getText() : null;
         boolean isAbstract = abstractValue.isSelected();
 
-        Set<SynsetExample> examples = new HashSet<>();
-
+//        Set<SynsetExample> examples = new HashSet<>();
+        List<SynsetExample> examples = new ArrayList<>();
         if (!examplesModel.isEmpty()) {
             for (int i = 0; i < examplesModel.size(); i++) {
                 examples.add((SynsetExample) examplesModel.getElementAt(i));
@@ -365,7 +383,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
         graphUI.refreshView(lastSynset);
     }
 
-    public boolean updateSynset(Synset synset, String definition, String comment, boolean isAbstract, Set<SynsetExample> examples) {
+    public boolean updateSynset(Synset synset, String definition, String comment, boolean isAbstract, List<SynsetExample> examples) {
         boolean result = true;
         if (synset != null) {
 

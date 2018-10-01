@@ -5,7 +5,9 @@ import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Audited
@@ -33,7 +35,8 @@ public class SynsetAttributes implements Serializable, Cloneable{
     private String errorComment;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "synsetAttributes", orphanRemoval = true)
-    private Set<SynsetExample> examples;
+//    private Set<SynsetExample> examples;
+    private List<SynsetExample> examples;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
@@ -59,6 +62,7 @@ public class SynsetAttributes implements Serializable, Cloneable{
         this.definition = definition;
         this.comment = comment;
         this.owner = owner;
+        this.examples = new ArrayList<>();
     }
 
     public SynsetAttributes(String definition, String comment, User owner, String princetonId) {
@@ -66,6 +70,7 @@ public class SynsetAttributes implements Serializable, Cloneable{
         this.comment = comment;
         this.owner = owner;
         this.princetonId = princetonId;
+        this.examples = new ArrayList<>();
     }
 
     public String getDefinition() {
@@ -109,18 +114,27 @@ public class SynsetAttributes implements Serializable, Cloneable{
     }
 
     public void addExample(SynsetExample example){
-        if(examples == null){
-            examples = new HashSet<>();
-        }
+//        if(examples == null){
+//            examples = new HashSet<>();
+//        }
         examples.add(example);
     }
-    public Set<SynsetExample> getExamples() {
+
+    public List<SynsetExample> getExamples() {
         return examples;
     }
 
-    public void setExamples(Set<SynsetExample> examples) {
+    public void setExamples(List<SynsetExample> examples){
         this.examples = examples;
     }
+
+//    public Set<SynsetExample> getExamples() {
+//        return examples;
+//    }
+//
+//    public void setExamples(Set<SynsetExample> examples) {
+//        this.examples = examples;
+//    }
 
     public String getErrorComment() {
         return errorComment;

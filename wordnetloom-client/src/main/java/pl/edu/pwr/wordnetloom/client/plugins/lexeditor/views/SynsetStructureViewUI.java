@@ -575,11 +575,8 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 String status = LocalisationManager.getInstance().getLocalisedString(synset.getStatus().getName());
                 statusText.setText(status);
             }
-            // odczytanie punktu podzialu
             newSplitPoint = synset.getSplit();
-            // odczytanie jednostek
             units = RemoteService.senseRemote.findBySynset(synset, LexiconManager.getInstance().getLexiconsIds());
-//            addUnitsToList(synset);
             SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
 
             commentValue.setText(sa.getComment() != null ? sa.getComment() : "");
@@ -595,7 +592,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             synsetOwner.setText(sa.getOwner() != null ? sa.getOwner().getFullname() : "");
         }
 
-        // odczytanie zaznaczonej jednostki
+        // get selected unit
         Collection<Sense> selectedUnits = lastUnits;
         if (selectedUnits == null && unitsList != null
                 && !unitsList.isSelectionEmpty()) {

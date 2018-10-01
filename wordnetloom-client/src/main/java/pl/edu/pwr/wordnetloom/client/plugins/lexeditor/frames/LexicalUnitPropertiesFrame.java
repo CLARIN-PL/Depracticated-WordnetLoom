@@ -25,7 +25,7 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
 
     public LexicalUnitPropertiesFrame(WebFrame baseFrame, String title, int x, int y, int width, int height) {
         super(baseFrame, title, x, y, width, height);
-        initComponents(baseFrame);
+        initComponents(baseFrame, width, height);
         createView();
     }
 
@@ -61,9 +61,9 @@ public class LexicalUnitPropertiesFrame extends DialogWindow{
         setVisible(false);
     }
 
-    private void initComponents(WebFrame frame) {
-        final int WIDTH = 560;
-        final int HEIGHT = 520;
+    private void initComponents(WebFrame frame, int width, int height) {
+        final int WIDTH = width - 30;
+        final int HEIGHT = height - 50;
         tabbedPane = new JTabbedPane();
 
         lexicalUnitPropertiesPanel = new LexicalUnitPropertiesPanel(frame,WIDTH, HEIGHT);

@@ -91,6 +91,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         addLexicon();
         addPartsOfSpeach();
         addDomain();
+        addStatus();
         addRelationType(RelationArgument.SYNSET_RELATION);
         addDefinition();
         addComment();
@@ -158,6 +159,9 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
 
     public SynsetCriteriaDTO getSynsetCriteria() {
         SynsetCriteriaDTO dto = new SynsetCriteriaDTO(getCriteriaDTO());
+        if (!id.getText().isEmpty()){
+            dto.setSynsetId(Long.parseLong(id.getText()));
+        }
         dto.setDefinition(definition.getText());
         dto.setAbstract(artificial.isSelected());
 
@@ -169,6 +173,7 @@ public final class SynsetCriteria extends CriteriaPanel implements ActionListene
         assert criteria instanceof SynsetCriteriaDTO;
         SynsetCriteriaDTO dto = (SynsetCriteriaDTO) criteria;
         restoreCriteriaDTO(dto);
+        id.setText(String.valueOf(dto.getSynsetId()));
         definition.setText(dto.getDefinition());
         artificial.setSelected(dto.isAbstract());
         notArtificial.setSelected(!dto.isAbstract());
