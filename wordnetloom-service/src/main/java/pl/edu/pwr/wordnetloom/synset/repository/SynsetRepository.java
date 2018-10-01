@@ -100,10 +100,9 @@ public class SynsetRepository extends GenericRepository<Synset> {
         if (synsetIds == null || synsetIds.length == 0) {
             return null;
         }
-        return getEntityManager().createQuery("SELECT s FROM Synset s WHERE s.id IN ( :synsetsID )", Synset.class)
+        return getEntityManager().createQuery("SELECT DISTINCT s FROM Synset s WHERE s.id IN ( :synsetsID )", Synset.class)
                 .setParameter("synsetsID", Arrays.asList(synsetIds))
                 .getResultList();
-
     }
 
 
