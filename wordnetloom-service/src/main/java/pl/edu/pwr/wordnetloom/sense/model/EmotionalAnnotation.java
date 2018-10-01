@@ -4,15 +4,12 @@ import org.hibernate.annotations.*;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.dictionary.model.Markedness;
 import pl.edu.pwr.wordnetloom.user.model.User;
-import sun.security.acl.PermissionImpl;
 
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -37,11 +34,11 @@ public class EmotionalAnnotation extends GenericEntity {
 
     @OneToMany(mappedBy = "annotation", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
-    private Set<UnitEmotion> emotions;
+    private Set<SenseEmotion> emotions;
 
     @OneToMany(mappedBy = "annotation", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Fetch(value = FetchMode.SUBSELECT)
-    private Set<UnitValuation> valuations;
+    private Set<SenseValuation> valuations;
 
     @ManyToOne()
     @JoinColumn(name = "markedness_id")
@@ -67,11 +64,11 @@ public class EmotionalAnnotation extends GenericEntity {
         return emotionalCharacteristic;
     }
 
-    public Set<UnitEmotion> getEmotions() {
+    public Set<SenseEmotion> getEmotions() {
         return emotions;
     }
 
-    public Set<UnitValuation> getValuations() {
+    public Set<SenseValuation> getValuations() {
         return valuations;
     }
 
@@ -103,11 +100,11 @@ public class EmotionalAnnotation extends GenericEntity {
         this.emotionalCharacteristic = emotionalCharacteristic;
     }
 
-    public void setEmotions(Set<UnitEmotion> emotions){
+    public void setEmotions(Set<SenseEmotion> emotions){
         this.emotions = emotions;
     }
 
-    public void setValuations(Set<UnitValuation> valuations){
+    public void setValuations(Set<SenseValuation> valuations){
         this.valuations = valuations;
     }
 

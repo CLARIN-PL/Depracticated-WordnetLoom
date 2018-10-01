@@ -189,11 +189,11 @@ public class SenseRepository extends GenericRepository<Sense> {
             subquery.select(emotionalAnnotationRoot.get(SENSE).get(ID));
             query.select(emotionalAnnotationRoot.get(SENSE).get(ID));
             if(!dto.getEmotions().isEmpty()) {
-                Join<EmotionalAnnotation, UnitEmotion> unitEmotionJoin = emotionalAnnotationRoot.join(EMOTIONS, JoinType.LEFT);
+                Join<EmotionalAnnotation, SenseEmotion> unitEmotionJoin = emotionalAnnotationRoot.join(EMOTIONS, JoinType.LEFT);
                 subquery.where(unitEmotionJoin.get(EMOTION).get(ID).in(dto.getEmotions()));
             }
             if(!dto.getValuations().isEmpty()) {
-                Join<EmotionalAnnotation, UnitValuation> unitValuationJoin = emotionalAnnotationRoot.join(VALUATIONS, JoinType.LEFT);
+                Join<EmotionalAnnotation, SenseValuation> unitValuationJoin = emotionalAnnotationRoot.join(VALUATIONS, JoinType.LEFT);
                 subquery.where(unitValuationJoin.get(VALUATION).get(ID).in(dto.getValuations()));
             }
             if(dto.getMarkedness() != null){

@@ -164,8 +164,12 @@ public class CommentParser {
         if(secondIndex == -1){
             secondIndex = text.length();
         }
-        if(text.charAt(startIndex) == ' '){
-            startIndex++;
+        try {
+            if (text.charAt(startIndex) == ' ') {
+                startIndex++;
+            }
+        } catch (Exception ex){
+            System.out.println(text);
         }
         return text.substring(startIndex, secondIndex);
     }
