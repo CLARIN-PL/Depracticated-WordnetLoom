@@ -63,6 +63,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
 
     private WebFrame frame;
     private Sense editedSense;
+    private String editedWord;
     private SenseAttributes senseAttributes;
 
     private ValidationManager validationManager;
@@ -185,13 +186,6 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         Example example = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, new SenseExample(), false);
         examplesModel.addElement(example);
         examplesList.updateUI();
-//        if(example != null && !example.isEmpty()) {
-//            SenseExample senseExample = new SenseExample();
-//            senseExample.setExample(example);
-//            senseExample.setType("W");
-//            examplesModel.addElement(senseExample);
-//            examplesList.updateUI();
-//        }
     }
 
     private void removeExample() {
@@ -205,14 +199,8 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         Example example = (Example) examplesList.getSelectedValue();
         if (example != null) {
             Example value = ExampleFrame.showModal(frame, Labels.EDIT_EXAMPLE, example, true);
-            // TODO sprawdzić, czy to będzie działać
             updateExample(example, value);
             examplesList.updateUI();
-//            String old = example.getExample();
-//            if(value != null && !value.equals(old)) {
-//                example.setExample(value);
-//                examplesList.updateUI();
-//            }
         }
     }
 
@@ -284,7 +272,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
 
     public void setSense(Sense unit) {
         this.editedSense = unit;
-
+        this.editedWord = editedSense.getWord().getWord();
         examplesModel.clear();
         if(unit == null) {
             return;
@@ -333,6 +321,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
             word = new Word(lemmaTextField.getText());
         }
         sense.setWord(word);
+
 //        sense.setVariant(Integer.valueOf(variantTextField.getText()));
         sense.setLexicon((Lexicon) lexiconComboBox.getSelectedItem());
         sense.setPartOfSpeech((PartOfSpeech)partOfSpeechComboBox.getSelectedItem());
@@ -363,17 +352,10 @@ public class LexicalUnitPropertiesPanel extends JPanel {
     public Sense save() {
         if(validateComponents()){
             if(editedSense == null || !checkUnitExists()) {
-                return saveSense(getSense());
+                return RemoteService.senseRemote.saveSense(getSense(), editedWord);
             }
         }
         return null;
-    }
-
-    private Sense saveSense(SenseAttributes attributes) {
-        Sense savedSense = RemoteService.senseRemote.save(attributes.getSense());
-        attributes.setSense(savedSense);
-        attributes = RemoteService.senseRemote.save(attributes);
-        return attributes.getSense();
     }
 
     private boolean validateComponents() {

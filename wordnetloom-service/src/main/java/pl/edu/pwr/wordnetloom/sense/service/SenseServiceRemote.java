@@ -9,14 +9,13 @@ import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.word.model.Word;
 
 public interface SenseServiceRemote {
 
     Sense clone(Sense sense);
 
     Sense save(Sense sense);
-
-    SenseAttributes save(SenseAttributes attributes);
 
     SenseAttributes addSenseAttribute(final Long senseId, final SenseAttributes attributes);
 
@@ -75,4 +74,6 @@ public interface SenseServiceRemote {
     EmotionalAnnotation save(EmotionalAnnotation annotation);
 
     List<String> findUniqueExampleTypes();
+
+    Sense saveSense(SenseAttributes attributes, String oldLemma);
 }

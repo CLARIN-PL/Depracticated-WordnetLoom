@@ -29,7 +29,8 @@ public abstract class GenericRepository<T> {
     }
 
     public void delete(T entity) {
-        getEntityManager().remove(entity);
+//        getEntityManager().remove(entity);
+        getEntityManager().remove(getEntityManager().contains(entity) ? entity: getEntityManager().merge(entity));
     }
 
     public void delete(final Long id) {

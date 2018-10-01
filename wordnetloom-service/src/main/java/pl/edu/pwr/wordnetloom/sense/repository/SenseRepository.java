@@ -352,6 +352,18 @@ public class SenseRepository extends GenericRepository<Sense> {
         return query.getResultList();
     }
 
+    public int countSensesByWordId(Long id){
+        return Math.toIntExact(getEntityManager().createQuery("SELECT COUNT(s.id) FROM Sense s WHERE s.word.id = :id", Long.class)
+                .setParameter("id" ,id)
+                .getSingleResult());
+    }
+
+    public int countSensesByWord(String word) {
+        return getEntityManager().createQuery("SELECT COUNT(s.id) FROM Sense s JOIN s.word As word WHERE CONVERT(word.word, BINARY) = :word", Long.class)
+                .setParameter("word", word)
+                .getFirstResult();
+    }
+
     public Sense findHeadSenseOfSynset(Long synsetId) {
         Query query = getEntityManager().createQuery("SELECT s FROM Sense s JOIN FETCH s.partOfSpeech JOIN FETCH s.domain JOIN FETCH s.lexicon WHERE s.synset.id = :id AND s.synsetPosition = 0")
                 .setParameter("id", synsetId);

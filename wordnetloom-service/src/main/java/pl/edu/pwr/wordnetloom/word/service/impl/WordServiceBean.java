@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.word.service.impl;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
+import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.word.exception.WordNotFoundException;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 import pl.edu.pwr.wordnetloom.word.repository.WordRepository;
@@ -30,6 +31,9 @@ public class WordServiceBean implements WordServiceLocal {
     WordRepository wordRepository;
 
     @Inject
+    SenseRepository senseRepository;
+
+    @Inject
     Validator validator;
 
     @RolesAllowed({"USER", "ADMIN"})
@@ -46,9 +50,6 @@ public class WordServiceBean implements WordServiceLocal {
     @Override
     public Word findByWord(String word) {
         Word w = wordRepository.findByWord(word);
-        if(w == null){
-            throw new WordNotFoundException();
-        }
         return w;
     }
 
@@ -73,4 +74,5 @@ public class WordServiceBean implements WordServiceLocal {
     public List<Word> findAll() {
         return wordRepository.findAll("word");
     }
+
 }

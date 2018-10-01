@@ -17,6 +17,7 @@ import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceRemote;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
+import pl.edu.pwr.wordnetloom.word.repository.WordRepository;
 import pl.edu.pwr.wordnetloom.word.service.WordServiceLocal;
 
 import javax.annotation.security.DeclareRoles;
@@ -44,6 +45,9 @@ public class SenseServiceBean implements SenseServiceLocal {
 
     @Inject
     EmotionalAnnotationRepository emotionalAnnotationRepository;
+
+    @Inject
+    WordRepository wordRepository;
 
     @Inject
     Validator validator;
@@ -88,21 +92,30 @@ public class SenseServiceBean implements SenseServiceLocal {
         return senseRepository.save(sense);
     }
 
+
     @RolesAllowed({"USER", "ADMIN"})
     @Override
-    public SenseAttributes save(SenseAttributes attributes) {
-        ValidationUtils.validateEntityFields(validator, attributes);
-        Sense sense = save(attributes.getSense());
-        SenseAttributes savedAttributes;
-        if(attributes.getId() != null){
-            savedAttributes = senseAttributesRepository.update(attributes);
-        } else {
-            savedAttributes = senseAttributesRepository.save(attributes);
+    public Sense saveSense(SenseAttributes attributes, String oldLemma) {
+        Sense savedSense = save(attributes.getSense());
+        attributes.setSense(savedSense);
+        SenseAttributes savedAttributes = senseAttributesRepository.save(attributes);
 
+        if(checkEditedLemma(oldLemma, savedSense)){
+            removeWord(oldLemma);
         }
-        savedAttributes.setSense(sense);
-        return savedAttributes;
-        //TODO zobaczyć, czy trzeba oddzielnie zapisywać jednostkę
+
+        return savedAttributes.getSense();
+    }
+
+    private void removeWord(String oldLemma) {
+        Word wordToRemove = wordRepository.findByWord(oldLemma);
+        if(senseRepository.countSensesByWordId(wordToRemove.getId()) == 0){
+            wordRepository.delete(wordToRemove);
+        }
+    }
+
+    private boolean checkEditedLemma(String oldLemma, Sense savedSense) {
+        return oldLemma != null && !oldLemma.equals(savedSense.getWord().getWord());
     }
 
     private boolean variantMustBeChanged(Sense sense) {

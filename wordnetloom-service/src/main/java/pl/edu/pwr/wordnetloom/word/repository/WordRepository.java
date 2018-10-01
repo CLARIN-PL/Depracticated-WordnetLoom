@@ -32,7 +32,6 @@ public class WordRepository extends GenericRepository<Word> {
         } catch (NoResultException e){
             return null;
         }
-
     }
 
     public Integer countByWord(String word) {
