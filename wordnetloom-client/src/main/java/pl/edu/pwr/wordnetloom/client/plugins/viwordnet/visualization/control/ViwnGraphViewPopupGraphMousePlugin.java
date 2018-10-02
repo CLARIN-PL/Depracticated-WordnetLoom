@@ -14,13 +14,16 @@ import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 import edu.uci.ics.jung.visualization.picking.PickedState;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
+import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
@@ -308,7 +311,6 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             group_action.setEnabled(true);
         }
 
-        // group
         popup.add(group_action);
 
         // enter make relation mode
@@ -326,8 +328,18 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
             }
         };
 
+        // TODO dorobić etykiety
+        AbstractAction removeSynsetAction = new AbstractAction("Usuń synset") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Synset synset = ((ViwnNodeSynset)vertex).getSynset();
+                removeSynset(synset);
+                Application.eventBus.post(new UpdateGraphEvent(null));
+            }
+        };
         popup.add(createRelationAction);
         popup.add(mergeAction);
+        popup.add(removeSynsetAction);
 
         // split synset options from lexical unit options
         popup.addSeparator();
@@ -343,6 +355,14 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
         Synset synset = ((ViwnNodeSynset) vertex).getSynset();
         checkPermissionToEdit(createRelationAction, mergeAction, components, synset);
+    }
+
+    private void removeSynset(Synset synset){
+        // TODO dorobić etykiety
+        final String message = "Czy na pewno usunąć synset wraz z wszystkimi jednostkami i relacjami?";
+        if(DialogBox.showYesNo(message) == DialogBox.YES){
+            RemoteService.synsetRemote.remove(synset);
+        }
     }
 
     private void checkPermissionToEdit(AbstractAction createRelationAction, AbstractAction mergeAction, JComponent[] components, Synset synset) {

@@ -312,9 +312,6 @@ public class ViWordNetService extends AbstractService implements
         for (ViwnGraphView vgv : graphViews) {
             if (vgv.getPanel().equals(jp)) {
                 // set active in service
-                // TODO sprawdzić, czy to zadziała
-//                CriteriaDTO criteria = luView.getCriteria();
-//                activeGraphView.getUI().setCriteria(criteria);
                 activeGraphView = vgv;
                 luView.setCriteria(activeGraphView.getUI().getCriteria());
                 // refresh satellite view
@@ -333,7 +330,6 @@ public class ViWordNetService extends AbstractService implements
                     ViwnNodeWord word = (ViwnNodeWord) root;
                     examplesView.load_examples(word.getLabel());
                 }
-
                 return true;
             }
         }

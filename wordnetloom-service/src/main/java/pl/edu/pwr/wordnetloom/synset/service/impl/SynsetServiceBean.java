@@ -8,12 +8,14 @@ import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
 import pl.edu.pwr.wordnetloom.dictionary.repository.DictionaryRepository;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
+import pl.edu.pwr.wordnetloom.sense.repository.SenseAttributesRepository;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.exception.InvalidLexiconException;
 import pl.edu.pwr.wordnetloom.synset.exception.InvalidPartOfSpeechException;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
+import pl.edu.pwr.wordnetloom.synset.model.SynsetExample;
 import pl.edu.pwr.wordnetloom.synset.repository.SynsetAttributesRepository;
 import pl.edu.pwr.wordnetloom.synset.repository.SynsetRepository;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceLocal;
@@ -22,6 +24,7 @@ import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository;
 import pl.edu.pwr.wordnetloom.user.model.User;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceLocal;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 import javax.annotation.security.DeclareRoles;
@@ -63,6 +66,9 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @Inject
     DictionaryRepository dictionaryRepository;
+
+    @Inject
+    SenseAttributesRepository senseAttributesRepository;
 
     @Inject
     Principal principal;
@@ -294,6 +300,23 @@ public class SynsetServiceBean implements SynsetServiceLocal {
             sense.setSynset(target);
             sense.setSynsetPosition(positionInSynset);
             senseService.save(sense);
+        }
+    }
+
+
+    @RolesAllowed({"USER", "ADMIN"})
+    @Override
+    public  void remove(Synset synset) {
+        synsetAttributesRepository.delete(synset.getId());
+        synsetRelationRepository.deleteConnection(synset);
+        List<Sense> senses = senseService.findBySynset(synset.getId());
+        removeSenses(senses);
+        synsetRepository.delete(synset);
+    }
+
+    private void removeSenses(List<Sense> senses){
+        for(Sense sense : senses) {
+            senseService.delete(sense);
         }
     }
 }

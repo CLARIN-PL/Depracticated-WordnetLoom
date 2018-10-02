@@ -33,13 +33,7 @@ public class SenseRepository extends GenericRepository<Sense> {
 
     @Override
     public void delete(Sense sense) {
-        Sense s = findById(sense.getId());
-
-        if (s != null) {
-            SenseAttributes senseAttributes = getEntityManager().find(SenseAttributes.class, s.getId());
-            getEntityManager().remove(senseAttributes);
-        }
-        super.delete(s);
+        getEntityManager().remove(getEntityManager().contains(sense) ? sense : getEntityManager().merge(sense));
     }
 
     public void deleteAll() {

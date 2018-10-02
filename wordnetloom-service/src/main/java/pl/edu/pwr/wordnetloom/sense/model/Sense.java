@@ -26,7 +26,7 @@ public class Sense extends GenericEntity {
     private Domain domain;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "word_id", referencedColumnName = "id", nullable = false)
     private Word word;
 

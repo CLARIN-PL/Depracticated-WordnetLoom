@@ -15,6 +15,7 @@ import pl.edu.pwr.wordnetloom.sense.repository.SenseAttributesRepository;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceRemote;
+import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 import pl.edu.pwr.wordnetloom.word.repository.WordRepository;
@@ -45,6 +46,10 @@ public class SenseServiceBean implements SenseServiceLocal {
 
     @Inject
     EmotionalAnnotationRepository emotionalAnnotationRepository;
+
+    @Inject
+    SenseRelationRepository senseRelationRepository;
+
 
     @Inject
     WordRepository wordRepository;
@@ -101,13 +106,13 @@ public class SenseServiceBean implements SenseServiceLocal {
         SenseAttributes savedAttributes = senseAttributesRepository.save(attributes);
 
         if(checkEditedLemma(oldLemma, savedSense)){
-            removeWord(oldLemma);
+            tryRemoveWord(oldLemma);
         }
 
         return savedAttributes.getSense();
     }
 
-    private void removeWord(String oldLemma) {
+    private void tryRemoveWord(String oldLemma) {
         Word wordToRemove = wordRepository.findByWord(oldLemma);
         if(senseRepository.countSensesByWordId(wordToRemove.getId()) == 0){
             wordRepository.delete(wordToRemove);
@@ -162,7 +167,18 @@ public class SenseServiceBean implements SenseServiceLocal {
     @RolesAllowed({"USER", "ADMIN"})
     @Override
     public void delete(Sense sense) {
+        senseAttributesRepository.delete(sense.getId());
+        senseRelationRepository.deleteConnection(sense);
+        removeEmotionalAnnotation(sense);
         senseRepository.delete(sense);
+        tryRemoveWord(sense.getWord().getWord());
+    }
+
+    private void removeEmotionalAnnotation(Sense sense) {
+        List<EmotionalAnnotation> emotionalAnnotations = emotionalAnnotationRepository.getEmotionalAnnotations(sense.getId());
+        for (EmotionalAnnotation annotation : emotionalAnnotations){
+            emotionalAnnotationRepository.delete(annotation);
+        }
     }
 
     @RolesAllowed({"USER", "ADMIN"})

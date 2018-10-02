@@ -44,4 +44,6 @@ public interface SynsetServiceRemote {
     SynsetAttributes fetchSynsetAttributes(Long synsetId);
 
     void merge(Synset target, Synset source);
+
+    void remove(Synset synset);
 }
