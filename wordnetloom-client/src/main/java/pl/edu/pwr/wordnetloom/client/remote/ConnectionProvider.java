@@ -1,10 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.remote;
 
 import com.google.common.eventbus.Subscribe;
-import org.jboss.ejb.client.EJBClientConfiguration;
-import org.jboss.ejb.client.EJBClientContext;
-import org.jboss.ejb.client.PropertiesBasedEJBClientConfiguration;
-import org.jboss.ejb.client.remoting.ConfigBasedEJBClientContextSelector;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.security.PasswordChangedEvent;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
@@ -54,9 +50,6 @@ public class ConnectionProvider implements Loggable {
     private Context getInitialContext() throws NamingException, IOException {
         Context localContext = initialContext;
         if (localContext == null) {
-            EJBClientConfiguration ejbClientConfiguration = new PropertiesBasedEJBClientConfiguration(getEjbProperties());
-            ConfigBasedEJBClientContextSelector selector = new ConfigBasedEJBClientContextSelector(ejbClientConfiguration);
-            EJBClientContext.setSelector(selector);
             initialContext = localContext = new InitialContext(getEjbProperties());
         }
         return localContext;
@@ -68,6 +61,7 @@ public class ConnectionProvider implements Loggable {
         String port = System.getenv("WORDNETLOOM_SERVER_PORT") != null ? System.getenv("WORDNETLOOM_SERVER_PORT") : "8080";
 
         Properties ejbProperties = new Properties();
+        ejbProperties.put(Context.INITIAL_CONTEXT_FACTORY,  "org.wildfly.naming.client.WildFlyInitialContextFactory");
         ejbProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
         ejbProperties.put("remote.connectionprovider.create.options.org.xnio.Options.SSL_ENABLED", "false");
         ejbProperties.put("jboss.naming.client.ejb.context", "true");
@@ -89,13 +83,12 @@ public class ConnectionProvider implements Loggable {
         String appName = "wordnetloom-server-2.0";
         String moduleName = "wordnetloom-service-2.0";
         String distinctName = "";
-        String name = "ejb:" +
+        return  "ejb:" +
                 appName + slash +
                 moduleName + slash +
                 distinctName + slash +
                 localBeanName + "!" +
                 interfaceName;
-        return name;
     }
 
     public void setCredentials(String username, String password){

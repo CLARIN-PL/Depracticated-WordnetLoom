@@ -6,7 +6,6 @@ import org.junit.Test;
 import pl.edu.pwr.wordnetloom.commontests.utils.TestBaseRepository;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
