@@ -104,6 +104,15 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         return rootSynset;
     }
 
+    public void setRoot(ViwnNodeRoot root){
+        rootNode = root;
+        if(root == null) {
+            rootSynset = null;
+        } else if(root instanceof ViwnNodeSynset){
+            rootSynset = ((ViwnNodeSynset)root).getSynset();
+        }
+    }
+
     public void addSynsetToCash(Long synsetId, ViwnNodeSynset node) {
         cache.put(synsetId, node);
     }

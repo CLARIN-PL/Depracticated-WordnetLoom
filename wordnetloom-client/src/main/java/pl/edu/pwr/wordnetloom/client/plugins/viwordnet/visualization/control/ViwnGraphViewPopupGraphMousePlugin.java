@@ -17,7 +17,7 @@ import edu.uci.ics.jung.visualization.picking.PickedState;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphAfterRemovingEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
@@ -48,6 +48,7 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
 
     ViwnGraphViewPopupGraphMousePlugin(ViwnGraphViewUI vgvui) {
         this.vgvui = vgvui;
+        Application.eventBus.register(this);
     }
 
     private void addSynsets(ViwnNode v) {
@@ -332,9 +333,9 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
         AbstractAction removeSynsetAction = new AbstractAction("Usuń synset") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Synset synset = ((ViwnNodeSynset)vertex).getSynset();
-                removeSynset(synset);
-                Application.eventBus.post(new UpdateGraphEvent(null));
+                Synset synsetToRemove = ((ViwnNodeSynset)vertex).getSynset();
+                removeSynset(synsetToRemove);
+                updateViewAfterRemovingSynset(synsetToRemove);
             }
         };
         popup.add(createRelationAction);
@@ -363,6 +364,10 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
         if(DialogBox.showYesNo(message) == DialogBox.YES){
             RemoteService.synsetRemote.remove(synset);
         }
+    }
+
+    private void updateViewAfterRemovingSynset(Synset removedSynset){
+        Application.eventBus.post(new UpdateGraphAfterRemovingEvent(removedSynset));
     }
 
     private void checkPermissionToEdit(AbstractAction createRelationAction, AbstractAction mergeAction, JComponent[] components, Synset synset) {

@@ -116,4 +116,8 @@ public class UnitsInSynsetListModel extends GenericListModel<Sense> {
         }
         return result;
     }
+
+    public void clear() {
+        itemsCollection.clear();
+    }
 }

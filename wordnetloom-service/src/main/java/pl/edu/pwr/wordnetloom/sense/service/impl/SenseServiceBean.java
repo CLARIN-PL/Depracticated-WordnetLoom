@@ -167,9 +167,9 @@ public class SenseServiceBean implements SenseServiceLocal {
     @RolesAllowed({"USER", "ADMIN"})
     @Override
     public void delete(Sense sense) {
+        removeEmotionalAnnotation(sense);
         senseAttributesRepository.delete(sense.getId());
         senseRelationRepository.deleteConnection(sense);
-        removeEmotionalAnnotation(sense);
         senseRepository.delete(sense);
         tryRemoveWord(sense.getWord().getWord());
     }

@@ -2,10 +2,11 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tree.WebTree;
-import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
+import com.google.common.eventbus.Subscribe;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.utils.RelationTypeFormat;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateUnitRelationsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewLexicalRelationWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
@@ -62,6 +63,12 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
     public ViwnLexicalUnitRelationsViewUI(Workbench workbench) {
         super();
         this.workbench = workbench;
+        Application.eventBus.register(this);
+    }
+
+    @Subscribe
+    public void setRelations(UpdateUnitRelationsEvent event){
+        SwingUtilities.invokeLater(()->fillTree(event.getSense()));
     }
 
     @Override
@@ -99,6 +106,10 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         content.add("hfill vfill", new JScrollPane(tree));
         content.add("br center", addRelationButton);
         content.add(deleteRelationButton);
+
+        tree.setVisible(false);
+        addRelationButton.setEnabled(false);
+        deleteRelationButton.setEnabled(false);
     }
 
     private void setEnableEditing(Sense sense){
@@ -122,6 +133,9 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
             protected String doInBackground() throws Exception {
                 root_from.removeAllChildren();
                 root_to.removeAllChildren();
+                if(object == null){
+                    return null;
+                }
                 Sense sense = (Sense) object;
                 // TODO chyba można jakoś zapobiec dodatkowemu pobieraniu z bazy
                 sense = RemoteService.senseRemote.fetchSense(sense.getId());
@@ -133,7 +147,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                 return null;
             }
 
-            private void fillRootRelations(DefaultMutableTreeNode nodeToFill, List<SenseRelation> relations, boolean displayChild) {
+            private void fillRootRelations(DefaultMutableTreeNode outNodeToFill, List<SenseRelation> relations, boolean displayChild) {
                 Map<Long, DefaultMutableTreeNode> relationTypeNodeMap = new HashMap<>();
                 DefaultMutableTreeNode node;
                 DefaultMutableTreeNode senseNode;
@@ -153,26 +167,27 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                     }
                 }
                 for (Map.Entry<Long, DefaultMutableTreeNode> entry : relationTypeNodeMap.entrySet()) {
-                    nodeToFill.add(entry.getValue());
+                    outNodeToFill.add(entry.getValue());
                 }
             }
 
             @Override
             protected void done() {
-                if (((DefaultMutableTreeNode) tree.getModel().getRoot())
-                        .getUserObject() != object) {
-                    // TODO: find better solution
-                    // ugly hack, to switch button off after changing tree
+                boolean isActive = object != null;
+                tree.setVisible(isActive);
+                addRelationButton.setEnabled(permissionToUpdate && isActive);
+                if (tree.getSelectedNode() == null){
                     deleteRelationButton.setEnabled(false);
                 }
-                root.setUserObject(object);
+                if (object != null){
+                    root.setUserObject(object);
 
-                ((DefaultTreeModel) tree.getModel()).reload();
-                tree.updateUI();
+                    ((DefaultTreeModel) tree.getModel()).reload();
+                    tree.updateUI();
 
-                expandAll(true);
+                    expandAll(true);
+                }
             }
-
         };
         worker.execute();
     }

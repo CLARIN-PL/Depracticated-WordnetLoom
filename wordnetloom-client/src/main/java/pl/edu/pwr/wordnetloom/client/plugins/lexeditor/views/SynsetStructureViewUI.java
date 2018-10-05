@@ -16,6 +16,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.models.UnitsInSynsetListM
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetPerspective;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetUnitsEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateUnitRelationsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNode;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.ViwnNodeSynset;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnGraphViewUI;
@@ -213,8 +214,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
 
         MComponentGroup buttonsPanel = new MComponentGroup(buttonUp, buttonDown, buttonAdd, buttonDelete, buttonToNew)
                 .withVerticalLayout();
-
-        // dodanie do okna
+        
         content.add("", new MLabel(Labels.LEXICAL_UNITS_IN_SYSET_COLON, 'y',
                 unitsList));
 
@@ -365,9 +365,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         }
         if (selectedUnits != null) {
             for (Sense selectedUnit : selectedUnits) {
-                // dodanie powiazanie
                 selectedUnit.setSynset(lastSynset);
-
                 try {
                     RemoteService.synsetRemote.addSenseToSynset(selectedUnit, lastSynset);
                 } catch (InvalidPartOfSpeechException poe) {
@@ -513,8 +511,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         buttonDelete.setEnabled(canDeleteUnit(selectionSize));
         buttonSwitchToLexicalPerspective.setEnabled(canSwitchToLexicalPerspective(index, singleSelection));
 
-        // powiadomienie zainteresowanych
-        listeners.notifyAllListeners(listModel.getObjectAt(index), LIST_SELECTION_CHANGED);
+        Application.eventBus.post(new UpdateUnitRelationsEvent(listModel.getObjectAt(index)));
     }
 
     private boolean canSwitchToLexicalPerspective(int index, boolean singleSelection) {
@@ -566,8 +563,29 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         SwingUtilities.invokeLater(() -> refreshData(event.getSynset()));
     }
 
+    private void setStructureData(Synset synset){
+        if (synset.getStatus() != null) {
+            String status = LocalisationManager.getInstance().getLocalisedString(synset.getStatus().getName());
+            statusText.setText(status);
+        }
+        SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
+
+        commentValue.setText(sa.getComment() != null ? sa.getComment() : "");
+        if (synset.getAbstract()) {
+            isAbstract.setText(String.format("<html><font color=red>%s</font></html>", Labels.SYNSET_ARTIFICIAL));
+        } else {
+            isAbstract.setText("");
+        }
+        synsetID.setText(Long.toString(synset.getId()));
+        princentonID.setText(sa.getPrincetonId());
+        iliID.setText(sa.getIliId());
+
+        synsetOwner.setText(sa.getOwner() != null ? sa.getOwner().getFullname() : "");
+    }
+
+
     /**
-     * odswiezenie danych w widoku
+     * Refresh data in view
      *
      * @param synset - powiazany senset
      */
@@ -575,62 +593,59 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         lastSynset = synset;
         int newSplitPoint = 0;
         List<Sense> units = null;
+        // set synset properties
         if (synset != null) {
-            if(synset.getStatus() != null){
-                String status = LocalisationManager.getInstance().getLocalisedString(synset.getStatus().getName());
-                statusText.setText(status);
-            }
-            newSplitPoint = synset.getSplit();
             units = RemoteService.senseRemote.findBySynset(synset, LexiconManager.getInstance().getLexiconsIds());
-            SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
-
-            commentValue.setText(sa.getComment() != null ? sa.getComment() : "");
-            if (synset.getAbstract()) {
-                isAbstract.setText(String.format("<html><font color=red>%s</font></html>", Labels.SYNSET_ARTIFICIAL));
-            } else {
-                isAbstract.setText("");
+            newSplitPoint = synset.getSplit();
+            setStructureData(synset);
+        } else {
+            if(isViewInitialized()){
+                clear();
             }
-            synsetID.setText(Long.toString(synset.getId()));
-            princentonID.setText(sa.getPrincetonId());
-            iliID.setText(sa.getIliId());
-
-            synsetOwner.setText(sa.getOwner() != null ? sa.getOwner().getFullname() : "");
         }
 
-        // get selected unit
+        // set units selection
         Collection<Sense> selectedUnits = lastUnits;
-        if (selectedUnits == null && unitsList != null
-                && !unitsList.isSelectionEmpty()) {
-            selectedUnits = new ArrayList<>();
-            int[] values = unitsList.getSelectedIndices();
-            for (int i : values) {
-                selectedUnits.add(listModel.getObjectAt(i));
-            }
+        if (selectedUnits == null && unitsList != null && !unitsList.isSelectionEmpty()) {
+            selectedUnits = getSelectedUnits();
         }
         lastUnits = null;
-
         listModel.setCollection(units, newSplitPoint);
 
         if (unitsList != null) {
             buttonAdd.setEnabled(canEditUnit());
             unitsList.setEnabled(listModel.getSize() > 1);
             buttonRelations.setEnabled(canEditUnit());
-            // przywrocenie zaznaczenia
-            Collection<Integer> indices = selectedUnits != null ? listModel
-                    .getIndexesOfSelectedElements(selectedUnits) : null;
-            // zaznaczenie odpowiedniego elementu
-            if (indices != null && indices.size() > 0) {
-                unitsList.setSelectedIndices(indices.stream().mapToInt(Integer::intValue).toArray());
-                valueChanged(new ListSelectionEvent(
-                        synset == null ? new Object() : synset, 0, 0, false));
-            } else if (listModel.getSize() > 0) {
-                // czyścimy zaznaczenie, aby podczas ustawienia pierwszego elementu zostało wywołane zdarzenie
-                // które doprowadzi do załadowania relacji dla jednostki
-                unitsList.clearSelection();
-                unitsList.setSelectedIndex(0); // zaznaczenie pierwszej
-            } else {
-                unitsList.clearSelection();
-            }
+            restoreSelection(synset, selectedUnits);
+        }
+    }
+
+    private boolean isViewInitialized() {
+        return statusText!=null;
+    }
+
+    private void clear() {
+        listModel.clear();
+        statusText.setText("");
+        commentValue.clear();
+        synsetID.clear();
+        princentonID.clear();
+        iliID.clear();
+        synsetOwner.setText("");
+    }
+
+    private void restoreSelection(Synset synset, Collection<Sense> selectedUnits) {
+        Collection<Integer> indices = selectedUnits != null ? listModel
+                .getIndexesOfSelectedElements(selectedUnits) : null;
+        if (indices != null && indices.size() > 0) {
+            unitsList.setSelectedIndices(indices.stream().mapToInt(Integer::intValue).toArray());
+            valueChanged(new ListSelectionEvent(
+                    synset == null ? new Object() : synset, 0, 0, false));
+        } else if (listModel.getSize() > 0) {
+            unitsList.clearSelection();
+            unitsList.setSelectedIndex(0);
+        } else {
+            unitsList.clearSelection();
         }
     }
 
@@ -681,20 +696,6 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             unit = RemoteService.senseRemote.fetchSense(unit.getId());
 
             LexicalUnitPropertiesFrame.showModal(workbench, unit);
-
-//            LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(graphUI);
-//            lui.init(workbench);
-//
-//            DialogWindow dia = new DialogWindow(workbench.getFrame(), Labels.UNIT_PROPERTIES, 500, 600);
-//            WebPanel pan = new WebPanel();
-//
-//            lui.initialize(pan);
-//            lui.refreshData(unit);
-//            lui.closeWindow((ActionEvent e1) -> dia.dispose());
-//            dia.setLocationRelativeTo(workbench.getFrame());
-//            dia.setContentPane(pan);
-//            dia.pack();
-//            dia.setVisible(true);
         }
     }
 

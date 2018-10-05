@@ -6,18 +6,14 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.google.common.eventbus.Subscribe;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.Application;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchSensesEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.LexicalUnitPropertiesFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.SynsetsFrame;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.models.Criteria;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SenseCriteria;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.SetCriteriaEvent;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateCriteriaEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SenseTooltipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
@@ -28,7 +24,6 @@ import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import se.datadosen.component.RiverLayout;
@@ -219,10 +214,11 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
      * 1. wyczyszczenie listy
      * 2. pobranie jednostek i umieszczenie ich na liście
      */
-    public void loadUnits() {
+    public void loadUnits(SenseCriteriaDTO dto) {
         clearUnitsList();
-
-        SenseCriteriaDTO dto = (SenseCriteriaDTO) criteria.getCriteria();
+        if (dto == null){
+            dto = (SenseCriteriaDTO)criteria.getCriteria();
+        }
         List<Sense> units = getSenses(dto, LIMIT, 0);
         allUnitsCount = RemoteService.senseRemote.getCountUnitsByCriteria(dto);
         setCountInfoText(allUnitsCount);
@@ -337,7 +333,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     @Override
     public void actionPerformed(ActionEvent event) {
         if (event.getSource() == searchButton) {
-            loadUnits();
+            loadUnits((SenseCriteriaDTO)criteria.getCriteria());
         } else if (event.getSource() == resetButton) {
             criteria.resetFields();
         } else if (event.getSource() == deleteButton) {
@@ -352,9 +348,9 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
     }
 
     @Subscribe
-    public void loadUnits(SearchUnitsEvent event){
+    public void loadUnits(SearchSensesEvent event){
         if(lastSenseCriteria != null){
-            SwingUtilities.invokeLater(()->loadUnits());
+            SwingUtilities.invokeLater(()->loadUnits(event.getDto()));
         }
     }
 
@@ -461,7 +457,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         super.keyPressed(event);
         if (!event.isConsumed() && event.getSource() == criteria.getSearchTextField() && event.getKeyChar() == KeyEvent.VK_ENTER) {
             event.consume();
-            loadUnits();
+            loadUnits((SenseCriteriaDTO)criteria.getCriteria());
         }
     }
 

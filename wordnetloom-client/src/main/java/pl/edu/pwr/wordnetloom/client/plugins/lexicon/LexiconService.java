@@ -5,7 +5,7 @@ import com.alee.laf.menu.WebMenuItem;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.core.CoreService;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchUnitsEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchSensesEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SetLexiconsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconManagerWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
@@ -116,7 +116,7 @@ public class LexiconService extends AbstractService {
 
     private void sendEvents() {
         Application.eventBus.post(new SetLexiconsEvent());
-        Application.eventBus.post(new SearchUnitsEvent());
+        Application.eventBus.post(new SearchSensesEvent());
         Application.eventBus.post(new UpdateGraphEvent(null));
     }
 }

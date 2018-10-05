@@ -147,6 +147,9 @@ public class LazyScrollList<T> extends WebScrollPane {
     public void setCollection(java.util.List<T> collection, int allElementsCount) {
         listSize = allElementsCount;
         SwingUtilities.invokeLater(() -> {
+            model.removeAllElements();
+            list.updateUI();
+            // TODO move cursor to top
             loadedItems = new boolean[allElementsCount];
             for (int i = 0; i < collection.size(); i++) {
                 model.addElement(collection.get(i));

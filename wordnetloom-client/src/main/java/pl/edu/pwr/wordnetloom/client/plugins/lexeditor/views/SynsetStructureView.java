@@ -40,7 +40,8 @@ public class SynsetStructureView extends AbstractView implements SimpleListenerI
 
     @Override
     public void doAction(Object object, int tag) {
-        viewUI.refreshData((Synset) object);
+        // TODO sprawdzić, czy potrzebne
+//        viewUI.refreshData((Synset) object);
     }
 
     public void refreshData() {

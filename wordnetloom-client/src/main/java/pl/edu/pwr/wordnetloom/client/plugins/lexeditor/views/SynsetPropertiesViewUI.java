@@ -277,11 +277,20 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
     @Subscribe
     public void handleUpdatePropertiesEvent(UpdateSynsetPropertiesEvent event){
-        refreshData(event.getSynset());
+        SwingUtilities.invokeLater(()->refreshData(event.getSynset()));
     }
 
-    public void refreshData(Synset synset) {
+    private void clear() {
+        statusComboBox.setSelectedIndex(0);
+        definitionValue.clear();
+        commentValue.clear();
+        examplesModel.clear();
+        abstractValue.setSelected(false);
+        buttonSave.setEnabled(false);
+    }
 
+    // TODO refactor
+    public void refreshData(Synset synset) {
         definitionValue.setText(formatValue(null));
         commentValue.setText(formatValue(null));
         abstractValue.setSelected(false);
@@ -305,6 +314,8 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
             }
 
             abstractValue.setSelected(synset.getAbstract());
+        } else {
+            clear();
         }
         lastSynset = synset;
         quiteMode = true;
