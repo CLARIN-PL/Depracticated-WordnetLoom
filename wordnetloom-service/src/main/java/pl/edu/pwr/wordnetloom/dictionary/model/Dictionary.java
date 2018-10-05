@@ -18,7 +18,6 @@ public abstract class Dictionary extends GenericEntity {
     private static final long serialVersionUID = -7858918337069154092L;
 
     public Dictionary(){
-
     }
 
     @NotNull
