@@ -272,7 +272,10 @@ public class LexicalUnitPropertiesPanel extends JPanel {
 
     public void setSense(Sense unit) {
         this.editedSense = unit;
-        this.editedWord = editedSense.getWord().getWord();
+        this.editedWord = "";
+        if(editedSense != null) {
+            this.editedWord = editedSense.getWord().getWord();
+        }
         examplesModel.clear();
         if(unit == null) {
             return;
