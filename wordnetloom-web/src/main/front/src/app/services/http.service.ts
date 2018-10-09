@@ -4,28 +4,28 @@ import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/catch';
-import {SlimLoadingBarService} from 'ng2-slim-loading-bar';
+// import {SlimLoadingBarService} from 'ng2-slim-loading-bar';
 
 @Injectable()
 export class HttpService {
   // apiBase = '/yiddish/api/';
   apiBase = 'http://156.17.135.29:8080/yiddish/api/';
 
-  constructor(private http: Http, private slimLoadingBarService: SlimLoadingBarService) {}
+  constructor(private http: Http) {}
 
   private handleError() {
     // todo
   }
 
   private get(uri): Observable<any> {
-    this.slimLoadingBarService.start();
+    // this.slimLoadingBarService.start();
 
     // const headers = new Headers(options);
     // const opt = new RequestOptions({ headers: headers});
 
     return this.http.get(this.apiBase + uri)
       .map( res => res.json())
-      .finally(() => this.slimLoadingBarService.complete() );
+      .finally(() => console.log(this));
   }
 
   getLexicalUnitDetails(id) {

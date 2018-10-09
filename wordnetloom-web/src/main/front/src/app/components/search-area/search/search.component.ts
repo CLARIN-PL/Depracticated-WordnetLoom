@@ -1,6 +1,7 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import { HttpService } from '../../../services/http.service';
 import {SidebarService} from '../../../services/sidebar.service';
+import {MatKeyboardService} from '@ngx-material-keyboard/core';
 
 @Component({
   selector: 'app-search',
@@ -9,7 +10,7 @@ import {SidebarService} from '../../../services/sidebar.service';
 })
 export class SearchComponent implements OnInit {
   @Output() onSearchSubmit = new EventEmitter<any>();
-  constructor(private http: HttpService, private sidebar: SidebarService) { }
+  constructor(private http: HttpService, private sidebar: SidebarService, private keyboardService: MatKeyboardService) { }
 
   searchFields: {[id: string]: Object} = {};
 
@@ -19,9 +20,10 @@ export class SearchComponent implements OnInit {
 
   searchFieldsGlob = ['lexicon', 'partofspeech', 'domain'];
 
-  searchKeys = ['lexiconId', 'partOfSpeechId', 'domainId', 'styleId', 'statusId', 'lexicalCharacteristicId', 'ageId', 'sourceId', 'yiddishDomainId', 'domainModifierId'];
+  searchKeys = ['lexiconId', 'partOfSpeechId', 'domainId', 'styleId', 'statusId', 'lexicalCharacteristicId', 'ageId',
+    'sourceId', 'yiddishDomainId', 'domainModifierId'];
 
-  states= [{name:'a', code:'a'}];
+  states= [{name: 'a', code: 'a'}];
 
   ngOnInit() {
     this.searchFields['lexiconId'] =               {apiOptions: 'lexicon', name: 'Lexicon', queryString: 'lexiconId', searchOptions: [] };
@@ -37,6 +39,10 @@ export class SearchComponent implements OnInit {
 
     this.assignSearchFields();
 
+    // this.keyboardService.open('yiddish');
+    // setTimeout(() => {
+    //   this.keyboardService.dismiss();
+    // }, 2000);
   }
 
   private assignSearchFields() {

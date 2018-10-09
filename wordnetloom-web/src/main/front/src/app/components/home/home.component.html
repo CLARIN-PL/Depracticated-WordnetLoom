@@ -1,18 +1,31 @@
-<app-header [showSearch]="false"></app-header>
+<app-header [hideSecondRow]="true"></app-header>
 
 <div class="container-fluid app-container">
   <div class="row">
     <div class="col-12 jumbotron jumbotron-fluid welcome">
         <div class="container">
-          <h2 class="display-3">Welcome to Yiddish wordnet!</h2>
-          <p class="lead">Lorem ipsum dolor sit amet enim. Etiam ullamcorper. Suspendisse a pellentesque dui, non felis.</p>
+          <h4 class="display-4">Welcome to The Online Dictionary of Polish Borrowings in Yiddish</h4>
+          <p class="lead">Type a word in Yiddish, the YIVO standard transcription, or the Slavic philological transcription to begin the search
+            <i class="fas fa-keyboard-o"></i>
+          </p>
         </div>
         <form #f="ngForm" (ngSubmit)="onSearch(f.value)">
+
+          <label class="fancy-checkbox">
+            <input type="checkbox" />
+            <i class="fa fa-fw fa-keyboard-o unchecked"></i>
+            <i class="fa fa-fw fa-keyboard-o checked"></i>
+          </label>
+
           <mat-form-field class="long-width-input">
-            <input matInput placeholder="Search for lemma, fonetic form, etc..." name="lemma" ngModel>
+            <input *ngIf="!useKeyboard" matInput placeholder="Search for lemma, fonetic form, etc..." name="lemma" ngModel>
+            <input *ngIf="useKeyboard" matInput [matKeyboard]="'yiddish'" placeholder="Search for lemma, fonetic form, etc..." name="lemma" ngModel>
           </mat-form-field>
+
+
           <button type="submit" mat-raised-button color="primary"><i class="fa fa-search"></i> Search</button>
         </form>
+      <a routerLink="/detail/search"><i>Goto advanced search</i></a>
     </div>
   </div>
 

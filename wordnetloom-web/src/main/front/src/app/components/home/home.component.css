@@ -1,3 +1,6 @@
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
+
 .welcome{
   text-align: center;
 }
@@ -10,7 +13,7 @@
   min-height: 99vh;
 }
 .app-container{
-  padding-top: 60px;
+  padding-top: 62px;
   height: 100%;
 }
 .offset-top{
@@ -19,4 +22,28 @@
 
 footer{
   background-color: #cccccc;
+}
+
+
+.fancy-checkbox i {
+  font-size: 1.1em;
+  color: #3f51b5;
+}
+.fancy-checkbox i.unchecked {
+  font-size: 1em;
+  color: rgb(178, 178, 178);
+}
+.fancy-checkbox input[type="checkbox"],
+.fancy-checkbox .checked {
+  display: none;
+}
+
+.fancy-checkbox input[type="checkbox"]:checked ~ .checked
+{
+  display: inline-block;
+}
+
+.fancy-checkbox input[type="checkbox"]:checked ~ .unchecked
+{
+  display: none;
 }

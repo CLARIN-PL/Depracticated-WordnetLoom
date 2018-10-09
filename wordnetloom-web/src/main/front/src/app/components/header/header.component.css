@@ -24,7 +24,7 @@ nav i{
 @media (min-width: 768px) {
   .advanced-search-panel{
     width: 50%;
-    top: 70px;
+    top: 108px;
     right: 15px;
   }
 }
@@ -32,7 +32,7 @@ nav i{
 @media (min-width: 992px) {
   .advanced-search-panel{
     width: 30%;
-    top: 70px;
+    top: 108px;
     right: 15px;
   }
 }
@@ -41,19 +41,24 @@ nav i{
   padding-top: 40px;
 }
 
-::ng-deep .advanced-search-form > .mat-input-wrapper.mat-form-field-wrapper > .mat-input-underline.mat-form-field-underline{
+::ng-deep .advanced-search-form > .mat-form-field-wrapper.mat-form-field-wrapper > .mat-form-field-underline.mat-form-field-underline{
   background-color: white;
 }
 
-::ng-deep .advanced-search-form .mat-input-placeholder{
+::ng-deep .advanced-search-form .mat-form-field-label{
   color: rgba(255, 255, 255, 0.3);
 }
 ::ng-deep .advanced-search-form .mat-form-field-underline{
   background-color: rgba(255, 255, 255, 0.3);;
 }
 .advanced-search-form{
+  /*width: 100%;*/
   margin-top: -10px;
   margin-bottom: -15px;
+
+  /*position: absolute;*/
+  /*left: 100%;*/
+  /*top: 0;*/
 }
 .advanced-search-form input{
   color: white;
@@ -72,3 +77,40 @@ nav i{
   flex: 1 1 auto;
 }
 
+.primary-navbar-row{
+  z-index: 1500;
+}
+
+.second-navbar-row{
+  top: 62px;
+  background-color: rgb(63, 81, 181);
+
+  -webkit-transition: top .5s ease-in-out;
+  -moz-transition: top .5s ease-in-out;
+  -ms-transition: top .5s ease-in-out;
+  -o-transition: top .5s ease-in-out;
+  transition: top .5s ease-in-out;
+}
+
+
+.second-navbar-row.hidden {
+  /*visibility: hidden;*/
+  /*z-index: -1;*/
+  top: -100px;
+}
+
+.second-navbar-content{
+  width:100%;
+  position: relative;
+  justify-content: center;
+
+}
+
+.right-nav-second-row{
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.search-field{
+  width:350px;
+}
