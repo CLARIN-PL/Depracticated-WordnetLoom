@@ -31,7 +31,13 @@ export class ResultComponent implements OnInit, OnDestroy {
 
     this.subscription = this.route.params.subscribe(params => {
       const searchLemma = params['search_lemma'];
-      if (searchLemma) {
+      if (!searchLemma) {
+        // console.log(params);
+        // this.sidebar.getAllOptions({lemma: ''});
+      } else {
+        if (searchLemma === '*') {
+          this.sidebar.getAllOptions({lemma: ''});
+        }
         // todo - fix when nothing found
         this.sidebar.getAllOptions({lemma: searchLemma});
       }

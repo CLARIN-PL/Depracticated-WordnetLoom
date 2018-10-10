@@ -6,26 +6,11 @@
         <div class="container">
           <h4 class="display-4">Welcome to The Online Dictionary of Polish Borrowings in Yiddish</h4>
           <p class="lead">Type a word in Yiddish, the YIVO standard transcription, or the Slavic philological transcription to begin the search
-            <i class="fas fa-keyboard-o"></i>
           </p>
         </div>
-        <form #f="ngForm" (ngSubmit)="onSearch(f.value)">
+      <app-input-with-keyboard></app-input-with-keyboard>
 
-          <label class="fancy-checkbox">
-            <input type="checkbox" />
-            <i class="fa fa-fw fa-keyboard-o unchecked"></i>
-            <i class="fa fa-fw fa-keyboard-o checked"></i>
-          </label>
-
-          <mat-form-field class="long-width-input">
-            <input *ngIf="!useKeyboard" matInput placeholder="Search for lemma, fonetic form, etc..." name="lemma" ngModel>
-            <input *ngIf="useKeyboard" matInput [matKeyboard]="'yiddish'" placeholder="Search for lemma, fonetic form, etc..." name="lemma" ngModel>
-          </mat-form-field>
-
-
-          <button type="submit" mat-raised-button color="primary"><i class="fa fa-search"></i> Search</button>
-        </form>
-      <a routerLink="/detail/search"><i>Goto advanced search</i></a>
+      <a routerLink="/detail/search/*"><i>Goto advanced search</i></a>
     </div>
   </div>
 

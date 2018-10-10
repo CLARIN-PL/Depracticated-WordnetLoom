@@ -9,15 +9,12 @@ import {Router} from '@angular/router';
 })
 export class SearchResultComponent implements OnInit {
   @Input() options;
-  cnt = 0;
   constructor(private currentState: CurrentStateService, private router: Router) { }
-
 
   ngOnInit() {
   }
 
   optionSelected(id) {
-    // this.cnt++;
     this.router.navigate([id]);
   }
 

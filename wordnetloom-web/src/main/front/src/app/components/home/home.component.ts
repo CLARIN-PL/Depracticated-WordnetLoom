@@ -9,15 +9,9 @@ import {Router} from '@angular/router';
 export class HomeComponent implements OnInit {
 
   constructor(private router: Router) { }
-  useKeyboard = true;
+  // useKeyboard = false;
   ngOnInit() {
   }
 
-  onSearch(form) {
-    console.log(form);
-    if (form.lemma.length > 0) {
-      this.router.navigate(['detail', 'search', form.lemma]);
-    }
 
-  }
 }

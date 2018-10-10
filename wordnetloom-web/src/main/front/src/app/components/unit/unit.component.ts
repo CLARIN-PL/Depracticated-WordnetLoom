@@ -21,6 +21,7 @@ export class UnitComponent implements OnInit, OnDestroy {
     this.sidebarService.init(this.sidebarRef);
     this.sidebarObsv = this.sidebarService.getListObservable()
       .subscribe(data => {
+        console.log(data);
         this.sidebarContent = data;
       });
     // timeout to deal with racing condition (angular error)

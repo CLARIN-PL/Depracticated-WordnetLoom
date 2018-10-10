@@ -29,6 +29,7 @@ import { UnitComponent } from './components/unit/unit.component';
 import { ScrollBottomDirective } from './directives/scroll-bottom.directive';
 import { SenseVisualizationComponent } from './components/visualizations/sense-visualization/sense-visualization.component';
 import { IKeyboardLayouts, KeyboardClassKey, keyboardLayouts, MAT_KEYBOARD_LAYOUTS, MatKeyboardModule } from '@ngx-material-keyboard/core';
+import { InputWithKeyboardComponent } from './components/input-with-keyboard/input-with-keyboard.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -172,7 +173,8 @@ const customLayouts: IKeyboardLayouts = {
     AboutComponent,
     UnitComponent,
     ScrollBottomDirective,
-    SenseVisualizationComponent
+    SenseVisualizationComponent,
+    InputWithKeyboardComponent
   ],
   imports: [
     RouterModule.forRoot(

@@ -1,0 +1,19 @@
+<form #f="ngForm" (ngSubmit)="onSearch(f.value)">
+<label class="fancy-checkbox" matTooltip="Check to use yiddish keyboard">
+  <input
+    name="questionAnswerState"
+    [(ngModel)]="useKeyboard"
+    (change)="checkboxClicked($event, useKeyboard)"
+    type="checkbox"
+    [checked]="useKeyboard"
+    />
+  <i class="fa fa-fw fa-keyboard-o unchecked"></i>
+  <i class="fa fa-fw fa-keyboard-o checked"></i>
+</label>
+
+<mat-form-field class="long-width-input">
+  <input *ngIf="!useKeyboard" matInput placeholder="Search for lemma, fonetic form, etc..." name="lemma" ngModel>
+  <input *ngIf="useKeyboard" matInput [matKeyboard]="'yiddish'" placeholder="Search for lemma, fonetic form, etc..." name="lemma" ngModel>
+</mat-form-field>
+  <button type="submit" mat-raised-button color="primary"><i class="fa fa-search"></i> Search</button>
+</form>

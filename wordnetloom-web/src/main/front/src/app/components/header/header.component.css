@@ -14,6 +14,10 @@ nav i{
   color: white;
 }
 
+nav i .fa {
+  color: #3f51b5;
+}
+
 .advanced-search-panel{
   z-index: 1000;
   position: fixed;
@@ -42,7 +46,7 @@ nav i{
 }
 
 ::ng-deep .advanced-search-form > .mat-form-field-wrapper.mat-form-field-wrapper > .mat-form-field-underline.mat-form-field-underline{
-  background-color: white;
+  background-color: black;
 }
 
 ::ng-deep .advanced-search-form .mat-form-field-label{
@@ -61,7 +65,7 @@ nav i{
   /*top: 0;*/
 }
 .advanced-search-form input{
-  color: white;
+  color: black;
 
 }
 
@@ -78,12 +82,18 @@ nav i{
 }
 
 .primary-navbar-row{
+  height: 62px;
   z-index: 1500;
+
+  -webkit-box-shadow: 0px 5px 15px 0px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0px 5px 15px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 5px 15px 0px rgba(0,0,0,0.2);
 }
 
 .second-navbar-row{
   top: 62px;
-  background-color: rgb(63, 81, 181);
+  /*background-color: #e9ecef;*/
+  background-color: rgb(220, 220, 220);
 
   -webkit-transition: top .5s ease-in-out;
   -moz-transition: top .5s ease-in-out;

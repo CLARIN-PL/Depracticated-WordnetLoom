@@ -25,7 +25,7 @@ export class HttpService {
 
     return this.http.get(this.apiBase + uri)
       .map( res => res.json())
-      .finally(() => console.log(this));
+      .finally(() => {});
   }
 
   getLexicalUnitDetails(id) {
