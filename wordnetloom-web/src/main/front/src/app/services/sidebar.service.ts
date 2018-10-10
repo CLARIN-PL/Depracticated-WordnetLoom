@@ -86,4 +86,16 @@ export class SidebarService {
     this.listObservable.next(this.list);
   }
 
+  assignSingleOptionIfEmpty(content) {
+    console.log(this.list)
+    if (this.list.length === 0) {
+      this.list = [];
+      this.list.push({
+        lemma: content.lemma,
+        id: content.senseId
+      });
+      this.listObservable.next(this.list);
+    }
+  }
+
 }

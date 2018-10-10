@@ -38,11 +38,6 @@ export class SearchComponent implements OnInit {
     this.searchFields['domainModifierId'] =        {apiOptions: 'dictionary/semantic-field/modifier', name: 'Domain modifier', queryString: 'domainModifierId', searchOptions: [] };
 
     this.assignSearchFields();
-
-    // this.keyboardService.open('yiddish');
-    // setTimeout(() => {
-    //   this.keyboardService.dismiss();
-    // }, 2000);
   }
 
   private assignSearchFields() {

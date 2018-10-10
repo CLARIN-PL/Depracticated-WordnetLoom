@@ -5,12 +5,23 @@
     <div class="col-12">
 
       <div class="row">
-        <div class="col-12 col-sm-3 col-lg-2 option-area">
+        <div class="col-12 col-sm-4 col-lg-2"></div> <!-- offset for main area -->
+        <div class="col-12 col-sm-4 col-lg-2 option-area"> <!-- position set as fixed -->
           <div [hidden]="sidebarContent.length < 1" class="options-title">
-            <h5>Wordslist:</h5>
-            <span>
-              <i>loaded: <span [hidden]="!sideBarListLoading">...</span><span [hidden]="sideBarListLoading">{{ recordsInfo }}</span></i>
-            </span>
+            <!--<h5>Wordslist: </h5>-->
+            <!--<span>-->
+              <!--<i>loaded: <span [hidden]="!sideBarListLoading">...</span><span [hidden]="sideBarListLoading">{{ recordsInfo }}</span></i>-->
+            <!--</span>-->
+            <!--(change)="selectedListStyle = $event.source.checked"-->
+            <mat-button-toggle-group
+              [value]="sideBarListStyle"
+              (change)="onSelectedListStyleChange($event)"
+              class="button-toggle-selector-names-style" name="fontStyle" aria-label="Font Style">
+              <mat-button-toggle class="small-toggle-btn" [checked]="true" value="yivo">YIVO</mat-button-toggle>
+              <mat-button-toggle class="small-toggle-btn" value="yiddish">Yiddish</mat-button-toggle>
+              <mat-button-toggle class="small-toggle-btn" value="philological">Philological</mat-button-toggle>
+            </mat-button-toggle-group>
+
           </div>
           <mat-nav-list #sidebarList class="option-list" [ngClass]="(sidebarContent.length < 1)?'':'no-content'" (appScrollBottom)="optionListScrollBottom($event)">
             <a mat-list-item
@@ -26,7 +37,7 @@
             </a>
           </mat-nav-list>
         </div>
-        <div class="col-12 col-sm-9 col-lg-10 offset-top">
+        <div class="col-12 col-sm-8 col-lg-10 offset-top">
           <app-right-area></app-right-area>
         </div>
       </div>

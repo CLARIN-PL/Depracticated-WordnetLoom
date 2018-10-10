@@ -12,6 +12,7 @@ export class UnitComponent implements OnInit, OnDestroy {
   sidebarObsv;
   sidebarLoadingObsv;
   sidebarContent = [];
+  sideBarListStyle = 'yiddish';
   sideBarListLoading = false;
   recordsInfo = null;
 
@@ -42,4 +43,7 @@ export class UnitComponent implements OnInit, OnDestroy {
     this.sidebarObsv.unsubscribe();
     this.sidebarLoadingObsv.unsubscribe();
   }
+  // onSelectedListStyleChange(event) {
+  //   console.log(event);
+  // }
 }

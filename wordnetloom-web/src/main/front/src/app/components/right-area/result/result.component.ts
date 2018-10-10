@@ -31,25 +31,28 @@ export class ResultComponent implements OnInit, OnDestroy {
 
     this.subscription = this.route.params.subscribe(params => {
       const searchLemma = params['search_lemma'];
-      if (!searchLemma) {
-        // console.log(params);
-        // this.sidebar.getAllOptions({lemma: ''});
-      } else {
+      // if (!searchLemma) {
+      //   console.log(this.sidebar.assignSingleOption({
+      //     lemma: this.lemmaId,
+      //     id: this.lemmaId
+      //   }));
+      // }
+
+        if (searchLemma) {
         if (searchLemma === '*') {
           this.sidebar.getAllOptions({lemma: ''});
         }
-        // todo - fix when nothing found
         this.sidebar.getAllOptions({lemma: searchLemma});
       }
 
       this.lemmaId = +params['lemma_id']; // (+) converts string 'id' to a number
       if (this.lemmaId) {
-        this.updateCurrentLexicalUnit();
+        this.updateCurrentLexicalUnit(!searchLemma);
       }
     });
   }
 
-  private updateCurrentLexicalUnit() {
+  private updateCurrentLexicalUnit(isSearchFieldEmpty) {
     this.content = [];
     this.http.getLexicalUnitDetails(this.lemmaId).subscribe((response) => {
       if (response['Yiddish'].length > 0) {
@@ -61,6 +64,7 @@ export class ResultComponent implements OnInit, OnDestroy {
         this.yiddishContentPresent = false;
         this.content.push(new SenseContent(response));
       }
+      this.sidebar.assignSingleOptionIfEmpty(this.content[0]);
     });
     this.http.getSenseRelations(this.lemmaId).subscribe(results => {
       this.relations = results[0].concat(results[1]);
