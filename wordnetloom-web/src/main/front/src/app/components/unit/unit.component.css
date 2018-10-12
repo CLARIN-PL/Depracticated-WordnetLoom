@@ -15,6 +15,23 @@
   position:fixed;
   top: 62px;
   min-height: calc(100vh - 62px);
+  transition: transform ease-in-out .5s;
+}
+
+.show-side-bar-area{
+  z-index: 2000;
+  position:fixed;
+  top: 62px;
+}
+
+.show-side-bar-area .show-hide-wordlist-btn{
+  background-color: transparent;
+  padding: 10px 10px;
+}
+
+.option-area.hidden{
+  transform: translate(-350px);
+  /*left: -30%;*/
 }
 .option-list{
   height: calc(100vh - 70px);
@@ -50,4 +67,23 @@
 /deep/ .small-toggle-btn.mat-button-toggle.mat-button-toggle-appearance-standard .mat-button-toggle-label-content{
   line-height: unset;
   padding: 0 5px;
+}
+
+.show-hide-wordlist-btn{
+  font-size: 1.1em;
+  width: 100%;
+  background-color: #dcdcdc;
+  margin-bottom: 10px;
+}
+.show-hide-wordlist-btn .fa-chevron-left{
+  position: relative;
+  top: -1px;
+  font-size: 0.9em;
+}
+.animate-flex,
+.right-area{
+  transition-duration: 200ms;
+  transition-delay: 1ms;
+  transition: width 0.5s, height 0.5s, max-width 0.5s, max-height 0.5s, flex 0.5s;
+  transition-timing-function: ease-in-out;
 }

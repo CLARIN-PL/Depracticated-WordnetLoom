@@ -5,14 +5,21 @@
     <div class="col-12">
 
       <div class="row">
-        <div class="col-12 col-sm-4 col-lg-2"></div> <!-- offset for main area -->
-        <div class="col-12 col-sm-4 col-lg-2 option-area"> <!-- position set as fixed -->
+        <div class="show-side-bar-area">
+          <button mat-button class="show-hide-wordlist-btn"  (click)="showSideBar()" >Wordslist: <i class="fa fa-chevron-right"></i></button>
+        </div>
+
+        <!--SIDE BAR-->
+        <div class="col-12 col-sm-4 col-lg-2 option-area" [ngClass]="{'hidden': !showingSideBar}"> <!-- position set as fixed -->
+
           <div [hidden]="sidebarContent.length < 1" class="options-title">
-            <!--<h5>Wordslist: </h5>-->
+            <button mat-button class="show-hide-wordlist-btn" (click)="hideSideBar()"><i class="fa fa-chevron-left"></i> Wordslist:</button>
+
             <!--<span>-->
               <!--<i>loaded: <span [hidden]="!sideBarListLoading">...</span><span [hidden]="sideBarListLoading">{{ recordsInfo }}</span></i>-->
             <!--</span>-->
             <!--(change)="selectedListStyle = $event.source.checked"-->
+
             <mat-button-toggle-group
               [value]="sideBarListStyle"
               (change)="onSelectedListStyleChange($event)"
@@ -37,11 +44,14 @@
             </a>
           </mat-nav-list>
         </div>
-        <div class="col-12 col-sm-8 col-lg-10 offset-top">
+
+        <!--SIDE BAR END-->
+
+        <div class="col-12 right-area offset-top" [ngClass]="{'col-sm-8 offset-sm-4 col-lg-10 offset-lg-2': showingSideBar}">
           <app-right-area></app-right-area>
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
 </div>

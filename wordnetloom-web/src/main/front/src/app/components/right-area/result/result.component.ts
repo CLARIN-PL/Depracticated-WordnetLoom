@@ -18,6 +18,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   lemmaId: number;
   yiddishContentPresent = false;
   relations= [];
+  footerFirstTabSelected = true;
 
   constructor(private http: HttpService,
               private sidebar: SidebarService,
@@ -79,5 +80,9 @@ export class ResultComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  footerTabChange(idx) {
+    this.footerFirstTabSelected = idx === 0;
   }
 }

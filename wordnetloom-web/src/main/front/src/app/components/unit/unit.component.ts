@@ -15,6 +15,7 @@ export class UnitComponent implements OnInit, OnDestroy {
   sideBarListStyle = 'yiddish';
   sideBarListLoading = false;
   recordsInfo = null;
+  showingSideBar = true;
 
   constructor(private sidebarService: SidebarService) {}
 
@@ -42,6 +43,14 @@ export class UnitComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.sidebarObsv.unsubscribe();
     this.sidebarLoadingObsv.unsubscribe();
+  }
+
+  hideSideBar() {
+    this.showingSideBar = false;
+  }
+
+  showSideBar() {
+    this.showingSideBar = true;
   }
   // onSelectedListStyleChange(event) {
   //   console.log(event);

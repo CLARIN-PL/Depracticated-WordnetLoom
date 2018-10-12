@@ -7,11 +7,14 @@
 </div>
 
 <div class="row main-area-row">
+
+  <!--GRAPH AREA-->
   <div class="col-sm-7">
-
     <div class="img-mockup"></div>
-
   </div>
+  <!--GRAPH AREA END-->
+
+  <!--SENSE DETAIL AREA-->
   <div class="col-sm-5 sense-detail-col">
 
     <mat-tab-group *ngIf="yiddishContentPresent" selectedIndex="1">
@@ -79,7 +82,42 @@
     </mat-tab-group>
 
   </div>
+  <!--GRAPH AREA END -->
 </div>
 
+
+  <!--FOOTER AREA-->
+  <!--FOOTER AREA END-->
+
+
   <!--<app-sense-visualization [visible]="true" [senseId]="lemmaId"></app-sense-visualization>-->
+</div>
+
+
+<div class="row footer">
+  <div class="col animate-flex no-gutters" >
+    <mat-tab-group class="vertical" [ngClass]="{'first-selected': footerFirstTabSelected}"
+                   (selectedIndexChange)="footerTabChange($event)">
+      <mat-tab label="Context">
+        <ul>
+          <li>context</li>
+          <li>context</li>
+          <li>context</li>
+          <li>context</li>
+          <li>context</li>
+        </ul>
+      </mat-tab>
+      <mat-tab label="Comment">
+        <ul>
+          <li>comment</li>
+          <li>comment</li>
+          <li>comment</li>
+          <li>comment</li>
+          <li>comment</li>
+          <li>comment</li>
+        </ul>
+      </mat-tab>
+    </mat-tab-group>
+
+  </div>
 </div>
