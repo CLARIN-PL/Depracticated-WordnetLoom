@@ -52,7 +52,7 @@ export class UnitComponent implements OnInit, OnDestroy {
   showSideBar() {
     this.showingSideBar = true;
   }
-  // onSelectedListStyleChange(event) {
-  //   console.log(event);
-  // }
+  onSelectedListStyleChange(event) {
+    console.log(event);
+  }
 }
