@@ -102,3 +102,15 @@
   flex: 1 1 auto;
 }
 
+.table.slim td {
+  padding: 3px 10px;
+}
+
+.sense-detail-col .card-body{
+  padding: 0;
+}
+
+.sense-detail-col .card {
+  margin-top: 20px;
+  border: none;
+}

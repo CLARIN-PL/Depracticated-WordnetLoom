@@ -9,22 +9,23 @@
 <div class="row main-area-row">
 
   <!--GRAPH AREA-->
-  <div class="col-sm-7">
+  <div class="col-sm-7 col-md-8">
     <div class="img-mockup"></div>
   </div>
   <!--GRAPH AREA END-->
 
   <!--SENSE DETAIL AREA-->
-  <div class="col-sm-5 sense-detail-col">
-
+  <div class="col-sm-5 col-md-4 sense-detail-col">
+    <h5 class="text-center">Selected unit details:</h5>
+    <h6 class="text-center" *ngIf="!yiddishContentPresent">No data avaliable for selected unit.</h6>
     <mat-tab-group *ngIf="yiddishContentPresent" selectedIndex="1">
       <mat-tab class="tab-title" label="Variants: " disabled></mat-tab>
       <mat-tab *ngFor="let content of content" [label]="content.yiddishVariant">
         <div class="row area-row">
           <div *ngFor="let area of content.areas" class="col-12 area-row">
-            <div class="card full-width small-margin">
+            <div class="card full-width">
               <div class="card-body">
-                <table class="table">
+                <table class="table slim">
                   <tr *ngFor="let field of area.fields">
                     <td><b>{{ field.name }}:</b></td>
                     <td>
@@ -32,51 +33,9 @@
                     </td>
                   </tr>
                 </table>
-
-                <!--<div *ngFor="let field of area.fields" class="row">-->
-                <!--<div class="col-4 col-xl-2"><b>{{ field.name }}:</b></div>-->
-                <!--<div class="col-8 col-xl-10">-->
-                <!--<p *ngFor="let value of field.values"> {{ value }} </p>-->
-                <!--<hr>-->
-                <!--</div>-->
-                <!--</div>-->
               </div>
             </div>
           </div>
-          <!--
-          <div class="col-lg-4 col-xl-4 area-row">
-            <div *ngIf="relations.length > 0" class="row area-row">
-              <div class="card full-width small-margin">
-                <div class="card-body">
-                  <h4 class="card-title">Relations:</h4>
-                  <div *ngFor="let relation of relations" class="row">
-                    <div class="col-md-4 col-lg-5"><b>{{ relation.key }}:</b></div>
-                    <div class="col-md-8 col-lg-7">
-                  <span *ngFor="let member of relation.items; let isLast=last">
-                    <a [routerLink]="'/detail/' + member['target']">{{ member['lemma']}}</a>{{isLast ? '' : ', '}}
-                  </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div *ngIf="yiddishContentPresent" class="row area-row">
-              <div class="card full-width small-margin">
-                <div class="card-body">
-                  <h4 class="card-title">Visualizations:</h4>
-                  <div class="row">
-                    <div class="col-4 col-md-2 col-xl-4"><b></b></div>
-                    <div class="col-8 col-md-10 col-xl-9">
-                      <button class="visualization-button" mat-raised-button color="primary">Show synset visualization</button>
-                      <span>&nbsp;</span>
-                      <button class="visualization-button" mat-raised-button color="primary">Show lexical unit visualization</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          -->
         </div>
       </mat-tab>
     </mat-tab-group>
