@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 
 @Component({
@@ -9,6 +9,9 @@ import {Router} from '@angular/router';
 export class InputWithKeyboardComponent implements OnInit {
   @Input() model: string;
   useKeyboard = true;
+  showAdvancedOptions = false;
+  @ViewChild('panel') el;
+
   constructor(private router: Router) { }
 
   ngOnInit() {
@@ -21,8 +24,19 @@ export class InputWithKeyboardComponent implements OnInit {
     }
   }
 
-  checkboxClicked(event, val) {
+  showKeyboardSelectorClicked(event, val) {
     console.log(event, val);
+  }
+
+  showAdvancedOptionsChange(event, val) {
+    // console.log(event, val);
+    this.panelToggle();
+  }
+
+  panelToggle() {
+    this.el.toggle();
+    this.showAdvancedOptions = this.el._expanded;
+    console.log(this.el);
   }
 
 }

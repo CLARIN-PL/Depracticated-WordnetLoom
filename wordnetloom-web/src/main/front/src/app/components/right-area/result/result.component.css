@@ -2,6 +2,9 @@
   margin-right: 0;
   margin-left: 0;
 }
+.sense-detail-col{
+  overflow-y: scroll;
+}
 
 .visualization-button{
   margin: 5px;
@@ -34,6 +37,16 @@
 }
 
 
+.main-area-row{
+  height: calc(100vh - 120px - 200px);
+}
+
+.img-mockup{
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-image: url('/assets/img/graph_mockup.png');
+}
 
 
 

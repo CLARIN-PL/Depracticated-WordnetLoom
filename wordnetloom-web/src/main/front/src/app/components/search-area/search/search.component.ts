@@ -13,7 +13,7 @@ export class SearchComponent implements OnInit {
   constructor(private http: HttpService, private sidebar: SidebarService, private keyboardService: MatKeyboardService) { }
 
   searchFields: {[id: string]: Object} = {};
-
+  searchByString: {} = {};
   searchFormFields: Array<Object> = [];
   searchFieldsDict = ['style', 'status', 'lexical-characteristic',
     'age', 'source', 'semantic-field', 'semantic-field/modifier'];
@@ -25,7 +25,24 @@ export class SearchComponent implements OnInit {
 
   states= [{name: 'a', code: 'a'}];
 
+  test = null;
+
   ngOnInit() {
+
+    this.searchByString = {apiOptions: 'stringType', name: 'String type', queryString: 'stringType',
+      searchOptions: [
+        {id: 1, name: 'YIVO Spelling', description: ''},
+        {id: 2, name: 'Yiddish', description: ''},
+        {id: 3, name: 'Philological', description: ''},
+        {id: 4, name: 'Transcription', description: ''},
+        {id: 5, name: 'Phonetic', description: ''},
+        {id: 6, name: 'Transcription', description: ''},
+        {id: 7, name: 'Etymological Root', description: ''},
+        {id: 8, name: 'Prefix', description: ''},
+        {id: 9, name: 'Root', description: ''},
+        {id: 10, name: 'Suffix', description: ''},
+        {id: 11, name: 'Constituent', description: ''}
+      ]};
     this.searchFields['lexiconId'] =               {apiOptions: 'lexicon', name: 'Lexicon', queryString: 'lexiconId', searchOptions: [] };
     this.searchFields['partOfSpeechId'] =          {apiOptions: 'partofspeech', name: 'Part of Speech', queryString: 'partOfSpeechId', searchOptions: [] };
     this.searchFields['domainId'] =                {apiOptions: 'domain', name: 'Domain', queryString: 'domainId', searchOptions: [] };
@@ -46,12 +63,19 @@ export class SearchComponent implements OnInit {
       this.http.getGlobalOptions(field['apiOptions']).subscribe(
         (response) => {
           this.searchFields[key]['searchOptions'] = response.entries;
-        });
+        },
+        (error) => {
+          console.log(error);
+        }
+        );
     }
+    console.log(this.searchFields);
 
   }
 
   onSubmit(form) {
+    console.log(form);
+    return;
     this.sidebar.getAllOptions(form);
   }
 }

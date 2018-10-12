@@ -6,3 +6,13 @@ from {
 form > * {
   width: 100%;
 }
+.vertical-padding{
+  padding: 0 10px;
+}
+
+.selector-label{
+  color: rgba(0,0,0,.42);
+}
+/deep/ .mat-form-field-infix{
+  width: 165px;
+}

@@ -51,22 +51,7 @@
     <div class="advanced-search-form">
       <app-input-with-keyboard  class="text-center center justify-content-center"></app-input-with-keyboard>
     </div>
-    <form [hidden]="!!showSearch" class="form-inline float-right right-nav-second-row">
-      <button #expandBtn type="button" color="primary" mat-button (click)="panelToggle()">
-        Show advanced options <i class="fa fa-chevron-down" aria-hidden="true"></i>
-      </button>
-    </form>
-
-
   </div>
 
 
 </nav>
-
-
-<mat-expansion-panel #panel class="advanced-search-panel" >
-  <!--TODO - make click out => close -->
-  <!--<app-search-area (clickOutside)="hideOnLeave($event)"></app-search-area>-->
-  <app-search-area></app-search-area>
-</mat-expansion-panel>
-

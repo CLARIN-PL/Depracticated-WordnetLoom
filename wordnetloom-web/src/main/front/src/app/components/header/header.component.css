@@ -17,58 +17,10 @@ nav i{
 nav i .fa {
   color: #3f51b5;
 }
-
-.advanced-search-panel{
-  z-index: 1000;
-  position: fixed;
-  width: 90%;
-  top: 50px;
-  right: 5px;
-}
-@media (min-width: 768px) {
-  .advanced-search-panel{
-    width: 50%;
-    top: 108px;
-    right: 15px;
-  }
-}
-
-@media (min-width: 992px) {
-  .advanced-search-panel{
-    width: 30%;
-    top: 108px;
-    right: 15px;
-  }
-}
-
-.advanced-search-panel .mat-expanded{
-  padding-top: 40px;
-}
-
-::ng-deep .advanced-search-form > .mat-form-field-wrapper.mat-form-field-wrapper > .mat-form-field-underline.mat-form-field-underline{
-  background-color: black;
-}
-
-::ng-deep .advanced-search-form .mat-form-field-label{
-  color: rgba(255, 255, 255, 0.3);
-}
-::ng-deep .advanced-search-form .mat-form-field-underline{
-  background-color: rgba(255, 255, 255, 0.3);;
-}
 .advanced-search-form{
-  /*width: 100%;*/
   margin-top: -10px;
   margin-bottom: -15px;
-
-  /*position: absolute;*/
-  /*left: 100%;*/
-  /*top: 0;*/
 }
-.advanced-search-form input{
-  color: black;
-
-}
-
 .fixed-top{
   z-index: 1000;
 }

@@ -1,16 +1,17 @@
 .long-width-input{
   min-width: 300px;
+  padding: 0 10px;
 }
 
 .fancy-checkbox i {
-  font-size: 1.3em;
+  font-size: 1.2em;
   color: #3f51b5;
   cursor: pointer;
 
-  margin: 5px 2px -2px 2px;
+  margin: 5px 6px -2px 3px;
 }
 .fancy-checkbox i.unchecked {
-  font-size: 1em;
+  font-size: 1.1em;
   color: rgb(178, 178, 178);
 
   margin: 5px;
@@ -29,3 +30,52 @@
 {
   display: none;
 }
+
+.fancy-checkbox .chevron-rotate{
+  font-size: 0.6em;
+  position: relative;
+  bottom: -8px;
+  left: -7px;
+}
+
+.fancy-checkbox .chevron-rotate.unchecked {
+  font-size: 0.6em;
+  color: rgb(178, 178, 178);
+}
+
+/* advanced panel*/
+.advanced-search-panel{
+  z-index: 1000;
+  position: fixed;
+  width: 90%;
+  top: 50px;
+  right: 5px;
+}
+@media (min-width: 768px) {
+  .advanced-search-panel{
+    width: 50%;
+    top: 108px;
+    right: 15px;
+  }
+}
+
+@media (min-width: 992px) {
+  .advanced-search-panel{
+    width: 65%;
+    top: 108px;
+    right: 17.5%;
+  }
+}
+
+.advanced-search-panel .mat-expanded{
+  padding-top: 40px;
+}
+
+::ng-deep .advanced-search-form > .mat-form-field-wrapper.mat-form-field-wrapper > .mat-form-field-underline.mat-form-field-underline{
+  background-color: black;
+}
+
+.advanced-search-form input{
+  color: black;
+}
+

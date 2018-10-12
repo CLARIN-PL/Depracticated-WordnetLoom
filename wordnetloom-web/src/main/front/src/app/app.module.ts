@@ -14,6 +14,7 @@ import {CurrentStateService} from './services/current-state.service';
 import {RouterModule, Routes} from '@angular/router';
 import {
   MatButtonModule, MatCheckboxModule, MatChipsModule, MatExpansionModule, MatInputModule, MatListModule,
+  MatFormFieldModule,
   MatProgressSpinnerModule,
   MatSelectionList,
   MatSelectModule,
@@ -195,6 +196,7 @@ const customLayouts: IKeyboardLayouts = {
     MatTabsModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    MatFormFieldModule,
     BrowserAnimationsModule,
     MatKeyboardModule,
     MatButtonToggleModule,
