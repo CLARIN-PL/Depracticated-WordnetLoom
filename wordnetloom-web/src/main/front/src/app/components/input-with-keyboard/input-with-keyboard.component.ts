@@ -12,6 +12,7 @@ export class InputWithKeyboardComponent implements OnInit {
   useKeyboard = true;
   showAdvancedOptions = false;
   @ViewChild('panel') el;
+  @ViewChild('advancedFilters') advancedFilters;
 
   constructor(private router: Router) { }
 
@@ -19,7 +20,8 @@ export class InputWithKeyboardComponent implements OnInit {
   }
 
   onSearch(form) {
-    console.log(form);
+    const advancedFilters = this.advancedFilters.get();
+
     if (form.lemma.length > 0) {
       this.router.navigate(['detail', 'search', form.lemma]);
     }

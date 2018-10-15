@@ -1,9 +1,5 @@
 <div class="form-container">
-<form #f="ngForm" (ngSubmit)="onSubmit(f.value)">
-
-  <!--<mat-form-field class="example-full-width">-->
-    <!--<input matInput placeholder="lemmat, zapis fonetyczny, odmiana..." value="" name="lemma" ngModel>-->
-  <!--</mat-form-field>-->
+<form #form="ngForm">
   <br>
 
   <label class="selector-label">Search by string type:</label>
@@ -32,10 +28,5 @@
 
     </mat-expansion-panel>
   </mat-accordion>
-
-
-
-  <!--<button mat-button type="submit" mat-raised-button color="primary"><i class="fa fa-search" aria-hidden="true"></i> Search</button>-->
-
 </form>
 </div>

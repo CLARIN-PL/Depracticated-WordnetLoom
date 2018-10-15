@@ -2,15 +2,14 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
-import { SearchComponent } from './components/search-area/search/search.component';
+import { SearchComponent } from './components/search/search.component';
 import { ResultComponent } from './components/right-area/result/result.component';
 import { RightAreaComponent } from './components/right-area/right-area.component';
-import { SearchAreaComponent } from './components/search-area/search-area.component';
 import { FormsModule } from '@angular/forms';
 import { HttpService } from './services/http.service';
 import { HttpModule } from '@angular/http';
-import { SearchResultComponent } from './components/search-area/search-result/search-result.component';
 import {CurrentStateService} from './services/current-state.service';
+import {AvailableSearchFiltersService} from './services/configuration/available-search-filters.service';
 import {RouterModule, Routes} from '@angular/router';
 import {
   MatButtonModule, MatCheckboxModule, MatChipsModule, MatExpansionModule, MatInputModule, MatListModule,
@@ -167,9 +166,7 @@ const customLayouts: IKeyboardLayouts = {
     HeaderComponent,
     SearchComponent,
     ResultComponent,
-    SearchAreaComponent,
     RightAreaComponent,
-    SearchResultComponent,
     ClickOutsideDirective,
     HomeComponent,
     AboutComponent,
@@ -203,7 +200,7 @@ const customLayouts: IKeyboardLayouts = {
     MatButtonToggleModule,
     ClickOutsideModule
   ],
-  providers: [HttpService, CurrentStateService, SidebarService,
+  providers: [HttpService, CurrentStateService, SidebarService, AvailableSearchFiltersService,
       { provide: MAT_KEYBOARD_LAYOUTS, useValue: customLayouts }
     ],
   bootstrap: [AppComponent]

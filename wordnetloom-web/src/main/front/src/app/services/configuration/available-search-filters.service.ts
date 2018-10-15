@@ -1,34 +1,13 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import { HttpService } from '../../../services/http.service';
-import {SidebarService} from '../../../services/sidebar.service';
-import {MatKeyboardService} from '@ngx-material-keyboard/core';
+import { Injectable } from '@angular/core';
+import {HttpService} from '../http.service';
 
-@Component({
-  selector: 'app-search',
-  templateUrl: './search.component.html',
-  styleUrls: ['./search.component.css']
-})
-export class SearchComponent implements OnInit {
-  @Output() onSearchSubmit = new EventEmitter<any>();
-  constructor(private http: HttpService, private sidebar: SidebarService, private keyboardService: MatKeyboardService) { }
-
+@Injectable()
+export class AvailableSearchFiltersService {
   searchFields: {[id: string]: Object} = {};
   searchByString: {} = {};
-  searchFormFields: Array<Object> = [];
-  searchFieldsDict = ['style', 'status', 'lexical-characteristic',
-    'age', 'source', 'semantic-field', 'semantic-field/modifier'];
+  initialized = false;
 
-  searchFieldsGlob = ['lexicon', 'partofspeech', 'domain'];
-
-  searchKeys = ['lexiconId', 'partOfSpeechId', 'domainId', 'styleId', 'statusId', 'lexicalCharacteristicId', 'ageId',
-    'sourceId', 'yiddishDomainId', 'domainModifierId'];
-
-  states= [{name: 'a', code: 'a'}];
-
-  test = null;
-
-  ngOnInit() {
-
+  constructor(private http: HttpService) {
     this.searchByString = {apiOptions: 'stringType', name: 'String type', queryString: 'stringType',
       searchOptions: [
         {id: 1, name: 'YIVO Spelling', description: ''},
@@ -67,15 +46,20 @@ export class SearchComponent implements OnInit {
         (error) => {
           console.log(error);
         }
-        );
+      );
     }
-    console.log(this.searchFields);
-
+    this.initialized = true;
   }
 
-  onSubmit(form) {
-    console.log(form);
-    return;
-    this.sidebar.getAllOptions(form);
+  isInitialized() {
+    return this.initialized;
+  }
+
+  getSearchByString() {
+    return this.searchByString;
+  }
+
+  getSearchFields() {
+    return this.searchFields;
   }
 }
