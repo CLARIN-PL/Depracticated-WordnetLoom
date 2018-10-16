@@ -87,3 +87,7 @@
   transition: width 0.5s, height 0.5s, max-width 0.5s, max-height 0.5s, flex 0.5s;
   transition-timing-function: ease-in-out;
 }
+
+/deep/ .mat-tooltip-top-fix{
+  z-index: 2001;
+}

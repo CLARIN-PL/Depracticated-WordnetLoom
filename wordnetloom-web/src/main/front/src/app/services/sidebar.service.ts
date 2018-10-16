@@ -86,6 +86,10 @@ export class SidebarService {
     this.listObservable.next(this.list);
   }
 
+  getList() {
+    return this.list;
+  }
+
   assignSingleOptionIfEmpty(content) {
     console.log(this.list)
     if (this.list.length === 0) {
@@ -98,4 +102,7 @@ export class SidebarService {
     }
   }
 
+  loadOptionsFromParameters(params) {
+    this.getAllOptions(params);
+  }
 }

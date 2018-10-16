@@ -45,6 +45,10 @@
 
 /* advanced panel*/
 .advanced-search-panel{
+  margin: 0 20px 5px 20px;
+}
+.advanced-search-panel.floating{
+  margin: 0;
   z-index: 1000;
   position: fixed;
   width: 90%;
@@ -52,7 +56,7 @@
   right: 5px;
 }
 @media (min-width: 768px) {
-  .advanced-search-panel{
+  .advanced-search-panel.floating{
     width: 50%;
     top: 108px;
     right: 15px;
@@ -60,7 +64,7 @@
 }
 
 @media (min-width: 992px) {
-  .advanced-search-panel{
+  .advanced-search-panel.floating{
     width: 65%;
     top: 108px;
     right: 17.5%;

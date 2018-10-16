@@ -1,4 +1,4 @@
-<app-header></app-header>
+<!--<app-header></app-header>-->
 
 <div class="container-fluid app-container">
   <div class="row">
@@ -36,7 +36,10 @@
                [routerLink]="[item.id]"
                routerLinkActive="active-link"
                *ngFor="let item of sidebarContent"
-               matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}">
+               matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}"
+               [matTooltipPosition]="'right'"
+               [matTooltipClass]="'mat-tooltip-top-fix'"
+            >
               {{ item.lemma}}
             </a>
             <a [hidden]="!sideBarListLoading" mat-list-item class="option-list-item loading-option-list">

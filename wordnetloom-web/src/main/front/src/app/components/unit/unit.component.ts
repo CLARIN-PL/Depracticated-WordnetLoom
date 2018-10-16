@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewChild, OnDestroy} from '@angular/core';
 import {SidebarService} from '../../services/sidebar.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-unit',
@@ -17,15 +18,17 @@ export class UnitComponent implements OnInit, OnDestroy {
   recordsInfo = null;
   showingSideBar = true;
 
-  constructor(private sidebarService: SidebarService) {}
+  constructor(private sidebarService: SidebarService, private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.sidebarService.init(this.sidebarRef);
+    this.sidebarContent = this.sidebarService.getList();
+
     this.sidebarObsv = this.sidebarService.getListObservable()
       .subscribe(data => {
-        console.log(data);
         this.sidebarContent = data;
       });
+
     // timeout to deal with racing condition (angular error)
     setTimeout(() => {
       this.sidebarLoadingObsv = this.sidebarService.getListLoadinObservable()

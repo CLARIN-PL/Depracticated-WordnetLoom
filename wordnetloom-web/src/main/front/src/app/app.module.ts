@@ -35,9 +35,11 @@ import { ClickOutsideModule } from 'ng-click-outside';
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'about', component: AboutComponent},
-  {path: 'detail', component: UnitComponent, children:[
+  {path: 'detail', component: UnitComponent, children: [
+    { path: 'search_params', component: ResultComponent},
     { path: ':lemma_id', component: ResultComponent},
     { path: 'search/:search_lemma', component: ResultComponent},
+
   ]}
 ];
 

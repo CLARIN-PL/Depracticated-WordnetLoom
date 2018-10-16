@@ -1,5 +1,5 @@
 import {Component, OnInit } from '@angular/core';
-import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {ActivatedRoute, NavigationEnd, ParamMap, Router} from '@angular/router';
 
 
 @Component({
@@ -10,32 +10,21 @@ import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 export class AppComponent implements OnInit {
   showSearchInHeader = true;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
-    // this.route.params.subscribe(params => {
-    //   console.log(params);
-    //
-    // });
-    // this.route.data
-    //   .subscribe((data) => {
-    //     console.log(data);
-    //   });
-
-    // this.route.paramMap
-    //   .switchMap((params: ParamMap) => {
-    //
-    //     console.log(params);
-    //   });
+    this.initShowingHeaderSearchBar();
   }
-    // this.route.params.subscribe(params => {
-    //   console.log(params);
-    //   if (params['lemma_id']) {
-    //     this.showSearchInHeader = true;
-    //   } else {
-    //     this.showSearchInHeader = false;
-    //   }
-    // });
 
+  initShowingHeaderSearchBar() {
+    this.showSearchInHeader = (this.router.url !== '/');
+    this.router.events.subscribe((event) => {
+      if (!(event instanceof NavigationEnd)) {
+        return;
+      }
+      this.showSearchInHeader = (event['url'] !== '/');  // hide search header on main page
+      console.log(this.showSearchInHeader);
+    });
+  }
 }
 

@@ -35,5 +35,9 @@ export class SearchComponent implements OnInit {
 
   get() {
     return this.form.value;
+
+    const form = this.form.value;
+    delete form['selectedSearchTypes'];  // todo -change, only temporary
+    return form;
   }
 }

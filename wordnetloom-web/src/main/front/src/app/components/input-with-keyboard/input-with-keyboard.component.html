@@ -37,8 +37,11 @@
 </form>
 
 
-
-<mat-expansion-panel  (clickOutside)="onClickedOutsideAdvancedSearchPanel($event)" [delayClickOutsideInit]="true" #panel class="advanced-search-panel" >
+<mat-expansion-panel #panel
+                     class="advanced-search-panel"
+                     [ngClass]="{'floating': floatingAdvancedSearchPanel}"
+                     (clickOutside)="onClickedOutsideAdvancedSearchPanel($event)"
+                     [delayClickOutsideInit]="true">
   <app-search #advancedFilters></app-search>
 </mat-expansion-panel>
 

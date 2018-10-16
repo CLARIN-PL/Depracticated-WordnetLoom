@@ -1,6 +1,7 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {isNullOrUndefined} from "util";
+import {isNullOrUndefined} from 'util';
+import {SidebarService} from "../../services/sidebar.service";
 
 @Component({
   selector: 'app-input-with-keyboard',
@@ -9,22 +10,23 @@ import {isNullOrUndefined} from "util";
 })
 export class InputWithKeyboardComponent implements OnInit {
   @Input() model: string;
-  useKeyboard = true;
-  showAdvancedOptions = false;
+  @Input('floatingSearch') floatingAdvancedSearchPanel  = true;
   @ViewChild('panel') el;
   @ViewChild('advancedFilters') advancedFilters;
 
-  constructor(private router: Router) { }
+  useKeyboard = true;
+  showAdvancedOptions = false;
 
-  ngOnInit() {
-  }
+  constructor(private router: Router, private sidebar: SidebarService) { }
+
+  ngOnInit() {}
 
   onSearch(form) {
     const advancedFilters = this.advancedFilters.get();
-
     if (form.lemma.length > 0) {
-      this.router.navigate(['detail', 'search', form.lemma]);
+      advancedFilters['lemma'] = form.lemma;
     }
+    this.sidebar.getAllOptions(advancedFilters);
   }
 
   showKeyboardSelectorClicked(event, val) {

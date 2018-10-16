@@ -19,6 +19,8 @@ export class ResultComponent implements OnInit, OnDestroy {
   yiddishContentPresent = false;
   relations= [];
   footerFirstTabSelected = true;
+  showNothingFoundMsg = false;
+
 
   constructor(private http: HttpService,
               private sidebar: SidebarService,
@@ -28,18 +30,15 @@ export class ResultComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.content = [];
 
+    const searchQueryParams = this.route.snapshot.queryParamMap;
+    if (searchQueryParams.keys.length > 0) {
+      // @ts-ignore - suppressing non existing error
+      this.sidebar.loadOptionsFromParameters(searchQueryParams.params);
+    }
     this.lemmaId = +this.route.snapshot.paramMap.get('lemma_id');
-
     this.subscription = this.route.params.subscribe(params => {
       const searchLemma = params['search_lemma'];
-      // if (!searchLemma) {
-      //   console.log(this.sidebar.assignSingleOption({
-      //     lemma: this.lemmaId,
-      //     id: this.lemmaId
-      //   }));
-      // }
-
-        if (searchLemma) {
+      if (searchLemma) {
         if (searchLemma === '*') {
           this.sidebar.getAllOptions({lemma: ''});
         }
@@ -47,8 +46,11 @@ export class ResultComponent implements OnInit, OnDestroy {
       }
 
       this.lemmaId = +params['lemma_id']; // (+) converts string 'id' to a number
-      if (this.lemmaId) {
+      if (!isNaN(this.lemmaId)) {
+        this.showNothingFoundMsg = false;
         this.updateCurrentLexicalUnit(!searchLemma);
+      } else {
+        this.showNothingFoundMsg = true;
       }
     });
   }
@@ -65,7 +67,14 @@ export class ResultComponent implements OnInit, OnDestroy {
         this.yiddishContentPresent = false;
         this.content.push(new SenseContent(response));
       }
+
       this.sidebar.assignSingleOptionIfEmpty(this.content[0]);
+
+      setTimeout(() => {
+        console.log(this.sidebar)
+        console.log(this.content);
+      }, 2000);
+
     });
     this.http.getSenseRelations(this.lemmaId).subscribe(results => {
       this.relations = results[0].concat(results[1]);
