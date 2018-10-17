@@ -14,16 +14,21 @@
   </div>
 </div>
 
-<div class="row main-area-row">
+<div class="row main-area-row" [ngClass]="{'expanded':footerPanelHidden}">
 
   <!--GRAPH AREA-->
-  <div class="col-sm-7 col-md-8">
-    <div class="img-mockup"></div>
+  <div class="col-sm-7 col-md-8 graph-area" [ngClass]="{'col-sm-12 col-md-12': rightPanelHidden}">
+    <app-graph-main></app-graph-main>
+    <button class="expand-btn expand-right" (click)=" rightPanelHidden= !rightPanelHidden; ">
+      <i *ngIf="!rightPanelHidden" class="fa fa-chevron-right"></i>
+      <i *ngIf="rightPanelHidden" class="fa fa-chevron-left"></i>
+    </button>
+    <!--<div class="img-mockup"></div>-->
   </div>
   <!--GRAPH AREA END-->
 
   <!--SENSE DETAIL AREA-->
-  <div class="col-sm-5 col-md-4 sense-detail-col">
+  <div class="col-sm-5 col-md-4 sense-detail-col" [ngClass]="{'d-none': rightPanelHidden}">
     <h5 class="text-center">Selected unit details:</h5>
     <h6 class="text-center" *ngIf="!yiddishContentPresent">No data avaliable for selected unit.</h6>
     <mat-tab-group *ngIf="yiddishContentPresent" selectedIndex="1">
@@ -84,8 +89,13 @@
 </div>
 
 
-<div class="row footer">
-  <div class="col animate-flex no-gutters" >
+<div class="row footer" [ngClass]="{'dropped':footerPanelHidden}">
+  <button class="expand-btn expand-footer" (click)="footerPanelHidden= !footerPanelHidden">
+    <i *ngIf="!footerPanelHidden" class="fa fa-chevron-down"></i>
+    <i *ngIf="footerPanelHidden" class="fa fa-chevron-up"></i>
+  </button>
+
+  <div class="col animate-flex no-gutters footer-content">
     <mat-tab-group class="vertical" [ngClass]="{'first-selected': footerFirstTabSelected}"
                    (selectedIndexChange)="footerTabChange($event)">
       <mat-tab label="Context">

@@ -38,7 +38,10 @@
 
 
 .main-area-row{
-  height: calc(100vh - 120px - 200px);
+  height: calc(100vh - 335px);
+}
+.main-area-row.expanded{
+  height: calc(100vh - 225px);
 }
 
 .img-mockup{
@@ -58,8 +61,22 @@
 
 .footer{
   overflow-y: scroll;
-  height: 105px;
+  height: 120px;
   box-shadow: inset -5px 5px 20px 0px rgba(0, 0, 0, 0.1);
+}
+
+.footer.dropped{
+  transition: height .3s ease-in-out;
+  height: 15px;
+}
+
+.footer.dropped:hover{
+  height: 25px;
+}
+
+.footer .footer-content{
+  margin-top: 15px;
+  height: 90px;
 }
 
 .footer /deep/ .mat-tab-body-wrapper{
@@ -113,4 +130,71 @@
 .sense-detail-col .card {
   margin-top: 20px;
   border: none;
+}
+
+.graph-area{
+  float:left;
+  overflow: hidden;
+}
+
+.expand-btn{
+  color: white;
+  position: absolute;
+  padding: 0;
+  border: 0;
+  transition: width .1s ease-in-out;
+  background-color: #ececeb;
+}
+.expand-btn .fa{
+  font-size: 0.5em;
+  transition: font-size .1s ease-in-out;
+}
+.expand-btn:hover .fa{
+  font-size: 1em;
+}
+
+.expand-btn:focus{
+  outline: 0;
+}
+
+.expand-right{
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 5px;
+}
+
+.expand-right:hover i.fa{
+  border: 0;
+  background: #ececeb;
+  color: white;
+  border-radius: 2.5rem;
+  width: 11rem;
+  height: 5rem;
+  padding: 2rem .6rem;
+  margin: -10px;
+  text-align: left;
+}
+.expand-right:hover{
+  width: 12px;
+}
+.expand-footer{
+  z-index: 1000;
+  top:0;
+  left: 0;
+  width: 100%;
+  height: 15px;
+}
+
+.expand-footer:hover i.fa{
+  background: #ececeb;
+  color: white;
+  border-radius: 16.5rem;
+  width: 4rem;
+  height: 0rem;
+  padding: 2rem .6rem;
+  margin: -25px;
+}
+.expand-footer:hover{
+  height: 25px;
 }

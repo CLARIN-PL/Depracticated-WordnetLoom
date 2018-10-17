@@ -55,7 +55,7 @@ export class SenseContent {
 
   private setYiddishFields(): void {
     const self = this;
-    const fieldNames = ['Yiddish variant', 'Dialectal', 'Grammatical gender', 'Meaning', 'Lexical Characteristic',
+    const fieldNames = ['Latin spelling', 'Yiddish spelling', 'Dialectal', 'Grammatical gender', 'Meaning', 'Lexical Characteristic',
       'Style', 'Status', 'Age'];
 
     const fields = [];

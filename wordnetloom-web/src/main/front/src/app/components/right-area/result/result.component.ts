@@ -20,6 +20,8 @@ export class ResultComponent implements OnInit, OnDestroy {
   relations= [];
   footerFirstTabSelected = true;
   showNothingFoundMsg = false;
+  rightPanelHidden = false;
+  footerPanelHidden = false;
 
 
   constructor(private http: HttpService,
@@ -69,12 +71,6 @@ export class ResultComponent implements OnInit, OnDestroy {
       }
 
       this.sidebar.assignSingleOptionIfEmpty(this.content[0]);
-
-      setTimeout(() => {
-        console.log(this.sidebar)
-        console.log(this.content);
-      }, 2000);
-
     });
     this.http.getSenseRelations(this.lemmaId).subscribe(results => {
       this.relations = results[0].concat(results[1]);
@@ -84,7 +80,6 @@ export class ResultComponent implements OnInit, OnDestroy {
         return {'key': key, items: rel[key]};
       });
     });
-    // this.http.getSenseRelations(this.lemmaId).subscribe();
   }
 
   ngOnDestroy() {
@@ -93,5 +88,9 @@ export class ResultComponent implements OnInit, OnDestroy {
 
   footerTabChange(idx) {
     this.footerFirstTabSelected = idx === 0;
+  }
+
+  graphContainerResized(event){
+    console.log(event);
   }
 }

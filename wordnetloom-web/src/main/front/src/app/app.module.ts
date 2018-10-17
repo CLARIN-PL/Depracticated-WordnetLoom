@@ -31,6 +31,8 @@ import { SenseVisualizationComponent } from './components/visualizations/sense-v
 import { IKeyboardLayouts, KeyboardClassKey, keyboardLayouts, MAT_KEYBOARD_LAYOUTS, MatKeyboardModule } from '@ngx-material-keyboard/core';
 import { InputWithKeyboardComponent } from './components/input-with-keyboard/input-with-keyboard.component';
 import { ClickOutsideModule } from 'ng-click-outside';
+import { GraphMainComponent } from './components/graph/graph-main/graph-main.component';
+import { AngularResizedEventModule } from 'angular-resize-event';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -175,7 +177,8 @@ const customLayouts: IKeyboardLayouts = {
     UnitComponent,
     ScrollBottomDirective,
     SenseVisualizationComponent,
-    InputWithKeyboardComponent
+    InputWithKeyboardComponent,
+    GraphMainComponent
   ],
   imports: [
     RouterModule.forRoot(
@@ -200,7 +203,8 @@ const customLayouts: IKeyboardLayouts = {
     BrowserAnimationsModule,
     MatKeyboardModule,
     MatButtonToggleModule,
-    ClickOutsideModule
+    ClickOutsideModule,
+    AngularResizedEventModule
   ],
   providers: [HttpService, CurrentStateService, SidebarService, AvailableSearchFiltersService,
       { provide: MAT_KEYBOARD_LAYOUTS, useValue: customLayouts }
