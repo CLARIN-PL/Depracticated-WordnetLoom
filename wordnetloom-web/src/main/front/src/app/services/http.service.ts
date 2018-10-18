@@ -52,4 +52,9 @@ export class HttpService {
 
     return Observable.forkJoin([incoming, outgoing]);
   }
+
+  getSearchAutocomplete(term) {
+    // todo- get from search
+    return Observable.of(new Object()).mapTo([term, 'abc', 'cde']);
+  }
 }

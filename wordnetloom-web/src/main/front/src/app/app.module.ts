@@ -5,7 +5,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { SearchComponent } from './components/search/search.component';
 import { ResultComponent } from './components/right-area/result/result.component';
 import { RightAreaComponent } from './components/right-area/right-area.component';
-import { FormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpService } from './services/http.service';
 import { HttpModule } from '@angular/http';
 import {CurrentStateService} from './services/current-state.service';
@@ -20,7 +20,7 @@ import {
   MatSidenavModule, MatTabsModule, MatTooltipModule,
   MatButtonToggleModule,
   MatTreeModule,
-  MatIconModule
+  MatIconModule, MatAutocompleteModule
 } from '@angular/material';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {SidebarService} from './services/sidebar.service';
@@ -204,6 +204,8 @@ const customLayouts: IKeyboardLayouts = {
     MatFormFieldModule,
     MatTreeModule,
     MatIconModule,
+    MatAutocompleteModule,
+    ReactiveFormsModule,
     BrowserAnimationsModule,
     MatKeyboardModule,
     MatButtonToggleModule,

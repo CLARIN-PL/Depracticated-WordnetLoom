@@ -1,10 +1,11 @@
-<form #f="ngForm" (ngSubmit)="onSearch(f.value)">
+<!--<form #f="ngForm" (ngSubmit)="onSearch(f.value)">-->
+<form [formGroup]="searchFormGroup" (ngSubmit)="onSearch()">
 
   <label class="fancy-checkbox" matTooltip="Show advanced options">
     <input
       class="ignore-btn-outside-click"
       name="showAdvancedOptions"
-      [(ngModel)]="showAdvancedOptions"
+      formControlName="showAdvancedOptions"
       (change)="toggleAdvancedOptionsChange($event, showAdvancedOptions)"
       type="checkbox"
       [checked]="showAdvancedOptions"
@@ -17,19 +18,25 @@
 
   <label class="fancy-checkbox" matTooltip="Check to use yiddish keyboard">
     <input
-      name="showYiddishKeyboard"
-      [(ngModel)]="useKeyboard"
-      (change)="showKeyboardSelectorClicked($event, useKeyboard)"
+      formControlName="useKeyboard"
       type="checkbox"
-      [checked]="useKeyboard"
+      [checked]="searchFormGroup.value.useKeyboard"
       />
     <i class="fa fa-fw fa-keyboard-o unchecked"></i>
     <i class="fa fa-fw fa-keyboard-o checked"></i>
   </label>
 
   <mat-form-field class="long-width-input">
-    <input *ngIf="!useKeyboard" matInput placeholder="Search for lemma, fonetic form, etc..." name="lemma" ngModel>
-    <input *ngIf="useKeyboard" matInput [matKeyboard]="'yiddish'" placeholder="Search for lemma, fonetic form, etc..." name="lemma" ngModel>
+    <input autocomplete="off" *ngIf="!searchFormGroup.value.useKeyboard" matInput formControlName="searchTerm" [matAutocomplete]="auto" placeholder="Search for lemma, fonetic form, etc..." name="lemma">
+    <input autocomplete="off" *ngIf="searchFormGroup.value.useKeyboard" matInput  formControlName="searchTerm" [matAutocomplete]="auto" [matKeyboard]="'yiddish'" placeholder="Search for lemma, fonetic form, etc..." name="lemma">
+
+    <!-- CREATE AUTO COMPLETE PANEL WITH OPTIONS. -->
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let opt of autoCompleteOptions" [value]="opt">
+        {{ opt }}
+      </mat-option>
+    </mat-autocomplete>
+
   </mat-form-field>
 
 
