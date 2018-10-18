@@ -10,8 +10,13 @@ import {SidebarService} from '../../services/sidebar.service';
 export class HeaderComponent implements OnInit {
   // @Input() showSearch = true;
   @Input() hideSecondRow = false;
+  navbarOpen = false;
 
   constructor(private http: HttpService, private sidebar: SidebarService) { }
+
+  toggleNavbar() {
+    this.navbarOpen = !this.navbarOpen;
+  }
 
   ngOnInit() {
     // this.hideOnLeave(this.el);// = () => {};

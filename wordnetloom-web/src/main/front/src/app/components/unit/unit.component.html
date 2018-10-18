@@ -31,17 +31,32 @@
 
           </div>
           <mat-nav-list #sidebarList class="option-list" [ngClass]="(sidebarContent.length < 1)?'':'no-content'" (appScrollBottom)="optionListScrollBottom($event)">
-            <a mat-list-item
-               class="option-list-item"
-               [routerLink]="[item.id]"
-               routerLinkActive="active-link"
-               *ngFor="let item of sidebarContent"
-               matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}"
-               [matTooltipPosition]="'right'"
-               [matTooltipClass]="'mat-tooltip-top-fix'"
-            >
-              {{ item.lemma}}
-            </a>
+            <div class="no-gutters" *ngFor="let item of sidebarContent">
+              <a mat-list-item
+                 class="option-list-item"
+                 [routerLink]="[item.id]"
+                 routerLinkActive="active-link"
+
+                 matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}"
+                 [matTooltipPosition]="'right'"
+                 [matTooltipClass]="'mat-tooltip-top-fix'"
+              >
+                {{ item.lemma}}
+              </a>
+
+
+              <a *ngFor="let temp of ['Yiddish Primary Lemma', 'Philological', 'Morphological']" mat-list-item
+                 class="option-list-item underlist-item"
+                 routerLinkActive="active-link"
+                 matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}"
+                 [matTooltipPosition]="'right'"
+                 [matTooltipClass]="'mat-tooltip-top-fix'">
+                {{temp}}
+              </a>
+              <mat-divider></mat-divider>
+            </div>
+
+
             <a [hidden]="!sideBarListLoading" mat-list-item class="option-list-item loading-option-list">
               <mat-spinner diameter="30" strokeWidth="3"></mat-spinner>
             </a>

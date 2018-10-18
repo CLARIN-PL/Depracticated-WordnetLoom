@@ -19,6 +19,8 @@ import {
   MatSelectModule,
   MatSidenavModule, MatTabsModule, MatTooltipModule,
   MatButtonToggleModule,
+  MatTreeModule,
+  MatIconModule
 } from '@angular/material';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {SidebarService} from './services/sidebar.service';
@@ -200,6 +202,8 @@ const customLayouts: IKeyboardLayouts = {
     MatChipsModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
+    MatTreeModule,
+    MatIconModule,
     BrowserAnimationsModule,
     MatKeyboardModule,
     MatButtonToggleModule,

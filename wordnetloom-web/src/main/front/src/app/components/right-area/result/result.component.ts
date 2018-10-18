@@ -1,10 +1,10 @@
-import {ChangeDetectorRef, Component, OnChanges, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Injectable, OnChanges, OnDestroy, OnInit} from '@angular/core';
 import {HttpService} from '../../../services/http.service';
 import {CurrentStateService} from '../../../services/current-state.service';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
 import {SenseContent} from './sensecontent';
-import {SidebarService} from "../../../services/sidebar.service";
+import {SidebarService} from '../../../services/sidebar.service';
 
 @Component({
   selector: 'app-result',
@@ -90,7 +90,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.footerFirstTabSelected = idx === 0;
   }
 
-  graphContainerResized(event){
+  graphContainerResized(event) {
     console.log(event);
   }
 }

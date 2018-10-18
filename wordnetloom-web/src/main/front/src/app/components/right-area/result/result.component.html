@@ -64,14 +64,15 @@
       <div class="card full-width small-margin">
         <div class="card-body">
           <h4 class="card-title">Relations:</h4>
-          <div *ngFor="let relation of relations" class="row">
-            <div class="col-md-4 col-lg-5"><b>{{ relation.key }}:</b></div>
-            <div class="col-md-8 col-lg-7">
-                  <span *ngFor="let member of relation.items; let isLast=last">
-                    <a [routerLink]="'/detail/' + member['target']">{{ member['lemma']}}</a>{{isLast ? '' : ', '}}
-                  </span>
-            </div>
-          </div>
+            <ul class="tree">
+              <li *ngFor="let relation of relations; let isLast=last">{{ relation.key }}:
+              <ul>
+                  <li *ngFor="let member of relation.items; let isLast=last">
+                    <a [routerLink]="'/detail/' + member['target']">{{ member['lemma']}}</a>
+                  </li>
+              </ul>
+              </li>
+            </ul>
         </div>
       </div>
     </div>

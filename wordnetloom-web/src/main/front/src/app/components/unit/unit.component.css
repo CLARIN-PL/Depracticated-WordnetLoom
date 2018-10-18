@@ -47,7 +47,16 @@
 }
 
 .option-list .option-list-item.mat-list-item{
-  padding-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  height: 40px;
+}
+
+.option-list .option-list-item.mat-list-item.underlist-item{
+  height: 25px;
+  margin-left: 25px;
+  line-height: 0.8em;
+  font-size: 0.8em;
   white-space: nowrap;
   overflow: hidden;
 }
