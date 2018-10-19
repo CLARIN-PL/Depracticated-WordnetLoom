@@ -74,9 +74,16 @@
 }
 
 /deep/ .small-toggle-btn.mat-button-toggle.mat-button-toggle-appearance-standard .mat-button-toggle-label-content{
-  line-height: unset;
+  /*line-height: unset;*/
   padding: 0 5px;
+  line-height: 36px;
 }
+@media (min-width: 1350px) {
+/deep/ .mat-button-toggle-vertical{
+  flex-flow: row;
+}
+}
+
 
 .show-hide-wordlist-btn{
   font-size: 1.1em;

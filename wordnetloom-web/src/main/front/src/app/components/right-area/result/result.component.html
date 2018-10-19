@@ -64,9 +64,9 @@
 
 
     <div *ngIf="relations.length > 0" class="row area-row">
-      <div class="card full-width small-margin">
-        <div class="card-body">
-          <h4 class="card-title">{{'lexical_relations' | translate}}:</h4>
+      <div class="card full-width small-margin relations-area">
+        <div class="card-body relations-content">
+          <h5 class="card-title">{{'lexical_relations' | translate}}:</h5>
             <ul class="tree">
               <li *ngFor="let relation of relations; let isLast=last">{{ relation.key }}:
               <ul>

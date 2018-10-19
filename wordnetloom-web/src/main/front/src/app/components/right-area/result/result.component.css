@@ -223,5 +223,10 @@ ul.tree li:last-child {
   background: #fff url(/assets/img/lastnode.png) no-repeat;
   padding-bottom: 20px;
 }
+.relations-area{
 
-
+}
+.relations-content{
+  margin: auto;
+  width: fit-content;
+}
