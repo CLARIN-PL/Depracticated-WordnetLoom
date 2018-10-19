@@ -1,0 +1,15 @@
+{
+  "welcome_msg": "Welcome to The Online Dictionary of Polish Borrowings in Yiddish",
+  "home_page_small_instruction": "Type a word in Yiddish, the YIVO standard transcription, or the Slavic philological transcription to begin the search",
+  "search_placeholder": "Search for lemma, fonetic form, etc...",
+  "search": "Search",
+  "go_to_advanced_search": "Go to advanced search",
+  "nav_header_link": "The Online Dictionary of Polish Borrowings in Yiddish",
+  "home_link": "home",
+  "project_site_link": "project site",
+  "about_link": "about",
+  "selected_units_details": "Selected unit's details",
+  "no_data_avaliable_for_unit": "No data avaliable for selected unit.",
+  "wordlist": "Wordlist",
+  "lexical_relations": "Lexical relations"
+}

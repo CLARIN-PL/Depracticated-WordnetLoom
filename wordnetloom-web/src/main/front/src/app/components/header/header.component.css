@@ -86,6 +86,9 @@ nav i .fa {
   text-align: center;
   color: white;
 }
+.nav-item button{
+  text-transform: uppercase;
+}
 
 .nav-item.nav-item-search {
   padding-bottom: 15px;

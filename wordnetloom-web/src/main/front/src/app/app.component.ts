@@ -1,5 +1,6 @@
 import {Component, OnInit } from '@angular/core';
 import {ActivatedRoute, NavigationEnd, ParamMap, Router} from '@angular/router';
+import {TranslateService} from './services/translate.service';
 
 
 @Component({
@@ -10,7 +11,13 @@ import {ActivatedRoute, NavigationEnd, ParamMap, Router} from '@angular/router';
 export class AppComponent implements OnInit {
   showSearchInHeader = true;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private translate: TranslateService) {
+    // translate.use('en').then(() => {
+    //   console.log(translate.data);
+    // });
+
+    console.log(translate.data);
+  }
 
   ngOnInit() {
     this.initShowingHeaderSearchBar();

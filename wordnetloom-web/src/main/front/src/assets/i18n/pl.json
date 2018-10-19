@@ -1,0 +1,15 @@
+{
+  "welcome_msg": "Witaj na stronie słownika polonizmów w jidysz",
+  "home_page_small_instruction": "Wpisz słowo w jiysz, formacie YIVO lub filologicznej transkrypcji polskiej, aby rozpocząć wyszukiwanie",
+  "search_placeholder": "Szukaj lematu, formy fonetycznej etc...",
+  "search": "Szukaj",
+  "go_to_advanced_search": "Przejdź do zaawansowanego wyszukiwania",
+  "nav_header_link": "Słownik polonizmów w jidysz",
+  "home_link": "home",
+  "project_site_link": "strona projektu",
+  "about_link": "o słowniku",
+  "selected_units_details": "Szczegóły wybranej jednostki",
+  "no_data_avaliable_for_unit": "Brak danych dla wybranej jednostki.",
+  "wordlist": "Lista słow",
+  "lexical_relations": "Relacje leksykalne"
+}

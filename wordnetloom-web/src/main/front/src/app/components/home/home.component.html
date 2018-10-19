@@ -4,13 +4,14 @@
   <div class="row">
     <div class="col-12 jumbotron jumbotron-fluid welcome">
         <div class="container">
-          <h4 class="display-4">Welcome to The Online Dictionary of Polish Borrowings in Yiddish</h4>
-          <p class="lead">Type a word in Yiddish, the YIVO standard transcription, or the Slavic philological transcription to begin the search
+          <!--<h4 class="display-4">Welcome to The Online Dictionary of Polish Borrowings in Yiddish</h4>-->
+          <h4 class="display-4">{{ 'welcome_msg'  | translate}}</h4>
+          <p class="lead">{{ 'home_page_small_instruction'  | translate}}
           </p>
         </div>
       <app-input-with-keyboard [floatingSearch]="false"></app-input-with-keyboard>
 
-      <a routerLink="/detail/search/*"><i>Goto advanced search</i></a>
+      <a routerLink="/detail/search/*"><i>{{'go_to_advanced_search' | translate}}</i></a>
     </div>
   </div>
 

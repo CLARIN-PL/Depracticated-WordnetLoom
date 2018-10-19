@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header.component';
 import { SearchComponent } from './components/search/search.component';
@@ -35,6 +35,8 @@ import { InputWithKeyboardComponent } from './components/input-with-keyboard/inp
 import { ClickOutsideModule } from 'ng-click-outside';
 import { GraphMainComponent } from './components/graph/graph-main/graph-main.component';
 import { AngularResizedEventModule } from 'angular-resize-event';
+import {TranslateService} from "./services/translate.service";
+import { TranslatePipe } from './pipes/translate.pipe';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -166,6 +168,11 @@ const customLayouts: IKeyboardLayouts = {
   }
 };
 
+export function setupTranslateFactory(
+  service: TranslateService): Function {
+  return () => service.use('en');
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -180,7 +187,8 @@ const customLayouts: IKeyboardLayouts = {
     ScrollBottomDirective,
     SenseVisualizationComponent,
     InputWithKeyboardComponent,
-    GraphMainComponent
+    GraphMainComponent,
+    TranslatePipe
   ],
   imports: [
     RouterModule.forRoot(
@@ -213,6 +221,13 @@ const customLayouts: IKeyboardLayouts = {
     AngularResizedEventModule
   ],
   providers: [HttpService, CurrentStateService, SidebarService, AvailableSearchFiltersService,
+    TranslateService,
+      {
+        provide: APP_INITIALIZER,
+        useFactory: setupTranslateFactory,
+        deps: [TranslateService],
+        multi: true
+      },
       { provide: MAT_KEYBOARD_LAYOUTS, useValue: customLayouts }
     ],
   bootstrap: [AppComponent]

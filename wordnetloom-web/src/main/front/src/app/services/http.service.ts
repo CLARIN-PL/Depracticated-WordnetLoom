@@ -17,16 +17,21 @@ export class HttpService {
     // todo
   }
 
-  private get(uri): Observable<any> {
+  private get(uri, base?: string): Observable<any> {
     // this.slimLoadingBarService.start();
 
     // const headers = new Headers(options);
     // const opt = new RequestOptions({ headers: headers});
 
-    return this.http.get(this.apiBase + uri)
+    if (!base) {
+      base = this.apiBase;
+    }
+
+    return this.http.get(base + uri)
       .map( res => res.json())
       .finally(() => {});
   }
+
 
   getLexicalUnitDetails(id) {
     return this.get('sense/' + id);
@@ -56,5 +61,12 @@ export class HttpService {
   getSearchAutocomplete(term) {
     // todo- get from search
     return Observable.of(new Object()).mapTo([term, 'abc', 'cde']);
+  }
+  getLang(lang) {
+    const langPath = `assets/i18n/${lang || 'en'}.json`;
+
+    return this.http.get(langPath).map( res => res.json())
+      .finally(() => {});
+    // return this.get(langPath, '/');
   }
 }

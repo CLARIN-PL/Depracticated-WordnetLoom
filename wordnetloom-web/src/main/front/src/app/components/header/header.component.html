@@ -3,7 +3,7 @@
   <div class="d-flex flex-grow-1">
     <span class="w-100 d-lg-none d-block"><!-- hidden spacer to center brand on mobile --></span>
     <a class="navbar-brand d-none d-lg-inline-block" routerLink="/">
-      The Online Dictionary of Polish Borrowings in Yiddish
+      {{'nav_header_link' | translate}}
     </a>
     <a class="navbar-brand-two mx-auto d-lg-none d-inline-block" href="#">
       <img src="//placehold.it/120x40?text=Yiddish borrowings" alt="logo">
@@ -17,14 +17,20 @@
   <div class="collapse navbar-collapse flex-grow-1 text-right" id="myNavbar"  [ngClass]="{ 'show': navbarOpen }">
     <ul class="navbar-nav ml-auto flex-nowrap">
       <li class="nav-item">
-        <a routerLink="/about"><button class="nav-link m-2 menu-item" type="button" color="primary" mat-button>HOME</button></a>
+        <a routerLink="/about"><button class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'home_link' | translate}} </button></a>
       </li>
       <li class="nav-item">
-        <a routerLink="/about"><button class="nav-link m-2 menu-item" type="button" color="primary" mat-button>PROJECT SITE</button></a>
+        <a routerLink="/about"><button class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'project_site_link' | translate}}</button></a>
       </li>
 
       <li class="nav-item">
-        <a routerLink="/about"><button class="nav-link m-2 menu-item" type="button" color="primary" mat-button>ABOUT</button></a>
+        <a routerLink="/about"><button class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'about_link' | translate}}</button></a>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link m-2 menu-item" type="button" color="primary" mat-button (click)="selectLang('pl')">{{'PL' | translate}}</button>
+      </li>
+      <li class="nav-item">
+       <button class="nav-link m-2 menu-item" type="button" color="primary" mat-button (click)="selectLang('en')">{{'EN' | translate}}</button>
       </li>
       <li class="nav-item d-block d-lg-none nav-item-search">
         <div class="advanced-search-form">

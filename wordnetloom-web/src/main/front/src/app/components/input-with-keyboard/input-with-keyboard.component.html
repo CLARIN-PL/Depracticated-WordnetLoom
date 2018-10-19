@@ -27,8 +27,8 @@
   </label>
 
   <mat-form-field class="long-width-input">
-    <input autocomplete="off" *ngIf="!searchFormGroup.value.useKeyboard" matInput formControlName="searchTerm" [matAutocomplete]="auto" placeholder="Search for lemma, fonetic form, etc..." name="lemma">
-    <input autocomplete="off" *ngIf="searchFormGroup.value.useKeyboard" matInput  formControlName="searchTerm" [matAutocomplete]="auto" [matKeyboard]="'yiddish'" placeholder="Search for lemma, fonetic form, etc..." name="lemma">
+    <input autocomplete="off" *ngIf="!searchFormGroup.value.useKeyboard" matInput formControlName="searchTerm" [matAutocomplete]="auto" [placeholder]="'search_placeholder' | translate " name="lemma">
+    <input autocomplete="off" *ngIf="searchFormGroup.value.useKeyboard" matInput  formControlName="searchTerm" [matAutocomplete]="auto" [matKeyboard]="'yiddish'" [placeholder]="'search_placeholder' | translate " name="lemma">
 
     <!-- CREATE AUTO COMPLETE PANEL WITH OPTIONS. -->
     <mat-autocomplete #auto="matAutocomplete">
@@ -40,7 +40,7 @@
   </mat-form-field>
 
 
-  <button type="submit" mat-raised-button color="primary"><i class="fa fa-search"></i> Search</button>
+  <button type="submit" mat-raised-button color="primary"><i class="fa fa-search"></i> {{ 'search' | translate}}</button>
 </form>
 
 

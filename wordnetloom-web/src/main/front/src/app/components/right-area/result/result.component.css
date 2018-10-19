@@ -38,10 +38,10 @@
 
 
 .main-area-row{
-  height: calc(100vh - 335px);
+  height: calc(100vh - 255px);
 }
 .main-area-row.expanded{
-  height: calc(100vh - 225px);
+  height: calc(100vh - 140px);
 }
 
 .img-mockup{
@@ -204,6 +204,7 @@ ul.tree, ul.tree ul {
   background: url(/assets/img/vline.png) repeat-y;
   margin: 0;
   padding: 0;
+  /*padding-bottom: 20px;*/
 }
 
 ul.tree ul {
@@ -220,6 +221,7 @@ ul.tree li {
 ul.tree li.last,
 ul.tree li:last-child {
   background: #fff url(/assets/img/lastnode.png) no-repeat;
+  padding-bottom: 20px;
 }
 
 

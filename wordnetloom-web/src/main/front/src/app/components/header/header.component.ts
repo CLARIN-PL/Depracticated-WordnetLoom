@@ -1,6 +1,7 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {HttpService} from '../../services/http.service';
 import {SidebarService} from '../../services/sidebar.service';
+import {TranslateService} from "../../services/translate.service";
 
 @Component({
   selector: 'app-header',
@@ -12,10 +13,14 @@ export class HeaderComponent implements OnInit {
   @Input() hideSecondRow = false;
   navbarOpen = false;
 
-  constructor(private http: HttpService, private sidebar: SidebarService) { }
+  constructor(private http: HttpService, private sidebar: SidebarService, private translate: TranslateService) { }
 
   toggleNavbar() {
     this.navbarOpen = !this.navbarOpen;
+  }
+
+  selectLang(lang) {
+    this.translate.use(lang);
   }
 
   ngOnInit() {
