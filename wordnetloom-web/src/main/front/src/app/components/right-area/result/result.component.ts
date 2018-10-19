@@ -89,8 +89,4 @@ export class ResultComponent implements OnInit, OnDestroy {
   footerTabChange(idx) {
     this.footerFirstTabSelected = idx === 0;
   }
-
-  graphContainerResized(event) {
-    console.log(event);
-  }
 }

@@ -26,8 +26,6 @@ export class GraphService {
   }
 
   changeBaseWordWithLemma(lemma) {
-    console.log('change word to ' + lemma);
-    console.log(this.graph);
     this.graph.initializeFromSynsetId(10000);
   }
 

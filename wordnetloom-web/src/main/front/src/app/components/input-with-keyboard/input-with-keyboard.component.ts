@@ -29,10 +29,8 @@ export class InputWithKeyboardComponent implements OnInit {
   constructor(private router: Router, private sidebar: SidebarService, private http: HttpService) { }
 
   ngOnInit() {
-    // console.log(this.searchFormGroup);
     this.searchFormGroup.controls.searchTerm.valueChanges.subscribe(
       term => {
-        console.log(term);
         if (term !== '') {
           this.http.getSearchAutocomplete(term).subscribe(
             data => {
@@ -43,7 +41,6 @@ export class InputWithKeyboardComponent implements OnInit {
   }
 
   onSearch() {
-    console.log(this.searchFormGroup.value);
     const searchTerm = this.searchFormGroup.value.searchTerm;
     const advancedFilters = this.advancedFilters.get();
     if (searchTerm.length > 0) {
@@ -57,7 +54,6 @@ export class InputWithKeyboardComponent implements OnInit {
   }
 
   toggleAdvancedOptionsChange(event, val) {
-    console.log('show advanced options');
     this.panelToggle();
   }
 

@@ -49,7 +49,6 @@ export class SenseContent {
   }
 
   private getSearchFieldQuery(name: string, id: number|string) {
-    console.log(name, id);
     return QueryNames.getQueryString(name, id);
   }
 
@@ -59,7 +58,6 @@ export class SenseContent {
       'Style', 'Status', 'Age'];
 
     const fields = [];
-    console.log(this.currentYiddish);
     for (const name of fieldNames){
       if (this.currentYiddish[name].length > 0) {
         const newField = {

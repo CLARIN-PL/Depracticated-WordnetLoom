@@ -50,20 +50,6 @@ export class SenseVisualizationComponent implements OnInit {
     });
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize() {
-    if (this.resizeTimeout) {
-      clearTimeout(this.resizeTimeout);
-    }
-    this.resizeTimeout = setTimeout((() => {
-      console.log('resizing');
-      const graphSpace = this.getSpaceForGraph();
-      const width = graphSpace[0],
-        height = graphSpace[1];
-      this.graph.resizeSVG(width, height);
-    }).bind(this), 100);
-  }
-
   onDestroy() {
     this.lastClickedNodeIdSubscription.unsubscribe();
     this.graph = null;

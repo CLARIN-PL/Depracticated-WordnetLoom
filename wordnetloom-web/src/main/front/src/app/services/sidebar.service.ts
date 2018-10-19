@@ -82,7 +82,6 @@ export class SidebarService {
 
   addSearchOptions (response) {
     this.list = this.list.concat(response.entries);
-    console.log(this.list);
     this.listObservable.next(this.list);
   }
 
@@ -91,7 +90,6 @@ export class SidebarService {
   }
 
   assignSingleOptionIfEmpty(content) {
-    console.log(this.list)
     if (this.list.length === 0) {
       this.list = [];
       this.list.push({

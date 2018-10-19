@@ -11,13 +11,7 @@ import {TranslateService} from './services/translate.service';
 export class AppComponent implements OnInit {
   showSearchInHeader = true;
 
-  constructor(private router: Router, private translate: TranslateService) {
-    // translate.use('en').then(() => {
-    //   console.log(translate.data);
-    // });
-
-    console.log(translate.data);
-  }
+  constructor(private router: Router, private translate: TranslateService) {}
 
   ngOnInit() {
     this.initShowingHeaderSearchBar();
@@ -30,7 +24,6 @@ export class AppComponent implements OnInit {
         return;
       }
       this.showSearchInHeader = (event['url'] !== '/');  // hide search header on main page
-      console.log(this.showSearchInHeader);
     });
   }
 }

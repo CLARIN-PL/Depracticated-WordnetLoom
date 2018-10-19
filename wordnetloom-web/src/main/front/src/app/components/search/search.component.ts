@@ -30,7 +30,6 @@ export class SearchComponent implements OnInit {
 
   private assignSearchFields() {
     this.searchFields = this.availableSearchFilters.getSearchFields();
-    console.log(this.searchFields);
   }
 
   get() {

@@ -43,7 +43,6 @@ export class GraphMainComponent implements OnInit {
     }
     this.graphService.initService(this.graph);
     this.graphService.initializeFromSynsetId(10);
-    console.log(this.graph);
   }
 
   onDestroy() {
@@ -56,8 +55,6 @@ export class GraphMainComponent implements OnInit {
       clearTimeout(this.resizeTimeout);
     }
     this.resizeTimeout = setTimeout((() => {
-      console.log(event);
-      // const graphSpace = this.getSpaceForGraph();
       const width = event.newWidth,
         height = event.newHeight;
       this.graph.resizeSVG(width, height);

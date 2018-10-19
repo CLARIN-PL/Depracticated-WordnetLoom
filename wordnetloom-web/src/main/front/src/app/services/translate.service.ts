@@ -19,8 +19,6 @@ export class TranslateService {
 
     this.selectedLang = lang;
 
-    // console.log(this.cachedData);
-
     if (this.cachedData[this.selectedLang]) {
         this.data = this.cachedData[this.selectedLang];
         return;
