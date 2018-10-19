@@ -26,12 +26,25 @@
       <li class="nav-item">
         <a routerLink="/about"><button class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'about_link' | translate}}</button></a>
       </li>
+
       <li class="nav-item">
-        <button class="nav-link m-2 menu-item" type="button" color="primary" mat-button (click)="selectLang('pl')">{{'PL' | translate}}</button>
+        <mat-button-toggle-group #group="matButtonToggleGroup" value="en">
+          <mat-button-toggle class="nav-lang-select-btn" (click)="selectLang('pl')" value="pl">
+            {{'PL' | translate}}
+          </mat-button-toggle>
+          <mat-button-toggle class="nav-lang-select-btn" (click)="selectLang('en')" value="en">
+            {{'EN' | translate}}
+          </mat-button-toggle>
+        </mat-button-toggle-group>
       </li>
-      <li class="nav-item">
-       <button class="nav-link m-2 menu-item" type="button" color="primary" mat-button (click)="selectLang('en')">{{'EN' | translate}}</button>
-      </li>
+
+      <!--<li class="nav-item dropdown dropdown-sm hidden-xs">-->
+        <!--<a href="#" class="dropdown-toggle flag" data-toggle="dropdown" role="button" aria-expanded="false"><img src="http://wojciechrauk.pl/wp-content/themes/rauk_wordpress/img/en.png" alt=""><span class="caret"></span></a>-->
+        <!--<ul class="dropdown-menu" role="menu" style="display: none;">-->
+          <!--<li><a href="http://wojciechrauk.pl" class="flag flag-inner"><img src="http://wojciechrauk.pl/wp-content/themes/rauk_wordpress/img/pl.png" alt=""></a></li>-->
+        <!--</ul>-->
+      <!--</li>-->
+
       <li class="nav-item d-block d-lg-none nav-item-search">
         <div class="advanced-search-form">
           <app-input-with-keyboard  [floatingSearch]="false" class="text-center center justify-content-center"></app-input-with-keyboard>
