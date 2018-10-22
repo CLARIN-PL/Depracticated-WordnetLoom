@@ -10,6 +10,7 @@ import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface SynsetServiceRemote {
 
@@ -21,7 +22,7 @@ public interface SynsetServiceRemote {
 
     Synset findSynsetBySense(Sense sense, List<Long> lexicons);
 
-    Synset fetchSynset(Long synsetId);
+    Synset fetchSynset(Synset synset);
 
     Synset findById(Long id);
 
@@ -29,7 +30,7 @@ public interface SynsetServiceRemote {
 
     Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons, NodeDirection[] directions);
 
-    DataEntry findSynsetDataEntry(Long synsetId, List<Long> lexicons);
+    DataEntry findSynsetDataEntry(UUID synsetUUID, List<Long> lexicons);
 
     Synset save(Synset synset);
 
@@ -41,7 +42,7 @@ public interface SynsetServiceRemote {
 
     SynsetAttributes addSynsetAttribute(Long synsetId, SynsetAttributes attributes);
 
-    SynsetAttributes fetchSynsetAttributes(Long synsetId);
+    SynsetAttributes fetchSynsetAttributes(Synset synset);
 
     void merge(Synset target, Synset source);
 

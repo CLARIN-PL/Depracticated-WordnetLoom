@@ -5,10 +5,7 @@ import pl.edu.pwr.wordnetloom.user.model.User;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Audited
 @Entity
@@ -18,10 +15,10 @@ public class SynsetAttributes implements Serializable, Cloneable{
     private static final long serialVersionUID = -3305787239727633359L;
 
     @Id
-    protected Long id;
+    protected UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "synset_id")
+    @JoinColumn(name = "synset_fk")
     @MapsId
     private Synset synset;
 
@@ -48,11 +45,11 @@ public class SynsetAttributes implements Serializable, Cloneable{
     @Column(name = "ili_id")
     private String iliId;
 
-    public Long getId() {
+    public UUID getId(){
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id){
         this.id = id;
     }
 

@@ -49,9 +49,10 @@ public class SynsetData implements Loggable {
      * @param synsetId
      * @param lexicons
      */
-    public void loadWithSimpleRelation(Long synsetId, List<Long> lexicons) {
-        DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(synsetId, lexicons);
-        data.put(synsetId, dataEntry);
+    public void loadWithSimpleRelation(Synset synset, List<Long> lexicons) {
+        DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(synset.getUuid(), lexicons);
+        // TODO zmienić to na UUID
+        data.put(synset.getId(), dataEntry);
     }
 
 

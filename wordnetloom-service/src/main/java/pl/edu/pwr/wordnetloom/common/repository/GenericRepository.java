@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.common.repository;
 
 
 import java.util.List;
+import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -47,6 +48,12 @@ public abstract class GenericRepository<T> {
         return getEntityManager().find(getPersistentClass(), id);
     }
 
+    public T findByUuid(final UUID uuid){
+        if(uuid == null){
+            return null;
+        }
+        return getEntityManager().find(getPersistentClass(), uuid);
+    }
 
     public List<T> findAll(final String orderField) {
         System.out.println("Select e From " + getPersistentClass().getSimpleName() + " e Order by e." + orderField);
@@ -56,12 +63,21 @@ public abstract class GenericRepository<T> {
     }
 
     public boolean existsById(final Long id) {
-        return getEntityManager()
-                .createQuery("Select 1 From " + getPersistentClass().getSimpleName() + " e where e.id = :id")
-                .setParameter("id", id)
-                .setMaxResults(1)
-                .getResultList().size() > 0;
+        return exists(id, "id");
     }
+
+    public boolean exists(final UUID uuid){
+        return exists(uuid, "uuid");
+    }
+
+    private boolean exists(final Object filter, String field){
+        return getEntityManager()
+                .createQuery(String.format("SELECT 1 FROM %s E WHERE E.%s = :id", getPersistentClass().getSimpleName(), field))
+                .setParameter("id", filter)
+                .setMaxResults(1)
+                .getResultList().size()>0;
+    }
+
 
     public boolean alreadyExists(final String propertyName, final String propertyValue, final Long id) {
         final StringBuilder jpql = new StringBuilder();

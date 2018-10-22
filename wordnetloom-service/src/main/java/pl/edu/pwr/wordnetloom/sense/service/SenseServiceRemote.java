@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.sense.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
@@ -65,9 +66,9 @@ public interface SenseServiceRemote {
 
     Sense findHeadSenseOfSynset(Long synsetId);
 
-    Sense fetchSense(Long senseId);
+    Sense fetchSense(UUID uuid);
 
-    SenseAttributes fetchSenseAttribute(Long senseId);
+    SenseAttributes fetchSenseAttribute(Sense sense);
 
     List<EmotionalAnnotation> getEmotionalAnnotations(Long senseID);
 

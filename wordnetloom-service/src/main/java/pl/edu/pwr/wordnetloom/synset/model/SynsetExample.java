@@ -12,7 +12,7 @@ import javax.persistence.*;
 public class SynsetExample extends GenericEntity implements Example {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "synset_attributes_id")
+    @JoinColumn(name = "synset_attributes_fk")
     private SynsetAttributes synsetAttributes;
 
     @Column(name = "example")

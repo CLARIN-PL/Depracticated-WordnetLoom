@@ -5,9 +5,7 @@ import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.synset.model.SynsetAttributes;
 import pl.edu.pwr.wordnetloom.synset.dto.SynsetCriteriaDTO;
@@ -37,6 +35,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
     private final int FIRST_SYNSET_POSITION = 0;
 
+    private final String UUID = "uuid";
     private final String SENSES = "senses";
     private final String WORD = "word";
     private final String DOMAIN = "domain";
@@ -70,30 +69,24 @@ public class SynsetRepository extends GenericRepository<Synset> {
     }
 
     public Synset findSynset(Synset synset, List<Long> lexicons) {
-        return getEntityManager().createQuery("SELECT s FROM Synset s JOIN FETCH s.senses WHERE s.lexicon.id IN ( :lexicons ) AND  s.id = :id", Synset.class)
-                .setParameter("id", synset.getId())
+        return getEntityManager().createQuery("SELECT s FROM Synset s JOIN FETCH s.senses WHERE s.lexicon.id IN ( :lexicons ) AND  s.uuid = :uuid", Synset.class)
+                .setParameter("uuid", synset.getUuid())
                 .setParameter("lexicons", lexicons)
                 .getSingleResult();
     }
 
 
     public Integer findSynsetSenseCount(Synset synset) {
-        return findById(synset.getId()).getSenses().size();
+        return findByUuid(synset.getUuid()).getSenses().size();
     }
 
     public PartOfSpeech findSynsetPartOfSpeech(Synset synset) {
-        List<Sense> senses = findById(synset.getId()).getSenses();
+        List<Sense> senses = findByUuid(synset.getUuid()).getSenses();
         if (senses.isEmpty() || senses.get(0) == null) {
             return null;
         }
 
         return senses.get(0).getPartOfSpeech();
-    }
-
-    public Boolean areSynsetsInSameLexicon(Long synset1, Long synset2) {
-        Synset s1 = findById(synset1);
-        Synset s2 = findById(synset2);
-        return s1.getLexicon().getId().equals(s2.getLexicon().getId());
     }
 
     public List<Synset> findSynsetsByIds(Long[] synsetIds) {
@@ -142,63 +135,46 @@ public class SynsetRepository extends GenericRepository<Synset> {
     }
 
     //TODO zmienić nazwę
-    private Synset findSynsetWithRelationsAndSenseById(Long id) {
+    private Synset findSynsetWithHeadUnit(UUID uuid) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Synset> cq = getSynsetCriteriaQuery(id, cb, FIRST_SYNSET_POSITION);
+        CriteriaQuery<Synset> cq = getSynsetCriteriaQuery(uuid, cb, FIRST_SYNSET_POSITION);
 
         TypedQuery<Synset> query = getEntityManager().createQuery(cq);
         return query.getSingleResult();
     }
 
-    private CriteriaQuery<Synset> getSynsetCriteriaQuery(Long id, CriteriaBuilder cb, int pos) {
+    private CriteriaQuery<Synset> getSynsetCriteriaQuery(UUID uuid, CriteriaBuilder cb, int synsetPosition) {
         CriteriaQuery<Synset> cq = cb.createQuery(Synset.class);
 
         Root<Synset> root = cq.from(Synset.class);
-        Join<Synset, Sense> senseJoin = root.join("senses");
+        Join<Synset, Sense> senseJoin = root.join(SENSES);
+        root.fetch(SENSES).fetch(PART_OF_SPEECH);
 
-        Fetch<Synset, Sense> senseFetch = root.fetch("senses");
-        senseFetch.fetch("partOfSpeech");
-
-        List<Predicate> predicatesList = new ArrayList<>();
-        Predicate idPredicate = cb.equal(root.get("id"), id);
-        predicatesList.add(idPredicate);
-
-        Predicate sensePredicate = cb.equal(senseJoin.get("synsetPosition"), pos);
-        predicatesList.add(sensePredicate);
-
-        cq.where(predicatesList.toArray(new Predicate[0]));
+        cq.where(
+                cb.equal(root.get(UUID), uuid),
+                cb.equal(senseJoin.get(SYNSET_POSITION), synsetPosition)
+        );
         return cq;
     }
 
-    public Map<Long, DataEntry> prepareCacheForRootNode(final Long synsetId, final List<Long> lexicons, int numSynsetOnDirection, NodeDirection[] directions) throws ExecutionException, InterruptedException {
+    public Map<Long, DataEntry> prepareCacheForRootNode(final UUID synsetUUID, final List<Long> lexicons, int numSynsetOnDirection, NodeDirection[] directions) throws ExecutionException, InterruptedException {
         long now = System.currentTimeMillis();
         Map<Long, DataEntry> result = new HashMap<>();
-        // łączenie synsetu z jednostką, aby uzyskać opis (wyraz, domene, wariant)
-        Synset synset = findSynsetWithRelationsAndSenseById(synsetId);
+        Synset synset = findSynsetWithHeadUnit(synsetUUID);
 
-        // pobranie relacji dla synsetu. Relacje pobierane są wraz z połączonymi synsetami oraz ich opisami (wyraz, domena, wariant)
         List<SynsetRelation> relationsFrom = synsetRelationRepository.findRelationsWhereSynsetIsParent(synset, lexicons, directions);
         List<SynsetRelation> relationsTo = synsetRelationRepository.findRelationsWhereSynsetIsChild(synset, lexicons, directions);
-
-        //szukanie i usuwanie relacji, które pojawiają się na liście relacji "od" i na liście relacji "do"
         deleteRepeatingRelations(relationsFrom, relationsTo);
-        relationsFrom.addAll(relationsTo);
+        relationsFrom.addAll(relationsTo); // concatenate relations lists
+        relationsFrom.sort(new RelationWordComparator(synsetUUID));
+        List<Integer> indexesRelationsFrom = getRelationsIndicesToShow(relationsFrom, numSynsetOnDirection, synsetUUID);
+        fillRelations(relationsFrom, indexesRelationsFrom, synset, lexicons);
 
-        // sortowanie listy alfabetycznie
-        relationsFrom.sort(new RelationWordComparator(synsetId));
-
-        // wyszukiwanie kilku pierwszych synsetów z każdego kierunku, które zostaną pokazane na grafie
-        List<Integer> indexesRelationsFrom = getIndexRelationsToShow(relationsFrom, numSynsetOnDirection, synsetId);
-
-        // pobranie relacji dla synsetów które zostaną pokazane
-        fillRelations(relationsFrom, indexesRelationsFrom, synsetId, lexicons);
-
-        // budowanie wyniku
         DataEntry dataEntry = buildDataEntry(synset, relationsFrom);
         result.put(synset.getId(), dataEntry);
-        putDataEntryFromSynsetRelation(result, relationsFrom, synsetId);
+        putDataEntryFromSynsetRelation(result, relationsFrom, synsetUUID);
 
-        logger.info("Loading Synset: " + synsetId+" took: "+ + (System.currentTimeMillis() - now) +"ms");
+        logger.info("Loading Synset: " + synset.getId() +" took: "+ + (System.currentTimeMillis() - now) +"ms");
         return result;
     }
 
@@ -237,13 +213,13 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return dataEntry;
     }
 
-    private void putDataEntryFromSynsetRelation(Map<Long, DataEntry> map, List<SynsetRelation> relationsList, Long isRelationsFrom) {
+    private void putDataEntryFromSynsetRelation(Map<Long, DataEntry> map, List<SynsetRelation> relationsList, UUID outgoindRelationUUID) {
         Synset relatedSynset;
         Sense sense;
         DataEntry dataEntry;
         PersistenceUnitUtil unitUtil = em.getEntityManagerFactory().getPersistenceUnitUtil(); // narzedzie do okreslania, czy kolekcja została załadowana
         for (SynsetRelation relation : relationsList) {
-            if (isRelationsFrom.equals(relation.getParent().getId())) {
+            if (outgoindRelationUUID.equals(relation.getParent().getUuid())) {
                 relatedSynset = relation.getChild();
             } else {
                 relatedSynset = relation.getParent();
@@ -266,24 +242,24 @@ public class SynsetRepository extends GenericRepository<Synset> {
 
     private class RelationWordComparator implements Comparator<SynsetRelation>
     {
-        private Long synsetId;
+        private UUID  synsetUUID;
 
-        RelationWordComparator(Long synsetId) {
-            this.synsetId = synsetId;
+        RelationWordComparator(UUID synsetUUID) {
+            this.synsetUUID = synsetUUID;
         }
 
         @Override
         public int compare(SynsetRelation o1, SynsetRelation o2) {
             String word1;
             String word2;
-            if(o1.getParent().getId().equals(synsetId))
+            if(o1.getParent().getUuid().equals(synsetUUID))
             {
                 word1 = o1.getChild().getSenses().get(0).getWord().getWord();
             } else {
                 word1 = o1.getParent().getSenses().get(0).getWord().getWord();
             }
 
-            if(o2.getParent().getId().equals(synsetId)) {
+            if(o2.getParent().getUuid().equals(synsetUUID)) {
                 word2 = o2.getChild().getSenses().get(0).getWord().getWord();
             } else {
                 word2 = o2.getParent().getSenses().get(0).getWord().getWord();
@@ -293,7 +269,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         }
     }
 
-    private List<Integer> getIndexRelationsToShow(List<SynsetRelation> synsetsList, int numRelationsOnDirection, Long synsetId) {
+    private List<Integer> getRelationsIndicesToShow(List<SynsetRelation> synsetsList, int numRelationsOnDirection, UUID synsetUUID) {
         final int NUM_DIRECTION = 4;
         int[] directionCounter = new int[NUM_DIRECTION];
         Arrays.fill(directionCounter, 0);
@@ -305,7 +281,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         for (int i = 0; i < synsetsList.size(); i++) {
             int direction = synsetsList.get(i).getRelationType().getNodePosition().ordinal();
 
-            if(synsetsList.get(i).getChild().getId().equals(synsetId)) {
+            if(synsetsList.get(i).getChild().getUuid().equals(synsetUUID)) {
                 direction = synsetsList.get(i).getRelationType().getNodePosition().getOpposite().ordinal();
             }
 
@@ -329,18 +305,10 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return resultList;
     }
 
-    private void fillRelations(List<SynsetRelation> relations, List<Integer> indexesRelationsToExtend, Long synsetIsParent, List<Long> lexicons) {
+    private void fillRelations(List<SynsetRelation> relations, List<Integer> indexesRelationsToExtend, Synset parentSynset, List<Long> lexicons) {
         for(Integer i : indexesRelationsToExtend){
-
-            Synset synset;
-
             SynsetRelation relation = relations.get(i);
-
-            if(synsetIsParent.equals(relation.getParent().getId())) {
-                synset = relation.getChild();
-            } else {
-                synset = relation.getParent();
-            }
+            Synset synset = isParent(parentSynset, relation) ? relation.getChild() : relation.getParent();
             List<SynsetRelation> relationsFrom = synsetRelationRepository.findSimpleRelationsWhereSynsetIsParent(synset,lexicons);
             List<SynsetRelation> relationsTo = synsetRelationRepository.findSimpleRelationsWhereSynsetIsChild(synset, lexicons);
             synset.setOutgoingRelations(relationsFrom);
@@ -348,8 +316,12 @@ public class SynsetRepository extends GenericRepository<Synset> {
         }
     }
 
-    public DataEntry findSynsetDataEntry(Long synsetId, List<Long> lexicons) {
-        Synset newSynset = findSynsetWithRelationsAndSenseById(synsetId);
+    private boolean isParent(Synset parentSynset, SynsetRelation relation) {
+        return parentSynset.getUuid().equals(relation.getParent().getUuid());
+    }
+
+    public DataEntry findSynsetDataEntry(UUID synsetUUID, List<Long> lexicons) {
+        Synset newSynset = findSynsetWithHeadUnit(synsetUUID);
         List<SynsetRelation> relationsFrom = synsetRelationRepository.findSimpleRelationsWhereSynsetIsParent(newSynset, lexicons);
         List<SynsetRelation> relationsTo = synsetRelationRepository.findSimpleRelationsWhereSynsetIsChild(newSynset, lexicons);
         relationsFrom.addAll(relationsTo);
@@ -414,8 +386,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         List<Predicate> criteriaList = new ArrayList<>();
 
         if(criteria.getStatus() != null){
-            Predicate statusPredicate = criteriaBuilder.equal(synsetRoot.get(STATUS), criteria.getStatusId());
-            criteriaList.add(statusPredicate);
+            criteriaList.add(criteriaBuilder.equal(synsetRoot.get(STATUS), criteria.getStatusId()));
         }
 
         if(criteria.getLemma()!=null || criteria.getLexiconId() != null || criteria.getPartOfSpeechId() != null || criteria.getDomainId() != null){
@@ -492,26 +463,23 @@ public class SynsetRepository extends GenericRepository<Synset> {
         return query;
     }
 
-    public Synset fetchSynset(Long synsetId) {
-
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Synset> query = criteriaBuilder.createQuery(Synset.class);
+    public Synset fetchSynset(Synset synset) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Synset> query = cb.createQuery(Synset.class);
 
         Root<Synset> synsetRoot = query.from(Synset.class);
         Join<Synset, Sense> senseJoin = synsetRoot.join(SENSES);
+        synsetRoot.fetch(SENSES, JoinType.LEFT).fetch(DOMAIN);
 
-        Fetch<Synset, Sense> senseFetch = synsetRoot.fetch(SENSES, JoinType.LEFT);
-        senseFetch.fetch(DOMAIN);
-
-        Predicate[] predicates = new Predicate[2];
-        predicates[0] = criteriaBuilder.equal(synsetRoot.get(ID), synsetId);
-        predicates[1] = criteriaBuilder.equal(senseJoin.get(SYNSET_POSITION), FIRST_SYNSET_POSITION);
-        query.where(predicates);
+        query.where(
+                cb.equal(synsetRoot.get(UUID), synset.getUuid()),
+                cb.equal(senseJoin.get(SYNSET_POSITION), FIRST_SYNSET_POSITION)
+        );
 
         return getEntityManager().createQuery(query).getSingleResult();
     }
 
-    public SynsetAttributes fetchSynsetAttributes(Long synsetId){
+    public SynsetAttributes fetchSynsetAttributes(Synset synset){
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<SynsetAttributes> query = criteriaBuilder.createQuery(SynsetAttributes.class);
 
@@ -519,8 +487,7 @@ public class SynsetRepository extends GenericRepository<Synset> {
         root.fetch("owner", JoinType.LEFT);
         root.fetch( "examples", JoinType.LEFT);
 
-        Predicate predicate =  criteriaBuilder.equal(root.get("id"), synsetId);
-        query.where(predicate);
+        query.where(criteriaBuilder.equal(root.get("synset"), synset));
 
         return getEntityManager().createQuery(query).getSingleResult();
     }

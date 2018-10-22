@@ -22,7 +22,7 @@ public class SenseTooltipGenerator implements ToolTipGeneratorInterface {
             return null;
         }
         Sense sense = (Sense) object;
-        Sense fetchedSense = RemoteService.senseRemote.fetchSense(sense.getId());
+        Sense fetchedSense = RemoteService.senseRemote.fetchSense(sense.getUuid());
         // we must get relations from database, because collections are lazy
         List<SenseRelation> relations = RemoteService.senseRelationRemote.findRelations(sense, null, true, false);
         return getSenseTooltipText(fetchedSense, relations);
@@ -33,7 +33,7 @@ public class SenseTooltipGenerator implements ToolTipGeneratorInterface {
         builder.addLexicon(sense.getLexicon())
                 .addDomain(sense.getDomain())
                 .addPartOfSpeech(sense.getPartOfSpeech());
-        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(sense.getId());
+        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(sense);
         if (attributes != null) {
             if (attributes.getRegister() != null) {
                 builder.addRegister(attributes.getRegister());

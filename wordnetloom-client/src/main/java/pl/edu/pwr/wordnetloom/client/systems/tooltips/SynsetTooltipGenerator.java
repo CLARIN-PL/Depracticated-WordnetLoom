@@ -26,8 +26,8 @@ public class SynsetTooltipGenerator implements ToolTipGeneratorInterface {
             return null;
         }
         Synset synset = (Synset) object;
-        Synset fetchedSynset = RemoteService.synsetRemote.fetchSynset(synset.getId());
-        SynsetAttributes attributes = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
+        Synset fetchedSynset = RemoteService.synsetRemote.fetchSynset(synset);
+        SynsetAttributes attributes = RemoteService.synsetRemote.fetchSynsetAttributes(synset);
         //TODO sprawdzić, czy wystarczy pobrać tylko relację, gdzie synset jest relacja
         List<SynsetRelation> synsetRelations = RemoteService.synsetRelationRemote.findRelationsWhereSynsetIsParent(synset, LexiconManager.getInstance().getUserChosenLexiconsIds(), NodeDirection.values());
 
@@ -51,7 +51,7 @@ public class SynsetTooltipGenerator implements ToolTipGeneratorInterface {
             builder.addOwner(attributes.getOwner())
                     .addSynsetComment(attributes.getComment());
         }
-        SenseAttributes senseAttributes = RemoteService.senseRemote.fetchSenseAttribute(headSense.getId());
+        SenseAttributes senseAttributes = RemoteService.senseRemote.fetchSenseAttribute(headSense);
         if (senseAttributes != null) {
             builder.addSenseComment(senseAttributes.getComment());
         }

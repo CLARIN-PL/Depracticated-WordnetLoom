@@ -16,15 +16,16 @@ public class SynsetRelation extends GenericEntity {
     private static final long serialVersionUID = 1624355230288462084L;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "synset_relation_type_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "relation_type_fk", referencedColumnName = "uuid", nullable = false)
+
     private RelationType relationType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_synset_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "parent_synset_fk", referencedColumnName = "uuid", nullable = false)
     private Synset parent;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "child_synset_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "child_synset_fk", referencedColumnName = "uuid", nullable = false)
     private Synset child;
 
     public SynsetRelation() {
@@ -39,7 +40,6 @@ public class SynsetRelation extends GenericEntity {
         parent.setId(parentId);
         child = new Synset();
         child.setId(childId);
-
     }
 
     public Synset getParent() {

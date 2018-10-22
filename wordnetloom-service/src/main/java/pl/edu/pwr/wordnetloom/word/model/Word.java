@@ -1,7 +1,7 @@
 package pl.edu.pwr.wordnetloom.word.model;
 
 import org.hibernate.envers.Audited;
-import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
+import pl.edu.pwr.wordnetloom.common.model.UuidEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -11,7 +11,7 @@ import java.util.Objects;
 @Audited
 @Entity
 @Table(name = "word")
-public class Word extends GenericEntity {
+public class Word extends UuidEntity {
 
     private static final long serialVersionUID = -1256292370070216845L;
 

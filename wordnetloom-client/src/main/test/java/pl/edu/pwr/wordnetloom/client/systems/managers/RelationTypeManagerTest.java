@@ -50,7 +50,7 @@ public class RelationTypeManagerTest {
         });
     }
 
-    @Test
+    /*@Test
     public void shouldReturnRelationsWithoutProxyParentRelations() {
 
         RelationTypeManager.getInstance().load(RelationTypeForTestsRepository.allRelations());
@@ -60,5 +60,5 @@ public class RelationTypeManagerTest {
         assertThat(list, not(hasItem(aspektowosc())));
         assertThat(list, not(hasItem(rola())));
         assertThat(list, hasItems(aspektowosc_czysta_NDK_DK(), aspektowosc_czysta_DK_NDK(), rola_agens(), rola_pacjens(), antonimia()));
-    }
+    }*/
 }

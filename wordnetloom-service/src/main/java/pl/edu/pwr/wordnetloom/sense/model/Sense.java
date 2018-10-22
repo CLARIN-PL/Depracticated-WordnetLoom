@@ -2,7 +2,7 @@ package pl.edu.pwr.wordnetloom.sense.model;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
+import pl.edu.pwr.wordnetloom.common.model.UuidEntity;
 import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
@@ -19,15 +19,15 @@ import java.util.Set;
 @Audited
 @Entity
 @Table(name = "sense")
-public class Sense extends GenericEntity {
+public class Sense extends UuidEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "domain_id", referencedColumnName = "id", nullable = false)
     private Domain domain;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "word_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "word_fk", referencedColumnName = "uuid", nullable = false)
     private Word word;
 
     @NotNull
@@ -40,7 +40,7 @@ public class Sense extends GenericEntity {
     private Integer variant = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "synset_id", referencedColumnName = "id")
+    @JoinColumn(name = "synset_fk", referencedColumnName = "uuid")
     private Synset synset;
 
     @Column(name = "synset_position", columnDefinition = "int default 0")

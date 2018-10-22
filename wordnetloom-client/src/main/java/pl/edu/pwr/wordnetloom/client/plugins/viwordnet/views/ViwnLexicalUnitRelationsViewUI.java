@@ -138,7 +138,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                 }
                 Sense sense = (Sense) object;
                 // TODO chyba można jakoś zapobiec dodatkowemu pobieraniu z bazy
-                sense = RemoteService.senseRemote.fetchSense(sense.getId());
+                sense = RemoteService.senseRemote.fetchSense(sense.getUuid());
                 List<SenseRelation> relationsFrom = RemoteService.senseRelationRemote.findRelations(sense, null, true, false);
                 List<SenseRelation> relationTo = RemoteService.senseRelationRemote.findRelations((Sense) object, null, false, false);
                 fillRootRelations(root_from, relationsFrom, true);

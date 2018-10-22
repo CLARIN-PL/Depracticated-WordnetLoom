@@ -21,31 +21,6 @@ import java.util.logging.Logger;
 @Stateless
 public class SenseRepository extends GenericRepository<Sense> {
 
-    @Inject
-    EntityManager em;
-
-    @Inject
-    Logger logger;
-
-    public Sense clone(Sense sense) {
-        return persist(new Sense(sense));
-    }
-
-    @Override
-    public void delete(Sense sense) {
-        getEntityManager().remove(getEntityManager().contains(sense) ? sense : getEntityManager().merge(sense));
-    }
-
-    public void deleteAll() {
-        List<Sense> senses = findAll("id");
-        delete(senses);
-    }
-
-    public List<Sense> findByCriteria(SenseCriteriaDTO dto) {
-        List<Sense> senses = getSensesByCriteria(dto);
-        return senses;
-    }
-
     private final String WORD = "word";
     private final String DOMAIN = "domain";
     private final String LEXICON = "lexicon";
@@ -68,11 +43,31 @@ public class SenseRepository extends GenericRepository<Sense> {
     private final String VALUATIONS = "valuations";
     private final String EXAMPLE = "example";
 
-    private List<Sense> getSensesByCriteria(SenseCriteriaDTO dto) {
+    @Inject
+    EntityManager em;
 
+    @Inject
+    Logger logger;
+
+    public Sense clone(Sense sense) {
+        return persist(new Sense(sense));
+    }
+
+    @Override
+    public void delete(Sense sense) {
+        getEntityManager().remove(getEntityManager().contains(sense) ? sense : getEntityManager().merge(sense));
+    }
+
+    public void deleteAll() {
+        List<Sense> senses = findAll("id");
+        delete(senses);
+    }
+
+    public List<Sense> findByCriteria(SenseCriteriaDTO dto) {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Sense> query = criteriaBuilder.createQuery(Sense.class);
         Root<Sense> senseRoot = query.from(Sense.class);
+        senseRoot.fetch(WORD);
         senseRoot.fetch(DOMAIN);
         senseRoot.fetch(LEXICON);
         senseRoot.fetch(SYNSET);
@@ -100,6 +95,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         Set<Sense> resultSet = new LinkedHashSet<>(result);
         return new ArrayList<>(resultSet);
     }
+
 
     //TODO Refactor to Specifications
     private Predicate[] getPredicatesByCriteria(SenseCriteriaDTO dto, Root senseRoot, CriteriaBuilder criteriaBuilder) {
@@ -240,7 +236,9 @@ public class SenseRepository extends GenericRepository<Sense> {
 
     public List<Sense> findBySynset(Synset synset, List<Long> lexicons) {
         return getEntityManager().createQuery("SELECT s FROM Sense s LEFT JOIN FETCH s.domain " +
-                "LEFT JOIN FETCH s.partOfSpeech WHERE s.synset.id = :synsetId AND s.lexicon.id IN (:lexicons)", Sense.class)
+                "LEFT JOIN FETCH s.partOfSpeech " +
+                "LEFT JOIN FETCH s.word " +
+                "WHERE s.synset.id = :synsetId AND s.lexicon.id IN (:lexicons)", Sense.class)
                 .setParameter("synsetId", synset.getId())
                 .setParameter("lexicons", lexicons)
                 .getResultList();
@@ -368,14 +366,15 @@ public class SenseRepository extends GenericRepository<Sense> {
         return null;
     }
 
-    public Sense fetchSense(Long senseId) {
+    public Sense fetchSense(UUID uuid) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Sense> query = criteriaBuilder.createQuery(Sense.class);
         Root<Sense> senseRoot = query.from(Sense.class);
-        senseRoot.fetch("domain", JoinType.LEFT);
-        senseRoot.fetch("lexicon", JoinType.LEFT);
-        senseRoot.fetch("partOfSpeech", JoinType.LEFT);
-        query.where(criteriaBuilder.equal(senseRoot.get("id"), senseId));
+        senseRoot.fetch(DOMAIN, JoinType.LEFT);
+        senseRoot.fetch(LEXICON, JoinType.LEFT);
+        senseRoot.fetch(PART_OF_SPEECH, JoinType.LEFT);
+        senseRoot.fetch(WORD, JoinType.LEFT);
+        query.where(criteriaBuilder.equal(senseRoot.get("uuid"), uuid));
 
         return getEntityManager().createQuery(query).getSingleResult();
     }
@@ -390,14 +389,14 @@ public class SenseRepository extends GenericRepository<Sense> {
         return em;
     }
 
-    public SenseAttributes fetchSenseAttribute(Long senseId) {
+    public SenseAttributes fetchSenseAttribute(Sense sense) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<SenseAttributes> query = criteriaBuilder.createQuery(SenseAttributes.class);
 
         Root<SenseAttributes> root = query.from(SenseAttributes.class);
         root.fetch("examples", JoinType.LEFT);
 
-        Predicate predicate = criteriaBuilder.equal(root.get("id"), senseId);
+        Predicate predicate = criteriaBuilder.equal(root.get("sense"), sense);
         query.where(predicate);
 
         return getEntityManager().createQuery(query).getSingleResult();

@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.synset.model;
 
 import org.hibernate.envers.Audited;
 import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
+import pl.edu.pwr.wordnetloom.common.model.UuidEntity;
 import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -14,7 +15,7 @@ import java.util.*;
 @Audited
 @Entity
 @Table(name = "synset")
-public class Synset extends GenericEntity {
+public class Synset extends UuidEntity {
 
     private static final long serialVersionUID = 800201223603990725L;
 

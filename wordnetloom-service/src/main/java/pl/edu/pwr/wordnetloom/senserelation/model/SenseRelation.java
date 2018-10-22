@@ -18,15 +18,16 @@ public class SenseRelation extends GenericEntity {
     private static final long serialVersionUID = -9013001788054096196L;
 
     @ManyToOne
-    @JoinColumn(name = "relation_type_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "relation_type_fk", referencedColumnName = "uuid", nullable = false)
+
     private RelationType relationType;
 
     @ManyToOne
-    @JoinColumn(name = "parent_sense_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "parent_sense_fk", referencedColumnName = "uuid", nullable = false)
     private Sense parent;
 
     @ManyToOne
-    @JoinColumn(name = "child_sense_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "child_sense_fk", referencedColumnName = "uuid", nullable = false)
     private Sense child;
 
     public SenseRelation() {

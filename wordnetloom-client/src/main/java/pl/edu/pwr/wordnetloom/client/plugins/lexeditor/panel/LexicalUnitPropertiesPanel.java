@@ -285,7 +285,7 @@ public class LexicalUnitPropertiesPanel extends JPanel {
         if(!PermissionHelper.isAdministrator() && unit.getLexicon().isOnlyToRead()){
             lexiconComboBox.addItem(unit.getLexicon());
         }
-        senseAttributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
+        senseAttributes = RemoteService.senseRemote.fetchSenseAttribute(unit);
         assert senseAttributes != null;
         lemmaTextField.setText(unit.getWord().getWord());
         variantTextField.setText(String.valueOf(unit.getVariant()));

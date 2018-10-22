@@ -700,8 +700,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         ViwnNodeSynset nodeSynset = new ViwnNodeSynset(synset, this);
         forest.addVertex(nodeSynset);
         NodeDirection[] directions  = new NodeDirection[]{relationType.getNodePosition()};
-         showRelation(nodeSynset, directions, relationType);
-
+        showRelation(nodeSynset, directions, relationType);
     }
 
     public void showRelation(ViwnNodeSynset synsetNode, NodeDirection[] directions, RelationType relationType){
@@ -711,7 +710,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
             if(!checkRelationIsDownloaded(synsetNode, directions)){
                 synsetData.load(synsetNode.getSynset(), LexiconManager.getInstance().getUserChosenLexiconsIds(), directions);
             }
-            synsetNode.construct(directions);
+            synsetNode.construct(directions); //TODO prawdopodobnie to jest niepotrzebne
             synsetNode.setDownloadedRelation(directions, true);
         }
 
@@ -762,10 +761,11 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
      * @param synsetNode node which relations will be shown
      * @param direction  relation class which will be shown
      */
+    // TODO zmienić to na UUID
     private void showRelationGUI(ViwnNodeSynset synsetNode, NodeDirection direction, RelationType relationType) {
         List<ViwnEdgeSynset> relations = (List<ViwnEdgeSynset>) synsetNode.getRelation(direction);
-        if(relationType != null){
-            relations = relations.stream().filter(e->e.getRelationType().getId().equals(relationType.getId())).collect(Collectors.toList());
+        if(relationType != null){ //
+            relations = relations.stream().filter(e->!e.getRelationType().getUuid().equals(relationType.getUuid())).collect(Collectors.toList());
         }
         int toShow = Math.min(MAX_SYNSETS_SHOWN, relations.size()); // number synset to show on the graph
         int insertedNodes = insertVisibleSynsetNodes(relations, synsetNode, direction, toShow);
@@ -823,6 +823,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
     }
 
+    // TODO przerobić na UUID
     private ViwnNodeSynset getNodeSynsetFromEdge(ViwnEdgeSynset edge, ViwnNodeSynset originalNode) {
         if (edge.getSynsetFrom().getId().equals(originalNode.getId())) {
             return loadSynsetNode(edge.getSynsetTo());

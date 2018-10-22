@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Audited
 @Entity
@@ -16,10 +17,10 @@ import java.util.Set;
 public class SenseAttributes implements Serializable, Cloneable {
 
     @Id
-    private Long id;
+    private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "sense_id")
+    @JoinColumn(name="sense_fk")
     @MapsId
     private Sense sense;
 
@@ -69,11 +70,11 @@ public class SenseAttributes implements Serializable, Cloneable {
         owner = sa.owner;
     }
 
-    public Long getId() {
+    public UUID getId(){
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id){
         this.id = id;
     }
 

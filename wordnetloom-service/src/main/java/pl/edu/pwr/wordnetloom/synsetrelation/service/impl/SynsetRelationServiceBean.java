@@ -151,13 +151,9 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
    @PermitAll
    @Override
    public List<DataEntry> findPath(Synset synset, RelationType relationType, List<Long> lexiconsIds){
-        List<Synset> synsets = synsetRelationRepository.findPath(synset, relationType);
         List<DataEntry> dataEntries = new ArrayList<>();
-        DataEntry dataEntry;
-        for(Synset syn : synsets){
-            dataEntry = synsetRepository.findSynsetDataEntry(syn.getId(), lexiconsIds);
-            dataEntries.add(dataEntry);
-        }
+        List<Synset> synsets = synsetRelationRepository.findPath(synset, relationType);
+        synsets.forEach(syn -> dataEntries.add(synsetRepository.findSynsetDataEntry(syn.getUuid(), lexiconsIds)));
         return dataEntries;
    }
 

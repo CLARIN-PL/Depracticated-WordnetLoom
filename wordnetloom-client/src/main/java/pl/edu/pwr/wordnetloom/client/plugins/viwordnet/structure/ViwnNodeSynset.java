@@ -182,7 +182,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     }
 
     public void refresh(){
-        DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(getSynset().getId(), LexiconManager.getInstance().getUserChosenLexiconsIds());
+        DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(getSynset().getUuid(), LexiconManager.getInstance().getUserChosenLexiconsIds());
         ui.addToEntrySet(dataEntry);
         construct();
         ui.recreateLayout();

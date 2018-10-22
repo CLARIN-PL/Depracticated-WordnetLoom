@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class SenseExample extends GenericEntity implements Example{
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sense_attribute_id")
+    @JoinColumn(name="sense_attribute_id")
     private SenseAttributes senseAttributes;
 
     @Column(name = "example")

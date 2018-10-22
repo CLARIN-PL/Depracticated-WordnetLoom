@@ -297,7 +297,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
 
         if (synset != null) {
 
-            SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());;
+            SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset);;
 
             statusComboBox.setSelectedItem(synset.getStatus());
             if (sa.getDefinition() != null) {
@@ -403,7 +403,7 @@ public class SynsetPropertiesViewUI extends AbstractViewUI implements ActionList
                 RemoteService.synsetRemote.save(synset);
             }
 
-            SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
+            SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset);
             sa.setDefinition(definition);
             sa.setComment(comment);
             examples.forEach(e -> e.setSynsetAttributes(sa));

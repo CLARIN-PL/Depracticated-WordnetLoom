@@ -226,9 +226,9 @@ public class ViWordNetService extends AbstractService implements
     @Subscribe
     public void updateGraph(UpdateGraphEvent event) {
         if (event.getSense() == null) {
-            if(event.getView() != null){ // update one view
-                updateGraphFromRoot(event.getView());
-            } else { // update all views
+            // update one view
+            if(event.getView() != null) updateGraphFromRoot(event.getView());
+            else { // update all views
                 graphViews.forEach(view->updateGraphFromRoot(view));
             }
         } else {
@@ -309,6 +309,7 @@ public class ViWordNetService extends AbstractService implements
         }
         // in case of failure, recreate the visualisation
         if (graphViews.size() < GRAPH_VIEWS_LIMIT) {
+            // TODO dodać etykiety
             if (DialogBox.showYesNo("Nie znaleziono źródłowej wizualizacji synsetu, otworzyć nową?") == DialogBox.YES) {
                 addGraphView();
                 // reload active visualisation view
@@ -316,7 +317,6 @@ public class ViWordNetService extends AbstractService implements
                 // change tab title and tool tip
                 ((ViWordNetPerspective) workbench.getActivePerspective())
                         .setTabTitle(activeGraphView.getUI().getRootNode().getLabel());
-
                 return activeGraphView.getUI().getRootNode();
             }
         }

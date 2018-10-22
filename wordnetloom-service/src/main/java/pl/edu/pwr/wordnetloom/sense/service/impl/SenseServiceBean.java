@@ -30,6 +30,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.validation.Validator;
 import java.util.List;
+import java.util.UUID;
 
 @Stateless
 @SecurityDomain("wordnetloom")
@@ -124,7 +125,7 @@ public class SenseServiceBean implements SenseServiceLocal {
     }
 
     private boolean variantMustBeChanged(Sense sense) {
-        Sense old = senseRepository.fetchSense(sense.getId());
+        Sense old = senseRepository.fetchSense(sense.getUuid());
         // if property is not initialized, it was not changed
         return (Hibernate.isInitialized(sense.getLexicon()) && !old.getLexicon().equals(sense.getLexicon()))
                 || !old.getWord().getWord().equals(sense.getWord().getWord())
@@ -291,14 +292,14 @@ public class SenseServiceBean implements SenseServiceLocal {
 
     @PermitAll
     @Override
-    public Sense fetchSense(Long senseId) {
-        return senseRepository.fetchSense(senseId);
+    public Sense fetchSense(UUID uuid) {
+        return senseRepository.fetchSense(uuid);
     }
 
     @PermitAll
     @Override
-    public SenseAttributes fetchSenseAttribute(Long senseId) {
-        return senseRepository.fetchSenseAttribute(senseId);
+    public SenseAttributes fetchSenseAttribute(Sense sense) {
+        return senseRepository.fetchSenseAttribute(sense);
     }
 
     @PermitAll

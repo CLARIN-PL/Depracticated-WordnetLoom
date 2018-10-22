@@ -30,8 +30,8 @@ public class MakeNewLexicalRelationWindow extends RelationTypeFrame {
                                            PartOfSpeech pos, Sense senseFrom, Sense senseTo) {
         super(frame, RelationArgument.SENSE_RELATION, pos, null);
 
-        from = RemoteService.senseRemote.fetchSense(senseFrom.getId());
-        to = RemoteService.senseRemote.fetchSense(senseTo.getId());
+        from = RemoteService.senseRemote.fetchSense(senseFrom.getUuid());
+        to = RemoteService.senseRemote.fetchSense(senseTo.getUuid());
 
 //        buildUI();
         init(RelationArgument.SENSE_RELATION);

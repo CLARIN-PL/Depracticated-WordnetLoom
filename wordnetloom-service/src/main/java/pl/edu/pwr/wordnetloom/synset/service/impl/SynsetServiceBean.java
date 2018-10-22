@@ -36,10 +36,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.validation.Validator;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Stateless
@@ -116,8 +113,8 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @PermitAll
     @Override
-    public DataEntry findSynsetDataEntry(Long synsetId, List<Long> lexicons) {
-        return synsetRepository.findSynsetDataEntry(synsetId, lexicons);
+    public DataEntry findSynsetDataEntry(UUID synsetUUID, List<Long> lexicons) {
+        return synsetRepository.findSynsetDataEntry(synsetUUID, lexicons);
     }
 
     @RolesAllowed({"USER", "ADMIN"})
@@ -135,7 +132,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     private void saveAttributes(Synset newSynset) {
         SynsetAttributes attributes = new SynsetAttributes();
         attributes.setSynset(newSynset);
-        attributes.setId(newSynset.getId());
+        attributes.setId(newSynset.getUuid());
         synsetAttributesRepository.persist(attributes);
     }
 
@@ -168,7 +165,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @Override
     public Map<Long, DataEntry> prepareCacheForRootNode(Synset synset, List<Long> lexicons, NodeDirection[] directions) {
         try {
-            return synsetRepository.prepareCacheForRootNode(synset.getId(), lexicons, 4, directions);
+            return synsetRepository.prepareCacheForRootNode(synset.getUuid(), lexicons, 4, directions);
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -185,7 +182,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
             saved = save(synset);
             saveOwner(saved);
         }
-        Sense fetchedSense = senseService.fetchSense(sense.getId());
+        Sense fetchedSense = senseService.fetchSense(sense.getUuid());
         List<Sense> sensesInSynset = senseService.findBySynset(synset.getId());
         sensesInSynset.stream()
                 .findFirst()
@@ -232,7 +229,7 @@ public class SynsetServiceBean implements SynsetServiceLocal {
     @Override
     public void deleteSensesFromSynset(Collection<Sense> senses, Synset synset) {
         for (Sense sense : senses) {
-            sense = senseService.fetchSense(sense.getId());
+            sense = senseService.fetchSense(sense.getUuid());
             sense.setSynset(null);
             sense.setSynsetPosition(null);
             senseService.save(sense);
@@ -254,14 +251,14 @@ public class SynsetServiceBean implements SynsetServiceLocal {
 
     @PermitAll
     @Override
-    public Synset fetchSynset(Long synsetId) {
-        return synsetRepository.fetchSynset(synsetId);
+    public Synset fetchSynset(Synset synset) {
+        return synsetRepository.fetchSynset(synset);
     }
 
     @PermitAll
     @Override
-    public SynsetAttributes fetchSynsetAttributes(Long synsetId) {
-        return synsetRepository.fetchSynsetAttributes(synsetId);
+    public SynsetAttributes fetchSynsetAttributes(Synset synset) {
+        return synsetRepository.fetchSynsetAttributes(synset);
     }
 
     @RolesAllowed({"USER", "ADMIN"})

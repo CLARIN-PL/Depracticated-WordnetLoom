@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.criteria.*;
 import java.util.*;
 
@@ -50,7 +51,6 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
 
         q.distinct(true);
         return em.createQuery(q).getResultList();
-
     }
 
     public RelationType findByIdWithDependencies(Long id) {
@@ -105,7 +105,7 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
     }
 
     public RelationType findReverseByRelationType(Long relationTypeId) {
-        return getEntityManager().createQuery("SELECT rt.reverse FROM RelationType rt where rt.id = :id", RelationType.class)
+        return getEntityManager().createQuery("SELECT rt FROM RelationType rt LEFT JOIN FETCH rt.reverse where rt.reverse.id = :id", RelationType.class)
                 .setParameter("id", relationTypeId)
                 .getSingleResult();
     }
@@ -119,9 +119,10 @@ public class RelationTypeRepository extends GenericRepository<RelationType> {
     }
 
     public RelationType findByName(String name) {
-        Long nameId = (Long)getEntityManager().createQuery("SELECT K.id FROM LocalisedString S JOIN S.key K WHERE S.value = :name")
-                .setParameter("name", name)
-                .getSingleResult();
+        Query query = getEntityManager().createQuery("SELECT K.id FROM LocalisedString S JOIN S.key K WHERE S.value = :name");
+        query.setParameter("name", name);
+        query.setMaxResults(1);
+        Long nameId = (Long) query.getSingleResult();
         if(nameId != null){
             return (RelationType) getEntityManager().createQuery("SELECT r FROM RelationType r WHERE r.name = :nameId")
                     .setParameter("nameId", nameId)

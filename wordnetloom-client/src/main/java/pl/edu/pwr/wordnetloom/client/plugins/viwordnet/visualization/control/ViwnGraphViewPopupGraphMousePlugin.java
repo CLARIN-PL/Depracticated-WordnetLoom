@@ -67,21 +67,12 @@ public class ViwnGraphViewPopupGraphMousePlugin extends AbstractPopupGraphMouseP
     private void showPathToHypernym(ViwnNode vertex) {
         // TODO rozwiązanie tymczasowe
         Synset synset = ((ViwnNodeSynset)vertex).getSynset();
-        RelationType type;
-        if(synset.getLexicon().getName().equals("Słowosieć")){
-            // TODO poprawić kierunek relacji
-            type = RemoteService.relationTypeRemote.findByName("hiponimia");
-        } else {
-            type = RemoteService.relationTypeRemote.findByName("Hyponym");
-        }
-        showPathTo(vertex, type);
-    }
-
-    private void showPathTo(ViwnNode node, RelationType relationType){
-        Synset synset = ((ViwnNodeSynset)node).getSynset();
+        String relationName = synset.getLexicon().getName().equals("Słowosieć") ? "hiperonimia" : "Hypernym";
+        RelationType relationType = RemoteService.relationTypeRemote.findByName(relationName);
+        RelationType reverseRelation = RemoteService.relationTypeRemote.findReverseByRelationType(relationType.getId());
         List<DataEntry> dataEntries = RemoteService.synsetRelationRemote.findPath(synset, relationType, LexiconManager.getInstance().getUserChosenLexiconsIds());
         dataEntries.forEach(dataEntry -> vgvui.addToEntrySet(dataEntry));
-        dataEntries.forEach(dataEntry -> vgvui.showRelation(dataEntry.getSynset(), relationType));
+        dataEntries.forEach(dataEntry -> vgvui.showRelation(dataEntry.getSynset(), reverseRelation));
     }
 
     @Override

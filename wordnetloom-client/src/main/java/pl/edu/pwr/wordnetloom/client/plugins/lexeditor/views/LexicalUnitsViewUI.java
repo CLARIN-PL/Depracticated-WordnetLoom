@@ -180,6 +180,10 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         if (returnValue < 0) {
             return;
         }
+        loadSynsetOnGraph(returnValue);
+    }
+
+    private void loadSynsetOnGraph(int returnValue) {
         Sense unit = listModel.get(returnValue);
 
         deleteButton.setEnabled(canDeleteUnit(unit));
@@ -437,7 +441,7 @@ public class LexicalUnitsViewUI extends AbstractViewUI implements
         if (sense == null) {
             return;
         }
-        Sense fetchedSense = RemoteService.senseRemote.fetchSense(sense.getId());
+        Sense fetchedSense = RemoteService.senseRemote.fetchSense(sense.getUuid());
         clearUnitsList();
         listModel.addElement(fetchedSense);
         valueChanged(new ListSelectionEvent(newUnitButton, 0, 0, false));

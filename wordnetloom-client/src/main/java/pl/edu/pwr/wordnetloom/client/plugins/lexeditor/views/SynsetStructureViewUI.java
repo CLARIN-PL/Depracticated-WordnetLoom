@@ -460,7 +460,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         }
 
         RemoteService.synsetRelationRemote.makeRelation(lastSynset, newSynset, relationType);
-        // usunięcie przeniesionych jednostek z listy
+        // remove moved units from list
         Collection<Sense> unitsInSynset = listModel.getCollection();
         unitsInSynset.removeAll(selectedUnits);
         listModel.setCollection(unitsInSynset);
@@ -502,9 +502,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         int index = unitsList.getSelectedIndex();
         boolean singleSelection = unitsList.getSelectedIndices() == null
                 || unitsList.getSelectedIndices().length < 2;
-        buttonUp.setEnabled(canMoveUp(index, singleSelection));
-        buttonDown.setEnabled(canMoveDown(index, singleSelection));
-        buttonToNew.setEnabled(canAddUnit());
+        setButtonsEnabled(index, singleSelection);
 
         int selectionSize = unitsList.getSelectedIndices().length;
         // nie można usunąć linii podziału
@@ -512,6 +510,12 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
         buttonSwitchToLexicalPerspective.setEnabled(canSwitchToLexicalPerspective(index, singleSelection));
 
         Application.eventBus.post(new UpdateUnitRelationsEvent(listModel.getObjectAt(index)));
+    }
+
+    private void setButtonsEnabled(int index, boolean singleSelection) {
+        buttonUp.setEnabled(canMoveUp(index, singleSelection));
+        buttonDown.setEnabled(canMoveDown(index, singleSelection));
+        buttonToNew.setEnabled(canAddUnit());
     }
 
     private boolean canSwitchToLexicalPerspective(int index, boolean singleSelection) {
@@ -568,7 +572,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
             String status = LocalisationManager.getInstance().getLocalisedString(synset.getStatus().getName());
             statusText.setText(status);
         }
-        SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset.getId());
+        SynsetAttributes sa = RemoteService.synsetRemote.fetchSynsetAttributes(synset);
 
         commentValue.setText(sa.getComment() != null ? sa.getComment() : "");
         if (synset.getAbstract()) {
@@ -693,7 +697,7 @@ public class SynsetStructureViewUI extends AbstractViewUI implements
                 && idx != listModel.getLineSplitPosition()) {
 
             Sense unit = listModel.getObjectAt(idx);
-            unit = RemoteService.senseRemote.fetchSense(unit.getId());
+            unit = RemoteService.senseRemote.fetchSense(unit.getUuid());
 
             LexicalUnitPropertiesFrame.showModal(workbench, unit);
         }

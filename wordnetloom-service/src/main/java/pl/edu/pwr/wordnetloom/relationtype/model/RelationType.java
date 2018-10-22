@@ -2,8 +2,8 @@ package pl.edu.pwr.wordnetloom.relationtype.model;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import pl.edu.pwr.wordnetloom.common.model.GenericEntity;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
+import pl.edu.pwr.wordnetloom.common.model.UuidEntity;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.relationtest.model.RelationTest;
@@ -17,7 +17,7 @@ import java.util.Set;
 @Audited
 @Entity
 @Table(name = "relation_type")
-public class RelationType extends GenericEntity {
+public class RelationType extends UuidEntity {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(
@@ -76,7 +76,7 @@ public class RelationType extends GenericEntity {
     private RelationType parent;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reverse_relation_type_id")
+    @JoinColumn(name = "reverse_relation_fk")
     private RelationType reverse;
 
     @NotNull

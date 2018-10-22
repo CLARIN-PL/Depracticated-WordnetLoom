@@ -22,7 +22,7 @@ public class EmotionalAnnotation extends GenericEntity {
     }
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sense_id")
+    @JoinColumn(name = "sense_fk")
     private Sense sense;
 
     @Column(name = "super_anotation")
