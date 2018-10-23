@@ -48,6 +48,13 @@ const appRoutes: Routes = [
   ]}
 ];
 
+const yiddish_characters = [
+    'פ', 'ם', 'ן', 'ו', 'ט', 'א', 'ר', 'ק', '׳', '״', ',','ף', 'ך',
+    'ל', 'ח', 'י', 'ע', 'כ', 'ג', 'ד', 'ש', '.', 'ץ', 'ת', 'צ', 'מ',
+    'נ', 'ה', 'ב', 'ס', 'ז', 'אַ', 'אָ', 'בֿ', 'וּ', 'יִ', 'יי', 'ײַ', 'כּ',
+    'פּ', 'פֿ', 'שׂ', 'תּ', '־'
+  ];
+
 const customLayouts: IKeyboardLayouts = {
   ...keyboardLayouts,
   'yiddish_original': {
@@ -164,7 +171,36 @@ const customLayouts: IKeyboardLayouts = {
       ],
     ],
     'lang': ['yi']
+  },
+  'yiddish_alphabetical_order': {
+    name: 'Yiddish layout',
+    lang: ['yi'],
+    'keys':
+      [
+        // comments in reversed order
+        // ‫װ‬ ‫וּ‬ ‫ו‬ ‫ה‬ ‫דזש‬ ‫ד‬ ‫ג‬ ‫בֿ‬ ‫ב‬ ‫אָ‬ ‫אַ‬ ‫א‬
+                                                 // 3 characters
+        ['\u05F0', '\uFB35', '\u05D5', '\u05D4', /*'\u05D3\u05D6\u05E9',*/ '\u05D3', '\u05D2', '\uFB4C', '\u05D1', '\uFB2F', '\uFB2E', '\u05D0'],
+        // //‫כ‬ ‫כּ‬ ‫ײ‬ ַ ‫ײ‬ ִ‫י‬ ‫י‬ ‫טש‬ ‫ט‬ ‫ח‬ ‫זש‬ ‫ז‬ ‫ױ‬
+                                                                                         // 2 letters                              // 2 letters
+        ['\u05DB', '\uFB3B', '\u05F2', '\u05B7', '\u05F2', '\u05B4', '\u05D9', '\u05D9', /* '\u05D8\u05E9', */ '\u05D8', '\u05D7', /* '\u05D6\u05E9', */ '\u05D6', '\u05F1'],
+        // ‫ר‬ ‫ק‬ ‫ץ‬ ‫פֿ‬ ‫פּ‬ ‫ע‬ ‫ס‬ ‫ן‬ ‫נ‬ ‫ם‬ ‫מ‬ ‫ל‬ ‫ך‬
+        ['\u05E8', '\u05E7', '\u05E5', '\uFB4E', '\uFB44', '\u05E2', '\u05E1', '\u05DF', '\u05E0', '\u05DD', '\u05DE', '\u05DC', '\u05DA'],
+        // ‫ת‬ ‫תּ‬ ‫שׂ‬ ‫ש‬
+        ['\u05EA', '\uFB4A', '\uFB2B', '\u05E9'],
+
+        [
+          'č',
+          '\u01C6', // ['dž'],
+          'š',
+          'ž'
+        ],
+      // ],
+      // ['abc'],
+      // ['דזש']
+    ]
   }
+
 };
 
 export function setupTranslateFactory(
