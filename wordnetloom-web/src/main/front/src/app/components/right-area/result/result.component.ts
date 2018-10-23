@@ -31,7 +31,6 @@ export class ResultComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.content = [];
-
     const searchQueryParams = this.route.snapshot.queryParamMap;
     if (searchQueryParams.keys.length > 0) {
       // @ts-ignore - suppressing non existing error

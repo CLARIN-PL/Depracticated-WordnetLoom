@@ -1,15 +1,16 @@
-import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {GraphService} from '../graph.service';
+import { ElementQueries, ResizeSensor } from 'css-element-queries' ;
 
-declare const GraphCreator: any;
+// declare const GraphCreator: any;
 
 @Component({
   selector: 'app-graph-main',
   templateUrl: './graph-main.component.html',
   styleUrls: ['./graph-main.component.css']
 })
-export class GraphMainComponent implements OnInit {
+export class GraphMainComponent implements OnInit, AfterViewInit {
 
   graph: any;
   @ViewChild('graphContainerDiv') graphContainerDiv: ElementRef;
@@ -18,7 +19,7 @@ export class GraphMainComponent implements OnInit {
   breakPoint = 768;
 
 
-  constructor(private graphService: GraphService) { }
+  constructor(@Inject('GraphCreator') public graphCreator: any, private graphService: GraphService) { }
 
   private getSpaceForGraph() {
     const breakPoint = this.breakPoint;
@@ -35,7 +36,7 @@ export class GraphMainComponent implements OnInit {
       width = this.graphContainerDiv.nativeElement.offsetWidth,
       showSearchBox = false;
 
-    this.graph = new GraphCreator.GraphCreator('graph-container', showSearchBox, width, height);
+    this.graph = new this.graphCreator.GraphCreator('graph-container', showSearchBox, width, height);
 
     if (window.innerWidth >= this.breakPoint) {
       //                  scale, parent, top, right, bottom, left
@@ -43,6 +44,15 @@ export class GraphMainComponent implements OnInit {
     }
     this.graphService.initService(this.graph);
     this.graphService.initializeFromSynsetId(10);
+
+    this.graphContainerDiv.nativeElement.onresize = this.graphContainerResized;
+  }
+
+  ngAfterViewInit() {
+    ElementQueries.listen();
+    ElementQueries.init();
+
+    const resizeSensor = new ResizeSensor(this.graphContainerDiv.nativeElement, this.graphContainerResized.bind(this));
   }
 
   onDestroy() {
@@ -51,6 +61,7 @@ export class GraphMainComponent implements OnInit {
   }
 
   graphContainerResized(event) {
+
     if (this.resizeTimeout) {
       clearTimeout(this.resizeTimeout);
     }
@@ -60,6 +71,5 @@ export class GraphMainComponent implements OnInit {
       this.graph.resizeSVG(width, height);
     }).bind(this), 250);
   }
-
 
 }

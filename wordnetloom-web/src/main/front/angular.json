@@ -22,9 +22,13 @@
               "src/graph-js"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "src/graph-js/css/graph-creator.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/graph-js/js/d3.v4.min.js",
+              "src/graph-js/js/graph-creator.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -70,9 +74,13 @@
             "karmaConfig": "./karma.conf.js",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
-            "scripts": [],
+            "scripts": [
+              "src/graph-js/js/d3.v4.min.js",
+              "src/graph-js/js/graph-creator.js"
+            ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "src/graph-js/css/graph-creator.css"
             ],
             "assets": [
               "src/assets",

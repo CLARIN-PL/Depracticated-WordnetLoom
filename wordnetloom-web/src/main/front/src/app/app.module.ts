@@ -34,8 +34,7 @@ import { IKeyboardLayouts, KeyboardClassKey, keyboardLayouts, MAT_KEYBOARD_LAYOU
 import { InputWithKeyboardComponent } from './components/input-with-keyboard/input-with-keyboard.component';
 import { ClickOutsideModule } from 'ng-click-outside';
 import { GraphMainComponent } from './components/graph/graph-main/graph-main.component';
-import { AngularResizedEventModule } from 'angular-resize-event';
-import {TranslateService} from "./services/translate.service";
+import {TranslateService} from './services/translate.service';
 import { TranslatePipe } from './pipes/translate.pipe';
 
 const appRoutes: Routes = [
@@ -218,7 +217,6 @@ export function setupTranslateFactory(
     MatKeyboardModule,
     MatButtonToggleModule,
     ClickOutsideModule,
-    AngularResizedEventModule
   ],
   providers: [HttpService, CurrentStateService, SidebarService, AvailableSearchFiltersService,
     TranslateService,
@@ -228,7 +226,8 @@ export function setupTranslateFactory(
         deps: [TranslateService],
         multi: true
       },
-      { provide: MAT_KEYBOARD_LAYOUTS, useValue: customLayouts }
+      { provide: MAT_KEYBOARD_LAYOUTS, useValue: customLayouts },
+      { provide: 'GraphCreator', useValue: window['GraphCreator']}
     ],
   bootstrap: [AppComponent]
 })
