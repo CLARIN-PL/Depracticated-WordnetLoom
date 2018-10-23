@@ -61,13 +61,13 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
   }
 
   graphContainerResized(event) {
-
+    console.log(event);
     if (this.resizeTimeout) {
       clearTimeout(this.resizeTimeout);
     }
     this.resizeTimeout = setTimeout((() => {
-      const width = event.newWidth,
-        height = event.newHeight;
+      const width = event.width,
+        height = event.height;
       this.graph.resizeSVG(width, height);
     }).bind(this), 250);
   }
