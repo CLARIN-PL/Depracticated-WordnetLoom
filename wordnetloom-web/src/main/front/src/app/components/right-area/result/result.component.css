@@ -38,7 +38,8 @@
 
 
 .main-area-row{
-  height: calc(100vh - 255px);
+  /*height: calc(100vh - 255px);*/
+  height: calc(100vh - 140px);
 }
 .main-area-row.expanded{
   height: calc(100vh - 140px);
@@ -229,4 +230,8 @@ ul.tree li:last-child {
 .relations-content{
   margin: auto;
   width: fit-content;
+}
+.show-graph-btn{
+  width: 100%;
+  margin: 15px 0;
 }

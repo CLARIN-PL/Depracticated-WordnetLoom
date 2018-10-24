@@ -1,15 +1,18 @@
-import {ChangeDetectorRef, Component, Injectable, OnChanges, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, Injectable, OnChanges, OnDestroy, OnInit} from '@angular/core';
 import {HttpService} from '../../../services/http.service';
 import {CurrentStateService} from '../../../services/current-state.service';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs/Subscription';
 import {SenseContent} from './sensecontent';
 import {SidebarService} from '../../../services/sidebar.service';
+import {GraphModalComponent} from '../../graph/graph-modal/graph-modal.component';
+import {MatDialog} from '@angular/material';
 
 @Component({
   selector: 'app-result',
   templateUrl: './result.component.html',
-  styleUrls: ['./result.component.css']
+  styleUrls: ['./result.component.css'],
+  providers: [GraphModalComponent]
 })
 export class ResultComponent implements OnInit, OnDestroy {
   content: SenseContent[];
@@ -22,11 +25,12 @@ export class ResultComponent implements OnInit, OnDestroy {
   showNothingFoundMsg = false;
   rightPanelHidden = false;
   footerPanelHidden = false;
-
+  mobile = true;
 
   constructor(private http: HttpService,
               private sidebar: SidebarService,
-              private route: ActivatedRoute
+              private route: ActivatedRoute,
+              public graphModal: MatDialog,
     ) { }
 
   ngOnInit() {
@@ -54,6 +58,13 @@ export class ResultComponent implements OnInit, OnDestroy {
         this.showNothingFoundMsg = true;
       }
     });
+    this.mobile = window.innerWidth < 576;
+    console.log(this.mobile);
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.mobile = window.innerWidth < 576;
   }
 
   private updateCurrentLexicalUnit(isSearchFieldEmpty) {
@@ -87,5 +98,14 @@ export class ResultComponent implements OnInit, OnDestroy {
 
   footerTabChange(idx) {
     this.footerFirstTabSelected = idx === 0;
+  }
+
+  showGraphModal() {
+    console.log('show graph modal');
+    this.graphModal.open(GraphModalComponent, {
+      maxWidth: '100vw',
+      height: '99%',
+      width: '99%',
+    });
   }
 }

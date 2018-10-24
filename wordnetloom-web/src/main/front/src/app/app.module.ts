@@ -20,7 +20,9 @@ import {
   MatSidenavModule, MatTabsModule, MatTooltipModule,
   MatButtonToggleModule,
   MatTreeModule,
-  MatIconModule, MatAutocompleteModule
+  MatIconModule, MatAutocompleteModule,
+  MatCardModule,
+  MatDialogModule,
 } from '@angular/material';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {SidebarService} from './services/sidebar.service';
@@ -36,6 +38,7 @@ import { ClickOutsideModule } from 'ng-click-outside';
 import { GraphMainComponent } from './components/graph/graph-main/graph-main.component';
 import {TranslateService} from './services/translate.service';
 import { TranslatePipe } from './pipes/translate.pipe';
+import { GraphModalComponent } from './components/graph/graph-modal/graph-modal.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -223,7 +226,8 @@ export function setupTranslateFactory(
     SenseVisualizationComponent,
     InputWithKeyboardComponent,
     GraphMainComponent,
-    TranslatePipe
+    TranslatePipe,
+    GraphModalComponent
   ],
   imports: [
     RouterModule.forRoot(
@@ -253,6 +257,8 @@ export function setupTranslateFactory(
     MatKeyboardModule,
     MatButtonToggleModule,
     ClickOutsideModule,
+    MatCardModule,
+    MatDialogModule,
   ],
   providers: [HttpService, CurrentStateService, SidebarService, AvailableSearchFiltersService,
     TranslateService,
@@ -265,6 +271,7 @@ export function setupTranslateFactory(
       { provide: MAT_KEYBOARD_LAYOUTS, useValue: customLayouts },
       { provide: 'GraphCreator', useValue: window['GraphCreator']}
     ],
+  entryComponents: [GraphModalComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

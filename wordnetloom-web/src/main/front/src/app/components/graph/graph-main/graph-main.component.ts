@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Inject, Input, OnInit, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {GraphService} from '../graph.service';
 import { ElementQueries, ResizeSensor } from 'css-element-queries' ;
@@ -11,7 +11,10 @@ import { ElementQueries, ResizeSensor } from 'css-element-queries' ;
   styleUrls: ['./graph-main.component.css']
 })
 export class GraphMainComponent implements OnInit, AfterViewInit {
-
+  @Input() showMiniMap = true;
+  @Input() updateSpaceForGraphAfterInit = false;
+  // generating random id for new instances of graph
+  graphContainerId = 'graph-container' + Math.random().toString(36).substr(2);
   graph: any;
   @ViewChild('graphContainerDiv') graphContainerDiv: ElementRef;
   resizeTimeout: number;
@@ -30,15 +33,32 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  ngAfterViewInit() {
+    this.initGraph();
+
+    ElementQueries.listen();
+    ElementQueries.init();
+
+    const resizeSensor = new ResizeSensor(this.graphContainerDiv.nativeElement, this.graphContainerResized.bind(this));
+  }
+
+  initGraph() {
     const graphSpace = this.getSpaceForGraph();
     const height = this.graphContainerDiv.nativeElement.offsetHeight,
       width = this.graphContainerDiv.nativeElement.offsetWidth,
       showSearchBox = false;
 
-    this.graph = new this.graphCreator.GraphCreator('graph-container', showSearchBox, width, height);
+    console.log(this.graphContainerDiv.nativeElement);
+    console.log(width, height);
+    this.graph = new this.graphCreator.GraphCreator(this.graphContainerId, showSearchBox, width, height);
+    if (this.updateSpaceForGraphAfterInit) {
+      // window.onresize();
+      // window.dispatchEvent(new Event('resize'));
+    }
 
-    if (window.innerWidth >= this.breakPoint) {
+    if (this.showMiniMap && window.innerWidth >= this.breakPoint) {
       //                  scale, parent, top, right, bottom, left
       this.graph.showMiniMap(.25, null, '5px', null, null, '5px');
     }
@@ -48,20 +68,12 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
     this.graphContainerDiv.nativeElement.onresize = this.graphContainerResized;
   }
 
-  ngAfterViewInit() {
-    ElementQueries.listen();
-    ElementQueries.init();
-
-    const resizeSensor = new ResizeSensor(this.graphContainerDiv.nativeElement, this.graphContainerResized.bind(this));
-  }
-
   onDestroy() {
     this.graphService.destroy();
     this.lastClickedNodeIdSubscription.unsubscribe();
   }
 
   graphContainerResized(event) {
-    console.log(event);
     if (this.resizeTimeout) {
       clearTimeout(this.resizeTimeout);
     }

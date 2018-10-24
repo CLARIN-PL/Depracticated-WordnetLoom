@@ -83,3 +83,74 @@
   color: black;
 }
 
+
+/deep/ .mat-keyboard-wrapper {
+  padding: 0 !important;
+}
+/deep/ .mat-keyboard-key {
+  padding: 4px !important;
+  /*margin: 0 !important;*/
+}
+/deep/ .mat-keyboard-col {
+  /*padding: 0 !important;*/
+  /*flex: 0 1 auto;*/
+  /*flex: 0;*/
+  flex: unset !important;
+  flex-grow: 0 !important;
+  flex-basis: 0 !important;
+  flex-direction: column !important;
+  /*flex-basis: 4.3% !important;*/
+}
+
+
+/*from internet  https://github.com/ngx-material-keyboard/core/issues/18*/
+/deep/ .mat-keyboard-container {
+  /*min-width: 100% !important;*/
+  padding: unset !important;
+  position: absolute !important;
+  bottom: 0% !important;
+  /*min-width: unset;*/
+  /*width: fit-content !important;*/
+  /*min-width: 320px !important;*/
+  /*width: 320px !important;*/
+  min-width: 320px !important;
+  width: fit-content !important;
+  /*max-width: 320px !important;*/
+}
+/deep/ .mat-keyboard-wrapper{
+  /*width: fit-content;*/
+  /*min-width: 320px !important;*/
+  /*width: 320px !important;*/
+}
+/deep/ .mat-keyboard-container .mat-keyboard-key .mat-keyboard-key{
+/*padding: unset !important;*/
+  padding: 0 0.485rem !important;
+}
+
+/deep/ .mat-keyboard-row:nth-child(1) .mat-keyboard-col{
+  flex-basis: 9.81% !important;
+}
+/deep/ .mat-keyboard-row:nth-child(2) .mat-keyboard-col{
+  flex-basis: 8.35% !important;
+}
+/deep/ .mat-keyboard-row:nth-child(3) .mat-keyboard-col{
+  flex-basis: 7.9% !important;
+}
+/deep/ .mat-keyboard-row:nth-child(4) .mat-keyboard-col,
+/deep/ .mat-keyboard-row:nth-child(5) .mat-keyboard-col{
+  flex-basis: 25% !important;
+}
+
+/deep/ .mat-keyboard-col{
+  padding: 1px !important;
+}
+/deep/ .mat-keyboard-wrapper{
+  padding:0 !important;
+}
+
+/deep/ mat-keyboard-container,
+/deep/ .mat-keyboard
+{
+  min-width: 320px !important;
+  width: fit-content !important;
+}

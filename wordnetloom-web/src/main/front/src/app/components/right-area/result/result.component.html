@@ -18,21 +18,22 @@
       <div class="text-center col-12">
         <h3>{{ content[0].lemma }}</h3>
         <h4><span matTooltip="Part of speech">{{ content[0].partOfSpeech }}</span><span *ngIf="content[0].grammaticalGender" matTooltip="Grammatical gender">, {{ content[0].grammaticalGender }}</span>, <span matTooltip="Lexicon">{{ content[0].flag }}</span></h4>
+        <button *ngIf="mobile" class="show-graph-btn" mat-raised-button color="primary" (click)="showGraphModal()">{{'show_graph_modal' | translate}}</button>
+        <!--<button class="show-graph-btn" mat-raised-button color="primary" (click)="showGraphModal()">{{'show_graph_modal' | translate}}</button>-->
       </div>
     </div>
-
-    <app-graph-main></app-graph-main>
+    <app-graph-main *ngIf="!mobile"></app-graph-main>
     <button class="expand-btn expand-right" (click)=" rightPanelHidden= !rightPanelHidden; ">
       <i *ngIf="!rightPanelHidden" class="fa fa-chevron-right"></i>
       <i *ngIf="rightPanelHidden" class="fa fa-chevron-left"></i>
     </button>
-    <!--<div class="img-mockup"></div>-->
   </div>
   <!--GRAPH AREA END-->
 
   <!--SENSE DETAIL AREA-->
   <div class="col-sm-5 col-md-4 sense-detail-col" [ngClass]="{'d-none': rightPanelHidden}">
     <h5 class="text-center">{{'selected_units_details' | translate}}:</h5>
+    <mat-card class="mb-2">
     <h6 class="text-center" *ngIf="!yiddishContentPresent">{{'no_data_avaliable_for_unit' | translate}}</h6>
     <mat-tab-group *ngIf="yiddishContentPresent" selectedIndex="1">
       <mat-tab class="tab-title" label="Variants: " disabled></mat-tab>
@@ -61,12 +62,22 @@
         </div>
       </mat-tab>
     </mat-tab-group>
+    </mat-card>
 
+    <div class="d-flex flex-wrap">
+      <div class="flex-fill">
 
-    <div *ngIf="relations.length > 0" class="row area-row">
+    <div *ngIf="relations.length > 0" class="">
+      <mat-card class="m-1">
+      <div class="row text-center" style="width: 100%;">
+        <div class="col">
+          <!--<hr>-->
+          <h5>{{'lexical_relations' | translate}}:</h5>
+        </div>
+      </div>
       <div class="card full-width small-margin relations-area">
         <div class="card-body relations-content">
-          <h5 class="card-title">{{'lexical_relations' | translate}}:</h5>
+          <!--<h5 class="card-title">{{'lexical_relations' | translate}}:</h5>-->
             <ul class="tree">
               <li *ngFor="let relation of relations; let isLast=last">{{ relation.key }}:
               <ul>
@@ -78,8 +89,78 @@
             </ul>
         </div>
       </div>
+      </mat-card>
     </div>
+      </div>
+      <!--<div class="p-2 flex-fill bd-highlight align-content-around flex-wrap">-->
+      <div class="d-flex flex-column flex-wrap">
+      <div class="">
+      <mat-card class="m-1">
+        <mat-card-header>
+          <mat-card-title>Context</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <ul>
+            <li>context</li>
+            <li>context</li>
+            <li>context</li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+      </div>
 
+      <div class="">
+        <mat-card class="m-1">
+          <mat-card-header>
+            <mat-card-title>Comment</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <ul>
+              <li>comment</li>
+              <li>comment</li>
+              <li>comment</li>
+              <li>comment</li>
+              <li>comment</li>
+            </ul>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      </div>
+
+      <!--<div class="flex-fill">-->
+        <!--<mat-card class="m-1">-->
+           <!--<table class="table slim">-->
+            <!--<tr>-->
+              <!--<td><b>Context:</b></td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+              <!--<td>-->
+                <!--<ul>-->
+                  <!--<li>context</li>-->
+                  <!--<li>context</li>-->
+                  <!--<li>context</li>-->
+                  <!--<li>context</li>-->
+                  <!--<li>context</li>-->
+                <!--</ul>-->
+              <!--</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+              <!--<th><b>Comment:</b></th>-->
+            <!--</tr>-->
+            <!--<tr>-->
+              <!--<td>-->
+                <!--<ul>-->
+                  <!--<li>Comment</li>-->
+                  <!--<li>Comment</li>-->
+                  <!--<li>Comment</li>-->
+                  <!--<li>Comment</li>-->
+                  <!--<li>Comment</li>-->
+                <!--</ul>-->
+              <!--</td>-->
+            <!--</tr>-->
+           <!--</table>-->
+        <!--</mat-card>-->
+      <!--</div>-->
   </div>
   <!--GRAPH AREA END -->
 </div>
@@ -93,35 +174,35 @@
 </div>
 
 
-<div class="row footer" [ngClass]="{'dropped':footerPanelHidden}">
-  <button class="expand-btn expand-footer" (click)="footerPanelHidden= !footerPanelHidden">
-    <i *ngIf="!footerPanelHidden" class="fa fa-chevron-down"></i>
-    <i *ngIf="footerPanelHidden" class="fa fa-chevron-up"></i>
-  </button>
+<!--<div class="row footer" [ngClass]="{'dropped':footerPanelHidden}">-->
+  <!--<button class="expand-btn expand-footer" (click)="footerPanelHidden= !footerPanelHidden">-->
+    <!--<i *ngIf="!footerPanelHidden" class="fa fa-chevron-down"></i>-->
+    <!--<i *ngIf="footerPanelHidden" class="fa fa-chevron-up"></i>-->
+  <!--</button>-->
 
-  <div class="col animate-flex no-gutters footer-content">
-    <mat-tab-group class="vertical" [ngClass]="{'first-selected': footerFirstTabSelected}"
-                   (selectedIndexChange)="footerTabChange($event)">
-      <mat-tab label="Context">
-        <ul>
-          <li>context</li>
-          <li>context</li>
-          <li>context</li>
-          <li>context</li>
-          <li>context</li>
-        </ul>
-      </mat-tab>
-      <mat-tab label="Comment">
-        <ul>
-          <li>comment</li>
-          <li>comment</li>
-          <li>comment</li>
-          <li>comment</li>
-          <li>comment</li>
-          <li>comment</li>
-        </ul>
-      </mat-tab>
-    </mat-tab-group>
+  <!--<div class="col animate-flex no-gutters footer-content">-->
+    <!--<mat-tab-group class="vertical" [ngClass]="{'first-selected': footerFirstTabSelected}"-->
+                   <!--(selectedIndexChange)="footerTabChange($event)">-->
+      <!--<mat-tab label="Context">-->
+        <!--<ul>-->
+          <!--<li>context</li>-->
+          <!--<li>context</li>-->
+          <!--<li>context</li>-->
+          <!--<li>context</li>-->
+          <!--<li>context</li>-->
+        <!--</ul>-->
+      <!--</mat-tab>-->
+      <!--<mat-tab label="Comment">-->
+        <!--<ul>-->
+          <!--<li>comment</li>-->
+          <!--<li>comment</li>-->
+          <!--<li>comment</li>-->
+          <!--<li>comment</li>-->
+          <!--<li>comment</li>-->
+          <!--<li>comment</li>-->
+        <!--</ul>-->
+      <!--</mat-tab>-->
+    <!--</mat-tab-group>-->
 
-  </div>
-</div>
+  <!--</div>-->
+<!--</div>-->

@@ -25,13 +25,15 @@
 }
 
 .show-side-bar-area .show-hide-wordlist-btn{
-  background-color: transparent;
-  padding: 10px 10px;
+  background-color: #dcdcdc;
+  padding: 5px 5px;
+  margin: 5px 5px 5px 0;
+  color: #525252;
+  border-radius: 0 20px 20px 0;
 }
 
 .option-area.hidden{
-  transform: translate(-350px);
-  /*left: -30%;*/
+  transform: translate(-100%);
 }
 .option-list{
   height: calc(100vh - 70px);
