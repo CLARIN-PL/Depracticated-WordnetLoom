@@ -11,7 +11,7 @@
   box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.12);
   padding-right: 0;
   padding-left: 0;
-  z-index: 2000;
+  z-index: 1000;
   position:fixed;
   top: 62px;
   min-height: calc(100vh - 62px);
@@ -19,7 +19,7 @@
 }
 
 .show-side-bar-area{
-  z-index: 2000;
+  z-index: 1000;
   position:fixed;
   top: 62px;
 }
