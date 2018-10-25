@@ -52,10 +52,16 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
 
     console.log(this.graphContainerDiv.nativeElement);
     console.log(width, height);
+
+
+    // console.log(this.graphCreator);
+    console.log();
+    // this.graphCreator.GraphCreator.prototype.updateWindow = () => {console.log('resizing graph'); };
     this.graph = new this.graphCreator.GraphCreator(this.graphContainerId, showSearchBox, width, height);
     if (this.updateSpaceForGraphAfterInit) {
-      // window.onresize();
-      // window.dispatchEvent(new Event('resize'));
+      setTimeout(() => {
+        this.graph.resizeSVG(width + 100, height);
+      }, 2000);
     }
 
     if (this.showMiniMap && window.innerWidth >= this.breakPoint) {
