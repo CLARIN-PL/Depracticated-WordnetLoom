@@ -21,15 +21,16 @@
       formControlName="useKeyboard"
       type="checkbox"
       [checked]="searchFormGroup.value.useKeyboard"
+      (click)="showKeyboardSelectorClicked(!searchFormGroup.value.useKeyboard, inputWithKeyboard)"
       />
     <i class="fa fa-fw fa-keyboard-o unchecked"></i>
     <i class="fa fa-fw fa-keyboard-o checked"></i>
   </label>
 
   <mat-form-field class="long-width-input main-search-field">
-    <input autocomplete="off" *ngIf="!searchFormGroup.value.useKeyboard" matInput formControlName="searchTerm" [matAutocomplete]="auto" [placeholder]="'search_placeholder' | translate " name="lemma">
-    <!--<input autocomplete="off" *ngIf="searchFormGroup.value.useKeyboard" matInput  formControlName="searchTerm" [matAutocomplete]="auto" [matKeyboard]="'yiddish'" [placeholder]="'search_placeholder' | translate " name="lemma">-->
-    <input autocomplete="off" *ngIf="searchFormGroup.value.useKeyboard" matInput  formControlName="searchTerm" [matAutocomplete]="auto" [matKeyboard]="'yiddish_alphabetical_order'" [placeholder]="'search_placeholder' | translate " name="lemma">
+    <input autocomplete="off" *ngIf="!searchFormGroup.value.useKeyboard"  matInput formControlName="searchTerm" [matAutocomplete]="auto" [placeholder]="'search_placeholder' | translate " name="lemma">
+    <input autocomplete="off" [hidden]="!searchFormGroup.value.useKeyboard" #inputWithKeyboard matInput  formControlName="searchTerm" [matAutocomplete]="auto" [matKeyboard]="'yiddish_alphabetical_order'" [placeholder]="'search_placeholder' | translate " name="lemma" autofocus>
+    <!--<input autocomplete="off" #inputWithKeyboard matInput  formControlName="searchTerm" [matAutocomplete]="auto" [matKeyboard]="'yiddish_alphabetical_order'" [placeholder]="'search_placeholder' | translate " name="lemma">-->
 
     <!-- CREATE AUTO COMPLETE PANEL WITH OPTIONS. -->
     <mat-autocomplete #auto="matAutocomplete">

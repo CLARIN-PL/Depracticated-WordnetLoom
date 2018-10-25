@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {isNullOrUndefined} from 'util';
 import {SidebarService} from "../../services/sidebar.service";
@@ -14,6 +14,7 @@ export class InputWithKeyboardComponent implements OnInit {
   @Input() model: string;
   @Input('floatingSearch') floatingAdvancedSearchPanel  = true;
   @ViewChild('panel') el;
+  @ViewChild('inputWithKeyboard') inputWithKeyboard: ElementRef;
   @ViewChild('advancedFilters') advancedFilters;
 
   useKeyboard = true;
@@ -49,8 +50,13 @@ export class InputWithKeyboardComponent implements OnInit {
     this.sidebar.getAllOptions(advancedFilters);
   }
 
-  showKeyboardSelectorClicked(event, val) {
-    console.log(event, val);
+  showKeyboardSelectorClicked(showKeyboard) {
+    if (showKeyboard) {
+      setTimeout(() => {
+        this.inputWithKeyboard.nativeElement.focus();
+      }, 100);
+
+    }
   }
 
   toggleAdvancedOptionsChange(event, val) {
