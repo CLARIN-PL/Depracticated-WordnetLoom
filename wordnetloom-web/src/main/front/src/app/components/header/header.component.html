@@ -1,14 +1,15 @@
 <!-- example 6 - center on mobile -->
 <nav class="navbar navbar-expand-lg fixed-top navbar-dark navbar-primary-row"> <!-- navbar fixed-top navbar-expand-lg navbar-dark primary-navbar-row -->
   <div class="d-flex flex-grow-1">
-    <span class="w-100 d-lg-none d-block"><!-- hidden spacer to center brand on mobile --></span>
+    <span class="w-50 d-lg-none d-block"><!-- hidden spacer to center brand on mobile --></span>
     <a class="navbar-brand d-none d-lg-inline-block narbar-title" routerLink="/">
       {{'nav_header_link' | translate}}
     </a>
-    <a class="navbar-brand-two mx-auto d-lg-none d-inline-block" routerLink="/">
-      <img src="//placehold.it/120x40?text=Yiddish borrowings" alt="logo">
+    <a class="navbar-brand-two mx-auto d-lg-none d-inline-block small-title" routerLink="/">
+      <!--<img src="//placehold.it/120x40?text=Yiddish borrowings" alt="logo">-->
+      {{'nav_header_link' | translate}}
     </a>
-    <div class="w-100 text-right">
+    <div class="w-50 text-right">
       <!--<button (click)="toggleNavbar()" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbar">-->
         <!--<span class="navbar-toggler-icon"></span>-->
       <!--</button>-->

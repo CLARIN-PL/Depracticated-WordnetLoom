@@ -1,3 +1,5 @@
+@import "~bootstrap/scss/bootstrap-grid.scss";
+
 nav{
   background-color: rgb(46, 59, 136);
 }
@@ -204,4 +206,21 @@ nav i .fa {
   font-family: Montserrat;
   letter-spacing: -1px;
   font-size: 1.1em;
+}
+
+.small-title{
+  margin-top: 4px;
+  text-align: center;
+  font-family: Montserrat;
+  letter-spacing: -1px;
+  max-width: 80%;
+  max-height: 40px;
+  font-size: .7em;
+  color: white;
+}
+@include media-breakpoint-up(sm) {
+  .small-title{
+    margin-top: unset;
+    font-size: 1em;
+  }
 }
