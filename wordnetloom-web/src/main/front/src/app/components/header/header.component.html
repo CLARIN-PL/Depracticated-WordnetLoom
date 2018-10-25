@@ -9,12 +9,19 @@
       <img src="//placehold.it/120x40?text=Yiddish borrowings" alt="logo">
     </a>
     <div class="w-100 text-right">
-      <button (click)="toggleNavbar()" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbar">
-        <span class="navbar-toggler-icon"></span>
+      <!--<button (click)="toggleNavbar()" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbar">-->
+        <!--<span class="navbar-toggler-icon"></span>-->
+      <!--</button>-->
+
+      <button (click)="toggleNavbar()" class="button_container navbar-toggler" [ngClass]="{'active': navbarOpen}">
+        <span class="top"></span>
+        <span class="middle"></span>
+        <span class="bottom"></span>
       </button>
+
     </div>
   </div>
-  <div class="collapse navbar-collapse flex-grow-1 text-right" id="myNavbar"  [ngClass]="{ 'show': navbarOpen }">
+  <div class="collapse navbar-collapse flex-grow-1 text-right" id="myNavbar"  [ngClass]="{ 'show': false }">
     <ul class="navbar-nav ml-auto flex-nowrap">
       <li class="nav-item">
         <a routerLink="/about"><button class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'home_link' | translate}} </button></a>
@@ -53,6 +60,40 @@
     </ul>
   </div>
 </nav>
+
+<div class="container-fluid overlay-nav" [ngClass]="{'active': navbarOpen}">
+  <div class="row">
+    <div class="col">
+      <ul class="navbar-nav ml-auto flex-nowrap">
+        <li class="nav-item d-block d-lg-none nav-item-search">
+          <div class="advanced-search-form">
+            <app-input-with-keyboard  [floatingSearch]="false" class="text-center center justify-content-center"></app-input-with-keyboard>
+          </div>
+        </li>
+        <li class="nav-item">
+          <mat-button-toggle-group #group="matButtonToggleGroup" value="en">
+            <mat-button-toggle class="nav-lang-select-btn" (click)="selectLang('pl')" value="pl">
+              {{'PL' | translate}}
+            </mat-button-toggle>
+            <mat-button-toggle class="nav-lang-select-btn" (click)="selectLang('en')" value="en">
+              {{'EN' | translate}}
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+        </li>
+
+        <li class="nav-item">
+          <a routerLink="/about"><button class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'home_link' | translate}} </button></a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/about"><button class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'project_site_link' | translate}}</button></a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/about"><button class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'about_link' | translate}}</button></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
 
 <nav class="d-none d-lg-block navbar navbar-toggleable-sm bg-inverse navbar-inverse fixed-top second-navbar-row" [ngClass]="{'hidden': hideSecondRow }">
   <div class="second-navbar-content">

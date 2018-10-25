@@ -5,7 +5,7 @@ import {ActivatedRoute} from '@angular/router';
 @Component({
   selector: 'app-unit',
   templateUrl: './unit.component.html',
-  styleUrls: ['./unit.component.css']
+  styleUrls: ['./unit.component.scss']
 })
 export class UnitComponent implements OnInit, OnDestroy {
 

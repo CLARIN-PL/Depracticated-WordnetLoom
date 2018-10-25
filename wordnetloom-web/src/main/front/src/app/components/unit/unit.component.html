@@ -5,8 +5,8 @@
     <div class="col-12">
 
       <div class="row">
-        <div class="show-side-bar-area">
-          <button mat-button class="show-hide-wordlist-btn"  (click)="showSideBar()" >{{ 'wordlist' | translate }}: <i class="fa fa-chevron-right"></i></button>
+        <div class="show-side-bar-area" [ngClass]="{'hidden': showingSideBar}">
+          <button mat-button class="show-hide-wordlist-btn"  (click)="showSideBar()" ><span class="button-text">{{ 'wordlist' | translate }}: </span><i class="fa fa-fw fa-list"></i><i class="fa fa-fw fa-angle-right"></i></button>
         </div>
 
         <!--SIDE BAR-->
