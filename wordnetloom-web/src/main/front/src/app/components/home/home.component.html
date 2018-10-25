@@ -4,8 +4,8 @@
   <div class="row">
     <div class="col-12 jumbotron jumbotron-fluid welcome">
         <div class="container">
-          <!--<h4 class="display-4">Welcome to The Online Dictionary of Polish Borrowings in Yiddish</h4>-->
-          <h4 class="display-4">{{ 'welcome_msg'  | translate}}</h4>
+          <!--<h5 class="display-4" [innerHtml]="'welcome_msg' | translate | saveHtml"></h5>-->
+          <h1 [innerHtml]="'welcome_msg' | translate | saveHtml"></h1>
           <p class="lead">{{ 'home_page_small_instruction'  | translate}}
           </p>
         </div>

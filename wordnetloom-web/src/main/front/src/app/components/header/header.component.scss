@@ -150,8 +150,8 @@ nav i .fa {
 .overlay-nav {
   padding-top: 0px;
   height: 0%;
-  transition: height .5ms ease-in-out;
-  background-color: #2e3b88d1;
+  transition: height .5s ease-in-out, padding-top .5s ease-in-out;
+  background-color: #2e3b88f0;
   position: fixed;
   top: 0;
   z-index: 50;
@@ -198,8 +198,10 @@ nav i .fa {
       background-color: #fff;
     }
   }
+}
 
-  //app-input-with-keyboard .mat-form-field-appearance-legacy.mat-form-field-underline {
-  //  background-color: rgb(255, 255, 255);
-  //}
+.narbar-title {
+  font-family: Montserrat;
+  letter-spacing: -1px;
+  font-size: 1.1em;
 }

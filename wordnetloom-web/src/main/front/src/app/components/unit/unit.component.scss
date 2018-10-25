@@ -1,3 +1,6 @@
+//@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/bootstrap-grid.scss";
+
 .app-container{
   height: 100%;
   padding-top: 62px;
@@ -105,7 +108,13 @@
   min-height: 99vh;
 }
 .offset-top{
-  padding-top: 72px;
+  padding-top: 10px;
+}
+
+@include media-breakpoint-up(lg) {
+  .offset-top{
+    padding-top: 72px;
+  }
 }
 
 /deep/ .small-toggle-btn.mat-button-toggle.mat-button-toggle-appearance-standard .mat-button-toggle-label-content{

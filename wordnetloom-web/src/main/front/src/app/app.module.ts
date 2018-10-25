@@ -39,6 +39,7 @@ import { GraphMainComponent } from './components/graph/graph-main/graph-main.com
 import {TranslateService} from './services/translate.service';
 import { TranslatePipe } from './pipes/translate.pipe';
 import { GraphModalComponent } from './components/graph/graph-modal/graph-modal.component';
+import { SaveHtmlPipe } from './pipes/save-html.pipe';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -227,7 +228,8 @@ export function setupTranslateFactory(
     InputWithKeyboardComponent,
     GraphMainComponent,
     TranslatePipe,
-    GraphModalComponent
+    GraphModalComponent,
+    SaveHtmlPipe
   ],
   imports: [
     RouterModule.forRoot(

@@ -55,7 +55,6 @@ export class InputWithKeyboardComponent implements OnInit {
       setTimeout(() => {
         this.inputWithKeyboard.nativeElement.focus();
       }, 100);
-
     }
   }
 

@@ -42,3 +42,58 @@
   background-color: #3f51b5;
 }
 
+/* roboto-regular - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/assets/fonts/roboto/roboto-v18-latin_latin-ext-regular.eot'); /* IE9 Compat Modes */
+  src: local('Roboto'), local('Roboto-Regular'),
+  url('/assets/fonts/roboto/roboto-v18-latin_latin-ext-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('/assets/fonts/roboto/roboto-v18-latin_latin-ext-regular.woff2') format('woff2'), /* Super Modern Browsers */
+  url('/assets/fonts/roboto/roboto-v18-latin_latin-ext-regular.woff') format('woff'), /* Modern Browsers */
+  url('/assets/fonts/roboto/roboto-v18-latin_latin-ext-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('/assets/fonts/roboto/roboto-v18-latin_latin-ext-regular.svg#Roboto') format('svg'); /* Legacy iOS */
+}
+
+/* montserrat-regular - latin */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/assets/fonts/montserrat/montserrat-v12-latin_latin-ext-regular.eot'); /* IE9 Compat Modes */
+  src: local('Montserrat Regular'), local('Montserrat-Regular'),
+  url('/assets/fonts/montserrat/montserrat-v12-latin_latin-ext-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('/assets/fonts/montserrat/montserrat-v12-latin_latin-ext-regular.woff2') format('woff2'), /* Super Modern Browsers */
+  url('/assets/fonts/montserrat/montserrat-v12-latin_latin-ext-regular.woff') format('woff'), /* Modern Browsers */
+  url('/assets/fonts/montserrat/montserrat-v12-latin_latin-ext-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('/assets/fonts/montserrat/montserrat-v12-latin_latin-ext-regular.svg#Montserrat') format('svg'); /* Legacy iOS */
+}
+
+/*settings fonts*/
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  color: #2b499e;
+  font-family: Montserrat, sans-serif, sans-serif;
+  font-weight: 300;
+}
+
+body {
+  word-wrap: break-word;
+  color: #333;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.42857143;
+}
+
