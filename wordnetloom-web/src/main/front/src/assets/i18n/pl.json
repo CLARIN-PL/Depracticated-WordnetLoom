@@ -11,5 +11,6 @@
   "selected_units_details": "Szczegóły wybranej jednostki",
   "no_data_avaliable_for_unit": "Brak danych dla wybranej jednostki.",
   "wordlist": "Lista słow",
-  "lexical_relations": "Relacje leksykalne"
+  "lexical_relations": "Relacje leksykalne",
+  "show_graph_modal": "Pokaż wizualizację graficzną"
 }

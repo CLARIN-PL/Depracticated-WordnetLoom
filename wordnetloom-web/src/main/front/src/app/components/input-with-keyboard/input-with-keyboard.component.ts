@@ -8,7 +8,7 @@ import {FormControl, FormGroup} from "@angular/forms";
 @Component({
   selector: 'app-input-with-keyboard',
   templateUrl: './input-with-keyboard.component.html',
-  styleUrls: ['./input-with-keyboard.component.css']
+  styleUrls: ['./input-with-keyboard.component.scss']
 })
 export class InputWithKeyboardComponent implements OnInit {
   @Input() model: string;

@@ -84,46 +84,28 @@
 }
 
 
-/deep/ .mat-keyboard-wrapper {
-  padding: 0 !important;
-}
+/*keyboard mobile fix*/
 /deep/ .mat-keyboard-key {
   padding: 4px !important;
-  /*margin: 0 !important;*/
 }
 /deep/ .mat-keyboard-col {
-  /*padding: 0 !important;*/
-  /*flex: 0 1 auto;*/
-  /*flex: 0;*/
   flex: unset !important;
   flex-grow: 0 !important;
   flex-basis: 0 !important;
   flex-direction: column !important;
-  /*flex-basis: 4.3% !important;*/
 }
-
 
 /*from internet  https://github.com/ngx-material-keyboard/core/issues/18*/
 /deep/ .mat-keyboard-container {
-  /*min-width: 100% !important;*/
+
   padding: unset !important;
   position: absolute !important;
   bottom: 0% !important;
-  /*min-width: unset;*/
-  /*width: fit-content !important;*/
-  /*min-width: 320px !important;*/
-  /*width: 320px !important;*/
-  min-width: 320px !important;
+  min-width: 100% !important;
   width: fit-content !important;
-  /*max-width: 320px !important;*/
 }
-/deep/ .mat-keyboard-wrapper{
-  /*width: fit-content;*/
-  /*min-width: 320px !important;*/
-  /*width: 320px !important;*/
-}
+
 /deep/ .mat-keyboard-container .mat-keyboard-key .mat-keyboard-key{
-/*padding: unset !important;*/
   padding: 0 0.485rem !important;
 }
 
@@ -145,12 +127,51 @@
   padding: 1px !important;
 }
 /deep/ .mat-keyboard-wrapper{
-  padding:0 !important;
+  padding: 5px !important;
 }
 
 /deep/ mat-keyboard-container,
 /deep/ .mat-keyboard
 {
-  min-width: 320px !important;
+  min-width: 100% !important;
   width: fit-content !important;
+}
+
+// Small devices (landscape phones, 576px and up)
+@media (min-width: 576px) {
+  /deep/ {
+    /deep/ .mat-keyboard-wrapper{
+      padding:10px !important;
+    }
+    mat-keyboard-container,
+    .mat-keyboard {
+      min-width: 576px !important;
+      //width: fit-content !important;
+    }
+  }
+}
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) {
+  mat-keyboard-container,
+  .mat-keyboard {
+    min-width: 700px !important;
+  }
+}
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) {
+  mat-keyboard-container,
+  .mat-keyboard {
+    min-width: 900px !important;
+  }
+}
+
+// Extra large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) {
+  mat-keyboard-container,
+  .mat-keyboard {
+    min-width: 1000px !important;
+    max-width: 80% !important;
+  }
 }
