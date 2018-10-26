@@ -18,8 +18,6 @@ export class GraphModalComponent implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: ModalOptions) { }
 
-  ngOnInit() {
-    console.log(this.data);
-  }
+  ngOnInit() {}
 
 }

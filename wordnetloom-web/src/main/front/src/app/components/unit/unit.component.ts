@@ -53,9 +53,7 @@ export class UnitComponent implements OnInit, OnDestroy {
   }
 
   optionSelected() {
-    console.log('option selected');
     if (this.state.getMobileState()) {
-      console.log('mobile state active');
       this.state.setSearchResultPanelOpen(false);
     }
   }

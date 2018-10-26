@@ -103,7 +103,6 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   showGraphModal() {
-    console.log('show graph modal');
     this.graphModal.open(GraphModalComponent, {
       maxWidth: '100vw',
       height: '99%',

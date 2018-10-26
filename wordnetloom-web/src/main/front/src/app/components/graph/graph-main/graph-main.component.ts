@@ -50,13 +50,6 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
       width = this.graphContainerDiv.nativeElement.offsetWidth,
       showSearchBox = false;
 
-    console.log(this.graphContainerDiv.nativeElement);
-    console.log(width, height);
-
-
-    // console.log(this.graphCreator);
-    console.log();
-    // this.graphCreator.GraphCreator.prototype.updateWindow = () => {console.log('resizing graph'); };
     this.graph = new this.graphCreator.GraphCreator(this.graphContainerId, showSearchBox, width, height);
     if (this.updateSpaceForGraphAfterInit) {
       setTimeout(() => {
