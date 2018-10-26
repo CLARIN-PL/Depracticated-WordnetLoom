@@ -13,6 +13,8 @@
   "wordlist": "Lista słow",
   "lexical_relations": "Relacje leksykalne",
   "show_graph_modal": "Pokaż wizualizację graficzną",
-  "explanation_keyboard": "Zaznacz, aby używać ekranowej klawiatury jidysz.",
-  "explanation_advanced_settings": "Kliknij aby wysunąć zaawansowane pole wyszkukiwania."
+  "explanation_keyboard": "Zaznacz, aby używać ekranowej klawiatury jidysz",
+  "explanation_advanced_settings": "Kliknij aby wysunąć zaawansowane pole wyszkukiwania.",
+  "tutorial_using_keyboard": "klawiatura jest włączona",
+  "tutorial_not_using_keyboard": "klawiatura jest wyłączona"
 }

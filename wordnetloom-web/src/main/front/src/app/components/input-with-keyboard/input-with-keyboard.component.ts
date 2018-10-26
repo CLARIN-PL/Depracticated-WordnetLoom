@@ -1,5 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {Router} from '@angular/router';
+import {Component, ElementRef, Input, OnInit, ViewChild, Output, EventEmitter} from '@angular/core';
 import {isNullOrUndefined} from 'util';
 import {SidebarService} from "../../services/sidebar.service";
 import {HttpService} from "../../services/http.service";
@@ -14,6 +13,10 @@ import { CurrentStateService } from '../../services/current-state.service'
 export class InputWithKeyboardComponent implements OnInit {
   @Input() model: string;
   @Input('floatingSearch') floatingAdvancedSearchPanel  = true;
+
+  @Output() advancedPanelOpen = new EventEmitter<boolean>();
+  @Output() usingKeyboard = new EventEmitter<boolean>();
+
   @ViewChild('panel') el;
   @ViewChild('inputWithKeyboard') inputWithKeyboard: ElementRef;
   @ViewChild('advancedFilters') advancedFilters;
@@ -59,6 +62,7 @@ export class InputWithKeyboardComponent implements OnInit {
         this.inputWithKeyboard.nativeElement.focus();
       }, 100);
     }
+    this.usingKeyboard.emit(showKeyboard);
   }
 
   toggleAdvancedOptionsChange(event, val) {
@@ -76,6 +80,7 @@ export class InputWithKeyboardComponent implements OnInit {
       this.el.close();
     }
     this.showAdvancedOptions = this.el._expanded;
+    this.advancedPanelOpen.emit(this.showAdvancedOptions);
   }
 
   onClickedOutsideAdvancedSearchPanel(event) {

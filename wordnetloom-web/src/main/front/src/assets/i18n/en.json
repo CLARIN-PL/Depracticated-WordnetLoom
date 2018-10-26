@@ -13,6 +13,8 @@
   "wordlist": "Wordlist",
   "lexical_relations": "Lexical relations",
   "show_graph_modal": "Show graphical visualization",
-  "explanation_keyboard": "Tick this field to use yiddish keyboard.",
-  "explanation_advanced_settings": "Click this field to specify advanced search criteria."
+  "explanation_keyboard": "Tick this field to use yiddish keyboard",
+  "explanation_advanced_settings": "Click this field to specify advanced search criteria.",
+  "tutorial_using_keyboard": "keyboard is turned on",
+  "tutorial_not_using_keyboard": "keyboard is turned off"
 }

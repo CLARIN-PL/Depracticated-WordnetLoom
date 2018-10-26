@@ -13,15 +13,18 @@
       <div class="tutorial d-none d-sm-block">
 
         <div class="line-oval right"></div>
-        <span class="tutorial-text top">{{'explanation_keyboard' | translate}}</span>
+        <span class="tutorial-text top">
+          {{'explanation_keyboard' | translate}}
+          (<span *ngIf="useKeyboard">{{'tutorial_using_keyboard' | translate}}</span><span *ngIf="!useKeyboard">{{'tutorial_not_using_keyboard' | translate}}</span>)
+        </span>
 
       </div>
 
-      <app-input-with-keyboard [floatingSearch]="false"></app-input-with-keyboard>
+      <app-input-with-keyboard [floatingSearch]="false" (advancedPanelOpen)="advancedPanelToggled($event)" (usingKeyboard)="usingKeyboardToggled($event)"></app-input-with-keyboard>
 
       <div class="tutorial d-none d-sm-block">
-        <div class="line-oval left"></div>
-        <span class="tutorial-text bottom">{{'explanation_advanced_settings' | translate}}</span>
+        <div class="line-oval left" [hidden]="advancedPanelOpened"></div>
+        <span class="tutorial-text bottom" [hidden]="advancedPanelOpened">{{'explanation_advanced_settings' | translate}}</span>
       </div>
 
       <!--<a routerLink="/detail/search/*"><i>{{'go_to_advanced_search' | translate}}</i></a>-->

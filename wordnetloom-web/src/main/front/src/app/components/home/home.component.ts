@@ -8,10 +8,19 @@ import {Router} from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private router: Router) { }
-  // useKeyboard = false;
+  advancedPanelOpened = false;
+  useKeyboard = true;
+
+  constructor() { }
+
   ngOnInit() {
   }
 
+  advancedPanelToggled(opened) {
+    this.advancedPanelOpened = opened;
+  }
 
+  usingKeyboardToggled(usingKeyboard) {
+    this.useKeyboard = usingKeyboard;
+  }
 }
