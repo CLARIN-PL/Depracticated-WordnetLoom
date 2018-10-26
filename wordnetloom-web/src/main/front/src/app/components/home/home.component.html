@@ -9,9 +9,22 @@
           <p class="lead">{{ 'home_page_small_instruction'  | translate}}
           </p>
         </div>
+
+      <div class="tutorial d-none d-sm-block">
+
+        <div class="line-oval right"></div>
+        <span class="tutorial-text top">{{'explanation_keyboard' | translate}}</span>
+
+      </div>
+
       <app-input-with-keyboard [floatingSearch]="false"></app-input-with-keyboard>
 
-      <a routerLink="/detail/search/*"><i>{{'go_to_advanced_search' | translate}}</i></a>
+      <div class="tutorial d-none d-sm-block">
+        <div class="line-oval left"></div>
+        <span class="tutorial-text bottom">{{'explanation_advanced_settings' | translate}}</span>
+      </div>
+
+      <!--<a routerLink="/detail/search/*"><i>{{'go_to_advanced_search' | translate}}</i></a>-->
     </div>
   </div>
 

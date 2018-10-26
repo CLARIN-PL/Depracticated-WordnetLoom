@@ -12,5 +12,7 @@
   "no_data_avaliable_for_unit": "Brak danych dla wybranej jednostki.",
   "wordlist": "Lista słow",
   "lexical_relations": "Relacje leksykalne",
-  "show_graph_modal": "Pokaż wizualizację graficzną"
+  "show_graph_modal": "Pokaż wizualizację graficzną",
+  "explanation_keyboard": "Zaznacz, aby używać ekranowej klawiatury jidysz.",
+  "explanation_advanced_settings": "Kliknij aby wysunąć zaawansowane pole wyszkukiwania."
 }

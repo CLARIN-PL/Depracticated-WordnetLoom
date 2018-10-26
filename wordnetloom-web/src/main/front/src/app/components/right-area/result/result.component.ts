@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, HostListener, Injectable, OnChanges, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Injectable, OnChanges, OnDestroy, OnInit} from '@angular/core';
 import {HttpService} from '../../../services/http.service';
 import {CurrentStateService} from '../../../services/current-state.service';
 import {ActivatedRoute} from '@angular/router';
@@ -25,9 +25,12 @@ export class ResultComponent implements OnInit, OnDestroy {
   showNothingFoundMsg = false;
   rightPanelHidden = false;
   footerPanelHidden = false;
+
   mobile = true;
+  mobileListener;
 
   constructor(private http: HttpService,
+              private state: CurrentStateService,
               private sidebar: SidebarService,
               private route: ActivatedRoute,
               public graphModal: MatDialog,
@@ -58,14 +61,13 @@ export class ResultComponent implements OnInit, OnDestroy {
         this.showNothingFoundMsg = true;
       }
     });
-    this.mobile = window.innerWidth < 576;
-    console.log(this.mobile);
+
+    this.mobile = this.state.getMobileState();
+    this.mobileListener = this.state.mobileStateSubscription.subscribe(state => {
+      this.mobile = state;
+    });
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event) {
-    this.mobile = window.innerWidth < 576;
-  }
 
   private updateCurrentLexicalUnit(isSearchFieldEmpty) {
     this.content = [];

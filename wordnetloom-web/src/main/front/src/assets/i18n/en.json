@@ -12,5 +12,7 @@
   "no_data_avaliable_for_unit": "No data avaliable for selected unit.",
   "wordlist": "Wordlist",
   "lexical_relations": "Lexical relations",
-  "show_graph_modal": "Show graphical visualization"
+  "show_graph_modal": "Show graphical visualization",
+  "explanation_keyboard": "Tick this field to use yiddish keyboard.",
+  "explanation_advanced_settings": "Click this field to specify advanced search criteria."
 }

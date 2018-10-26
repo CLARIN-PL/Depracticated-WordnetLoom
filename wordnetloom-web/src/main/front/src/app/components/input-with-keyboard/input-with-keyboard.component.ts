@@ -4,6 +4,7 @@ import {isNullOrUndefined} from 'util';
 import {SidebarService} from "../../services/sidebar.service";
 import {HttpService} from "../../services/http.service";
 import {FormControl, FormGroup} from "@angular/forms";
+import { CurrentStateService } from '../../services/current-state.service'
 
 @Component({
   selector: 'app-input-with-keyboard',
@@ -27,7 +28,7 @@ export class InputWithKeyboardComponent implements OnInit {
   // searchTerm: FormControl = new FormControl();
   autoCompleteOptions = [];
 
-  constructor(private router: Router, private sidebar: SidebarService, private http: HttpService) { }
+  constructor(private state: CurrentStateService, private sidebar: SidebarService, private http: HttpService) { }
 
   ngOnInit() {
     this.searchFormGroup.controls.searchTerm.valueChanges.subscribe(
@@ -48,6 +49,8 @@ export class InputWithKeyboardComponent implements OnInit {
       advancedFilters['lemma'] = searchTerm;
     }
     this.sidebar.getAllOptions(advancedFilters);
+    this.state.setNavbarOpen(false); // hide navbar
+    this.state.setSearchResultPanelOpen(true); // show sidebar with results
   }
 
   showKeyboardSelectorClicked(showKeyboard) {

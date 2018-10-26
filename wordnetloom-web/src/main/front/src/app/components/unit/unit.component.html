@@ -34,6 +34,7 @@
             <div class="no-gutters" *ngFor="let item of sidebarContent">
               <a mat-list-item
                  class="option-list-item"
+                 (click)="optionSelected()"
                  [routerLink]="[item.id]"
                  routerLinkActive="active-link"
 
