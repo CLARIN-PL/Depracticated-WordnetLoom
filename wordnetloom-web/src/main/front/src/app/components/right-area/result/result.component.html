@@ -66,25 +66,60 @@
 
     <div class="d-flex flex-wrap">
       <div class="flex-fill">
+        <div *ngIf="relations['incoming'].length > 0 || relations['outgoing'].length > 0" class="">
+          <mat-card class="m-1">
+            <div class="row text-center" style="width: 100%;">
+              <div class="col">
+                <h5>{{'synonyms' | translate}}:</h5>
+              </div>
+            </div>
+            <div class="card full-width small-margin relations-area">
+              <div class="card-body relations-content">
+                <span>syninim, </span>
+                <span>syninim, </span>
+                <span>syninim, </span>
+                <span>syninim</span>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+      </div>
 
-    <div *ngIf="relations.length > 0" class="">
+    <div class="d-flex flex-wrap">
+      <div class="flex-fill">
+    <div *ngIf="relations['incoming'].length > 0 || relations['outgoing'].length > 0" class="">
       <mat-card class="m-1">
       <div class="row text-center" style="width: 100%;">
         <div class="col">
-          <!--<hr>-->
           <h5>{{'lexical_relations' | translate}}:</h5>
         </div>
       </div>
       <div class="card full-width small-margin relations-area">
         <div class="card-body relations-content">
-          <!--<h5 class="card-title">{{'lexical_relations' | translate}}:</h5>-->
             <ul class="tree">
-              <li *ngFor="let relation of relations; let isLast=last">{{ relation.key }}:
-              <ul>
-                  <li *ngFor="let member of relation.items; let isLast=last">
-                    <a [routerLink]="'/detail/' + member['target']">{{ member['lemma']}}</a>
+              <li *ngIf="relations['incoming'].length > 0">
+                {{ 'incoming_relations' | translate }}:
+                <ul>
+                  <li *ngFor="let relation of relations['incoming']; let isLast=last">{{ relation.key }}:
+                    <ul>
+                      <li *ngFor="let member of relation.items; let isLast=last">
+                        <a [routerLink]="'/detail/' + member['target']">{{ member['lemma']}}</a>
+                      </li>
+                    </ul>
                   </li>
-              </ul>
+                </ul>
+              </li>
+              <li *ngIf="relations['outgoing'].length > 0">
+                {{ 'outgoing_relations' | translate }}:
+                <ul>
+                  <li *ngFor="let relation of relations['outgoing']; let isLast=last">{{ relation.key }}:
+                    <ul>
+                      <li *ngFor="let member of relation.items; let isLast=last">
+                        <a [routerLink]="'/detail/' + member['target']">{{ member['lemma']}}</a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
               </li>
             </ul>
         </div>

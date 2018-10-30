@@ -22,7 +22,8 @@
               "src/graph-js"
             ],
             "styles": [
-              "src/styles.css",
+              "src/styles.scss",
+              "src/variables.scss",
               "src/graph-js/css/graph-creator.css"
             ],
             "scripts": [
@@ -79,7 +80,8 @@
               "src/graph-js/js/graph-creator.js"
             ],
             "styles": [
-              "src/styles.css",
+              "src/styles.scss",
+              "src/variables.scss",
               "src/graph-js/css/graph-creator.css"
             ],
             "assets": [

@@ -16,5 +16,10 @@
   "explanation_keyboard": "Tick this field to use yiddish keyboard",
   "explanation_advanced_settings": "Click this field to specify advanced search criteria.",
   "tutorial_using_keyboard": "keyboard is turned on",
-  "tutorial_not_using_keyboard": "keyboard is turned off"
+  "tutorial_not_using_keyboard": "keyboard is turned off",
+  "incoming_relations": "Incoming relations",
+  "outgoing_relations": "Outgoing relations",
+  "synonyms": "Synonyms",
+  "keyboard_tooltip": "Check to use yiddish keyboard",
+  "advanced_options_tooltip": "Show advanced options"
 }

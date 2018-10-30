@@ -20,7 +20,7 @@ export class ResultComponent implements OnInit, OnDestroy {
 
   lemmaId: number;
   yiddishContentPresent = false;
-  relations= [];
+  relations = {};
   footerFirstTabSelected = true;
   showNothingFoundMsg = false;
   rightPanelHidden = false;
@@ -85,12 +85,15 @@ export class ResultComponent implements OnInit, OnDestroy {
       this.sidebar.assignSingleOptionIfEmpty(this.content[0]);
     });
     this.http.getSenseRelations(this.lemmaId).subscribe(results => {
-      this.relations = results[0].concat(results[1]);
+      this.relations = {};
 
-      this.relations = this.relations.map(rel => {
+      const mapRelsFcn = (rel) => {
         const key = Object.keys(rel)[0]; // assuming only one key possible!
         return {'key': key, items: rel[key]};
-      });
+      };
+
+      this.relations['incoming'] = results[0].map(mapRelsFcn);
+      this.relations['outgoing'] = results[1].map(mapRelsFcn);
     });
   }
 

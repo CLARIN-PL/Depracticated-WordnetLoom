@@ -1,3 +1,5 @@
+@import "~variables.scss";
+
 .long-width-input{
   min-width: 300px;
   padding: 0 10px;
@@ -11,10 +13,7 @@
   margin: 5px 6px -2px 3px;
 }
 .fancy-checkbox i.unchecked {
-  font-size: 1.1em;
   color: rgb(178, 178, 178);
-
-  margin: 5px;
 }
 .fancy-checkbox input[type="checkbox"],
 .fancy-checkbox .checked {
@@ -83,8 +82,16 @@
   color: black;
 }
 
+/deep/ .mat-keyboard-key {
+  border-radius: 4px !important;
+}
+
+/deep/ .mat-keyboard-wrapper {
+  background-color: rgba(lighten($primary-color, 15%), 10%) !important;
+}
 
 /*keyboard mobile fix*/
+@media (max-width: 900px){
 /deep/ .mat-keyboard-key {
   padding: 4px !important;
 }
@@ -159,19 +166,20 @@
   }
 }
 
-// Large devices (desktops, 992px and up)
-@media (min-width: 992px) {
-  mat-keyboard-container,
-  .mat-keyboard {
-    min-width: 900px !important;
-  }
-}
-
-// Extra large devices (large desktops, 1200px and up)
-@media (min-width: 1200px) {
-  mat-keyboard-container,
-  .mat-keyboard {
-    min-width: 1000px !important;
-    max-width: 80% !important;
-  }
+//// Large devices (desktops, 992px and up)
+//@media (min-width: 992px) {
+//  mat-keyboard-container,
+//  .mat-keyboard {
+//    min-width: 900px !important;
+//  }
+//}
+//
+//// Extra large devices (large desktops, 1200px and up)
+//@media (min-width: 1200px) {
+//  mat-keyboard-container,
+//  .mat-keyboard {
+//    min-width: 1000px !important;
+//    max-width: 80% !important;
+//  }
+//}
 }

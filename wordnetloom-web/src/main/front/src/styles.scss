@@ -1,8 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 @import "../node_modules/font-awesome/css/font-awesome.min.css";
-
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "variables.scss";
 
 .form-group{
   margin-bottom: .5rem;
@@ -26,20 +26,21 @@
 ::-webkit-scrollbar-track
 {
   border-radius: 2px;
-  background-color: #ddd;
+  background-color: $background-color;
 }
 
 ::-webkit-scrollbar
 {
   width: 4px;
   height: 4px;
-  background-color: #ddd;
+  background-color: $background-color;
 }
 
 ::-webkit-scrollbar-thumb
 {
   border-radius: 4px;
-  background-color: #3f51b5;
+  //background-color: #3f51b5;
+  background-color: $primary-color;
 }
 
 /* roboto-regular - latin */
@@ -83,17 +84,39 @@ h6,
 .h4,
 .h5,
 .h6 {
-  color: #2b499e;
+  //color: #2b499e;
+  color: $primary-color;
   font-family: Montserrat, sans-serif, sans-serif;
   font-weight: 300;
 }
 
 body {
   word-wrap: break-word;
-  color: #333;
+  color: $gray-color;
   font-family: Roboto, sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 1.42857143;
 }
 
+.mat-raised-button[_ngcontent-c4]:not([class*='mat-elevation-z']){
+  box-shadow: 0px 3px 1px -2px rgba($primary-color, 0.2),
+              0px 2px 2px 0px rgba($primary-color, 0.14),
+              0px 1px 5px 0px rgba($primary-color, 0.12) !important;
+}
+button[mat-raised-button],
+button[mat-raised-button].mat-primary
+//button.mat-raised-button.mat-primary,
+//button.mat-button
+{
+  border-radius: 100px;
+  background-color: white !important;
+  color: $primary-color !important;
+  transition: background-color .1s ease-in-out;
+}
+
+button[mat-raised-button]:hover,
+button[mat-raised-button].mat-primary:hover {
+  background-color: $primary-color !important;
+  color: white !important;
+}

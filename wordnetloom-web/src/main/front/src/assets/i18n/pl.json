@@ -16,5 +16,10 @@
   "explanation_keyboard": "Zaznacz, aby używać ekranowej klawiatury jidysz",
   "explanation_advanced_settings": "Kliknij aby wysunąć zaawansowane pole wyszkukiwania.",
   "tutorial_using_keyboard": "klawiatura jest włączona",
-  "tutorial_not_using_keyboard": "klawiatura jest wyłączona"
+  "tutorial_not_using_keyboard": "klawiatura jest wyłączona",
+  "incoming_relations": "Relacje przychodzące",
+  "outgoing_relations": "Relacje wychodzące",
+  "synonyms": "Synonimy",
+  "keyboard_tooltip": "Zaznacz aby używać klawiaturę ekranową",
+  "advanced_options_tooltip": "Pokaż zaawansowane opcje"
 }

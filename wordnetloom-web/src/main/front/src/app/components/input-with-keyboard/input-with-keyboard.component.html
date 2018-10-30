@@ -1,7 +1,7 @@
 <!--<form #f="ngForm" (ngSubmit)="onSearch(f.value)">-->
 <form [formGroup]="searchFormGroup" (ngSubmit)="onSearch()">
 
-  <label class="fancy-checkbox" matTooltip="Show advanced options">
+  <label class="fancy-checkbox" [matTooltip]="'advanced_options_tooltip' | translate">
     <input
       class="ignore-btn-outside-click"
       name="showAdvancedOptions"
@@ -16,7 +16,7 @@
     <i class="ignore-btn-outside-click fa fa-fw fa-chevron-up checked chevron-rotate"></i>
   </label>
 
-  <label class="fancy-checkbox" matTooltip="Check to use yiddish keyboard">
+  <label class="fancy-checkbox" [matTooltip]="'keyboard_tooltip' | translate">
     <input
       formControlName="useKeyboard"
       type="checkbox"

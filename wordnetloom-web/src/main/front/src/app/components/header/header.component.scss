@@ -1,7 +1,8 @@
 @import "~bootstrap/scss/bootstrap-grid.scss";
+@import "~variables.scss";
 
 nav{
-  background-color: rgb(46, 59, 136);
+  background-color: $primary-color;//rgb(46, 59, 136);
 }
 
 nav .nav-button {
@@ -88,6 +89,7 @@ nav i .fa {
 }
 .nav-item button{
   text-transform: uppercase;
+  color: white;
 }
 
 .nav-item.nav-item-search {
@@ -153,7 +155,8 @@ nav i .fa {
   padding-top: 0px;
   height: 0%;
   transition: height .5s ease-in-out, padding-top .5s ease-in-out;
-  background-color: #2e3b88f0;
+  //background-color: #2e3b88f0;
+  background-color: $primary-color;
   position: fixed;
   top: 0;
   z-index: 50;
@@ -180,11 +183,14 @@ nav i .fa {
   /deep/ .fancy-checkbox i.unchecked {
     color: #fff;
   }
-  a {
-    button {
+  a button,
+  .lang-button-group .mat-button-toggle-label-content
+  {
       color: white;
+      font-size: 3em;
+      padding: 20px 0;
     }
-  }
+
   app-input-with-keyboard{
     mat-form-field.mat-form-field.main-search-field {
       font-size: 16px;
@@ -222,5 +228,21 @@ nav i .fa {
   .small-title{
     margin-top: unset;
     font-size: 1em;
+  }
+}
+
+.lang-button-group {
+  border: none;
+  margin-top: 16px;
+  color: white;
+  /deep/ .mat-button-toggle-label-content {
+    line-height: 20px;
+  }
+  .nav-lang-select-btn:nth-child(1) {
+      border-right: 1px black solid;
+  }
+
+  .mat-button-toggle-checked.mat-button-toggle-appearance-standard{
+    color: white;
   }
 }
