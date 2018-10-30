@@ -151,6 +151,12 @@ nav i .fa {
   height: 100%;
   padding-top: 70px;
 }
+/deep/ .overlay-nav mat-button-toggle .mat-button-toggle-label-content {
+  color: white;
+  font-size: 3em;
+  line-height: unset;
+  padding: 20px 10px;
+}
 .overlay-nav {
   padding-top: 0px;
   height: 0%;
@@ -184,7 +190,7 @@ nav i .fa {
     color: #fff;
   }
   a button,
-  .lang-button-group .mat-button-toggle-label-content
+  mat-button-toggle .mat-button-toggle-label-content
   {
       color: white;
       font-size: 3em;
@@ -239,7 +245,10 @@ nav i .fa {
     line-height: 20px;
   }
   .nav-lang-select-btn:nth-child(1) {
-      border-right: 1px black solid;
+      border-right: 1px white solid;
+  }
+  .nav-lang-select-btn:nth-child(2) {
+    border-left: 1px white solid;
   }
 
   .mat-button-toggle-checked.mat-button-toggle-appearance-standard{

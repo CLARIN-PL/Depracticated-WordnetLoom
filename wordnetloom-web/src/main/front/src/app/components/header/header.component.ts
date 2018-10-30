@@ -36,5 +36,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.translate.use(lang);
   }
 
+  hideNav() {
+    console.log('hidding navbar');
+    this.state.setNavbarOpen(false);
+  }
 
 }
