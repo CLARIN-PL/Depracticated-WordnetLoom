@@ -102,6 +102,7 @@ CALL add_uuid_column('synset_relation', 'relation_type_fk');
 CALL add_uuid_column('word', 'uuid');
 
 
+
 CALL add_uuid_column('tracker_relation_type', 'uuid');
 CALL add_uuid_column('tracker_relation_type', 'parent_relation_fk');
 CALL add_uuid_column('tracker_relation_type', 'reverse_relation_fk');
@@ -175,9 +176,9 @@ CALL move_data('sense_relation','sense', 'child_sense_id', 'child_sense_fk');
 CALL move_data('sense_relation','sense', 'parent_sense_id', 'parent_sense_fk');
 CALL move_data('sense_relation','relation_type', 'relation_type_id', 'relation_type_fk');
 CALL move_data('synset_attributes','synset', 'synset_id', 'synset_fk');
-CALL move_data('synset_relation','synset', 'child_synset_id', 'child_synset_fk');
+-- CALL move_data('synset_relation','synset', 'child_synset_id', 'child_synset_fk');
 -- CALL move_data('synset_relation','synset', 'parent_synset_id', 'parent_synset_fk');
--- CALL move_data('synset_relation','relation_type', 'synset_relation_type_id', 'relation_type_fk');
+CALL move_data('synset_relation','relation_type', 'synset_relation_type_id', 'relation_type_fk');
 UPDATE synset_relation S
 SET child_synset_fk = (SELECT uuid FROM synset WHERE id = S.child_synset_id);
 

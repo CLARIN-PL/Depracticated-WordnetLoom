@@ -1,5 +1,7 @@
 package pl.edu.pwr.wordnetloom.application.flyway;
 
+import db.migration.TestMigration;
+import db.migration.TestMigration2;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.MigrationInfo;
@@ -46,5 +48,20 @@ public class DbMigrator {
                 e1.printStackTrace();
             }
         }
+//
+
+//        TestMigration migration = new TestMigration();
+//        try {
+//            migration.run(dataSource.getConnection());
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+
+//        TestMigration2 migration = new TestMigration2();
+//        try{
+//            migration.run(dataSource.getConnection());
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
     }
 }
