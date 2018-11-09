@@ -196,7 +196,6 @@ ALTER TABLE relation_type_allowed_parts_of_speech DROP FOREIGN KEY FK5ynuaw5d0qy
 ALTER TABLE relation_tests DROP FOREIGN KEY FK404q0976re9p6m0h1oyanxhnd;
 ALTER TABLE relation_type DROP FOREIGN KEY FK6bdgdngxm2rl0vium1q98i9c1;
 ALTER TABLE relation_type DROP FOREIGN KEY FK8k2lma1x3l6nm7rm7rjxjx3a9;
-ALTER TABLE word DROP FOREIGN KEY FK98i2qhqmrcfki79ul7ua8tup7;
 ALTER TABLE sense DROP FOREIGN KEY FKk1w1bikgc6pcqsm4v5jbnahdq;
 ALTER TABLE sense DROP FOREIGN KEY FK98i2qhqmrcfki79ul7ua8tup7;
 ALTER TABLE sense_attributes DROP FOREIGN KEY FKjevbefuvttet3sb4u1h8h4gys;
