@@ -1,4 +1,5 @@
 @import "~bootstrap/scss/bootstrap-grid.scss";
+@import "~variables.scss";
 
 .app-container{
   height: 100%;
@@ -78,9 +79,16 @@
 .option-list.no-content{
   height: calc(100vh - 70px - 84px);
 }
-.option-list a.active-link{
-  color: white;
-  background-color: rgba(46, 59, 137, 0.6);
+
+.option-list {
+  a.active-link {
+    color: white;
+    background-color: $primary-color;
+  }
+  a:hover {
+    color: white;
+    background-color: lighten($primary-color, 20%);
+  }
 }
 
 .option-list .option-list-item.mat-list-item{
@@ -121,12 +129,6 @@
   padding: 0 5px;
   line-height: 36px;
 }
-@media (min-width: 1350px) {
-/deep/ .mat-button-toggle-vertical{
-  flex-flow: row;
-}
-}
-
 
 .show-hide-wordlist-btn{
   font-size: 1.1em;
@@ -149,4 +151,12 @@
 
 /deep/ .mat-tooltip-top-fix{
   z-index: 2001;
+}
+
+.button-toggle-selector-names-style {
+  width: 100%;
+
+  mat-button-toggle {
+    width: 100%;
+  }
 }

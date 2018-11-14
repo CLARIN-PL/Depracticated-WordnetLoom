@@ -1,5 +1,5 @@
 @import '~@angular/material/theming';
-@include mat-core();
+//@include mat-core();
 
 // overriding mat-colors
 $mat-blue: (
@@ -37,7 +37,7 @@ $mat-blue: (
 $primary: mat-palette($mat-blue,900);
 $accent: mat-palette($mat-pink);
 $theme: mat-light-theme($primary, $accent);
-@include angular-material-theme($theme);
+//@include angular-material-theme($theme);
 
 $background-color: #ccc;
 $gray-color: #676767;

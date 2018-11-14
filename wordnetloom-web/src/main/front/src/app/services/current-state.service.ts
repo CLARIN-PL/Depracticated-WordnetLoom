@@ -12,15 +12,16 @@ export class CurrentStateService {
   sidebarRearchResultsPanelOpenSubscription = new EventEmitter<boolean>();
 
   mobileState: boolean;
-  mobileStateBreakPoint = 576;
+  // mobileStateBreakPoint = 576;
+  mobileStateBreakPoint = 768;
   mobileStateSubscription = new EventEmitter<boolean>();
 
 
   constructor() {
     this.mobileState = window.innerWidth < this.mobileStateBreakPoint;
     window.addEventListener('resize', (event) => {
-      this.onResize(event)
-    })
+      this.onResize(event);
+    });
   }
 
   onResize(event) {

@@ -17,7 +17,14 @@
     <div class="row">
       <div class="text-center col-12">
         <h3>{{ content[0].lemma }}</h3>
-        <h4><span matTooltip="Part of speech">{{ content[0].partOfSpeech }}</span><span *ngIf="content[0].grammaticalGender" matTooltip="Grammatical gender">, {{ content[0].grammaticalGender }}</span>, <span matTooltip="Lexicon">{{ content[0].flag }}</span></h4>
+        <h4>
+          <span matTooltip="Part of speech">{{ content[0].partOfSpeech }}</span>
+          <span *ngIf="content[0].grammaticalGender" matTooltip="Grammatical gender">,
+            {{ content[0].grammaticalGender }}
+          </span>
+          <span *ngIf="content[0].flag !== 'Yiddish 1.0'" matTooltip="Lexicon">, {{ content[0].flag }}
+          </span>
+        </h4>
         <button *ngIf="mobile" class="show-graph-btn" mat-raised-button color="primary" (click)="showGraphModal()">{{'show_graph_modal' | translate}}</button>
         <!--<button class="show-graph-btn" mat-raised-button color="primary" (click)="showGraphModal()">{{'show_graph_modal' | translate}}</button>-->
       </div>

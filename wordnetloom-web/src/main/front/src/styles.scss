@@ -98,6 +98,9 @@ body {
   font-weight: 400;
   line-height: 1.42857143;
 }
+a {
+  color: $primary-color;
+}
 
 .mat-raised-button[_ngcontent-c4]:not([class*='mat-elevation-z']){
   box-shadow: 0px 3px 1px -2px rgba($primary-color, 0.2),
@@ -119,4 +122,35 @@ button[mat-raised-button]:hover,
 button[mat-raised-button].mat-primary:hover {
   background-color: $primary-color !important;
   color: white !important;
+}
+
+.clarin-graph-visualization #download-picture {
+  background-image: none !important;
+  cursor: pointer;
+  border-radius: 50px;
+  border: 2px $primary-color solid !important;
+  color: $primary-color;
+  transition: background-color .2s;
+  &:hover {
+    color: white;
+    background-color: $primary-color;
+    height: 50px !important;
+    width: 55px !important;
+    &:before {
+      color: white;
+    }
+  }
+
+  &:before {
+    content: "\f063";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    color: $primary-color;
+    font-size: 2em;
+    position: absolute;
+    top: 3px;
+    left: 11px;
+  }
 }

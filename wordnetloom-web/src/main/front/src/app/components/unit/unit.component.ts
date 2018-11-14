@@ -14,7 +14,7 @@ export class UnitComponent implements OnInit, OnDestroy {
   sidebarObsv;
   sidebarLoadingObsv;
   sidebarContent = [];
-  sideBarListStyle = 'yiddish';
+  sideBarListStyle = 'yivo';
   sideBarListLoading = false;
   recordsInfo = null;
 

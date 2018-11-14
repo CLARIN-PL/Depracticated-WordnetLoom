@@ -54,8 +54,43 @@ export class SenseContent {
 
   private setYiddishFields(): void {
     const self = this;
-    const fieldNames = ['Latin spelling', 'Yiddish spelling', 'Dialectal', 'Grammatical gender', 'Meaning', 'Lexical Characteristic',
-      'Style', 'Status', 'Age'];
+    const fieldNames = [
+      'Latin spelling',
+      'Yiddish spelling',
+      'YIVO spelling',
+
+      // part of speech
+      // gramatical qualifiers
+      'Grammatical gender', // change to 'Grammatical qualifiers'
+      'Dialectal',
+
+      'Meaning',
+      'Lexical Characteristic',
+      'Style',
+      'Status',
+      'Age'
+
+      // Philological Spelling,
+      // Yiddish Spelling,
+      // YIVO Spelling,
+      // Part of Speech,
+      // Grammatical Qualifiers (​ zawartość pola Grammatical Gender​),
+      // Inflection, ​
+      // Meaning,
+      // Semantic Field, SEARCH!!
+      // Style, SEARCH!!
+      // Lexical Characteristic, SEARCH!!
+      // Rootedness (​ zawartość pola Status​ ), SEARCH!!
+      // Etymology,
+      // Age, SEARCH!!
+      // Source,
+      // Etymological Root, SEARCH!!
+      // Morphology (​zawartość pola Particles​ ) ​ . SEARCH!!
+      //
+      // Wszystkie pola powinny być wyświetlane zawsze, niezależnie od tego,
+      // czy coś jest w nich wybrane lub wpisane w Wordnetloomie,
+      // z wyjątkiem następujących: ​ Lexical Characteristic, Context, Comment​
+    ];
 
     const fields = [];
     for (const name of fieldNames){

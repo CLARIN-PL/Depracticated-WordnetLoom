@@ -183,3 +183,8 @@
 //  }
 //}
 }
+@media (min-width: 1200px) {
+  /deep/ .mat-keyboard-col .mat-button-wrapper{
+    font-size: 1.3em !important;
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "welcome_msg": "Welcome to The Online Dictionary of&nbsp;Polish Borrowings in Yiddish",
+  "welcome_msg": "Welcome to The Online Dictionary<br>of&nbsp;Polish Borrowings in Yiddish",
   "home_page_small_instruction": "Type a word in Yiddish, the YIVO standard transcription, or the Slavic philological transcription to begin the search",
   "search_placeholder": "Search for lemma, fonetic form, etc...",
   "search": "Search",
@@ -13,13 +13,13 @@
   "wordlist": "Wordlist",
   "lexical_relations": "Lexical relations",
   "show_graph_modal": "Show graphical visualization",
-  "explanation_keyboard": "Tick this field to use yiddish keyboard",
+  "explanation_keyboard": "Tick this field to use Yiddish keyboard",
   "explanation_advanced_settings": "Click this field to specify advanced search criteria.",
   "tutorial_using_keyboard": "keyboard is turned on",
   "tutorial_not_using_keyboard": "keyboard is turned off",
   "incoming_relations": "Incoming relations",
   "outgoing_relations": "Outgoing relations",
   "synonyms": "Synonyms",
-  "keyboard_tooltip": "Check to use yiddish keyboard",
+  "keyboard_tooltip": "Check to use Yiddish keyboard",
   "advanced_options_tooltip": "Show advanced options"
 }

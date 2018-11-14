@@ -16,12 +16,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   navbarOpenListener;
 
 
-  constructor(private state: CurrentStateService, private translate: TranslateService) { };
+  constructor(private state: CurrentStateService, private translate: TranslateService) { }
 
   ngOnInit() {
     this.navbarOpenListener = this.state.navbarOpenSubscription.subscribe((state) => {
       this.navbarOpen = state;
-    })
+    });
   }
 
   ngOnDestroy() {
@@ -37,7 +37,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   hideNav() {
-    console.log('hidding navbar');
     this.state.setNavbarOpen(false);
   }
 
