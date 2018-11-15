@@ -235,3 +235,6 @@ ul.tree li:last-child {
   width: 100%;
   margin: 15px 0;
 }
+.title-row{
+  min-height:80px;
+}

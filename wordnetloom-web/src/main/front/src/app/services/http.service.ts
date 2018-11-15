@@ -34,7 +34,7 @@ export class HttpService {
   }
 
 
-  getLexicalUnitDetails(id) {
+  getSenseDetails(id) {
     return this.get('sense/' + id);
   }
 

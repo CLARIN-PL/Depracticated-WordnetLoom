@@ -18,7 +18,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   content: SenseContent[];
   subscription: Subscription = null;
 
-  lemmaId: number;
+  synsetId: number;
   yiddishContentPresent = false;
   relations = {};
   footerFirstTabSelected = true;
@@ -43,7 +43,17 @@ export class ResultComponent implements OnInit, OnDestroy {
       // @ts-ignore - suppressing non existing error
       this.sidebar.loadOptionsFromParameters(searchQueryParams.params);
     }
-    this.lemmaId = +this.route.snapshot.paramMap.get('lemma_id');
+    this.synsetId = +this.route.snapshot.paramMap.get('lemma_id');
+
+    this.state.setResultComponentRouteObserver(this.route);
+    let sub = this.state.getSynsetIdSubscription().subscribe(id => {
+      this.synsetId = id;
+      console.log(id);
+      this.updateCurrentSynset(false);
+    });
+
+
+    // todo -- delete this?
     this.subscription = this.route.params.subscribe(params => {
       const searchLemma = params['search_lemma'];
       if (searchLemma) {
@@ -51,14 +61,6 @@ export class ResultComponent implements OnInit, OnDestroy {
           this.sidebar.getAllOptions({lemma: ''});
         }
         this.sidebar.getAllOptions({lemma: searchLemma});
-      }
-
-      this.lemmaId = +params['lemma_id']; // (+) converts string 'id' to a number
-      if (!isNaN(this.lemmaId)) {
-        this.showNothingFoundMsg = false;
-        this.updateCurrentLexicalUnit(!searchLemma);
-      } else {
-        this.showNothingFoundMsg = true;
       }
     });
 
@@ -69,9 +71,9 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
 
-  private updateCurrentLexicalUnit(isSearchFieldEmpty) {
+  private updateCurrentSynset(isSearchFieldEmpty) {
     this.content = [];
-    this.http.getLexicalUnitDetails(this.lemmaId).subscribe((response) => {
+    this.http.getSenseDetails(this.synsetId).subscribe((response) => {
       if (response['Yiddish'].length > 0) {
         for(let i = 0; i < response['Yiddish'].length; i++) {
           this.yiddishContentPresent = true;
@@ -84,7 +86,7 @@ export class ResultComponent implements OnInit, OnDestroy {
 
       this.sidebar.assignSingleOptionIfEmpty(this.content[0]);
     });
-    this.http.getSenseRelations(this.lemmaId).subscribe(results => {
+    this.http.getSenseRelations(this.synsetId).subscribe(results => {
       this.relations = {};
 
       const mapRelsFcn = (rel) => {

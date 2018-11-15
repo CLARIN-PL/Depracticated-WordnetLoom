@@ -1,9 +1,13 @@
 import {EventEmitter, Injectable, HostListener} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {Subscription} from 'rxjs';
 
 @Injectable()
 export class CurrentStateService {
-  lexicalUnitId = null;
-  lexicalUnitSubscription = new EventEmitter<any>();
+  synsetId = null;
+  synsetSubscription = new EventEmitter<any>();
+
+  routeObserver = null;
 
   navbarOpenState: boolean;
   navbarOpenSubscription = new EventEmitter<boolean>();
@@ -16,17 +20,29 @@ export class CurrentStateService {
   mobileStateBreakPoint = 768;
   mobileStateSubscription = new EventEmitter<boolean>();
 
-
-  constructor() {
+  constructor(private route: ActivatedRoute) {
     this.mobileState = window.innerWidth < this.mobileStateBreakPoint;
     window.addEventListener('resize', (event) => {
       this.onResize(event);
     });
   }
 
+  setResultComponentRouteObserver(routeObserver) {
+    this.routeObserver = routeObserver;
+    this.routeObserver.params.subscribe( params => {
+      const synsetId = +params['lemma_id']; // (+) converts string 'id' to a number
+
+      if (isNaN(synsetId)) {
+        this.setSynsetId(null);
+      } else {
+        this.setSynsetId(synsetId);
+      }
+    });
+  }
+
   onResize(event) {
     const newMobileState = window.innerWidth < this.mobileStateBreakPoint;
-    if ( this.mobileState !== newMobileState ){
+    if ( this.mobileState !== newMobileState ) {
       this.mobileState = newMobileState;
       this.mobileStateSubscription.emit(this.mobileState);
     }
@@ -46,16 +62,18 @@ export class CurrentStateService {
     this.sidebarRearchResultsPanelOpenSubscription.emit(state);
   }
 
-  setLexicalUnit(id) {
-    this.lexicalUnitId = id;
-    this.lexicalUnitSubscription.emit(id);
+  setSynsetId(id) {
+    if (this.synsetId === id) return;
+
+    this.synsetId = id;
+    this.synsetSubscription.emit(id);
   }
 
-  getLexicalUnitId() {
-    return this.lexicalUnitId;
+  getSynsetId() {
+    return this.synsetId;
   }
 
-  getLexicalUnitIdSubscription() {
-    return this.lexicalUnitSubscription;
+  getSynsetIdSubscription() {
+    return this.synsetSubscription;
   }
 }
