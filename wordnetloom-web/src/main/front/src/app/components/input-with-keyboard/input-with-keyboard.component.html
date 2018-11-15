@@ -29,13 +29,14 @@
 
   <mat-form-field class="long-width-input main-search-field">
     <input autocomplete="off" *ngIf="!searchFormGroup.value.useKeyboard"  matInput formControlName="searchTerm" [matAutocomplete]="auto" [placeholder]="'search_placeholder' | translate " name="lemma">
-    <input autocomplete="off" [hidden]="!searchFormGroup.value.useKeyboard" #inputWithKeyboard matInput  formControlName="searchTerm" [matAutocomplete]="auto" [matKeyboard]="'yiddish_alphabetical_order'" [placeholder]="'search_placeholder' | translate " name="lemma">
+    <input autocomplete="off" [hidden]="!searchFormGroup.value.useKeyboard" #inputWithKeyboard matInput  formControlName="searchTerm" (ngModelChange)="modelChanged()" (blur)="inputBlured()" [matAutocomplete]="auto" [matKeyboard]="'yiddish_alphabetical_order'" [placeholder]="'search_placeholder' | translate " name="lemma">
     <!--<input autocomplete="off" #inputWithKeyboard matInput  formControlName="searchTerm" [matAutocomplete]="auto" [matKeyboard]="'yiddish_alphabetical_order'" [placeholder]="'search_placeholder' | translate " name="lemma">-->
 
     <!-- CREATE AUTO COMPLETE PANEL WITH OPTIONS. -->
-    <mat-autocomplete #auto="matAutocomplete">
-      <mat-option *ngFor="let opt of autoCompleteOptions" [value]="opt">
-        {{ opt }}
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected($event)">
+      <mat-option *ngFor="let opt of autoCompleteOptions | async" [value]="opt">
+        <span class="autocomplete-option-main">{{opt}}</span>
+        <small class="autocomplete-option-small">spelling: Yiddish</small>
       </mat-option>
     </mat-autocomplete>
 

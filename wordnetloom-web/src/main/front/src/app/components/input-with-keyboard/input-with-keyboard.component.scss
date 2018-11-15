@@ -188,3 +188,13 @@
     font-size: 1.3em !important;
   }
 }
+
+.autocomplete-option-main {
+  min-width:155px;
+  display: inline-block;
+}
+.autocomplete-option-small {
+  color: #aaaaaa;
+  font-style: italic;
+}
+

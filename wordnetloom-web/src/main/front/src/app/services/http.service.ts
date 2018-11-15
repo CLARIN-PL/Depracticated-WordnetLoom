@@ -4,6 +4,7 @@ import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/catch';
+import {lemmas} from './avaliable_lemmas_temp';
 // import {SlimLoadingBarService} from 'ng2-slim-loading-bar';
 
 @Injectable()
@@ -60,7 +61,28 @@ export class HttpService {
 
   getSearchAutocomplete(term) {
     // todo- get from search
-    return Observable.of(new Object()).mapTo([term, 'abc', 'cde']);
+    // const avaliable_lemmas = lemmas.filter((it) => it.startsWith(term));
+    const getLemmas = (searchedTerm, maxItemsToFind) => {
+      const found = [];
+      let somethingFound = false; // using this to optimize search function since lemmas are sorted
+      for (let i = 0; i < lemmas.length; i++) {
+        if (lemmas[i].startsWith(searchedTerm.toLowerCase())) {
+          found.push(lemmas[i]);
+          somethingFound = true;
+          if (found.length >= maxItemsToFind) { // check if list ready
+            return found;
+          }
+        } else if (somethingFound) {
+          // fired when something was found recently but not in current iter
+          return found;
+        }
+      }
+      return found;
+    };
+    return Observable.of(getLemmas(term, 10)).debounceTime(750);
+    return Observable.of(lemmas.filter((it) => it.startsWith(term))).debounceTime(750);
+    // return Observable.of(new Object()).mapTo(avaliable_lemmas);
+    // return Observable.of(new Object()).mapTo([term, 'abc', 'cde']);
   }
   getLang(lang) {
     const langPath = `assets/i18n/${lang || 'en'}.json`;

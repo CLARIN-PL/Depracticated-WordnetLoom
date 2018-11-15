@@ -30,7 +30,7 @@
       </div>
     </div>
     <app-graph-main *ngIf="!mobile"></app-graph-main>
-    <button class="expand-btn expand-right" (click)=" rightPanelHidden= !rightPanelHidden; ">
+    <button *ngIf="!mobile" class="expand-btn expand-right" (click)=" rightPanelHidden= !rightPanelHidden; ">
       <i *ngIf="!rightPanelHidden" class="fa fa-chevron-right"></i>
       <i *ngIf="rightPanelHidden" class="fa fa-chevron-left"></i>
     </button>

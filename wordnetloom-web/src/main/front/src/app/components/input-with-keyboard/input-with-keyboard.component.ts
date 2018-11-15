@@ -1,9 +1,13 @@
 import {Component, ElementRef, Input, OnInit, ViewChild, Output, EventEmitter} from '@angular/core';
 import {isNullOrUndefined} from 'util';
-import {SidebarService} from "../../services/sidebar.service";
-import {HttpService} from "../../services/http.service";
-import {FormControl, FormGroup} from "@angular/forms";
-import { CurrentStateService } from '../../services/current-state.service'
+import {SidebarService} from '../../services/sidebar.service';
+import {HttpService} from '../../services/http.service';
+import {FormControl, FormGroup} from '@angular/forms';
+import { CurrentStateService } from '../../services/current-state.service';
+import { MatAutocompleteTrigger } from '@angular/material';
+import {MatKeyboardService} from '@ngx-material-keyboard/core';
+import {debounceTime, distinctUntilChanged, skipWhile, takeUntil, last, finalize} from 'rxjs/operators';
+import {skipUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-input-with-keyboard',
@@ -19,6 +23,7 @@ export class InputWithKeyboardComponent implements OnInit {
 
   @ViewChild('panel') el;
   @ViewChild('inputWithKeyboard') inputWithKeyboard: ElementRef;
+  @ViewChild('inputWithKeyboard', { read: MatAutocompleteTrigger }) trigger: MatAutocompleteTrigger;
   @ViewChild('advancedFilters') advancedFilters;
 
   useKeyboard = true;
@@ -29,18 +34,19 @@ export class InputWithKeyboardComponent implements OnInit {
     useKeyboard: new FormControl(true)
   });
   // searchTerm: FormControl = new FormControl();
-  autoCompleteOptions = [];
+  autoCompleteOptions; // = [];
 
-  constructor(private state: CurrentStateService, private sidebar: SidebarService, private http: HttpService) { }
+  constructor(private state: CurrentStateService, private sidebar: SidebarService, private http: HttpService, private keyboardService: MatKeyboardService) { }
 
   ngOnInit() {
     this.searchFormGroup.controls.searchTerm.valueChanges.subscribe(
       term => {
         if (term !== '') {
-          this.http.getSearchAutocomplete(term).subscribe(
-            data => {
-              this.autoCompleteOptions = data as any[];
-            });
+          this.autoCompleteOptions = this.http.getSearchAutocomplete(term);
+          // this.http.getSearchAutocomplete(term).subscribe(
+          //   data => {
+          //     this.autoCompleteOptions = data as any[];
+          //   });
         }
       });
   }
@@ -51,6 +57,8 @@ export class InputWithKeyboardComponent implements OnInit {
     if (searchTerm.length > 0) {
       advancedFilters['lemma'] = searchTerm;
     }
+    this.inputWithKeyboard.nativeElement.blur();
+    this.keyboardService.dismiss();
     this.sidebar.getAllOptions(advancedFilters);
     this.state.setNavbarOpen(false); // hide navbar
     this.state.setSearchResultPanelOpen(true); // show sidebar with results
@@ -75,8 +83,7 @@ export class InputWithKeyboardComponent implements OnInit {
       this.el.toggle();
     } else if (visible) {
       this.el.show();
-    }
-    else {
+    } else {
       this.el.close();
     }
     this.showAdvancedOptions = this.el._expanded;
@@ -102,5 +109,32 @@ export class InputWithKeyboardComponent implements OnInit {
 
     this.el.close();
     this.showAdvancedOptions = this.el._expanded;
+  }
+
+  modelChanged() {
+    if (this.keyboardService.isOpened) {
+
+      this.trigger.panelClosingActions
+        .pipe(
+          takeUntil(this.trigger.autocomplete.opened))
+        .subscribe(() => {
+         const panelClosedInterval = setInterval(() => {
+
+           if (this.trigger.autocomplete.closed) {
+             this.trigger.openPanel();
+             clearInterval(panelClosedInterval);
+           }
+         }, 100);
+      });
+    }
+  }
+
+  optionSelected(event) {
+    this.onSearch();
+  }
+
+  inputBlured() {
+    // console.log(this.keyboardService);
+    // console.log('input blured');
   }
 }
