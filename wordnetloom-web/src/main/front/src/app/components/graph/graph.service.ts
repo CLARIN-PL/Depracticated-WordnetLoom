@@ -50,6 +50,7 @@ export class GraphService {
 
   initializeFromSynsetId(id) {
     this.currentSynsetId = id;
+    this.graph.setRootNodeAsLastClickedAutomatically();
     this.graph.initializeFromSynsetId(id);
   }
 

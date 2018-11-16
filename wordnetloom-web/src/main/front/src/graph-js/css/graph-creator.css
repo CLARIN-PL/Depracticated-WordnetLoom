@@ -379,24 +379,46 @@
     fill: red;
 }
 
+.clarin-graph-visualization g.conceptG {
+    cursor: move;
+}
+
+.clarin-graph-visualization.style-yiddish g.conceptG,
+.clarin-graph-visualization.style-yiddish g.conceptG circle.inner-node{
+    cursor: pointer;
+    fill: #a8b5d6;
+}
+
+.clarin-graph-visualization.style-plWordNet g.conceptG circle.inner-node{
+    cursor: pointer;
+    fill: #aaffaf;
+}
+
+
+
 /* marking selected nodes */
 .clarin-graph-visualization.style-yiddish g.node-selected rect.inner-node,
 .clarin-graph-visualization.style-yiddish g.node-selected polyline.inner-node,
 .clarin-graph-visualization.style-yiddish g.node-selected circle.inner-node {
+    cursor: move;
     fill: #5e8fff;
 }
 .clarin-graph-visualization.style-plWordNet g.node-selected rect.inner-node,
 .clarin-graph-visualization.style-plWordNet g.node-selected polyline.inner-node,
 .clarin-graph-visualization.style-plWordNet g.node-selected circle.inner-node {
+    cursor: move;
     fill: rgb(255,255,48);
 }
-
-.clarin-graph-visualization.style-yiddish g.conceptG circle.inner-node{
-    fill: #a8b5d6;
+.clarin-graph-visualization.style-plWordNet polyline:not(.inner-node) {
+    cursor: pointer;
 }
 
-.clarin-graph-visualization.style-plWordNet g.conceptG circle.inner-node{
-    fill: #aaffaf;
-}
+/*show information about last node clicked*/
+/*.clarin-graph-visualization.style-plWordNet g.last-node-clicked polyline.inner-node {*/
+/*stroke-width: 2px;*/
+/*}*/
 
+.clarin-graph-visualization.style-yiddish g.last-node-clicked rect.inner-node {
+    stroke-width: 2px;
+}
 
