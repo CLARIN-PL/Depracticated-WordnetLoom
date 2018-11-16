@@ -19,7 +19,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(private state: CurrentStateService, private translate: TranslateService) { }
 
   ngOnInit() {
-    this.navbarOpenListener = this.state.navbarOpenSubscription.subscribe((state) => {
+    this.navbarOpenListener = this.state.getNavbarOpenEmitter().subscribe((state) => {
       this.navbarOpen = state;
     });
   }

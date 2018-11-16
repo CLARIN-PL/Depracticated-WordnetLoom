@@ -32,7 +32,7 @@ export class UnitComponent implements OnInit, OnDestroy {
         this.sidebarContent = data;
       });
 
-    this.sidebarOpenListener = this.state.sidebarRearchResultsPanelOpenSubscription.subscribe(
+    this.sidebarOpenListener = this.state.getSidebarRearchResultsPanelOpenEmitter().subscribe(
       (state) => {
         this.showingSideBar = state;
       }
@@ -54,7 +54,7 @@ export class UnitComponent implements OnInit, OnDestroy {
 
   optionSelected() {
     if (this.state.getMobileState()) {
-      this.state.setSearchResultPanelOpen(false);
+      this.state.setSidebarSearchResultPanelOpen(false);
     }
   }
 
@@ -66,12 +66,12 @@ export class UnitComponent implements OnInit, OnDestroy {
 
   hideSideBar() {
     // this.showingSideBar = false;
-    this.state.setSearchResultPanelOpen(false);
+    this.state.setSidebarSearchResultPanelOpen(false);
   }
 
   showSideBar() {
     // this.showingSideBar = true;
-    this.state.setSearchResultPanelOpen(true);
+    this.state.setSidebarSearchResultPanelOpen(true);
   }
   onSelectedListStyleChange(event) {
     console.log(event);

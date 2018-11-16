@@ -61,7 +61,7 @@ export class InputWithKeyboardComponent implements OnInit {
     this.keyboardService.dismiss();
     this.sidebar.getAllOptions(advancedFilters);
     this.state.setNavbarOpen(false); // hide navbar
-    this.state.setSearchResultPanelOpen(true); // show sidebar with results
+    this.state.setSidebarSearchResultPanelOpen(true); // show sidebar with results
   }
 
   showKeyboardSelectorClicked(showKeyboard) {

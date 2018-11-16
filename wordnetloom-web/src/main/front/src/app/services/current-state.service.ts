@@ -1,24 +1,20 @@
-import {EventEmitter, Injectable, HostListener} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {Subscription} from 'rxjs';
 
 @Injectable()
 export class CurrentStateService {
-  synsetId = null;
-  synsetSubscription = new EventEmitter<any>();
+  private synsetId = null;
+  private navbarOpenState: boolean;
+  private sidebarSearchResultsPanelOpen: boolean;
+  private mobileStateBreakPoint = 768;
+  private mobileState: boolean;
 
-  routeObserver = null;
+  private synsetIdEmitter = new EventEmitter<any>();
+  private navbarOpenEmitter = new EventEmitter<boolean>();
+  private sidebarSearchResultsPanelOpenEmitter = new EventEmitter<boolean>();
+  private mobileStateEmitter = new EventEmitter<boolean>();
 
-  navbarOpenState: boolean;
-  navbarOpenSubscription = new EventEmitter<boolean>();
-
-  sidebarRearchResultsPanelOpen: boolean;
-  sidebarRearchResultsPanelOpenSubscription = new EventEmitter<boolean>();
-
-  mobileState: boolean;
-  // mobileStateBreakPoint = 576;
-  mobileStateBreakPoint = 768;
-  mobileStateSubscription = new EventEmitter<boolean>();
+  private routeObserver = null;
 
   constructor(private route: ActivatedRoute) {
     this.mobileState = window.innerWidth < this.mobileStateBreakPoint;
@@ -44,36 +40,35 @@ export class CurrentStateService {
     const newMobileState = window.innerWidth < this.mobileStateBreakPoint;
     if ( this.mobileState !== newMobileState ) {
       this.mobileState = newMobileState;
-      this.mobileStateSubscription.emit(this.mobileState);
+      this.mobileStateEmitter.emit(this.mobileState);
     }
   }
+  // emitter getters
+  getSynsetIdEmitter(): EventEmitter<any> {return this.synsetIdEmitter; }
+  getNavbarOpenEmitter(): EventEmitter<any> {return this.navbarOpenEmitter; }
+  getSidebarRearchResultsPanelOpenEmitter(): EventEmitter<any> {return this.sidebarSearchResultsPanelOpenEmitter; }
+  getMobileStateEmitter(): EventEmitter<any> {return this.mobileStateEmitter; }
 
-  getMobileState(): boolean {
-    return this.mobileState;
-  }
+  // state getters
+  getMobileState(): boolean { return this.mobileState; }
+  getSynsetId() { return this.synsetId; }
 
+
+  // setters
   setNavbarOpen(state: boolean): void {
     this.navbarOpenState = state;
-    this.navbarOpenSubscription.emit(state);
+    this.navbarOpenEmitter.emit(state);
   }
 
-  setSearchResultPanelOpen(state: boolean): void {
-    this.sidebarRearchResultsPanelOpen = state;
-    this.sidebarRearchResultsPanelOpenSubscription.emit(state);
+  setSidebarSearchResultPanelOpen(state: boolean): void {
+    this.sidebarSearchResultsPanelOpen = state;
+    this.sidebarSearchResultsPanelOpenEmitter.emit(state);
   }
 
   setSynsetId(id) {
-    if (this.synsetId === id) return;
-
-    this.synsetId = id;
-    this.synsetSubscription.emit(id);
-  }
-
-  getSynsetId() {
-    return this.synsetId;
-  }
-
-  getSynsetIdSubscription() {
-    return this.synsetSubscription;
+    if (this.synsetId !== id) {
+      this.synsetId = id;
+      this.synsetIdEmitter.emit(id);
+    }
   }
 }

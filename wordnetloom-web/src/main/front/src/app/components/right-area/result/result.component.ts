@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Injectable, OnChanges, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {HttpService} from '../../../services/http.service';
 import {CurrentStateService} from '../../../services/current-state.service';
 import {ActivatedRoute} from '@angular/router';
@@ -16,7 +16,8 @@ import {MatDialog} from '@angular/material';
 })
 export class ResultComponent implements OnInit, OnDestroy {
   content: SenseContent[];
-  subscription: Subscription = null;
+  routeSubscription: Subscription = null;
+  synsetIdStateSubscription: Subscription = null;
 
   synsetId: number;
   yiddishContentPresent = false;
@@ -43,18 +44,21 @@ export class ResultComponent implements OnInit, OnDestroy {
       // @ts-ignore - suppressing non existing error
       this.sidebar.loadOptionsFromParameters(searchQueryParams.params);
     }
-    this.synsetId = +this.route.snapshot.paramMap.get('lemma_id');
 
+    this.synsetId = +this.route.snapshot.paramMap.get('lemma_id');
     this.state.setResultComponentRouteObserver(this.route);
-    let sub = this.state.getSynsetIdSubscription().subscribe(id => {
+
+    this.synsetId = this.state.getSynsetId();
+    this.updateCurrentSynset(true);
+
+    this.synsetIdStateSubscription = this.state.getSynsetIdEmitter().subscribe(id => {
       this.synsetId = id;
-      console.log(id);
-      this.updateCurrentSynset(false);
+      this.updateCurrentSynset(true);
     });
 
 
     // todo -- delete this?
-    this.subscription = this.route.params.subscribe(params => {
+    this.routeSubscription = this.route.params.subscribe(params => {
       const searchLemma = params['search_lemma'];
       if (searchLemma) {
         if (searchLemma === '*') {
@@ -65,7 +69,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     });
 
     this.mobile = this.state.getMobileState();
-    this.mobileListener = this.state.mobileStateSubscription.subscribe(state => {
+    this.mobileListener = this.state.getMobileStateEmitter().subscribe(state => {
       this.mobile = state;
     });
   }
@@ -100,7 +104,8 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.routeSubscription.unsubscribe();
+    this.synsetIdStateSubscription.unsubscribe();
   }
 
   footerTabChange(idx) {
