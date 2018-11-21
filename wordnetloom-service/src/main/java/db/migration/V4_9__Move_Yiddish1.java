@@ -401,7 +401,6 @@ public class V4_9__Move_Yiddish1 implements JdbcMigration {
             // set with removing space at the end
             this.word = word.replaceAll("\\s+$", "");
         }
-
     }
 
     private class Domain {

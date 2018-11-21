@@ -46,7 +46,6 @@ WHERE id_lexicon > 2;
 
 # TODO ustawić odpowiedni status i abstract
 
-
 CREATE TABLE temp_sense_word(
 	sense_id INT NOT NULL,
     old_word INT NOT NULL,

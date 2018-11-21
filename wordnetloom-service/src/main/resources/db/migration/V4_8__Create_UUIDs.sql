@@ -176,6 +176,7 @@ CALL move_data('sense_relation','sense', 'child_sense_id', 'child_sense_fk');
 CALL move_data('sense_relation','sense', 'parent_sense_id', 'parent_sense_fk');
 CALL move_data('sense_relation','relation_type', 'relation_type_id', 'relation_type_fk');
 CALL move_data('synset_attributes','synset', 'synset_id', 'synset_fk');
+CALL move_data('synset_examples','synset','synset_attributes_id', 'synset_attributes_fk')
 -- CALL move_data('synset_relation','synset', 'child_synset_id', 'child_synset_fk');
 -- CALL move_data('synset_relation','synset', 'parent_synset_id', 'parent_synset_fk');
 CALL move_data('synset_relation','relation_type', 'synset_relation_type_id', 'relation_type_fk');
