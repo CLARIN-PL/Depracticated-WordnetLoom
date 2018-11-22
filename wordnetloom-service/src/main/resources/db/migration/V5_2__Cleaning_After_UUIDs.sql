@@ -46,3 +46,50 @@ DROP TABLE temp_lexicon;
 DROP TABLE temp_relation_type;
 DROP TABLE temp_sense_word;
 
+ALTER TABLE relation_type
+CHANGE COLUMN id legacy_id BIGINT(20),
+CHANGE COLUMN uuid id BINARY(16),
+CHANGE COLUMN parent_relation_fk parent_relation_id BINARY(16),
+CHANGE COLUMN reverse_relation_fk reverse_relation_id BINARY(16);
+
+ALTER TABLE relation_type_allowed_lexicons
+CHANGE COLUMN relation_type_fk relation_type_id BINARY(16);
+
+ALTER TABLE relation_type_allowed_parts_of_speech
+CHANGE COLUMN relation_type_fk relation_type_id BINARY(16);
+
+ALTER TABLE sense
+CHANGE COLUMN id legacy_id BIGINT(20),
+CHANGE COLUMN uuid id BINARY(16),
+CHANGE COLUMN synset_fk synset_id BINARY(16),
+CHANGE COLUMN word_fk word_id BINARY(16);
+
+ALTER TABLE sense_relation
+CHANGE COLUMN child_sense_fk child_sense_id BINARY(16),
+CHANGE COLUMN parent_sense_fk parent_sense_id BINARY(16),
+CHANGE COLUMN relation_type_fk relation_type_id BINARY(16);
+
+ALTER TABLE sense_attributes
+CHANGE COLUMN sense_fk sense_id BINARY(16);
+
+ALTER TABLE sense_examples
+CHANGE COLUMN sense_attribute_fk sense_attribute_id BINARY(16);
+
+ALTER TABLE synset
+CHANGE COLUMN id legacy_id BIGINT(20),
+CHANGE COLUMN uuid id BINARY(16);
+
+ALTER TABLE synset_relation
+CHANGE COLUMN child_synset_fk child_synset_id BINARY(16),
+CHANGE COLUMN parent_synset_fk parent_synset_id BINARY(16),
+CHANGE COLUMN relation_type_fk relation_type_id BINARY(16);
+
+ALTER TABLE synset_attributes
+CHANGE COLUMN synset_fk synset_id BINARY(16);
+
+ALTER TABLE synset_examples
+CHANGE COLUMN synset_attributes_fk synset_attribute_id BINARY(16);
+
+
+
+
