@@ -90,6 +90,11 @@ CHANGE COLUMN synset_fk synset_id BINARY(16);
 ALTER TABLE synset_examples
 CHANGE COLUMN synset_attributes_fk synset_attribute_id BINARY(16);
 
+ALTER TABLE yiddish_sense_extension
+CHANGE COLUMN sense_fk sense_id BINARY(16);
 
+ALTER TABLE word
+CHANGE COLUMN id legacy_id BIGINT(20),
+CHANGE COLUMN uuid id BINARY(16);
 
 

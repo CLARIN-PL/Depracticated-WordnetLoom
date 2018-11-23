@@ -249,7 +249,8 @@ CASE spelling_yivo WHEN '' THEN NULL ELSE spelling_yivo END,
 (SELECT id FROM dictionaries WHERE temp_id = source_id LIMIT 1) as source,
 (SELECT id FROM dictionaries WHERE temp_id = status_id LIMIT 1) as status,
 (SELECT id FROM dictionaries WHERE temp_id = style_id LIMIT 1) as style
-FROM `plwordnet3-prod`.yiddish_sense_extension;
+FROM `plwordnet3-prod`.yiddish_sense_extension
+WHERE sense IN (SELECT id FROM `plwordnet3-prod`.sense);
 
 UPDATE yiddish_sense_extension Y1 JOIN `plwordnet3-prod`.yiddish_sense_extension Y2 ON Y1.id = Y2.id JOIN sense S ON Y2.sense = S.id
 SET Y1.sense_fk = S.uuid;
