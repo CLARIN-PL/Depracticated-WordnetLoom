@@ -41,10 +41,20 @@ DROP COLUMN child_synset_id,
 DROP COLUMN parent_synset_id,
 DROP COLUMN synset_relation_type_id;
 
+ALTER TABLE emotional_annotations
+DROP COLUMN sense_id;
+
+ALTER TABLE sense_emotions
+DROP COLUMN annotation_id;
+
+ALTER TABLE sense_valuations
+DROP COLUMN annotation_id;
+
 DROP TABLE temp_domains;
 DROP TABLE temp_lexicon;
 DROP TABLE temp_relation_type;
 DROP TABLE temp_sense_word;
+
 
 ALTER TABLE relation_type
 CHANGE COLUMN id legacy_id BIGINT(20),
@@ -96,5 +106,30 @@ CHANGE COLUMN sense_fk sense_id BINARY(16);
 ALTER TABLE word
 CHANGE COLUMN id legacy_id BIGINT(20),
 CHANGE COLUMN uuid id BINARY(16);
+
+ALTER TABLE emotional_annotation
+CHANGE COLUMN sense_fk sense_id BINARY(16);
+
+ALTER TABLE sense_emotions
+CHANGE COLUMN annotation_fk annotation_id BINARY(16);
+
+ALTER TABLE sense_valuations
+CHANGE COLUMN annotation_fk annotation_id BINARY(16);
+
+--ALTER TABLE sense_relation
+--CHANGE COLUMN id id BIGINT(20),
+--DROP PRIMARY KEY,
+--DROP COLUMN id,
+--ADD PRIMARY KEY (child_sense_id, parent_sense_id, relation_type_id);
+
+--ALTER TABLE synset_relation
+--CHANGE COLUMn synset_relation_type_fk relation_type_id BINARY(16);
+
+--ALTER TABLE synset_relation
+--CHANGE COLUMN id id BIGINT(20),
+--DROP PRIMARY KEY,
+--DROP COLUMN id,
+--ADD PRIMARY KEY (child_synset_id, parent_synset_id, synset_relation_type_id)
+
 
 

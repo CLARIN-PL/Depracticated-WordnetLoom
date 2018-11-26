@@ -78,6 +78,7 @@ $$
 
 DELIMITER ;
 
+CALL add_uuid_column('emotional_annotations', 'uuid');
 CALL add_uuid_column('emotional_annotations', 'sense_fk');
 CALL add_uuid_column('relation_tests', 'relation_type_fk');
 CALL add_uuid_column('relation_type', 'uuid');
@@ -89,20 +90,24 @@ CALL add_uuid_column('sense', 'uuid');
 CALL add_uuid_column('sense', 'synset_fk');
 CALL add_uuid_column('sense', 'word_fk');
 CALL add_uuid_column('sense_attributes', 'sense_fk');
+CALL add_uuid_column('sense_examples', 'uuid');
 CALL add_uuid_column('sense_examples', 'sense_attribute_fk');
 CALL add_uuid_column('sense_relation', 'child_sense_fk');
 CALL add_uuid_column('sense_relation', 'parent_sense_fk');
 CALL add_uuid_column('sense_relation', 'relation_type_fk');
 CALL add_uuid_column('synset', 'uuid');
 CALL add_uuid_column('synset_attributes', 'synset_fk');
+CALL add_uuid_column('synset_examples', 'uuid');
 CALL add_uuid_column('synset_examples', 'synset_attributes_fk');
 CALL add_uuid_column('synset_relation', 'child_synset_fk');
 CALL add_uuid_column('synset_relation', 'parent_synset_fk');
 CALL add_uuid_column('synset_relation', 'relation_type_fk');
 CALL add_uuid_column('word', 'uuid');
+CALL add_uuid_column('sense_emotions', 'annotation_fk');
+CALL add_uuid_column('sense_valuations', 'annotation_fk');
 
 
-
+# TODO dlaczebo nie ma tracker_emotional_annotations, sense_emotions, sense_valuations
 CALL add_uuid_column('tracker_relation_type', 'uuid');
 CALL add_uuid_column('tracker_relation_type', 'parent_relation_fk');
 CALL add_uuid_column('tracker_relation_type', 'reverse_relation_fk');
@@ -112,6 +117,7 @@ CALL add_uuid_column('tracker_sense', 'uuid');
 CALL add_uuid_column('tracker_sense', 'synset_fk');
 CALL add_uuid_column('tracker_sense', 'word_fk');;
 CALL add_uuid_column('tracker_sense_attributes', 'sense_fk');
+CALL add_uuid_column('tracker_sense_examples', 'uuid');
 CALL add_uuid_column('tracker_sense_examples', 'sense_attribute_fk');
 CALL add_uuid_column('tracker_sense_relation', 'child_sense_fk');
 CALL add_uuid_column('tracker_sense_relation', 'parent_sense_fk');
@@ -130,6 +136,9 @@ CALL add_uuid_index('relation_type');
 CALL add_uuid_index('sense');
 CALL add_uuid_index('synset');
 CALL add_uuid_index('word');
+CALL add_uuid_index('sense_examples');
+CALL add_uuid_index('synset_examples');
+CALL add_uuid_index('emotional_annotations');
 
 
 CALL add_foreign_key('emotional_annotations', 'sense_fk', 'sense', 'uuid', 'FK_emotional_annotation_sense');
@@ -150,6 +159,8 @@ CALL add_foreign_key('synset_examples', 'synset_attributes_fk', 'synset', 'uuid'
 CALL add_foreign_key('synset_relation', 'child_synset_fk', 'synset', 'uuid', 'FK_synset_relation_child');
 CALL add_foreign_key('synset_relation', 'parent_synset_fk', 'synset', 'uuid', 'FK_synset_relation_parent');
 CALL add_foreign_key('synset_relation', 'relation_type_fk', 'relation_type', 'uuid', 'FK_synset_relation_relation');
+CALL add_foreign_key('sense_emotions', 'annotation_fk', 'emotional_annotations', 'uuid', 'FK_sense_emotions_emotional_annotations');
+CALL add_foreign_key('sense_valuations', 'annotation_fk', 'emotional_annotations', 'uuid', 'FK_sense_valuations_emotional_annotations');
 
 SET SQL_SAFE_UPDATES = 0;
 
@@ -157,7 +168,9 @@ CALL generate_uuid_key('relation_type');
 CALL generate_uuid_key('sense');
 CALL generate_uuid_key('synset');
 CALL generate_uuid_key('word');
-
+CALL generate_uuid_key('sense_examples');
+CALL generate_uuid_key('synset_examples');
+CALL generate_uuid_key('emotional_annotations');
 
 SET SQL_SAFE_UPDATES = 0;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -176,10 +189,12 @@ CALL move_data('sense_relation','sense', 'child_sense_id', 'child_sense_fk');
 CALL move_data('sense_relation','sense', 'parent_sense_id', 'parent_sense_fk');
 CALL move_data('sense_relation','relation_type', 'relation_type_id', 'relation_type_fk');
 CALL move_data('synset_attributes','synset', 'synset_id', 'synset_fk');
-CALL move_data('synset_examples','synset','synset_attributes_id', 'synset_attributes_fk')
--- CALL move_data('synset_relation','synset', 'child_synset_id', 'child_synset_fk');
--- CALL move_data('synset_relation','synset', 'parent_synset_id', 'parent_synset_fk');
+CALL move_data('synset_examples','synset','synset_attributes_id', 'synset_attributes_fk');
 CALL move_data('synset_relation','relation_type', 'synset_relation_type_id', 'relation_type_fk');
+CALL move_data('sense_emotions', 'emotional_annotations', 'annotation_id', 'annotation_fk');
+CALL move_data('sense_valuations', 'emotional_annotations', 'annotation_id', 'annotation_fk');
+
+
 UPDATE synset_relation S
 SET child_synset_fk = (SELECT uuid FROM synset WHERE id = S.child_synset_id);
 
@@ -209,12 +224,17 @@ ALTER TABLE synset_examples DROP FOREIGN KEY FK3po12pm1bqwwgq9ejvlrvg4sx;
 ALTER TABLE synset_relation DROP FOREIGN KEY FKhcndh5xtn9k4pcrjb8ur9e1oy;
 ALTER TABLE synset_relation DROP FOREIGN KEY FK4q4yini7xmac0dojilalv3l6j;
 ALTER TABLE synset_relation DROP FOREIGN KEY FKj3d2urv1wi643w7y6ovlei5q;
+ALTER TABLE sense_emotions DROP FOREIGN KEY sense_emotions_ibfk_1;
+ALTER TABLE sense_valuations DROP FOREIGN KEY sense_valuations_ibfk_1;
 
 
 ALTER TABLE relation_type CHANGE id id BIGINT(20) NOT NULL;
 ALTER TABLE sense CHANGE id id BIGINT(20) NOT NULL;
 ALTER TABLE synset CHANGE id id BIGINT(20) NOT NULL;
 ALTER TABLE word CHANGE id id BIGINT(20) NOT NULL;
+ALTER TABLE emotional_annotations CHANGE id id BIGINT(20) NOT NULL;
+ALTER TABLE sense_examples CHANGE id id BIGINT(20) NOT NULL;
+ALTER TABLE synset_examples CHANGE id id BIGINT(20) NOT NULL;
 
 ALTER TABLE relation_type DROP PRIMARY KEY, ADD PRIMARY KEY (uuid);
 ALTER TABLE sense DROP PRIMARY KEY, ADD PRIMARY KEY (uuid);
@@ -222,6 +242,10 @@ ALTER TABLE sense_attributes DROP PRIMARY KEY, ADD PRIMARY KEY (sense_fk);
 ALTER TABLE synset DROP PRIMARY KEY, ADD PRIMARY KEY (uuid);
 ALTER TABLE synset_attributes DROP PRIMARY KEY, ADD PRIMARY KEY (synset_fk);
 ALTER TABLE word DROP PRIMARY KEY, ADD PRIMARY KEY (uuid);
+ALTER TABLE sense_examples DROP PRIMARY KEY, ADD PRIMARY KEY (uuid);
+ALTER TABLE emotional_annotations DROP PRIMARY KEY, ADD PRIMARY KEY (uuid);
+ALTER TABLE sense_emotions DROP PRIMARY KEY, ADD PRIMARY KEY (annotation_fk, emotion);
+ALTER TABLE sense_valuations DROP PRIMARY KEY, ADD PRIMARY KEY (annotation_fk, valuation);
 
 DROP PROCEDURE IF EXISTS add_uuid_column;
 DROP PROCEDURE IF EXISTS add_foreign_key;
