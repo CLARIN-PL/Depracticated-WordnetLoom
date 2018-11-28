@@ -58,12 +58,21 @@ CREATE INDEX temp_old_word_index ON temp_sense_word(old_word);
 CREATE INDEX temp_new_word_index ON temp_sense_word(new_word);
 CREATE INDEX temp_new_word_uuid_index ON temp_sense_word(new_word_uuid);
 
+--INSERT temp_sense_word(sense_id, old_word, new_word, new_word_uuid)
+--SELECT DISTINCT S.id, W.id, W2.id, W2.uuid
+--FROM `plwordnet3-prod`.sense S JOIN `plwordnet3-prod`.word W ON S.lemma = W.id JOIN word W2 ON W.word = W2.word
+--WHERE S.id_lexicon >2;
 INSERT temp_sense_word(sense_id, old_word, new_word, new_word_uuid)
 SELECT DISTINCT S.id, W.id, W2.id, W2.uuid
-FROM `plwordnet3-prod`.sense S JOIN `plwordnet3-prod`.word W ON S.lemma = W.id JOIN word W2 ON W.word = W2.word
-WHERE S.id_lexicon >2;
+FROM word W2
+JOIN `plwordnet3-prod`.word W ON W.word = W2.word
+JOIN `plwordnet3-prod`.sense S ON S.lemma = W.id
+WHERE S.id_lexicon > 2;
+
+-- TODO sprawdzić, czy zapytanie zwróci wszystkie dane
 
 # przenoszenie jednostek bez obcych uuidów (word i synset)
+-- TODO przerzucić to do jakieś funkcji
 INSERT INTO sense(id, synset_position, variant, word_id, word_fk, domain_id, lexicon_id, part_of_speech_id, synset_id, uuid)
 SELECT S.id,
 SS.sense_index,
@@ -78,7 +87,44 @@ UUID_TO_BIN(UUID())
 FROM `plwordnet3-prod`.sense S
 LEFT JOIN `plwordnet3-prod`.sense_to_synset SS ON S.id = SS.id_sense
 LEFT JOIN `plwordnet3-prod`.part_of_speech P ON S.part_of_speech = P.id
-WHERE S.id_lexicon > 2;
+WHERE S.id_lexicon > 2
+LIMIT 50000;
+
+INSERT INTO sense(id, synset_position, variant, word_id, word_fk, domain_id, lexicon_id, part_of_speech_id, synset_id, uuid)
+SELECT S.id,
+SS.sense_index,
+sense_number,
+(SELECT new_word FROM temp_sense_word WHERE sense_id = S.id) AS word_id,
+(SELECT new_word_uuid FROM temp_sense_word WHERE sense_id = S.id) AS word_fk,
+(SELECT oldId FROM temp_domains WHERE newId = domain) AS domain,
+(SELECT newID FROM temp_lexicon WHERE oldID = S.id_lexicon) AS lexicon,
+(SELECT POS.id FROM part_of_speech POS JOIN application_localised_string A ON POS.name_id = A.id WHERE P.uby_lmf_type = A.value) AS pos,
+SS.id_synset,
+UUID_TO_BIN(UUID())
+FROM `plwordnet3-prod`.sense S
+LEFT JOIN `plwordnet3-prod`.sense_to_synset SS ON S.id = SS.id_sense
+LEFT JOIN `plwordnet3-prod`.part_of_speech P ON S.part_of_speech = P.id
+WHERE S.id_lexicon > 2
+LIMIT 50000
+OFFSET 50000;
+
+INSERT INTO sense(id, synset_position, variant, word_id, word_fk, domain_id, lexicon_id, part_of_speech_id, synset_id, uuid)
+SELECT S.id,
+SS.sense_index,
+sense_number,
+(SELECT new_word FROM temp_sense_word WHERE sense_id = S.id) AS word_id,
+(SELECT new_word_uuid FROM temp_sense_word WHERE sense_id = S.id) AS word_fk,
+(SELECT oldId FROM temp_domains WHERE newId = domain) AS domain,
+(SELECT newID FROM temp_lexicon WHERE oldID = S.id_lexicon) AS lexicon,
+(SELECT POS.id FROM part_of_speech POS JOIN application_localised_string A ON POS.name_id = A.id WHERE P.uby_lmf_type = A.value) AS pos,
+SS.id_synset,
+UUID_TO_BIN(UUID())
+FROM `plwordnet3-prod`.sense S
+LEFT JOIN `plwordnet3-prod`.sense_to_synset SS ON S.id = SS.id_sense
+LEFT JOIN `plwordnet3-prod`.part_of_speech P ON S.part_of_speech = P.id
+WHERE S.id_lexicon > 2
+LIMIT 100000
+OFFSET 100000;
 
 # uzupełnianie jednostek (uuidy)
 UPDATE sense S JOIN synset SY ON S.synset_id = SY.id

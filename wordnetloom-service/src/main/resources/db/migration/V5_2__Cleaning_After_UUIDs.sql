@@ -55,12 +55,11 @@ DROP TABLE temp_lexicon;
 DROP TABLE temp_relation_type;
 DROP TABLE temp_sense_word;
 
-
 ALTER TABLE relation_type
 CHANGE COLUMN id legacy_id BIGINT(20),
 CHANGE COLUMN uuid id BINARY(16),
-CHANGE COLUMN parent_relation_fk parent_relation_id BINARY(16),
-CHANGE COLUMN reverse_relation_fk reverse_relation_id BINARY(16);
+CHANGE COLUMN parent_relation_fk parent_relation_type_id BINARY(16),
+CHANGE COLUMN reverse_relation_fk reverse_relation_type_id BINARY(16);
 
 ALTER TABLE relation_type_allowed_lexicons
 CHANGE COLUMN relation_type_fk relation_type_id BINARY(16);
@@ -92,7 +91,7 @@ CHANGE COLUMN uuid id BINARY(16);
 ALTER TABLE synset_relation
 CHANGE COLUMN child_synset_fk child_synset_id BINARY(16),
 CHANGE COLUMN parent_synset_fk parent_synset_id BINARY(16),
-CHANGE COLUMN relation_type_fk relation_type_id BINARY(16);
+CHANGE COLUMN relation_type_fk synset_relation_type_id BINARY(16);
 
 ALTER TABLE synset_attributes
 CHANGE COLUMN synset_fk synset_id BINARY(16);

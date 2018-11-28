@@ -111,6 +111,7 @@
             <version>5.0.4.Final</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -131,7 +132,42 @@
                     <generateClient>true</generateClient>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>4.2.0</version>
 
+                <configuration>
+                    <url>jdbc:mysql://localhost:3306/wordnet</url>
+                    <encoding>UTF-8</encoding>
+                    <driver>com.mysql.jdbc.Driver</driver>
+                    <user>root</user>
+                    <password>password</password>
+                    <schemas>
+                        <schema>wordnet</schema>
+                    </schemas>
+                    <validateOnMigrate>false</validateOnMigrate>
+                    <locations>
+                        <location>classpath:db/migration</location>
+                    </locations>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>8.0.8-dmr</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 </project>
