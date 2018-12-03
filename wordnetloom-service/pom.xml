@@ -144,10 +144,10 @@
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <version>4.2.0</version>
+                <version>5.2.3</version>
 
                 <configuration>
-                    <url>jdbc:mysql://localhost:3306/wordnet</url>
+                    <url>jdbc:mysql://localhost:3306/wordnet?characterEncoding=UTF-8</url>
                     <encoding>UTF-8</encoding>
                     <driver>com.mysql.jdbc.Driver</driver>
                     <user>root</user>
@@ -155,7 +155,7 @@
                     <schemas>
                         <schema>wordnet</schema>
                     </schemas>
-                    <validateOnMigrate>false</validateOnMigrate>
+                    <validateOnMigrate>true</validateOnMigrate>
                     <locations>
                         <location>classpath:db/migration</location>
                     </locations>

@@ -58,10 +58,7 @@ CREATE INDEX temp_old_word_index ON temp_sense_word(old_word);
 CREATE INDEX temp_new_word_index ON temp_sense_word(new_word);
 CREATE INDEX temp_new_word_uuid_index ON temp_sense_word(new_word_uuid);
 
---INSERT temp_sense_word(sense_id, old_word, new_word, new_word_uuid)
---SELECT DISTINCT S.id, W.id, W2.id, W2.uuid
---FROM `plwordnet3-prod`.sense S JOIN `plwordnet3-prod`.word W ON S.lemma = W.id JOIN word W2 ON W.word = W2.word
---WHERE S.id_lexicon >2;
+
 INSERT temp_sense_word(sense_id, old_word, new_word, new_word_uuid)
 SELECT DISTINCT S.id, W.id, W2.id, W2.uuid
 FROM word W2
@@ -72,7 +69,6 @@ WHERE S.id_lexicon > 2;
 -- TODO sprawdzić, czy zapytanie zwróci wszystkie dane
 
 # przenoszenie jednostek bez obcych uuidów (word i synset)
--- TODO przerzucić to do jakieś funkcji
 INSERT INTO sense(id, synset_position, variant, word_id, word_fk, domain_id, lexicon_id, part_of_speech_id, synset_id, uuid)
 SELECT S.id,
 SS.sense_index,
@@ -335,7 +331,8 @@ INSERT INTO yiddish_extension_source(id, sense_extension_id, source_dictionary_i
 SELECT id,
 sense_extension_id,
 (SELECT id FROM dictionaries WHERE temp_id = source_dictionary_id)
-FROM `plwordnet3-prod`.yiddish_extension_source;
+FROM `plwordnet3-prod`.yiddish_extension_source
+WHERE sense_extension_id IN (SELECT id FROM yiddish_sense_extension);
 
 CREATE TABLE yiddish_transcriptions (
 	id BIGINT(20) PRIMARY KEY AUTO_INCREMENT,

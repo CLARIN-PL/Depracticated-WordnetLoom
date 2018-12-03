@@ -106,7 +106,7 @@ ALTER TABLE word
 CHANGE COLUMN id legacy_id BIGINT(20),
 CHANGE COLUMN uuid id BINARY(16);
 
-ALTER TABLE emotional_annotation
+ALTER TABLE emotional_annotations
 CHANGE COLUMN sense_fk sense_id BINARY(16);
 
 ALTER TABLE sense_emotions
