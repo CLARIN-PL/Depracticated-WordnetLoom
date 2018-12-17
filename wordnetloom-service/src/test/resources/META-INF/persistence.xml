@@ -42,6 +42,7 @@
 
             <property name="org.hibernate.envers.audit_table_prefix" value="tracker_" />
             <property name="org.hibernate.envers.audit_table_suffix" value="" />
+            <!--<property name="org.hibernate.envers.default_schema" value="" />-->
             <property
                     name="org.hibernate.envers.audit_strategy"
                     value="org.hibernate.envers.strategy.ValidityAuditStrategy"/>
