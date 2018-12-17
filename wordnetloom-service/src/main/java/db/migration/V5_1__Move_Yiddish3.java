@@ -90,10 +90,18 @@ public class V5_1__Move_Yiddish3 implements JdbcMigration{
 
     @Override
     public void migrate(Connection connection) throws SQLException {
+        setSafeUpdate(connection, 0);
         moveSenseAttributes(connection);
         moveSynsetAttributes(connection);
         updateRelationTypes(connection);
+        setSafeUpdate(connection, 1);
+    }
 
+    private void setSafeUpdate(Connection connection, int safeUpdate) throws SQLException {
+        final String SAFE_UPDATE_STATEMENT = "SET SQL_SAFE_UPDATES = ?";
+        PreparedStatement statement = connection.prepareStatement(SAFE_UPDATE_STATEMENT);
+        statement.setInt(1, safeUpdate);
+        statement.execute();
     }
 
     private void updateRelationTypes(Connection connection) throws SQLException {
