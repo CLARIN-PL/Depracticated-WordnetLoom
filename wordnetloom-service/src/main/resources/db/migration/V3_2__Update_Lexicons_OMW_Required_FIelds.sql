@@ -1,39 +1,39 @@
-ALTER TABLE `wordnet`.`lexicon` DROP COLUMN icon;
+ALTER TABLE lexicon DROP COLUMN icon;
 
-ALTER TABLE `wordnet`.`tracker_lexicon`
+ALTER TABLE tracker_lexicon
   ADD COLUMN `language_shortcut` VARCHAR(5) NULL AFTER `language_name`;
 
-ALTER TABLE `wordnet`.`tracker_lexicon`
+ALTER TABLE tracker_lexicon
   ADD COLUMN `license` VARCHAR(255) NULL AFTER `lexicon_version`;
 
-ALTER TABLE `wordnet`.`tracker_lexicon`
+ALTER TABLE tracker_lexicon
   ADD COLUMN `email` VARCHAR(255) NULL AFTER `license`;
 
-ALTER TABLE `wordnet`.`tracker_lexicon`
+ALTER TABLE tracker_lexicon
   ADD COLUMN `reference_url` VARCHAR(255) NULL AFTER `email`;
 
-ALTER TABLE `wordnet`.`tracker_lexicon`
+ALTER TABLE tracker_lexicon
   ADD COLUMN `citation` TEXT NULL AFTER `reference_url`;
 
-ALTER TABLE `wordnet`.`tracker_lexicon`
+ALTER TABLE tracker_lexicon
   ADD COLUMN `confidence_score` VARCHAR(255) NULL AFTER `citation`;
 
-ALTER TABLE `wordnet`.`lexicon`
+ALTER TABLE lexicon
   ADD COLUMN `language_shortcut` VARCHAR(5) NULL AFTER `language_name`;
 
-ALTER TABLE `wordnet`.`lexicon`
+ALTER TABLE lexicon
   ADD COLUMN `license` VARCHAR(255) NULL AFTER `lexicon_version`;
 
-ALTER TABLE `wordnet`.`lexicon`
+ALTER TABLE lexicon
   ADD COLUMN `email` VARCHAR(255) NULL AFTER `license`;
 
-ALTER TABLE `wordnet`.`lexicon`
+ALTER TABLE lexicon
   ADD COLUMN `reference_url` VARCHAR(255) NULL AFTER `email`;
 
-ALTER TABLE `wordnet`.`lexicon`
+ALTER TABLE lexicon
   ADD COLUMN `citation` TEXT NULL AFTER `reference_url`;
 
-ALTER TABLE `wordnet`.`lexicon`
+ALTER TABLE lexicon
   ADD COLUMN `confidence_score` VARCHAR(255) NULL AFTER `citation`;
 
 

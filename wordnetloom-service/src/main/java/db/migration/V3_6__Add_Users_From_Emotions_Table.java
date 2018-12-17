@@ -8,7 +8,7 @@ import java.util.List;
 
 public class V3_6__Add_Users_From_Emotions_Table implements JdbcMigration {
 
-    private final String USERS_TABLE = "wordnet.users";
+    private final String USERS_TABLE = "users";
     private final String EMOTION_TABLE = "wordnet_work.emotion";
 
     @Override

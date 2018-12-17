@@ -1,8 +1,8 @@
-ALTER TABLE wordnet.dictionaries
+ALTER TABLE dictionaries
 ADD is_default BIT DEFAULT 0;
 
-ALTER TABLE wordnet.tracker_dictionaries
+ALTER TABLE tracker_dictionaries
 Add is_default BIT;
 
 
-update wordnet.dictionaries set is_default = 1 WHERE id = 12;
+update dictionaries set is_default = 1 WHERE id = 12;

@@ -14,7 +14,7 @@ ALTER TABLE wordnet_work.relationtype
 
 
 #przeniesienie słów. m^2 oraz m^3 nalezy dodać odzielnie, ponieważ DISTINCT traktuje m^2 tak samo jak M2 i wstawia tylko jedną z tych wartości
-INSERT INTO wordnet.word (word)
+INSERT INTO word (word)
   SELECT DISTINCT CAST(BINARY lemma AS CHAR CHARACTER SET utf8) COLLATE utf8_bin
   FROM wordnet_work.lexicalunit
   UNION ALL
@@ -22,7 +22,7 @@ INSERT INTO wordnet.word (word)
   UNION ALL
   SELECT 'm³';
 
-CREATE TABLE wordnet.temp_dictionaries(
+CREATE TABLE temp_dictionaries(
     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     old_value INT NOT NULL,
     name_id BIGINT NOT NULL,
@@ -50,25 +50,25 @@ CREATE PROCEDURE insert_dictionaries(IN valuesList VARCHAR(1000), IN typeName VA
 
                 SELECT @optionalValue;
             END IF;
-            INSERT INTO wordnet.application_localised_string (value, language)
+            INSERT INTO application_localised_string (value, language)
             VALUES (@value, 'pl');
             SET @lastInsertedStringId = LAST_INSERT_ID();
-            INSERT INTO wordnet.application_localised_string(id, value, language)
+            INSERT INTO application_localised_string(id, value, language)
             VALUES (@lastInsertedStringId, @value, 'en');
 
             IF(@optionalValue IS NOT NULL) THEN
                 IF(typeName = 'Markedness') THEN
-                    INSERT INTO wordnet.application_localised_string(value, language)
+                    INSERT INTO application_localised_string(value, language)
                     VALUES (@optionalValue, 'pl');
                     SET @lastInsertedValueId = LAST_INSERT_ID();
-                    INSERT INTO wordnet.application_localised_string(id, value, language)
+                    INSERT INTO application_localised_string(id, value, language)
                     VALUES (@lastInsertedValueId, @optionalValue, 'en');
                 END IF;
                 IF (typeName = 'Aspect') THEN
                     SET @tag = @optionalValue;
 				END IF;
 			END IF;
-            INSERT INTO wordnet.temp_dictionaries (old_value, name_id, dtype, tag, markednessValue)
+            INSERT INTO temp_dictionaries (old_value, name_id, dtype, tag, markednessValue)
             VALUES(@counter, @lastInsertedStringId, typeName, @tag, @lastInsertedValueId);
 
             SET @valuesList = SUBSTRING(@valuesList, LOCATE(',', @valuesList)+1);
@@ -91,7 +91,7 @@ FROM temp_dictionaries;
 
 # przerzucenie synsetu
 # złączenia mają na celu pozbycie się synsetów pustych oraz połączeń synsetów z nieistniejącymi jednostkami
-INSERT INTO wordnet.synset (id, split,abstract, lexicon_id, status_id)
+INSERT INTO synset (id, split,abstract, lexicon_id, status_id)
   SELECT DISTINCT
     S.id,
     S.split,
@@ -105,7 +105,7 @@ INSERT INTO wordnet.synset (id, split,abstract, lexicon_id, status_id)
        LEFT JOIN wordnet_work.synset SS ON U.SYN_ID = SS.id
      WHERE SS.id = S.id
      LIMIT 1) AS lexicon,
-     (SELECT id FROM wordnet.temp_dictionaries WHERE old_value = S.status AND dtype = 'Status')
+     (SELECT id FROM temp_dictionaries WHERE old_value = S.status AND dtype = 'Status')
   FROM wordnet_work.synset S LEFT JOIN wordnet_work.unitandsynset U ON S.id = U.SYN_ID
     LEFT JOIN wordnet_work.lexicalunit L ON U.LEX_ID = L.id
   WHERE U.SYN_ID IS NOT NULL AND L.id IS NOT NULL;
@@ -122,7 +122,7 @@ FROM word;
 
 
 # przerzucenie jednostek
-INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, part_of_speech_id, synset_id, word_id, status_id)
+INSERT INTO sense (id, synset_position, variant, domain_id, lexicon_id, part_of_speech_id, synset_id, word_id, status_id)
   SELECT
     L.id,
     U.unitindex,
@@ -141,7 +141,7 @@ INSERT INTO wordnet.sense (id, synset_position, variant, domain_id, lexicon_id, 
      FROM tempWord W
       WHERE W.bin = BINARY (TRIM(TRAILING FROM L.lemma))
      LIMIT 1)        AS word_id,
-      (SELECT id FROM wordnet.temp_dictionaries WHERE old_value = L.status AND dtype = 'Status') AS status
+      (SELECT id FROM temp_dictionaries WHERE old_value = L.status AND dtype = 'Status') AS status
   FROM wordnet_work.lexicalunit L LEFT JOIN wordnet_work.unitandsynset U ON L.id = U.LEX_ID
     LEFT JOIN wordnet_work.synset S ON U.SYN_ID = S.id;
 
@@ -162,7 +162,7 @@ CREATE TABLE tempSynsetPos(
 );
 
 INSERT INTO tempSynsetPos(id, pos)
-  SELECT s.synset_id, min(s.synset_position) FROM wordnet.sense s
+  SELECT s.synset_id, min(s.synset_position) FROM sense s
   GROUP BY s.synset_id
   HAVING min(s.synset_position) <> 0;
 
@@ -182,7 +182,7 @@ SELECT DISTINCT
 FROM wordnet_work.lexicalunit;
 
 # dodanie użytkowników. Użytkownicy wymagają czyszczenia
-INSERT INTO wordnet.users (email, firstname, lastname, password)
+INSERT INTO users (email, firstname, lastname, password)
   SELECT DISTINCT
     ''                                                            AS email,
     SUBSTRING_INDEX(LOWER(TRIM(owner)), '.', 1) COLLATE utf8_general_ci  AS firstname,
@@ -200,12 +200,12 @@ INSERT INTO wordnet.users (email, firstname, lastname, password)
   HAVING firstname != '' AND lastname != '';
 
 # wstawianie atrybutów jednostek
-INSERT INTO wordnet.sense_attributes (sense_id, comment, user_id, error_comment)
+INSERT INTO sense_attributes (sense_id, comment, user_id, error_comment)
   SELECT
     id,
     comment,
     (SELECT id
-     FROM wordnet.users
+     FROM users
      WHERE
        SUBSTRING_INDEX(TRIM(LOWER(L.owner)), '.', 1) = firstname AND
        SUBSTRING_INDEX(TRIM(LOWER(L.owner)), '.', -1) = lastname) AS user,
@@ -215,20 +215,20 @@ INSERT INTO wordnet.sense_attributes (sense_id, comment, user_id, error_comment)
 
 # wstawianie atrybótów synsetów
 # złączenia z synsetem dokonujemy aby wyeliminować atrybuty synsetów pustych, które nie zostały przeniesione do nowej bazy
-INSERT INTO wordnet.synset_attributes (synset_id, comment, definition, owner_id, error_comment)
+INSERT INTO synset_attributes (synset_id, comment, definition, owner_id, error_comment)
   SELECT
     S.id,
     S.comment,
     S.definition,
     (SELECT id
-     FROM wordnet.users
+     FROM users
      WHERE
        SUBSTRING_INDEX(TRIM(LOWER(S.owner)), '.', 1) = firstname AND
        SUBSTRING_INDEX(TRIM(LOWER(S.owner)), '.', -1) = lastname
      LIMIT 1) AS user,
     error_comment
   FROM wordnet_work.synset S
-  JOIN wordnet.synset SY ON S.id = SY.id;
+  JOIN synset SY ON S.id = SY.id;
 
 
 # dodawanie tekstów opisu
@@ -251,9 +251,9 @@ CREATE PROCEDURE insert_localised_description(IN columnName VARCHAR(50))
       USING @i;
       DEALLOCATE PREPARE statement2;
 
-      INSERT INTO wordnet.application_localised_string (value, language)
+      INSERT INTO application_localised_string (value, language)
       VALUES (@t, 'pl');
-      INSERT INTO wordnet.application_localised_string (id, value, language)
+      INSERT INTO application_localised_string (id, value, language)
       VALUES (last_insert_id(), @t, 'en');
       # w przypadku pojawienia sie nowych języków wstawic w tym miejscu odpowiednią wartość
       SET @i = @i + 1;
@@ -270,21 +270,21 @@ CALL insert_localised_description('shortcut');
 DROP PROCEDURE IF EXISTS insert_localised_description;
 
 #wstawienie typów relacji
-INSERT INTO wordnet.relation_type (id, auto_reverse, multilingual, description_id, display_text_id, name_id, parent_relation_type_id, relation_argument, short_display_text_id, node_position)
+INSERT INTO relation_type (id, auto_reverse, multilingual, description_id, display_text_id, name_id, parent_relation_type_id, relation_argument, short_display_text_id, node_position)
   SELECT
     ID,
     autoreverse,
     0                          AS multilingual,
     (SELECT id
-     FROM wordnet.application_localised_string
+     FROM application_localised_string
      WHERE value = R.description
      LIMIT 1)                  AS description,
     (SELECT id
-     FROM wordnet.application_localised_string
+     FROM application_localised_string
      WHERE value = R.display
      LIMIT 1)                  AS display,
     (SELECT id
-     FROM wordnet.application_localised_string
+     FROM application_localised_string
      WHERE value = R.name
      LIMIT 1)                  AS name,
     PARENT_ID,
@@ -297,7 +297,7 @@ INSERT INTO wordnet.relation_type (id, auto_reverse, multilingual, description_i
       THEN 'SENSE_RELATION'
     ELSE 'SYNSET_RELATION' END AS relation_argument,
     (SELECT id
-     FROM wordnet.application_localised_string
+     FROM application_localised_string
      WHERE value = R.shortcut
      LIMIT 1)                  AS short,
     'IGNORE'
@@ -307,13 +307,13 @@ INSERT INTO wordnet.relation_type (id, auto_reverse, multilingual, description_i
 
 # wstawienie relacji odwrotnych. Relacje odwrotne trzeba wstawić odzielnie, ponieważ klucze obce nie pozwalają tego zrobić podczas wstawiania typów relacji
 SET SQL_SAFE_UPDATES = 0;
-UPDATE wordnet_work.relationtype RS INNER JOIN wordnet.relation_type RN ON RS.id = RN.id
+UPDATE wordnet_work.relationtype RS INNER JOIN relation_type RN ON RS.id = RN.id
 SET RN.reverse_relation_type_id = RS.REVERSE_ID;
 SET SQL_SAFE_UPDATES = 1;
 
 # dodawanie testów , sprawdzić, czy numery id się zgadzają
 # TODO będzie trzeba wyrzucić dtype
-INSERT INTO wordnet.relation_tests (test, element_A_part_of_speech_id, element_B_part_of_speech_id, relation_type_id, position)
+INSERT INTO relation_tests (test, element_A_part_of_speech_id, element_B_part_of_speech_id, relation_type_id, position)
   SELECT
     `text`,
     CASE WHEN posA <= 4
@@ -328,7 +328,7 @@ INSERT INTO wordnet.relation_tests (test, element_A_part_of_speech_id, element_B
     `order`
   FROM wordnet_work.test
   WHERE REL_ID IN (SELECT id
-                   FROM wordnet.relation_type);
+                   FROM relation_type);
 
 # dodawanie dozwolonych leksykonów dla poszczególnych typów relacji. Wstawione wartości powinny być przejrzane i poprawione ręcznie
 DELIMITER $$
@@ -339,29 +339,29 @@ CREATE PROCEDURE insertAllowedLexicons()
     DECLARE i INT;
     DECLARE relID INT;
     SELECT COUNT(1)
-    FROM wordnet.relation_type
+    FROM relation_type
     INTO n;
     SET i = 0;
     SET relID = 0;
     START TRANSACTION;
     WHILE i < n DO
       SELECT id
-      FROM wordnet.relation_type
+      FROM relation_type
       ORDER BY id
       LIMIT i, 1
       INTO relID;
       SET i = i + 1;
       IF ((relID > 170 AND relID <= 190) OR (relID > 3000 AND relID <= 3002))
       THEN # angielskie
-        INSERT INTO wordnet.relation_type_allowed_lexicons (relation_type_id, lexicon_id)
+        INSERT INTO relation_type_allowed_lexicons (relation_type_id, lexicon_id)
         VALUES (relID, 2);
 
       ELSEIF ((relID > 197 AND relID <= 223) OR (relID > 3004 AND relID <= 3016))
         THEN # miedzyjęzykowe
-          INSERT INTO wordnet.relation_type_allowed_lexicons (relation_type_id, lexicon_id)
+          INSERT INTO relation_type_allowed_lexicons (relation_type_id, lexicon_id)
           VALUES (relID, 1), (relID, 3);
       ELSE
-        INSERT INTO wordnet.relation_type_allowed_lexicons (relation_type_id, lexicon_id)
+        INSERT INTO relation_type_allowed_lexicons (relation_type_id, lexicon_id)
         VALUES (relID, 1);
       END IF;
     END WHILE;
@@ -375,37 +375,37 @@ CALL insertAllowedLexicons();
 DROP PROCEDURE IF EXISTS insertAllowedLexicons;
 
 # dodanie kolumny proper_name, do atrybutów jednostek
-ALTER TABLE wordnet.sense_attributes
+ALTER TABLE sense_attributes
 ADD COLUMN proper_name BIT DEFAULT 0 NOT NULL;
 
 # wstawienie relacji jednostek i synsetów
 # wstawianie relacji jednostek. Sprawdzamy parent oraz child, ponieważ w bazie przechowywane sa relacje do nieistniejących jednostek
 # chyba będzie do poprawy. Za pomocą tego wstawiane sa tylko te relacje tych typów, które zostały wcześniej
 # dodane do nowej tabeli. Być moze bedzie trzeba to zrobić inaczej
-INSERT INTO wordnet.sense_relation (child_sense_id, parent_sense_id, relation_type_id)
+INSERT INTO sense_relation (child_sense_id, parent_sense_id, relation_type_id)
   SELECT
     CHILD_ID,
     PARENT_ID,
     REL_ID
   FROM wordnet_work.lexicalrelation
   WHERE REL_ID IN (SELECT id
-                   FROM wordnet.relation_type)
+                   FROM relation_type)
         AND PARENT_ID IN (SELECT id
                           FROM wordnet_work.lexicalunit)
         AND CHILD_ID IN (SELECT id
                          FROM wordnet_work.lexicalunit);
 
 # wstawianie relacji synsetów
-INSERT INTO wordnet.synset_relation (child_synset_id, parent_synset_id, synset_relation_type_id)
+INSERT INTO synset_relation (child_synset_id, parent_synset_id, synset_relation_type_id)
   SELECT
     CHILD_ID,
     PARENT_ID,
     REL_ID
   FROM wordnet_work.synsetrelation
   WHERE PARENT_ID IN (SELECT id
-                      FROM wordnet.synset)
+                      FROM synset)
         AND CHILD_ID IN (SELECT id
-                         FROM wordnet.synset);
+                         FROM synset);
 
 DROP TABLE temp_dictionaries;
 DROP PROCEDURE IF EXISTS insert_dictionaries;

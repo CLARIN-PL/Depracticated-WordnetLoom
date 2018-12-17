@@ -26,7 +26,7 @@ public class V2_9__Add_Position_To_Relation_Type implements JdbcMigration {
 
     private Map<Long, RelationType> getRelationTypes(Connection connection, String relationType) throws SQLException {
         final Map<Long, RelationType> result = new LinkedHashMap<>();
-        final String SELECT_STATEMENT = "SELECT id, parent_relation_type_id FROM wordnet.relation_type WHERE relation_argument =? ORDER BY id";
+        final String SELECT_STATEMENT = "SELECT id, parent_relation_type_id FROM relation_type WHERE relation_argument =? ORDER BY id";
         final int ID_POSITION = 1;
         final int PARENT_POSITION = 2;
         final PreparedStatement statement = connection.prepareStatement(SELECT_STATEMENT);
@@ -66,7 +66,7 @@ public class V2_9__Add_Position_To_Relation_Type implements JdbcMigration {
     }
 
     private void updateRelationsTypes(List<RelationType> relationTypes, Connection connection) throws SQLException {
-        final String UPDATE_STATEMENT = "UPDATE wordnet.relation_type SET priority=? WHERE id=?";
+        final String UPDATE_STATEMENT = "UPDATE relation_type SET priority=? WHERE id=?";
         final int POSITION_POSITION = 1;
         final int ID_POSITION = 2;
         final PreparedStatement updateStatement = connection.prepareStatement(UPDATE_STATEMENT);

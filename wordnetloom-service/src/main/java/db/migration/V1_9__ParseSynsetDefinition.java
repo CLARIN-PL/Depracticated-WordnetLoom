@@ -114,8 +114,8 @@ public class V1_9__ParseSynsetDefinition implements JdbcMigration {
     private List<Attribute> getAttributesList (Connection connection) throws SQLException {
 
         final String SELECT_ATTRIBUTES_QUERY = "SELECT A.synset_id, A.definition, S.lexicon_id " +
-                "FROM wordnet.synset_attributes A " +
-                "JOIN wordnet.synset S ON A.synset_id = S.id " +
+                "FROM synset_attributes A " +
+                "JOIN synset S ON A.synset_id = S.id " +
                 "WHERE A.definition IS NOT NULL AND A.definition != '' AND A.definition != 'brak danych'" ;
 
         final long PRINCETON_ID = 2L;

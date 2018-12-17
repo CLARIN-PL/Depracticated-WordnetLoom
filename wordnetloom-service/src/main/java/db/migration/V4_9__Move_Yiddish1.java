@@ -269,7 +269,7 @@ public class V4_9__Move_Yiddish1 implements JdbcMigration {
     }
 
     private Map<String, Domain> getWordnetDomains(Connection connection) throws SQLException {
-        final String SELECT_QUERY = "SELECT D.id, D.description_id, D.name_id, A1.value, A2.value FROM wordnet.domain D LEFT JOIN wordnet.application_localised_string A1 ON D.description_id = A1.id AND A1.language='pl' LEFT JOIN wordnet.application_localised_string A2 ON D.name_id = A2.id AND A2.language = 'pl'";
+        final String SELECT_QUERY = "SELECT D.id, D.description_id, D.name_id, A1.value, A2.value FROM domain D LEFT JOIN application_localised_string A1 ON D.description_id = A1.id AND A1.language='pl' LEFT JOIN application_localised_string A2 ON D.name_id = A2.id AND A2.language = 'pl'";
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(SELECT_QUERY);
         Map<String, Domain> result = new HashMap<>();

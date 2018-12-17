@@ -1,5 +1,5 @@
-ALTER TABLE wordnet.lexicon
+ALTER TABLE lexicon
 ADD description TEXT;
 
-ALTER TABLE wordnet.tracker_lexicon
+ALTER TABLE tracker_lexicon
 ADD description TEXT;

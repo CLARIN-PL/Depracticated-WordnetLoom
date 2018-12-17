@@ -197,7 +197,7 @@ CREATE TABLE word_form (
 );
 
 CREATE INDEX word_index
-  ON wordnet.word (word);
+  ON word (word);
 
 ALTER TABLE dictionaries
   ADD CONSTRAINT FKflyxm5y0r293f9s1sv4q7weix

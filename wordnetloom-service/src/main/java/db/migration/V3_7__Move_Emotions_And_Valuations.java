@@ -7,12 +7,12 @@ import java.util.*;
 
 public class V3_7__Move_Emotions_And_Valuations implements JdbcMigration {
     private final String INPUT_EMOTIONAL_ANNOTATION_TABLE = "wordnet_work.emotion";
-    private final String OUTPUT_EMOTIONAL_ANNOTATION_TABLE = "wordnet.emotional_annotations";
-    private final String UNIT_EMOTIONS_TABLE = "wordnet.unit_emotions";
-    private final String UNIT_VALUATIONS_TABLE = "wordnet.unit_valuations";
-    private final String DICTIONARIES_TABLE = "wordnet.dictionaries";
-    private final String LOCALISED_STRING_TABLE = "wordnet.application_localised_string";
-    private final String USERS_TABLE = "wordnet.users";
+    private final String OUTPUT_EMOTIONAL_ANNOTATION_TABLE = "emotional_annotations";
+    private final String UNIT_EMOTIONS_TABLE = "unit_emotions";
+    private final String UNIT_VALUATIONS_TABLE = "unit_valuations";
+    private final String DICTIONARIES_TABLE = "dictionaries";
+    private final String LOCALISED_STRING_TABLE = "application_localised_string";
+    private final String USERS_TABLE = "users";
     private final String EMOTION_TYPE = "Emotion";
     private final String VALUATION_TYPE = "Valuation";
     private final String SPLIT_REGEX = "[\\;\\.\\:]";
@@ -24,7 +24,7 @@ public class V3_7__Move_Emotions_And_Valuations implements JdbcMigration {
     private final String AMB = "amb";
     private final String EMPTY = "";
 
-    private final String ANNOTATION_TABLE = "wordnet.emotional_annotations";
+    private final String ANNOTATION_TABLE = "emotional_annotations";
     private final String MARKEDNESS = "Markedness";
 
     @Override

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class V1_8__ParseComment implements JdbcMigration {
 
-    private final String ATTRIBUTE_TABLE = "wordnet.sense_attributes";
+    private final String ATTRIBUTE_TABLE = "sense_attributes";
 
     private CommentParser parser = new CommentParser();
 
@@ -21,7 +21,7 @@ public class V1_8__ParseComment implements JdbcMigration {
             "register_id=?, " +
             "proper_name=? " +
             "WHERE sense_id = ?";
-    final String INSERT_QUERY = "INSERT INTO wordnet.sense_examples (sense_attribute_id, type, example) VALUES (?,?,?)";
+    final String INSERT_QUERY = "INSERT INTO sense_examples (sense_attribute_id, type, example) VALUES (?,?,?)";
     private PreparedStatement updateAttributeStatement;
     private PreparedStatement insertExampleStatement;
 
@@ -167,7 +167,7 @@ public class V1_8__ParseComment implements JdbcMigration {
 
 
     private Long getRegisterID(String registerName, Connection connection) throws SQLException {
-        String GET_ID_QUERY = "SELECT D.id FROM wordnet.dictionaries D LEFT JOIN wordnet.application_localised_string S ON D.name_id = S.id WHERE S.value = ?";
+        String GET_ID_QUERY = "SELECT D.id FROM dictionaries D LEFT JOIN application_localised_string S ON D.name_id = S.id WHERE S.value = ?";
         PreparedStatement statement = connection.prepareStatement(GET_ID_QUERY);
         statement.setString(1, registerName);
         ResultSet resultSet = statement.executeQuery();
