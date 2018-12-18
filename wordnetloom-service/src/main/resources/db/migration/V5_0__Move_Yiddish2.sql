@@ -68,33 +68,43 @@ WHERE S.id_lexicon > 2;
 
 -- TODO sprawdzić, czy zapytanie zwróci wszystkie dane
 
-INSERT INTO sense(id, synset_position, variant, word_id, word_fk, synset_id, uuid)
+INSERT INTO sense(id, synset_position, variant, word_id, word_fk, synset_id, uuid, domain_id, lexicon_id, part_of_speech_id)
 SELECT S.id,
 SS.sense_index,
 sense_number,
 new_word,
 new_word_uuid,
 SS.id_synset,
-UUID_TO_BIN(UUID())
+UUID_TO_BIN(UUID()),
+1, # TEMPORARY DOMAIN
+1,  # TEMPORARY LEXICON
+1 # TEMPORARY PART_OF_SPEECH
 FROM `plwordnet3-prod`.sense S
 LEFT JOIN `plwordnet3-prod`.sense_to_synset SS ON S.id = SS.id_sense
 LEFT JOIN temp_sense_word TSW ON TSW.sense_id = S.id
 WHERE S.id_lexicon > 2;
 
+SET SQL_SAFE_UPDATES = 0;
+
 UPDATE sense S JOIN `plwordnet3-prod`.sense SE ON S.id = SE.id JOIN  `plwordnet3-prod`.part_of_speech P ON SE.part_of_speech = P.id
 JOIN application_localised_string A ON P.uby_lmf_type = A.value JOIN part_of_speech POS ON POS.name_id = A.id
-SET part_of_speech_id = POS.id;
+SET part_of_speech_id = POS.id
+WHERE SE.id_lexicon > 2;
 
 UPDATE sense S JOIN `plwordnet3-prod`.sense SE ON S.id = SE.id JOIN temp_domains TD ON TD.newId = SE.domain
-SET domain_id = TD.oldId;
+SET domain_id = TD.oldId
+WHERE SE.id_lexicon > 2;
 
 UPDATE sense S JOIN `plwordnet3-prod`.sense SE ON S.id = SE.id JOIN temp_lexicon TL ON TL.oldID = SE.id_lexicon
-SET lexicon_id = TL.newID;
+SET lexicon_id = TL.newID
+WHERE SE.id_lexicon > 2;
 
 # uzupełnianie jednostek (uuidy)
 UPDATE sense S JOIN synset SY ON S.synset_id = SY.id
 SET S.synset_fk = SY.uuid
 WHERE S.synset_fk IS NULL;
+
+SET SQL_SAFE_UPDATES = 1;
 
 # wstawienie brakujących atrybutów
 INSERT INTO sense_attributes(sense_id, sense_fk)
