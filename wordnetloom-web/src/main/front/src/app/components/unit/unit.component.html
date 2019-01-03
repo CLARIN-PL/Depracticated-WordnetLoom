@@ -10,7 +10,7 @@
         </div>
 
         <!--SIDE BAR-->
-        <div class="col-12 col-sm-4 col-lg-2 option-area" [ngClass]="{'hidden': !showingSideBar}"> <!-- position set as fixed -->
+        <div class="col-12 col-md-4 col-lg-2 option-area" [ngClass]="{'hidden': !showingSideBar}"> <!-- position set as fixed -->
 
           <div [hidden]="sidebarContent.length < 1" class="options-title">
             <button mat-button class="show-hide-wordlist-btn" (click)="hideSideBar()"><i class="fa fa-chevron-left"></i> {{ 'wordlist' | translate }}:</button>
@@ -66,7 +66,7 @@
 
         <!--SIDE BAR END-->
 
-        <div class="col-12 right-area offset-top" [ngClass]="{'col-sm-8 offset-sm-4 col-lg-10 offset-lg-2': showingSideBar}">
+        <div class="col-12 right-area offset-top" [ngClass]="{'col-md-8 offset-md-4 col-lg-10 offset-lg-2': showingSideBar}">
           <app-right-area></app-right-area>
         </div>
 

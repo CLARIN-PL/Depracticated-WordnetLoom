@@ -1,6 +1,8 @@
 import {Component, OnInit } from '@angular/core';
 import {ActivatedRoute, NavigationEnd, ParamMap, Router} from '@angular/router';
 import {TranslateService} from './services/translate.service';
+import {CurrentStateService} from './services/current-state.service';
+import {Subscription} from 'rxjs';
 
 
 @Component({
@@ -10,11 +12,17 @@ import {TranslateService} from './services/translate.service';
 })
 export class AppComponent implements OnInit {
   showSearchInHeader = true;
-
-  constructor(private router: Router, private translate: TranslateService) {}
+  mobile = true;
+  mobileStateSubscription: Subscription = null;
+  constructor(private router: Router,
+              private translate: TranslateService,
+              private currentState: CurrentStateService) {}
 
   ngOnInit() {
     this.initShowingHeaderSearchBar();
+    this.mobileStateSubscription = this.currentState.getMobileStateEmitter().subscribe(
+      mobileState => this.mobile = mobileState
+      );
   }
 
   initShowingHeaderSearchBar() {

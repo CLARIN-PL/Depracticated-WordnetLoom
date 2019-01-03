@@ -1,3 +1,6 @@
+@import "~bootstrap/scss/bootstrap-grid.scss";
+@import "~variables.scss";
+
 .area-row{
   margin-right: 0;
   margin-left: 0;
@@ -38,11 +41,14 @@
 
 
 .main-area-row{
-  /*height: calc(100vh - 255px);*/
-  height: calc(100vh - 140px);
+  height: calc(100vh - 75px);
+  padding-bottom: 5px;
 }
-.main-area-row.expanded{
-  height: calc(100vh - 140px);
+
+@include media-breakpoint-up(lg) {
+  .main-area-row{
+    height: calc(100vh - 145px);
+  }
 }
 
 .img-mockup{

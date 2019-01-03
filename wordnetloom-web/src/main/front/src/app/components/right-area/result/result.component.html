@@ -6,13 +6,10 @@
 </div>
 
 
-<div>
-
-
 <div class="row main-area-row" [ngClass]="{'expanded':footerPanelHidden}">
 
   <!--GRAPH AREA-->
-  <div class="col-sm-7 col-md-8 graph-area" [ngClass]="{'col-sm-12 col-md-12': rightPanelHidden}">
+  <div class="col-sm-12 col-md-8 graph-area" [ngClass]="{'col-sm-12 col-md-12': rightPanelHidden}">
     <div *ngIf="content.length === 0" class="title-row"></div>
     <div *ngIf="content.length > 0" class="row title-row">
       <div class="text-center col-12">
@@ -38,7 +35,7 @@
   <!--GRAPH AREA END-->
 
   <!--SENSE DETAIL AREA-->
-  <div class="col-sm-5 col-md-4 sense-detail-col" [ngClass]="{'d-none': rightPanelHidden}" *ngIf="content.length > 0">
+  <div class="col-sm-12 col-md-4 sense-detail-col" [ngClass]="{'d-none': rightPanelHidden}" *ngIf="content.length > 0">
     <h5 class="text-center">{{'selected_units_details' | translate}}:</h5>
     <mat-card class="mb-2">
     <h6 class="text-center" *ngIf="!yiddishContentPresent">{{'no_data_avaliable_for_unit' | translate}}</h6>
@@ -244,4 +241,4 @@
     <!--</mat-tab-group>-->
 
   <!--</div>-->
-<!--</div>-->
+</div>

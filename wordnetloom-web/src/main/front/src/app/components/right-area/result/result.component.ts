@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit} from '@angular/core';
 import {HttpService} from '../../../services/http.service';
 import {CurrentStateService} from '../../../services/current-state.service';
 import {ActivatedRoute} from '@angular/router';
@@ -11,13 +11,15 @@ import {MatDialog} from '@angular/material';
 @Component({
   selector: 'app-result',
   templateUrl: './result.component.html',
-  styleUrls: ['./result.component.css'],
+  styleUrls: ['./result.component.scss'],
   providers: [GraphModalComponent]
 })
 export class ResultComponent implements OnInit, OnDestroy {
   content: SenseContent[];
   routeSubscription: Subscription = null;
   synsetIdStateSubscription: Subscription = null;
+
+  modalLabelEmitter = new EventEmitter<string>();
 
   synsetId: number;
   yiddishContentPresent = false;
@@ -88,6 +90,8 @@ export class ResultComponent implements OnInit, OnDestroy {
         this.content.push(new SenseContent(response));
       }
 
+      this.modalLabelEmitter.emit(this.content[0].lemma);
+
       this.sidebar.assignSingleOptionIfEmpty(this.content[0]);
     });
     this.http.getSenseRelations(this.synsetId).subscribe(results => {
@@ -113,10 +117,18 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   showGraphModal() {
+    let topLabel = '';
+    if (this.content.length > 0) {
+      topLabel = this.content[0].lemma;
+    }
     this.graphModal.open(GraphModalComponent, {
       maxWidth: '100vw',
       height: '99%',
       width: '99%',
+      data: {
+        topLabel: topLabel,
+        topLabelEmitter: this.modalLabelEmitter
+      }
     });
   }
 }

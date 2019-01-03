@@ -1,10 +1,10 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, EventEmitter, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material';
+import {Subscription} from 'rxjs';
 
 export interface ModalOptions {
-  maxWidth: string;
-  height: string;
-  width: string;
+  topLabel: string;
+  topLabelEmitter: EventEmitter<string>;
 }
 
 @Component({
@@ -12,12 +12,25 @@ export interface ModalOptions {
   templateUrl: './graph-modal.component.html',
   styleUrls: ['./graph-modal.component.css']
 })
-export class GraphModalComponent implements OnInit {
+export class GraphModalComponent implements OnInit, OnDestroy {
 
-  selectedUnitName: string = 'unit name';
+  selectedUnitName: string = '';
+  selectedUnitNameSubscription: Subscription;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: ModalOptions) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log(this.data);
+    this.selectedUnitName = this.data.topLabel;
+    this.selectedUnitNameSubscription = this.data.topLabelEmitter.subscribe(
+      label => {
+        this.selectedUnitName = label;
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    this.selectedUnitNameSubscription.unsubscribe();
+  }
 
 }
