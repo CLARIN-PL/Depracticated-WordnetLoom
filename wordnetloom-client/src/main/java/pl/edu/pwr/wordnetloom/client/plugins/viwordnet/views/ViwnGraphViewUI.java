@@ -550,6 +550,22 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         }
     }
 
+    /**
+     * @param synset
+     */
+    public void addSynsetFromSet(ViwnNodeSynset synset) {
+        addSynsetFromSet_(synset);
+        vv.getPickedVertexState().pick(synset, true);
+        if (getSetFrom(synset).getSynsets().size() == 1) {
+            ViwnNodeSynset last = getSetFrom(synset).getSynsets().iterator()
+                    .next();
+            addSynsetFromSet_(last);
+            vv.getPickedVertexState().pick(last, true);
+        }
+//        selectedNode = synset;
+
+    }
+
     public void addSynsetsFromSet(List<ViwnNodeSynset> synsets) {
         if (synsets.isEmpty()) {
             return;
@@ -585,22 +601,6 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
 
     public void clearNodeCache() {
         cache.clear();
-    }
-
-    /**
-     * @param synset
-     */
-    public void addSynsetFromSet(ViwnNodeSynset synset) {
-        addSynsetFromSet_(synset);
-        vv.getPickedVertexState().pick(synset, true);
-        if (getSetFrom(synset).getSynsets().size() == 1) {
-            ViwnNodeSynset last = getSetFrom(synset).getSynsets().iterator()
-                    .next();
-            addSynsetFromSet_(last);
-            vv.getPickedVertexState().pick(last, true);
-        }
-//        selectedNode = synset;
-
     }
 
     /**
@@ -700,7 +700,7 @@ public class ViwnGraphViewUI extends AbstractViewUI implements
         ViwnNodeSynset nodeSynset = new ViwnNodeSynset(synset, this);
         forest.addVertex(nodeSynset);
         NodeDirection[] directions  = new NodeDirection[]{relationType.getNodePosition()};
-         showRelation(nodeSynset, directions, relationType);
+        showRelation(nodeSynset, directions, relationType);
 
     }
 
