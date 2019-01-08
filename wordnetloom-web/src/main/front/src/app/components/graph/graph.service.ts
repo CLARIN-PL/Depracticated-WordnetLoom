@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {Router} from '@angular/router';
 import {CurrentStateService} from '../../services/current-state.service';
+import {HttpService} from "../../services/http.service";
 
 @Injectable({providedIn: 'root'})
 export class GraphService {
@@ -13,7 +14,8 @@ export class GraphService {
   selectedNodeId = null;
 
   constructor(private currentStateService: CurrentStateService,
-              private router: Router) { }
+              private router: Router,
+              private http: HttpService) { }
 
   initService(graph) {
     const self = this;
@@ -40,19 +42,31 @@ export class GraphService {
     return this.graph != null;
   }
 
-  changeBaseWordWithLemma(lemma) {
-    this.graph.initializeFromSynsetId(10000);
-  }
+  // changeBaseWordWithLemma(lemma) {
+  //   this.graph.initializeFromSynsetId(10000);
+  // }
 
-  getSynsetFromSenseId(id) {
-    this.graph.getSynsetFromSenseId(id);
-  }
+  // getSynsetFromSenseId(id) {
+  //   this.graph.getSynsetFromSenseId(id);
+  // }
 
   initializeFromSynsetId(id) {
-    this.currentSynsetId = id;
-    this.graph.setRootNodeAsLastClickedAutomatically();
-    this.graph.initializeFromSynsetId(id);
+    console.log(id);
+    console.log(this.graph);
+
+    this.http.getSenseGraph(id).subscribe(data => {
+      this.currentSynsetId = id;
+      this.graph.setRootNodeAsLastClickedAutomatically();
+      // this.graph.initializeFromSynsetId(id);
+      this.graph.initFromJson(data);
+    });
   }
+
+  // initFromActiveSynsetId() {
+  //   let synsetId = this.currentStateService.getSynsetId();
+  //   console.log(synsetId);
+  //   this.initializeFromSynsetId(synsetId);
+  // }
 
   destroy() {
     this.graph = null;

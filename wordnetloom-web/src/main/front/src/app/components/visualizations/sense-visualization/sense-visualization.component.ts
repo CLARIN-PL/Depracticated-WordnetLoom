@@ -11,7 +11,7 @@ declare const GraphCreator: any;
   encapsulation: ViewEncapsulation.None,
 })
 export class SenseVisualizationComponent implements OnInit {
-  @Input() senseId: number;
+  @Input() senseId: string;
   @Input() visible: boolean;
 
 
@@ -40,8 +40,8 @@ export class SenseVisualizationComponent implements OnInit {
       height = graphSpace[1],
       showSearchBox = false;
     this.graph = new GraphCreator('graph-container', showSearchBox, width, height);
-    this.graph.initializeFromSynsetId(10);
-    // this.graph.initializeFromSenseId(this.senseId);
+    // this.graph.initializeFromSynsetId('11e9134f-edac-32ef-bd32-7824af8ebbbd');
+    this.graph.initializeFromSynsetId(this.senseId);
 
     this.graph.eventDispatch.on('ordinary-node-mousedown', function(e){
       if (e) {

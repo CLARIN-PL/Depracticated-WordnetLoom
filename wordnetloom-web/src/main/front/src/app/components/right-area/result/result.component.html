@@ -10,16 +10,16 @@
 
   <!--GRAPH AREA-->
   <div class="col-sm-12 col-md-8 graph-area" [ngClass]="{'col-sm-12 col-md-12': rightPanelHidden}">
-    <div *ngIf="content.length === 0" class="title-row"></div>
-    <div *ngIf="content.length > 0" class="row title-row">
+    <div *ngIf="!content" class="title-row"></div>
+    <div *ngIf="content" class="row title-row">
       <div class="text-center col-12">
-        <h3>{{ content[0].lemma }}</h3>
+        <h3>{{ content.lemma }}</h3>
         <h4>
-          <span matTooltip="Part of speech">{{ content[0].partOfSpeech }}</span>
-          <span *ngIf="content[0].grammaticalGender" matTooltip="Grammatical gender">,
-            {{ content[0].grammaticalGender }}
+          <span matTooltip="Part of speech">{{ content.partOfSpeech }}</span>
+          <span *ngIf="content.grammaticalGender" matTooltip="Grammatical gender">,
+            {{ content.grammaticalGender }}
           </span>
-          <span *ngIf="content[0].flag !== 'Yiddish 1.0'" matTooltip="Lexicon">, {{ content[0].flag }}
+          <span *ngIf="content.flag !== 'Yiddish 1.0'" matTooltip="Lexicon">, {{ content.flag }}
           </span>
         </h4>
         <button *ngIf="mobile" class="show-graph-btn" mat-raised-button color="primary" (click)="showGraphModal()">{{'show_graph_modal' | translate}}</button>
@@ -35,13 +35,13 @@
   <!--GRAPH AREA END-->
 
   <!--SENSE DETAIL AREA-->
-  <div class="col-sm-12 col-md-4 sense-detail-col" [ngClass]="{'d-none': rightPanelHidden}" *ngIf="content.length > 0">
+  <div class="col-sm-12 col-md-4 sense-detail-col" [ngClass]="{'d-none': rightPanelHidden}" *ngIf="yiddishContent.length > 0">
     <h5 class="text-center">{{'selected_units_details' | translate}}:</h5>
     <mat-card class="mb-2">
     <h6 class="text-center" *ngIf="!yiddishContentPresent">{{'no_data_avaliable_for_unit' | translate}}</h6>
     <mat-tab-group *ngIf="yiddishContentPresent" selectedIndex="1">
       <mat-tab class="tab-title" label="Variants: " disabled></mat-tab>
-      <mat-tab *ngFor="let content of content" [label]="content.yiddishVariant">
+      <mat-tab *ngFor="let content of yiddishContent" [label]="content.yiddishVariant">
         <div class="row area-row">
           <div *ngFor="let area of content.areas" class="col-12 area-row">
             <div class="card full-width">

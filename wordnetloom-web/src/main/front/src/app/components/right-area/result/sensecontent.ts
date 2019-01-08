@@ -3,10 +3,8 @@ import {UnitComponent} from "../../unit/unit.component";
 
 export class SenseContent {
   lemma: string;
-  senseId: number;
-  yiddishVariantId: number;
+  senseId: string;
   variant: number;
-  currentYiddish: Object;
 
   partOfSpeech;
   grammaticalGender;
@@ -17,26 +15,28 @@ export class SenseContent {
   yiddishVariant = 'Default';
 
   constructor(json: Object, currentYiddishVariant=null) {
-    this.senseId = json['Id'];
-    this.variant = json['Sense number'];
-    this.partOfSpeech = json['Part of speech'];
+    console.log(json);
+    this.senseId = json['id'];
+    this.variant = json['variant'];
+    this.partOfSpeech = json['part_of_speech'];
     this.grammaticalGender = null;
-    this.flag = json['Lexicon'];
+    this.flag = json['lexicon'];
 
-    this.lemma = json['Lemma'] + ' ' + this.variant + ' (' + json['Domain'] + ')';
-    if (json['Yiddish'].length > 0) {
-      if (currentYiddishVariant && json['Yiddish'][currentYiddishVariant]) {
-        this.yiddishVariantId = currentYiddishVariant;
-      } else {
-        this.yiddishVariantId = 0;
-      }
-      this.currentYiddish = json['Yiddish'][this.yiddishVariantId];
-      this.lemma = this.currentYiddish['Latin spelling'] +  ' ' + this.variant + ' (' + json['Domain'] + ')'
-        + ' | ' + this.currentYiddish['Yiddish spelling'] + ' | ' +  this.currentYiddish['YIVO spelling'];
-      this.grammaticalGender = this.currentYiddish['Grammatical gender'];
-      this.yiddishVariant = this.currentYiddish['Yiddish variant'].replace(/_/g, ' ');
-      this.setYiddishFields();
-    }
+    this.lemma = json['lemma'] + ' ' + this.variant + ' (' + json['domain'] + ')';
+    // todo - change
+    // if (json['_links']['yiddish']) {
+    //   if (currentYiddishVariant && json['Yiddish'][currentYiddishVariant]) {
+    //     this.yiddishVariantId = currentYiddishVariant;
+    //   } else {
+    //     this.yiddishVariantId = 0;
+    //   }
+    //   this.currentYiddish = json['Yiddish'][this.yiddishVariantId];
+    //   this.lemma = this.currentYiddish['Latin spelling'] +  ' ' + this.variant + ' (' + json['Domain'] + ')'
+    //     + ' | ' + this.currentYiddish['Yiddish spelling'] + ' | ' +  this.currentYiddish['YIVO spelling'];
+    //   this.grammaticalGender = this.currentYiddish['Grammatical gender'];
+    //   this.yiddishVariant = this.currentYiddish['Yiddish variant'].replace(/_/g, ' ');
+    //   this.setYiddishFields();
+    // }
 
     this.setBasicFields(json);
   }
@@ -52,104 +52,4 @@ export class SenseContent {
     return QueryNames.getQueryString(name, id);
   }
 
-  private setYiddishFields(): void {
-    const self = this;
-    const fieldNames = [
-      'Latin spelling',
-      'Yiddish spelling',
-      'YIVO spelling',
-
-      // part of speech
-      // gramatical qualifiers
-      'Grammatical gender', // change to 'Grammatical qualifiers'
-      'Dialectal',
-
-      'Meaning',
-      'Lexical Characteristic',
-      'Style',
-      'Status',
-      'Age'
-
-      // Philological Spelling,
-      // Yiddish Spelling,
-      // YIVO Spelling,
-      // Part of Speech,
-      // Grammatical Qualifiers (​ zawartość pola Grammatical Gender​),
-      // Inflection, ​
-      // Meaning,
-      // Semantic Field, SEARCH!!
-      // Style, SEARCH!!
-      // Lexical Characteristic, SEARCH!!
-      // Rootedness (​ zawartość pola Status​ ), SEARCH!!
-      // Etymology,
-      // Age, SEARCH!!
-      // Source,
-      // Etymological Root, SEARCH!!
-      // Morphology (​zawartość pola Particles​ ) ​ . SEARCH!!
-      //
-      // Wszystkie pola powinny być wyświetlane zawsze, niezależnie od tego,
-      // czy coś jest w nich wybrane lub wpisane w Wordnetloomie,
-      // z wyjątkiem następujących: ​ Lexical Characteristic, Context, Comment​
-    ];
-
-    const fields = [];
-    for (const name of fieldNames){
-      if (this.currentYiddish[name].length > 0) {
-        const newField = {
-          name: name,
-          values: [
-            {
-              name: this.currentYiddish[name],
-              searchQuery: this.getSearchFieldQuery(name, this.currentYiddish[name])
-            }]};
-        fields.push(newField);
-      }
-    }
-
-    // transcription
-    if (this.currentYiddish['Transcription'].length > 0) {
-      fields.push({
-        name: 'Transcription', values: this.currentYiddish['Transcription'].map(function (it) {
-          return {
-            name: it.type + ': ' + it.value,
-            searchQuery: self.getSearchFieldQuery('Transcription', it.id)
-          };
-        })
-      });
-    }
-    // source
-    if (this.currentYiddish['Source'].length > 0) {
-      const srcs = this.currentYiddish['Source'].map(function (it) {
-        return {
-          name: it.name,
-          searchQuery:  self.getSearchFieldQuery('Source', it.id)
-        };
-      });
-      fields.push({name: 'Source', values: srcs});
-    }
-
-    //  Inflection
-    if (this.currentYiddish['Inflection'].length > 0) {
-      fields.push({
-        name: 'Inflection',
-        values: this.currentYiddish['Inflection'].map(function (it) {
-          return {name: 'prefix: ' + it.prefix + ', value:' + it.text,
-            searchQuery: self.getSearchFieldQuery('Inflection', it.id)
-          };
-        })
-      });
-    }
-    // semantic fied
-    if (this.currentYiddish['Semantic filed'].length > 0) {
-      fields.push({
-        name: 'Semantic filed',
-        values: this.currentYiddish['Semantic filed'].map(function (it) {
-          return {name: it.domain + ' (' + it.modifier + ')',
-            searchQuery: self.getSearchFieldQuery('Semantic filed', it.id)
-          };
-        })
-      });
-    }
-    this.areas.push({name: 'Yiddish specific', fields: fields});
-  }
 }

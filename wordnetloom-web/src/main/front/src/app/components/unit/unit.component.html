@@ -38,18 +38,18 @@
                  [routerLink]="[item.id]"
                  routerLinkActive="active-link"
 
-                 matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}"
+                 matTooltip="{{item.label.length > 23 ? item.label : '' }}"
                  [matTooltipPosition]="'right'"
                  [matTooltipClass]="'mat-tooltip-top-fix'"
               >
-                {{ item.lemma}}
+                {{ item.label}}
               </a>
 
 
               <a *ngFor="let temp of ['Yiddish Primary Lemma', 'Philological', 'Morphological']" mat-list-item
                  class="option-list-item underlist-item"
                  routerLinkActive="active-link"
-                 matTooltip="{{item.lemma.length > 23 ? item.lemma : '' }}"
+                 matTooltip="{{item.label.length > 23 ? item.label : '' }}"
                  [matTooltipPosition]="'right'"
                  [matTooltipClass]="'mat-tooltip-top-fix'">
                 {{temp}}

@@ -10,7 +10,8 @@ import {lemmas} from './avaliable_lemmas_temp';
 @Injectable()
 export class HttpService {
   // apiBase = '/yiddish/api/';
-  apiBase = 'http://156.17.135.29:8080/yiddish/api/';
+  // apiBase = 'http://156.17.135.29:8080/yiddish/api/';
+  apiBase = 'http://156.17.135.55:8080/wordnetloom-server/resources/';
 
   constructor(private http: Http) {}
 
@@ -35,17 +36,18 @@ export class HttpService {
 
 
   getSenseDetails(id) {
-    return this.get('sense/' + id);
+    return this.get('senses/' + id);
   }
 
   getSearchOptions(form: String, page = 0, perPage= 50) {
-    let searchStr = 'sense?';
+    let searchStr = 'senses/search?';
     for (const key in form) {
       if (form[key] !== '' && form[key] !== undefined) {
         searchStr += key + '=' + form[key] + '&';
       }
     }
-    return this.get(searchStr + 'per_page=' + perPage + '&page=' + page);
+    return this.get(searchStr + 'limit=' + perPage + '&start=' + page * perPage );
+    // return this.get(searchStr + 'per_page=' + perPage + '&page=' + page);
   }
 
   getGlobalOptions(searchedKey) {
@@ -53,6 +55,7 @@ export class HttpService {
   }
 
   getSenseRelations(senseId) {
+    return this.get('senses/' + senseId + '/relations');
     const incoming = this.get('sense/' + senseId + '/relations/incoming').map(res => res);
     const outgoing = this.get('sense/' + senseId + '/relations/outgoing').map(res => res);
 
@@ -91,4 +94,13 @@ export class HttpService {
       .finally(() => {});
     // return this.get(langPath, '/');
   }
+
+  getYiddishDetails(senseId) {
+    return this.get('senses/' + senseId + '/yiddish');
+  }
+
+  getSenseGraph(senseId) {
+    return this.get('senses/' + senseId + '/graph');
+  }
 }
+

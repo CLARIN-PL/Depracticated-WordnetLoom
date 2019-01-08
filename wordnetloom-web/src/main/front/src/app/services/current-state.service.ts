@@ -26,9 +26,11 @@ export class CurrentStateService {
   setResultComponentRouteObserver(routeObserver) {
     this.routeObserver = routeObserver;
     this.routeObserver.params.subscribe( params => {
-      const synsetId = +params['lemma_id']; // (+) converts string 'id' to a number
+      const synsetId = params['lemma_id'];
 
-      if (isNaN(synsetId)) {
+
+      // if (isNaN(synsetId)) { // todo - check for isNaN unwanted behaviur
+      if (synsetId === null) {
         this.setSynsetId(null);
       } else {
         this.setSynsetId(synsetId);

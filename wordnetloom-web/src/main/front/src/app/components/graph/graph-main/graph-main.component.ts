@@ -62,7 +62,7 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
       this.graph.showMiniMap(.25, null, '5px', null, null, '5px');
     }
     this.graphService.initService(this.graph);
-    this.graphService.initializeFromSynsetId(10);
+    // this.graphService.initializeFromSynsetId('11e9134f-edac-32ef-bd32-7824af8ebbbd');
 
     this.graphContainerDiv.nativeElement.onresize = this.graphContainerResized;
   }
