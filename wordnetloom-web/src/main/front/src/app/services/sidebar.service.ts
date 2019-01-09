@@ -46,6 +46,7 @@ export class SidebarService {
 
     self.http.getSearchOptions(this.form, this.page, this.batchSize).subscribe(
       (response) => {
+        console.log(response);
         self.addSearchOptions(response);
         self.totalRecords = response['size'];
         self.recordsLoaded = Math.min(self.recordsLoaded + self.batchSize, self.totalRecords);
@@ -53,10 +54,11 @@ export class SidebarService {
         if (self.page === 0) { // first batch loaded
           if (response['rows'].length > 0) {
             // temporary solution
-            console.log(response.rows[0]);
-            let splittedLink = response.rows[0]['_links']['self'].split('/');
-            let id = splittedLink[splittedLink.length -1];
+            // console.log(response.rows[0]);
+            const splittedLink = response.rows[0]['_links']['self'].split('/');
+            const id = splittedLink[splittedLink.length -1 ];
             console.log(id);
+            // const id =
             self.router.navigate(['detail', id]);
             // self.router.navigate(['detail', response['rows'][0]['id']]);
           } else {

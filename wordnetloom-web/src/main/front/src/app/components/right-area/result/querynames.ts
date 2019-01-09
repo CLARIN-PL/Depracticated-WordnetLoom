@@ -8,10 +8,15 @@ export class QueryNames {
     // 'todo': 'lexiconId',
     // 'todo': 'partOfSpeechId',
     // 'todo': 'domainId',
-    'Style': 'styleId',
+    'style': 'style',
     // 'Status': 'statusId',
     // 'todo': 'lexicalCharacteristicId',
-    'Source': 'sourceId',
+    'sources': 'source',
+    'age': 'age',
+    'grammatical_gender': 'grammatical_gender',
+    'status': 'status',
+    'lexical_characteristic': 'lexical_characteristic',
+    'etymological_root': 'etymological_root'
     // 'todo': 'yiddishDomainId',
     // 'todo': 'domainModifierId',
   };

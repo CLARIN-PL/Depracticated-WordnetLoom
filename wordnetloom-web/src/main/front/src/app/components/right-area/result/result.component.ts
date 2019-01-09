@@ -19,6 +19,7 @@ import {GraphService} from "../../graph/graph.service";
 export class ResultComponent implements OnInit, OnDestroy {
   content: SenseContent|YiddishContent;
   yiddishContent: YiddishContent[];
+  currentYiddishTabIndex = 0;
   routeSubscription: Subscription = null;
   synsetIdStateSubscription: Subscription = null;
 
@@ -93,6 +94,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.http.getSenseDetails(this.synsetId).subscribe((response) => {
       console.log(response);
       this.content = new SenseContent(response);
+      const originalSenseContent = this.content;
 
       this.modalLabelEmitter.emit(this.content.lemma);
       this.sidebar.assignSingleOptionIfEmpty(this.content);
@@ -105,9 +107,9 @@ export class ResultComponent implements OnInit, OnDestroy {
         this.http.getYiddishDetails(this.synsetId).subscribe(response => {
           console.log(response);
           for (const yContent of response.rows) {
-            this.yiddishContent.push(new YiddishContent(yContent))
+            this.yiddishContent.push(new YiddishContent(yContent, originalSenseContent));
           }
-          if (response.rows.length > 0 ){
+          if (response.rows.length > 0 ) {
             this.content = this.yiddishContent[0];
             this.yiddishContentPresent = true;
           }
@@ -156,5 +158,11 @@ export class ResultComponent implements OnInit, OnDestroy {
         topLabelEmitter: this.modalLabelEmitter
       }
     });
+  }
+  selectedTabChange(event) {
+    console.log(event);
+    this.currentYiddishTabIndex = event.index - 1;
+    console.log(this.currentYiddishTabIndex);
+    // this.selectedTab = 1;
   }
 }

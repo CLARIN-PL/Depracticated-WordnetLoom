@@ -39,7 +39,7 @@
     <h5 class="text-center">{{'selected_units_details' | translate}}:</h5>
     <mat-card class="mb-2">
     <h6 class="text-center" *ngIf="!yiddishContentPresent">{{'no_data_avaliable_for_unit' | translate}}</h6>
-    <mat-tab-group *ngIf="yiddishContentPresent" selectedIndex="1">
+    <mat-tab-group *ngIf="yiddishContentPresent" [selectedIndex]="currentYiddishTabIndex + 1" (selectedTabChange)="selectedTabChange($event)">
       <mat-tab class="tab-title" label="Variants: " disabled></mat-tab>
       <mat-tab *ngFor="let content of yiddishContent" [label]="content.yiddishVariant">
         <div class="row area-row">
@@ -56,7 +56,6 @@
                           {{ link.name }}
                         </a>
                       </span>
-
                     </td>
                   </tr>
                 </table>
@@ -104,10 +103,10 @@
               <li *ngIf="relations['incoming'].length > 0">
                 {{ 'incoming_relations' | translate }}:
                 <ul>
-                  <li *ngFor="let relation of relations['incoming']; let isLast=last">{{ relation.key }}:
+                  <li *ngFor="let relation of relations['incoming']; let isLast=last">{{ relation.relation_type_name }}:
                     <ul>
-                      <li *ngFor="let member of relation.items; let isLast=last">
-                        <a [routerLink]="'/detail/' + member['target']">{{ member['lemma']}}</a>
+                      <li *ngFor="let member of relation.rows; let isLast=last">
+                        <a [routerLink]="'/detail/' + member['target']">{{ member['label']}}</a>
                       </li>
                     </ul>
                   </li>
@@ -116,10 +115,10 @@
               <li *ngIf="relations['outgoing'].length > 0">
                 {{ 'outgoing_relations' | translate }}:
                 <ul>
-                  <li *ngFor="let relation of relations['outgoing']; let isLast=last">{{ relation.key }}:
+                  <li *ngFor="let relation of relations['outgoing']; let isLast=last">{{ relation.relation_type_name }}:
                     <ul>
-                      <li *ngFor="let member of relation.items; let isLast=last">
-                        <a [routerLink]="'/detail/' + member['target']">{{ member['lemma']}}</a>
+                      <li *ngFor="let member of relation.rows; let isLast=last">
+                        <a [routerLink]="'/detail/' + member['target']">{{ member['label']}}</a>
                       </li>
                     </ul>
                   </li>
@@ -134,30 +133,32 @@
       <!--<div class="p-2 flex-fill bd-highlight align-content-around flex-wrap">-->
       <div class="d-flex flex-column flex-wrap">
       <div class="">
-      <mat-card class="m-1">
+      <mat-card class="m-1" *ngIf="yiddishContentPresent && yiddishContent[currentYiddishTabIndex].additionalFields.context">
         <div class="row text-center" style="width: 100%;">
           <div class="col">
             <h5>{{'Context' | translate}}:</h5>
           </div>
         </div>
         <mat-card-content>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi earum esse exercitationem nemo nihil? Accusantium ad assumenda atque debitis enim ipsam labore magnam modi molestiae praesentium quia sint, soluta ullam.</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi earum esse exercitationem nemo nihil? Accusantium ad assumenda atque debitis enim ipsam labore magnam modi molestiae praesentium quia sint, soluta ullam.</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi earum esse exercitationem nemo nihil? Accusantium ad assumenda atque debitis enim ipsam labore magnam modi molestiae praesentium quia sint, soluta ullam.</p>
+          <p>{{ yiddishContent[currentYiddishTabIndex].additionalFields.context }}</p>
+          <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi earum esse exercitationem nemo nihil? Accusantium ad assumenda atque debitis enim ipsam labore magnam modi molestiae praesentium quia sint, soluta ullam.</p>-->
+          <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi earum esse exercitationem nemo nihil? Accusantium ad assumenda atque debitis enim ipsam labore magnam modi molestiae praesentium quia sint, soluta ullam.</p>-->
+          <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi earum esse exercitationem nemo nihil? Accusantium ad assumenda atque debitis enim ipsam labore magnam modi molestiae praesentium quia sint, soluta ullam.</p>-->
         </mat-card-content>
       </mat-card>
       </div>
 
       <div class="">
-        <mat-card class="m-1">
+        <mat-card class="m-1" *ngIf="yiddishContentPresent && yiddishContent[currentYiddishTabIndex].additionalFields.comment">
           <div class="row text-center" style="width: 100%;">
             <div class="col">
               <h5>{{'Comment' | translate}}:</h5>
             </div>
           </div>
           <mat-card-content>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus amet aut cumque ducimus enim et expedita harum in ipsum itaque, necessitatibus officia optio perferendis quidem, repellat repudiandae suscipit, ullam veniam.</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus amet aut cumque ducimus enim et expedita harum in ipsum itaque, necessitatibus officia optio perferendis quidem, repellat repudiandae suscipit, ullam veniam.</p>
+            <p>{{ yiddishContent[currentYiddishTabIndex].additionalFields.comment }}</p>
+            <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus amet aut cumque ducimus enim et expedita harum in ipsum itaque, necessitatibus officia optio perferendis quidem, repellat repudiandae suscipit, ullam veniam.</p>-->
+            <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus amet aut cumque ducimus enim et expedita harum in ipsum itaque, necessitatibus officia optio perferendis quidem, repellat repudiandae suscipit, ullam veniam.</p>-->
           </mat-card-content>
         </mat-card>
       </div>
