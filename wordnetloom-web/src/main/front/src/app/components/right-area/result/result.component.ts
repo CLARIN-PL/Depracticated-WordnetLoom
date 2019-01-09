@@ -9,6 +9,8 @@ import {SidebarService} from '../../../services/sidebar.service';
 import {GraphModalComponent} from '../../graph/graph-modal/graph-modal.component';
 import {MatDialog} from '@angular/material';
 import {GraphService} from "../../graph/graph.service";
+import {AvailableSearchFiltersService} from "../../../services/configuration/available-search-filters.service";
+import {settings} from "cluster";
 
 @Component({
   selector: 'app-result',
@@ -24,7 +26,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   routeParamsSubscription: Subscription = null;
   selectedYiddishVariant: String;
   synsetIdStateSubscription: Subscription = null;
-
+  settingsDict: {};
   modalLabelEmitter = new EventEmitter<string>();
 
   synsetId: string;
@@ -43,13 +45,19 @@ export class ResultComponent implements OnInit, OnDestroy {
               private sidebar: SidebarService,
               private route: ActivatedRoute,
               private graph: GraphService,
+              private dictionaryItems: AvailableSearchFiltersService,
               public graphModal: MatDialog,
+
     ) { }
 
   ngOnInit() {
-    // this.content = [];
     this.content = null;
     this.yiddishContent = [];
+
+    this.settingsDict = this.dictionaryItems.getSearchFields();
+
+    console.log(this.settingsDict);
+
     const searchQueryParams = this.route.snapshot.queryParamMap;
     if (searchQueryParams.keys.length > 0) {
       // @ts-ignore - suppressing non existing error
@@ -115,7 +123,7 @@ export class ResultComponent implements OnInit, OnDestroy {
 
     this.http.getSenseDetails(this.synsetId).subscribe((response) => {
       console.log(response);
-      this.content = new SenseContent(response);
+      this.content = new SenseContent(response, null, this.settingsDict);
       const originalSenseContent = this.content;
 
       this.modalLabelEmitter.emit(this.content.lemma);
@@ -129,7 +137,7 @@ export class ResultComponent implements OnInit, OnDestroy {
         this.http.getYiddishDetails(this.synsetId).subscribe(response => {
           console.log(response);
           for (const yContent of response.rows) {
-            this.yiddishContent.push(new YiddishContent(yContent, originalSenseContent));
+            this.yiddishContent.push(new YiddishContent(yContent, originalSenseContent, this.settingsDict));
           }
           if (response.rows.length > 0 ) {
             this.content = this.yiddishContent[0];

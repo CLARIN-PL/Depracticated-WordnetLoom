@@ -22,7 +22,7 @@ export class YiddishContent {
   currentYiddish;
   additionalFields = {};
 
-  constructor(json: Object, parentSense: SenseContent) {
+  constructor(json: Object, parentSense: SenseContent, dictionarySettings: {}) {
     this.currentYiddish = json; // todo - get rid of that later
 
     // console.log(json);
@@ -35,13 +35,18 @@ export class YiddishContent {
     this.variant = parentSense.variant;
     this.partOfSpeech = parentSense.partOfSpeech;
     this.grammaticalGender = null;
-    this.flag = json['lexicon'];
+    // this.flag = dictionarySettings['lexicon'].searchOptions.find(it => it.id === parentSense.flag).name;
+    this.flag = parentSense.flag;
 
     this.yiddishVariantId = 0;
-
-    this.lemma = json['latin_spelling'] +  ' ' + this.variant + ' (' + json['domain'] + ')'
+    // console.log(dictionarySettings['domainId'].find(it => it.id === json['domain']));
+    // console.log(dictionarySettings);
+    // console.log(parentSense);
+    const domainName = parentSense.domain;//dictionarySettings['domainId'].searchOptions.find(it => it.id === parentSense['domain']).name;
+    // console.log(json['domain']);
+    this.lemma = json['latin_spelling'] +  ' ' + this.variant + ' (' + domainName + ')'
       + ' | ' + json['yiddish_spelling'] + ' | ' +  json['yivo_spelling'];
-    this.grammaticalGender = json['Grammatical gender'];
+    this.grammaticalGender = json['grammatical_gender'].name;
 
     this.setYiddishFields();
 

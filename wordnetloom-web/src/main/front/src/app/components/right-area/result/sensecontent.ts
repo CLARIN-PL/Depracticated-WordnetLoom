@@ -5,6 +5,7 @@ export class SenseContent {
   lemma: string;
   senseId: string;
   variant: number;
+  domain: number;
 
   partOfSpeech;
   grammaticalGender;
@@ -14,15 +15,17 @@ export class SenseContent {
   areas: Array<Object> = [];
   yiddishVariant = 'Default';
 
-  constructor(json: Object, currentYiddishVariant=null) {
+  constructor(json: Object, currentYiddishVariant=null, dictionarySettings: {}) {
     console.log(json);
     this.senseId = json['id'];
     this.variant = json['variant'];
-    this.partOfSpeech = json['part_of_speech'];
+    this.partOfSpeech = dictionarySettings['partOfSpeechId'].searchOptions.find(it => it.id === json['part_of_speech']).name;
     this.grammaticalGender = null;
-    this.flag = json['lexicon'];
+    this.flag = dictionarySettings['lexicon'].searchOptions.find(it => it.id === json['lexicon']).name;
+    // this.domain = json['domain'];
+    this.domain =  dictionarySettings['domainId'].searchOptions.find(it => it.id === json['domain']).name;
 
-    this.lemma = json['lemma'] + ' ' + this.variant + ' (' + json['domain'] + ')';
+    this.lemma = json['lemma'] + ' ' + this.variant + ' (' + this.domain + ')';
     // todo - change
     // if (json['_links']['yiddish']) {
     //   if (currentYiddishVariant && json['Yiddish'][currentYiddishVariant]) {

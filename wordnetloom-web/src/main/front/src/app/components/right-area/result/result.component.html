@@ -19,7 +19,7 @@
           <span *ngIf="content.grammaticalGender" matTooltip="Grammatical gender">,
             {{ content.grammaticalGender }}
           </span>
-          <span *ngIf="content.flag !== 'Yiddish 1.0'" matTooltip="Lexicon">, {{ content.flag }}
+          <span *ngIf="content.flag !== 'Yiddish'" matTooltip="Lexicon">, {{ content.flag }}
           </span>
         </h4>
         <button *ngIf="mobile" class="show-graph-btn" mat-raised-button color="primary" (click)="showGraphModal()">{{'show_graph_modal' | translate}}</button>
