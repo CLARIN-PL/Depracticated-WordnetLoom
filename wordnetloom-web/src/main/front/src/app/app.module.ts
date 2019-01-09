@@ -40,6 +40,7 @@ import {TranslateService} from './services/translate.service';
 import { TranslatePipe } from './pipes/translate.pipe';
 import { GraphModalComponent } from './components/graph/graph-modal/graph-modal.component';
 import { SaveHtmlPipe } from './pipes/save-html.pipe';
+import { YiddishPrimaryFirstPipe } from './pipes/yiddish-primary-first.pipe';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -224,7 +225,8 @@ export function setupTranslateFactory(
     GraphMainComponent,
     TranslatePipe,
     GraphModalComponent,
-    SaveHtmlPipe
+    SaveHtmlPipe,
+    YiddishPrimaryFirstPipe
   ],
   imports: [
     RouterModule.forRoot(

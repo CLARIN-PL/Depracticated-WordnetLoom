@@ -53,14 +53,7 @@ export class SidebarService {
 
         if (self.page === 0) { // first batch loaded
           if (response['rows'].length > 0) {
-            // temporary solution
-            // console.log(response.rows[0]);
-            const splittedLink = response.rows[0]['_links']['self'].split('/');
-            const id = splittedLink[splittedLink.length -1 ];
-            console.log(id);
-            // const id =
-            self.router.navigate(['detail', id]);
-            // self.router.navigate(['detail', response['rows'][0]['id']]);
+            self.router.navigate(['detail', response['rows'][0]['id']]);
           } else {
             self.router.navigate(['detail', 'not_found']);
             self.addSearchOptions({entries: [{id: 'nothing_found', lemma: 'nothing found'}]});

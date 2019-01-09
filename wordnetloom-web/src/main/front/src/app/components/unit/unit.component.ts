@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild, OnDestroy} from '@angular/core';
 import {SidebarService} from '../../services/sidebar.service';
 import {ActivatedRoute} from '@angular/router';
-import {CurrentStateService} from "../../services/current-state.service";
+import {CurrentStateService} from '../../services/current-state.service';
 
 @Component({
   selector: 'app-unit',
@@ -76,6 +76,11 @@ export class UnitComponent implements OnInit, OnDestroy {
     this.state.setSidebarSearchResultPanelOpen(true);
   }
   onSelectedListStyleChange(event) {
-    console.log(event);
+    this.sideBarListStyle = event.value;
+  }
+
+  setYiddishPrimaryFirst(item) {
+    console.log(item);
+    return item;
   }
 }

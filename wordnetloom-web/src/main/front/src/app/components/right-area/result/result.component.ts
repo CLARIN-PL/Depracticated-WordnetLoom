@@ -21,6 +21,8 @@ export class ResultComponent implements OnInit, OnDestroy {
   yiddishContent: YiddishContent[];
   currentYiddishTabIndex = 0;
   routeSubscription: Subscription = null;
+  routeParamsSubscription: Subscription = null;
+  selectedYiddishVariant: String;
   synsetIdStateSubscription: Subscription = null;
 
   modalLabelEmitter = new EventEmitter<string>();
@@ -55,16 +57,20 @@ export class ResultComponent implements OnInit, OnDestroy {
     }
 
     this.synsetId = this.route.snapshot.paramMap.get('lemma_id');
-    console.log(this.synsetId);
+    // console.log(this.synsetId);
     this.state.setResultComponentRouteObserver(this.route);
 
     this.synsetId = this.state.getSynsetId();
-    console.log(this.synsetId);
-    this.updateCurrentSynset(true);
-
-    this.synsetIdStateSubscription = this.state.getSynsetIdEmitter().subscribe(id => {
-      this.synsetId = id;
+    this.yiddishContentPresent = false;
+    if (this.synsetId) {
       this.updateCurrentSynset(true);
+    }
+
+    this.synsetIdStateSubscription = this.state.getSynsetIdEmitter().subscribe(data => {
+      const id = data[0];
+      const graphInitiated = data[1];
+      this.synsetId = id;
+      this.updateCurrentSynset(true, !graphInitiated);
     });
 
 
@@ -79,14 +85,30 @@ export class ResultComponent implements OnInit, OnDestroy {
       }
     });
 
+    this.routeParamsSubscription = this.route.queryParams.subscribe(params => {
+      // console.log(params);
+      this.selectedYiddishVariant = params['variant'];
+      this.checkSelectedTab();
+      // const tabToBeSelected = this.yiddishContent.findIndex(it => it.variant_type === this.selectedYiddishVariant);
+      // if (tabToBeSelected > -1) {
+      //   this.currentYiddishTabIndex = tabToBeSelected;
+      // }
+    });
+
     this.mobile = this.state.getMobileState();
     this.mobileListener = this.state.getMobileStateEmitter().subscribe(state => {
       this.mobile = state;
     });
   }
 
+  private checkSelectedTab() {
+    const tabToBeSelected = this.yiddishContent.findIndex(it => it.variant_type === this.selectedYiddishVariant);
+    if (tabToBeSelected > -1) {
+      this.currentYiddishTabIndex = tabToBeSelected;
+    }
+  }
 
-  private updateCurrentSynset(isSearchFieldEmpty) {
+  private updateCurrentSynset(isSearchFieldEmpty, updateGraph= true) {
     this.content = null;
     this.yiddishContent = [];
     this.yiddishContentPresent = false;
@@ -113,25 +135,18 @@ export class ResultComponent implements OnInit, OnDestroy {
             this.content = this.yiddishContent[0];
             this.yiddishContentPresent = true;
           }
-          // this.yiddishContent = yiddishContent;
+          this.checkSelectedTab();
         });
       } else {
         console.log('yiddish content not present');
       }
-      this.graph.initializeFromSynsetId(this.content.senseId);
+
+      if (updateGraph) {
+        this.graph.initializeFromSynsetId(this.content.senseId);
+      }
     });
     this.http.getSenseRelations(this.synsetId).subscribe(results => {
       this.relations = results;
-      // return;
-      // this.relations = {};
-      //
-      // const mapRelsFcn = (rel) => {
-      //   const key = Object.keys(rel)[0]; // assuming only one key possible!
-      //   return {'key': key, items: rel[key]};
-      // };
-      //
-      // this.relations['incoming'] = results[0].map(mapRelsFcn);
-      // this.relations['outgoing'] = results[1].map(mapRelsFcn);
     });
   }
 
@@ -160,9 +175,6 @@ export class ResultComponent implements OnInit, OnDestroy {
     });
   }
   selectedTabChange(event) {
-    console.log(event);
     this.currentYiddishTabIndex = event.index - 1;
-    console.log(this.currentYiddishTabIndex);
-    // this.selectedTab = 1;
   }
 }

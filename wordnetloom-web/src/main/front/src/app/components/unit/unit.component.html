@@ -24,7 +24,7 @@
               [value]="sideBarListStyle"
               (change)="onSelectedListStyleChange($event)"
               class="button-toggle-selector-names-style" name="fontStyle" aria-label="Font Style">
-              <mat-button-toggle class="small-toggle-btn" value="philological">Philological</mat-button-toggle>
+              <mat-button-toggle class="small-toggle-btn" value="latin">Philological</mat-button-toggle>
               <mat-button-toggle class="small-toggle-btn" [checked]="true" value="yivo">YIVO</mat-button-toggle>
               <mat-button-toggle class="small-toggle-btn" value="yiddish">Yiddish</mat-button-toggle>
             </mat-button-toggle-group>
@@ -32,7 +32,8 @@
           </div>
           <mat-nav-list #sidebarList class="option-list" [ngClass]="(sidebarContent.length < 1)?'':'no-content'" (appScrollBottom)="optionListScrollBottom($event)">
             <div class="no-gutters" *ngFor="let item of sidebarContent">
-              <a mat-list-item
+              <a  *ngIf="!item.variants || item.variants.length === 0"
+                 mat-list-item
                  class="option-list-item"
                  (click)="optionSelected()"
                  [routerLink]="[item.id]"
@@ -45,15 +46,27 @@
                 {{ item.label}}
               </a>
 
-
-              <a *ngFor="let temp of ['Yiddish Primary Lemma', 'Philological', 'Morphological']" mat-list-item
-                 class="option-list-item underlist-item"
+              <a *ngFor="let variant of item.variants | yiddishPrimaryFirst" mat-list-item
+                 class="option-list-item"
+                 [ngClass]="{'underlist-item': variant.variant_type !== 'Yiddish_Primary_Lemma'}"
                  routerLinkActive="active-link"
                  matTooltip="{{item.label.length > 23 ? item.label : '' }}"
+                 (click)="optionSelected()"
+                 [routerLink]="[item.id]"
+                 [queryParams]="{variant: variant.variant_type}"
                  [matTooltipPosition]="'right'"
                  [matTooltipClass]="'mat-tooltip-top-fix'">
-                {{temp}}
+                 {{variant[sideBarListStyle]}} <i *ngIf="variant.variant_type !== 'Yiddish_Primary_Lemma'"> ({{variant.variant_type}})</i>
               </a>
+
+              <!--<a *ngFor="let temp of ['Yiddish Primary Lemma', 'Philological', 'Morphological']" mat-list-item-->
+                 <!--class="option-list-item underlist-item"-->
+                 <!--routerLinkActive="active-link"-->
+                 <!--matTooltip="{{item.label.length > 23 ? item.label : '' }}"-->
+                 <!--[matTooltipPosition]="'right'"-->
+                 <!--[matTooltipClass]="'mat-tooltip-top-fix'">-->
+                <!--{{temp}}-->
+              <!--</a>-->
               <mat-divider></mat-divider>
             </div>
 

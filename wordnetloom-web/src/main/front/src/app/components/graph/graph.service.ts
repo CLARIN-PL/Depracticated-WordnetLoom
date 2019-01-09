@@ -27,7 +27,7 @@ export class GraphService {
       self._lastClickedNodeId.next(e['detail'].node.id);
       const id = e['detail'].node.id;
       if (id !== null) {
-        this.currentStateService.setSynsetId(id);
+        this.currentStateService.setSynsetId(id, true);
       }
     });
 
@@ -51,22 +51,12 @@ export class GraphService {
   // }
 
   initializeFromSynsetId(id) {
-    console.log(id);
-    console.log(this.graph);
-
     this.http.getSenseGraph(id).subscribe(data => {
       this.currentSynsetId = id;
       this.graph.setRootNodeAsLastClickedAutomatically();
-      // this.graph.initializeFromSynsetId(id);
-      this.graph.initFromJson(data);
+      this.graph.initializeFromSynsetId(id);
     });
   }
-
-  // initFromActiveSynsetId() {
-  //   let synsetId = this.currentStateService.getSynsetId();
-  //   console.log(synsetId);
-  //   this.initializeFromSynsetId(synsetId);
-  // }
 
   destroy() {
     this.graph = null;

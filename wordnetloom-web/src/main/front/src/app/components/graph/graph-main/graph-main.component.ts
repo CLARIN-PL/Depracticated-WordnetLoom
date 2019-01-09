@@ -2,6 +2,7 @@ import {AfterViewInit, Component, ElementRef, Inject, Input, OnInit, ViewChild} 
 import {Subscription} from 'rxjs';
 import {GraphService} from '../graph.service';
 import { ElementQueries, ResizeSensor } from 'css-element-queries' ;
+import {HttpService} from "../../../services/http.service";
 
 // declare const GraphCreator: any;
 
@@ -22,7 +23,7 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
   breakPoint = 768;
 
 
-  constructor(@Inject('GraphCreator') public graphCreator: any, private graphService: GraphService) { }
+  constructor(@Inject('GraphCreator') public graphCreator: any, private graphService: GraphService, private http: HttpService) { }
 
   private getSpaceForGraph() {
     const breakPoint = this.breakPoint;
@@ -45,12 +46,25 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
   }
 
   initGraph() {
+    const self = this;
     const graphSpace = this.getSpaceForGraph();
     const height = this.graphContainerDiv.nativeElement.offsetHeight,
       width = this.graphContainerDiv.nativeElement.offsetWidth,
       showSearchBox = false;
 
     this.graph = new this.graphCreator.GraphCreator(this.graphContainerId, showSearchBox, width, height);
+
+    this.graph.api.getGraph = function(senseId, callback) {
+      console.log(senseId, callback);
+      this._getJson(self.http.apiBase + 'senses/{id}/graph'.replace('{id}', senseId), function(json) {
+        if (json) {
+          callback(json);
+        } else {
+          callback(null);
+        }
+      }, true);
+    };
+
     if (this.updateSpaceForGraphAfterInit) {
       setTimeout(() => {
         this.graph.resizeSVG(width + 100, height);

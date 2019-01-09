@@ -28,9 +28,10 @@ export class CurrentStateService {
     this.routeObserver.params.subscribe( params => {
       const synsetId = params['lemma_id'];
 
+      console.log(params);
 
       // if (isNaN(synsetId)) { // todo - check for isNaN unwanted behaviur
-      if (synsetId === null) {
+      if (synsetId === null || synsetId === 'not_found') {
         this.setSynsetId(null);
       } else {
         this.setSynsetId(synsetId);
@@ -67,10 +68,10 @@ export class CurrentStateService {
     this.sidebarSearchResultsPanelOpenEmitter.emit(state);
   }
 
-  setSynsetId(id) {
+  setSynsetId(id, graphInitiated = false) {
     if (this.synsetId !== id) {
       this.synsetId = id;
-      this.synsetIdEmitter.emit(id);
+      this.synsetIdEmitter.emit([id, graphInitiated]);
     }
   }
 }

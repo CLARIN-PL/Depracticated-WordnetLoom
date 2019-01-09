@@ -17,6 +17,7 @@ export class YiddishContent {
 
   fields: Array<Object> = [];
   areas: Array<Object> = [];
+  variant_type: String;
   yiddishVariant = 'Default';
   currentYiddish;
   additionalFields = {};
@@ -26,6 +27,7 @@ export class YiddishContent {
 
     // console.log(json);
     this.yiddishId = json['id'];
+    this.variant_type = json['variant_type'];
     this.yiddishVariant = json['variant_type'].replace(/_/g, ' ');
 
     // this.lemma = json['latin_spelling'] + ' ' + this.variant + ' (' + json['domain'] + ')';
@@ -79,7 +81,7 @@ export class YiddishContent {
       'inflections': {viewName: 'Inflections', type: 'array'},
       'semantic_fields': {viewName: 'Semantic fields', type: 'array'},        // todo -search
       'meaning': {viewName: 'Meaning', type: 'simple'},
-      'style': {viewName: 'Style', type: 'simple'},                           // todo -- missing, ma być object
+      'style': {viewName: 'Style', type: 'object'},                           // todo -- missing, ma być object
       'lexical_characteristic': {viewName: 'Lexical Characteristic', type: 'object'},
       'status': {viewName: 'Rootedness', type: 'object'},
       'etymology': {viewName: 'Etymology', type: 'simple'},
@@ -126,7 +128,8 @@ export class YiddishContent {
           values: [
             {
               name: this.currentYiddish[key],
-              searchQuery: this.getSearchFieldQuery(name, this.currentYiddish[name])
+              // searchQuery: this.getSearchFieldQuery(name, this.currentYiddish[name])
+              searchQuery: this.getSearchFieldQuery(key, this.currentYiddish[key])
             }]};
       } else if (fieldNames[key].type === 'inherited') {
         newField = {

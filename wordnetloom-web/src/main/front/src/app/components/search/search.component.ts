@@ -16,7 +16,7 @@ export class SearchComponent implements OnInit {
   searchFields: {[id: string]: Object} = {};
   searchByString: {} = {};
 
-  searchKeys = ['lexicon', 'partOfSpeechId', 'domainId', 'styleId', 'statusId', 'lexicalCharacteristicId', 'ageId',
+  searchKeys = ['partOfSpeechId', 'domainId', 'styleId', 'statusId', 'lexicalCharacteristicId', 'ageId',
     'sourceId', 'yiddishDomainId', 'domainModifierId'];
 
   ngOnInit() {
