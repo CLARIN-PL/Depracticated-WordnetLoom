@@ -16,8 +16,24 @@ export class SearchComponent implements OnInit {
   searchFields: {[id: string]: Object} = {};
   searchByString: {} = {};
 
-  searchKeys = ['partOfSpeechId', 'domainId', 'styleId', 'statusId', 'lexicalCharacteristicId', 'ageId',
-    'sourceId', 'yiddishDomainId', 'domainModifierId'];
+  advancedSearchKeys = [
+    'partOfSpeech',
+    'style',
+    'yiddishStatus',
+    'lexicalCharacteristic',
+    'age',
+    'source',
+    'yiddishDomain',
+    'yiddishDomainModifier'
+  ];
+
+  basicSearchKeys = [
+    'prefixes',
+    'suffixes',
+    'particle_root',
+    'etymological_root',
+    'particle_constituent'
+  ];
 
   ngOnInit() {
     this.assignSearchByFields();
@@ -33,10 +49,15 @@ export class SearchComponent implements OnInit {
   }
 
   get() {
+    console.log(this.form);
+    console.log(this.form.value);
     return this.form.value;
 
-    const form = this.form.value;
-    delete form['selectedSearchTypes'];  // todo -change, only temporary
-    return form;
+    // const form = this.form.value;
+    // delete form['selectedSearchTypes'];  // todo -change, only temporary
+    // return form;
   }
+
+
+
 }

@@ -1,32 +1,58 @@
 <div class="form-container">
-<form #form="ngForm">
-  <br>
+  <form #form="ngForm">
+    <br>
 
-  <label class="selector-label">Search by string type:</label>
-  <mat-checkbox class="vertical-padding" *ngFor="let opt of searchByString['searchOptions']" [name]="opt.id" ngModel ngModelGroup="selectedSearchTypes">{{ opt.name }}</mat-checkbox>
-
-  <hr>
-
-  <mat-accordion>
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          Narrow down
-        </mat-panel-title>
-        <mat-panel-description>
-          (specify additional filters)
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-
-      <!--abc-->
-      <mat-form-field class="vertical-padding" *ngFor="let searchFieldName of searchKeys">
-        <mat-select placeholder="{{searchFields[searchFieldName]['name'] }}"  [name]="searchFieldName" ngModel>
+    <label class="selector-label">Search by string type:</label>
+    <span>
+      <mat-form-field class="vertical-padding">
+        <mat-select [placeholder]="searchFields['prefix'].name" [name]="searchFields['prefix']['queryString']" ngModel>
           <mat-option [value]=""></mat-option>
-          <mat-option *ngFor="let opt of searchFields[searchFieldName]['searchOptions']" [value]="opt.id"> {{opt.name}} </mat-option>
+          <mat-option *ngFor="let opt of searchFields['prefix']['searchOptions']" [value]="opt.id"> {{opt.name}} </mat-option>
         </mat-select>
       </mat-form-field>
 
-    </mat-expansion-panel>
-  </mat-accordion>
-</form>
+      <mat-form-field class="vertical-padding">
+       <input matInput placeholder="Root" name="particle_root" ngModel>
+      </mat-form-field>
+
+      <mat-form-field class="vertical-padding">
+       <input matInput placeholder="Constituent" name="particle_constituent" ngModel>
+      </mat-form-field>
+
+      <mat-form-field class="vertical-padding">
+        <input matInput placeholder="Etymological root" name="etymological_root" ngModel>
+      </mat-form-field>
+
+      <mat-form-field class="vertical-padding">
+        <mat-select [placeholder]="searchFields['suffix'].name" [name]="searchFields['suffix']['queryString']" ngModel>
+          <mat-option [value]=""></mat-option>
+          <mat-option *ngFor="let opt of searchFields['suffix']['searchOptions']" [value]="opt.id"> {{opt.name}} </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </span>
+
+    <hr>
+
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Narrow down
+          </mat-panel-title>
+          <mat-panel-description>
+            (specify additional filters)
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-form-field class="vertical-padding" *ngFor="let searchFieldName of advancedSearchKeys">
+          <mat-select placeholder="{{searchFields[searchFieldName]['name'] }}" [name]="searchFields[searchFieldName]['queryString']" ngModel>
+            <mat-option [value]=""></mat-option>
+            <mat-option *ngFor="let opt of searchFields[searchFieldName]['searchOptions']"
+                        [value]="opt.id"> {{opt.name}} </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+      </mat-expansion-panel>
+    </mat-accordion>
+  </form>
 </div>

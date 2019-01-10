@@ -22,9 +22,9 @@ export class SenseContent {
     this.grammaticalGender = null;
 
     // todo -- check if fields exist first
-    this.partOfSpeech = dictionarySettings['partOfSpeechId'].searchOptions.find(it => it.id === json['part_of_speech']).name;
+    this.partOfSpeech = dictionarySettings['partOfSpeech'].searchOptions.find(it => it.id === json['part_of_speech']).name;
     this.flag = dictionarySettings['lexicon'].searchOptions.find(it => it.id === json['lexicon']).name;
-    this.domain =  dictionarySettings['domainId'].searchOptions.find(it => it.id === json['domain']).name;
+    this.domain =  dictionarySettings['domain'].searchOptions.find(it => it.id === json['domain']).name;
 
     this.lemma = json['lemma'] + ' ' + this.variant + ' (' + this.domain + ')';
     this.setBasicFields(json);

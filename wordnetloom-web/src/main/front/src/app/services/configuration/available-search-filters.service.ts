@@ -23,15 +23,19 @@ export class AvailableSearchFiltersService {
         {id: 11, name: 'Constituent', description: ''}
       ]};
     this.searchFields['lexicon'] =               {apiOptions: 'lexicons', name: 'Lexicon', queryString: 'lexicon', searchOptions: [] };
-    this.searchFields['partOfSpeechId'] =          {apiOptions: 'dictionaries/parts-of-speech', name: 'Part of Speech', queryString: 'part_of_speech', searchOptions: [] };
-    this.searchFields['domainId'] =                {apiOptions: 'dictionaries/domains', name: 'Domain', queryString: 'domain', searchOptions: [] };
-    this.searchFields['styleId'] =                 {apiOptions: 'dictionaries/styles', name: 'Style', queryString: 'style', searchOptions: [] }; // nie ma
-    this.searchFields['statusId'] =                {apiOptions: 'dictionaries/statuses', name: 'Status', queryString: 'status', searchOptions: [] };
-    this.searchFields['lexicalCharacteristicId'] = {apiOptions: 'dictionaries/lexical-characteristics', name: 'Lexical characteristic', queryString: 'lexicalCharacteristicId', searchOptions: [] }; // nie ma
-    this.searchFields['ageId'] =                   {apiOptions: 'dictionaries/ages', name: 'Age', queryString: 'ageId', searchOptions: [] }; // nie ma
-    this.searchFields['sourceId'] =                {apiOptions: 'dictionaries/sources', name: 'Source', queryString: 'sourceId', searchOptions: [] }; // nie ma
-    this.searchFields['yiddishDomainId'] =         {apiOptions: 'dictionaries/yiddish-domains', name: 'Semantic field', queryString: 'yiddishDomainId', searchOptions: [] }; // nie ma
-    this.searchFields['domainModifierId'] =        {apiOptions: 'dictionaries/yiddish-domain-modifiers', name: 'Semantic field modifier', queryString: 'domainModifierId', searchOptions: [] }; // nie ma
+    this.searchFields['partOfSpeech'] =          {apiOptions: 'dictionaries/parts-of-speech', name: 'Part of Speech', queryString: 'part_of_speech', searchOptions: [] };
+    this.searchFields['domain'] =                {apiOptions: 'dictionaries/domains', name: 'Domain', queryString: 'domain', searchOptions: [] };
+    this.searchFields['style'] =                 {apiOptions: 'dictionaries/styles', name: 'Style', queryString: 'style', searchOptions: [] }; // nie ma
+    this.searchFields['status'] =                {apiOptions: 'dictionaries/statuses', name: 'Status', queryString: 'status', searchOptions: [] };
+    this.searchFields['yiddishStatus'] =         {apiOptions: 'dictionaries/yiddish-statuses', name: 'Status', queryString: 'yiddish_status', searchOptions: [] };
+    this.searchFields['lexicalCharacteristic'] = {apiOptions: 'dictionaries/lexical-characteristics', name: 'Lexical characteristic', queryString: 'lexical_characteristic', searchOptions: [] }; // nie ma
+    this.searchFields['age'] =                   {apiOptions: 'dictionaries/ages', name: 'Age', queryString: 'age', searchOptions: [] }; // nie ma
+    this.searchFields['source'] =                {apiOptions: 'dictionaries/sources', name: 'Source', queryString: 'source', searchOptions: [] }; // nie ma
+    this.searchFields['yiddishDomain'] =         {apiOptions: 'dictionaries/yiddish-domains', name: 'Semantic field', queryString: 'yiddish_domain', searchOptions: [] }; // nie ma
+    this.searchFields['yiddishDomainModifier'] = {apiOptions: 'dictionaries/yiddish-domain-modifiers', name: 'Semantic field modifier', queryString: 'yiddish_domain_modification', searchOptions: [] }; // nie ma
+
+    this.searchFields['prefix'] = {apiOptions: 'dictionaries/prefixes', name: 'Prefix', queryString: 'particle_prefix', searchOptions: [] };
+    this.searchFields['suffix'] = {apiOptions: 'dictionaries/suffixes', name: 'Suffix', queryString: 'particle_suffix', searchOptions: [] };
 
     this.assignSearchFields();
   }
