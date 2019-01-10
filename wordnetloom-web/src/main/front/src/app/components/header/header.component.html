@@ -24,8 +24,8 @@
   </div>
   <div class="collapse navbar-collapse flex-grow-1 text-right" id="myNavbar"  [ngClass]="{ 'show': false }">
     <ul class="navbar-nav ml-auto flex-nowrap">
-      <li class="nav-item">
-        <a routerLink="/about"><button (click)="hideNav()" class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'home_link' | translate}}</button></a>
+      <li class="nav-item" [hidden]="isLandingPage">
+        <a routerLink="/"><button (click)="hideNav()" class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'home_link' | translate}}</button></a>
       </li>
       <li class="nav-item">
         <a routerLink="/about"><button (click)="hideNav()" class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'project_site_link' | translate}}</button></a>
