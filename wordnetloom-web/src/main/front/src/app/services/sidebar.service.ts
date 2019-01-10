@@ -56,7 +56,7 @@ export class SidebarService {
             self.router.navigate(['detail', response['rows'][0]['id']]);
           } else {
             self.router.navigate(['detail', 'not_found']);
-            self.addSearchOptions({entries: [{id: 'nothing_found', lemma: 'nothing found'}]});
+            self.addSearchOptions({rows: [{id: 'not_found', label: 'nothing found'}]});
           }
         }
 

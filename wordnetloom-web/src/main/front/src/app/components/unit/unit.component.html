@@ -53,7 +53,7 @@
                  matTooltip="{{item.label.length > 23 ? item.label : '' }}"
                  (click)="optionSelected()"
                  [routerLink]="[item.id]"
-                 [queryParams]="{variant: variant.variant_type}"
+                 [queryParams]="{variant: variant.id}"
                  [matTooltipPosition]="'right'"
                  [matTooltipClass]="'mat-tooltip-top-fix'">
                  {{variant[sideBarListStyle]}} <i *ngIf="variant.variant_type !== 'Yiddish_Primary_Lemma'"> ({{variant.variant_type}})</i>

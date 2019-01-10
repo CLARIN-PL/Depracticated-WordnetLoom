@@ -3,6 +3,7 @@ import {UnitComponent} from '../../unit/unit.component';
 import {SenseContent} from "./sensecontent";
 
 export class YiddishContent {
+  id: number;
   yiddishId: number;
 
 
@@ -25,28 +26,26 @@ export class YiddishContent {
   constructor(json: Object, parentSense: SenseContent, dictionarySettings: {}) {
     this.currentYiddish = json; // todo - get rid of that later
 
-    // console.log(json);
+    this.id = json['id'];
     this.yiddishId = json['id'];
     this.variant_type = json['variant_type'];
     this.yiddishVariant = json['variant_type'].replace(/_/g, ' ');
 
-    // this.lemma = json['latin_spelling'] + ' ' + this.variant + ' (' + json['domain'] + ')';
-    // this.variant = json['variant_type'];
     this.variant = parentSense.variant;
     this.partOfSpeech = parentSense.partOfSpeech;
     this.grammaticalGender = null;
-    // this.flag = dictionarySettings['lexicon'].searchOptions.find(it => it.id === parentSense.flag).name;
     this.flag = parentSense.flag;
 
     this.yiddishVariantId = 0;
-    // console.log(dictionarySettings['domainId'].find(it => it.id === json['domain']));
-    // console.log(dictionarySettings);
-    // console.log(parentSense);
-    const domainName = parentSense.domain;//dictionarySettings['domainId'].searchOptions.find(it => it.id === parentSense['domain']).name;
-    // console.log(json['domain']);
+    const domainName = parentSense.domain;
+
     this.lemma = json['latin_spelling'] +  ' ' + this.variant + ' (' + domainName + ')'
       + ' | ' + json['yiddish_spelling'] + ' | ' +  json['yivo_spelling'];
-    this.grammaticalGender = json['grammatical_gender'].name;
+
+    this.grammaticalGender = '';
+    if (json['grammatical_gender']) {
+      this.grammaticalGender = json['grammatical_gender'].name;
+    }
 
     this.setYiddishFields();
 

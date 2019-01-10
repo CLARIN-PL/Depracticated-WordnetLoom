@@ -8,9 +8,9 @@ import {YiddishContent} from './yiddishcontent';
 import {SidebarService} from '../../../services/sidebar.service';
 import {GraphModalComponent} from '../../graph/graph-modal/graph-modal.component';
 import {MatDialog} from '@angular/material';
-import {GraphService} from "../../graph/graph.service";
-import {AvailableSearchFiltersService} from "../../../services/configuration/available-search-filters.service";
-import {settings} from "cluster";
+import {GraphService} from '../../graph/graph.service';
+import {AvailableSearchFiltersService} from '../../../services/configuration/available-search-filters.service';
+
 
 @Component({
   selector: 'app-result',
@@ -24,14 +24,16 @@ export class ResultComponent implements OnInit, OnDestroy {
   currentYiddishTabIndex = 0;
   routeSubscription: Subscription = null;
   routeParamsSubscription: Subscription = null;
-  selectedYiddishVariant: String;
+  selectedYiddishVariant: Number;
   synsetIdStateSubscription: Subscription = null;
   settingsDict: {};
+  synsetData: {} = null;
   modalLabelEmitter = new EventEmitter<string>();
 
   synsetId: string;
   yiddishContentPresent = false;
-  relations = {};
+  senseLoaded = false;
+  relations: Object = null;
   footerFirstTabSelected = true;
   showNothingFoundMsg = false;
   rightPanelHidden = false;
@@ -71,14 +73,27 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.synsetId = this.state.getSynsetId();
     this.yiddishContentPresent = false;
     if (this.synsetId) {
+      this.showNothingFoundMsg = false;
       this.updateCurrentSynset(true);
+    } else {
+      this.synsetData = null;
+      this.relations = null;
+      this.senseLoaded = false;
+      this.showNothingFoundMsg = true;
     }
 
     this.synsetIdStateSubscription = this.state.getSynsetIdEmitter().subscribe(data => {
       const id = data[0];
       const graphInitiated = data[1];
       this.synsetId = id;
-      this.updateCurrentSynset(true, !graphInitiated);
+
+      if (!id) { // nothing found
+        this.showNothingFoundMsg = true;
+      } else {
+        this.senseLoaded = false;
+        this.showNothingFoundMsg = false;
+        this.updateCurrentSynset(true, !graphInitiated);
+      }
     });
 
 
@@ -94,13 +109,8 @@ export class ResultComponent implements OnInit, OnDestroy {
     });
 
     this.routeParamsSubscription = this.route.queryParams.subscribe(params => {
-      // console.log(params);
-      this.selectedYiddishVariant = params['variant'];
+      this.selectedYiddishVariant = +params['variant'];
       this.checkSelectedTab();
-      // const tabToBeSelected = this.yiddishContent.findIndex(it => it.variant_type === this.selectedYiddishVariant);
-      // if (tabToBeSelected > -1) {
-      //   this.currentYiddishTabIndex = tabToBeSelected;
-      // }
     });
 
     this.mobile = this.state.getMobileState();
@@ -110,7 +120,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   private checkSelectedTab() {
-    const tabToBeSelected = this.yiddishContent.findIndex(it => it.variant_type === this.selectedYiddishVariant);
+    const tabToBeSelected = this.yiddishContent.findIndex(it => it.id === this.selectedYiddishVariant);
     if (tabToBeSelected > -1) {
       this.currentYiddishTabIndex = tabToBeSelected;
     }
@@ -122,20 +132,17 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.yiddishContentPresent = false;
 
     this.http.getSenseDetails(this.synsetId).subscribe((response) => {
-      console.log(response);
       this.content = new SenseContent(response, null, this.settingsDict);
+      this.senseLoaded = true;
       const originalSenseContent = this.content;
 
       this.modalLabelEmitter.emit(this.content.lemma);
       this.sidebar.assignSingleOptionIfEmpty(this.content);
 
-      // if (response['Yiddish'].length > 0) {
 
+      // load yiddish content
       if (response['_links']['yiddish']) {
-        console.log('yiddish content present');
-        // getting yiddish contnent
         this.http.getYiddishDetails(this.synsetId).subscribe(response => {
-          console.log(response);
           for (const yContent of response.rows) {
             this.yiddishContent.push(new YiddishContent(yContent, originalSenseContent, this.settingsDict));
           }
@@ -145,8 +152,17 @@ export class ResultComponent implements OnInit, OnDestroy {
           }
           this.checkSelectedTab();
         });
-      } else {
-        console.log('yiddish content not present');
+      }
+
+      if (response['_links']['synset']) {
+        this.http.getAbsolute(response['_links']['synset']).subscribe(synsetResponse => {
+          this.synsetData = synsetResponse;
+          if (this.synsetData['senses']) {
+            this.synsetData['senses'].splice(
+              this.synsetData['senses'].findIndex(sense => {sense['id'] = this.content.senseId; }), 1
+            );
+          }
+        });
       }
 
       if (updateGraph) {

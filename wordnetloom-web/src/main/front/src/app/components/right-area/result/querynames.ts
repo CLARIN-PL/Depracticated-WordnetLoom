@@ -14,7 +14,7 @@ export class QueryNames {
     'sources': 'source',
     'age': 'age',
     'grammatical_gender': 'grammatical_gender',
-    'status': 'status',
+    'status': 'yiddish_status',
     'lexical_characteristic': 'lexical_characteristic',
     'etymological_root': 'etymological_root'
     // 'todo': 'yiddishDomainId',

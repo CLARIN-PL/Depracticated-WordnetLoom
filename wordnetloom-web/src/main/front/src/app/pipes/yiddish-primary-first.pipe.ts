@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class YiddishPrimaryFirstPipe implements PipeTransform {
 
   transform(value: any[], args?: any): any {
-    if (!value) {
+    if (!value || !value[0]) {
       return value;
     }
     if (value[0].variant_type === 'Yiddish_Primary_Lemma') {

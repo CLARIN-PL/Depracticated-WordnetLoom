@@ -46,8 +46,6 @@ export class UnitComponent implements OnInit, OnDestroy {
           this.recordsInfo = data.recordsStr;
         });
     }, 20);
-
-    console.log(this.sidebarContent);
   }
 
   optionListScrollBottom(event) {

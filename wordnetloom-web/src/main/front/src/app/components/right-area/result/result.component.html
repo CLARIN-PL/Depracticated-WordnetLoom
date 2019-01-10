@@ -22,7 +22,8 @@
           <span *ngIf="content.flag !== 'Yiddish'" matTooltip="Lexicon">, {{ content.flag }}
           </span>
         </h4>
-        <button *ngIf="mobile" class="show-graph-btn" mat-raised-button color="primary" (click)="showGraphModal()">{{'show_graph_modal' | translate}}</button>
+        <button *ngIf="mobile" class="show-graph-btn" mat-raised-button color="primary"
+                (click)="showGraphModal()">{{'show_graph_modal' | translate}}</button>
         <!--<button class="show-graph-btn" mat-raised-button color="primary" (click)="showGraphModal()">{{'show_graph_modal' | translate}}</button>-->
       </div>
     </div>
@@ -35,41 +36,72 @@
   <!--GRAPH AREA END-->
 
   <!--SENSE DETAIL AREA-->
-  <div class="col-sm-12 col-md-4 sense-detail-col" [ngClass]="{'d-none': rightPanelHidden}" *ngIf="yiddishContent.length > 0">
+  <div *ngIf="senseLoaded" class="col-sm-12 col-md-4 sense-detail-col" [ngClass]="{'d-none': rightPanelHidden}">
     <h5 class="text-center">{{'selected_units_details' | translate}}:</h5>
     <mat-card class="mb-2">
-    <h6 class="text-center" *ngIf="!yiddishContentPresent">{{'no_data_avaliable_for_unit' | translate}}</h6>
-    <mat-tab-group *ngIf="yiddishContentPresent" [selectedIndex]="currentYiddishTabIndex + 1" (selectedTabChange)="selectedTabChange($event)">
-      <mat-tab class="tab-title" label="Variants: " disabled></mat-tab>
-      <mat-tab *ngFor="let content of yiddishContent" [label]="content.yiddishVariant">
-        <div class="row area-row">
-          <div *ngFor="let area of content.areas" class="col-12 area-row">
-            <div class="card full-width">
-              <div class="card-body">
-                <table class="table slim">
-                  <tr *ngFor="let field of area.fields">
-                    <td><b>{{ field.name }}:</b></td>
-                    <td>
-                      <span  *ngFor="let link of field.values">
+
+      <mat-tab-group *ngIf="yiddishContentPresent" [selectedIndex]="currentYiddishTabIndex + 1"
+                     (selectedTabChange)="selectedTabChange($event)">
+        <mat-tab class="tab-title" label="Variants: " disabled></mat-tab>
+        <mat-tab *ngFor="let content of yiddishContent" [label]="content.yiddishVariant">
+          <div class="row area-row">
+            <div *ngFor="let area of content.areas" class="col-12 area-row">
+              <div class="card full-width">
+                <div class="card-body">
+                  <table class="table slim">
+                    <tr *ngFor="let field of area.fields">
+                      <td><b>{{ field.name }}:</b></td>
+                      <td>
+                      <span *ngFor="let link of field.values">
                         <p *ngIf='!link.searchQuery'>{{ link.name }}</p>
                         <a *ngIf='link.searchQuery' routerLink="/detail/search_params" [queryParams]="link.searchQuery">
                           {{ link.name }}
                         </a>
                       </span>
-                    </td>
-                  </tr>
-                </table>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
+        </mat-tab>
+      </mat-tab-group>
+
+      <span *ngIf="!yiddishContentPresent && senseLoaded">
+            <div class="card full-width">
+                <div class="card-body">
+                  <table class="table slim">
+                    <tr>
+                      <td *ngIf="content['lemma']"><b>Latin spelling</b></td>
+                      <td>{{ content['lemma'] }}</td>
+                    </tr>
+                    <tr *ngIf="content['flag']">
+                      <td><b>Lexicon</b></td>
+                      <td>{{ content['flag'] }}</td>
+                    </tr>
+                    <tr *ngIf="content['domain']">
+                      <td><b>Domain</b></td>
+                      <td>{{ content['domain'] }}</td>
+                    </tr>
+                    <tr *ngIf="content['partOfSpeech']">
+                      <td><b>Part of speech</b></td>
+                      <td>{{ content['partOfSpeech'] }}</td>
+                    </tr>
+                    <tr *ngIf="content['definition']">
+                      <td><b>Definition</b></td>
+                      <td>{{ content['definition'] }}</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+      </span>
+
     </mat-card>
 
     <div class="d-flex flex-wrap">
       <div class="flex-fill">
-        <div *ngIf="relations['incoming'].length > 0 || relations['outgoing'].length > 0" class="">
+        <div *ngIf="senseLoaded && synsetData && synsetData['senses'].length > 0">
           <mat-card class="m-1">
             <div class="row text-center" style="width: 100%;">
               <div class="col">
@@ -78,168 +110,95 @@
             </div>
             <div class="card full-width small-margin relations-area">
               <div class="card-body relations-content">
-                <span>syninim, </span>
-                <span>syninim, </span>
-                <span>syninim, </span>
-                <span>syninim</span>
+                <span *ngFor="let sense of synsetData['senses']; let isLast=last">
+                  <a [routerLink]="'/detail/' + sense['id']">{{ sense['label']}}</a>
+                  <span *ngIf="!isLast">, </span>
+                </span>
               </div>
             </div>
           </mat-card>
         </div>
       </div>
 
-    <div class="d-flex flex-wrap">
-      <div class="flex-fill">
-    <div *ngIf="relations['incoming'].length > 0 || relations['outgoing'].length > 0" class="">
-      <mat-card class="m-1">
-      <div class="row text-center" style="width: 100%;">
-        <div class="col">
-          <h5>{{'lexical_relations' | translate}}:</h5>
+      <div class="d-flex flex-wrap">
+        <div class="flex-fill">
+          <div
+            *ngIf="senseLoaded && relations && (relations['incoming'].length > 0 || relations['outgoing'].length > 0)">
+            <mat-card class="m-1">
+              <div class="row text-center" style="width: 100%;">
+                <div class="col">
+                  <h5>{{'lexical_relations' | translate}}:</h5>
+                </div>
+              </div>
+              <div class="card full-width small-margin relations-area">
+                <div class="card-body relations-content">
+                  <ul class="tree">
+                    <li *ngIf="relations['incoming'].length > 0">
+                      {{ 'incoming_relations' | translate }}:
+                      <ul>
+                        <li
+                          *ngFor="let relation of relations['incoming']; let isLast=last">{{ relation.relation_type_name }}
+                          :
+                          <ul>
+                            <li *ngFor="let member of relation.rows; let isLast=last">
+                              <a [routerLink]="'/detail/' + member['sense_id']">{{ member['label']}}</a>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                    <li *ngIf="relations['outgoing'].length > 0">
+                      {{ 'outgoing_relations' | translate }}:
+                      <ul>
+                        <li
+                          *ngFor="let relation of relations['outgoing']; let isLast=last">{{ relation.relation_type_name }}
+                          :
+                          <ul>
+                            <li *ngFor="let member of relation.rows; let isLast=last">
+                              <a [routerLink]="'/detail/' + member['sense_id']">{{ member['label']}}</a>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </mat-card>
+          </div>
+        </div>
+        <!--<div class="p-2 flex-fill bd-highlight align-content-around flex-wrap">-->
+        <div class="d-flex flex-column flex-wrap">
+          <div class="">
+            <mat-card class="m-1"
+                      *ngIf="yiddishContentPresent && yiddishContent[currentYiddishTabIndex].additionalFields.context">
+              <div class="row text-center" style="width: 100%;">
+                <div class="col">
+                  <h5>{{'Context' | translate}}:</h5>
+                </div>
+              </div>
+              <mat-card-content>
+                <p>{{ yiddishContent[currentYiddishTabIndex].additionalFields.context }}</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <div class="">
+            <mat-card class="m-1"
+                      *ngIf="yiddishContentPresent && yiddishContent[currentYiddishTabIndex].additionalFields.comment">
+              <div class="row text-center" style="width: 100%;">
+                <div class="col">
+                  <h5>{{'Comment' | translate}}:</h5>
+                </div>
+              </div>
+              <mat-card-content>
+                <p>{{ yiddishContent[currentYiddishTabIndex].additionalFields.comment }}</p>
+              </mat-card-content>
+            </mat-card>
+          </div>
         </div>
       </div>
-      <div class="card full-width small-margin relations-area">
-        <div class="card-body relations-content">
-            <ul class="tree">
-              <li *ngIf="relations['incoming'].length > 0">
-                {{ 'incoming_relations' | translate }}:
-                <ul>
-                  <li *ngFor="let relation of relations['incoming']; let isLast=last">{{ relation.relation_type_name }}:
-                    <ul>
-                      <li *ngFor="let member of relation.rows; let isLast=last">
-                        <a [routerLink]="'/detail/' + member['target']">{{ member['label']}}</a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </li>
-              <li *ngIf="relations['outgoing'].length > 0">
-                {{ 'outgoing_relations' | translate }}:
-                <ul>
-                  <li *ngFor="let relation of relations['outgoing']; let isLast=last">{{ relation.relation_type_name }}:
-                    <ul>
-                      <li *ngFor="let member of relation.rows; let isLast=last">
-                        <a [routerLink]="'/detail/' + member['target']">{{ member['label']}}</a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-        </div>
-      </div>
-      </mat-card>
+      <!--GRAPH AREA END -->
     </div>
-      </div>
-      <!--<div class="p-2 flex-fill bd-highlight align-content-around flex-wrap">-->
-      <div class="d-flex flex-column flex-wrap">
-      <div class="">
-      <mat-card class="m-1" *ngIf="yiddishContentPresent && yiddishContent[currentYiddishTabIndex].additionalFields.context">
-        <div class="row text-center" style="width: 100%;">
-          <div class="col">
-            <h5>{{'Context' | translate}}:</h5>
-          </div>
-        </div>
-        <mat-card-content>
-          <p>{{ yiddishContent[currentYiddishTabIndex].additionalFields.context }}</p>
-          <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi earum esse exercitationem nemo nihil? Accusantium ad assumenda atque debitis enim ipsam labore magnam modi molestiae praesentium quia sint, soluta ullam.</p>-->
-          <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi earum esse exercitationem nemo nihil? Accusantium ad assumenda atque debitis enim ipsam labore magnam modi molestiae praesentium quia sint, soluta ullam.</p>-->
-          <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi earum esse exercitationem nemo nihil? Accusantium ad assumenda atque debitis enim ipsam labore magnam modi molestiae praesentium quia sint, soluta ullam.</p>-->
-        </mat-card-content>
-      </mat-card>
-      </div>
-
-      <div class="">
-        <mat-card class="m-1" *ngIf="yiddishContentPresent && yiddishContent[currentYiddishTabIndex].additionalFields.comment">
-          <div class="row text-center" style="width: 100%;">
-            <div class="col">
-              <h5>{{'Comment' | translate}}:</h5>
-            </div>
-          </div>
-          <mat-card-content>
-            <p>{{ yiddishContent[currentYiddishTabIndex].additionalFields.comment }}</p>
-            <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus amet aut cumque ducimus enim et expedita harum in ipsum itaque, necessitatibus officia optio perferendis quidem, repellat repudiandae suscipit, ullam veniam.</p>-->
-            <!--<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus amet aut cumque ducimus enim et expedita harum in ipsum itaque, necessitatibus officia optio perferendis quidem, repellat repudiandae suscipit, ullam veniam.</p>-->
-          </mat-card-content>
-        </mat-card>
-      </div>
-      </div>
-
-      <!--<div class="flex-fill">-->
-        <!--<mat-card class="m-1">-->
-           <!--<table class="table slim">-->
-            <!--<tr>-->
-              <!--<td><b>Context:</b></td>-->
-            <!--</tr>-->
-            <!--<tr>-->
-              <!--<td>-->
-                <!--<ul>-->
-                  <!--<li>context</li>-->
-                  <!--<li>context</li>-->
-                  <!--<li>context</li>-->
-                  <!--<li>context</li>-->
-                  <!--<li>context</li>-->
-                <!--</ul>-->
-              <!--</td>-->
-            <!--</tr>-->
-            <!--<tr>-->
-              <!--<th><b>Comment:</b></th>-->
-            <!--</tr>-->
-            <!--<tr>-->
-              <!--<td>-->
-                <!--<ul>-->
-                  <!--<li>Comment</li>-->
-                  <!--<li>Comment</li>-->
-                  <!--<li>Comment</li>-->
-                  <!--<li>Comment</li>-->
-                  <!--<li>Comment</li>-->
-                <!--</ul>-->
-              <!--</td>-->
-            <!--</tr>-->
-           <!--</table>-->
-        <!--</mat-card>-->
-      <!--</div>-->
   </div>
-  <!--GRAPH AREA END -->
-</div>
-
-
-  <!--FOOTER AREA-->
-  <!--FOOTER AREA END-->
-
-
-  <!--<app-sense-visualization [visible]="true" [senseId]="synsetId"></app-sense-visualization>-->
-</div>
-
-
-<!--<div class="row footer" [ngClass]="{'dropped':footerPanelHidden}">-->
-  <!--<button class="expand-btn expand-footer" (click)="footerPanelHidden= !footerPanelHidden">-->
-    <!--<i *ngIf="!footerPanelHidden" class="fa fa-chevron-down"></i>-->
-    <!--<i *ngIf="footerPanelHidden" class="fa fa-chevron-up"></i>-->
-  <!--</button>-->
-
-  <!--<div class="col animate-flex no-gutters footer-content">-->
-    <!--<mat-tab-group class="vertical" [ngClass]="{'first-selected': footerFirstTabSelected}"-->
-                   <!--(selectedIndexChange)="footerTabChange($event)">-->
-      <!--<mat-tab label="Context">-->
-        <!--<ul>-->
-          <!--<li>context</li>-->
-          <!--<li>context</li>-->
-          <!--<li>context</li>-->
-          <!--<li>context</li>-->
-          <!--<li>context</li>-->
-        <!--</ul>-->
-      <!--</mat-tab>-->
-      <!--<mat-tab label="Comment">-->
-        <!--<ul>-->
-          <!--<li>comment</li>-->
-          <!--<li>comment</li>-->
-          <!--<li>comment</li>-->
-          <!--<li>comment</li>-->
-          <!--<li>comment</li>-->
-          <!--<li>comment</li>-->
-        <!--</ul>-->
-      <!--</mat-tab>-->
-    <!--</mat-tab-group>-->
-
-  <!--</div>-->
 </div>

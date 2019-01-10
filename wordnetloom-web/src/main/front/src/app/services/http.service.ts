@@ -34,6 +34,9 @@ export class HttpService {
       .finally(() => {});
   }
 
+  getAbsolute(uri) {
+    return this.get('', uri);
+  }
 
   getSenseDetails(id) {
     return this.get('senses/' + id);
