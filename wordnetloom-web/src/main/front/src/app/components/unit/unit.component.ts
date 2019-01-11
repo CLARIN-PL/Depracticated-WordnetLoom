@@ -65,20 +65,13 @@ export class UnitComponent implements OnInit, OnDestroy {
   }
 
   hideSideBar() {
-    // this.showingSideBar = false;
     this.state.setSidebarSearchResultPanelOpen(false);
   }
 
   showSideBar() {
-    // this.showingSideBar = true;
     this.state.setSidebarSearchResultPanelOpen(true);
   }
   onSelectedListStyleChange(event) {
     this.sideBarListStyle = event.value;
-  }
-
-  setYiddishPrimaryFirst(item) {
-    console.log(item);
-    return item;
   }
 }

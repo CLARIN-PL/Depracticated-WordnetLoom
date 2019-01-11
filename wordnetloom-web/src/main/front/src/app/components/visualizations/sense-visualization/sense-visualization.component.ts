@@ -1,6 +1,6 @@
-import {Component, HostListener, Input, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, HostListener, Input, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-import {environment} from "../../../../environments/environment";
+import {environment} from '../../../../environments/environment';
 
 declare const GraphCreator: any;
 
@@ -10,7 +10,7 @@ declare const GraphCreator: any;
   styleUrls: ['./sense-visualization.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class SenseVisualizationComponent implements OnInit {
+export class SenseVisualizationComponent implements OnInit, OnDestroy {
   @Input() senseId: string;
   @Input() visible: boolean;
 
@@ -40,20 +40,19 @@ export class SenseVisualizationComponent implements OnInit {
       height = graphSpace[1],
       showSearchBox = false;
     this.graph = new GraphCreator('graph-container', showSearchBox, width, height);
-    // this.graph.initializeFromSynsetId('11e9134f-edac-32ef-bd32-7824af8ebbbd');
     this.graph.initializeFromSynsetId(this.senseId);
 
-    this.graph.eventDispatch.on('ordinary-node-mousedown', function(e){
+    this.graph.eventDispatch.on('ordinary-node-mousedown', function(e) {
       if (e) {
         this._lastClickedNodeId.next(e.nodeId);
       }
     });
   }
 
-  onDestroy() {
+  ngOnDestroy() {
     this.lastClickedNodeIdSubscription.unsubscribe();
-    this.graph = null;
     this.graph.destroy();
+    this.graph = null;
   }
 
 }

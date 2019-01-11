@@ -166,6 +166,7 @@ export class ResultComponent implements OnInit, OnDestroy {
       }
 
       if (updateGraph) {
+        console.log(this.content.senseId);
         this.graph.initializeFromSynsetId(this.content.senseId);
       }
     });
@@ -194,7 +195,8 @@ export class ResultComponent implements OnInit, OnDestroy {
       width: '99%',
       data: {
         topLabel: topLabel,
-        topLabelEmitter: this.modalLabelEmitter
+        topLabelEmitter: this.modalLabelEmitter,
+        senseId: this.content.senseId
       }
     });
   }

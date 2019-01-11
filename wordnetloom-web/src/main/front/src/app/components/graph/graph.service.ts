@@ -53,8 +53,10 @@ export class GraphService {
   initializeFromSynsetId(id) {
     this.http.getSenseGraph(id).subscribe(data => {
       this.currentSynsetId = id;
-      this.graph.setRootNodeAsLastClickedAutomatically();
-      this.graph.initializeFromSynsetId(id);
+      if (this.graph) { // see if graph is initialized
+        this.graph.setRootNodeAsLastClickedAutomatically();
+        this.graph.initializeFromSynsetId(id);
+      }
     });
   }
 

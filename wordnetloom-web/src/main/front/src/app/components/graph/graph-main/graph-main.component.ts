@@ -14,6 +14,7 @@ import {HttpService} from "../../../services/http.service";
 export class GraphMainComponent implements OnInit, AfterViewInit {
   @Input() showMiniMap = true;
   @Input() updateSpaceForGraphAfterInit = false;
+  @Input() senseId = null;
   // generating random id for new instances of graph
   graphContainerId = 'graph-container' + Math.random().toString(36).substr(2);
   graph: any;
@@ -76,9 +77,12 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
       this.graph.showMiniMap(.25, null, '5px', null, null, '5px');
     }
     this.graphService.initService(this.graph);
-    // this.graphService.initializeFromSynsetId('11e9134f-edac-32ef-bd32-7824af8ebbbd');
-
     this.graphContainerDiv.nativeElement.onresize = this.graphContainerResized;
+
+    // initialize graph
+    if (this.senseId) {
+      this.graphService.initializeFromSynsetId(this.senseId);
+    }
   }
 
   onDestroy() {

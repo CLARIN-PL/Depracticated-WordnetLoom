@@ -3,6 +3,7 @@ import {MAT_DIALOG_DATA} from '@angular/material';
 import {Subscription} from 'rxjs';
 
 export interface ModalOptions {
+  senseId: string;
   topLabel: string;
   topLabelEmitter: EventEmitter<string>;
 }
@@ -13,7 +14,7 @@ export interface ModalOptions {
   styleUrls: ['./graph-modal.component.css']
 })
 export class GraphModalComponent implements OnInit, OnDestroy {
-
+  senseId: string;
   selectedUnitName: string = '';
   selectedUnitNameSubscription: Subscription;
 
@@ -22,6 +23,7 @@ export class GraphModalComponent implements OnInit, OnDestroy {
   ngOnInit() {
     console.log(this.data);
     this.selectedUnitName = this.data.topLabel;
+    this.senseId = this.data.senseId;
     this.selectedUnitNameSubscription = this.data.topLabelEmitter.subscribe(
       label => {
         this.selectedUnitName = label;
