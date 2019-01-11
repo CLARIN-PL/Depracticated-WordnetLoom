@@ -5,7 +5,7 @@
     <label class="selector-label">Search by string type:</label>
     <span>
       <mat-form-field class="vertical-padding">
-        <mat-select [placeholder]="searchFields['prefix'].name" [name]="searchFields['prefix']['queryString']" ngModel>
+        <mat-select [placeholder]="searchFields['prefix']['name']" [name]="searchFields['prefix']['queryString']" ngModel>
           <mat-option [value]=""></mat-option>
           <mat-option *ngFor="let opt of searchFields['prefix']['searchOptions']" [value]="opt.id"> {{opt.name}} </mat-option>
         </mat-select>
@@ -24,7 +24,7 @@
       </mat-form-field>
 
       <mat-form-field class="vertical-padding">
-        <mat-select [placeholder]="searchFields['suffix'].name" [name]="searchFields['suffix']['queryString']" ngModel>
+        <mat-select [placeholder]="searchFields['suffix']['name']" [name]="searchFields['suffix']['queryString']" ngModel>
           <mat-option [value]=""></mat-option>
           <mat-option *ngFor="let opt of searchFields['suffix']['searchOptions']" [value]="opt.id"> {{opt.name}} </mat-option>
         </mat-select>

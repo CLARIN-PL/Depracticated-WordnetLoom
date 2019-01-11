@@ -14,7 +14,6 @@ export class SearchComponent implements OnInit {
   constructor(private http: HttpService, private availableSearchFilters: AvailableSearchFiltersService) { }
 
   searchFields: {[id: string]: Object} = {};
-  searchByString: {} = {};
 
   advancedSearchKeys = [
     'partOfSpeech',
@@ -36,12 +35,7 @@ export class SearchComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.assignSearchByFields();
     this.assignSearchFields();
-  }
-
-  private assignSearchByFields() {
-    this.searchByString = this.availableSearchFilters.getSearchByString();
   }
 
   private assignSearchFields() {
@@ -49,13 +43,7 @@ export class SearchComponent implements OnInit {
   }
 
   get() {
-    console.log(this.form);
-    console.log(this.form.value);
     return this.form.value;
-
-    // const form = this.form.value;
-    // delete form['selectedSearchTypes'];  // todo -change, only temporary
-    // return form;
   }
 
 
