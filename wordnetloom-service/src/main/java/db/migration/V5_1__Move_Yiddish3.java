@@ -7,10 +7,15 @@ import java.util.*;
 
 public class V5_1__Move_Yiddish3 implements JdbcMigration{
 
-    final String DIRECTIONS = "LEFT=Syn_PWN-plWN,Hipo_PWN-plWN,Hiper_PWN-plWN,mczęść_PWN-plWN,melement_PWN-plWN,mmateriał_PWN-plWN,hczęść_PWN-plWN,helement_PWN-plWN,hmateriał_PWN-plWN,pot_odp_PWN-plWN,międzyjęzykowa_synonimia_częściowa_PWN-plWN,międzyjęzykowa_synonimia_międzyrejestrowa_PWN-plWN,pot_odp_PWN-plWN,holonimia,holonimia_czasownikowa,wielokrotność,uprzedniość,presupozycja,gradacyjność,Part_holonym,Member_holonym,Substance_holonym,Domain_of_synset_-_TOPIC,Domain_of_synset_-_REGION,Domain_of_synset_-_USAGE,Verb_Group,Attribute\n" +
+    final String SYNSETS_DIRECTIONS = "LEFT=Syn_PWN-plWN,Hipo_PWN-plWN,Hiper_PWN-plWN,mczęść_PWN-plWN,melement_PWN-plWN,mmateriał_PWN-plWN,hczęść_PWN-plWN,helement_PWN-plWN,hmateriał_PWN-plWN,pot_odp_PWN-plWN,międzyjęzykowa_synonimia_częściowa_PWN-plWN,międzyjęzykowa_synonimia_międzyrejestrowa_PWN-plWN,pot_odp_PWN-plWN,holonimia,holonimia_czasownikowa,wielokrotność,uprzedniość,presupozycja,gradacyjność,Part_holonym,Member_holonym,Substance_holonym,Domain_of_synset_-_TOPIC,Domain_of_synset_-_REGION,Domain_of_synset_-_USAGE,Verb_Group,Attribute\n" +
             "RIGHT=Syn_plWN-PWN,Hipo_plWN-PWN,Hiper_plWN-PWN,mczęść_plWN-PWN,melement_plWN-PWN,mmateriał_plWN-PWN,hczęść_plWN-PWN,helement_plWN-PWN,hmateriał_plWN-PWN,pot_odp_plWN-PWN,międzyjęzykowa_synonimia_częściowa_plWN-PWN,międzyjęzykowa_synonimia_międzyrejestrowa_plWN-PWN,bliskoznaczność,meronimia,meronimia_czasownikowa,kauzacja,procesywność,stanowość,inchoatywność,fuzzynimia_synsetów,określnik,Part_meronym,Member_meronym,Substance_meronym,Member_of_this_domain_-_TOPIC,Member_of_this_domain_-_REGION,Member_of_this_domain_-_USAGE,Similar_to,Entailment,Cause,has_hypernymy,has_hyponym,is_related_to,entails,causes,has_component_meronym,has_member_meronym,has_portion_meronym,has_substance_meronym,synonimia_Y-Pol,synonimia_Pol-Y\n" +
             "BOTTOM=hiperonimia,egzemplarz,Hypernym,Instance_Hypernym\n" +
             "TOP=hiponimia,typ,mieszkaniec,wartość_cechy,Hyponym,Instance_Hyponym,sumo_instance";
+
+    final String SENSES_DIRECTIONS = "LEFT=synonimia międzyparadygmatyczna V-N,synonimia międzyparadygmatyczna ADJ-N,synonimia międzyparadygmatyczna ADV-ADJ,synonimia międzyparadygmatyczna dla relacyjnych,synonimia międzyparadygmatyczna N-V,synonimia międzyparadygmatyczna N-ADJ,Derivation>Noun,Derivation>Verb,Derivation>Adj,Derivation>Adv\n" +
+            "RIGHT=stopień wyższy,stopień najwyższy,derywacyjność,zawieranie_roli,agens|subiekt,pacjens|obiekt,narzędzie,miejsce,wytwór|rezultat,czas,podtyp nieokreślony,zawieranie agensa|subiektu,zawieranie pacjensa|obiektu,zawieranie czasu,zawieranie miejsca,zawieranie narzędzia,zawieranie wytworu | rezultatu,podtyp nieokreślony,agens przy niewyrażonym predykacie,miejsce przy niewyrażonym predykacie,wytwór | rezultat przy niewyrażonym predykacie,nosiciel_stanu|cechy,stan|cecha,podobieństwo,charakteryzowanie,subiekt,obiekt,instrument,miejsce,czas,rezultat,kauzacja,potencjalność,habitualność,kwantytatywność,ocena,rola: materiał,Derivationally related form,Common_Etymological_Root,Equivalence_Polish,Equivalence_German,Equivalence_English\n" +
+            "BOTTOM=żeńskość,deminutywność,istota młoda,ekspresywność | augmentatywność,nacechowanie-intensywność Adj-Adj,fuzzynimia,Also see,Participle of verb,Pertainym (pertains to noun),has_participle,has_pertainym,Polysemy_Lexical\n" +
+            "TOP=zwrotność,wzajemność,aspektowość wtórna DK-NDK,aspektowość wtórna NDK-DK,aspektowość czysta DK-NDK,aspektowość czysta NDK-DK,antonimia komplementarna,forma kanoniczna,konwersja,antonimia właściwa,Antonym,has_antonym,Antonymy";
 
     final String COLORS = "meronimia=#0000ff\n" +
             "Part_meronym=#0000ff\n" +
@@ -160,28 +165,34 @@ public class V5_1__Move_Yiddish3 implements JdbcMigration{
             if(relationType != null){
                 relationType.setColor(color);
             } else {
-                System.out.println("Ojoj, zepsuło się");
+                System.out.println("Nie znaleziono relacji: " + relation);
             }
         }
         return relations;
     }
 
     private Map<String, RelationType> setRelationsDirections(Map<String, RelationType> relations) {
-        String[] lines = DIRECTIONS.split(System.getProperty("line.separator"));
+        String[] synsetsDirectionLines = SYNSETS_DIRECTIONS.split(System.getProperty("line.separator"));
+        String[] sensesDirectionLines = SENSES_DIRECTIONS.split(System.getProperty("line.separator"));
+        Map<String, RelationType> resultRelations = setRelationDirections(relations, synsetsDirectionLines);
+        resultRelations = setRelationDirections(relations, sensesDirectionLines);
+        return resultRelations;
+    }
+
+    private Map<String, RelationType> setRelationDirections(Map<String, RelationType> relations, String[] directionLines) {
         String direction;
-        for(String line : lines){
+        for(String line: directionLines) {
             String[] split = line.split("=");
             direction = split[0];
             String[] values = split[1].split(",");
-            for(String value : values){
+            for(String value : values) {
                 RelationType relationType = relations.get(value);
-                if(relationType != null){
+                if(relationType != null) {
                     relationType.setNodePosition(direction);
                 } else {
-                    System.out.println("Coś poszło nie tak");
+                    System.out.println("Nie znaleziono relacji: " + value);
                 }
             }
-
         }
         return relations;
     }
