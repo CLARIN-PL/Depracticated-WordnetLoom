@@ -61,19 +61,41 @@ export class HttpService {
 
     const getLemmas = (searchedTerm, maxItemsToFind) => {
       const found = [];
-      let somethingFound = false; // using this to optimize search function since lemmas are sorted
-      for (let i = 0; i < lemmas.length; i++) {
-        if (lemmas[i].startsWith(searchedTerm.toLowerCase())) {
-          found.push(lemmas[i]);
-          somethingFound = true;
-          if (found.length >= maxItemsToFind) { // check if list ready
-            return found;
+      let somethingFound = false; // using this to optimize search function since lemmas are sorted,
+
+      // true if searched term is yiddish
+      const yiddishTerm = (searchedTerm.search(/[\u0590-\u05FF]/) >= 0);
+
+      if (yiddishTerm) {
+        for (let i = 0; i < lemmas['yiddish'].length; i++) {
+        // for (const lemma of lemmas['yiddish']) {
+          if (lemmas['yiddish'][i].startsWith(searchedTerm.toLowerCase())) {
+            found.push({'lemma': lemmas['yiddish'][i], 'spelling': 'Yiddish'});
+            somethingFound = true;
+            if (found.length >= maxItemsToFind) { // check if list ready
+              return found;
+            }
           }
-        } else if (somethingFound) {
-          // fired when something was found recently but not in current iter
-          return found;
+          // else if (somethingFound) {
+          //   // fired when something was found recently but not in current iter
+          //   return found;
+          // }
         }
       }
+
+      // for (let i = 0; i < lemmas.length; i++) {
+      //   if (lemmas[i].startsWith(searchedTerm.toLowerCase())) {
+      //     found.push(lemmas[i]);
+      //     somethingFound = true;
+      //     if (found.length >= maxItemsToFind) { // check if list ready
+      //       return found;
+      //     }
+      //   } else if (somethingFound) {
+      //     // fired when something was found recently but not in current iter
+      //     return found;
+      //   }
+      // }
+      console.log(found);
       return found;
     };
     return Observable.of(getLemmas(term, 10)).debounceTime(750);
