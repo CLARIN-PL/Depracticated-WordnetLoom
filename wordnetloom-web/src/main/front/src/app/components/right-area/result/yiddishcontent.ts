@@ -133,7 +133,6 @@ export class YiddishContent {
           values: [
             {
               name: this.currentYiddish[key],
-              // searchQuery: this.getSearchFieldQuery(name, this.currentYiddish[name])
               searchQuery: this.getSearchFieldQuery(key, this.currentYiddish[key])
             }]};
       } else if (fieldNames[key].type === 'inherited') {
@@ -197,15 +196,20 @@ export class YiddishContent {
               })
             };
           } else {
-              newField = {
-                name: fieldNames[key].viewName, values: this.currentYiddish[key].map(function (it) {
-                  return {
-                    name: it.name,
-                    searchQuery: self.getSearchFieldQuery(key, it.id)
-                  };
-                })
-              };
+            newField = {
+              name: fieldNames[key].viewName, values: this.currentYiddish[key].map(function (it) {
+                return {
+                  name: it.name,
+                  searchQuery: self.getSearchFieldQuery(key, it.id)
+                };
+              })
+            };
           }
+      }
+
+      // don't show lexical characteristic if it's empty
+      if (newField.name === 'Lexical Characteristic' && newField.values.length === 0) {
+        continue;
       }
 
       fields.push(newField);
