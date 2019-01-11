@@ -81,7 +81,7 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
 
     // initialize graph
     if (this.senseId) {
-      this.graphService.initializeFromSynsetId(this.senseId);
+      this.graphService.initializeFromSenseId(this.senseId);
     }
   }
 

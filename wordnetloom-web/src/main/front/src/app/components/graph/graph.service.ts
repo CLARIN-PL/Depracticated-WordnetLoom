@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
+import {Location} from '@angular/common';
 import {BehaviorSubject} from 'rxjs';
 import {Router} from '@angular/router';
 import {CurrentStateService} from '../../services/current-state.service';
-import {HttpService} from "../../services/http.service";
+import {HttpService} from '../../services/http.service';
 
 @Injectable({providedIn: 'root'})
 export class GraphService {
@@ -15,11 +16,13 @@ export class GraphService {
 
   constructor(private currentStateService: CurrentStateService,
               private router: Router,
-              private http: HttpService) { }
+              private http: HttpService,
+              private location: Location) { }
 
   initService(graph) {
     const self = this;
     self.graph = graph;
+    self.graph.setRootNodeAsLastClickedAutomatically();
     self.graph.setVisualSettings('yiddish');
 
     document.addEventListener('nodeClicked', e => {
@@ -27,13 +30,13 @@ export class GraphService {
       self._lastClickedNodeId.next(e['detail'].node.id);
       const id = e['detail'].node.id;
       if (id !== null) {
-        this.currentStateService.setSynsetId(id, true);
+        this.currentStateService.setSenseId(id, true);
       }
     });
 
     self.lastClickedNodeObservable.subscribe(id => {
       if (id !== null) {
-        this.router.navigate(['detail', id]);
+        this.location.go('/detail/' + id);
       }
     });
   }
@@ -43,18 +46,17 @@ export class GraphService {
   }
 
   // changeBaseWordWithLemma(lemma) {
-  //   this.graph.initializeFromSynsetId(10000);
+  //   this.graph.initializeFromSenseId(10000);
   // }
 
   // getSynsetFromSenseId(id) {
   //   this.graph.getSynsetFromSenseId(id);
   // }
 
-  initializeFromSynsetId(id) {
+  initializeFromSenseId(id) {
     this.http.getSenseGraph(id).subscribe(data => {
       this.currentSynsetId = id;
       if (this.graph) { // see if graph is initialized
-        this.graph.setRootNodeAsLastClickedAutomatically();
         this.graph.initializeFromSynsetId(id);
       }
     });

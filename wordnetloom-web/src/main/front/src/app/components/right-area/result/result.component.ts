@@ -25,12 +25,12 @@ export class ResultComponent implements OnInit, OnDestroy {
   routeSubscription: Subscription = null;
   routeParamsSubscription: Subscription = null;
   selectedYiddishVariant: Number;
-  synsetIdStateSubscription: Subscription = null;
+  senseIdStateSubscription: Subscription = null;
   settingsDict: {};
   synsetData: {} = null;
   modalLabelEmitter = new EventEmitter<string>();
 
-  synsetId: string;
+  senseId: string;
   yiddishContentPresent = false;
   senseLoaded = false;
   relations: Object = null;
@@ -58,23 +58,21 @@ export class ResultComponent implements OnInit, OnDestroy {
 
     this.settingsDict = this.dictionaryItems.getSearchFields();
 
-    console.log(this.settingsDict);
-
     const searchQueryParams = this.route.snapshot.queryParamMap;
     if (searchQueryParams.keys.length > 0) {
       // @ts-ignore - suppressing non existing error
       this.sidebar.loadOptionsFromParameters(searchQueryParams.params);
     }
 
-    this.synsetId = this.route.snapshot.paramMap.get('lemma_id');
-    // console.log(this.synsetId);
+    this.senseId = this.route.snapshot.paramMap.get('lemma_id');
+    // console.log(this.senseId);
     this.state.setResultComponentRouteObserver(this.route);
 
-    this.synsetId = this.state.getSynsetId();
+    this.senseId = this.state.getSenseId();
     this.yiddishContentPresent = false;
-    if (this.synsetId) {
+    if (this.senseId) {
       this.showNothingFoundMsg = false;
-      this.updateCurrentSynset(true);
+      this.updateCurrentSense(true);
     } else {
       this.synsetData = null;
       this.relations = null;
@@ -82,17 +80,16 @@ export class ResultComponent implements OnInit, OnDestroy {
       this.showNothingFoundMsg = true;
     }
 
-    this.synsetIdStateSubscription = this.state.getSynsetIdEmitter().subscribe(data => {
+    this.senseIdStateSubscription = this.state.getSenseIdEmitter().subscribe(data => {
       const id = data[0];
       const graphInitiated = data[1];
-      this.synsetId = id;
-
+      this.senseId = id;
       if (!id) { // nothing found
         this.showNothingFoundMsg = true;
       } else {
         this.senseLoaded = false;
         this.showNothingFoundMsg = false;
-        this.updateCurrentSynset(true, !graphInitiated);
+        this.updateCurrentSense(true, !graphInitiated);
       }
     });
 
@@ -126,12 +123,12 @@ export class ResultComponent implements OnInit, OnDestroy {
     }
   }
 
-  private updateCurrentSynset(isSearchFieldEmpty, updateGraph= true) {
+  private updateCurrentSense(isSearchFieldEmpty, updateGraph= true) {
     this.content = null;
     this.yiddishContent = [];
     this.yiddishContentPresent = false;
 
-    this.http.getSenseDetails(this.synsetId).subscribe((response) => {
+    this.http.getSenseDetails(this.senseId).subscribe((response) => {
       this.content = new SenseContent(response, null, this.settingsDict);
       this.senseLoaded = true;
       const originalSenseContent = this.content;
@@ -142,7 +139,7 @@ export class ResultComponent implements OnInit, OnDestroy {
 
       // load yiddish content
       if (response['_links']['yiddish']) {
-        this.http.getYiddishDetails(this.synsetId).subscribe(response => {
+        this.http.getYiddishDetails(this.senseId).subscribe(response => {
           for (const yContent of response.rows) {
             this.yiddishContent.push(new YiddishContent(yContent, originalSenseContent, this.settingsDict));
           }
@@ -159,25 +156,26 @@ export class ResultComponent implements OnInit, OnDestroy {
           this.synsetData = synsetResponse;
           if (this.synsetData['senses']) {
             this.synsetData['senses'].splice(
-              this.synsetData['senses'].findIndex(sense => {sense['id'] = this.content.senseId; }), 1
+              this.synsetData['senses'].findIndex(sense => sense['id'] === this.content.senseId), 1
             );
           }
+          console.log(this.synsetData);
         });
       }
 
       if (updateGraph) {
         console.log(this.content.senseId);
-        this.graph.initializeFromSynsetId(this.content.senseId);
+        this.graph.initializeFromSenseId(this.content.senseId);
       }
     });
-    this.http.getSenseRelations(this.synsetId).subscribe(results => {
+    this.http.getSenseRelations(this.senseId).subscribe(results => {
       this.relations = results;
     });
   }
 
   ngOnDestroy() {
     this.routeSubscription.unsubscribe();
-    this.synsetIdStateSubscription.unsubscribe();
+    this.senseIdStateSubscription.unsubscribe();
   }
 
   footerTabChange(idx) {
@@ -189,6 +187,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     if (this.content) {
       topLabel = this.content.lemma;
     }
+    this.graph.initializeFromSenseId(this.senseId);
     this.graphModal.open(GraphModalComponent, {
       maxWidth: '100vw',
       height: '99%',
@@ -196,7 +195,7 @@ export class ResultComponent implements OnInit, OnDestroy {
       data: {
         topLabel: topLabel,
         topLabelEmitter: this.modalLabelEmitter,
-        senseId: this.content.senseId
+        senseId: this.senseId
       }
     });
   }

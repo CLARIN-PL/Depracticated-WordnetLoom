@@ -21,7 +21,6 @@ export class GraphModalComponent implements OnInit, OnDestroy {
   constructor(@Inject(MAT_DIALOG_DATA) public data: ModalOptions) { }
 
   ngOnInit() {
-    console.log(this.data);
     this.selectedUnitName = this.data.topLabel;
     this.senseId = this.data.senseId;
     this.selectedUnitNameSubscription = this.data.topLabelEmitter.subscribe(

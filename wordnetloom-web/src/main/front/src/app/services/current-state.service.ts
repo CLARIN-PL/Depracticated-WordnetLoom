@@ -3,13 +3,13 @@ import {ActivatedRoute} from '@angular/router';
 
 @Injectable()
 export class CurrentStateService {
-  private synsetId = null;
+  private senseId = null;
   private navbarOpenState: boolean;
   private sidebarSearchResultsPanelOpen: boolean;
   private mobileStateBreakPoint = 768;
   private mobileState: boolean;
 
-  private synsetIdEmitter = new EventEmitter<any>();
+  private senseIdEmitter = new EventEmitter<any>();
   private navbarOpenEmitter = new EventEmitter<boolean>();
   private sidebarSearchResultsPanelOpenEmitter = new EventEmitter<boolean>();
   private mobileStateEmitter = new EventEmitter<boolean>();
@@ -26,15 +26,12 @@ export class CurrentStateService {
   setResultComponentRouteObserver(routeObserver) {
     this.routeObserver = routeObserver;
     this.routeObserver.params.subscribe( params => {
-      const synsetId = params['lemma_id'];
+      const senseId = params['lemma_id'];
 
-      console.log(params);
-
-      // if (isNaN(synsetId)) { // todo - check for isNaN unwanted behaviur
-      if (synsetId === null || synsetId === 'not_found') {
-        this.setSynsetId(null);
+      if (senseId === null || senseId === 'not_found') {
+        this.setSenseId(null, true);
       } else {
-        this.setSynsetId(synsetId);
+        this.setSenseId(senseId);
       }
     });
   }
@@ -47,14 +44,14 @@ export class CurrentStateService {
     }
   }
   // emitter getters
-  getSynsetIdEmitter(): EventEmitter<any> {return this.synsetIdEmitter; }
+  getSenseIdEmitter(): EventEmitter<any> {return this.senseIdEmitter; }
   getNavbarOpenEmitter(): EventEmitter<any> {return this.navbarOpenEmitter; }
   getSidebarRearchResultsPanelOpenEmitter(): EventEmitter<any> {return this.sidebarSearchResultsPanelOpenEmitter; }
   getMobileStateEmitter(): EventEmitter<any> {return this.mobileStateEmitter; }
 
   // state getters
   getMobileState(): boolean { return this.mobileState; }
-  getSynsetId() { return this.synsetId; }
+  getSenseId() { return this.senseId; }
 
 
   // setters
@@ -68,10 +65,10 @@ export class CurrentStateService {
     this.sidebarSearchResultsPanelOpenEmitter.emit(state);
   }
 
-  setSynsetId(id, graphInitiated = false) {
-    if (this.synsetId !== id) {
-      this.synsetId = id;
-      this.synsetIdEmitter.emit([id, graphInitiated]);
+  setSenseId(id, graphInitiated = false) {
+    if (this.senseId !== id) {
+      this.senseId = id;
+      this.senseIdEmitter.emit([id, graphInitiated]);
     }
   }
 }
