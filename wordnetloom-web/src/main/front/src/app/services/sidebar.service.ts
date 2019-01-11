@@ -46,7 +46,6 @@ export class SidebarService {
 
     self.http.getSearchOptions(this.form, this.page, this.batchSize).subscribe(
       (response) => {
-        console.log(response);
         self.addSearchOptions(response);
         self.totalRecords = response['size'];
         self.recordsLoaded = Math.min(self.recordsLoaded + self.batchSize, self.totalRecords);
@@ -87,19 +86,16 @@ export class SidebarService {
   }
 
   getList() {
-    console.log(this.list);
     return this.list;
   }
 
   assignSingleOptionIfEmpty(content) {
     if (this.list.length === 0) {
       this.list = [];
-      console.log(content);
       this.list.push({
         label: content.lemma,
         id: content.senseId
       });
-      console.log(this.list);
       this.listObservable.next(this.list);
     }
   }

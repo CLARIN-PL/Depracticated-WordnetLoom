@@ -216,6 +216,5 @@ export class YiddishContent {
     }
 
     this.areas.push({name: 'Yiddish specific', fields: fields});
-    console.log(this);
   }
 }
