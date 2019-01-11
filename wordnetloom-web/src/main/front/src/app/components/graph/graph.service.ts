@@ -26,7 +26,6 @@ export class GraphService {
     self.graph.setVisualSettings('yiddish');
 
     document.addEventListener('nodeClicked', e => {
-      console.log('clicked node', e['detail'].node);
       self._lastClickedNodeId.next(e['detail'].node.id);
       const id = e['detail'].node.id;
       if (id !== null) {

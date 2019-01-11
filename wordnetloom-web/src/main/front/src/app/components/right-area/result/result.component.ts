@@ -65,7 +65,6 @@ export class ResultComponent implements OnInit, OnDestroy {
     }
 
     this.senseId = this.route.snapshot.paramMap.get('lemma_id');
-    // console.log(this.senseId);
     this.state.setResultComponentRouteObserver(this.route);
 
     this.senseId = this.state.getSenseId();
@@ -159,12 +158,10 @@ export class ResultComponent implements OnInit, OnDestroy {
               this.synsetData['senses'].findIndex(sense => sense['id'] === this.content.senseId), 1
             );
           }
-          console.log(this.synsetData);
         });
       }
 
       if (updateGraph) {
-        console.log(this.content.senseId);
         this.graph.initializeFromSenseId(this.content.senseId);
       }
     });

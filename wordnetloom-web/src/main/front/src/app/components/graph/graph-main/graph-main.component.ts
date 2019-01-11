@@ -56,7 +56,6 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
     this.graph = new this.graphCreator.GraphCreator(this.graphContainerId, showSearchBox, width, height);
 
     this.graph.api.getGraph = function(senseId, callback) {
-      console.log(senseId, callback);
       this._getJson(self.http.apiBase + 'senses/{id}/graph'.replace('{id}', senseId), function(json) {
         if (json) {
           callback(json);

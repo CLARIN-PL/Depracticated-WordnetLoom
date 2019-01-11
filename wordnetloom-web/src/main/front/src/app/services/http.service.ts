@@ -15,13 +15,8 @@ export class HttpService {
 
   constructor(private http: Http) {}
 
-  private handleError() {
-    // todo
-  }
 
   private get(uri, base?: string): Observable<any> {
-    // this.slimLoadingBarService.start();
-
     // const headers = new Headers(options);
     // const opt = new RequestOptions({ headers: headers});
 
@@ -59,15 +54,11 @@ export class HttpService {
 
   getSenseRelations(senseId) {
     return this.get('senses/' + senseId + '/relations');
-    const incoming = this.get('sense/' + senseId + '/relations/incoming').map(res => res);
-    const outgoing = this.get('sense/' + senseId + '/relations/outgoing').map(res => res);
-
-    return Observable.forkJoin([incoming, outgoing]);
   }
 
   getSearchAutocomplete(term) {
-    // todo- get from search
-    // const avaliable_lemmas = lemmas.filter((it) => it.startsWith(term));
+    // todo- add other search options (yiddish, yivo, philological)
+
     const getLemmas = (searchedTerm, maxItemsToFind) => {
       const found = [];
       let somethingFound = false; // using this to optimize search function since lemmas are sorted
@@ -86,9 +77,6 @@ export class HttpService {
       return found;
     };
     return Observable.of(getLemmas(term, 10)).debounceTime(750);
-    return Observable.of(lemmas.filter((it) => it.startsWith(term))).debounceTime(750);
-    // return Observable.of(new Object()).mapTo(avaliable_lemmas);
-    // return Observable.of(new Object()).mapTo([term, 'abc', 'cde']);
   }
   getLang(lang) {
     const langPath = `assets/i18n/${lang || 'en'}.json`;

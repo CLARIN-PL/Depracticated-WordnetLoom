@@ -16,7 +16,13 @@ export class QueryNames {
     'grammatical_gender': 'grammatical_gender',
     'status': 'yiddish_status',
     'lexical_characteristic': 'lexical_characteristic',
-    'etymological_root': 'etymological_root'
+    'etymological_root': 'etymological_root',
+    'semantic_fields': 'yiddish_domain',
+    'particle_prefix': 'particle_prefix',
+    'particle_root': 'particle_root',
+    'particle_suffix': 'particle_suffix',
+    'particle_constituent': 'particle_constituent',
+
     // 'todo': 'yiddishDomainId',
     // 'todo': 'domainModifierId',
   };

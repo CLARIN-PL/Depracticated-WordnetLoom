@@ -1,6 +1,5 @@
 import {QueryNames} from './querynames';
-import {UnitComponent} from '../../unit/unit.component';
-import {SenseContent} from "./sensecontent";
+import {SenseContent} from './sensecontent';
 
 export class YiddishContent {
   id: number;
@@ -13,6 +12,7 @@ export class YiddishContent {
   variant: number;
 
   partOfSpeech;
+  part_of_speech;
   grammaticalGender;
   flag;
 
@@ -33,6 +33,7 @@ export class YiddishContent {
 
     this.variant = parentSense.variant;
     this.partOfSpeech = parentSense.partOfSpeech;
+    this.part_of_speech = parentSense.partOfSpeech;
     this.grammaticalGender = null;
     this.flag = parentSense.flag;
 
@@ -91,7 +92,7 @@ export class YiddishContent {
       'etymology': {viewName: 'Etymology', type: 'simple'},
       'age': {viewName: 'Age', type: 'object'},
       'sources': {viewName: 'Sources', type: 'array'},
-      'etymological_root': {viewName: 'Etymological Root', type: 'simple'}, // todo search need OBJECT
+      'etymological_root': {viewName: 'Etymological Root', type: 'simple'},
       'particles': {viewName: 'Morphology', type: 'array'},
       'transcriptions': {viewName: 'Transcriptions', type: 'array'}
       // Philological Spelling,
@@ -140,7 +141,7 @@ export class YiddishContent {
           name: fieldNames[key].viewName,
           values: [
             {
-              name: this[key],
+              name: this.partOfSpeech,
               searchQuery: this.getSearchFieldQuery(name, this.currentYiddish[name])
             }]};
       } else if (fieldNames[key].type === 'object') {
@@ -177,77 +178,39 @@ export class YiddishContent {
                 };
               })
             };
-        } else {
+          } else if (key === 'semantic_fields' && this.currentYiddish['semantic_fields'].length > 0) {
             newField = {
               name: fieldNames[key].viewName, values: this.currentYiddish[key].map(function (it) {
                 return {
-                  name: it.name,
-                  searchQuery: self.getSearchFieldQuery(key, it.id)
+                  name: it['domain'].name,
+                  searchQuery: self.getSearchFieldQuery(key, it['domain'].id)
                 };
               })
             };
-        }
+          } else if (key === 'particles' && this.currentYiddish['particles'].length > 0) {
+            newField = {
+              name: fieldNames[key].viewName, values: this.currentYiddish[key].map(function (it) {
+                return {
+                  name: it.type + ': ' + it.value,
+                  searchQuery: self.getSearchFieldQuery('particle_' + it.type, it.id ? it.id : it.value)
+                };
+              })
+            };
+          } else {
+              newField = {
+                name: fieldNames[key].viewName, values: this.currentYiddish[key].map(function (it) {
+                  return {
+                    name: it.name,
+                    searchQuery: self.getSearchFieldQuery(key, it.id)
+                  };
+                })
+              };
+          }
       }
 
       fields.push(newField);
-
-      // if (this.currentYiddish.length > 0) {
-      //   const newField = {
-      //     name: name,
-      //     values: [
-      //       {
-      //         name: this.currentYiddish[name],
-      //         searchQuery: this.getSearchFieldQuery(name, this.currentYiddish[name])
-      //       }]};
-      //   fields.push(newField);
-      // }
     }
 
-    // transcription
-    // if (this.currentYiddish['transcriptions'].length > 0) {
-    //   fields.push({
-    //     name: 'transcriptions', values: this.currentYiddish['transcriptions'].map(function (it) {
-    //       return {
-    //         name: it.name + ': ' + it.phonography,
-    //         searchQuery: self.getSearchFieldQuery('transcriptions', it.id)
-    //       };
-    //     })
-    //   });
-    // }
-    // source
-    // if (this.currentYiddish['sources'].length > 0) {
-    //   const srcs = this.currentYiddish['sources'].map(function (it) {
-    //     return {
-    //       name: it.name,
-    //       searchQuery:  self.getSearchFieldQuery('sources', it.id)
-    //     };
-    //   });
-    //   fields.push({name: 'sources', values: srcs});
-    // }
-    //
-    // //  Inflection
-    // if (this.currentYiddish['inflections'].length > 0) {
-    //   // field name contains prefix
-    //   fields.push({
-    //     name: 'inflections',
-    //     values: this.currentYiddish['inflections'].map(function (it) {
-    //       return {name: 'prefix: ' + it.name + ', value:' + it.text,
-    //         searchQuery: self.getSearchFieldQuery('Inflection', it.id)
-    //       };
-    //     })
-    //   });
-    // }
-    // semantic fied -- todo
-    // if (this.currentYiddish['Semantic filed'].length > 0) {
-    //   fields.push({
-    //     name: 'Semantic filed',
-    //     values: this.currentYiddish['Semantic filed'].map(function (it) {
-    //       return {name: it.domain + ' (' + it.modifier + ')',
-    //         searchQuery: self.getSearchFieldQuery('Semantic filed', it.id)
-    //       };
-    //     })
-    //   });
-    // }
     this.areas.push({name: 'Yiddish specific', fields: fields});
     console.log(this);
   }

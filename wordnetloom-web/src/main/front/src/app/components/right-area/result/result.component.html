@@ -52,11 +52,12 @@
                     <tr *ngFor="let field of area.fields">
                       <td><b>{{ field.name }}:</b></td>
                       <td>
-                      <span *ngFor="let link of field.values">
+                      <span *ngFor="let link of field.values; let isLast= last">
                         <p *ngIf='!link.searchQuery'>{{ link.name }}</p>
                         <a *ngIf='link.searchQuery' routerLink="/detail/search_params" [queryParams]="link.searchQuery">
                           {{ link.name }}
                         </a>
+                        <span *ngIf="!isLast"><br></span>
                       </span>
                       </td>
                     </tr>
