@@ -60,13 +60,6 @@ const appRoutes: Routes = [
   ]}
 ];
 
-const yiddish_characters = [
-    'פ', 'ם', 'ן', 'ו', 'ט', 'א', 'ר', 'ק', '׳', '״', ',','ף', 'ך',
-    'ל', 'ח', 'י', 'ע', 'כ', 'ג', 'ד', 'ש', '.', 'ץ', 'ת', 'צ', 'מ',
-    'נ', 'ה', 'ב', 'ס', 'ז', 'אַ', 'אָ', 'בֿ', 'וּ', 'יִ', 'יי', 'ײַ', 'כּ',
-    'פּ', 'פֿ', 'שׂ', 'תּ', '־'
-  ];
-
 const customLayouts: IKeyboardLayouts = {
   ...keyboardLayouts,
   'yiddish_original': {
