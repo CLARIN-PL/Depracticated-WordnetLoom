@@ -14,7 +14,7 @@ export class AvailableSearchFiltersService {
       'domain':                {apiOptions: 'dictionaries/domains', name: 'Domain', queryString: 'domain', searchOptions: [] },
       'style':                 {apiOptions: 'dictionaries/styles', name: 'Style', queryString: 'style', searchOptions: [] },
       'status':                {apiOptions: 'dictionaries/statuses', name: 'Status', queryString: 'status', searchOptions: [] },
-      'yiddishStatus':         {apiOptions: 'dictionaries/yiddish-statuses', name: 'Status', queryString: 'yiddish_status', searchOptions: [] },
+      'yiddishStatus':         {apiOptions: 'dictionaries/yiddish-statuses', name: 'Rootedness', queryString: 'yiddish_status', searchOptions: [] },
       'lexicalCharacteristic': {apiOptions: 'dictionaries/lexical-characteristics', name: 'Lexical characteristic', queryString: 'lexical_characteristic', searchOptions: [] },
       'age':                   {apiOptions: 'dictionaries/ages', name: 'Age', queryString: 'age', searchOptions: [] },
       'source':                {apiOptions: 'dictionaries/sources', name: 'Source', queryString: 'source', searchOptions: [] },
@@ -22,6 +22,7 @@ export class AvailableSearchFiltersService {
       'yiddishDomainModifier': {apiOptions: 'dictionaries/yiddish-domain-modifiers', name: 'Semantic field modifier', queryString: 'yiddish_domain_modification', searchOptions: [] },
       'prefix':                {apiOptions: 'dictionaries/prefixes', name: 'Prefix', queryString: 'particle_prefix', searchOptions: [] },
       'suffix':                {apiOptions: 'dictionaries/suffixes', name: 'Suffix', queryString: 'particle_suffix', searchOptions: [] },
+      'gramaticalGender':      {apiOptions: 'dictionaries/grammatical-genders', name: 'Grammatical qualifiers', queryString: 'grammatical_gender', searchOptions: [] },
     };
     this.assignSearchFields();
   }
