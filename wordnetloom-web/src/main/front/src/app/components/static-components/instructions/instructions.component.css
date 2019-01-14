@@ -1,0 +1,40 @@
+.app-container{
+  padding-top: 119px;
+  height: 100%;
+}
+.offset-top{
+  padding-top: 10px;
+}
+.no-padding{
+  padding: 0;
+}
+ol { counter-reset: item }
+ol > li { display: block }
+ol > li:before {
+  font-size: 1.1em;
+  color: #2a4aa3;
+  content: counters(item, ".") ". ";
+  counter-increment: item
+}
+.list-item-title{
+  display: inline-block;
+}
+
+.color-red{
+  font-weight: 700;
+  color: red;
+}
+
+.color-green{
+  font-weight: 700;
+  color: green;
+}
+
+.color-blue{
+  font-weight: 700;
+  color: blue;
+}
+.color-black{
+  font-weight: 700;
+  color: black;
+}

@@ -28,7 +28,6 @@ import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-b
 import {SidebarService} from './services/sidebar.service';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { HomeComponent } from './components/home/home.component';
-import { AboutComponent } from './components/about/about.component';
 import { UnitComponent } from './components/unit/unit.component';
 import { ScrollBottomDirective } from './directives/scroll-bottom.directive';
 import { SenseVisualizationComponent } from './components/visualizations/sense-visualization/sense-visualization.component';
@@ -36,15 +35,23 @@ import { IKeyboardLayouts, KeyboardClassKey, keyboardLayouts, MAT_KEYBOARD_LAYOU
 import { InputWithKeyboardComponent } from './components/input-with-keyboard/input-with-keyboard.component';
 import { ClickOutsideModule } from 'ng-click-outside';
 import { GraphMainComponent } from './components/graph/graph-main/graph-main.component';
-import {TranslateService} from './services/translate.service';
+import { TranslateService} from './services/translate.service';
 import { TranslatePipe } from './pipes/translate.pipe';
 import { GraphModalComponent } from './components/graph/graph-modal/graph-modal.component';
 import { SaveHtmlPipe } from './pipes/save-html.pipe';
 import { YiddishPrimaryFirstPipe } from './pipes/yiddish-primary-first.pipe';
 
+import { AboutComponent } from './components/static-components/about/about.component';
+import { DictionaryContentComponent } from './components/static-components/dictionary-content/dictionary-content.component';
+import { InstructionsComponent } from './components/static-components/instructions/instructions.component';
+import { SourcesComponent } from './components/static-components/sources/sources.component';
+
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'about', component: AboutComponent},
+  {path: 'dictionary-content', component: DictionaryContentComponent},
+  {path: 'instructions', component: InstructionsComponent},
+  {path: 'sources', component: SourcesComponent},
   {path: 'detail', component: UnitComponent, children: [
     { path: 'search_params', component: ResultComponent},
     { path: ':lemma_id', component: ResultComponent},
@@ -230,7 +237,10 @@ export function setupTranslateFactory(
     TranslatePipe,
     GraphModalComponent,
     SaveHtmlPipe,
-    YiddishPrimaryFirstPipe
+    YiddishPrimaryFirstPipe,
+    DictionaryContentComponent,
+    InstructionsComponent,
+    SourcesComponent
   ],
   imports: [
     RouterModule.forRoot(
