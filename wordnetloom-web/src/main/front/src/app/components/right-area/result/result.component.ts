@@ -183,7 +183,7 @@ export class ResultComponent implements OnInit, OnDestroy {
       }
 
       if (updateGraph) {
-        this.graph.initializeFromSenseId(this.content.senseId);
+        this.graph.initializeFromSenseId(this.senseId);
       }
     });
     this.http.getSenseRelations(this.senseId).subscribe(results => {

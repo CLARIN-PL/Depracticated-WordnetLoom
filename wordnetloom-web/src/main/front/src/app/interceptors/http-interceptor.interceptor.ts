@@ -18,7 +18,7 @@ export class CachingInterceptor implements HttpInterceptor {
     }
 
     this.notCacheableURIs.forEach(nonCachableURI => {
-      if (req.url.indexOf(nonCachableURI) > -1){
+      if (req.url.indexOf(nonCachableURI) > -1) {
         return false;
       }
     });

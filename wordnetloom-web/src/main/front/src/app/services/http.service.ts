@@ -103,9 +103,5 @@ export class HttpService {
   getYiddishDetails(senseId) {
     return this.get('senses/' + senseId + '/yiddish');
   }
-
-  getSenseGraph(senseId) {
-    return this.get('senses/' + senseId + '/graph');
-  }
 }
 

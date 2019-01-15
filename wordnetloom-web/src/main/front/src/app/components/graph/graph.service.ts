@@ -44,21 +44,8 @@ export class GraphService {
     return this.graph != null;
   }
 
-  // changeBaseWordWithLemma(lemma) {
-  //   this.graph.initializeFromSenseId(10000);
-  // }
-
-  // getSynsetFromSenseId(id) {
-  //   this.graph.getSynsetFromSenseId(id);
-  // }
-
   initializeFromSenseId(id) {
-    this.http.getSenseGraph(id).subscribe(data => {
-      this.currentSynsetId = id;
-      if (this.graph) { // see if graph is initialized
-        this.graph.initializeFromSynsetId(id);
-      }
-    });
+    this.graph.initializeFromSynsetId(id);
   }
 
   destroy() {
