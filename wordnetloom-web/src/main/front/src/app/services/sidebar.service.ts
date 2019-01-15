@@ -3,10 +3,11 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {HttpService} from './http.service';
 import {Router} from '@angular/router';
+import {CurrentStateService} from "./current-state.service";
 
 @Injectable()
 export class SidebarService {
-  constructor(private http: HttpService, private router: Router) { }
+  constructor(private http: HttpService, private router: Router, private state: CurrentStateService) { }
   nav = null;
   list = [];
   listObservable = new Subject<any[]>();
@@ -71,6 +72,11 @@ export class SidebarService {
     this.page = 0;
     this.recordsLoaded = 0;
     this.totalRecords = null; // resetting total records cnt
+
+    // if lemma is set and contains yiddish characters
+    if (form.lemma && form.lemma.search(/[\u0590-\u05FF]/) >= 0) {
+      this.state.setListAlphabetStyle('yiddish');
+    }
     this.form = form;
 
     this.getOptions();

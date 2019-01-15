@@ -45,7 +45,6 @@ export class HttpService {
       }
     }
     return this.get(searchStr + 'limit=' + perPage + '&start=' + page * perPage );
-    // return this.get(searchStr + 'per_page=' + perPage + '&page=' + page);
   }
 
   getGlobalOptions(searchedKey) {

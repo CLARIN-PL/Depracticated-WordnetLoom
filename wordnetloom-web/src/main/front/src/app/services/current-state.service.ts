@@ -8,11 +8,13 @@ export class CurrentStateService {
   private sidebarSearchResultsPanelOpen: boolean;
   private mobileStateBreakPoint = 768;
   private mobileState: boolean;
+  private listAlphabetStyle: string;
 
   private senseIdEmitter = new EventEmitter<any>();
   private navbarOpenEmitter = new EventEmitter<boolean>();
   private sidebarSearchResultsPanelOpenEmitter = new EventEmitter<boolean>();
   private mobileStateEmitter = new EventEmitter<boolean>();
+  private listAlphabetStyleEmitter = new EventEmitter<string>();
 
   private routeObserver = null;
 
@@ -48,6 +50,7 @@ export class CurrentStateService {
   getNavbarOpenEmitter(): EventEmitter<any> {return this.navbarOpenEmitter; }
   getSidebarRearchResultsPanelOpenEmitter(): EventEmitter<any> {return this.sidebarSearchResultsPanelOpenEmitter; }
   getMobileStateEmitter(): EventEmitter<any> {return this.mobileStateEmitter; }
+  getListAlphabetStyleEmitter(): EventEmitter<any> {return this.listAlphabetStyleEmitter; }
 
   // state getters
   getMobileState(): boolean { return this.mobileState; }
@@ -70,5 +73,10 @@ export class CurrentStateService {
       this.senseId = id;
       this.senseIdEmitter.emit([id, graphInitiated]);
     }
+  }
+
+  setListAlphabetStyle(newState) {
+    this.listAlphabetStyle = newState;
+    this.listAlphabetStyleEmitter.emit(this.listAlphabetStyle);
   }
 }

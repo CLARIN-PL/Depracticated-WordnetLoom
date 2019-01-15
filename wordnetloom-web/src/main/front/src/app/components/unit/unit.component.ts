@@ -13,6 +13,7 @@ export class UnitComponent implements OnInit, OnDestroy {
   @ViewChild('sidebar') sidebarRef;
   sidebarObsv;
   sidebarLoadingObsv;
+  sideBarListStyleListener;
   sidebarContent = [];
   sideBarListStyle = 'yivo';
   sideBarListLoading = false;
@@ -40,6 +41,10 @@ export class UnitComponent implements OnInit, OnDestroy {
       }
     );
 
+    this.sideBarListStyleListener = this.state.getListAlphabetStyleEmitter().subscribe(state => {
+      this.sideBarListStyle = state;
+    });
+
     this.mobile = this.state.getMobileState();
 
     // timeout to deal with racing condition (angular error)
@@ -66,6 +71,7 @@ export class UnitComponent implements OnInit, OnDestroy {
     this.sidebarObsv.unsubscribe();
     this.sidebarLoadingObsv.unsubscribe();
     this.sidebarOpenListener.unsubscribe();
+    this.sideBarListStyleListener.unsubscribe();
   }
 
   toggleSidebarShowing() {
@@ -81,6 +87,6 @@ export class UnitComponent implements OnInit, OnDestroy {
   }
 
   onSelectedListStyleChange(event) {
-    this.sideBarListStyle = event.value;
+    this.state.setListAlphabetStyle(event.value);
   }
 }
