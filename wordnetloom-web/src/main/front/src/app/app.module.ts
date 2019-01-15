@@ -7,7 +7,8 @@ import { ResultComponent } from './components/right-area/result/result.component
 import { RightAreaComponent } from './components/right-area/right-area.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpService } from './services/http.service';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {CurrentStateService} from './services/current-state.service';
 import {AvailableSearchFiltersService} from './services/configuration/available-search-filters.service';
 import {RouterModule, Routes} from '@angular/router';
@@ -40,11 +41,12 @@ import { TranslatePipe } from './pipes/translate.pipe';
 import { GraphModalComponent } from './components/graph/graph-modal/graph-modal.component';
 import { SaveHtmlPipe } from './pipes/save-html.pipe';
 import { YiddishPrimaryFirstPipe } from './pipes/yiddish-primary-first.pipe';
-
 import { AboutComponent } from './components/static-components/about/about.component';
 import { DictionaryContentComponent } from './components/static-components/dictionary-content/dictionary-content.component';
 import { InstructionsComponent } from './components/static-components/instructions/instructions.component';
 import { SourcesComponent } from './components/static-components/sources/sources.component';
+import {RequestCacheService} from './services/request-cache.service';
+import {CachingInterceptor} from './interceptors/http-interceptor.interceptor';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -242,7 +244,7 @@ export function setupTranslateFactory(
     ),
     BrowserModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
     MatButtonModule,
     MatCheckboxModule,
     MatInputModule,
@@ -266,7 +268,12 @@ export function setupTranslateFactory(
     MatCardModule,
     MatDialogModule,
   ],
-  providers: [HttpService, CurrentStateService, SidebarService, AvailableSearchFiltersService,
+  providers: [
+    HttpService,
+    CurrentStateService,
+    SidebarService,
+    AvailableSearchFiltersService,
+    RequestCacheService,
     TranslateService,
       {
         provide: APP_INITIALIZER,
@@ -275,7 +282,8 @@ export function setupTranslateFactory(
         multi: true
       },
       { provide: MAT_KEYBOARD_LAYOUTS, useValue: customLayouts },
-      { provide: 'GraphCreator', useValue: window['GraphCreator']}
+      { provide: 'GraphCreator', useValue: window['GraphCreator']},
+      { provide: HTTP_INTERCEPTORS, useClass: CachingInterceptor, multi: true },
     ],
   entryComponents: [GraphModalComponent],
   bootstrap: [AppComponent]

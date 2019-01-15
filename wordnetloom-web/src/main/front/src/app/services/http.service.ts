@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import {Http} from '@angular/http';
+// import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/catch';
 import {lemmas} from './avaliable_lemmas_temp';
+import {HttpClient} from '@angular/common/http';
 // import {SlimLoadingBarService} from 'ng2-slim-loading-bar';
 
 @Injectable()
@@ -13,7 +14,7 @@ export class HttpService {
   // apiBase = 'http://156.17.135.29:8080/yiddish/api/';
   apiBase = 'http://156.17.135.55:8080/wordnetloom-server/resources/';
 
-  constructor(private http: Http) {}
+  constructor(private http: HttpClient) {}
 
 
   private get(uri, base?: string): Observable<any> {
@@ -24,9 +25,8 @@ export class HttpService {
       base = this.apiBase;
     }
 
-    return this.http.get(base + uri)
-      .map( res => res.json())
-      .finally(() => {});
+    return this.http.get(base + uri);
+    // .finally(() => {}); // possibly add cache here?
   }
 
   getAbsolute(uri) {
@@ -97,10 +97,7 @@ export class HttpService {
   }
   getLang(lang) {
     const langPath = `assets/i18n/${lang || 'en'}.json`;
-
-    return this.http.get(langPath).map( res => res.json())
-      .finally(() => {});
-    // return this.get(langPath, '/');
+    return this.getAbsolute(langPath);
   }
 
   getYiddishDetails(senseId) {

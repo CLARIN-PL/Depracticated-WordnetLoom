@@ -40,6 +40,7 @@ export class SenseVisualizationComponent implements OnInit, OnDestroy {
       height = graphSpace[1],
       showSearchBox = false;
     this.graph = new GraphCreator('graph-container', showSearchBox, width, height);
+    this.graph.setLanguage('en');
     this.graph.initializeFromSynsetId(this.senseId);
 
     this.graph.eventDispatch.on('ordinary-node-mousedown', function(e) {
