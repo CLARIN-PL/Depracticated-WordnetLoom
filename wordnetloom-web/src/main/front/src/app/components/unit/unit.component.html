@@ -5,20 +5,16 @@
     <div class="col-12">
 
       <div class="row">
-        <div class="show-side-bar-area" [ngClass]="{'hidden': showingSideBar}">
-          <button mat-button class="show-hide-wordlist-btn"  (click)="showSideBar()" ><span class="button-text">{{ 'wordlist' | translate }}: </span><i class="fa fa-fw fa-list"></i><i class="fa fa-fw fa-angle-right"></i></button>
+        <div class="show-side-bar-area" [ngClass]="{'hidden': !mobile }">
+          <button [ngClass]="{'hidden': showingSideBar }" mat-button class="show-hide-wordlist-btn"  (click)="showSideBar()" ><i class="fa fa-fw fa-list"></i><i class="fa fa-fw fa-angle-right"></i></button>
+          <button [ngClass]="{'hidden': !showingSideBar }" mat-button class="show-hide-wordlist-btn"  (click)="hideSideBar()"><i class="fa fa-fw fa-angle-left"></i><i class="fa fa-fw fa-list"></i></button>
         </div>
 
         <!--SIDE BAR-->
         <div class="col-12 col-md-4 col-lg-2 option-area" [ngClass]="{'hidden': !showingSideBar}"> <!-- position set as fixed -->
 
           <div [hidden]="sidebarContent.length < 1" class="options-title">
-            <button mat-button class="show-hide-wordlist-btn" (click)="hideSideBar()"><i class="fa fa-chevron-left"></i> {{ 'wordlist' | translate }}:</button>
-
-            <!--<span>-->
-              <!--<i>loaded: <span [hidden]="!sideBarListLoading">...</span><span [hidden]="sideBarListLoading">{{ recordsInfo }}</span></i>-->
-            <!--</span>-->
-            <!--(change)="selectedListStyle = $event.source.checked"-->
+            <h4>Wordlist:</h4>
 
             <mat-button-toggle-group
               [value]="sideBarListStyle"
@@ -75,7 +71,14 @@
               <mat-spinner diameter="30" strokeWidth="3"></mat-spinner>
             </a>
           </mat-nav-list>
+
+          <button *ngIf="!mobile" class="expand-btn expand-left" (click)=" toggleSidebarShowing() ">
+            <i *ngIf="showingSideBar" class="fa fa-chevron-left" ></i>
+            <i *ngIf="!showingSideBar" class="fa fa-chevron-right"></i>
+          </button>
+
         </div>
+
 
         <!--SIDE BAR END-->
 

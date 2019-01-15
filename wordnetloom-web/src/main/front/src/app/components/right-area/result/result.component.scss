@@ -165,10 +165,11 @@
 }
 
 .expand-right{
+  cursor: pointer;
   top: 0;
   right: 0;
   height: 100%;
-  width: 5px;
+  width: 15px;
 }
 
 .expand-right:hover i.fa{
@@ -183,7 +184,7 @@
   text-align: left;
 }
 .expand-right:hover{
-  width: 12px;
+  width: 20px;
 }
 .expand-footer{
   z-index: 1000;

@@ -135,6 +135,10 @@
   width: 100%;
   background-color: #dcdcdc;
   margin-bottom: 10px;
+  
+  &.hidden {
+    display: none;
+  }
 }
 .show-hide-wordlist-btn .fa-chevron-left{
   position: relative;
@@ -159,4 +163,59 @@
   mat-button-toggle {
     width: 100%;
   }
+}
+
+
+.expand-btn{
+  color: white;
+  position: absolute;
+  padding: 0;
+  border: 0;
+  transition: width .1s ease-in-out;
+  background-color: #ececeb;
+  text-align: right;
+}
+.expand-btn .fa{
+  font-size: 0.5em;
+  transition: font-size .1s ease-in-out, height .1s ease-in-out, width .1s ease-in-out;
+}
+.expand-btn:hover .fa{
+  font-size: 1em;
+}
+
+.expand-btn:focus{
+  outline: 0;
+}
+
+.expand-left{
+  cursor: pointer;
+  top: 0;
+  left: 100%; // align to right side
+  height: 100%;
+  width: 15px;
+  text-align: center;
+
+  &:hover {
+    width: 20px;
+  }
+
+  i.fa {
+    width: 1em;
+    transition: width .1s ease-in-out;
+  }
+
+}
+$size: 2rem;
+.expand-left:hover i.fa{
+  border: 0;
+  background: #ececeb;
+  color: white;
+
+  height: $size * 2;
+  width: $size;
+
+  border-bottom-right-radius: $size;
+  border-top-right-radius: $size;
+
+  padding-top: 1.5rem;
 }

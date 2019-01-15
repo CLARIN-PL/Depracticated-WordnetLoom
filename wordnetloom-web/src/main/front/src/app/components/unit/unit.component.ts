@@ -21,6 +21,8 @@ export class UnitComponent implements OnInit, OnDestroy {
   sidebarOpenListener;
   showingSideBar = true;
 
+  mobile = false; // mobile state - obtained only once at init
+
   constructor(private sidebarService: SidebarService, private state: CurrentStateService) {}
 
   ngOnInit() {
@@ -37,6 +39,8 @@ export class UnitComponent implements OnInit, OnDestroy {
         this.showingSideBar = state;
       }
     );
+
+    this.mobile = this.state.getMobileState();
 
     // timeout to deal with racing condition (angular error)
     setTimeout(() => {
@@ -64,6 +68,10 @@ export class UnitComponent implements OnInit, OnDestroy {
     this.sidebarOpenListener.unsubscribe();
   }
 
+  toggleSidebarShowing() {
+    this.state.setSidebarSearchResultPanelOpen(!this.showingSideBar);
+  }
+
   hideSideBar() {
     this.state.setSidebarSearchResultPanelOpen(false);
   }
@@ -71,6 +79,7 @@ export class UnitComponent implements OnInit, OnDestroy {
   showSideBar() {
     this.state.setSidebarSearchResultPanelOpen(true);
   }
+
   onSelectedListStyleChange(event) {
     this.sideBarListStyle = event.value;
   }
