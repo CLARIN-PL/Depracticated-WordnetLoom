@@ -43,7 +43,10 @@
       <mat-tab-group *ngIf="yiddishContentPresent" [selectedIndex]="currentYiddishTabIndex + 1"
                      (selectedTabChange)="selectedTabChange($event)">
         <mat-tab class="tab-title" label="Variants: " disabled></mat-tab>
-        <mat-tab *ngFor="let content of yiddishContent" [label]="content.yiddishVariant">
+        <mat-tab
+          *ngFor="let content of yiddishContent"
+          [label]="content.differentAlphabetLemmas[listAlphabetStyle] + ' (' + content.yiddishVariant + ')'"
+        >
           <div class="row area-row">
             <div *ngFor="let area of content.areas" class="col-12 area-row">
               <div class="card full-width">
@@ -55,7 +58,6 @@
                       <span *ngFor="let link of field.values; let isLast= last">
                         <p *ngIf='!link.searchQuery'>{{ link.name }}</p>
                         <a [matTooltip]="link.tooltip | async" *ngIf='link.searchQuery' routerLink="/detail/search_params" [queryParams]="link.searchQuery">
-                          <!--{{ link.tooltip | async}}-->
                           {{ link.name }}
                         </a>
                         <span *ngIf="!isLast && field.separator">{{ field.separator}}</span>

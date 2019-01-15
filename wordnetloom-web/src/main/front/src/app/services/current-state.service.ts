@@ -8,7 +8,7 @@ export class CurrentStateService {
   private sidebarSearchResultsPanelOpen: boolean;
   private mobileStateBreakPoint = 768;
   private mobileState: boolean;
-  private listAlphabetStyle: string;
+  private listAlphabetStyle: string = 'yivo';
 
   private senseIdEmitter = new EventEmitter<any>();
   private navbarOpenEmitter = new EventEmitter<boolean>();
@@ -55,7 +55,7 @@ export class CurrentStateService {
   // state getters
   getMobileState(): boolean { return this.mobileState; }
   getSenseId() { return this.senseId; }
-
+  getListAlphabetStyle() { return this.listAlphabetStyle; }
 
   // setters
   setNavbarOpen(state: boolean): void {

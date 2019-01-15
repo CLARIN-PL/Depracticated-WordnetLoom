@@ -26,11 +26,13 @@ export class ResultComponent implements OnInit, OnDestroy {
   routeParamsSubscription: Subscription = null;
   selectedYiddishVariant: Number;
   senseIdStateSubscription: Subscription = null;
+  listAlphabetStyleSubscription: Subscription = null;
   settingsDict: {};
   synsetData: {} = null;
   modalLabelEmitter = new EventEmitter<string>();
 
   senseId: string;
+  listAlphabetStyle = 'latin';
   yiddishContentPresent = false;
   senseLoaded = false;
   relations: Object = null;
@@ -112,6 +114,11 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.mobile = this.state.getMobileState();
     this.mobileListener = this.state.getMobileStateEmitter().subscribe(state => {
       this.mobile = state;
+    });
+
+    this.listAlphabetStyle = this.state.getListAlphabetStyle();
+    this.listAlphabetStyleSubscription = this.state.getListAlphabetStyleEmitter().subscribe(state => {
+      this.listAlphabetStyle = state;
     });
   }
 

@@ -11,7 +11,12 @@ export class YiddishContent {
     this.id = json['id'];
     this.yiddishId = json['id'];
     this.variant_type = json['variant_type'];
-    this.yiddishVariant = json['variant_type'].replace(/_/g, ' ');
+    this.differentAlphabetLemmas = {
+      'latin': json['latin_spelling'],
+      'yivo': json['yivo_spelling'],
+      'yiddish': json['yiddish_spelling'],
+    };
+    this.yiddishVariant = json['variant_type'].replace('Yiddish_', '').replace(/_/g, ' ');
 
     this.variant = parentSense.variant;
     this.partOfSpeech = parentSense.partOfSpeech;
@@ -38,12 +43,15 @@ export class YiddishContent {
       'context': json['context'],
       'comment': json['comment']
     };
+
+    console.log(this);
   }
   id: number;
   yiddishId: number;
 
 
   lemma: string;
+  differentAlphabetLemmas: {};
   senseId: string;
   yiddishVariantId: number;
   variant: number;
@@ -211,7 +219,7 @@ export class YiddishContent {
             newField = {
               name: fieldNames[key].viewName,
               values: this.currentYiddish['inflections'].map(function (it) {
-                return {name: 'prefix: ' + it.name + ', value:' + it.text,
+                return {name: it.name + ' ' + it.text,
                   searchQuery: self.getSearchFieldQuery('Inflection', it.id)
                 };
               })
@@ -259,8 +267,9 @@ export class YiddishContent {
           }
       }
 
-      // don't show lexical characteristic if it's empty
-      if (newField.name === 'Lexical Characteristic' && newField.values.length === 0) {
+      // don't show [Grammatical qualifiers, Inflection, Lexical Characteristic, Synonyms, Context, Comment] if it's empty
+      if (newField.values.length === 0 &&
+        ['Grammatical qualifiers', 'Inflection', 'Lexical Characteristic'].indexOf(newField.name) > -1) {
         continue;
       }
 
