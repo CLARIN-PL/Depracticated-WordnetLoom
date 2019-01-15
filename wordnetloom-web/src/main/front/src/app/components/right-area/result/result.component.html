@@ -174,28 +174,28 @@
         <div class="d-flex flex-column flex-wrap">
           <div class="">
             <mat-card class="m-1"
-                      *ngIf="yiddishContentPresent && yiddishContent[currentYiddishTabIndex].additionalFields.context">
+                      *ngIf="yiddishContentPresent && yiddishContent[currentYiddishTabIndex]?.additionalFields.context">
               <div class="row text-center" style="width: 100%;">
                 <div class="col">
                   <h5>{{'Context' | translate}}:</h5>
                 </div>
               </div>
               <mat-card-content>
-                <p>{{ yiddishContent[currentYiddishTabIndex].additionalFields.context }}</p>
+                <p>{{ yiddishContent[currentYiddishTabIndex]?.additionalFields.context }}</p>
               </mat-card-content>
             </mat-card>
           </div>
 
           <div class="">
             <mat-card class="m-1"
-                      *ngIf="yiddishContentPresent && yiddishContent[currentYiddishTabIndex].additionalFields.comment">
+                      *ngIf="yiddishContentPresent && yiddishContent[currentYiddishTabIndex]?.additionalFields.comment">
               <div class="row text-center" style="width: 100%;">
                 <div class="col">
                   <h5>{{'Comment' | translate}}:</h5>
                 </div>
               </div>
               <mat-card-content>
-                <p>{{ yiddishContent[currentYiddishTabIndex].additionalFields.comment }}</p>
+                <p>{{ yiddishContent[currentYiddishTabIndex]?.additionalFields.comment }}</p>
               </mat-card-content>
             </mat-card>
           </div>

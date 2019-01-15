@@ -122,6 +122,18 @@ export class ResultComponent implements OnInit, OnDestroy {
     }
   }
 
+  private setYiddishPrimaryFirst(variants: any[]) {
+    // console.log(variants);
+    // return variants;
+
+    if (variants.length === 0 || variants[0].variant_type === 'Yiddish_Primary_Lemma') {
+      return variants;
+    }
+    const yiddishIdx = variants.findIndex(variant => variant.variant_type === 'Yiddish_Primary_Lemma');
+    variants.unshift(variants.splice(yiddishIdx, 1)[0]); // return Yiddish primary lemma as first
+    return variants;
+  }
+
   private updateCurrentSense(isSearchFieldEmpty, updateGraph= true) {
     this.content = null;
     this.yiddishContent = [];
@@ -139,6 +151,8 @@ export class ResultComponent implements OnInit, OnDestroy {
       // load yiddish content
       if (response['_links']['yiddish']) {
         this.http.getYiddishDetails(this.senseId).subscribe(response => {
+          response.rows = this.setYiddishPrimaryFirst(response.rows);
+
           for (const yContent of response.rows) {
             this.yiddishContent.push(new YiddishContent(yContent, originalSenseContent, this.settingsDict, this.http));
           }
