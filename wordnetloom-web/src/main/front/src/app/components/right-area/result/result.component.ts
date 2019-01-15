@@ -140,7 +140,7 @@ export class ResultComponent implements OnInit, OnDestroy {
       if (response['_links']['yiddish']) {
         this.http.getYiddishDetails(this.senseId).subscribe(response => {
           for (const yContent of response.rows) {
-            this.yiddishContent.push(new YiddishContent(yContent, originalSenseContent, this.settingsDict));
+            this.yiddishContent.push(new YiddishContent(yContent, originalSenseContent, this.settingsDict, this.http));
           }
           if (response.rows.length > 0 ) {
             this.content = this.yiddishContent[0];

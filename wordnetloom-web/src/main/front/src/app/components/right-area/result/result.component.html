@@ -37,7 +37,7 @@
 
   <!--SENSE DETAIL AREA-->
   <div *ngIf="senseLoaded" class="col-sm-12 col-md-4 sense-detail-col" [ngClass]="{'d-none': rightPanelHidden}">
-    <h5 class="text-center">{{'selected_units_details' | translate}}:</h5>
+    <h5 class="text-center">Info Window:</h5>
     <mat-card class="mb-2">
 
       <mat-tab-group *ngIf="yiddishContentPresent" [selectedIndex]="currentYiddishTabIndex + 1"
@@ -54,10 +54,12 @@
                       <td>
                       <span *ngFor="let link of field.values; let isLast= last">
                         <p *ngIf='!link.searchQuery'>{{ link.name }}</p>
-                        <a *ngIf='link.searchQuery' routerLink="/detail/search_params" [queryParams]="link.searchQuery">
+                        <a [matTooltip]="link.tooltip | async" *ngIf='link.searchQuery' routerLink="/detail/search_params" [queryParams]="link.searchQuery">
+                          <!--{{ link.tooltip | async}}-->
                           {{ link.name }}
                         </a>
-                        <span *ngIf="!isLast"><br></span>
+                        <span *ngIf="!isLast && field.separator">{{ field.separator}}</span>
+                        <span *ngIf="!isLast && !field.separator"><br></span>
                       </span>
                       </td>
                     </tr>

@@ -1,29 +1,11 @@
 import {QueryNames} from './querynames';
 import {SenseContent} from './sensecontent';
+import {HttpService} from '../../../services/http.service';
 
 export class YiddishContent {
-  id: number;
-  yiddishId: number;
 
-
-  lemma: string;
-  senseId: string;
-  yiddishVariantId: number;
-  variant: number;
-
-  partOfSpeech;
-  part_of_speech;
-  grammaticalGender;
-  flag;
-
-  fields: Array<Object> = [];
-  areas: Array<Object> = [];
-  variant_type: String;
-  yiddishVariant = 'Default';
-  currentYiddish;
-  additionalFields = {};
-
-  constructor(json: Object, parentSense: SenseContent, dictionarySettings: {}) {
+  // http not initialized automatically, needs to be passed
+  constructor(json: Object, parentSense: SenseContent, dictionarySettings: {}, private http: HttpService) {
     this.currentYiddish = json; // todo - get rid of that later
 
     this.id = json['id'];
@@ -57,6 +39,72 @@ export class YiddishContent {
       'comment': json['comment']
     };
   }
+  id: number;
+  yiddishId: number;
+
+
+  lemma: string;
+  senseId: string;
+  yiddishVariantId: number;
+  variant: number;
+
+  partOfSpeech;
+  part_of_speech;
+  grammaticalGender;
+  flag;
+
+  fields: Array<Object> = [];
+  areas: Array<Object> = [];
+  variant_type: String;
+  yiddishVariant = 'Default';
+  currentYiddish;
+  additionalFields = {};
+
+  private static sortParticles(it0, it1) {
+    const values = {
+      'prefix': 0,
+      'root': 5,
+      'constituent': 7,
+      'suffix': 10
+    };
+    return values[it0.type] - values[it1.type];
+  }
+
+  static capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  private assignTooltipForParticle(element) {
+    const self = this;
+
+    if (element.type === 'root' || element.type === 'constituent') {
+      return (resolve, reject) => {
+        resolve(YiddishContent.capitalizeFirstLetter(element.type));
+      };
+    }
+
+    return (resolve, reject) => {
+      self.http
+        .getAbsolute(
+          `http://156.17.135.55:8080/wordnetloom-server/resources/dictionaries/${element.type}es/${element.id}`
+        )
+        .toPromise()
+        .then(data => {
+          resolve(YiddishContent.capitalizeFirstLetter(element.type) + ' | ' + data.description);
+        });
+    };
+  }
+
+  private getPrefixDescriptionPromise() {
+
+    return this.http
+      .getAbsolute('http://156.17.135.55:8080/wordnetloom-server/resources/dictionaries/prefixes/185')
+      .toPromise()
+      .then( data => {
+          console.log(data);
+        }
+      );
+  }
 
   private setBasicFields(json): void {
     const fieldNames = ['Domain', 'lexicon', 'Part of speech'];
@@ -78,14 +126,14 @@ export class YiddishContent {
     // self.currentYiddish['lexical_characteristic'] = [self.currentYiddish['lexical_characteristic']]; // fix for later use
 
     const fieldNames = {
-      'latin_spelling': {viewName: 'Latin spelling', type: 'simple'},
+      'latin_spelling': {viewName: 'Philological spelling', type: 'simple'},
       'yiddish_spelling': {viewName: 'Yiddish spelling', type: 'simple'},
       'yivo_spelling': {viewName: 'YIVO spelling', type: 'simple'},
       'part_of_speech': {viewName: 'Part of speech', type: 'inherited'},
       'grammatical_gender': {viewName: 'Grammatical qualifiers', type: 'object'},
-      'inflections': {viewName: 'Inflections', type: 'array'},
-      'semantic_fields': {viewName: 'Semantic fields', type: 'array'},        // todo -search
+      'inflections': {viewName: 'Inflection', type: 'array'},
       'meaning': {viewName: 'Meaning', type: 'simple'},
+      'semantic_fields': {viewName: 'Semantic field', type: 'array'},        // todo -search
       'style': {viewName: 'Style', type: 'object'},                           // todo -- missing, ma być object
       'lexical_characteristic': {viewName: 'Lexical Characteristic', type: 'object'},
       'status': {viewName: 'Rootedness', type: 'object'},
@@ -93,8 +141,8 @@ export class YiddishContent {
       'age': {viewName: 'Age', type: 'object'},
       'sources': {viewName: 'Sources', type: 'array'},
       'etymological_root': {viewName: 'Etymological Root', type: 'simple'},
-      'particles': {viewName: 'Morphology', type: 'array'},
-      'transcriptions': {viewName: 'Transcriptions', type: 'array'}
+      'particles': {viewName: 'Morphology', type: 'array', separator: ' | '},
+      'transcriptions': {viewName: 'Phonetic transcription', type: 'array'}
       // Philological Spelling,
       // Yiddish Spelling,
       // YIVO Spelling,
@@ -170,9 +218,10 @@ export class YiddishContent {
             };
           } else if (key === 'transcriptions' && this.currentYiddish['transcriptions'].length > 0) {
             newField = {
-              name: 'transcriptions', values: this.currentYiddish['transcriptions'].map(function (it) {
+              name: fieldNames[key].viewName,
+              values: this.currentYiddish['transcriptions'].map(function (it) {
                 return {
-                  name: it.name + ': ' + it.phonography,
+                  name: it.phonography,
                   searchQuery: self.getSearchFieldQuery('transcriptions', it.id)
                 };
               })
@@ -188,11 +237,14 @@ export class YiddishContent {
             };
           } else if (key === 'particles' && this.currentYiddish['particles'].length > 0) {
             newField = {
-              name: fieldNames[key].viewName, values: this.currentYiddish[key].map(function (it) {
-                return {
-                  name: it.type + ': ' + it.value,
-                  searchQuery: self.getSearchFieldQuery('particle_' + it.type, it.id ? it.id : it.value)
-                };
+              name: fieldNames[key].viewName, values: this.currentYiddish[key]
+                .sort(YiddishContent.sortParticles)
+                .map(function (it) {
+                  return {
+                    name: it.value,
+                    tooltip: new Promise<string>(self.assignTooltipForParticle(it)),
+                    searchQuery: self.getSearchFieldQuery('particle_' + it.type, it.id ? it.id : it.value)
+                  };
               })
             };
           } else {
@@ -212,6 +264,7 @@ export class YiddishContent {
         continue;
       }
 
+      newField.separator = fieldNames[key].separator;
       fields.push(newField);
     }
 
