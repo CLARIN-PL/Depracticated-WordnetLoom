@@ -48,6 +48,7 @@ import { SourcesComponent } from './components/static-components/sources/sources
 import {RequestCacheService} from './services/request-cache.service';
 import {CachingInterceptor} from './interceptors/http-interceptor.interceptor';
 import { TableResultsComponent } from './components/right-area/result/table-results/table-results.component';
+import { RelationsViewComponent } from './components/right-area/result/relations-view/relations-view.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -237,7 +238,8 @@ export function setupTranslateFactory(
     DictionaryContentComponent,
     InstructionsComponent,
     SourcesComponent,
-    TableResultsComponent
+    TableResultsComponent,
+    RelationsViewComponent
   ],
   imports: [
     RouterModule.forRoot(

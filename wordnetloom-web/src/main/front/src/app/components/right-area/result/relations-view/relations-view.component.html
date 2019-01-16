@@ -1,0 +1,30 @@
+<ul class="tree">
+  <li *ngIf="relations['incoming'].length > 0">
+    {{ 'incoming_relations' | translate }}:
+    <ul>
+      <li
+        *ngFor="let relation of relations['incoming']; let isLast=last">{{ relation.relation_type_name }}
+        :
+        <ul>
+          <li *ngFor="let member of relation.rows; let isLast=last">
+            <a [routerLink]="'/detail/' + member['sense_id']">{{ member['label']}}</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li *ngIf="relations['outgoing'].length > 0">
+    {{ 'outgoing_relations' | translate }}:
+    <ul>
+      <li
+        *ngFor="let relation of relations['outgoing']; let isLast=last">{{ relation.relation_type_name }}
+        :
+        <ul>
+          <li *ngFor="let member of relation.rows; let isLast=last">
+            <a [routerLink]="'/detail/' + member['sense_id']">{{ member['label']}}</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>

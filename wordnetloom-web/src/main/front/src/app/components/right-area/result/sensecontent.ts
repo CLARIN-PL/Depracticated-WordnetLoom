@@ -24,12 +24,9 @@ export class SenseContent {
     this.lemma = json['lemma'] + ' ' + this.variant + ' (' + this.domain + ')';
 
     this.setContent(json, dictionarySettings);
-    console.log(this);
   }
 
   private setContent(jsonData, dictionarySettings) {
-    const self = this;
-
     const fieldNames = {
       'lemma': {viewName: 'Latin spelling', type: 'simple'},
       'lexicon': {viewName: 'Lexicon', type: 'simple_dict',  dictName: 'lexicon'},

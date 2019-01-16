@@ -71,7 +71,7 @@
 
     <div class="d-flex flex-wrap">
       <div class="flex-fill">
-        <div *ngIf="senseLoaded && synsetData && synsetData['senses'].length > 0">
+        <div *ngIf="senseLoaded && synonyms && synonyms.length > 0">
           <mat-card class="m-1">
             <div class="row text-center" style="width: 100%;">
               <div class="col">
@@ -80,7 +80,7 @@
             </div>
             <div class="card full-width small-margin relations-area">
               <div class="card-body relations-content">
-                <span *ngFor="let sense of synsetData['senses']; let isLast=last">
+                <span *ngFor="let sense of synonyms; let isLast=last">
                   <a [routerLink]="'/detail/' + sense['id']">{{ sense['label']}}</a>
                   <span *ngIf="!isLast">, </span>
                 </span>
@@ -101,38 +101,7 @@
                 </div>
               </div>
               <div class="card full-width small-margin relations-area">
-                <div class="card-body relations-content">
-                  <ul class="tree">
-                    <li *ngIf="relations['incoming'].length > 0">
-                      {{ 'incoming_relations' | translate }}:
-                      <ul>
-                        <li
-                          *ngFor="let relation of relations['incoming']; let isLast=last">{{ relation.relation_type_name }}
-                          :
-                          <ul>
-                            <li *ngFor="let member of relation.rows; let isLast=last">
-                              <a [routerLink]="'/detail/' + member['sense_id']">{{ member['label']}}</a>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                    <li *ngIf="relations['outgoing'].length > 0">
-                      {{ 'outgoing_relations' | translate }}:
-                      <ul>
-                        <li
-                          *ngFor="let relation of relations['outgoing']; let isLast=last">{{ relation.relation_type_name }}
-                          :
-                          <ul>
-                            <li *ngFor="let member of relation.rows; let isLast=last">
-                              <a [routerLink]="'/detail/' + member['sense_id']">{{ member['label']}}</a>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
-                </div>
+                <app-relations-view class="card-body" [relations]="relations"></app-relations-view>
               </div>
             </mat-card>
           </div>

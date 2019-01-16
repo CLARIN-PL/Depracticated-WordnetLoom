@@ -43,14 +43,6 @@ export class InputWithKeyboardComponent implements OnInit {
       term => {
         if (term !== '') {
           this.autoCompleteOptions = this.http.getSearchAutocomplete(term);
-          // this.autoCompleteOptions.subscribe(data => {
-          //   console.log(data);
-          // });
-          // console.log(this.autoCompleteOptions);
-          // this.http.getSearchAutocomplete(term).subscribe(
-          //   data => {
-          //     this.autoCompleteOptions = data as any[];
-          //   });
         }
       });
   }

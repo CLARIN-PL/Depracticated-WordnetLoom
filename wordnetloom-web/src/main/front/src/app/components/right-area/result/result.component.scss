@@ -181,33 +181,6 @@
   height: 25px;
 }
 
-ul.tree, ul.tree ul {
-  list-style-type: none;
-  background: url(/assets/img/vline.png) repeat-y;
-  margin: 0;
-  padding: 0;
-  /*padding-bottom: 20px;*/
-}
-
-ul.tree ul {
-  margin-left: 20px;
-}
-
-ul.tree li {
-  margin: 0;
-  padding: 0 12px;
-  line-height: 20px;
-  background: url(/assets/img/node.png) no-repeat;
-}
-
-ul.tree li.last,
-ul.tree li:last-child {
-  background: #fff url(/assets/img/lastnode.png) no-repeat;
-  padding-bottom: 20px;
-}
-.relations-area{
-
-}
 .relations-content{
   margin: auto;
   width: fit-content;

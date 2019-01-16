@@ -56,8 +56,6 @@ export class YiddishContent {
       'context': json['context'],
       'comment': json['comment']
     };
-
-    console.log(this);
   }
 
   private static sortParticles(it0, it1) {
@@ -108,8 +106,8 @@ export class YiddishContent {
       'grammatical_gender': {viewName: 'Grammatical qualifiers', type: 'object'},
       'inflections': {viewName: 'Inflection', type: 'array'},
       'meaning': {viewName: 'Meaning', type: 'simple'},
-      'semantic_fields': {viewName: 'Semantic field', type: 'array'},        // todo -search
-      'style': {viewName: 'Style', type: 'object'},                           // todo -- missing, ma być object
+      'semantic_fields': {viewName: 'Semantic field', type: 'array'},
+      'style': {viewName: 'Style', type: 'object'},
       'lexical_characteristic': {viewName: 'Lexical Characteristic', type: 'object'},
       'status': {viewName: 'Rootedness', type: 'object'},
       'etymology': {viewName: 'Etymology', type: 'simple'},

@@ -22,13 +22,13 @@ export class ResultComponent implements OnInit, OnDestroy {
   content: SenseContent|YiddishContent;
   yiddishContent: YiddishContent[];
   currentYiddishTabIndex = 0;
-  routeSubscription: Subscription = null;
   routeParamsSubscription: Subscription = null;
   selectedYiddishVariant: Number;
   senseIdStateSubscription: Subscription = null;
   listAlphabetStyleSubscription: Subscription = null;
   settingsDict: {};
   synsetData: {} = null;
+  synonyms: Object[] = null;
   modalLabelEmitter = new EventEmitter<string>();
 
   senseId: string;
@@ -94,18 +94,6 @@ export class ResultComponent implements OnInit, OnDestroy {
       }
     });
 
-
-    // todo -- delete this?
-    this.routeSubscription = this.route.params.subscribe(params => {
-      const searchLemma = params['search_lemma'];
-      if (searchLemma) {
-        if (searchLemma === '*') {
-          this.sidebar.getAllOptions({lemma: ''});
-        }
-        this.sidebar.getAllOptions({lemma: searchLemma});
-      }
-    });
-
     this.routeParamsSubscription = this.route.queryParams.subscribe(params => {
       this.selectedYiddishVariant = +params['variant'];
       this.checkSelectedTab();
@@ -130,9 +118,6 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   private setYiddishPrimaryFirst(variants: any[]) {
-    // console.log(variants);
-    // return variants;
-
     if (variants.length === 0 || variants[0].variant_type === 'Yiddish_Primary_Lemma') {
       return variants;
     }
@@ -149,6 +134,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.http.getSenseDetails(this.senseId).subscribe((response) => {
       this.content = new SenseContent(response, null, this.settingsDict);
       this.senseLoaded = true;
+      this.synonyms = null;
       const originalSenseContent = this.content;
 
       this.modalLabelEmitter.emit(this.content.lemma);
@@ -175,9 +161,7 @@ export class ResultComponent implements OnInit, OnDestroy {
         this.http.getAbsolute(response['_links']['synset']).subscribe(synsetResponse => {
           this.synsetData = synsetResponse;
           if (this.synsetData['senses']) {
-            this.synsetData['senses'].splice(
-              this.synsetData['senses'].findIndex(sense => sense['id'] === this.content.senseId), 1
-            );
+            this.synonyms = this.synsetData['senses'].filter(sense => sense['id'] !== this.senseId);
           }
         });
       }
@@ -192,7 +176,6 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.routeSubscription.unsubscribe();
     this.senseIdStateSubscription.unsubscribe();
   }
 
