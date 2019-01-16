@@ -2,7 +2,7 @@ import {AfterViewInit, Component, ElementRef, Inject, Input, OnInit, ViewChild} 
 import {Subscription} from 'rxjs';
 import {GraphService} from '../graph.service';
 import { ElementQueries, ResizeSensor } from 'css-element-queries' ;
-import {HttpService} from "../../../services/http.service";
+import {HttpService} from '../../../services/http.service';
 
 // declare const GraphCreator: any;
 
@@ -46,6 +46,10 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
     const resizeSensor = new ResizeSensor(this.graphContainerDiv.nativeElement, this.graphContainerResized.bind(this));
   }
 
+  private detectBrowserNotChrome() {
+    return !(/Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor));
+  }
+
   initGraph() {
     const self = this;
     const graphSpace = this.getSpaceForGraph();
@@ -54,6 +58,10 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
       showSearchBox = false;
 
     this.graph = new this.graphCreator.GraphCreator(this.graphContainerId, showSearchBox, width, height);
+
+    if (this.detectBrowserNotChrome) {
+      this.graph.firefoxAngularBaseXlinkHrefFix();
+    }
 
     this.graph.api.getGraph = function(senseId, callback) {
       this._getJson(self.http.apiBase + 'senses/{id}/graph'.replace('{id}', senseId), function(json) {

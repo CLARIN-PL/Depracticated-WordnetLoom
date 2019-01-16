@@ -155,6 +155,7 @@
     -webkit-animation-duration: 1s;
     -webkit-animation-iteration-count: 1;
     -webkit-animation-timing-function: linear;
+    font-family: monospace; /* fix reverse errors on firefox */
     /*-webkit-animation-delay: 1s;*/
 
 }
