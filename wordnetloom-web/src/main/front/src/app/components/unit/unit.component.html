@@ -46,13 +46,15 @@
                  class="option-list-item"
                  [ngClass]="{'underlist-item': variant.variant_type !== 'Yiddish_Primary_Lemma'}"
                  routerLinkActive="active-link"
-                 matTooltip="{{item.label.length > 23 ? item.label : '' }}"
+                 matTooltip="{{item.label.length > 23 ? item.label + item.variant : '' }}"
                  (click)="optionSelected()"
                  [routerLink]="[item.id]"
                  [queryParams]="{variant: variant.id}"
                  [matTooltipPosition]="'right'"
                  [matTooltipClass]="'mat-tooltip-top-fix'">
-                 {{variant[sideBarListStyle]}} <i *ngIf="variant.variant_type !== 'Yiddish_Primary_Lemma'"> ({{variant.variant_type}})</i>
+                 {{variant[sideBarListStyle]}}
+                <span *ngIf="variant.variant_type === 'Yiddish_Primary_Lemma'">&#160;{{item.variant}}</span>
+                <i *ngIf="variant.variant_type !== 'Yiddish_Primary_Lemma'"> ({{variant.variant_type}})</i>
               </a>
 
               <!--<a *ngFor="let temp of ['Yiddish Primary Lemma', 'Philological', 'Morphological']" mat-list-item-->

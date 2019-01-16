@@ -30,7 +30,8 @@ export class SearchComponent implements OnInit {
     'suffixes',
     'particle_root',
     'etymological_root',
-    'particle_constituent'
+    'particle_constituent',
+    'etymology'
   ];
 
   ngOnInit() {
