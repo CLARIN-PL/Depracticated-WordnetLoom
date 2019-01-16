@@ -38,7 +38,7 @@ export class HttpService {
   }
 
   getSearchOptions(form: String, page = 0, perPage= 50) {
-    let searchStr = 'senses/search?lexicon=4&';
+    let searchStr = 'senses/search?lexicon=4&domain=55&';
     for (const key in form) {
       if (form[key] !== '' && form[key] !== undefined) {
         searchStr += key + '=' + form[key] + '&';

@@ -59,10 +59,30 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
 
     this.graph = new this.graphCreator.GraphCreator(this.graphContainerId, showSearchBox, width, height);
 
-    if (this.detectBrowserNotChrome) {
+    if (this.detectBrowserNotChrome()) {
       this.graph.firefoxAngularBaseXlinkHrefFix();
     }
 
+    // override edge color
+    this.graphCreator.Edge.prototype.initColor = function() {
+      let relName = this.pathTextSrc ? this.pathTextSrc : this.pathTextTarget;
+      if (!relName) {
+        return;
+      }
+      relName = relName.split('_')[0].split('>')[0];
+
+      const settings = {
+        ps: '#AA1D45' ,
+        der: '#7FB881',
+        Eq: '#2A4089'
+      };
+
+      if (relName && settings[relName]) {
+        this.color = settings[relName];
+      }
+    };
+
+    console.log(this.graphCreator.Edge.prototype.initColor);
     this.graph.api.getGraph = function(senseId, callback) {
       this._getJson(self.http.apiBase + 'senses/{id}/graph'.replace('{id}', senseId), function(json) {
         if (json) {
