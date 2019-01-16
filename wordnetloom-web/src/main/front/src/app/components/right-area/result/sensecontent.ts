@@ -8,37 +8,71 @@ export class SenseContent {
   definition: string;
 
   partOfSpeech;
-  grammaticalGender;
   flag;
 
-  fields: Array<Object> = [];
   areas: Array<Object> = [];
-  yiddishVariant = 'Default';
 
   constructor(json: Object, currentYiddishVariant=null, dictionarySettings: {}) {
     this.senseId = json['id'];
     this.variant = json['variant'];
     this.definition = json['definition'];
-    this.grammaticalGender = null;
 
-    // todo -- check if fields exist first
     this.partOfSpeech = dictionarySettings['partOfSpeech'].searchOptions.find(it => it.id === json['part_of_speech']).name;
     this.flag = dictionarySettings['lexicon'].searchOptions.find(it => it.id === json['lexicon']).name;
     this.domain =  dictionarySettings['domain'].searchOptions.find(it => it.id === json['domain']).name;
 
     this.lemma = json['lemma'] + ' ' + this.variant + ' (' + this.domain + ')';
-    this.setBasicFields(json);
+
+    this.setContent(json, dictionarySettings);
+    console.log(this);
   }
 
-  private setBasicFields(json): void {
-    const fieldNames = ['Domain', 'Lexicon', 'Part of speech'];
-    for (const name of fieldNames) {
-      this.fields.push({name: name, values: [json[name]]});
+  private setContent(jsonData, dictionarySettings) {
+    const self = this;
+
+    const fieldNames = {
+      'lemma': {viewName: 'Latin spelling', type: 'simple'},
+      'lexicon': {viewName: 'Lexicon', type: 'simple_dict',  dictName: 'lexicon'},
+      'part_of_speech': {viewName: 'Part of speech', type: 'simple_dict', dictName: 'partOfSpeech'},
+      'domain': {viewName: 'Domain', type: 'simple_dict',  dictName: 'domain'},
+      'definition': {viewName: 'Definition', type: 'simple'},
+      'register': {viewName: 'Register', type: 'simple_dict',  dictName: 'register'},
+    };
+    const fields = [];
+
+    for (const key in fieldNames) {
+      let newField;
+
+      if (fieldNames[key].type === 'simple') {
+
+        if (!jsonData[key]) {
+          console.log(key, 'missing');
+          continue;
+        }
+
+        newField = {
+          name: fieldNames[key].viewName,
+          values: [
+            {
+              name: jsonData[key],
+              searchQuery: null
+            }]
+        };
+      } else if (fieldNames[key].type === 'simple_dict' && jsonData[key] ) {
+
+        newField = {
+          name: fieldNames[key].viewName,
+          values: [
+            {
+              name: dictionarySettings[fieldNames[key].dictName].searchOptions.find(it => it.id === jsonData[key]).name,
+              searchQuery: null
+            }]
+        };
+      }
+      if (newField) {
+        fields.push(newField);
+      }
     }
+    this.areas.push({name: 'Sense content', fields: fields});
   }
-
-  private getSearchFieldQuery(name: string, id: number|string) {
-    return QueryNames.getQueryString(name, id);
-  }
-
 }

@@ -1,11 +1,18 @@
 import { Injectable } from '@angular/core';
 import {HttpEvent, HttpRequest, HttpResponse} from '@angular/common/http';
 
-const maxAge = 30000;
+// setting to 30 minutes
+const maxAge = 1000 * 60 * 30;
+
 @Injectable()
 export class RequestCacheService {
 
   cache = new Map();
+
+  constructor() {
+    // setting interval to be one minute less then maxAge
+    setInterval(() => this.deleteExpiredEntries(), maxAge - (1000 * 60));
+  }
 
   private deleteExpiredEntries() {
     const expired = Date.now() - maxAge;
@@ -20,8 +27,6 @@ export class RequestCacheService {
     const url = req.urlWithParams;
     const cached = this.cache.get(url);
 
-    // todo - add debounce
-    this.deleteExpiredEntries();
     if (!cached) {
       return undefined;
     }

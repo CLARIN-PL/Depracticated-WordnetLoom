@@ -47,6 +47,7 @@ import { InstructionsComponent } from './components/static-components/instructio
 import { SourcesComponent } from './components/static-components/sources/sources.component';
 import {RequestCacheService} from './services/request-cache.service';
 import {CachingInterceptor} from './interceptors/http-interceptor.interceptor';
+import { TableResultsComponent } from './components/right-area/result/table-results/table-results.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -235,7 +236,8 @@ export function setupTranslateFactory(
     YiddishPrimaryFirstPipe,
     DictionaryContentComponent,
     InstructionsComponent,
-    SourcesComponent
+    SourcesComponent,
+    TableResultsComponent
   ],
   imports: [
     RouterModule.forRoot(

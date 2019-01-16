@@ -1,17 +1,13 @@
 import { Injectable } from '@angular/core';
-// import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/catch';
 import {lemmas} from './avaliable_lemmas_temp';
 import {HttpClient} from '@angular/common/http';
-// import {SlimLoadingBarService} from 'ng2-slim-loading-bar';
 
 @Injectable()
 export class HttpService {
-  // apiBase = '/yiddish/api/';
-  // apiBase = 'http://156.17.135.29:8080/yiddish/api/';
   apiBase = 'http://156.17.135.55:8080/wordnetloom-server/resources/';
 
   constructor(private http: HttpClient) {}
@@ -31,6 +27,10 @@ export class HttpService {
 
   getAbsolute(uri) {
     return this.get('', uri);
+  }
+
+  getDictionaryItem(itemName, itemId) {
+    return this.get('dictionaries/' + itemName + '/' + (itemId ? itemId : ''));
   }
 
   getSenseDetails(id) {
@@ -65,7 +65,6 @@ export class HttpService {
 
       if (yiddishTerm) {
         for (let i = 0; i < lemmas['yiddish'].length; i++) {
-        // for (const lemma of lemmas['yiddish']) {
           if (lemmas['yiddish'][i].startsWith(searchedTerm.toLowerCase())) {
             found.push({'lemma': lemmas['yiddish'][i], 'spelling': 'Yiddish'});
             somethingFound = true;

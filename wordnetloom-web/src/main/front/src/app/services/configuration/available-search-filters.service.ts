@@ -23,6 +23,7 @@ export class AvailableSearchFiltersService {
       'prefix':                {apiOptions: 'dictionaries/prefixes', name: 'Prefix', queryString: 'particle_prefix', searchOptions: [] },
       'suffix':                {apiOptions: 'dictionaries/suffixes', name: 'Suffix', queryString: 'particle_suffix', searchOptions: [] },
       'gramaticalGender':      {apiOptions: 'dictionaries/grammatical-genders', name: 'Grammatical qualifiers', queryString: 'grammatical_gender', searchOptions: [] },
+      'register':              {apiOptions: 'dictionaries/registers', name: 'Registers', queryString: 'register', searchOptions: [] },
     };
     this.assignSearchFields();
   }
