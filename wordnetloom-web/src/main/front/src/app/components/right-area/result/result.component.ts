@@ -166,7 +166,7 @@ export class ResultComponent implements OnInit, OnDestroy {
         });
       }
 
-      if (updateGraph) {
+      if (updateGraph && !this.mobile) {
         this.graph.initializeFromSenseId(this.senseId);
       }
     });
@@ -188,7 +188,6 @@ export class ResultComponent implements OnInit, OnDestroy {
     if (this.content) {
       topLabel = this.content.lemma;
     }
-    this.graph.initializeFromSenseId(this.senseId);
     this.graphModal.open(GraphModalComponent, {
       maxWidth: '100vw',
       height: '99%',

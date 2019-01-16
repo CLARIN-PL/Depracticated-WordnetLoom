@@ -82,7 +82,6 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
       }
     };
 
-    console.log(this.graphCreator.Edge.prototype.initColor);
     this.graph.api.getGraph = function(senseId, callback) {
       this._getJson(self.http.apiBase + 'senses/{id}/graph'.replace('{id}', senseId), function(json) {
         if (json) {
