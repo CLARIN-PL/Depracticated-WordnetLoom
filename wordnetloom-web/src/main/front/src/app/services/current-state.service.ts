@@ -5,12 +5,6 @@ import {ActivatedRoute} from '@angular/router';
 export class CurrentStateService {
 
   private mobileStateBreakPoint = 768;
-  // private senseId = null;
-  // private navbarOpenState: boolean;
-  // private sidebarSearchResultsPanelOpen: boolean;
-  // private mobileState: boolean;
-  // private listAlphabetStyle: string = 'yivo';
-
   private state = {
     senseId:                       {value: null, persistent: false},
     navbarOpenState:               {value: false, persistent: false},
@@ -95,7 +89,6 @@ export class CurrentStateService {
   }
 
   setSidebarSearchResultPanelOpen(state: boolean): void {
-    // this.sidebarSearchResultsPanelOpen = state;
     this.state.sidebarSearchResultsPanelOpen.value = state;
     this.sidebarSearchResultsPanelOpenEmitter.emit(state);
     this.saveStateToLocalStorage();
@@ -103,16 +96,12 @@ export class CurrentStateService {
 
   setSenseId(id, graphInitiated = false) {
     if (this.state.senseId.value !== id) {
-      // this.senseId = id;
       this.state.senseId.value = id;
       this.senseIdEmitter.emit([id, graphInitiated]);
     }
   }
 
   setListAlphabetStyle(newState) {
-    // this.listAlphabetStyle = newState;
-    // this.listAlphabetStyleEmitter.emit(this.listAlphabetStyle);
-
     this.state.listAlphabetStyle.value = newState;
     this.listAlphabetStyleEmitter.emit(newState);
     this.saveStateToLocalStorage();
