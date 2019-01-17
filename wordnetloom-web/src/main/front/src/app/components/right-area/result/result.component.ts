@@ -61,13 +61,13 @@ export class ResultComponent implements OnInit, OnDestroy {
 
     this.settingsDict = this.dictionaryItems.getSearchFields();
 
-    const searchQueryParams = this.route.snapshot.queryParamMap;
-    if (searchQueryParams.keys.length > 0) {
-      // @ts-ignore - suppressing non existing error
-      this.sidebar.loadOptionsFromParameters(searchQueryParams.params);
+    this.senseId = this.route.snapshot.paramMap.get('lemma_id');
+
+    const searchQueryParams = this.route.snapshot.queryParamMap['params'];
+    if (Object.keys(searchQueryParams).length > 0 && !this.senseId) {
+      this.sidebar.loadOptionsFromParameters(searchQueryParams);
     }
 
-    this.senseId = this.route.snapshot.paramMap.get('lemma_id');
     this.state.setResultComponentRouteObserver(this.route);
 
     this.senseId = this.state.getSenseId();
@@ -144,7 +144,7 @@ export class ResultComponent implements OnInit, OnDestroy {
       const originalSenseContent = this.content;
 
       this.modalLabelEmitter.emit(this.content.lemma);
-      this.sidebar.assignSingleOptionIfEmpty(this.content);
+
 
 
       // load yiddish content
@@ -160,8 +160,12 @@ export class ResultComponent implements OnInit, OnDestroy {
             this.yiddishContentPresent = true;
           }
           this.checkSelectedTab();
+          this.sidebar.assignSingleOptionIfEmpty(originalSenseContent, this.yiddishContent);
         });
+      } else {
+        this.sidebar.assignSingleOptionIfEmpty(originalSenseContent);
       }
+
 
       if (response['_links']['synset']) {
         this.http.getAbsolute(response['_links']['synset']).subscribe(synsetResponse => {
@@ -211,6 +215,5 @@ export class ResultComponent implements OnInit, OnDestroy {
 
   toggleRightPanelOpen() {
     this.state.setRightDetailPanelOpen(!this.rightPanelOpen);
-    console.log(this.rightPanelOpen);
   }
 }

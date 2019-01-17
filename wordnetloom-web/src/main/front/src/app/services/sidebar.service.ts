@@ -3,7 +3,9 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {HttpService} from './http.service';
 import {Router} from '@angular/router';
-import {CurrentStateService} from "./current-state.service";
+import {CurrentStateService} from './current-state.service';
+import {YiddishContent} from '../components/right-area/result/yiddishcontent';
+import {SenseContent} from '../components/right-area/result/sensecontent';
 
 @Injectable()
 export class SidebarService {
@@ -95,12 +97,27 @@ export class SidebarService {
     return this.list;
   }
 
-  assignSingleOptionIfEmpty(content) {
+  assignSingleOptionIfEmpty(senseContent: SenseContent, yiddishContent?: YiddishContent[] | null) {
     if (this.list.length === 0) {
+
+      if (!yiddishContent) {
+        yiddishContent = [];
+      }
+
       this.list = [];
       this.list.push({
-        label: content.lemma,
-        id: content.senseId
+        label: senseContent.lemma,
+        id: senseContent.senseId,
+        variant: senseContent.variant,
+        variants: yiddishContent.map(yContent => {
+          return {
+            id: yContent.id,
+            variant_type: yContent.variant_type,
+            latin: yContent.differentAlphabetLemmas['latin'],
+            yiddish: yContent.differentAlphabetLemmas['yiddish'],
+            yivo: yContent.differentAlphabetLemmas['yivo']
+          };
+        })
       });
       this.listObservable.next(this.list);
     }
