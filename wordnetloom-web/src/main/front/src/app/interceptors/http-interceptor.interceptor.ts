@@ -3,11 +3,13 @@ import { HttpEvent, HttpRequest, HttpResponse, HttpInterceptor, HttpHandler } fr
 import { Observable } from 'rxjs/Rx';
 import {  tap } from 'rxjs/operators';
 import {RequestCacheService} from '../services/request-cache.service';
+import { LoadingBarService } from '@ngx-loading-bar/core';
 
 
 @Injectable()
 export class CachingInterceptor implements HttpInterceptor {
-  constructor(private cache: RequestCacheService) {}
+  constructor(private cache: RequestCacheService,
+              private loadingBar: LoadingBarService) {}
 
   // graph should be cached elsewhere
   notCacheableURIs = ['/graph'];
@@ -29,14 +31,19 @@ export class CachingInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const cachedResponse: HttpEvent<any> = this.cache.get(req);
 
+    this.loadingBar.start();
+
     if (!this.isRequestCacheable(req)) {
+      this.loadingBar.complete();
       return next.handle(req);
     }
 
     if (cachedResponse) {
+      this.loadingBar.complete();
       return Observable.of(cachedResponse);
     }
 
+    this.loadingBar.complete();
     return this.sendRequest(req, next, this.cache);
   }
 

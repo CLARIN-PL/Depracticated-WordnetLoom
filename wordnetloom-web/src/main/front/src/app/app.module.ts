@@ -12,6 +12,7 @@ import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {CurrentStateService} from './services/current-state.service';
 import {AvailableSearchFiltersService} from './services/configuration/available-search-filters.service';
 import {RouterModule, Routes} from '@angular/router';
+import { LoadingBarModule } from '@ngx-loading-bar/core';
 import {
   MatButtonModule, MatCheckboxModule, MatChipsModule, MatExpansionModule, MatInputModule, MatListModule,
   MatFormFieldModule,
@@ -271,6 +272,7 @@ export function setupTranslateFactory(
     ClickOutsideModule,
     MatCardModule,
     MatDialogModule,
+    LoadingBarModule,
   ],
   providers: [
     HttpService,

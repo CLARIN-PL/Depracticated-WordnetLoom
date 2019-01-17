@@ -3,6 +3,7 @@ import {ActivatedRoute, NavigationEnd, ParamMap, Router} from '@angular/router';
 import {TranslateService} from './services/translate.service';
 import {CurrentStateService} from './services/current-state.service';
 import {Subscription} from 'rxjs';
+import { LoadingBarService } from '@ngx-loading-bar/core';
 
 
 @Component({
@@ -16,13 +17,17 @@ export class AppComponent implements OnInit {
   mobileStateSubscription: Subscription = null;
   constructor(private router: Router,
               private translate: TranslateService,
-              private currentState: CurrentStateService) {}
+              private currentState: CurrentStateService,
+              private loadingBar: LoadingBarService) {}
 
   ngOnInit() {
     this.initShowingHeaderSearchBar();
     this.mobileStateSubscription = this.currentState.getMobileStateEmitter().subscribe(
       mobileState => this.mobile = mobileState
       );
+
+    // this.loadingBar.start();
+
   }
 
   initShowingHeaderSearchBar() {
