@@ -35,16 +35,16 @@
         <a routerLink="/about"><button (click)="hideNav()" class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'about_link' | translate}}</button></a>
       </li>
 
-      <li class="nav-item">
-        <mat-button-toggle-group class="lang-button-group" #group="matButtonToggleGroup" value="en">
-          <mat-button-toggle class="nav-lang-select-btn" (click)="selectLang('en'); hideNav();" value="en">
-            {{'EN' | translate}}
-          </mat-button-toggle>
-          <mat-button-toggle class="nav-lang-select-btn" (click)="selectLang('pl'); hideNav()" value="pl">
-            {{'PL' | translate}}
-          </mat-button-toggle>
-        </mat-button-toggle-group>
-      </li>
+      <!--<li class="nav-item">-->
+        <!--<mat-button-toggle-group class="lang-button-group" #group="matButtonToggleGroup" value="en">-->
+          <!--<mat-button-toggle class="nav-lang-select-btn" (click)="selectLang('en'); hideNav();" value="en">-->
+            <!--{{'EN' | translate}}-->
+          <!--</mat-button-toggle>-->
+          <!--<mat-button-toggle class="nav-lang-select-btn" (click)="selectLang('pl'); hideNav()" value="pl">-->
+            <!--{{'PL' | translate}}-->
+          <!--</mat-button-toggle>-->
+        <!--</mat-button-toggle-group>-->
+      <!--</li>-->
 
       <!--<li class="nav-item dropdown dropdown-sm hidden-xs">-->
         <!--<a href="#" class="dropdown-toggle flag" data-toggle="dropdown" role="button" aria-expanded="false"><img src="http://wojciechrauk.pl/wp-content/themes/rauk_wordpress/img/en.png" alt=""><span class="caret"></span></a>-->
@@ -71,16 +71,16 @@
             <app-input-with-keyboard  [floatingSearch]="false" class="text-center center justify-content-center"></app-input-with-keyboard>
           </div>
         </li>
-        <li class="nav-item">
-          <mat-button-toggle-group class="lang-button-group" #group="matButtonToggleGroup" value="en">
-            <mat-button-toggle class="nav-lang-select-btn" (click)="selectLang('en'); hideNav();" value="en">
-              {{'EN' | translate}}
-            </mat-button-toggle>
-            <mat-button-toggle class="nav-lang-select-btn" (click)="selectLang('pl'); hideNav();" value="pl">
-              {{'PL' | translate}}
-            </mat-button-toggle>
-          </mat-button-toggle-group>
-        </li>
+        <!--<li class="nav-item">-->
+          <!--<mat-button-toggle-group class="lang-button-group" #group="matButtonToggleGroup" value="en">-->
+            <!--<mat-button-toggle class="nav-lang-select-btn" (click)="selectLang('en'); hideNav();" value="en">-->
+              <!--{{'EN' | translate}}-->
+            <!--</mat-button-toggle>-->
+            <!--<mat-button-toggle class="nav-lang-select-btn" (click)="selectLang('pl'); hideNav();" value="pl">-->
+              <!--{{'PL' | translate}}-->
+            <!--</mat-button-toggle>-->
+          <!--</mat-button-toggle-group>-->
+        <!--</li>-->
 
         <li class="nav-item">
           <a routerLink="/"><button (click)="hideNav()" class="nav-link m-2 menu-item" type="button" color="primary" mat-button>{{'home_link' | translate}} </button></a>
