@@ -198,3 +198,7 @@
   font-style: italic;
 }
 
+// lower the main search bar placeholder
+/deep/ .main-search-field.mat-form-field-appearance-legacy.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+  transform: translateY(-1em) scale(.75) perspective(100px) translateZ(.001px) !important;
+}
