@@ -38,7 +38,8 @@ export class ResultComponent implements OnInit, OnDestroy {
   relations: Object = null;
   footerFirstTabSelected = true;
   showNothingFoundMsg = false;
-  rightPanelHidden = false;
+  rightPanelOpen;
+  rightPanelOpenListener: Subscription = null;
   footerPanelHidden = false;
 
   mobile = true;
@@ -107,6 +108,11 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.listAlphabetStyle = this.state.getListAlphabetStyle();
     this.listAlphabetStyleSubscription = this.state.getListAlphabetStyleEmitter().subscribe(state => {
       this.listAlphabetStyle = state;
+    });
+
+    this.rightPanelOpen = this.state.getRightDetailPanelOpen();
+    this.rightPanelOpenListener = this.state.getRightDetailPanelOpenEmitter().subscribe(panelOpen => {
+      this.rightPanelOpen = panelOpen;
     });
   }
 
@@ -201,5 +207,10 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
   selectedTabChange(event) {
     this.currentYiddishTabIndex = event.index - 1;
+  }
+
+  toggleRightPanelOpen() {
+    this.state.setRightDetailPanelOpen(!this.rightPanelOpen);
+    console.log(this.rightPanelOpen);
   }
 }

@@ -35,6 +35,7 @@ export class UnitComponent implements OnInit, OnDestroy {
         this.sidebarContent = data;
       });
 
+    this.showingSideBar = this.state.getSidebarRearchResultsPanelOpen();
     this.sidebarOpenListener = this.state.getSidebarRearchResultsPanelOpenEmitter().subscribe(
       (state) => {
         this.showingSideBar = state;

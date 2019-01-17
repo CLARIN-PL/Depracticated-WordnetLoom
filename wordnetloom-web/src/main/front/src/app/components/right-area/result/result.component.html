@@ -9,7 +9,7 @@
 <div class="row main-area-row" [ngClass]="{'expanded':footerPanelHidden}">
 
   <!--GRAPH AREA-->
-  <div class="col-sm-12 col-md-8 graph-area" [ngClass]="{'col-sm-12 col-md-12': rightPanelHidden}">
+  <div class="col-sm-12 col-md-8 graph-area" [ngClass]="{'col-sm-12 col-md-12': !rightPanelOpen}">
     <div *ngIf="!content" class="title-row"></div>
     <div *ngIf="content" class="row title-row">
       <div class="text-center col-12">
@@ -28,15 +28,15 @@
       </div>
     </div>
     <app-graph-main *ngIf="!mobile"></app-graph-main>
-    <button *ngIf="!mobile" class="expand-btn expand-right" (click)=" rightPanelHidden= !rightPanelHidden; ">
-      <i *ngIf="!rightPanelHidden" class="fa fa-chevron-right"></i>
-      <i *ngIf="rightPanelHidden" class="fa fa-chevron-left"></i>
+    <button *ngIf="!mobile" class="expand-btn expand-right" (click)="toggleRightPanelOpen();">
+      <i *ngIf="rightPanelOpen" class="fa fa-chevron-right"></i>
+      <i *ngIf="!rightPanelOpen" class="fa fa-chevron-left"></i>
     </button>
   </div>
   <!--GRAPH AREA END-->
 
   <!--SENSE DETAIL AREA-->
-  <div *ngIf="senseLoaded" class="col-sm-12 col-md-4 sense-detail-col" [ngClass]="{'d-none': rightPanelHidden}">
+  <div *ngIf="senseLoaded" class="col-sm-12 col-md-4 sense-detail-col" [ngClass]="{'d-none': !rightPanelOpen}">
     <h5 class="text-center">Info Window:</h5>
     <mat-card class="mb-2">
 
