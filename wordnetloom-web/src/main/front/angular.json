@@ -19,7 +19,8 @@
             "assets": [
               "src/assets",
               "src/favicon.ico",
-              "src/graph-js"
+              "src/graph-js",
+              "src/robots.txt"
             ],
             "styles": [
               "src/styles.scss",
