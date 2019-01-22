@@ -11,7 +11,7 @@
         </div>
 
         <!--SIDE BAR-->
-        <div class="col-12 col-md-4 col-lg-2 option-area" [ngClass]="{'hidden': !showingSideBar}"> <!-- position set as fixed -->
+        <div class="col-12 col-md-4 col-lg-3 col-xl-2 option-area" [ngClass]="{'hidden': !showingSideBar}"> <!-- position set as fixed -->
 
           <div [hidden]="sidebarContent.length < 1" class="options-title">
             <h4>Wordlist:</h4>
@@ -52,9 +52,12 @@
                  [queryParams]="{variant: variant.id}"
                  [matTooltipPosition]="'right'"
                  [matTooltipClass]="'mat-tooltip-top-fix'">
-                 {{variant[sideBarListStyle]}}
-                <span *ngIf="variant.variant_type === 'Yiddish_Primary_Lemma'">&#160;{{item.variant}}</span>
-                <i *ngIf="variant.variant_type !== 'Yiddish_Primary_Lemma'"> ({{variant.variant_type}})</i>
+                 <span class="label" [ngClass]="{'align-right': sideBarListStyle === 'yiddish'}">
+                   <span *ngIf="variant.variant_type !== 'Yiddish_Primary_Lemma' && sideBarListStyle === 'yiddish'">({{variant.variant_type}})&#160;</span>
+                   <span>{{variant[sideBarListStyle]}}</span>
+                   <span *ngIf="variant.variant_type !== 'Yiddish_Primary_Lemma' && sideBarListStyle !== 'yiddish'">&#160;({{variant.variant_type}})</span>
+                   <span *ngIf="variant.variant_type === 'Yiddish_Primary_Lemma'">&#160;{{item.variant}}</span>
+                 </span>
               </a>
 
               <!--<a *ngFor="let temp of ['Yiddish Primary Lemma', 'Philological', 'Morphological']" mat-list-item-->
@@ -84,7 +87,7 @@
 
         <!--SIDE BAR END-->
 
-        <div class="col-12 right-area offset-top" [ngClass]="{'col-md-8 offset-md-4 col-lg-10 offset-lg-2': showingSideBar}">
+        <div class="col-12 right-area offset-top" [ngClass]="{'col-md-8 offset-md-4 col-lg-9 offset-lg-3 col-xl-10 offset-xl-2': showingSideBar}">
           <app-right-area></app-right-area>
         </div>
 

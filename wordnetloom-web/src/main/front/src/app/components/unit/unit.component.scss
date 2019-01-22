@@ -99,11 +99,21 @@
 
 .option-list .option-list-item.mat-list-item.underlist-item{
   height: 25px;
-  margin-left: 25px;
+  text-align:right;
   line-height: 0.8em;
   font-size: 0.8em;
   white-space: nowrap;
   overflow: hidden;
+
+  .label {
+    padding-left: 25px;
+  }
+}
+
+
+.option-list .option-list-item.mat-list-item.underlist-item .label.align-right{
+  padding-left: 0;
+  padding-right: 25px;
 }
 
 .options-title{
@@ -218,4 +228,9 @@ $size: 2rem;
   border-top-right-radius: $size;
 
   padding-top: 1.5rem;
+}
+
+.align-right {
+  width: 100%;
+  text-align: right;
 }
