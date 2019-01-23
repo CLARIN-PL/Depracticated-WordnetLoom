@@ -72,9 +72,13 @@ export class GraphMainComponent implements OnInit, AfterViewInit {
       relName = relName.split('_')[0].split('>')[0];
 
       const settings = {
-        ps: '#AA1D45' ,
-        der: '#7FB881',
-        Eq: '#2A4089'
+        // ps: '#AA1D45' ,
+        // der: '#7FB881',
+        // Eq: '#2A4089'
+
+        ps: '#ee0039' ,
+        der: '#30cb35',
+        Eq: '#1c24bf'
       };
 
       if (relName && settings[relName]) {

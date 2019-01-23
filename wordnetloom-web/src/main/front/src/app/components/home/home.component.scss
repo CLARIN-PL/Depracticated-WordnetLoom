@@ -1,3 +1,6 @@
+@import "~variables.scss";
+
+
 .welcome{
   text-align: center;
 }
@@ -20,7 +23,7 @@ footer{
 
 .fancy-checkbox i {
   font-size: 1.2em;
-  color: #3f51b5;
+  color: $primary-color;
   cursor: pointer;
 
   margin: 3px 5px 4px 0;
@@ -114,4 +117,47 @@ footer{
 }
 .card {
   margin-bottom: 15px;
+  min-height: 275px;
+
+  mat-card-actions{
+    position: absolute;
+    bottom: 18px;
+    right: 18px;
+  }
+  a.hidden-link-overlay{
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%; width: 100%;
+  }
+
+  &:hover {
+    //box-shadow: 5px 5px 1px -1px rgba(0,0,0,.2),
+    //            0 1px 1px 0 rgba(0,0,0,.14),
+    //            0 1px 3px 0 rgba(0,0,0,.12)
+
+    box-shadow: 0 2px 5px 3px rgba(0,0,0,.2),
+                0 1px 1px 0 rgba(0,0,0,.14),
+                0 1px 3px 0 rgba(0,0,0,.12);
+  }
+
+  /deep/ .mat-card-header-text {
+    width: 100%;
+    text-align: center;
+  }
+}
+.card-title {
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.main-page-icon-wrapper{
+  //width: 100%;
+  text-align: center;
+  font-size: 4em;
+  //background-color: $primary-color;
+  color:$primary-color;
+  padding: 5px 0;
+  width: calc(100% + 32px);
+  margin: 0 -16px 16px -16px;
+
 }

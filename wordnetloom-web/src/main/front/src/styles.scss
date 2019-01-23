@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
-@import "../node_modules/font-awesome/css/font-awesome.min.css";
+//@import "../node_modules/font-awesome/css/font-awesome.min.css";
+@import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "variables.scss";
 
@@ -31,7 +32,7 @@
 
 ::-webkit-scrollbar
 {
-  width: 4px;
+  width: 8px;
   height: 4px;
   background-color: $background-color;
 }
@@ -124,33 +125,44 @@ button[mat-raised-button].mat-primary:hover {
   color: white !important;
 }
 
+$background-size: 30px;
 .clarin-graph-visualization #download-picture {
   background-image: none !important;
   cursor: pointer;
-  border-radius: 50px;
-  border: 2px $primary-color solid !important;
+  border-radius: 100px;
   color: $primary-color;
-  transition: background-color .2s;
+
+  bottom: 90px !important;
+  right: 20px !important;
+
+  background-size: $background-size $background-size !important;
+  height: $background-size !important;
+  width: $background-size !important;
+
+  transition: color .2s, background-color .2s;
   &:hover {
     color: white;
     background-color: $primary-color;
-    height: 50px !important;
-    width: 55px !important;
+
+    background-size: $background-size $background-size !important;
+    height: $background-size !important;
+    width: $background-size !important;
+
     &:before {
       color: white;
     }
   }
 
   &:before {
-    content: "\f063";
-    font-family: FontAwesome;
+    content: "\f358";
+    font-family: 'Font Awesome 5 Free';
     font-style: normal;
-    font-weight: normal;
+    font-weight: bold;
     text-decoration: inherit;
     color: $primary-color;
-    font-size: 2em;
+    font-size: 3em;
     position: absolute;
-    top: 3px;
-    left: 11px;
+    top: -20px;
+    left: -10px;
   }
 }

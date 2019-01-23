@@ -44,31 +44,67 @@
   <div class="container">
     <div class="row">
     <div class="col-12 col-md-4">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">Dictionary Content</h4>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a routerLink="/dictionary-content" class="btn btn-primary">{{ 'See' | translate}}</a>
+
+      <mat-card class="card">
+        <a class="hidden-link-overlay" routerLink="/dictionary-content"></a>
+        <div class="main-page-icon-wrapper">
+          <i class="fas fa-book-open"></i>
         </div>
-      </div>
+        <mat-card-header>
+          <mat-card-title><h4>Dictionary Content</h4></mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>
+            This dictionary is a product of a research project on Yiddish-Polish language contact...
+          </p>
+        </mat-card-content>
+        <mat-card-actions *ngIf="mobile">
+          <a mat-raised-button  color="primary" routerLink="/dictionary-content" class="btn btn-primary">{{ 'See' | translate}}</a>
+        </mat-card-actions>
+      </mat-card>
+
     </div>
     <div class="col-12 col-md-4">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">How to Use</h4>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a routerLink="/instructions" class="btn btn-primary">{{ 'See' | translate}}</a>
+
+      <mat-card class="card">
+        <a class="hidden-link-overlay" routerLink="/instructions"></a>
+        <div class="main-page-icon-wrapper">
+          <i class="fas fa-info"></i>
         </div>
-      </div>
+        <mat-card-header>
+          <mat-card-title><h4>How to Use</h4></mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>
+            The “Dictionary of Polish Borrowings in Yiddish” is designed around the concept of word families,
+            i.e. groups of related (cognate) words...
+          </p>
+        </mat-card-content>
+        <mat-card-actions *ngIf="mobile">
+          <a mat-raised-button  color="primary" routerLink="/instructions" class="btn btn-primary">{{ 'See' | translate}}</a>
+        </mat-card-actions>
+      </mat-card>
+
     </div>
     <div class="col-12 col-md-4">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">Sources</h4>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a routerLink="/sources" class="btn btn-primary">{{ 'See' | translate}}</a>
+      <mat-card class="card">
+        <a class="hidden-link-overlay" routerLink="/sources"></a>
+        <div class="main-page-icon-wrapper">
+          <i class="fas fa-list-ul"></i>
         </div>
-      </div>
+        <mat-card-header>
+          <mat-card-title><h4>Sources</h4></mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>
+            The main goal of our investigation was not to create an exhaustive dictionary
+            but rather to establish the grade of rootedness of Polish loanwords in Yiddish...
+          </p>
+        </mat-card-content>
+        <mat-card-actions *ngIf="mobile">
+          <a mat-raised-button  color="primary" routerLink="/sources" class="btn btn-primary">{{ 'See' | translate}}</a>
+        </mat-card-actions>
+      </mat-card>
     </div>
   </div>
   </div>

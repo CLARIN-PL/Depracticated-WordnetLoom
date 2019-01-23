@@ -24,13 +24,21 @@ export class AvailableSearchFiltersService {
       'suffix':                {apiOptions: 'dictionaries/suffixes', name: 'Suffix', queryString: 'particle_suffix', searchOptions: [] },
       'gramaticalGender':      {apiOptions: 'dictionaries/grammatical-genders', name: 'Grammatical qualifiers', queryString: 'grammatical_gender', searchOptions: [] },
       'register':              {apiOptions: 'dictionaries/registers', name: 'Registers', queryString: 'register', searchOptions: [] },
+      'sortBy':                {apiOptions: null, name: 'Sort by', queryString: 'sort_by', searchOptions: [
+                                  {id: 'yiddish', name: 'Yiddish'},
+                                  {id: 'yivo', name: 'yivo'}
+                               ]}
     };
     this.assignSearchFields();
+    console.log(this);
   }
 
   private assignSearchFields() {
     for (const key in this.searchFields) {
       const field =  this.searchFields[key];
+      if (!field['apiOptions']) {
+        continue;
+      }
       this.http.getGlobalOptions(field['apiOptions']).subscribe(
         (response) => {
           // this.searchFields[key]['searchOptions'] = response.entries;

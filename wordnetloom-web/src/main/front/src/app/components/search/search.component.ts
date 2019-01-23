@@ -22,7 +22,8 @@ export class SearchComponent implements OnInit {
     'lexicalCharacteristic',
     'yiddishDomain',
     'yiddishDomainModifier',
-    'gramaticalGender'
+    'gramaticalGender',
+    'sortBy'
   ];
 
   basicSearchKeys = [

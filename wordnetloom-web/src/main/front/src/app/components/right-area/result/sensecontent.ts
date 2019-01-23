@@ -27,14 +27,24 @@ export class SenseContent {
   }
 
   private setContent(jsonData, dictionarySettings) {
-    const fieldNames = {
-      'lemma': {viewName: 'Latin spelling', type: 'simple'},
-      'lexicon': {viewName: 'Lexicon', type: 'simple_dict',  dictName: 'lexicon'},
-      'part_of_speech': {viewName: 'Part of speech', type: 'simple_dict', dictName: 'partOfSpeech'},
-      'domain': {viewName: 'Domain', type: 'simple_dict',  dictName: 'domain'},
-      'definition': {viewName: 'Definition', type: 'simple'},
-      'register': {viewName: 'Register', type: 'simple_dict',  dictName: 'register'},
-    };
+    let fieldNames;
+    if (this.flag === 'Germanet') {
+      fieldNames = {
+        'lemma': {viewName: 'Latin spelling', type: 'simple'},
+        'lexicon': {viewName: 'Lexicon', type: 'simple_dict',  dictName: 'lexicon'},
+        'part_of_speech': {viewName: 'Part of speech', type: 'simple_dict', dictName: 'partOfSpeech'}
+      };
+    } else {
+      fieldNames = {
+        'lemma': {viewName: 'Latin spelling', type: 'simple'},
+        'lexicon': {viewName: 'Lexicon', type: 'simple_dict',  dictName: 'lexicon'},
+        'part_of_speech': {viewName: 'Part of speech', type: 'simple_dict', dictName: 'partOfSpeech'},
+        'domain': {viewName: 'Domain', type: 'simple_dict',  dictName: 'domain'},
+        'definition': {viewName: 'Definition', type: 'simple'},
+        'register': {viewName: 'Register', type: 'simple_dict',  dictName: 'register'},
+      };
+    }
+
     const fields = [];
 
     for (const key in fieldNames) {

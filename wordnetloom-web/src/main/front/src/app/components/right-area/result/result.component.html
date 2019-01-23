@@ -16,7 +16,7 @@
         <h3>{{ content.lemma }}</h3>
         <h4>
           <span matTooltip="Part of speech">{{ content.partOfSpeech }}</span>
-          <span *ngIf="content.grammaticalGender" matTooltip="Grammatical gender">,
+          <span *ngIf="content.grammaticalGender" matTooltip="Grammatical qualifier">,
             {{ content.grammaticalGender }}
           </span>
           <span *ngIf="content.flag !== 'Yiddish'" matTooltip="Lexicon">, {{ content.flag }}
@@ -37,7 +37,7 @@
 
   <!--SENSE DETAIL AREA-->
   <div *ngIf="senseLoaded" class="col-sm-12 col-md-4 sense-detail-col" [ngClass]="{'d-none': !rightPanelOpen}">
-    <h5 class="text-center">Info Window:</h5>
+    <h5 class="text-center">Linguistic information:</h5>
     <mat-card class="mb-2">
 
       <mat-tab-group *ngIf="yiddishContentPresent" [selectedIndex]="currentYiddishTabIndex + 1"
