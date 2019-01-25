@@ -26,11 +26,10 @@ export class AvailableSearchFiltersService {
       'register':              {apiOptions: 'dictionaries/registers', name: 'Registers', queryString: 'register', searchOptions: [] },
       'sortBy':                {apiOptions: null, name: 'Sort by', queryString: 'sort_by', searchOptions: [
                                   {id: 'yiddish', name: 'Yiddish'},
-                                  {id: 'yivo', name: 'yivo'}
+                                  {id: 'yivo', name: 'Yivo'}
                                ]}
     };
     this.assignSearchFields();
-    console.log(this);
   }
 
   private assignSearchFields() {

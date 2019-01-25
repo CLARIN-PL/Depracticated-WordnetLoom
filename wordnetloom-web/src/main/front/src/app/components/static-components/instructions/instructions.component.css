@@ -38,3 +38,9 @@ ol > li:before {
   font-weight: 700;
   color: black;
 }
+.content-container{
+  text-align: justify;
+}
+.padding-35{
+  padding: 0 35px;
+}

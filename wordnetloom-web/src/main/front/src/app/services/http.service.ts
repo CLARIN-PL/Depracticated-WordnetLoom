@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/catch';
 import {lemmas} from './avaliable_lemmas_temp';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Injectable()
 export class HttpService {
@@ -14,14 +14,17 @@ export class HttpService {
 
 
   private get(uri, base?: string): Observable<any> {
-    // const headers = new Headers(options);
-    // const opt = new RequestOptions({ headers: headers});
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Accept-Language': 'en',
+      })
+    };
 
     if (!base) {
       base = this.apiBase;
     }
 
-    return this.http.get(base + uri);
+    return this.http.get(base + uri, httpOptions);
     // .finally(() => {}); // possibly add cache here?
   }
 

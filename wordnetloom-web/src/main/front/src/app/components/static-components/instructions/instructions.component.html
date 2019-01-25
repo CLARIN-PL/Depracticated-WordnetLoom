@@ -7,11 +7,32 @@
           <p class="lead">The Online Dictionary of Polish Borrowings in Yiddish</p>
         </div>
       </div>
-      <div class="container">
+      <!--<div class="container-fluid">-->
+        <div class="container">
+          <div class="col-12">
+            <h4 class="padding-35">Menu:</h4>
+            <ol>
+              <li><a [routerLink]="['/instructions']" fragment="dictionary-structure">Dictionary structure</a></li>
+              <li><a [routerLink]="['/instructions']" fragment="home-page">Home page</a></li>
+              <li>
+                <a [routerLink]="['/instructions']" fragment="dictionary-view">Dictionary view</a>
+                <ol>
+                  <li><a [routerLink]="['/instructions']" fragment="search-bar">Search bar</a></li>
+                  <li><a [routerLink]="['/instructions']" fragment="wordlist">Wordlist</a></li>
+                  <li><a [routerLink]="['/instructions']" fragment="relations-graph">Relations graph</a></li>
+                  <li><a [routerLink]="['/instructions']" fragment="info-window">Info window</a></li>
+                </ol>
+              </li>
+              <li><a [routerLink]="['/instructions']" fragment="advanced-search">Advanced search</a></li>
+            </ol>
+          </div>
+        </div>
+      <!--</div>-->
+      <div class="container content-container">
         <div class="row">
           <div class="col-12">
             <ol>
-              <li>
+              <li id="dictionary-structure">
                 <h5 class="list-item-title">A few words on the structure of the dictionary</h5>
                 <p>The “Dictionary of Polish Borrowings in Yiddish” is designed around the concept of word families,
                   i.e. groups of related (cognate) words. For example,
@@ -28,7 +49,7 @@
                 </p>
               </li>
 
-              <li>
+              <li id="home-page">
                 <h5 class="list-item-title">Home page</h5>
                 <p>
                   From here you can perform basic searches. Simply type the chosen word in Yiddish script or the YIVO transliteration and you will be taken to the dictionary view. Leaving the field empty and pressing search will display all entries in the dictionary.
@@ -41,17 +62,17 @@
                 </p>
               </li>
 
-              <li>
+              <li id="dictionary-view">
                 <h5 class="list-item-title">The dictionary view</h5>
                 <p>The dictionary view is divided into four main spaces: 1) the search bar (top), 2) the wordlist (left), 3) the relations graph (middle), 4) the info window (right).</p>
 
               <ol>
-                  <li>
+                  <li id="search-bar">
                     <h5 class="list-item-title">The search bar</h5>
                     <p>Works the same as on the Home Page.</p>
                   </li>
 
-                  <li>
+                  <li id="wordlist">
                     <h5 class="list-item-title">The wordlist</h5>
                     <p>
                       The <i>wordlist</i> shows your search results.
@@ -76,7 +97,7 @@
                       but information on the variant will be shown in the <i>info window</i>.
                     </p>
                   </li>
-                  <li>
+                  <li id="relations-graph">
                     <h5 class="list-item-title">The relations graph</h5>
                     <p>On the top of the graph window you will see basic grammatical information on the chosen word, eg. part of speech, grammatical gender, plural forms if applicable.</p>
                     <p>You can click on any word visible on the graph to select it. This will display the basic information about it in the area above and details to the right, in the <i>info window</i>.</p>
@@ -129,8 +150,8 @@
                     </ul>
                   </li>
 
-                  <li>
-                    <h5 class="list-item-title">The info windon</h5>
+                  <li id="info-window">
+                    <h5 class="list-item-title">The info window</h5>
                     <p>
                       The <i>info window</i> displays detailed information on the word selected from the
                       graph or one of its variants. The latter can be selected either from the <i>wordlist</i>
@@ -211,7 +232,7 @@
                     <p>Some of the above-mentioned categories may be used to quickly find all the entries that share them. Simply click on an element in each category to display such entries in the wordlist. The “navigable” categories are: <i>semantic field, style, lexical characteristic, rootedness, age, etymological root</i>, and <i>morphology</i>. For example, if you click on the suffix -EVE- in <i>iber|khitr|eve|n</i>, you will see all the words that have it.</p>
                 </ol>
               </li>
-              <li>
+              <li id="advanced-search">
                 <h5 class="list-item-title">Advanced search.</h5>
                 <p>The advanced search options overlay will provide you two ways in which you can refine your search.</p>
                 <p>
