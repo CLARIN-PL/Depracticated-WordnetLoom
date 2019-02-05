@@ -10,7 +10,8 @@ services:
     volumes:
       - /opt/docker_data/mysql_data:/var/lib/mysql
     container_name: clarinpl_wordnetloom_mysql
-
+    ports:
+      - "4306:3306"
   wildfly:
     build: .
     restart: always

@@ -20,8 +20,8 @@ import javax.swing.*;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
 
-
-public class Application implements Loggable {
+public class
+        Application implements Loggable {
 
     public static final String PROGRAM_NAME_VERSION = "WordnetLoom 2.0";
 
