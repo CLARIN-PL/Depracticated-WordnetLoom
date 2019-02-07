@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
+import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
 import pl.edu.pwr.wordnetloom.synset.dto.CriteriaDTO;
 import pl.edu.pwr.wordnetloom.client.systems.listeners.SimpleListenerInterface;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractView;
@@ -37,7 +38,7 @@ public class LexicalUnitsView extends AbstractView {
      */
     public void refreshData() {
         LexicalUnitsViewUI viewUI = (LexicalUnitsViewUI) getUI();
-        viewUI.loadUnits();
+        viewUI.loadUnits((SenseCriteriaDTO) getCriteria());
     }
 
     /**

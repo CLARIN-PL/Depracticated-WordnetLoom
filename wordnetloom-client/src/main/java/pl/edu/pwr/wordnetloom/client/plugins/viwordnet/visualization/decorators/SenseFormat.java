@@ -9,6 +9,9 @@ public class SenseFormat {
     private static final String SENSE_FORMAT = "%s %s* (%s)";
 
     public static String getText(Sense sense) {
+        if(sense.getWord() == null){
+            return "";
+        }
         String word = sense.getWord().getWord();
         String variant = String.valueOf(sense.getVariant());
         String domain = LocalisationManager.getInstance().getLocalisedString(sense.getDomain().getName());
@@ -25,6 +28,9 @@ public class SenseFormat {
     }
 
     public static String getTextWithLexicon(Sense sense) {
+        if(sense.getLexicon() == null){
+            return " "; // when return space, list item has normal height
+        }
         String lexicon = sense.getLexicon().getIdentifier();
         return getText(sense) + " " + lexicon;
     }

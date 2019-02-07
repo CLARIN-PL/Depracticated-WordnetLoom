@@ -40,7 +40,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
     protected WebFrame frame = null;
     private WebPanel mainPane;
 
-    protected WebPanel statusPanel;
     private MenuHolder menuHolder;
     private static BusyGlassPane busyPanel;
 
@@ -172,7 +171,6 @@ public final class PanelWorkbench implements WindowListener, Workbench, Loggable
 
 
                 mainPane.add(perspective.getContent(), BorderLayout.CENTER);
-                mainPane.add(statusPanel, BorderLayout.SOUTH);
                 mainPane.invalidate();
                 frame.setContentPane(mainPane);
 

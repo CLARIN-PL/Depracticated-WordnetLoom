@@ -17,12 +17,26 @@ public abstract class Dictionary extends GenericEntity {
 
     private static final long serialVersionUID = -7858918337069154092L;
 
+    public Dictionary(){
+    }
+
     @NotNull
     @Column(name = "name_id")
     protected Long name;
 
     @Column(name = "description_id")
     protected Long description;
+
+    @Column(name = "is_default")
+    protected Boolean isDefault;
+
+    public Boolean getDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(Boolean aDefault) {
+        isDefault = aDefault;
+    }
 
     public Long getName() {
         return name;

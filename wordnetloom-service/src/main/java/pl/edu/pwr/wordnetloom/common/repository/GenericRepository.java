@@ -29,12 +29,14 @@ public abstract class GenericRepository<T> {
     }
 
     public void delete(T entity) {
-        getEntityManager().remove(entity);
+//        getEntityManager().remove(entity);
+        getEntityManager().remove(getEntityManager().contains(entity) ? entity: getEntityManager().merge(entity));
     }
 
     public void delete(final Long id) {
         if (id != null) {
             getEntityManager().remove(findById(id));
+            getEntityManager().flush();
         }
     }
 
@@ -47,6 +49,7 @@ public abstract class GenericRepository<T> {
 
 
     public List<T> findAll(final String orderField) {
+        System.out.println("Select e From " + getPersistentClass().getSimpleName() + " e Order by e." + orderField);
         return getEntityManager().createQuery(
                 "Select e From " + getPersistentClass().getSimpleName() + " e Order by e." + orderField)
                 .getResultList();

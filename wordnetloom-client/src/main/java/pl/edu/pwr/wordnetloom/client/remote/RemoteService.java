@@ -13,23 +13,26 @@ import pl.edu.pwr.wordnetloom.senserelation.service.SenseRelationServiceRemote;
 import pl.edu.pwr.wordnetloom.synset.service.SynsetServiceRemote;
 import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceRemote;
 import pl.edu.pwr.wordnetloom.user.service.UserServiceRemote;
+import pl.edu.pwr.wordnetloom.word.service.WordServiceRemote;
+import pl.edu.pwr.wordnetloom.wordform.service.WordFormServiceRemote;
 
 public final class RemoteService {
 
-    public static SenseRelationServiceRemote senseRelationRemote = RemoteConnectionProvider.getInstance().lookupForService(SenseRelationServiceRemote.class);
-    public static SenseServiceRemote senseRemote = RemoteConnectionProvider.getInstance().lookupForService(SenseServiceRemote.class);
-    public static RelationTypeServiceRemote relationTypeRemote = RemoteConnectionProvider.getInstance().lookupForService(RelationTypeServiceRemote.class);
-    public static SynsetRelationServiceRemote synsetRelationRemote = RemoteConnectionProvider.getInstance().lookupForService(SynsetRelationServiceRemote.class);
-    public static SynsetServiceRemote synsetRemote = RemoteConnectionProvider.getInstance().lookupForService(SynsetServiceRemote.class);
-    public static RelationTestServiceRemote relationTestRemote = RemoteConnectionProvider.getInstance().lookupForService(RelationTestServiceRemote.class);
-    public static DomainServiceRemote domainServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(DomainServiceRemote.class);
-    public static LexiconServiceRemote lexiconServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(LexiconServiceRemote.class);
-    public static PartOfSpeechServiceRemote partOfSpeechServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(PartOfSpeechServiceRemote.class);
-    public static CorpusExampleServiceRemote corpusExampleServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(CorpusExampleServiceRemote.class);
-    public static UserServiceRemote userServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(UserServiceRemote.class);
-    public static LocalisedStringServiceRemote localisedStringServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(LocalisedStringServiceRemote.class);
-    public static DictionaryServiceRemote dictionaryServiceRemote = RemoteConnectionProvider.getInstance().lookupForService(DictionaryServiceRemote.class);
-
+    public static SenseRelationServiceRemote senseRelationRemote = ConnectionProvider.getInstance().lookupForService(SenseRelationServiceRemote.class);
+    public static SenseServiceRemote senseRemote = ConnectionProvider.getInstance().lookupForService(SenseServiceRemote.class);
+    public static RelationTypeServiceRemote relationTypeRemote = ConnectionProvider.getInstance().lookupForService(RelationTypeServiceRemote.class);
+    public static SynsetRelationServiceRemote synsetRelationRemote = ConnectionProvider.getInstance().lookupForService(SynsetRelationServiceRemote.class);
+    public static SynsetServiceRemote synsetRemote = ConnectionProvider.getInstance().lookupForService(SynsetServiceRemote.class);
+    public static RelationTestServiceRemote relationTestRemote = ConnectionProvider.getInstance().lookupForService(RelationTestServiceRemote.class);
+    public static DomainServiceRemote domainServiceRemote = ConnectionProvider.getInstance().lookupForService(DomainServiceRemote.class);
+    public static LexiconServiceRemote lexiconServiceRemote = ConnectionProvider.getInstance().lookupForService(LexiconServiceRemote.class);
+    public static PartOfSpeechServiceRemote partOfSpeechServiceRemote = ConnectionProvider.getInstance().lookupForService(PartOfSpeechServiceRemote.class);
+    public static CorpusExampleServiceRemote corpusExampleServiceRemote = ConnectionProvider.getInstance().lookupForService(CorpusExampleServiceRemote.class);
+    public static UserServiceRemote userServiceRemote = ConnectionProvider.getInstance().lookupForService(UserServiceRemote.class);
+    public static LocalisedStringServiceRemote localisedStringServiceRemote = ConnectionProvider.getInstance().lookupForService(LocalisedStringServiceRemote.class);
+    public static DictionaryServiceRemote dictionaryServiceRemote = ConnectionProvider.getInstance().lookupForService(DictionaryServiceRemote.class);
+    public static WordFormServiceRemote wordFormServiceRemote = ConnectionProvider.getInstance().lookupForService(WordFormServiceRemote.class);
+    public static WordServiceRemote wordServiceRemote = ConnectionProvider.getInstance().lookupForService(WordServiceRemote.class);
 
     private RemoteService() {
     }

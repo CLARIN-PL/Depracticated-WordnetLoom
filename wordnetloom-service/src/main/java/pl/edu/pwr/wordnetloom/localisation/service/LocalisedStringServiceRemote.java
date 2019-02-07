@@ -1,5 +1,6 @@
 package pl.edu.pwr.wordnetloom.localisation.service;
 
+import pl.edu.pwr.wordnetloom.localisation.model.ApplicationLabel;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 
@@ -8,7 +9,7 @@ import java.util.Map;
 
 public interface LocalisedStringServiceRemote {
 
-    Map<String, String> findLabelsByLanguage(String locale);
+    List<ApplicationLabel> findLabelsByLanguage(String locale);
 
     LocalisedString findStringsByKey(LocalisedKey key);
 
@@ -16,5 +17,18 @@ public interface LocalisedStringServiceRemote {
 
     Map<Long, String> findAllByLanguageAsMap(String language);
 
-    void update(LocalisedString ls);
+    LocalisedString update(LocalisedString ls);
+
+    LocalisedString save(LocalisedString localisedString);
+
+    List<ApplicationLabel> findStringInAllLanguages(String key);
+
+    ApplicationLabel save(ApplicationLabel label);
+
+    ApplicationLabel find(String key, String language);
+
+    void remove(ApplicationLabel label);
+
+    Long save(List<LocalisedString> localisedStringList);
+
 }

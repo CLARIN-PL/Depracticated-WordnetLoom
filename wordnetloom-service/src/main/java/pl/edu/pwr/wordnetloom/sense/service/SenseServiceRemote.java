@@ -1,13 +1,13 @@
 package pl.edu.pwr.wordnetloom.sense.service;
 
-import java.util.List;
-
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
+import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+
+import java.util.List;
 
 public interface SenseServiceRemote {
 
@@ -16,6 +16,8 @@ public interface SenseServiceRemote {
     Sense save(Sense sense);
 
     SenseAttributes addSenseAttribute(final Long senseId, final SenseAttributes attributes);
+
+    List<SenseAttributes> findByLemmaWithSense(String lemma, List<Long> lexicons);
 
     void delete(Sense sense);
 
@@ -62,4 +64,8 @@ public interface SenseServiceRemote {
     Sense fetchSense(Long senseId);
 
     SenseAttributes fetchSenseAttribute(Long senseId);
+
+    List<String> findUniqueExampleTypes();
+
+    Sense saveSense(SenseAttributes attributes, String oldLemma);
 }

@@ -4,10 +4,8 @@ import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextArea;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitPropertiesViewUI;
-import pl.edu.pwr.wordnetloom.client.systems.ui.DialogWindow;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.LexicalUnitPropertiesFrame;
 import pl.edu.pwr.wordnetloom.client.utils.GUIUtils;
-import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import se.datadosen.component.RiverLayout;
@@ -48,13 +46,11 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
         examples.setCellRenderer(new ExampleCellRenderer());
 
         ComponentListener l = new ComponentAdapter() {
-
             @Override
             public void componentResized(ComponentEvent e) {
                 examples.setFixedCellHeight(10);
                 examples.setFixedCellHeight(-1);
             }
-
         };
 
         examples.addComponentListener(l);
@@ -97,25 +93,7 @@ public class ViwnExampleKPWrViewUI extends AbstractViewUI implements
     public void mouseClicked(MouseEvent e) {
 
         if (e.getButton() == MouseEvent.BUTTON3) {
-
-            LexicalUnitPropertiesViewUI lui = new LexicalUnitPropertiesViewUI(graphUI);
-            lui.init(workbench);
-
-            final DialogWindow dia = new DialogWindow(workbench.getFrame(),
-                    Labels.UNIT_PROPERTIES, 585, 520);
-
-            WebPanel pan = new WebPanel();
-            lui.initialize(pan);
-            lui.refreshData(unit);
-            lui.fillKPWrExample(examples.getSelectedValues());
-            lui.closeWindow((ActionEvent e1) -> {
-                dia.dispose();
-            });
-            dia.setLocationRelativeTo(workbench.getFrame());
-            dia.setContentPane(pan);
-            dia.pack();
-            dia.setVisible(true);
-
+            LexicalUnitPropertiesFrame.showModal(workbench, unit);
         }
     }
 

@@ -1,7 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.systems.tooltips;
 
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
@@ -49,6 +49,6 @@ public class SenseTooltipGenerator implements ToolTipGeneratorInterface {
 
     @Override
     public boolean hasEnabledTooltips() {
-        return RemoteConnectionProvider.getInstance().getUser().getSettings().getShowToolTips();
+        return UserSessionContext.getInstance().getUserSettings().getShowToolTips();
     }
 }

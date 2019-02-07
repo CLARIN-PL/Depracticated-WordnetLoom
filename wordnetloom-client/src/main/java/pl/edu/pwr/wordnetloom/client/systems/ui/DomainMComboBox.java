@@ -42,11 +42,6 @@ public class DomainMComboBox extends MComboBox<Domain> {
         }
     }
 
-    public void filterDomainByUbyPos(PartOfSpeech pos, boolean withPrefix) {
-        //  all = filterDomainByUbyPos(pos.getUbyType());
-        loadItems(withPrefix);
-    }
-
     public void filterDomainByUbyPosAndLexcion(PartOfSpeech pos, Lexicon lex, boolean withPrefix) {
         //  all = filterDomainByUbyPos(pos.getUbyType());
         filterDomainsByLexicon(lex, withPrefix);
@@ -61,10 +56,11 @@ public class DomainMComboBox extends MComboBox<Domain> {
         removeAllItems();
         all = DomainManager.getInstance().sortDomains(all);
         addItem(new CustomDescription<>(nullRepresentation, null));
-        String text;
+        String shortcut, desc;
         for (Domain domain : all) {
-            text = LocalisationManager.getInstance().getLocalisedString(domain.getName());
-            addItem(new CustomDescription<>(withPrefix ? text : nameWithoutPrefix(text), domain));
+            shortcut = LocalisationManager.getInstance().getLocalisedString(domain.getName());
+            desc = LocalisationManager.getInstance().getLocalisedString(domain.getDescription());
+            addItem(new CustomDescription<>(String.format("%s (%s)", desc,shortcut), domain));
         }
     }
 
@@ -89,9 +85,25 @@ public class DomainMComboBox extends MComboBox<Domain> {
 
     public Domain getSelectedDomain() {
         int selectedIndex = getSelectedIndex();
-        if(selectedIndex == 0){
+        if(selectedIndex <= 0){
             return null;
         }
         return all.get(selectedIndex - 1);
+    }
+
+    // TODO refactor
+    public void setSelectedDomain(Domain domain){
+        if(domain == null){
+            setSelectedIndex(0);
+        } else {
+            for(int i=0; i<getItemCount(); i++) {
+                CustomDescription<Domain> item = (CustomDescription<Domain>) getItemAt(i);
+                if(item != null && item.getObject() != null && item.getObject().equals(domain)){
+                    setSelectedIndex(i);
+                    return;
+                }
+            }
+            setSelectedIndex(0);
+        }
     }
 }

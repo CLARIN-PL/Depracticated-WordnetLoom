@@ -20,6 +20,7 @@ package pl.edu.pwr.wordnetloom.client.systems.ui;
 import com.alee.laf.text.WebTextField;
 
 import javax.swing.*;
+import javax.swing.event.CaretListener;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -48,6 +49,22 @@ public class MTextField extends WebTextField implements Serializable {
         setPreferredSize(new Dimension(width, height));
         setSize(new Dimension(width, height));
         setFocusHandler();
+    }
+
+    public MTextField withSize(Dimension dimension) {
+        setPreferredSize(dimension);
+        return this;
+    }
+
+
+    public MTextField withCaretListener(CaretListener l) {
+        addCaretListener(l);
+        return this;
+    }
+
+    public MTextField withEnabled(Boolean enabled) {
+        setEnabled(enabled);
+        return this;
     }
 
     @Override

@@ -1,41 +1,47 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexicon;
 
 import com.alee.laf.menu.WebMenu;
+import com.alee.laf.menu.WebMenuItem;
+import jiconfont.icons.FontAwesome;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.core.CoreService;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchSensesEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SetLexiconsEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconManagerWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
-import pl.edu.pwr.wordnetloom.client.plugins.login.data.UserSessionData;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.ViWordNetService;
-import pl.edu.pwr.wordnetloom.client.remote.RemoteConnectionProvider;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
+import pl.edu.pwr.wordnetloom.client.security.UserSessionContext;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MMenuItem;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
-import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.user.model.User;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.util.Set;
 
 public class LexiconService extends AbstractService {
 
-    private final JMenuItem lexiconItem = new MMenuItem(Labels.LEXICON);
+    // TODO przenieśc to w inne miejsce
+    private final WebMenuItem lexiconItem = new MMenuItem(Labels.LEXICON)
+            .withIcon(FontAwesome.BOOK);
 
-    public LexiconService(final Workbench workbench) {
+    private final WebMenuItem lexiconManagerItem = new MMenuItem("Zarządzaj leksykonami")
+            .withIcon(FontAwesome.ANGELLIST);
+
+    public LexiconService(Workbench workbench) {
         super(workbench);
 
-        lexiconItem.addActionListener((ActionEvent e) -> {
-            showLexiconWindow();
-            ViWordNetService s = ServiceManager.getViWordNetService(workbench);
-            s.getLexicalUnitsView().refreshLexicons();
-            s.getSynsetView().refreshLexicons();
-            s.clearAllViews();
-            s.reloadCurrentListSelection();
+        lexiconItem.addActionListener(e -> {
+            boolean wasChanged = showLexiconWindow();
+            if(wasChanged) {
+                sendEvents();
+            }
         });
+        lexiconManagerItem.addActionListener(e -> showLexiconManagerWindow());
     }
 
     @Override
@@ -44,12 +50,13 @@ public class LexiconService extends AbstractService {
 
     @Override
     public void installMenuItems() {
-        WebMenu user = workbench.getMenu(RemoteConnectionProvider.getInstance().getUser().getFullname());
+        WebMenu user = workbench.getMenu(UserSessionContext.getInstance().getFullName());
         WebMenu help = findMenu(CoreService.APP_SETTINGS, user);
         if (help == null) {
             return;
         }
         help.add(lexiconItem);
+        help.add(lexiconManagerItem);
     }
 
     public WebMenu findMenu(String name, WebMenu menu) {
@@ -63,6 +70,7 @@ public class LexiconService extends AbstractService {
         }
         return null;
     }
+
     @Override
     public boolean onClose() {
         return true;
@@ -72,14 +80,43 @@ public class LexiconService extends AbstractService {
     public void onStart() {
     }
 
-    private void showLexiconWindow() {
+    private boolean showLexiconWindow() {
+        Set<Lexicon> oldLexicons = LexiconManager.getInstance().getUserChosenLexicons();
         Set<Lexicon> lexicons = LexiconsWindow.showModal(workbench.getFrame(), LexiconManager.getInstance().getUserChosenLexicons());
-        User user = RemoteConnectionProvider.getInstance().getUser();
+
+        if(compareLexicons(oldLexicons, lexicons)){
+            return false; // not changes
+        }
+
+        User user = UserSessionContext.getInstance().getUser();
         user.getSettings().setChosenLexicons(LexiconManager.getInstance().lexiconIdToString(lexicons));
         RemoteService.userServiceRemote.save(user);
 
-        UserSessionData data = RemoteConnectionProvider.getInstance().getUserSessionData();
-        UserSessionData current = new UserSessionData(data.getUsername(), data.getPassword(), data.getLanguage() , user);
-        RemoteConnectionProvider.getInstance().setUserSessionData(current);
+        String language = UserSessionContext.getInstance().getLanguage();
+        UserSessionContext.initialiseAndGetInstance(user, language);
+
+        return true;
+    }
+
+    private boolean compareLexicons(Set<Lexicon> oldLexicons, Set<Lexicon> newLexicons) {
+        if(oldLexicons.size() != newLexicons.size()) {
+            return false;
+        }
+        for(Lexicon lexicon : oldLexicons){
+            if(!newLexicons.contains(lexicon)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void showLexiconManagerWindow() {
+        LexiconManagerWindow.showModal(workbench.getFrame());
+    }
+
+    private void sendEvents() {
+        Application.eventBus.post(new SetLexiconsEvent());
+        Application.eventBus.post(new SearchSensesEvent());
+        Application.eventBus.post(new UpdateGraphEvent(null));
     }
 }

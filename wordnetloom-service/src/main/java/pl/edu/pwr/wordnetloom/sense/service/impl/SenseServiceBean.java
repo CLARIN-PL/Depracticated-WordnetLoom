@@ -3,6 +3,7 @@ package pl.edu.pwr.wordnetloom.sense.service.impl;
 import org.hibernate.Hibernate;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import pl.edu.pwr.wordnetloom.common.utils.ValidationUtils;
+import pl.edu.pwr.wordnetloom.dictionary.repository.DictionaryRepository;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
@@ -12,8 +13,10 @@ import pl.edu.pwr.wordnetloom.sense.repository.SenseAttributesRepository;
 import pl.edu.pwr.wordnetloom.sense.repository.SenseRepository;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceLocal;
 import pl.edu.pwr.wordnetloom.sense.service.SenseServiceRemote;
+import pl.edu.pwr.wordnetloom.senserelation.repository.SenseRelationRepository;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
+import pl.edu.pwr.wordnetloom.word.repository.WordRepository;
 import pl.edu.pwr.wordnetloom.word.service.WordServiceLocal;
 
 import javax.annotation.security.DeclareRoles;
@@ -40,10 +43,20 @@ public class SenseServiceBean implements SenseServiceLocal {
     SenseAttributesRepository senseAttributesRepository;
 
     @Inject
+    SenseRelationRepository senseRelationRepository;
+
+
+    @Inject
+    WordRepository wordRepository;
+
+    @Inject
     Validator validator;
 
     @Inject
     WordServiceLocal wordServiceLocal;
+
+    @Inject
+    DictionaryRepository dictionaryRepository;
 
     @Override
     public Sense clone(Sense unit) {
@@ -62,20 +75,47 @@ public class SenseServiceBean implements SenseServiceLocal {
     public Sense save(Sense sense) {
         ValidationUtils.validateEntityFields(validator, sense);
 
-        if(sense.getWord().getId() == null){
+        if (sense.getWord().getId() == null) {
             Word w = wordServiceLocal.add(sense.getWord());
             sense.setWord(w);
         }
 
         if (sense.getId() != null) {
-            if(variantMustBeChanged(sense)){
+            if (variantMustBeChanged(sense)) {
                 int nextVariant = senseRepository.findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech());
                 sense.setVariant(nextVariant);
             }
             return senseRepository.update(sense);
         }
         sense.setVariant(senseRepository.findNextVariant(sense.getWord().getWord(), sense.getPartOfSpeech()));
-        return senseRepository.persist(sense);
+        sense.setStatus(dictionaryRepository.findStatusDefaultValue());
+        return senseRepository.save(sense);
+    }
+
+
+    @RolesAllowed({"USER", "ADMIN"})
+    @Override
+    public Sense saveSense(SenseAttributes attributes, String oldLemma) {
+        Sense savedSense = save(attributes.getSense());
+        attributes.setSense(savedSense);
+        SenseAttributes savedAttributes = senseAttributesRepository.save(attributes);
+
+        if (checkEditedLemma(oldLemma, savedSense)) {
+            tryRemoveWord(oldLemma);
+        }
+
+        return savedAttributes.getSense();
+    }
+
+    private void tryRemoveWord(String oldLemma) {
+        Word wordToRemove = wordRepository.findByWord(oldLemma);
+        if (senseRepository.countSensesByWordId(wordToRemove.getId()) == 0) {
+            wordRepository.delete(wordToRemove);
+        }
+    }
+
+    private boolean checkEditedLemma(String oldLemma, Sense savedSense) {
+        return oldLemma != null && !oldLemma.equals(savedSense.getWord().getWord());
     }
 
     private boolean variantMustBeChanged(Sense sense) {
@@ -100,6 +140,13 @@ public class SenseServiceBean implements SenseServiceLocal {
         return senseAttributesRepository.persist(attributes);
     }
 
+
+    @PermitAll
+    @Override
+    public List<SenseAttributes> findByLemmaWithSense(String lemma, List<Long> lexicons) {
+        return senseAttributesRepository.findByLemmaWithSense(lemma, lexicons);
+    }
+
     @RolesAllowed({"USER", "ADMIN"})
     @Override
     public void deleteAll() {
@@ -115,7 +162,10 @@ public class SenseServiceBean implements SenseServiceLocal {
     @RolesAllowed({"USER", "ADMIN"})
     @Override
     public void delete(Sense sense) {
+        senseAttributesRepository.delete(sense.getId());
+        senseRelationRepository.deleteConnection(sense);
         senseRepository.delete(sense);
+        tryRemoveWord(sense.getWord().getWord());
     }
 
     @PermitAll
@@ -214,7 +264,6 @@ public class SenseServiceBean implements SenseServiceLocal {
         return senseRepository.findSensesByWordId(id, lexicon);
     }
 
-
     @PermitAll
     @Override
     public Sense findHeadSenseOfSynset(Long synsetId) {
@@ -231,5 +280,11 @@ public class SenseServiceBean implements SenseServiceLocal {
     @Override
     public SenseAttributes fetchSenseAttribute(Long senseId) {
         return senseRepository.fetchSenseAttribute(senseId);
+    }
+
+    @PermitAll
+    @Override
+    public List<String> findUniqueExampleTypes() {
+        return senseAttributesRepository.findUniqueExampleTypes();
     }
 }

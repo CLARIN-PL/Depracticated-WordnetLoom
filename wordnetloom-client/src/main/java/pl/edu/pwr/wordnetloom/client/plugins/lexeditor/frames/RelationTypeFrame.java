@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
 import com.alee.laf.rootpane.WebFrame;
+import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.SenseFormat;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
@@ -22,7 +23,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -44,8 +44,6 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
     protected List<RelationType> mainRelations = null;
     protected RelationArgument relationsType;
 
-    //    private Sense parentSense;
-//    private Sense childSense;
     protected MButton buttonSwitch;
     protected JPanel jp;
     private RelationType fixedRelationType;
@@ -60,6 +58,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
                               Collection<Sense> middleUnits,
                               Collection<Sense> childUnits) {
         super(frame, Labels.RELATION_PARAMS, 650, 500);
+        setLocationRelativeTo(frame);
         RelationTypeFrame.pos = pos;
         this.fixedRelationType = fixedRelationType;
         setResizable(false);
@@ -214,10 +213,16 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
             }
 
             if (markerX != null) {
-                text = text.replace(markerX, "<font color=\"blue\">" + parent + "</font>");
+                String tag = markerX.replace("<x#","");
+                tag = tag.replace("%>","");
+                String form = findForm(parent, tag);
+                text = text.replace(markerX, "<font color=\"blue\">" + form + "</font>");
             }
             if (markerY != null) {
-                text = text.replace(markerY, "<font color=\"blue\">" + child + "</font>");
+                String tag = markerY.replace("<y#","");
+                tag = tag.replace("%>","");
+                String form = findForm(child, tag);
+                text = text.replace(markerY, "<font color=\"blue\">" + form + "</font>");
             }
 
             result.add("<html>" + (testIndex++) + ". " + text + "</html>");
@@ -225,21 +230,20 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         return result;
     }
 
-    private static Collection<String> getForms(Collection<String> defs, String unit) {
-        Collection<String> forms = new ArrayList<>();
-        // ustawieni suffixu
+    private static String findForm(String unit, String tag) {
+
         String suffix = "";
-        //TODO sprawdzić jak to powinno działać
-        if (unit.endsWith("się")) { // konczy sie z się, a ma to zostać odcięte
+        if (unit.endsWith("się")) {
             unit = unit.substring(0, unit.length() - 4);
-            suffix = " się"; // ustawienie sufixu
+            suffix = " się";
         }
-        for (String def : defs) {
-            List<String> splits = Arrays.asList(def.split("\\|"));
-            forms.add(unit);
-            //forms.add(RemoteUtils.wordFormsRemote.getFormFor(new Word(unit), splits) + suffix);
+
+        String form = RemoteService.wordFormServiceRemote.findFormByLemmaAndTag(unit, tag);
+
+        if (form != null) {
+            return form + suffix;
         }
-        return forms;
+        return unit + suffix;
     }
 
     protected void loadParentRelation(RelationArgument type, int filter) {
@@ -282,6 +286,7 @@ public class RelationTypeFrame extends DialogWindow implements ActionListener, K
         testsList = new JList();
 
         buttonSwitch = new MButton(this)
+                .withIcon(FontAwesome.EXCHANGE)
                 .withCaption(Labels.SWITCH)
                 .withMnemonic(KeyEvent.VK_Z)
                 .withKeyListener(this);

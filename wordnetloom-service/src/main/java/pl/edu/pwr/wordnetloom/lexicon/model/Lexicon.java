@@ -31,6 +31,10 @@ public class Lexicon extends GenericEntity {
 
     private String icon;
 
+    private String description;
+
+    private boolean onlyToRead;
+
     public Lexicon() {
     }
 
@@ -72,6 +76,26 @@ public class Lexicon extends GenericEntity {
         this.lexiconVersion = lexiconVersion;
     }
 
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isOnlyToRead() {
+        return onlyToRead;
+    }
+
+    public void setOnlyToRead(boolean onlyToRead) {
+        this.onlyToRead = onlyToRead;
+    }
+
     public String getIcon() {
         return icon;
     }
@@ -102,8 +126,11 @@ public class Lexicon extends GenericEntity {
         return Objects.equals(id, other.id);
     }
 
+
     @Override
     public String toString() {
         return name;
     }
+
+
 }

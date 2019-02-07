@@ -1,496 +1,395 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel;
 
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.list.WebList;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
-import com.alee.laf.tabbedpane.WebTabbedPane;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.Sizes;
-import com.jgoodies.forms.util.LayoutStyle;
 import jiconfont.icons.FontAwesome;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.ExampleFrame;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
-import pl.edu.pwr.wordnetloom.client.systems.managers.DictionaryManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.LocalisationManager;
-import pl.edu.pwr.wordnetloom.client.systems.managers.PartOfSpeechManager;
-import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
-import pl.edu.pwr.wordnetloom.client.systems.renderers.ExampleCellRenderer;
+import pl.edu.pwr.wordnetloom.client.systems.errors.ValidationManager;
+import pl.edu.pwr.wordnetloom.client.systems.managers.*;
+import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
+import pl.edu.pwr.wordnetloom.client.systems.renderers.*;
 import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
+import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
+import pl.edu.pwr.wordnetloom.common.model.Example;
 import pl.edu.pwr.wordnetloom.dictionary.model.Register;
+import pl.edu.pwr.wordnetloom.dictionary.model.Status;
 import pl.edu.pwr.wordnetloom.domain.model.Domain;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
 import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
+import pl.edu.pwr.wordnetloom.word.model.Word;
 
 import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class LexicalUnitPropertiesPanel extends JPanel implements
-        CaretListener, ActionListener {
+public class LexicalUnitPropertiesPanel extends JPanel {
 
-    private static final long serialVersionUID = 8598891792812358941L;
     private final String DEFAULT_VARIANT = "1";
+
     private Sense unit;
-    private LexiconComboBox lexicon;
-    private MTextField lemma;
-    private MTextField variant;
-    private MTextField link;
-    private MComboBox<Register> register;
-    private MComboBox<PartOfSpeech> partOfSpeech;
-    private DomainMComboBox domain;
-    private MTextPane comment;
-    private final MButton btnCancel;
-    private MButton btnSave;
-    private JScrollPane commentScrollPane;
-    private JScrollPane scrollPaneExamples;
-    private final MButton btnGoToLink;
-    private final MButton btnNewExample;
-    private final MButton btnEditExample;
-    private final MButton btnRemoveExample;
-    private WebList examplesList;
+
+    private JTextField lemmaTextField;
+    private JTextField variantTextField;
+    private JComboBox lexiconComboBox;
+    private JComboBox partOfSpeechComboBox;
+    private JComboBox domainComboBox;
+    private JComboBox registerComboBox;
+    private JComboBox statusComboBox;
+    private JTextArea definitionArea;
+    private JScrollPane definitionScroll;
+    private JTextArea commentArea;
+    private JScrollPane commentScroll;
+    private JList examplesList;
     private DefaultListModel examplesModel;
-    private WebLabel lblDefinition;
-    private JScrollPane definitionScrollPane;
-    private MTextPane definition;
+    private JTextField linkTextField;
 
-    public LexicalUnitPropertiesPanel(final WebFrame frame) {
-        setLayout(new BorderLayout(0, 0));
-        WebPanel mainPanel = new WebPanel();
-        mainPanel.setLayout(new FormLayout(new ColumnSpec[]{
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(57dlu;min)"),
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(48dlu;min)"),
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(49dlu;min)"),
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(28dlu;min):grow"),
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(17dlu;min)"),
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(44dlu;default)"),
-                ColumnSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadX()),
-                ColumnSpec.decode("max(5dlu;default):grow"),},
-                new RowSpec[]{
-                        RowSpec.decode("1dlu"),
-                        RowSpec.decode("6dlu"),
-                        RowSpec.decode("fill:max(14dlu;default)"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("fill:max(14dlu;default)"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("fill:default"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("fill:default"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("fill:max(14dlu;default)"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("max(36dlu;default):grow"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("fill:max(40dlu;pref):grow"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("max(14dlu;default)"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("max(14dlu;default)"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("max(14dlu;default)"),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        new RowSpec(Sizes.DEFAULT),
-                        RowSpec.createGap(LayoutStyle.getCurrent().getRelatedComponentsPadY()),
-                        RowSpec.decode("fill:max(14dlu;default)"),
-                        RowSpec.decode("max(10dlu;default):grow"),}));
+    private JButton addExampleButton;
+    private JButton removeExampleButton;
+    private JButton editExampleButton;
+    private JButton goToLinkButton;
 
-        JLabel lblLemma = new JLabel(Labels.LEMMA_COLON);
-        lblLemma.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblLemma, "2, 3, left, default");
+    private boolean permissionToEdit = false;
 
-        lemma = new MTextField(Labels.VALUE_UNKNOWN);
-        lemma.addCaretListener(this);
-        mainPanel.add(lemma, "4, 3, 4, 1, fill, fill");
-        lemma.setColumns(10);
+    private WebFrame frame;
+    private Sense editedSense;
+    private String editedWord;
+    private SenseAttributes senseAttributes;
 
-        JLabel lblVariant = new JLabel(Labels.NUMBER_COLON);
-        lblVariant.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblVariant, "8, 3, 3, 1, fill, fill");
+    private ValidationManager validationManager;
 
-        variant = new MTextField(DEFAULT_VARIANT);
-        variant.addCaretListener(this);
-        variant.setEditable(false);
-        mainPanel.add(variant, "12, 3, left, fill");
-        variant.setColumns(10);
+    private int width;
+    private int height;
 
-        JLabel lblLexicon = new JLabel(Labels.LEXICON_COLON);
-        lblLexicon.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblLexicon, "2, 5, left, fill");
-        lexicon = new LexiconComboBox(Labels.NOT_CHOSEN);
-        lexicon.addActionListener(this);
-        lexicon.addItemListener((ItemEvent e) -> {
-            Lexicon lex = lexicon.getEntity();
-            if (lex != null) {
-//                partOfSpeech.filterByLexicon(lex);
-                domain.filterDomainsByLexicon(lex, false);
+
+    public LexicalUnitPropertiesPanel(WebFrame frame, int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.frame = frame;
+        initComponents();
+        insertComponents();
+        validationManager = initValidationManager();
+    }
+
+    private ValidationManager initValidationManager() {
+        ValidationManager validationManager = new ValidationManager();
+        // TODO dorobić etykiety
+        validationManager.registerError(lemmaTextField, "To pole nie może być puste", ()->lemmaTextField.getText().isEmpty());
+        validationManager.registerError(lexiconComboBox, "To pole nie może być puste", ()->lexiconComboBox.getSelectedItem() == null);
+        validationManager.registerError(partOfSpeechComboBox, "Wybierz część mowy", ()->partOfSpeechComboBox.getSelectedItem() == null);
+        validationManager.registerError(domainComboBox, "Wybierz domenę", ()->domainComboBox.getSelectedItem() == null);
+        validationManager.registerError(statusComboBox, "Wybierz status", ()->statusComboBox.getSelectedItem() == null);
+
+        return validationManager;
+    }
+
+    private void initComponents() {
+        final int AREA_WIDTH = 300;
+        final int AREA_HEIGHT = 75;
+        lemmaTextField = new JTextField();
+        variantTextField = new JTextField(DEFAULT_VARIANT);
+        variantTextField.setEnabled(false);
+        lexiconComboBox = createLexiconComboBox();
+        partOfSpeechComboBox = createPartOfSpeechComboBox();
+        domainComboBox = createDomainComboBox();
+        registerComboBox = createRegisterComboBox();
+        statusComboBox = createStatusComboBox();
+        definitionArea = new JTextArea();
+        definitionScroll = new JScrollPane(definitionArea);
+        definitionScroll.setPreferredSize(new Dimension(AREA_WIDTH, AREA_HEIGHT));
+        commentArea = new JTextArea();
+        commentScroll = new JScrollPane(commentArea);
+        commentScroll.setPreferredSize(new Dimension(AREA_WIDTH, AREA_HEIGHT));
+        examplesList = createExamplesList();
+        linkTextField = new JTextField();
+        linkTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                enableGoToLinkButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                enableGoToLinkButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                enableGoToLinkButton();
             }
         });
-        mainPanel.add(lexicon, "4, 5, 3, 1, fill, fill");
 
-        JLabel lblPoS = new JLabel(Labels.PARTS_OF_SPEECH_COLON);
-        lblPoS.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblPoS, "2, 7, left, default");
+        addExampleButton = MButton.buildAddButton()
+                .withActionListener(e->addExample());
+        removeExampleButton = MButton.buildDeleteButton()
+                .withActionListener(e->removeExample());
+        editExampleButton = MButton.buildEditButton()
+                .withActionListener(e->editExample());
+        goToLinkButton = new MButton().withIcon(FontAwesome.INTERNET_EXPLORER)
+                .withActionListener(e->goToLink());
+    }
 
-        partOfSpeech = new PartOfSpeechComboBox(Labels.NOT_CHOSEN);
-        java.util.List<PartOfSpeech> partOfSpeechList = PartOfSpeechManager.getInstance().getAll();
-        java.util.List<CustomDescription> partOfSpeechDescriptorList = new ArrayList<>();
-        partOfSpeechDescriptorList.add(new CustomDescription("Brak", null)); //TODO zmienić puste
-        String posName;
+    private void enableGoToLinkButton(){
+        // TODO can add link validation
+        goToLinkButton.setEnabled(!linkTextField.getText().isEmpty());
+    }
 
-        for(PartOfSpeech pos : partOfSpeechList){
-            posName = LocalisationManager.getInstance().getLocalisedString(pos.getName());
-            partOfSpeechDescriptorList.add(new CustomDescription(posName, pos));
+    private void insertComponents() {
+        final float LABEL_RATIO = 0.1f;
+        final float COMPONENT_RATIO = 0.9f;
+        Map<String, Component> componentsMap = new LinkedHashMap<>();
+        componentsMap.put(Labels.LEMMA_COLON, lemmaTextField);
+        componentsMap.put(Labels.NUMBER_COLON, variantTextField);
+        componentsMap.put(Labels.LEXICON_COLON, lexiconComboBox);
+        componentsMap.put(Labels.PARTS_OF_SPEECH_COLON, partOfSpeechComboBox);
+        componentsMap.put(Labels.DOMAIN_COLON, domainComboBox);
+        componentsMap.put(Labels.REGISTER_COLON, registerComboBox);
+        componentsMap.put(Labels.STATUS_COLON, statusComboBox);
+        componentsMap.put(Labels.DEFINITION_COLON, definitionScroll);
+        componentsMap.put(Labels.COMMENT_COLON, commentScroll);
+        componentsMap.put(Labels.EXAMPLES, createExamplesPanel());
+        componentsMap.put(Labels.LINK_COLON, createLinkPanel());
+
+        Component views = GroupView.createGroupView(componentsMap, new Dimension(width, height),LABEL_RATIO, COMPONENT_RATIO);
+        add(views);
+    }
+
+    private JPanel createExamplesPanel() {
+        JPanel buttonsPanel = new MComponentGroup(addExampleButton, editExampleButton, removeExampleButton)
+                .withVerticalLayout();
+        JPanel examplesPanel = new JPanel(new BorderLayout());
+        examplesPanel.add(examplesList, BorderLayout.CENTER);
+        examplesPanel.add(buttonsPanel, BorderLayout.EAST);
+
+        return examplesPanel;
+    }
+
+    private JPanel createLinkPanel() {
+        JPanel linkPanel = new JPanel(new BorderLayout());
+        linkPanel.add(linkTextField, BorderLayout.CENTER);
+        linkPanel.add(goToLinkButton, BorderLayout.EAST);
+
+        return linkPanel;
+    }
+
+    private void addExample() {
+        Example example = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, new SenseExample(), false);
+        examplesModel.addElement(example);
+        examplesList.updateUI();
+    }
+
+    private void removeExample() {
+        int index = examplesList.getSelectedIndex();
+        if(index >= 0) {
+            examplesModel.remove(index);
         }
+    }
 
-        partOfSpeech.setModel(new DefaultComboBoxModel(partOfSpeechDescriptorList.toArray()));
-        partOfSpeech.addActionListener(this);
-        partOfSpeech.addItemListener((ItemEvent e) -> {
-            PartOfSpeech pos = partOfSpeech.getEntity();
-            if (pos != null) {
-                domain.filterDomainByPos(pos, false);
-            }
-        });
-        mainPanel.add(partOfSpeech, "4, 7, 3, 1, fill, fill");
+    private void editExample() {
+        Example example = (Example) examplesList.getSelectedValue();
+        if (example != null) {
+            Example value = ExampleFrame.showModal(frame, Labels.EDIT_EXAMPLE, example, true);
+            updateExample(example, value);
+            examplesList.updateUI();
+        }
+    }
 
-        JLabel lblDomain = new JLabel(Labels.DOMAIN_COLON);
-        lblDomain.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblDomain, "2, 9, left, fill");
+    private void updateExample(Example oldExample, Example newExample){
+        oldExample.setExample(newExample.getExample());
+        oldExample.setType(newExample.getType());
+    }
 
-        domain = new DomainMComboBox(Labels.NOT_CHOSEN);
-        domain.allDomains(false);
-        domain.addActionListener(this);
-        mainPanel.add(domain, "4, 9, 3, 1, fill, fill");
+    private void goToLink() {
+        try{
+            URI uri = new URI(linkTextField.getText());
+            LinkRunner linkRunner = new LinkRunner(uri);
+            linkRunner.execute();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
 
-        JLabel lblRegister = new JLabel(Labels.REGISTER_COLON);
-        lblRegister.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblRegister, "2, 11, left, fill");
+    private JComboBox createLexiconComboBox() {
+        List<Lexicon> lexiconsList = LexiconManager.getInstance().getLexicons();
+        // when user is not an administrator, we delete all read-only lexicons
+        if(!PermissionHelper.isAdministrator()) {
+            lexiconsList = lexiconsList.stream().filter(lexicon->!lexicon.isOnlyToRead()).collect(Collectors.toList());
+        }
+        return createComboBox(lexiconsList.iterator(), new LexiconRenderer());
+    }
 
-        register = new MComboBox<>()
-                .withDictionaryItems(
-                        DictionaryManager.getInstance().getDictionaryByClassName(Register.class),
-                        Labels.NOT_CHOSEN);
+    private JComboBox createPartOfSpeechComboBox() {
+        List<PartOfSpeech> partOfSpeechList = PartOfSpeechManager.getInstance().getAll();
+        return createComboBox(partOfSpeechList.iterator(), new LocalisedRenderer());
+    }
 
-        register.addActionListener(this);
-        mainPanel.add(register, "4, 11, 3, 1, fill, fill");
+    private JComboBox createDomainComboBox() {
+        List<Domain> domains = DomainManager.getInstance().getAllDomains();
+        return createComboBox(domains.iterator(), new LocalisedRenderer());
+    }
 
-        lblDefinition = new WebLabel(Labels.DEFINITION_COLON);
-        lblDefinition.setVerticalAlignment(SwingConstants.TOP);
-        lblDefinition.setHorizontalAlignment(SwingConstants.LEFT);
-        mainPanel.add(lblDefinition, "2, 13, left, top");
+    private JComboBox createRegisterComboBox() {
+        List<Register> registerList = (List<Register>) RemoteService.dictionaryServiceRemote.findDictionaryByClass(Register.class);
+        return createComboBox(registerList.iterator(), new LocalisedRenderer());
+    }
 
-        definitionScrollPane = new JScrollPane();
-        mainPanel.add(definitionScrollPane, "4, 13, 9, 1, default, fill");
+    private JComboBox createStatusComboBox() {
+        List<Status> statusList = (List<Status>) RemoteService.dictionaryServiceRemote.findDictionaryByClass(Status.class);
+        return createComboBox(statusList.iterator(), new LocalisedRenderer());
+    }
 
-        definition = new MTextPane();
-        definition.addCaretListener(this);
-        definitionScrollPane.setViewportView(definition);
+    private JComboBox createComboBox(Iterator iterator, ListCellRenderer renderer) {
+        JComboBox comboBox = new MComboBox();
+        comboBox.setRenderer(renderer);
 
-        JLabel lblComment = new JLabel(Labels.COMMENT_COLON);
-        lblComment.setVerticalAlignment(SwingConstants.TOP);
-        lblComment.setHorizontalAlignment(SwingConstants.LEFT);
-        mainPanel.add(lblComment, "2, 15, left, default");
+        DefaultComboBoxModel model = new DefaultComboBoxModel();
+        model.addElement(null);
+        while(iterator.hasNext()) {
+            model.addElement(iterator.next());
+        }
+        comboBox.setModel(model);
+        return comboBox;
+    }
 
-        commentScrollPane = new JScrollPane();
-        mainPanel.add(commentScrollPane, "4, 15, 9, 1, default, fill");
-
-        comment = new MTextPane();
-        comment.addCaretListener(this);
-        commentScrollPane.setViewportView(comment);
-
-        scrollPaneExamples = new JScrollPane();
-        mainPanel.add(scrollPaneExamples, "4, 17, 7, 7, default, fill");
-
-        examplesList = new WebList() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public boolean getScrollableTracksViewportWidth() {
-                return true;
-            }
-        };
-        examplesList.setCellRenderer(new ExampleCellRenderer());
-
-        ComponentListener l = new ComponentAdapter() {
-
-            @Override
-            public void componentResized(ComponentEvent e) {
-                examplesList.setFixedCellHeight(10);
-                examplesList.setFixedCellHeight(-1);
-            }
-
-        };
-
-        examplesList.addComponentListener(l);
+    private JList createExamplesList() {
+        JList list = new JList();
+        list.setCellRenderer(new ExampleCellRenderer());
+        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         examplesModel = new DefaultListModel();
-        scrollPaneExamples.setViewportView(examplesList);
-
-        btnNewExample = MButton.buildAddButton();
-
-        btnNewExample.addActionListener((ActionEvent e) -> {
-            String example = ExampleFrame.showModal(frame, Labels.NEW_EXAMPLE, "", false);
-            if (example != null && !"".equals(example)) {
-                SenseExample senseExample = new SenseExample();
-                senseExample.setExample(example);
-                senseExample.setType("W");
-                examplesModel.addElement(senseExample);
-                btnSave.setEnabled(true);
-                examplesList.updateUI();
-            }
-        });
-
-        JLabel lblExample = new JLabel(Labels.USE_CASE_COLON);
-        lblExample.setVerticalAlignment(SwingConstants.TOP);
-        lblExample.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblExample, "2, 17, left, fill");
-        mainPanel.add(btnNewExample, "12, 17, fill, fill");
-
-        btnEditExample = MButton.buildEditButton();
-        btnEditExample.addActionListener((ActionEvent e) -> {
-            int idx = examplesList.getSelectedIndex();
-            SenseExample example = (SenseExample) examplesModel.get(idx);
-            if (idx >= 0) {
-                String modified = ExampleFrame.showModal(frame,
-                        Labels.EDIT_EXAMPLE,
-                        example.getExample(), true);
-                String old = example.getExample();
-                if (modified != null && !old.equals(modified)) {
-                    example.setExample(modified);
-                    examplesList.updateUI();
-                    btnSave.setEnabled(true);
-                }
-            }
-        });
-        mainPanel.add(btnEditExample, "12, 19, fill, fill");
-
-        btnRemoveExample = MButton.buildDeleteButton();
-        btnRemoveExample.addActionListener((ActionEvent e) -> {
-            int idx = examplesList.getSelectedIndex();
-            if (idx >= 0) {
-                examplesModel.remove(idx);
-                btnSave.setEnabled(true);
-            }
-        });
-        mainPanel.add(btnRemoveExample, "12, 21, fill, fill");
-
-        WebLabel lblLink = new WebLabel(Labels.LINK_COLON);
-        lblLink.setHorizontalAlignment(SwingConstants.RIGHT);
-        mainPanel.add(lblLink, "2, 25, left, fill");
-
-        link = new MTextField("");
-        link.addCaretListener(this);
-        mainPanel.add(link, "4, 25, 7, 1, fill, fill");
-        link.setColumns(10);
-
-        btnGoToLink = new MButton().withIcon(FontAwesome.INTERNET_EXPLORER);
-        btnGoToLink.addActionListener((ActionEvent e) -> {
-            try {
-                URI uri = new java.net.URI(link.getText());
-                LinkRunner lr =  new LinkRunner(uri);
-                lr.execute();
-            } catch (URISyntaxException use) {
-            }
-        });
-        mainPanel.add(btnGoToLink, "12, 25, fill, fill");
-
-        WebTabbedPane tabs = new WebTabbedPane();
-        tabs.setPreferredSize(new Dimension(620, 500));
-        tabs.setLayout(new BorderLayout());
-        tabs.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        add(tabs, BorderLayout.CENTER);
-        tabs.addTab("Main", mainPanel);
-
-        JPanel buttons = new JPanel();
-        buttons.setLayout(new FlowLayout());
-        btnCancel = MButton.buildCancelButton();
-        buttons.add(btnCancel);
-
-        btnSave = MButton.buildSaveButton();
-        buttons.add(btnSave);
-        btnSave.addActionListener(this);
-        add(buttons, BorderLayout.SOUTH);
-    }
-
-    public SenseAttributes getSenseAttributes(Long senseId)
-    {
-        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(senseId);
-        Register reg = register.getEntity();
-        String definition = getDefinition().getText();
-        String link = getLink().getToolTipText();
-        String comment = getComment().getText();
-        if(attributes == null && (definition != null || link != null || comment != null || register.getSelectedIndex() > 0))
-        {
-            attributes = new SenseAttributes();
-        }
-        attributes.setComment(comment);
-        attributes.setLink(link);
-        attributes.setDefinition(definition);
-        attributes.setRegister(reg);
-
-        java.util.Set<SenseExample> examples = attributes.getExamples();
-        examples.clear();
-
-        if(!examplesModel.isEmpty()) {
-            for(int i = 0; i < examplesModel.size(); i++)
-            {
-                examples.add((SenseExample)examplesModel.getElementAt(i));
-            }
-        }
-        return attributes;
-    }
-
-    public Sense updateAndGetSense()
-    {
-        unit.getWord().setWord(getLemma().getText());
-        unit.setPartOfSpeech(getPartOfSpeech().getEntity());
-        unit.setDomain(getDomain().getEntity());
-        int variant = Integer.parseInt(getVariant().getText());
-        unit.setVariant(variant);
-
-        return unit;
-    }
-
-    public Sense getSense() {
-        return unit;
+        list.setModel(examplesModel);
+        return list;
     }
 
     public void setSense(Sense unit) {
-        this.unit = unit;
-        refreshData();
-    }
-
-    @Override
-    public void caretUpdate(CaretEvent event) {
-        if (event.getSource() instanceof MTextField) {
-            MTextField field = (MTextField) event.getSource();
-            btnSave.setEnabled(btnSave.isEnabled() | field.wasTextChanged());
+        this.editedSense = unit;
+        this.editedWord = "";
+        if(editedSense != null) {
+            this.editedWord = editedSense.getWord().getWord();
         }
-        if (event.getSource() instanceof MTextPane) {
-            MTextPane field = (MTextPane) event.getSource();
-            btnSave.setEnabled(btnSave.isEnabled() | field.wasTextChanged());
-        }
-    }
-
-    public void refreshData() {
-
-        lemma.setText(formatValue(unit != null ? unit.getWord().getWord() : null));
-        variant.setText(unit != null ? "" + unit.getVariant() : null);
-        lexicon.setSelectedItem(unit != null ? new CustomDescription<>(unit.getLexicon().toString(), unit.getLexicon()) : null);
-
-        String partOfSpeechText = LocalisationManager.getInstance().getLocalisedString(unit.getPartOfSpeech().getId());
-        partOfSpeech.setSelectedItem(unit != null ? new CustomDescription<>(
-                partOfSpeechText, unit.getPartOfSpeech()): null);
-
-        String domainText = LocalisationManager.getInstance().getLocalisedString(unit.getDomain().getName());
-        domain.setSelectedItem(domainText == null ? null
-                : new CustomDescription<>(domainText, unit.getDomain()));
-
-        SenseAttributes attributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
-
-        if(attributes != null){
-            definition.setText(attributes.getDefinition());
-            comment.setText(attributes.getComment());
-            register.setSelectedItem(attributes.getRegister() == null ? null :
-                    new CustomDescription<>(LocalisationManager.getInstance().getLocalisedString(attributes.getRegister().getName()), attributes.getRegister()));
-            link.setText(attributes.getLink());
-        }
-
         examplesModel.clear();
-        if(attributes.getExamples() != null){
-            for(SenseExample example : attributes.getExamples()){
-                examplesModel.addElement(example);
+        if(unit == null) {
+            return;
+        }
+        // when user isn't administrator, all only-read lexicons has been filtered, and current lexicon will not be shown
+        // then, we must add current lexicon to lexiconComboBox
+        if(!PermissionHelper.isAdministrator() && unit.getLexicon().isOnlyToRead()){
+            lexiconComboBox.addItem(unit.getLexicon());
+        }
+        senseAttributes = RemoteService.senseRemote.fetchSenseAttribute(unit.getId());
+        assert senseAttributes != null;
+        lemmaTextField.setText(unit.getWord().getWord());
+        variantTextField.setText(String.valueOf(unit.getVariant()));
+        lexiconComboBox.setSelectedItem(unit.getLexicon());
+        partOfSpeechComboBox.setSelectedItem(unit.getPartOfSpeech());
+        domainComboBox.setSelectedItem(unit.getDomain());
+        registerComboBox.setSelectedItem(senseAttributes.getRegister());
+        statusComboBox.setSelectedItem(unit.getStatus());
+        definitionArea.setText(senseAttributes.getDefinition());
+        commentScroll.setToolTipText(senseAttributes.getComment());
+        for(SenseExample example : senseAttributes.getExamples()) {
+            examplesModel.addElement(example);
+        }
+        linkTextField.setText(senseAttributes.getLink());
+        setEnableEditing(unit);
+        enableGoToLinkButton();
+    }
+
+    private void setEnableEditing(Sense unit){
+        PermissionHelper.checkPermissionToEditAndSetComponents(unit,
+                lemmaTextField, variantTextField, lexiconComboBox, partOfSpeechComboBox, domainComboBox,
+                registerComboBox, definitionArea, commentArea, examplesList, linkTextField,
+                addExampleButton, removeExampleButton, editExampleButton);
+    }
+
+    private SenseAttributes getSense(){
+        Sense sense = editedSense;
+        SenseAttributes attributes = senseAttributes;
+        if(sense == null) {
+            sense = new Sense();
+            attributes = new SenseAttributes();
+            attributes.setSense(sense);
+        }
+        Word word = RemoteService.wordServiceRemote.findByWord(lemmaTextField.getText());
+        if(word == null){
+            word = new Word(lemmaTextField.getText());
+        }
+        sense.setWord(word);
+
+//        sense.setVariant(Integer.valueOf(variantTextField.getText()));
+        sense.setLexicon((Lexicon) lexiconComboBox.getSelectedItem());
+        sense.setPartOfSpeech((PartOfSpeech)partOfSpeechComboBox.getSelectedItem());
+        sense.setDomain((Domain)domainComboBox.getSelectedItem());
+        attributes.setRegister((Register)registerComboBox.getSelectedItem());
+        sense.setStatus((Status)statusComboBox.getSelectedItem());
+
+        String definition = !definitionArea.getText().isEmpty() ? definitionArea.getText() : null;
+        String comment = !commentArea.getText().isEmpty() ? commentArea.getText() : null;
+        String link = !linkTextField.getText().isEmpty() ? linkTextField.getText() : null;
+
+        Set<SenseExample> examples = new HashSet<>();
+        for(int i=0; i<examplesModel.getSize(); i++) {
+            SenseExample example = (SenseExample)examplesModel.getElementAt(i);
+            example.setSenseAttributes(senseAttributes);
+            examples.add(example);
+        }
+
+        attributes.setDefinition(definition);
+        attributes.setComment(comment);
+        attributes.setLink(link);
+        attributes.setExamples(examples);
+
+        attributes.setSense(sense);
+        return attributes;
+    }
+
+    public Sense save() {
+        if(validateComponents()){
+            if(editedSense == null || !checkUnitExists()) {
+                return RemoteService.senseRemote.saveSense(getSense(), editedWord);
             }
-            examplesList.setModel(examplesModel);
         }
-
-        btnSave.setEnabled(false);
+        return null;
     }
 
-    private String formatValue(String value) {
-        return (value == null || value.length() == 0) ? null : value;
+    private boolean validateComponents() {
+        return validationManager.validate();
     }
 
-    @Override
-    public void actionPerformed(ActionEvent event) {
-
-        if (event.getSource() == domain) {
-            btnSave.setEnabled(true);
-        } else if (event.getSource() == lexicon) {
-            btnSave.setEnabled(true);
-        } else if (event.getSource() == register) {
-            btnSave.setEnabled(true);
-        } else if (event.getSource() == link) {
-            btnSave.setEnabled(true);
-        } else if (event.getSource() == examplesList) {
-            btnSave.setEnabled(true);
-        } else if (event.getSource() == partOfSpeech) {
-            btnSave.setEnabled(true);
+    private boolean checkUnitExists() {
+        assert !lemmaTextField.getText().isEmpty();
+        String lemma = lemmaTextField.getText();
+        List<SenseAttributes> units = RemoteService.senseRemote.findByLemmaWithSense(lemma, LexiconManager.getInstance().getUserChosenLexiconsIds());
+        if(units == null || units.isEmpty()) {
+            return false;
         }
-    }
+        Lexicon lexicon = (Lexicon) lexiconComboBox.getSelectedItem();
+        Domain domain = (Domain) domainComboBox.getSelectedItem();
+        PartOfSpeech partOfSpeech = (PartOfSpeech) partOfSpeechComboBox.getSelectedItem();
+        String definition = !definitionArea.getText().isEmpty() ? definitionArea.getText() : null;
 
-    public MComboBox<Lexicon> getLexicon() {
-        return lexicon;
+        long count = units.stream()
+                .filter(u-> !u.getId().equals(editedSense.getId())
+                        && u.getSense().getWord().getWord().equals(lemma)
+                && u.getSense().getLexicon().equals(lexicon)
+                && u.getSense().getDomain().equals(domain)
+                && u.getSense().getPartOfSpeech().equals(partOfSpeech)
+                && u.getDefinition() != null
+                && u.getDefinition().equals(definition))
+                .count();
+        if(count > 0){
+            DialogBox.showError(Messages.FAILURE_UNIT_EXISTS);
+            return true;
+        }
+        return false;
     }
-
-    public MTextField getLemma() {
-        return lemma;
-    }
-
-    public MTextField getVariant() {
-        return variant;
-    }
-
-    public MTextField getLink() {
-        return link;
-    }
-
-    public MComboBox<Register> getRegister() {
-        return register;
-    }
-
-    public MComboBox<PartOfSpeech> getPartOfSpeech() {
-        return partOfSpeech;
-    }
-
-    public MComboBox<Domain> getDomain() {
-        return domain;
-    }
-
-    public JTextPane getDefinition() {
-        return definition;
-    }
-
-    public JTextPane getComment() {
-        return comment;
-    }
-
-    public JButton getBtnCancel() {
-        return btnCancel;
-    }
-
-    public DefaultListModel getExamplesModel() {
-        return examplesModel;
-    }
-
-    public JButton getBtnSave() {
-        return btnSave;
-    }
-
 }

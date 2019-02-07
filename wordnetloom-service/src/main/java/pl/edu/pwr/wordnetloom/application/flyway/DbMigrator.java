@@ -1,11 +1,13 @@
 package pl.edu.pwr.wordnetloom.application.flyway;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.MigrationInfo;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,6 +34,17 @@ public class DbMigrator {
         for (MigrationInfo i : flyway.info().all()) {
             log.log(Level.INFO, "Migrate task: {0} : {1} from file: {2}", new Object[]{i.getVersion(), i.getDescription(), i.getScript()});
         }
-        flyway.migrate();
+
+        try{
+            flyway.migrate();
+        } catch (FlywayException e){
+            e.printStackTrace();
+            flyway.repair();
+            try {
+                dataSource.getConnection().rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
     }
 }

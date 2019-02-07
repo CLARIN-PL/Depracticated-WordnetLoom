@@ -2,6 +2,7 @@ package pl.edu.pwr.wordnetloom.localisation.repository;
 
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.dictionary.model.Register;
+import pl.edu.pwr.wordnetloom.localisation.model.ApplicationLabel;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedKey;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 
@@ -19,13 +20,10 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
     @Inject
     EntityManager em;
 
-    public Map<String, String> findAllLabels(String locale) {
-        Map<String, String> map = new HashMap<>();
-
-        final List<Object[]> list = em.createNativeQuery("SELECT label_key, value FROM application_labels WHERE language = :locale")
-                .setParameter("locale", locale).getResultList();
-        list.forEach(i -> map.put(i[0].toString(), i[1].toString()));
-        return map;
+    public List<ApplicationLabel> findAllLabels(String locale) {
+        return em.createQuery("FROM ApplicationLabel a WHERE a.language=:language")
+                .setParameter("language", locale)
+                .getResultList();
     }
 
     public LocalisedString findByKey(LocalisedKey key) {
@@ -87,6 +85,51 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
         return resultMap;
     }
 
+    public List<ApplicationLabel> findStringsByKey(String key){
+        return em.createQuery("FROM ApplicationLabel a WHERE a.key =:key")
+                .setParameter("key", key)
+                .getResultList();
+    }
+
+    public LocalisedString save(LocalisedString localisedString){
+        if(getEntityManager().contains(localisedString)){
+            getEntityManager().persist(localisedString);
+            return localisedString;
+        } else {
+            return getEntityManager().merge(localisedString);
+        }
+    }
+
+    public synchronized Long getNextIdValue() {
+        Long latestId = (Long) getEntityManager().createQuery("SELECT MAX(l.key.id) FROM  LocalisedString l").getSingleResult();
+        return latestId + 1;
+    }
+
+    public ApplicationLabel save(ApplicationLabel label){
+        if(em.contains(label)){
+            em.persist(label);
+            return label;
+        } else {
+            return em.merge(label);
+        }
+    }
+
+    public ApplicationLabel find(String key, String language){
+        return (ApplicationLabel) em.createQuery("FROM ApplicationLabel a WHERE a.key = :key AND a.language = :language")
+                .setParameter("key", key)
+                .setParameter("language", language)
+                .getSingleResult();
+    }
+
+    public void remove(ApplicationLabel label){
+        em.remove(label);
+    }
+
+    public void removeLocalisedString(Long id) {
+        getEntityManager().createQuery("DELETE FROM LocalisedString l WHERE l.key.id = :id")
+                .setParameter("id", id).executeUpdate();
+    }
+
     @Override
     public LocalisedString persist(LocalisedString s) {
         if (s.getKey().getId() == null) {
@@ -95,7 +138,6 @@ public class LocalisedStringRepository extends GenericRepository<LocalisedString
         getEntityManager().persist(s);
         return s;
     }
-
 
     @Override
     protected Class<LocalisedString> getPersistentClass() {

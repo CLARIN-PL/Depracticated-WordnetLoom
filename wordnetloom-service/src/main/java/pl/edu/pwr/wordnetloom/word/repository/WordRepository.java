@@ -3,6 +3,8 @@ package pl.edu.pwr.wordnetloom.word.repository;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+
 import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.word.model.Word;
 
@@ -23,9 +25,13 @@ public class WordRepository extends GenericRepository<Word> {
     }
 
     public Word findByWord(String word) {
-        return em.createQuery("SELECT w FROM Word w WHERE w.word = :word", Word.class)
-                .setParameter("word", word)
-                .getSingleResult();
+        try{
+            return em.createQuery("SELECT w FROM Word w WHERE CONVERT(w.word, BINARY) = :word", Word.class)
+                    .setParameter("word", word)
+                    .getSingleResult();
+        } catch (NoResultException e){
+            return null;
+        }
     }
 
     public Integer countByWord(String word) {
@@ -33,5 +39,4 @@ public class WordRepository extends GenericRepository<Word> {
                 .setParameter("word", word)
                 .getSingleResult();
     }
-
 }

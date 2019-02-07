@@ -1,9 +1,11 @@
 package pl.edu.pwr.wordnetloom.synsetrelation.service.impl;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import pl.edu.pwr.wordnetloom.common.dto.DataEntry;
 import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
+import pl.edu.pwr.wordnetloom.synset.repository.SynsetRepository;
 import pl.edu.pwr.wordnetloom.synsetrelation.model.SynsetRelation;
 import pl.edu.pwr.wordnetloom.synsetrelation.repository.SynsetRelationRepository;
 import pl.edu.pwr.wordnetloom.synsetrelation.service.SynsetRelationServiceLocal;
@@ -16,6 +18,7 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
@@ -27,6 +30,9 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
 
     @Inject
     private SynsetRelationRepository synsetRelationRepository;
+
+    @Inject
+    private SynsetRepository synsetRepository;
 
     @RolesAllowed({"USER", "ADMIN"})
     @Override
@@ -142,11 +148,18 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
         return synsetRelationRepository.findRelation(parent, child, relation);
     }
 
-    @PermitAll
-    @Override
-    public List<Synset> findTopPathInSynsets(Synset synset, Long rtype) {
-        return synsetRelationRepository.findTopPathInSynsets(synset, rtype);
-    }
+   @PermitAll
+   @Override
+   public List<DataEntry> findPath(Synset synset, RelationType relationType, List<Long> lexiconsIds){
+        List<Synset> synsets = synsetRelationRepository.findPath(synset, relationType);
+        List<DataEntry> dataEntries = new ArrayList<>();
+        DataEntry dataEntry;
+        for(Synset syn : synsets){
+            dataEntry = synsetRepository.findSynsetDataEntry(syn.getId(), lexiconsIds);
+            dataEntries.add(dataEntry);
+        }
+        return dataEntries;
+   }
 
     @PermitAll
     @Override
@@ -170,5 +183,11 @@ public class SynsetRelationServiceBean implements SynsetRelationServiceLocal {
     @Override
     public List<SynsetRelation> findSimpleRelationsWhereSynsetIsChild(Synset synset, List<Long> lexicons) {
         return synsetRelationRepository.findSimpleRelationsWhereSynsetIsChild(synset, lexicons);
+    }
+
+    @RolesAllowed({"USER", "ADMIN"})
+    @Override
+    public void create(Synset parent, Synset child, RelationType relationType){
+        synsetRelationRepository.create(parent, child, relationType);
     }
 }

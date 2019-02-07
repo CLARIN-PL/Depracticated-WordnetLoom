@@ -29,4 +29,11 @@ public class DictionaryManager {
                 .collect(Collectors.toList());
     }
 
+    public<T> List<T> getDictionaryById(Long id) {
+        return dictionaries.stream()
+                .filter(d->d.getId().equals(id))
+                .map(d->(T)d)
+                .collect(Collectors.toList());
+    }
+
 }

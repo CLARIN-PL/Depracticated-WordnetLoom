@@ -8,6 +8,7 @@ import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebFormattedTextField;
 import com.google.common.eventbus.Subscribe;
+import org.jdesktop.swingx.HorizontalLayout;
 import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexicon.window.LexiconsWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.events.ShowRelationTestsEvent;
@@ -28,6 +29,7 @@ import pl.edu.pwr.wordnetloom.common.model.NodeDirection;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.localisation.model.LocalisedString;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.GlobalWordnetRelationType;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import se.datadosen.component.RiverLayout;
@@ -37,16 +39,12 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
-
-    private static final String LINE_BREAK = RiverLayout.LINE_BREAK;
-    private static final String LEFT_BREAK = RiverLayout.LINE_BREAK + " " + RiverLayout.LEFT;
-    private static final String LINE_FILL = RiverLayout.LINE_BREAK + " " + RiverLayout.HFILL;
-    private static final String TAB_FILL = RiverLayout.TAB_STOP + " " + RiverLayout.HFILL;
-    private static final String RIGHT = RiverLayout.RIGHT;
 
     private RelationType currentRelation;
     private WebFrame parent;
@@ -72,29 +70,42 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         allowedPartsOfSpeech.setFocusable(false);
         reverseRelation.setFocusable(false);
 
-        add(LINE_BREAK + " " + RIGHT, nameLabel);
-        add(TAB_FILL, relationName);
-        add(LINE_BREAK, displayLabel);
-        add(TAB_FILL, relationDisplay);
-        add(LINE_BREAK, shortcutLabel);
-        add(TAB_FILL, relationShortcut);
-        add(LINE_BREAK, descriptionLabel);
-        add(TAB_FILL, descriptionScrollWrapper);
-        add(LINE_BREAK, lexiconLabel);
-        add(TAB_FILL, lexicon);
-        add(RIGHT, lexiconBtn);
-        add(LINE_BREAK, multilingualLabel);
-        add(TAB_FILL, multilingual);
-        add(LINE_BREAK, posLabel);
-        add(TAB_FILL, allowedPartsOfSpeech);
-        add(RIGHT, showAllowedPartsOfSpeechBtn);
-        add(LINE_BREAK, reverseLabel);
-        add(TAB_FILL, reverseRelation);
-        add(RIGHT, reverseRelationBtn);
-        add(LINE_BREAK, colorLabel);
-        add(TAB_FILL, colorChooser);
-        add(LINE_BREAK, directionLabel);
-        add(TAB_FILL, relationDirection);
+        Map<String, Component> components = new LinkedHashMap<>();
+        components.put(Labels.RELATION_NAME_COLON,  new MComponentGroup(relationName)
+                .withHorizontalLayout().withFirstElementSize(new Dimension(260, 25)));
+
+        components.put(Labels.SHORTCUT_COLON, new MComponentGroup(relationShortcut)
+                .withHorizontalLayout().withFirstElementSize(new Dimension(260, 25)));
+
+        components.put(Labels.DISPALY_FORM_COLON, new MComponentGroup(relationDisplay)
+                .withHorizontalLayout().withFirstElementSize(new Dimension(260, 25)));
+
+        components.put(Labels.DESCRIPTION_COLON, new MComponentGroup(descriptionScrollWrapper)
+                .withHorizontalLayout().withFirstElementSize(new Dimension(260, 55)));
+
+        components.put(Labels.LEXICON_COLON, new MComponentGroup(lexicon, lexiconBtn)
+                .withHorizontalLayout()
+                .withFirstElementSize(new Dimension(220, 25)));
+
+        components.put(Labels.MULTILINGUAL, multilingual);
+        components.put("GlobalWordnet Type:", new MComponentGroup(globalWordnetRelationTypeComboBox)
+                .withHorizontalLayout().withFirstElementSize(new Dimension(260, 25)));
+
+        components.put(Labels.PARTS_OF_SPEECH_COLON, new MComponentGroup(allowedPartsOfSpeech, showAllowedPartsOfSpeechBtn)
+                .withHorizontalLayout()
+                .withFirstElementSize(new Dimension(220, 25)));
+
+        components.put(Labels.REVERSE_RELATION, new MComponentGroup(reverseRelation,reverseRelationBtn)
+                .withHorizontalLayout()
+                .withFirstElementSize(new Dimension(220, 25)));
+
+        components.put(Labels.COLOR_COLON, colorChooser);
+        components.put(Labels.DIRECTION_COLON, new MComponentGroup(relationDirection)
+                .withHorizontalLayout()
+                .withFirstElementSize(new Dimension(260, 25)));
+
+        add("", GroupView.createGroupView(components, null, 0.1f,0.9f));
+
         add(RiverLayout.LINE_BREAK + " " + RiverLayout.CENTER, btnSave);
     }
 
@@ -127,6 +138,7 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         reverseRelationBtn.setEnabled(enable);
         colorChooser.setEnabled(enable);
         relationDirection.setEnabled(enable);
+        globalWordnetRelationTypeComboBox.setEnabled(enable);
     }
 
     private void bind(RelationType rt) {
@@ -141,6 +153,15 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         reverseRelation.setText(rt.getReverse() != null ? LocalisationManager.getInstance().getLocalisedString(rt.getReverse().getName()) : "");
         lexicon.setText(LexiconManager.getInstance().lexiconNamesToString(rt.getLexicons()));
         allowedPartsOfSpeech.setText(PartOfSpeechManager.getInstance().partsOfSpeechToString(rt.getPartsOfSpeech()));
+
+        List<GlobalWordnetRelationType> gwrt = Stream.of(GlobalWordnetRelationType.values())
+                .filter(g -> g.type.contains(rt.getRelationArgument()))
+                .collect(Collectors.toList());
+
+        globalWordnetRelationTypeComboBox.setModel(new DefaultComboBoxModel<>(
+                gwrt.toArray(new GlobalWordnetRelationType[gwrt.size()])));
+
+        globalWordnetRelationTypeComboBox.setSelectedItem(rt.getGlobalWordnetRelationType());
     }
 
     private void save(){
@@ -154,7 +175,7 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
             currentRelation.setColor(hex.toUpperCase());
             currentRelation.setMultilingual(multilingual.isSelected());
             currentRelation.setNodePosition(relationDirection.getEntity());
-
+            currentRelation.setGlobalWordnetRelationType(globalWordnetRelationTypeComboBox.getEntity());
             RemoteService.relationTypeRemote.save(currentRelation);
         }
     }
@@ -194,16 +215,6 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
         }
     }
 
-    private MaskFormatter createFormatter(String s) {
-        MaskFormatter formatter = null;
-        try {
-            formatter = new MaskFormatter(s);
-        } catch (java.text.ParseException exc) {
-            logger().error("Formatter color parse error:", exc);
-        }
-        return formatter;
-    }
-
     private final MButton btnSave = MButton.buildSaveButton()
             .withActionListener(e -> save());
 
@@ -238,71 +249,9 @@ public class RelationTypePropertiesPanel extends WebPanel implements Loggable {
             .withActionListener(e -> openReverseRelationDialog())
             .withToolTip(Hints.CHOOSE_REVERSE_RELATION);
 
-    private final MComboBox<NodeDirection> relationDirection = new MComboBox<>(NodeDirection.values())
-            .withSize(new Dimension(150, 25));
+    private final MComboBox<NodeDirection> relationDirection = new MComboBox<>(NodeDirection.values());
 
-    private final WebFormattedTextField colorRelation = new WebFormattedTextField(createFormatter("#HHHHHH"));
-
-    private final MLabel lexiconLabel = new MLabel(Labels.LEXICON_COLON)
-            .withMnemonic('l')
-            .withAlignment(SwingConstants.RIGHT)
-            .withSize(new Dimension(130, 15))
-            .withLabelFor(lexicon);
-
-    private final MLabel nameLabel = new MLabel(Labels.RELATION_NAME_COLON)
-            .withMnemonic('n')
-            .withAlignment(SwingConstants.RIGHT)
-            .withSize(new Dimension(130, 15))
-            .withLabelFor(relationName);
-
-    private final MLabel displayLabel = new MLabel(Labels.DISPALY_FORM_COLON)
-            .withMnemonic('f')
-            .withAlignment(SwingConstants.RIGHT)
-            .withSize(new Dimension(130, 15))
-            .withLabelFor(relationDisplay);
-
-    private final MLabel shortcutLabel = new MLabel(Labels.SHORTCUT_COLON)
-            .withMnemonic('s')
-            .withAlignment(SwingConstants.RIGHT)
-            .withSize(new Dimension(130, 15))
-            .withLabelFor(relationShortcut);
-
-    private final MLabel descriptionLabel = new MLabel(Labels.DESCRIPTION_COLON)
-            .withMnemonic('o')
-            .withAlignment(SwingConstants.RIGHT)
-            .withSize(new Dimension(130, 15))
-            .withLabelFor(relationDescription);
-
-    private final MLabel posLabel = new MLabel(Labels.PARTS_OF_SPEECH_COLON)
-            .withMnemonic('c')
-            .withAlignment(SwingConstants.RIGHT)
-            .withSize(new Dimension(130, 15))
-            .withLabelFor(allowedPartsOfSpeech);
-
-    private final MLabel reverseLabel = new MLabel(Labels.REVERSE_RELATION)
-            .withMnemonic('\0')
-            .withAlignment(SwingConstants.RIGHT)
-            .withSize(new Dimension(130, 15))
-            .withLabelFor(reverseRelation);
-
-    private final MLabel colorLabel = new MLabel(Labels.COLOR_COLON)
-            .withMnemonic('q')
-            .withAlignment(SwingConstants.RIGHT)
-            .withSize(new Dimension(130, 15))
-            .withLabelFor(colorRelation);
-
-    private final MLabel directionLabel = new MLabel()
-            .withMnemonic('d')
-            .withAlignment(SwingConstants.RIGHT)
-            .withSize(new Dimension(130, 15))
-            .withCaption(Labels.DIRECTION_COLON)
-            .withLabelFor(relationDirection);
-
-    private final MLabel multilingualLabel = new MLabel(Labels.MULTILINGUAL)
-            .withMnemonic('m')
-            .withAlignment(SwingConstants.RIGHT)
-            .withSize(new Dimension(130, 15))
-            .withLabelFor(multilingual);
+    private final MComboBox<GlobalWordnetRelationType> globalWordnetRelationTypeComboBox = new MComboBox<>();
 
     private final WebColorChooserField colorChooser = new WebColorChooserField();
 

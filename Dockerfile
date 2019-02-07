@@ -1,9 +1,9 @@
 FROM clarinpl/java
 
 # Maintainer
-LABEL maintainer="Tomasz Naskręt, clarin-pl.eu" description="WordnetLoom  on WildFly 10 with MySql Drivers"
+LABEL maintainer="Tomasz Naskręt, clarin-pl.eu" description="WordnetLoom  on WildFly 14 with MySql Drivers"
 # Wildfly
-ENV VERSION 10.1.0.Final
+ENV VERSION 14.0.1.Final
 ENV INSTALL_DIR /opt
 ENV WILDFLY_HOME ${INSTALL_DIR}/wildfly-${VERSION}
 ENV DEPLOYMENT_DIR ${WILDFLY_HOME}/standalone/deployments/

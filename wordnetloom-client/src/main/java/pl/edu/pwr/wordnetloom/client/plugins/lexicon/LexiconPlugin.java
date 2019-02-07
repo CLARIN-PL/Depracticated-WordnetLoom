@@ -9,5 +9,4 @@ public class LexiconPlugin implements Plugin {
     public void install(Workbench workbench) {
         workbench.installService(new LexiconService(workbench));
     }
-
 }

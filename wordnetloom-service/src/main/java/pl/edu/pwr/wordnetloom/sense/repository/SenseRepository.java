@@ -4,9 +4,7 @@ import pl.edu.pwr.wordnetloom.common.repository.GenericRepository;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
 import pl.edu.pwr.wordnetloom.sense.dto.SenseCriteriaDTO;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
-import pl.edu.pwr.wordnetloom.sense.model.SenseAttributes;
-import pl.edu.pwr.wordnetloom.sense.model.SenseExample;
+import pl.edu.pwr.wordnetloom.sense.model.*;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
 import pl.edu.pwr.wordnetloom.word.model.Word;
@@ -35,13 +33,7 @@ public class SenseRepository extends GenericRepository<Sense> {
 
     @Override
     public void delete(Sense sense) {
-        Sense s = findById(sense.getId());
-
-        if (s != null) {
-            SenseAttributes senseAttributes = getEntityManager().find(SenseAttributes.class, s.getId());
-            getEntityManager().remove(senseAttributes);
-        }
-        super.delete(s);
+        getEntityManager().remove(getEntityManager().contains(sense) ? sense : getEntityManager().merge(sense));
     }
 
     public void deleteAll() {
@@ -59,6 +51,7 @@ public class SenseRepository extends GenericRepository<Sense> {
     private final String LEXICON = "lexicon";
     private final String PART_OF_SPEECH = "partOfSpeech";
     private final String VARIANT = "variant";
+    private final String STATUS = "status";
     private final String INCOMING_RELATIONS = "incomingRelations";
     private final String OUTGOING_RELATIONS = "outgoingRelations";
     private final String RELATION_TYPE = "relationType";
@@ -66,6 +59,14 @@ public class SenseRepository extends GenericRepository<Sense> {
     private final String COMMENT = "comment";
     private final String EXAMPLES = "examples";
     private final String SYNSET = "synset";
+    private final String SENSE = "sense";
+    private final String ID = "id";
+    private final String EMOTION = "emotion";
+    private final String VALUATION = "valuation";
+    private final String MARKEDNESS = "markedness";
+    private final String EMOTIONS = "emotions";
+    private final String VALUATIONS = "valuations";
+    private final String EXAMPLE = "example";
 
     private List<Sense> getSensesByCriteria(SenseCriteriaDTO dto) {
 
@@ -74,6 +75,7 @@ public class SenseRepository extends GenericRepository<Sense> {
         Root<Sense> senseRoot = query.from(Sense.class);
         senseRoot.fetch(DOMAIN);
         senseRoot.fetch(LEXICON);
+        senseRoot.fetch(SYNSET);
 
         query.select(senseRoot);
         query.where(getPredicatesByCriteria(dto, senseRoot, criteriaBuilder));
@@ -108,6 +110,11 @@ public class SenseRepository extends GenericRepository<Sense> {
             predicateList.add(lemmaPredicate);
         }
 
+        if(dto.getStatus() != null){
+            Predicate statusPredicate = criteriaBuilder.equal(senseRoot.get(STATUS), dto.getStatusId());
+            predicateList.add(statusPredicate);
+        }
+
         Predicate lexiconPredicate = senseRoot.get(LEXICON).in(dto.getLexicons());
         predicateList.add(lexiconPredicate);
 
@@ -135,7 +142,7 @@ public class SenseRepository extends GenericRepository<Sense> {
             CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
             Subquery<Long> subquery = query.subquery(Long.class);
             Root<SenseAttributes> senseAttributesRoot = subquery.from(SenseAttributes.class);
-            subquery.select(senseAttributesRoot.get("sense").get("id"));
+            subquery.select(senseAttributesRoot.get(SENSE).get(ID));
 
             List<Predicate> predicates = new ArrayList<>();
 
@@ -151,12 +158,12 @@ public class SenseRepository extends GenericRepository<Sense> {
 
             if (dto.getExample() != null) {
                 Join<SenseAttributes, SenseExample> senseExampleJoin = senseAttributesRoot.join(EXAMPLES);
-                Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get("example"), "%"+dto.getExample()+"%");
+                Predicate examplePredicate = criteriaBuilder.like(senseExampleJoin.get(EXAMPLE), "%"+dto.getExample()+"%");
                 predicates.add(examplePredicate);
             }
 
             subquery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
-            Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get("id")).value(subquery);
+            Predicate subquery_predicate = criteriaBuilder.in(senseRoot.get(ID)).value(subquery);
             predicateList.add(subquery_predicate);
         }
 
@@ -173,7 +180,6 @@ public class SenseRepository extends GenericRepository<Sense> {
     }
 
     public int getCountUnitsByCriteria(SenseCriteriaDTO dto) {
-
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
 
@@ -186,7 +192,6 @@ public class SenseRepository extends GenericRepository<Sense> {
 
         return Math.toIntExact(getEntityManager().createQuery(query).getSingleResult());
     }
-
 
 
     public List<Sense> filterSenseByLexicon(List<Sense> senses, List<Long> lexicons) {
@@ -318,8 +323,20 @@ public class SenseRepository extends GenericRepository<Sense> {
         return query.getResultList();
     }
 
+    public int countSensesByWordId(Long id){
+        return Math.toIntExact(getEntityManager().createQuery("SELECT COUNT(s.id) FROM Sense s WHERE s.word.id = :id", Long.class)
+                .setParameter("id" ,id)
+                .getSingleResult());
+    }
+
+    public int countSensesByWord(String word) {
+        return getEntityManager().createQuery("SELECT COUNT(s.id) FROM Sense s JOIN s.word As word WHERE CONVERT(word.word, BINARY) = :word", Long.class)
+                .setParameter("word", word)
+                .getFirstResult();
+    }
+
     public Sense findHeadSenseOfSynset(Long synsetId) {
-        Query query = getEntityManager().createQuery("SELECT s FROM Sense s JOIN FETCH s.domain JOIN FETCH s.lexicon WHERE s.synset.id = :id AND s.synsetPosition = 0")
+        Query query = getEntityManager().createQuery("SELECT s FROM Sense s JOIN FETCH s.partOfSpeech JOIN FETCH s.domain JOIN FETCH s.lexicon WHERE s.synset.id = :id AND s.synsetPosition = 0")
                 .setParameter("id", synsetId);
         List<Sense> resultList = query.getResultList();
         if (!resultList.isEmpty()) {
@@ -339,7 +356,6 @@ public class SenseRepository extends GenericRepository<Sense> {
 
         return getEntityManager().createQuery(query).getSingleResult();
     }
-
 
     @Override
     protected Class<Sense> getPersistentClass() {
@@ -362,5 +378,13 @@ public class SenseRepository extends GenericRepository<Sense> {
         query.where(predicate);
 
         return getEntityManager().createQuery(query).getSingleResult();
+    }
+
+    public Sense save(Sense sense){
+        if(getEntityManager().contains(sense)){
+            getEntityManager().persist(sense);
+            return sense;
+        }
+        return getEntityManager().merge(sense);
     }
 }

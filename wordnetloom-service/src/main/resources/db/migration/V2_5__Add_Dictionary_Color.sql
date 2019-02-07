@@ -1,0 +1,6 @@
+START TRANSACTION;
+
+ALTER TABLE wordnet.dictionaries
+ADD color VARCHAR(7);
+
+COMMIT;

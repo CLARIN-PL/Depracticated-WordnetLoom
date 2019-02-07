@@ -10,10 +10,10 @@ import java.awt.*;
 
 public class RelationsEditorWindow extends MFrame {
 
-    public final static int MIN_WINDOW_WIDTH = 850;
-    public final static int MIN_WINDOW_HEIGHT = 680;
-    public final static int MAX_WINDOW_WIDTH = 850;
-    public final static int MAX_WINDOW_HEIGHT = 680;
+    public final static int MIN_WINDOW_WIDTH = 880;
+    public final static int MIN_WINDOW_HEIGHT = 720;
+    public final static int MAX_WINDOW_WIDTH = 880;
+    public final static int MAX_WINDOW_HEIGHT = 720;
 
     private RelationTypePanel relationTypePanel;
 

@@ -1,28 +1,54 @@
 package pl.edu.pwr.wordnetloom.synset.dto;
 
+import EDU.oswego.cs.dl.util.concurrent.FJTask;
+import pl.edu.pwr.wordnetloom.dictionary.model.Markedness;
+import pl.edu.pwr.wordnetloom.dictionary.model.Status;
+import pl.edu.pwr.wordnetloom.domain.model.Domain;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
+import pl.edu.pwr.wordnetloom.partofspeech.model.PartOfSpeech;
+import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import pl.edu.pwr.wordnetloom.sense.model.Sense;
+
 
 public class CriteriaDTO implements Serializable{
 
     private String lemma;
-    private int lexicon;
-    private int partOfSpeech;
-    private int domain;
-    private int relation;
-    private int register;
-    private String definition;
+    private Long synsetId;
+
+    private List<Long> lexiconsIds;
+    private PartOfSpeech partOfSpeech;
+    private Domain domain;
+    private RelationType relationType;
     private String comment;
-    private String example;
+    private List<Long> emotions;
+    private List<Long> valuations;
+    private Markedness markedness;
+    private Status status;
+    private int limit;
+    private int offset;
 
-    /** true - only abstract synsets
-     * false - only normal synsets
-     * null - all synsets
-     */
-    private Boolean abstractSynset;
+    public CriteriaDTO(){
 
-    private List<Sense> sense;
+    }
+
+    public CriteriaDTO(CriteriaDTO criteria) {
+        setLemma(criteria.getLemma());
+        setLexicons(criteria.getLexicons());
+        setPartOfSpeech(criteria.getPartOfSpeech());
+        setDomain(criteria.getDomain());
+        setRelationType(criteria.getRelationType());
+        setComment(criteria.getComment());
+        setEmotions(criteria.getEmotions());
+        setValuations(criteria.getValuations());
+        setMarkedness(criteria.getMarkedness());
+        setLimit(criteria.getLimit());
+        setOffset(criteria.getOffset());
+        setStatus(criteria.getStatus());
+
+    }
 
     public String getLemma() {
         return lemma;
@@ -32,83 +58,138 @@ public class CriteriaDTO implements Serializable{
         this.lemma = lemma;
     }
 
-    public int getLexicon() {
-        return lexicon;
+    public Long getSynsetId() {
+        return synsetId;
     }
 
-    public void setLexicon(int lexicon) {
-        this.lexicon = lexicon;
+    public void setSynsetId(Long synsetId) {
+        this.synsetId = synsetId;
     }
 
-    public int getPartOfSpeech() {
+    public List<Long> getLexicons() {
+        return lexiconsIds;
+    }
+
+    public void setLexicons(List<Long> lexiconsIds) {
+        this.lexiconsIds = lexiconsIds;
+    }
+
+    public Long getLexiconId() {
+        if(lexiconsIds != null && !lexiconsIds.isEmpty()){
+            return lexiconsIds.get(0);
+        }
+        return null;
+    }
+
+    public void setLexiconId(Long lexiconId) {
+        this.lexiconsIds = new ArrayList<>();
+        lexiconsIds.add(lexiconId);
+    }
+
+    public Long getPartOfSpeechId() {
+        return partOfSpeech != null ? partOfSpeech.getId() : null;
+    }
+
+    public PartOfSpeech getPartOfSpeech() {
         return partOfSpeech;
     }
 
-    public void setPartOfSpeech(int partOfSpeech) {
+    public void setPartOfSpeech(PartOfSpeech partOfSpeech){
         this.partOfSpeech = partOfSpeech;
     }
 
-    public int getDomain() {
+    public Long getDomainId() {
+        return domain != null ? domain.getId() : null;
+    }
+
+    public Domain getDomain() {
         return domain;
     }
 
-    public void setDomain(int domain) {
+    public void setDomain(Domain domain){
         this.domain = domain;
     }
 
-    public int getRelation() {
-        return relation;
+    public Long getRelationTypeId() {
+        return relationType != null ? relationType.getId() : null;
     }
 
-    public void setRelation(int relation) {
-        this.relation = relation;
+    public RelationType getRelationType() {
+        return relationType;
     }
 
-    public int getRegister() {
-        return register;
+    public void setRelationType(RelationType relationType){
+        this.relationType = relationType;
     }
 
-    public void setRegister(int register) {
-        this.register = register;
-    }
-
-    public String getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(String definition) {
-        this.definition = definition;
-    }
-
-    public String getComment() {
+    public String getComment(){
         return comment;
     }
 
     public void setComment(String comment) {
-        this.comment = comment;
+        if(comment == null || comment.isEmpty()){
+            this.comment = null;
+        } else {
+            this.comment = comment;
+        }
     }
 
-    public String getExample() {
-        return example;
+    public List<Long> getEmotions() {
+        return emotions;
     }
 
-    public void setExample(String example) {
-        this.example = example;
+    public void setEmotions(List<Long> emotions) {
+        this.emotions = emotions;
     }
 
-    public Boolean isAbstract(){
-        return abstractSynset;
+    public List<Long> getValuations() {
+        return valuations;
     }
 
-    public void setAbstract(Boolean isAbstract){
-        abstractSynset = isAbstract;
+    public void setValuations(List<Long> valuations) {
+        this.valuations = valuations;
     }
 
-    public List<Sense> getSense() {
-        return sense;
+    public Long getMarkednessId() {
+        return markedness != null ? markedness.getId() : null;
     }
 
-    public void setSense(List<Sense> sense) {
-        this.sense = sense;
+    public Markedness getMarkedness(){
+        return markedness;
+    }
+
+    public void setMarkedness(Markedness markedness) {
+        this.markedness = markedness;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public Long getStatusId(){
+        if (status != null){
+            return status.getId();
+        }
+        return null;
+    }
+
+    public void setStatus(Status status){
+        this.status = status;
     }
 }

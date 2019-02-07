@@ -236,48 +236,6 @@ public class ViwnGraphView extends AbstractView {
             for (int i = 0; i < ids.length; i++) {
                 ids[i] = graphs.get(i).getSynset().getId();
             }
-            // List<Synset> synsets = RemoteUtils.synsetRemote.dbFullGet(ids);
-
-            //Stworzenie odpowiednich węzłów na podstawie pobranych informacji
-//            if (synsets != null && synsets.size() > 0) {
-//
-//                HashMap<Long, ExtGraph> synGraphs = new HashMap<>();
-//
-//                for (ExtGraph eg : graphs) {
-//                    synsets.stream().filter((ss) -> (eg.getSynset().getId().equals(ss.getId()))).forEachOrdered((ss) -> {
-//                        synGraphs.put(ss.getId(), eg);
-//                    });
-//                }
-//
-//                //Uzupełnienie synsetów
-//                //synsets = RemoteUtils.synsetRemote.dbGetUnits(synsets);
-//                //	synsets = RemoteUtils.synsetRemote.dbGetSynsetsRels(synsets);
-//                //Uzupełnienie jednostek w rozszerzeniach
-//                synsets.stream().map((syn) -> graphExts.get(synGraphs.get(syn.getId()).getId())).forEachOrdered((exge) -> {
-//                    // TODO: check me
-//                    //graphExts.get(synGraphs.get(syn.getId()).getId()).setLexicalUnit(syn);
-//                    RemoteUtils.extGraphExtensionRemote.mergeObject(exge);
-//                });
-//
-//                ArrayList<ViwnNodeCandExtension> result = new ArrayList<>();
-//
-//                synsets.stream().map((s) -> {
-//                    ViwnNodeCandExtension ext = new ViwnNodeCandExtension(s, graphExts.get(synGraphs.get(s.getId()).getId()), getUI());
-//                    ext.setRelName(graphExts.get(synGraphs.get(s.getId()).
-//                            getId()).
-//                            getRelationType().
-//                            getName().getText());
-//                    ext.setColor(graphExts.get(synGraphs.get(s.getId()).getId()).getColor());
-//                    return ext;
-//                }).forEachOrdered((ext) -> {
-//                    result.add(ext);
-//                });
-//                return result;
-//            } else {
-//                return null;
-//            }
-//        } else {
-//            return null;
         }
         return null;
     }

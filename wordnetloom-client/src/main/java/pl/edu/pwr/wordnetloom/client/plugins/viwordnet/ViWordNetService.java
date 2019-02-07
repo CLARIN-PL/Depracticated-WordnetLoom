@@ -1,16 +1,20 @@
 package pl.edu.pwr.wordnetloom.client.plugins.viwordnet;
 
-import com.alee.laf.menu.WebMenu;
+import com.google.common.eventbus.Subscribe;
+import pl.edu.pwr.wordnetloom.client.Application;
+import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.events.SearchSensesEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.LexicalUnitsView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetPropertiesView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetStructureView;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views.SynsetView;
-import pl.edu.pwr.wordnetloom.client.plugins.relations.da.RelationsDA;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphAfterRemovingEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateGraphEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetPropertiesEvent;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateSynsetUnitsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.LockerChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.listeners.SynsetSelectionChangeListener;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.structure.*;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.*;
-import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views.ViwnLockerViewUI.LockerElementRenderer;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.DeleteRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewLexicalRelationWindow;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewRelationWindow;
@@ -23,7 +27,6 @@ import pl.edu.pwr.wordnetloom.client.systems.misc.DialogBox;
 import pl.edu.pwr.wordnetloom.client.systems.misc.SimpleListenerWrapper;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractService;
-import pl.edu.pwr.wordnetloom.client.workbench.implementation.ServiceManager;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Loggable;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
@@ -72,7 +75,6 @@ public class ViWordNetService extends AbstractService implements
     private SynsetStructureView synsetStructureView = null;
     private SynsetPropertiesView synsetPropertiesView = null;
     private ViwnSatelliteGraphView satelliteGraphView = null;
-    private ViwnLockerView lockerView = null;
     private ViwnExamplesView examplesView = null;
     private ViwnExampleKPWrView kpwrExamples = null;
 
@@ -97,6 +99,8 @@ public class ViWordNetService extends AbstractService implements
         super(workbench);
         this.perspectiveName = perspectiveName;
         this.perspective = perspective;
+
+        Application.eventBus.register(this);
     }
 
     public SynsetData getSynsetData() {
@@ -117,12 +121,6 @@ public class ViWordNetService extends AbstractService implements
                     }
                     return false;
                 });
-
-        WebMenu other = workbench.getMenu(Labels.SETTINGS);
-        if (other == null) {
-            return;
-        }
-        other.addSeparator();
     }
 
     public void refreshViews() {
@@ -160,11 +158,6 @@ public class ViWordNetService extends AbstractService implements
         kpwrExamples = new ViwnExampleKPWrView(workbench, Labels.KPWR, graphUI);
         workbench.installView(examplesView, ViWordNetPerspective.SPILT_LOCKER_VIEW, perspectiveName);
         workbench.installView(kpwrExamples, ViWordNetPerspective.SPILT_LOCKER_VIEW, perspectiveName);
-
-        lockerView = new ViwnLockerView(workbench, Labels.CLIPBOARD);
-        lockerView.addSynsetSelectionChangeListener(this);
-        lockerView.addLockerChangeListener(this);
-        workbench.installView(lockerView, ViWordNetPerspective.SPILT_LOCKER_VIEW, perspectiveName);
 
         synsetStructureView = new SynsetStructureView(workbench, Labels.SYNSET, false, false, false, 1, graphUI);
         synsetStructureView.addUnitChangeListener(new SimpleListenerWrapper(this, "synsetUnitSelection"));
@@ -205,12 +198,19 @@ public class ViWordNetService extends AbstractService implements
     public void synsetSelectionChangeListener(ViwnNode node) {
         if (node != null && node instanceof ViwnNodeSynset) {
             ViwnNodeSynset synset = (ViwnNodeSynset) node;
-            if (getActiveGraphView().getUI().getSelectedNode() == null || !getActiveGraphView().getUI().getSelectedNode().equals(synset)) {
-                getActiveGraphView().getUI().setSelectedNode(synset);
-                synsetStructureView.doAction(synset.getSynset(), 1);
-                synsetPropertiesView.doAction(synset.getSynset(), 1);
-            }
+            getActiveGraphView().getUI().setSelectedNode(synset);
+
+            sendSelectionChangeEvents(synset.getSynset());
         }
+    }
+
+    private void sendSelectionChangeEvents(Synset synset) {
+        updateSynsetViews(synset);
+    }
+
+    private void updateSynsetViews(Synset synset) {
+        Application.eventBus.post(new UpdateSynsetUnitsEvent(synset));
+        Application.eventBus.post(new UpdateSynsetPropertiesEvent(synset));
     }
 
     @Override
@@ -223,15 +223,75 @@ public class ViWordNetService extends AbstractService implements
         }
     }
 
-    /**
-     * Add new item to locker, every item remember a node which it represents
-     * and a <code>ViwnGraphViewUI</code> to which it belongs
-     *
-     * @param vn
-     * @param ler
+    @Subscribe
+    public void updateGraph(UpdateGraphEvent event) {
+        if (event.getSense() == null) {
+            if(event.getView() != null){ // update one view
+                updateGraphFromRoot(event.getView());
+            } else { // update all views
+                graphViews.forEach(view->updateGraphFromRoot(view));
+            }
+        } else {
+            new LoadSenseTask(event.getSense()).execute();
+        }
+    }
+
+    private void updateGraphFromRoot(ViwnGraphView view){
+        Synset root = view.getUI().getRootSynset();
+        new LoadSynsetTask(root, view).execute();
+    }
+
+    @Subscribe
+    public void updateViewAfterRemovingSynset(UpdateGraphAfterRemovingEvent event){
+        Synset synset = event.getSynset();
+        updateSensesListAfterRemovingSynset(synset);
+        for(ViwnGraphView view : graphViews){
+            if(isSynsetSelected(synset, view) && isActiveView(view)){
+                updateSynsetViews();
+            }
+            if(isRoot(synset, view)){
+                clearGraph(view);
+            } else {
+                updateGraph(new UpdateGraphEvent(null, view));
+            }
+        }
+    }
+
+    private void updateSensesListAfterRemovingSynset(Synset synset){
+        Application.eventBus.post(new SearchSensesEvent());
+    }
+
+    private void clearGraph(ViwnGraphView view) {
+        view.getUI().setRoot(null);
+        view.getUI().clear();
+        // TODO clear preview
+    }
+
+    private boolean isRoot(Synset synset, ViwnGraphView gv) {
+        if (synset == null || gv.getUI().getRootSynset() == null){
+            return false;
+        }
+        return synset.getId().equals(gv.getUI().getRootSynset().getId());
+    }
+
+    /***
+     * Clear SynsetStructureView and SysnetProperitesView
      */
-    public void addToLocker(Object vn, LockerElementRenderer ler) {
-        lockerView.addToLocker(vn, ler);
+    private void updateSynsetViews() {
+        Application.eventBus.post(new UpdateSynsetUnitsEvent(null));
+        Application.eventBus.post(new UpdateSynsetPropertiesEvent(null));
+    }
+
+    private boolean isSynsetSelected(Synset synset, ViwnGraphView view){
+        if(view.getUI().getSelectedNode() == null
+                && !(view.getUI().getSelectedNode() instanceof ViwnNodeSynset)){
+            return false;
+        }
+        return ((ViwnNodeSynset)view.getUI().getSelectedNode()).getSynset().equals(synset);
+    }
+
+    private boolean isActiveView(ViwnGraphView view){
+        return getActiveGraphView().equals(view);
     }
 
     /**
@@ -327,7 +387,6 @@ public class ViWordNetService extends AbstractService implements
                     ViwnNodeWord word = (ViwnNodeWord) root;
                     examplesView.load_examples(word.getLabel());
                 }
-
                 return true;
             }
         }
@@ -446,7 +505,6 @@ public class ViWordNetService extends AbstractService implements
         for (ViwnGraphView viwnGraphView : graphViews) {
             viwnGraphView.getUI().setCursor(cursor);
         }
-        lockerView.getViewUI().setCursor(cursor);
     }
 
     /**
@@ -467,30 +525,35 @@ public class ViWordNetService extends AbstractService implements
                 return;
             }
 
-            String MERGE_SYNSETS = "<html>Czy na pewno chcesz połączyć synsety:<br>"
+            final String MERGE_SYNSETS = "<html>Czy na pewno chcesz połączyć synsety:<br>"
                     + "1. <font color=\"blue\">%s</font><br>"
                     + "2. <font color=\"blue\">%s</font> ?</html>";
 
             if (DialogBox.showYesNo(String.format(MERGE_SYNSETS,
                     src.getUnitsStr(), dst.getUnitsStr())) == DialogBox.YES) {
 
-                RelationsDA.mergeSynsets(src.getSynset(), dst.getSynset(),
-                        LexiconManager.getInstance().getLexiconsIds());
+//                RelationsDA.mergeSynsets(src.getSynset(), dst.getSynset(),
+//                        LexiconManager.getInstance().getLexiconsIds());
 
-                for (ViwnGraphView gv : new ArrayList<>(graphViews)) {
+                RemoteService.synsetRemote.merge(dst.getSynset(), src.getSynset());
+
+                Application.eventBus.post(new UpdateGraphEvent(null));
+                // TODO zobaczyć, czy synset usuwa się poprawnie
+                for(ViwnGraphView gv: graphViews){
                     gv.getUI().removeSynset(src);
-                    gv.getUI().updateSynset(dst);
                 }
-
-                ViWordNetService s = ServiceManager.getViWordNetService(workbench);
-                src.getSynset().setId((long) -1);
-                s.lockerView.refreshData();
+//                for (ViwnGraphView gv : new ArrayList<>(graphViews)) {
+//                    gv.getUI().updateViewAfterRemovingSynset(src);
+//                    gv.getUI().updateSynset(dst);
+//                }
+//
+//
+//                ViWordNetService s = ServiceManager.getViWordNetService(workbench);
+//                src.getSynset().setId((long) -1);
             }
         }
-
         setMergeSynsetsMode(false);
     }
-
 
     /**
      * @param second object to make relation with first turns off make relation
@@ -532,6 +595,15 @@ public class ViWordNetService extends AbstractService implements
         ViwnNodeSynset src = (ViwnNodeSynset) first;
         ViwnNodeSynset dst = second;
         if (src == null || dst == null || src.getId() == -1 || dst.getId() == -1) {
+            setMakeRelationMode(false);
+            return;
+        }
+        Synset sourceSynset = src.getSynset();
+        Synset destinationSynset = dst.getSynset();
+        if(sourceSynset.getLexicon().isOnlyToRead() && sourceSynset.getLexicon().equals(destinationSynset.getLexicon())){
+            // TODO dorobić etykietę, poprawić tekst
+            final String MESSAGE_TEXT = "Nie można utworzyć relacji pomiędzy synsetami z temgo samego leksykonu tylko do odczytu";
+            DialogBox.showInformation(MESSAGE_TEXT);
             setMakeRelationMode(false);
             return;
         }
@@ -599,14 +671,7 @@ public class ViWordNetService extends AbstractService implements
 //        }
     }
 
-    public void clearAllViews() {
-        graphViews.stream().map((vgv) -> {
-            vgv.getUI().clear();
-            return vgv;
-        }).forEach((vgv) -> {
-            vgv.getUI().getCriteria().setSense(new ArrayList<>());
-        });
-    }
+
 
     /**
      * @param object
@@ -634,15 +699,27 @@ public class ViWordNetService extends AbstractService implements
     class LoadSynsetTask extends SwingWorker<Void, Void> {
 
         protected Synset synset;
+        protected ViwnGraphView view;
 
         public LoadSynsetTask(Synset synset) {
             this.synset = synset;
+            this.view = getActiveGraphView();
+        }
+
+        public LoadSynsetTask(Synset synset, ViwnGraphView view){
+            this.synset = synset;
+            if (view != null){
+                this.view = view;
+            } else {
+                this.view = getActiveGraphView();
+            }
         }
 
         @Override
         protected Void doInBackground() throws Exception {
             if (synset == null) {
-                getActiveGraphView().getUI().clear();
+                view.getUI().clear();
+//                getActiveGraphView().getUI().clear();
                 return null;
             }
             workbench.setBusy(true);
@@ -653,12 +730,15 @@ public class ViWordNetService extends AbstractService implements
         @Override
         public void done() {
             workbench.setBusy(false);
+            Application.eventBus.post(new UpdateSynsetPropertiesEvent(synset));
+            Application.eventBus.post(new UpdateSynsetUnitsEvent(synset));
         }
 
         protected void loadSynset(Synset synset) {
-            getActiveGraphView().getUI().clearNodeCache();
+//            getActiveGraphView().getUI().clearNodeCache();
+            view.getUI().clearNodeCache();
             if (synset != null) {
-                synsetData.load(synset, LexiconManager.getInstance().getLexiconsIds());
+                synsetData.load(synset, LexiconManager.getInstance().getUserChosenLexiconsIds());
                 // loading full object. Original rootSynset does't have partOfSpeech and other required data
                 synset = synsetData.getSynsetById(synset.getId());
                 loadGraph(synset);
@@ -666,9 +746,12 @@ public class ViWordNetService extends AbstractService implements
         }
 
         private void loadGraph(Synset rootSynset) {
-            activeGraphView.loadSynset(rootSynset);
+//            activeGraphView.loadSynset(rootSynset);
+            view.loadSynset(rootSynset);
             Sense unit = rootSynset.getSenses().get(0);
             examplesView.load_examples(unit.getWord().getWord());
+            // TODO sprawdzić, czy to jest ok
+            // w przypadku usuwania nieaktywnego grafu należy zmienić jego nazwę
             ((ViWordNetPerspective) workbench.getActivePerspective())
                     .setTabTitle("<html><font color=green>" + unit.getWord()
                             + "</font> #"
@@ -687,10 +770,16 @@ public class ViWordNetService extends AbstractService implements
             this.sense = sense;
         }
 
+        public LoadSenseTask(Sense sense, ViwnGraphView view){
+            super(null, view);
+            this.sense = sense;
+        }
+
         @Override
         protected Void doInBackground() {
             if (sense == null) {
-                getActiveGraphView().getUI().clear();
+//                getActiveGraphView().getUI().clear();
+                view.getUI().clear();
                 return null;
             }
             workbench.setBusy(true);
@@ -698,5 +787,6 @@ public class ViWordNetService extends AbstractService implements
             loadSynset(synset);
             return null;
         }
+
     }
 }

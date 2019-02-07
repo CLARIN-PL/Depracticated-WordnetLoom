@@ -11,9 +11,7 @@ import pl.edu.pwr.wordnetloom.relationtest.model.RelationTest;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Audited
@@ -58,7 +56,7 @@ public class RelationType extends GenericEntity {
     @NotAudited
     @OneToMany(mappedBy = "relationType", fetch = FetchType.LAZY)
     @OrderBy("position")
-    private List<RelationTest> relationTests = new ArrayList<>();
+    private Set<RelationTest> relationTests = new HashSet<>();
 
     @NotNull
     @Column(name = "relation_argument")
@@ -86,11 +84,16 @@ public class RelationType extends GenericEntity {
     @Enumerated(EnumType.STRING)
     private NodeDirection nodePosition = NodeDirection.IGNORE;
 
+    @Column(name = "global_wordnet_relation_type")
+    @Enumerated(EnumType.STRING)
+    private GlobalWordnetRelationType globalWordnetRelationType;
+
     @NotAudited
     private Integer priority;
 
     @Column
     private String color = "#ffffff";
+
 
     public RelationType() {
     }
@@ -151,7 +154,7 @@ public class RelationType extends GenericEntity {
         this.shortDisplayText = shortDisplayText;
     }
 
-    public void setRelationTests(List<RelationTest> relationTests) {
+    public void setRelationTests(Set<RelationTest> relationTests) {
         this.relationTests = relationTests;
     }
 
@@ -163,7 +166,7 @@ public class RelationType extends GenericEntity {
         this.color = color;
     }
 
-    public List<RelationTest> getRelationTests() {
+    public Set<RelationTest> getRelationTests() {
         return relationTests;
     }
 
@@ -235,18 +238,30 @@ public class RelationType extends GenericEntity {
         return priority;
     }
 
-    public int getOrder(){
-        if(priority == null){
+    public Boolean getAutoReverse() {
+        return autoReverse;
+    }
+
+    public GlobalWordnetRelationType getGlobalWordnetRelationType() {
+        return globalWordnetRelationType;
+    }
+
+    public void setGlobalWordnetRelationType(GlobalWordnetRelationType globalWordnetRelationType) {
+        this.globalWordnetRelationType = globalWordnetRelationType;
+    }
+
+    public int getOrder() {
+        if (priority == null) {
             return 0;
         } //TODO zlikwidowac ten warunkek. Został wstawiony, aby przechodziły testy. W testach należy do danych dodać pozycje
-        final int POSITION_FACTOR = 100;
-        if(getParent() != null){
+        int POSITION_FACTOR = 100;
+        if (getParent() != null) {
             return getParent().getOrder() + priority;
         }
         return priority * POSITION_FACTOR;
     }
 
-    public void setPriority(Integer position){
-        this.priority = position;
+    public void setPriority(Integer position) {
+        priority = position;
     }
 }

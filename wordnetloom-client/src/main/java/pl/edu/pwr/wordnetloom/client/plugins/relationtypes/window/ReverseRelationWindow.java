@@ -38,12 +38,14 @@ public class ReverseRelationWindow extends DialogWindow implements ActionListene
     private final MButton buttonChoose, buttonCancel, buttonNoReverse;
     private RelationType lastReverse = null;
     private RelationType selectedRelation = null;
+
     private final JTree tree;
     private final JCheckBox autoReverse;
 
-    private ReverseRelationWindow(WebFrame owner) {
-        super(owner, Labels.REVERSE_RELATION, 400, 450);
+    private ReverseRelationWindow(WebFrame parent) {
+        super(parent, Labels.REVERSE_RELATION, 400, 450);
         setResizable(false);
+        setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         tree = new WebTree(root);

@@ -17,7 +17,6 @@ or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames;
 
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.da.LexicalDA;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
 import pl.edu.pwr.wordnetloom.client.systems.common.ValueContainer;
@@ -61,7 +60,7 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
     protected boolean verifySelectedElements() {
         if (filterObject != null) {
             for (Sense elem : selectedElements) {
-                if (LexicalDA.checkIfInAnySynset(elem)) {
+                if (elem.getSynset().getId() != null) {
                     DialogBox.showError(String.format(Messages.INFO_UNIT_ALREADY_ASSIGNED_TO_SYNSET, (elem).getWord()));
                     return false;
                 }
@@ -78,7 +77,8 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
             SenseCriteriaDTO dto = new SenseCriteriaDTO();
             dto.setLemma(filter);
             if (pos != null) {
-                dto.setPartOfSpeechId(pos.getId());
+//                dto.setPartOfSpeechId(pos.getId());
+                dto.setPartOfSpeech(pos);
             }
             dto.setLexicons(LexiconManager.getInstance().getUserChosenLexiconsIds());
             return RemoteService.senseRemote.findByCriteria(dto);
@@ -88,15 +88,15 @@ public class UnitsListFrame extends AbstractListFrame<Sense, PartOfSpeech> {
 
     @Override
     protected void invokeNew() {
-
-        Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, filterObject);
-        if (newUnit != null) {
-            Sense sense = RemoteService.senseRemote.save(newUnit.getA());
-            RemoteService.senseRemote.addSenseAttribute(sense.getId(), newUnit.getB());
-            filterEdit.setText(sense.getWord().getWord());
-            unitWasCreated = true;
-            refreshListModel();
-        }
+        LexicalUnitPropertiesFrame.showModal(workbench, null);
+//        Pair<Sense, SenseAttributes> newUnit = NewLexicalUnitFrame.showModal(workbench, filterObject);
+//        if (newUnit != null) {
+//            Sense sense = RemoteService.senseRemote.save(newUnit.getA());
+//            RemoteService.senseRemote.addSenseAttribute(sense.getId(), newUnit.getB());
+//            filterEdit.setText(sense.getWord().getWord());
+//            unitWasCreated = true;
+//            refreshListModel();
+//        }
     }
 
     protected void setFilterObject(PartOfSpeech filterObject) {

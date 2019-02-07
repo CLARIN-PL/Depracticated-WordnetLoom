@@ -94,6 +94,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
     }
 
     private void drawFrame(GraphicsDecorator g, Shape shape, Color color, Point2D.Float pos) {
+        final float BORDER_WIDTH = 5.0f;
         Shape old_clip = g.getClip();
         AffineTransform old = g.getTransform();
         AffineTransform t = g.getTransform();
@@ -101,7 +102,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
         g.setTransform(t);
         g.setColor(color);
         Stroke old_stroke = g.getStroke();
-        g.setStroke(new BasicStroke(10.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
+        g.setStroke(new BasicStroke(BORDER_WIDTH, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
         Area a = new Area(g.getClip());
         a.subtract(new Area(shape));
         g.setClip(a);
@@ -120,6 +121,7 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
 
         Shape shape = rc.getVertexShapeTransformer().transform(node);
         GraphicsDecorator g = rc.getGraphicsContext();
+        node.setFrame(true);
 
         if (node instanceof ViwnNodeCand) {
             ViwnNodeCand cand = (ViwnNodeCand) node;
@@ -133,7 +135,11 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
         } else if (PosFrameColors.containsKey(node.getPos())) {
             drawFrame(g, shape, PosFrameColors.get(node.getPos()), pos);
         } else if (node.getFrame()) {
-            drawFrame(g, shape, new Color(50, 132, 255), pos);
+            if(node.getSynset().getStatus() !=null) {
+                String colorHex = node.getSynset().getStatus().getColor();
+                Color borderColor = Color.decode(colorHex);
+                drawFrame(g, shape, borderColor, pos);
+            }
         }
 
         delegate.paintVertex(rc, layout, node);
@@ -146,27 +152,10 @@ public class ViwnVertexRenderer implements Renderer.Vertex<ViwnNode, ViwnEdge> {
             }
 
             if (node.getRelation(rclass).size() > 0) {
-
                 boolean hide = false;
-
                 if (node.getState(rclass) == State.EXPANDED) {
-                    hide = true;
-                    Iterator<ViwnEdgeSynset> itr = node.getRelation(rclass).iterator();
-                    while (hide && itr.hasNext()) {
-                        ViwnEdgeSynset e = itr.next();
-                        if (layout.getGraph().containsEdge(e)) {
-                            Collection<ViwnNode> inc = layout.getGraph().getIncidentVertices(e);
-                            for (ViwnNode s : inc) {
-                                ViwnNodeSynset ss = (ViwnNodeSynset) s;
-                                if (ss.getSpawner() == node) {
-                                    hide = false;
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    hide = node.getRelation(rclass).isEmpty();
                 }
-
                 if (!hide) {
                     Area area = new Area(node.getButtonArea(rclass));
                     area.transform(AffineTransform.getTranslateInstance(pos.x, pos.y));

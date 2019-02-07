@@ -4,7 +4,9 @@ import com.alee.laf.rootpane.WebDialog;
 import com.alee.laf.rootpane.WebFrame;
 import se.datadosen.component.RiverLayout;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class DialogWindow extends WebDialog {
 
@@ -24,14 +26,22 @@ public class DialogWindow extends WebDialog {
         }
 
         initializeComponents(x, y, width, height);
+        initDefaultCloseOnEscape();
     }
 
     public DialogWindow(WebFrame baseFrame, String title, int width, int height) {
         super(baseFrame, title, true);
-
+        setLocationRelativeTo(baseFrame);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         initializeComponents(calculateCenterPosition(screenSize.width, width), calculateCenterPosition(screenSize.height, height), width, height);
+        initDefaultCloseOnEscape();
+    }
+
+    private void initDefaultCloseOnEscape(){
+        this.getRootPane().registerKeyboardAction(e -> {
+           this.dispose();
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     /**
@@ -42,13 +52,14 @@ public class DialogWindow extends WebDialog {
      */
     public DialogWindow(WebFrame frame, String title) {
         super(frame, title, true);
-
+        setLocationRelativeTo(frame);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         int width = screenSize.width - 50;
         int height = screenSize.height - 80;
 
         initializeComponents(calculateCenterPosition(screenSize.width, width), calculateCenterPosition(screenSize.height, height), width, height);
+        initDefaultCloseOnEscape();
     }
 
     private void initializeComponents(int x, int y, int width, int height) {

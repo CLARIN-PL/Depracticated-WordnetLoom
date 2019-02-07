@@ -68,4 +68,5 @@ public class WordRepositoryUTest extends TestBaseRepository {
         assertThat(w, is(equalTo(krowa)));
     }
 
+
 }

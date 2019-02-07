@@ -1,6 +1,7 @@
 package pl.edu.pwr.wordnetloom.client.plugins.lexeditor.views;
 
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.panel.SynsetCriteria;
@@ -8,10 +9,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.visualization.decorators.
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.SynsetTooltipGenerator;
 import pl.edu.pwr.wordnetloom.client.systems.tooltips.ToolTipList;
-import pl.edu.pwr.wordnetloom.client.systems.ui.LazyScrollPane;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MLabel;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MSplitPane;
+import pl.edu.pwr.wordnetloom.client.systems.ui.*;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.synset.model.Synset;
@@ -40,8 +38,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
 
     private SynsetCriteria criteria;
     private SynsetCriteriaDTO lastCriteriaDTO;
-    private ToolTipList synsetList;
-    private LazyScrollPane scrollPane;
+    private LazyScrollList synsetList;
     private WebLabel infoLabel;
     private int allMatchedSynsetCount = -1;
     private DefaultListModel<Synset> synsetListModel = new DefaultListModel<>();
@@ -53,6 +50,16 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         } else {
             infoLabel.setText("");
         }
+    }
+
+    private void setCountInfoText(int numAllObjects) {
+        String infoText;
+        if(numAllObjects > 0){
+            infoText = String.format(Labels.VALUE_COUNT_SIMPLE, numAllObjects);
+        } else {
+            infoText = "";
+        }
+        infoLabel.setText(infoText);
     }
 
     @Override
@@ -73,12 +80,13 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         bottom.setLayout(new RiverLayout());
         bottom.setMargin(0);
 
-        top.add("hfill", scroll);
+        top.add("hfill vfill", scroll);
         top.add("br center", btnSearch);
         top.add("center", btnReset);
 
         bottom.add("br left", new MLabel(Labels.SYNSETS_COLON, 'j', synsetList));
-        bottom.add("br hfill vfill", scrollPane);
+//        bottom.add("br hfill vfill", scrollPane);
+        bottom.add("br hfill vfill", synsetList);
         bottom.add("br left", infoLabel);
 
         MSplitPane split = new MSplitPane(0, top, bottom);
@@ -95,11 +103,9 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         criteria.getDomainComboBox().addActionListener(this);
         criteria.getPartsOfSpeechComboBox().addActionListener(this);
 
-        synsetList = createSynsetList(synsetListModel);
-
-        scrollPane = new LazyScrollPane(synsetList, LIMIT);
-        scrollPane.setHorizontalScrolling(false);
-        scrollPane.setScrollListener((offset, limit) -> loadMoreSynsets());
+        WebList list = createSynsetList(synsetListModel);
+        synsetList = new LazyScrollList(list, synsetListModel, new Synset(), LIMIT);
+        synsetList.setScrollListener(((offset, limit) -> getSynsets(offset, limit)));
 
         infoLabel = new WebLabel();
         infoLabel.setText(String.format(Labels.VALUE_COUNT_SIMPLE, "0"));
@@ -109,6 +115,7 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         ToolTipList list = new ToolTipList(workbench, model, new SynsetTooltipGenerator());
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.getSelectionModel().addListSelectionListener(this);
+
         list.setCellRenderer(new SynsetListCellRenderer());
         return list;
     }
@@ -121,24 +128,13 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         new SynsetDownloaderWorker(true).execute();
     }
 
-    public void loadMoreSynsets() {
-        new SynsetDownloaderWorker(false).execute();
-    }
-
     @Override
     public void valueChanged(ListSelectionEvent event) {
         if (event == null || event.getValueIsAdjusting()) {
             return;
         }
-        int selectedIndex = synsetList.getSelectedIndex();
-        if(isCorrectSelectedIndex(selectedIndex)){
-            Synset synset = synsetListModel.getElementAt(selectedIndex);
-            listeners.notifyAllListeners(synsetList.getSelectedIndices().length == 1 ? synset : null);
-        }
-    }
-
-    private boolean isCorrectSelectedIndex(int selectedIndex) {
-        return selectedIndex >= 0 && selectedIndex < synsetListModel.size();
+        Synset selectedSynset = (Synset) synsetList.getSelectedItem();
+        listeners.notifyAllListeners(selectedSynset);
     }
 
     @Override
@@ -164,7 +160,15 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         }
     }
 
-    private class SynsetDownloaderWorker extends SwingWorker<Void, Void> {
+    private List<Synset> getSynsets(int offset, int limit) {
+        SynsetCriteriaDTO synsetCriteriaDTO = criteria.getSynsetCriteria();
+        synsetCriteriaDTO.setOffset(offset);
+        synsetCriteriaDTO.setLimit(limit);
+        lastCriteriaDTO = synsetCriteriaDTO;
+        return RemoteService.synsetRemote.findSynsetsByCriteria(synsetCriteriaDTO);
+    }
+
+    private class SynsetDownloaderWorker extends SwingWorker<List<Synset>, Void> {
 
         private boolean isNewCriteria;
 
@@ -173,9 +177,8 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
         }
 
         @Override
-        protected Void doInBackground() throws Exception {
+        protected List<Synset> doInBackground() throws Exception {
             workbench.setBusy(true);
-
             if(isNewCriteria){
                 resetSynsetList();
                 lastCriteriaDTO = criteria.getSynsetCriteria();
@@ -184,51 +187,49 @@ public class SynsetViewUI extends AbstractViewUI implements ActionListener, List
                 allMatchedSynsetCount = RemoteService.synsetRemote.getCountSynsetsByCriteria(lastCriteriaDTO);
             }
             lastCriteriaDTO.setOffset(synsetListModel.getSize());
-            loadAndAddSynsets(lastCriteriaDTO);
-            return null;
+            return loadAndAddSynsets(lastCriteriaDTO);
         }
 
         private void resetSynsetList() {
-            synsetListModel.clear();
-            scrollPane.reset();
+            synsetList.reset();
         }
 
-        private void loadAndAddSynsets(SynsetCriteriaDTO criteriaDTO) {
+        private List<Synset> loadAndAddSynsets(SynsetCriteriaDTO criteriaDTO) {
             lastCriteriaDTO = criteriaDTO;
             List<Synset> synsets = RemoteService.synsetRemote.findSynsetsByCriteria(criteriaDTO);
-            addElementsToList(synsets);
-            scrollPane.setEnd(synsets.isEmpty() || synsets.size() < criteriaDTO.getLimit());
-        }
-
-        private void addElementsToList(List<Synset> synsets) {
-            for (Synset synset : synsets) {
-                synsetListModel.addElement(synset);
-            }
+            int synsetsCount = RemoteService.synsetRemote.getCountSynsetsByCriteria(criteriaDTO);
+            synsetList.setCollection(synsets, synsetsCount);
+            return synsets;
         }
 
         @Override
         protected void done(){
             synsetList.updateUI();
-            setInfoLabelText(synsetListModel.getSize(), allMatchedSynsetCount);
+            setCountInfoText(allMatchedSynsetCount);
             workbench.setBusy(false);
         }
     }
 
-    private class SynsetListCellRenderer extends WebLabel implements ListCellRenderer {
-        private final String FONT_NAME = "Courier New";
+    private class SynsetListCellRenderer implements ListCellRenderer {
+
+        private final String FONT_NAME = Font.SANS_SERIF;
         private final int FONT_SIZE = 14;
         private final Font FONT = new Font(FONT_NAME, Font.PLAIN, FONT_SIZE);
 
-        SynsetListCellRenderer() {
-            this.setDrawShade(false);
-            this.setFont(FONT);
-            this.setMargin(1,2,1,2);
+        private WebLabel component;
+        private Synset synset;
+
+        public SynsetListCellRenderer() {
+            component = new WebLabel();
+            component.setFont(FONT);
         }
 
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            setText(SynsetFormat.getHtmlText((Synset) value, scrollPane.getWidth()));
-            return this;
+            synset = (Synset) value;
+            String text = SynsetFormat.getHtmlText(synset, synsetList.getWidth());
+            component.setText(text);
+            return component;
         }
     }
 }

@@ -4,6 +4,7 @@ import pl.edu.pwr.wordnetloom.client.systems.managers.LexiconManager;
 import pl.edu.pwr.wordnetloom.client.systems.misc.CustomDescription;
 import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LexiconComboBox extends MComboBox<Lexicon> {
@@ -19,7 +20,7 @@ public class LexiconComboBox extends MComboBox<Lexicon> {
     }
 
     private void loadLexicons() {
-        all = LexiconManager.getInstance().getLexicons();
+        all = new ArrayList<>(LexiconManager.getInstance().getUserChosenLexicons());
     }
 
     private void loadItems() {
@@ -41,5 +42,29 @@ public class LexiconComboBox extends MComboBox<Lexicon> {
             return null;
         }
         return all.get(selectedIndex - 1); // subtract 1, because first element is null (CustomDescription(nullRepresentation, null))
+    }
+
+    public void setSelectedLexicon(List<Long> lexicon) {
+        if(lexicon.size() > 1){
+            setSelectedIndex(0); // select all lexicon
+        } else {
+            for(int i=0; i<getItemCount(); i++){
+                CustomDescription<Lexicon> item = (CustomDescription<Lexicon>) getItemAt(i);
+                if(item != null && item.getObject() != null && item.getObject().getId().equals(lexicon.get(0))){
+                    setSelectedIndex(i);
+                    return;
+                }
+            }
+            setSelectedIndex(0);
+        }
+    }
+
+    private int getIndex(Long lexiconId) {
+        for(int i=0; i < all.size(); i++){
+            if(all.get(i).equals(lexiconId)){
+                return i+1;
+            }
+        }
+        return 0;
     }
 }

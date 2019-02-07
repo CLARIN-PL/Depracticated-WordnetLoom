@@ -2,10 +2,11 @@ package pl.edu.pwr.wordnetloom.client.plugins.viwordnet.views;
 
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tree.WebTree;
-import org.jboss.naming.remote.client.ejb.RemoteNamingStoreEJBClientHandler;
-import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.RelationTypeFrame;
+import com.google.common.eventbus.Subscribe;
+import pl.edu.pwr.wordnetloom.client.Application;
 import pl.edu.pwr.wordnetloom.client.plugins.lexeditor.frames.UnitsListFrame;
 import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.utils.RelationTypeFormat;
+import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.events.UpdateUnitRelationsEvent;
 import pl.edu.pwr.wordnetloom.client.plugins.viwordnet.window.MakeNewLexicalRelationWindow;
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.common.Pair;
@@ -17,8 +18,10 @@ import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.client.utils.Labels;
 import pl.edu.pwr.wordnetloom.client.utils.Messages;
+import pl.edu.pwr.wordnetloom.client.utils.PermissionHelper;
 import pl.edu.pwr.wordnetloom.client.workbench.abstracts.AbstractViewUI;
 import pl.edu.pwr.wordnetloom.client.workbench.interfaces.Workbench;
+import pl.edu.pwr.wordnetloom.lexicon.model.Lexicon;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
 import pl.edu.pwr.wordnetloom.sense.model.Sense;
 import pl.edu.pwr.wordnetloom.senserelation.model.SenseRelation;
@@ -55,9 +58,17 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
 
     Workbench workbench;
 
+    private boolean permissionToUpdate = false;
+
     public ViwnLexicalUnitRelationsViewUI(Workbench workbench) {
         super();
         this.workbench = workbench;
+        Application.eventBus.register(this);
+    }
+
+    @Subscribe
+    public void setRelations(UpdateUnitRelationsEvent event){
+        SwingUtilities.invokeLater(()->fillTree(event.getSense()));
     }
 
     @Override
@@ -95,6 +106,15 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
         content.add("hfill vfill", new JScrollPane(tree));
         content.add("br center", addRelationButton);
         content.add(deleteRelationButton);
+
+        tree.setVisible(false);
+        addRelationButton.setEnabled(false);
+        deleteRelationButton.setEnabled(false);
+    }
+
+    private void setEnableEditing(Sense sense){
+        JComponent[] components = {addRelationButton, deleteRelationButton};
+        permissionToUpdate = PermissionHelper.checkPermissionToEditAndSetComponents(sense, components);
     }
 
     @Override
@@ -113,15 +133,21 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
             protected String doInBackground() throws Exception {
                 root_from.removeAllChildren();
                 root_to.removeAllChildren();
-                List<SenseRelation> relationsFrom = RemoteService.senseRelationRemote.findRelations((Sense) object, null, true, false);
+                if(object == null){
+                    return null;
+                }
+                Sense sense = (Sense) object;
+                // TODO chyba można jakoś zapobiec dodatkowemu pobieraniu z bazy
+                sense = RemoteService.senseRemote.fetchSense(sense.getId());
+                List<SenseRelation> relationsFrom = RemoteService.senseRelationRemote.findRelations(sense, null, true, false);
                 List<SenseRelation> relationTo = RemoteService.senseRelationRemote.findRelations((Sense) object, null, false, false);
                 fillRootRelations(root_from, relationsFrom, true);
                 fillRootRelations(root_to, relationTo, false);
-
+                setEnableEditing(sense);
                 return null;
             }
 
-            private void fillRootRelations(DefaultMutableTreeNode nodeToFill, List<SenseRelation> relations, boolean displayChild) {
+            private void fillRootRelations(DefaultMutableTreeNode outNodeToFill, List<SenseRelation> relations, boolean displayChild) {
                 Map<Long, DefaultMutableTreeNode> relationTypeNodeMap = new HashMap<>();
                 DefaultMutableTreeNode node;
                 DefaultMutableTreeNode senseNode;
@@ -141,26 +167,27 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
                     }
                 }
                 for (Map.Entry<Long, DefaultMutableTreeNode> entry : relationTypeNodeMap.entrySet()) {
-                    nodeToFill.add(entry.getValue());
+                    outNodeToFill.add(entry.getValue());
                 }
             }
 
             @Override
             protected void done() {
-                if (((DefaultMutableTreeNode) tree.getModel().getRoot())
-                        .getUserObject() != object) {
-                    // TODO: find better solution
-                    // ugly hack, to switch button off after changing tree
+                boolean isActive = object != null;
+                tree.setVisible(isActive);
+                addRelationButton.setEnabled(permissionToUpdate && isActive);
+                if (tree.getSelectedNode() == null){
                     deleteRelationButton.setEnabled(false);
                 }
-                root.setUserObject(object);
+                if (object != null){
+                    root.setUserObject(object);
 
-                ((DefaultTreeModel) tree.getModel()).reload();
-                tree.updateUI();
+                    ((DefaultTreeModel) tree.getModel()).reload();
+                    tree.updateUI();
 
-                expandAll(true);
+                    expandAll(true);
+                }
             }
-
         };
         worker.execute();
     }
@@ -350,9 +377,7 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
     }
 
     //TODO przeanalizować
-    private void removeNodeFromTree(SenseRelation senseRelation)
-    {
-        System.out.println("Usuwanie wierzchołka z drzewa relacji jednostek");
+    private void removeNodeFromTree(SenseRelation senseRelation) {
         DefaultMutableTreeNode node = null;
         List<DefaultMutableTreeNode> allNodes = tree.getAllNodes();
         for(DefaultMutableTreeNode treeNode : allNodes) {
@@ -413,12 +438,11 @@ public class ViwnLexicalUnitRelationsViewUI extends AbstractViewUI implements
     @Override
     public void valueChanged(TreeSelectionEvent evt) {
         DefaultMutableTreeNode selectedNode = tree.getSelectedNode();
-        if(selectedNode == null)
-        {
+        if(selectedNode == null) {
             return;
         }
         if (selectedNode.isLeaf() && !root.isNodeChild(selectedNode)) {
-            deleteRelationButton.setEnabled(true);
+            deleteRelationButton.setEnabled(permissionToUpdate);
         } else {
             deleteRelationButton.setEnabled(false);
         }

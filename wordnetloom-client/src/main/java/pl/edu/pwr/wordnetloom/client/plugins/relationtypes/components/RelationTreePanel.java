@@ -10,7 +10,7 @@ import pl.edu.pwr.wordnetloom.client.plugins.relationtypes.models.RelationTypeNo
 import pl.edu.pwr.wordnetloom.client.remote.RemoteService;
 import pl.edu.pwr.wordnetloom.client.systems.managers.RelationTypeManager;
 import pl.edu.pwr.wordnetloom.client.systems.ui.MButton;
-import pl.edu.pwr.wordnetloom.client.systems.ui.MButtonPanel;
+import pl.edu.pwr.wordnetloom.client.systems.ui.MComponentGroup;
 import pl.edu.pwr.wordnetloom.client.utils.Hints;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationArgument;
 import pl.edu.pwr.wordnetloom.relationtype.model.RelationType;
@@ -70,10 +70,10 @@ public class RelationTreePanel extends WebPanel implements TreeSelectionListener
         WebPanel wrapper = new WebPanel(treeScrollWrapper);
         wrapper.setMargin(5, 10, 10, 0);
 
-        MButtonPanel buttonPanel = new MButtonPanel(moveUpButton, moveDownButton,
+        MComponentGroup buttonPanel = new MComponentGroup(moveUpButton, moveDownButton,
                 addButton, addSubRelationButton, removeButton)
                 .withVerticalLayout()
-                .withAllButtonsEnabled(true)
+                .withAllComponentsEnabled(true)
                 .withMargin(10);
 
         add(wrapper, BorderLayout.CENTER);

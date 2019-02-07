@@ -9,3 +9,4 @@ cp ./wordnetloom-client/start.bat client/
 
 docker-compose build
 docker-compose up
+

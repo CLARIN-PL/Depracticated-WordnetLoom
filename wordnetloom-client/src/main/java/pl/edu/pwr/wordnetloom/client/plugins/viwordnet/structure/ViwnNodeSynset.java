@@ -172,15 +172,20 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
             relations[direction.ordinal()].clear();
         }
         DataEntry dataEntry = synsetData.getById(synset.getId());
+        updateSynset(dataEntry.getSynset()); // TODO try update status without this
         pos = PartOfSpeechManager.getInstance().getById(dataEntry.getPosID());
         addSynsetEdges(dataEntry, directions);
+    }
+
+    private void updateSynset(Synset synset){
+        this.synset.setStatus(synset.getStatus());
     }
 
     public void refresh(){
         DataEntry dataEntry = RemoteService.synsetRemote.findSynsetDataEntry(getSynset().getId(), LexiconManager.getInstance().getUserChosenLexiconsIds());
         ui.addToEntrySet(dataEntry);
         construct();
-        ui.recreateLayout(); //TODO zmienić to na coś, co nie powoduje zmiany pozycji synsetów
+        ui.recreateLayout();
     }
 
     public void construct() {
@@ -298,6 +303,16 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
         return relations[dir.ordinal()];
     }
 
+    public Collection<ViwnEdgeSynset> getRelations(RelationType relationType){
+        Collection<ViwnEdgeSynset>  result = new ArrayList<>();
+        for(ViwnEdgeSynset edge : relations[relationType.getNodePosition().ordinal()]){
+            if(edge.getRelationType().getId().equals(relationType.getId())){
+                result.add(edge);
+            }
+        }
+        return result;
+    }
+
     public void setState(NodeDirection dir, State state_new) {
         states[dir.ordinal()] = state_new;
     }
@@ -324,7 +339,7 @@ public class ViwnNodeSynset extends ViwnNodeRoot implements Comparable<ViwnNodeS
     public String getUnitsStr() {
         if (getSynset() != null) {
             if(unitsStr == null || unitsStr.equals("")){
-                System.out.println();
+                return ret;
             }
             return unitsStr;
         }
