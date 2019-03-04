@@ -1,3 +1,4 @@
+# This application is depracticated keept for legacy reasons
 # WordnetLoom
 
 Wordnet Visual Editor
